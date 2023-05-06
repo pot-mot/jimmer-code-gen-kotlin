@@ -1,9 +1,15 @@
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: root
-    url: jdbc:mysql://localhost:3307/jimmer-code-gen?serverTimezone=Asia/Shanghai
+    primary:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: root
+      url: jdbc:mysql://localhost:3307/jimmer-code-gen?serverTimezone=Asia/Shanghai
+    gen:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: root
+      url: jdbc:mysql://localhost:3307/sweep_net?serverTimezone=Asia/Shanghai
 
 jimmer:
   language: kotlin

@@ -1,6 +1,7 @@
 package top.potmot.jimmercodegen.service
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 import top.potmot.jimmercodegen.dao.GenTableAssociationRepository
@@ -17,9 +18,9 @@ class GenService(
     @Autowired val tableRepository: GenTableRepository,
     @Autowired val associationRepository: GenTableAssociationRepository,
     @Autowired val columnRepository: GenTableColumnRepository,
-    @Autowired val dataSource: DataSource
+    @Autowired @Qualifier("GenDataSource") val genDataSource: DataSource
 ) {
-    val jdbcTemplate = JdbcTemplate(dataSource)
+    val jdbcTemplate = JdbcTemplate(genDataSource)
 
     fun importGenTable(tableNames: List<String>) {
         for (tableInput in getTables(tableNames)) {
@@ -91,10 +92,10 @@ class GenService(
                 rs.getString("pk"),
                 rs.getString("increment"),
                 rs.getString("required"),
-                "",
-                "",
-                "",
-                "",
+                "0",
+                "0",
+                "0",
+                "0",
                 "",
                 "",
                 "",

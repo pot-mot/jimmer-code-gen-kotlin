@@ -10,9 +10,9 @@ class GenServiceTest (
     @Autowired val genService: GenService,
 ) {
     @Test
-    fun getColumns() {
+    fun importGenTable() {
         val tables = ArrayList<String>()
-        tables.add("gen_table")
+        tables.add("block")
         println(genService.importGenTable(tables))
     }
 
