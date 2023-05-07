@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
-import top.potmot.jimmercodegen.dao.GenTableAssociationRepository
 import top.potmot.jimmercodegen.dao.GenTableColumnRepository
 import top.potmot.jimmercodegen.dao.GenTableRepository
 import top.potmot.jimmercodegen.model.GenTable
@@ -14,9 +13,8 @@ import top.potmot.jimmercodegen.utils.GenUtils
 import javax.sql.DataSource
 
 @Service
-class GenService(
+class TableService(
     @Autowired val tableRepository: GenTableRepository,
-    @Autowired val associationRepository: GenTableAssociationRepository,
     @Autowired val columnRepository: GenTableColumnRepository,
     @Autowired @Qualifier("GenDataSource") val genDataSource: DataSource
 ) {
@@ -92,6 +90,7 @@ class GenService(
                 rs.getString("pk"),
                 rs.getString("increment"),
                 rs.getString("required"),
+                "0",
                 "0",
                 "0",
                 "0",

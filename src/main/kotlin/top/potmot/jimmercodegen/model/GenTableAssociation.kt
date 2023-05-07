@@ -12,7 +12,7 @@ import org.babyfish.jimmer.sql.ManyToOne
  * 代码生成业务表关联实体类
  *
  * @author potmot
- * @since 2023-05-06 18:45:32
+ * @since 2023-05-07 09:36:23
  */
 @Entity
 interface GenTableAssociation {
@@ -29,7 +29,7 @@ interface GenTableAssociation {
     val tableAssociationName: String
 
     /**
-     * 主表
+     * 主表编号
      */
     @ManyToOne
     val masterTable: GenTable
@@ -38,12 +38,16 @@ interface GenTableAssociation {
     val masterTableId: Long
 
     /**
-     * 主表字段
+     * 主表字段id
      */
-    val masterTableColumn: String
+    @ManyToOne
+    val masterTableColumn: GenTableColumn
+
+    @IdView
+    val masterTableColumnId: Long
 
     /**
-     * 从表
+     * 从表编号
      */
     @ManyToOne
     val slaveTable: GenTable
@@ -52,9 +56,13 @@ interface GenTableAssociation {
     val slaveTableId: Long
 
     /**
-     * 从表字段
+     * 从表字段id
      */
-    val slaveTableColumn: String
+    @ManyToOne
+    val slaveTableColumn: GenTableColumn
+
+    @IdView
+    val slaveTableColumnId: Long
 
     /**
      * 关联类别

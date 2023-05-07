@@ -1,5 +1,4 @@
 package top.potmot.jimmercodegen.model.input;
-import java.time.LocalDateTime;
 
 import org.babyfish.jimmer.Input
 import org.mapstruct.BeanMapping
@@ -12,16 +11,16 @@ import top.potmot.jimmercodegen.model.GenTableAssociation;
  * 代码生成业务表关联实体类
  *
  * @author potmot
- * @since 2023-05-06 18:45:32
+ * @since 2023-05-07 09:36:25
  */
 data class GenTableAssociationInput(
     var genTableAssociationId: Long?,
     var tableAssociationName: String,
     var masterTableId: Long,
-    var masterTableColumn: String,
+    var masterTableColumnId: Long,
     var slaveTableId: Long,
-    var slaveTableColumn: String,
-    var associationCategory: String,
+    var slaveTableColumnId: Long,
+    var associationCategory: String?,
 ) : Input<GenTableAssociation> {
     override fun toEntity(): GenTableAssociation =
         CONVERTER.toGenTableAssociation(this)

@@ -1,4 +1,4 @@
-package top.potmot.jimmercodegen.gentable
+package top.potmot.jimmercodegen.config
 
 import com.alibaba.druid.pool.DruidDataSource
 import org.junit.jupiter.api.Test

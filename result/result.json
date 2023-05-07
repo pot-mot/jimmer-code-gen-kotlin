@@ -1,0 +1,457 @@
+[
+  {
+    "genTableId": 16,
+    "columns": [
+      {
+        "genTableColumnId": 73,
+        "table": {
+          "genTableId": 16
+        },
+        "columnName": "id",
+        "columnComment": "",
+        "columnType": "int unsigned",
+        "fieldType": "String",
+        "fieldName": "id",
+        "pk": "1",
+        "increment": "1",
+        "required": "0",
+        "inInsert": "0",
+        "inEdit": "0",
+        "inList": "0",
+        "inQuery": "0",
+        "queryType": "EQ",
+        "htmlType": "",
+        "dictType": "",
+        "sort": 1
+      },
+      {
+        "genTableColumnId": 74,
+        "table": {
+          "genTableId": 16
+        },
+        "columnName": "group_id",
+        "columnComment": "用户组 ID",
+        "columnType": "int unsigned",
+        "fieldType": "String",
+        "fieldName": "groupId",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "",
+        "dictType": "",
+        "sort": 2
+      },
+      {
+        "genTableColumnId": 75,
+        "table": {
+          "genTableId": 16
+        },
+        "columnName": "order_key",
+        "columnComment": "局部排序",
+        "columnType": "int unsigned",
+        "fieldType": "String",
+        "fieldName": "orderKey",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "",
+        "dictType": "",
+        "sort": 3
+      },
+      {
+        "genTableColumnId": 76,
+        "table": {
+          "genTableId": 16
+        },
+        "columnName": "title",
+        "columnComment": "标题",
+        "columnType": "varchar(255)",
+        "fieldType": "String",
+        "fieldName": "title",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "input",
+        "dictType": "",
+        "sort": 4
+      },
+      {
+        "genTableColumnId": 77,
+        "table": {
+          "genTableId": 16
+        },
+        "columnName": "comment",
+        "columnComment": "描述",
+        "columnType": "varchar(255)",
+        "fieldType": "String",
+        "fieldName": "comment",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "input",
+        "dictType": "",
+        "sort": 5
+      },
+      {
+        "genTableColumnId": 78,
+        "table": {
+          "genTableId": 16
+        },
+        "columnName": "created_time",
+        "columnComment": "创建时间",
+        "columnType": "datetime",
+        "fieldType": "Date",
+        "fieldName": "createdTime",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "BETWEEN",
+        "htmlType": "datetime",
+        "dictType": "",
+        "sort": 6
+      },
+      {
+        "genTableColumnId": 79,
+        "table": {
+          "genTableId": 16
+        },
+        "columnName": "modified_time",
+        "columnComment": "修改时间",
+        "columnType": "datetime",
+        "fieldType": "Date",
+        "fieldName": "modifiedTime",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "BETWEEN",
+        "htmlType": "datetime",
+        "dictType": "",
+        "sort": 7
+      }
+    ]
+  },
+  {
+    "genTableId": 17,
+    "columns": [
+      {
+        "genTableColumnId": 80,
+        "table": {
+          "genTableId": 17
+        },
+        "columnName": "id",
+        "columnComment": "",
+        "columnType": "int unsigned",
+        "fieldType": "String",
+        "fieldName": "id",
+        "pk": "1",
+        "increment": "1",
+        "required": "0",
+        "inInsert": "0",
+        "inEdit": "0",
+        "inList": "0",
+        "inQuery": "0",
+        "queryType": "EQ",
+        "htmlType": "",
+        "dictType": "",
+        "sort": 1
+      },
+      {
+        "genTableColumnId": 81,
+        "table": {
+          "genTableId": 17
+        },
+        "columnName": "parent_id",
+        "columnComment": "父条目 ID",
+        "columnType": "int unsigned",
+        "fieldType": "String",
+        "fieldName": "parentId",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "",
+        "dictType": "",
+        "sort": 2
+      },
+      {
+        "genTableColumnId": 82,
+        "table": {
+          "genTableId": 17
+        },
+        "columnName": "order_key",
+        "columnComment": "局部顺序",
+        "columnType": "int unsigned",
+        "fieldType": "String",
+        "fieldName": "orderKey",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "",
+        "dictType": "",
+        "sort": 3
+      },
+      {
+        "genTableColumnId": 83,
+        "table": {
+          "genTableId": 17
+        },
+        "columnName": "title",
+        "columnComment": "标题",
+        "columnType": "varchar(255)",
+        "fieldType": "String",
+        "fieldName": "title",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "input",
+        "dictType": "",
+        "sort": 4
+      },
+      {
+        "genTableColumnId": 84,
+        "table": {
+          "genTableId": 17
+        },
+        "columnName": "comment",
+        "columnComment": "描述",
+        "columnType": "varchar(255)",
+        "fieldType": "String",
+        "fieldName": "comment",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "input",
+        "dictType": "",
+        "sort": 5
+      },
+      {
+        "genTableColumnId": 85,
+        "table": {
+          "genTableId": 17
+        },
+        "columnName": "created_time",
+        "columnComment": "创建时间",
+        "columnType": "datetime",
+        "fieldType": "Date",
+        "fieldName": "createdTime",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "BETWEEN",
+        "htmlType": "datetime",
+        "dictType": "",
+        "sort": 6
+      },
+      {
+        "genTableColumnId": 86,
+        "table": {
+          "genTableId": 17
+        },
+        "columnName": "modified_time",
+        "columnComment": "修改时间",
+        "columnType": "datetime",
+        "fieldType": "Date",
+        "fieldName": "modifiedTime",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "BETWEEN",
+        "htmlType": "datetime",
+        "dictType": "",
+        "sort": 7
+      }
+    ]
+  },
+  {
+    "genTableId": 18,
+    "columns": [
+      {
+        "genTableColumnId": 87,
+        "table": {
+          "genTableId": 18
+        },
+        "columnName": "id",
+        "columnComment": "",
+        "columnType": "int unsigned",
+        "fieldType": "String",
+        "fieldName": "id",
+        "pk": "1",
+        "increment": "1",
+        "required": "0",
+        "inInsert": "0",
+        "inEdit": "0",
+        "inList": "0",
+        "inQuery": "0",
+        "queryType": "EQ",
+        "htmlType": "",
+        "dictType": "",
+        "sort": 1
+      },
+      {
+        "genTableColumnId": 88,
+        "table": {
+          "genTableId": 18
+        },
+        "columnName": "item_id",
+        "columnComment": "条目 ID",
+        "columnType": "int unsigned",
+        "fieldType": "String",
+        "fieldName": "itemId",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "",
+        "dictType": "",
+        "sort": 2
+      },
+      {
+        "genTableColumnId": 89,
+        "table": {
+          "genTableId": 18
+        },
+        "columnName": "block_id",
+        "columnComment": "板块 ID",
+        "columnType": "int unsigned",
+        "fieldType": "String",
+        "fieldName": "blockId",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "",
+        "dictType": "",
+        "sort": 3
+      },
+      {
+        "genTableColumnId": 90,
+        "table": {
+          "genTableId": 18
+        },
+        "columnName": "x",
+        "columnComment": "X 坐标",
+        "columnType": "int",
+        "fieldType": "Long",
+        "fieldName": "x",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "input",
+        "dictType": "",
+        "sort": 4
+      },
+      {
+        "genTableColumnId": 91,
+        "table": {
+          "genTableId": 18
+        },
+        "columnName": "y",
+        "columnComment": "Y 坐标",
+        "columnType": "int",
+        "fieldType": "Long",
+        "fieldName": "y",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "input",
+        "dictType": "",
+        "sort": 5
+      },
+      {
+        "genTableColumnId": 92,
+        "table": {
+          "genTableId": 18
+        },
+        "columnName": "direction",
+        "columnComment": "节点树展开方向",
+        "columnType": "tinyint unsigned",
+        "fieldType": "String",
+        "fieldName": "direction",
+        "pk": "0",
+        "increment": "1",
+        "required": "1",
+        "inInsert": "0",
+        "inEdit": "1",
+        "inList": "1",
+        "inQuery": "1",
+        "queryType": "EQ",
+        "htmlType": "",
+        "dictType": "",
+        "sort": 6
+      }
+    ]
+  }
+]

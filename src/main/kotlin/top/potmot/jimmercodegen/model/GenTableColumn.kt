@@ -92,6 +92,11 @@ interface GenTableColumn {
     val inQuery: String
 
     /**
+     * 是否Id视图（1是）
+     */
+    val idView: String
+
+    /**
      * 查询方式（等于、不等于、大于、小于、范围）
      */
     val queryType: String

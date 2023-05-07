@@ -82,14 +82,17 @@ public class GenUtils {
             column.setInQuery(GenConstants.REQUIRE);
         }
 
+        if (!column.getPk().equals("1") && StringUtils.endsWithIgnoreCase(columnName, "id")) {
+            column.setIdView("1");
+        }
+
         // 查询字段类型
         if (StringUtils.endsWithIgnoreCase(columnName, "name")) {
             column.setQueryType(GenConstants.QUERY_LIKE);
         }
-
-        if (StringUtils.endsWithIgnoreCase(columnName, "status")
+        // 分类与状态设置为选择框
+        else if (StringUtils.endsWithIgnoreCase(columnName, "status")
                 || StringUtils.endsWithIgnoreCase(columnName, "type")
-                || StringUtils.endsWithIgnoreCase(columnName, "sex")
                 || StringUtils.endsWithIgnoreCase(columnName, "category")
         ) {
             column.setHtmlType(GenConstants.HTML_SELECT);
@@ -105,9 +108,8 @@ public class GenUtils {
         // 内容字段设置富文本控件
         else if (StringUtils.endsWithIgnoreCase(columnName, "content")) {
             column.setHtmlType(GenConstants.HTML_EDITOR);
-        }
-
-        else if (StringUtils.endsWithIgnoreCase(columnName, "time")) {
+            // 时间字段设置区间查询
+        } else if (StringUtils.endsWithIgnoreCase(columnName, "time")) {
             column.setQueryType(GenConstants.QUERY_BETWEEN);
         }
     }
@@ -167,7 +169,7 @@ public class GenUtils {
      * 批量替换前缀
      *
      * @param replacement 替换值
-     * @param searchList   替换列表
+     * @param searchList  替换列表
      */
     public static String replaceFirst(String replacement, String[] searchList) {
         String text = replacement;

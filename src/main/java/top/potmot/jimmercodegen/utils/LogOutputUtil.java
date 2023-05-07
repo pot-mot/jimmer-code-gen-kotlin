@@ -34,8 +34,6 @@ public class LogOutputUtil {
 
         stringBuilder.append("\n");
 
-//        stringBuilder.append("result: ").append(result).append("\n");
-
         logger.info(stringBuilder.toString(), args.toArray());
     }
 }

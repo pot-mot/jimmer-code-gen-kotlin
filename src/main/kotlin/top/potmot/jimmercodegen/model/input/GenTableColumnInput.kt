@@ -28,6 +28,7 @@ data class GenTableColumnInput(
     var inEdit: String,
     var inList: String,
     var inQuery: String,
+    var idView: String,
     var queryType: String,
     var htmlType: String,
     var dictType: String,

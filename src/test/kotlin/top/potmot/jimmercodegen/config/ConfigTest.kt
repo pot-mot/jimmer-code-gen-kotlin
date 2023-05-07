@@ -1,4 +1,4 @@
-package top.potmot.jimmercodegen.gentable;
+package top.potmot.jimmercodegen.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
