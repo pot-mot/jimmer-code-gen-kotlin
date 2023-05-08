@@ -14,8 +14,8 @@ import top.potmot.jimmercodegen.model.GenTableColumn;
  * @since 2023-05-06 23:20:01
  */
 data class GenTableColumnInput(
-    var genTableColumnId: Long?,
-    var tableId: Long,
+    var id: Long?,
+    var genTableId: Long,
     var columnName: String,
     var columnComment: String,
     var columnType: String,

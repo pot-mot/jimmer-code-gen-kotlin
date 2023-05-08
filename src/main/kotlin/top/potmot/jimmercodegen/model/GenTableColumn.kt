@@ -1,11 +1,7 @@
 package top.potmot.jimmercodegen.model;
 
-import org.babyfish.jimmer.sql.Entity;
-import org.babyfish.jimmer.sql.GeneratedValue;
-import org.babyfish.jimmer.sql.GenerationType;
-import org.babyfish.jimmer.sql.Id;
-import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.*
+import top.potmot.jimmercodegen.model.common.BaseEntity
 
 /**
  * 代码生成业务表字段实体类
@@ -20,16 +16,16 @@ interface GenTableColumn {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val genTableColumnId: Long
+    val id: Long
 
     /**
      * 归属表编号
      */
     @ManyToOne
-    val table: GenTable
-    
+    val genTable: GenTable
+
     @IdView
-    val tableId: Long
+    val genTableId: Long
 
     /**
      * 列名称

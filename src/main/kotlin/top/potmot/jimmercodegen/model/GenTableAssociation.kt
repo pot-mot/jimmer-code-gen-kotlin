@@ -1,12 +1,7 @@
 package top.potmot.jimmercodegen.model;
-import java.time.LocalDateTime;
 
-import org.babyfish.jimmer.sql.Entity;
-import org.babyfish.jimmer.sql.GeneratedValue;
-import org.babyfish.jimmer.sql.GenerationType;
-import org.babyfish.jimmer.sql.Id;
-import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.*
+import top.potmot.jimmercodegen.model.common.BaseEntity
 
 /**
  * 代码生成业务表关联实体类
@@ -15,13 +10,13 @@ import org.babyfish.jimmer.sql.ManyToOne
  * @since 2023-05-07 09:36:23
  */
 @Entity
-interface GenTableAssociation {
+interface GenTableAssociation : BaseEntity {
     /**
      * 编号
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val genTableAssociationId: Long
+    val id: Long
 
     /**
      * 表关联名称
@@ -41,10 +36,10 @@ interface GenTableAssociation {
      * 主表字段id
      */
     @ManyToOne
-    val masterTableColumn: GenTableColumn
+    val masterColumn: GenTableColumn
 
     @IdView
-    val masterTableColumnId: Long
+    val masterColumnId: Long
 
     /**
      * 从表编号
@@ -59,10 +54,10 @@ interface GenTableAssociation {
      * 从表字段id
      */
     @ManyToOne
-    val slaveTableColumn: GenTableColumn
+    val slaveColumn: GenTableColumn
 
     @IdView
-    val slaveTableColumnId: Long
+    val slaveColumnId: Long
 
     /**
      * 关联类别

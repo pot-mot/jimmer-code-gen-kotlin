@@ -1,12 +1,11 @@
 package top.potmot.jimmercodegen.model.input;
-import java.time.LocalDateTime;
 
 import org.babyfish.jimmer.Input
 import org.mapstruct.BeanMapping
 import org.mapstruct.Mapper
 import org.mapstruct.ReportingPolicy
 import org.mapstruct.factory.Mappers
-import top.potmot.jimmercodegen.model.GenTable;
+import top.potmot.jimmercodegen.model.GenTable
 
 /**
  * 代码生成业务表实体类
@@ -15,11 +14,10 @@ import top.potmot.jimmercodegen.model.GenTable;
  * @since 2023-05-06 18:45:51
  */
 data class GenTableInput(
-    var genTableId: Long?,
+    var id: Long?,
     var tableName: String,
     var tableComment: String,
     var className: String,
-    var tplCategory: String,
     var packageName: String,
     var moduleName: String,
     var businessName: String,

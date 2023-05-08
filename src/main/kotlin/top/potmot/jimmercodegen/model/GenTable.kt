@@ -1,11 +1,7 @@
 package top.potmot.jimmercodegen.model;
-import java.time.LocalDateTime;
 
-import org.babyfish.jimmer.sql.Entity;
-import org.babyfish.jimmer.sql.GeneratedValue;
-import org.babyfish.jimmer.sql.GenerationType;
-import org.babyfish.jimmer.sql.Id;
-import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.*
+import top.potmot.jimmercodegen.model.common.BaseEntity
 
 /**
  * 代码生成业务表实体类
@@ -14,13 +10,13 @@ import org.babyfish.jimmer.sql.OneToMany
  * @since 2023-05-06 18:45:50
  */
 @Entity
-interface GenTable {
+interface GenTable : BaseEntity {
     /**
      * 编号
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val genTableId: Long
+    val id: Long
 
     /**
      * 表名称
@@ -36,11 +32,6 @@ interface GenTable {
      * 实体类名称
      */
     val className: String
-
-    /**
-     * 使用的模板（crud单表操作 tree树表操作）
-     */
-    val tplCategory: String
 
     /**
      * 生成包路径
@@ -85,18 +76,30 @@ interface GenTable {
     /**
      * 列
      */
-    @OneToMany(mappedBy = "table")
+    @OneToMany(mappedBy = "genTable")
     val columns: List<GenTableColumn>
 
     /**
-     * 作为从表的关联
+     * 本表作为从表的关联
      */
     @OneToMany(mappedBy = "slaveTable")
     val slaveAssociation: List<GenTableAssociation>
 
+    @ManyToManyView(
+        prop = "slaveAssociation",
+        deeperProp = "masterTable"
+    )
+    val masterTables: List<GenTable>
+
     /**
-     * 作为主表的关联
+     * 本表作为主表的关联
      */
     @OneToMany(mappedBy = "masterTable")
     val masterAssociation: List<GenTableAssociation>
+
+    @ManyToManyView(
+        prop = "masterAssociation",
+        deeperProp = "slaveTable"
+    )
+    val slaveTables: List<GenTable>
 }

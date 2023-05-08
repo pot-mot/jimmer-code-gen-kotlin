@@ -14,13 +14,14 @@ import top.potmot.jimmercodegen.model.GenTableAssociation;
  * @since 2023-05-07 09:36:25
  */
 data class GenTableAssociationInput(
-    var genTableAssociationId: Long?,
+    var id: Long?,
     var tableAssociationName: String,
     var masterTableId: Long,
-    var masterTableColumnId: Long,
+    var masterColumnId: Long,
     var slaveTableId: Long,
-    var slaveTableColumnId: Long,
+    var slaveColumnId: Long,
     var associationCategory: String?,
+    var remark: String?
 ) : Input<GenTableAssociation> {
     override fun toEntity(): GenTableAssociation =
         CONVERTER.toGenTableAssociation(this)

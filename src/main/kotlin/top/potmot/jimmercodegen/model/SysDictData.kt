@@ -1,11 +1,7 @@
 package top.potmot.jimmercodegen.model;
-import java.time.LocalDateTime;
 
-import org.babyfish.jimmer.sql.Entity;
-import org.babyfish.jimmer.sql.GeneratedValue;
-import org.babyfish.jimmer.sql.GenerationType;
-import org.babyfish.jimmer.sql.Id;
-import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.*
+import top.potmot.jimmercodegen.model.common.BaseEntity
 
 /**
  * 字典数据表实体类
@@ -14,7 +10,7 @@ import org.babyfish.jimmer.sql.ManyToOne
  * @since 2023-05-06 19:13:44
  */
 @Entity
-interface SysDictData {
+interface SysDictData : BaseEntity {
     /**
      * 字典数据编号
      */

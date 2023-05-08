@@ -8,5 +8,6 @@ class JimmerCodeGenApplicationTests {
 
     @Test
     fun contextLoads() {
+
     }
 }

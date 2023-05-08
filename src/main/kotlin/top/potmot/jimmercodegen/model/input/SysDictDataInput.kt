@@ -1,12 +1,11 @@
 package top.potmot.jimmercodegen.model.input;
-import java.time.LocalDateTime;
 
 import org.babyfish.jimmer.Input
 import org.mapstruct.BeanMapping
 import org.mapstruct.Mapper
 import org.mapstruct.ReportingPolicy
 import org.mapstruct.factory.Mappers
-import top.potmot.jimmercodegen.model.SysDictData;
+import top.potmot.jimmercodegen.model.SysDictData
 
 /**
  * 字典数据表实体类
