@@ -49,11 +49,10 @@ const props = defineProps({
   }
 })
 
-onMounted(() => {
+const resetGraph = () => {
   graph = new G6.Graph({
     autoPaint: false,
     container: <HTMLDivElement>mainContainer.value,
-    fitView: true,
     modes: {
       default: [
         'drag-canvas',
@@ -70,24 +69,37 @@ onMounted(() => {
     groupByTypes: false,
     layout: {
       type: 'comboForce',
+      preventNodeOverlap: true,
+      edgeStrength: 1,
     },
     defaultNode: {
-      size: [60, 30],
+      size: [100, 60],
       type: 'rect',
       style: {
         opacity: 0.1
       },
       labelCfg: {
         style: {
-          fill: '#fff'
+          fill: '#fff',
+          fontsize: '8px'
         },
       },
+      anchorPoints: [
+        [0, 0.5],
+        [1, 0.5],
+      ],
     },
     defaultEdge: {
       type: 'line',
+      sourceAnchor: 0,
+      targetAnchor: 1,
+      style: {
+        endArrow: true,
+      },
       labelCfg: {
         style: {
-          fill: '#eee'
+          fill: '#eee',
+          fontsize: '8px'
         },
       },
     },
@@ -98,12 +110,13 @@ onMounted(() => {
       },
       labelCfg: {
         style: {
-          fill: '#fff'
+          fill: '#fff',
+          fontsize: '8px'
         },
       },
     }
   })
-})
+}
 
 let graph: undefined | Graph = undefined;
 
@@ -115,17 +128,12 @@ const render = async () => {
   let tables = await api.returnService.getAllTable({keyword: props.keyword})
   let associations = await api.returnService.getAllAssociation({keyword: props.keyword})
 
-  console.log(tables)
-  console.log(associations)
-
   const data = parseColumnResponse(tables, associations)
-
-  console.log(data)
-
-  loading.value --
 
   graph?.data(data);
   graph?.render();
+
+  loading.value --
 }
 
 onMounted(() => {
@@ -133,8 +141,11 @@ onMounted(() => {
 })
 
 watch(() => props.keyword, () => {
+  graph?.destroy()
+  resetGraph()
   render()
 })
+
 </script>
 
 <style lang="scss">
@@ -145,7 +156,7 @@ watch(() => props.keyword, () => {
 
 .mind-mapping {
 	width: 100vw;
-	height: 100vh;
+	height: 80vh;
 	margin: auto;
 	overflow: hidden;
   background-color: #444;

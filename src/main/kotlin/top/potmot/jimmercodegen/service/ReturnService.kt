@@ -20,18 +20,15 @@ class ReturnService(
 ) {
     @GetMapping("/tables/{keyword}")
     fun getAllTable(@PathVariable keyword: String): List<GenTable> {
-        val keywords = keyword.split(" ")
+        val temp = keyword.replace("_", "\\_").replace("%", "\\%")
+        val keywords = temp.split(" ")
         return tableRepository.sql.createQuery(GenTable::class) {
-            for (keyword1 in keywords.withIndex()) {
-                if (keyword1.index == 0) {
-                    where(
-                        table.tableName ilike keyword1.value
-                    )
-                } else {
+            for (keyword1 in keywords) {
+                where(
                     or(
-                        table.tableName ilike keyword1.value
+                        table.tableName ilike keyword1
                     )
-                }
+                )
             }
             select(table.fetch(TABLE_FETCHER))
         }.execute()
@@ -39,18 +36,15 @@ class ReturnService(
 
     @GetMapping("/associations/{keyword}")
     fun getAllAssociation(@PathVariable keyword: String): List<GenTableAssociation> {
-        val keywords = keyword.split(" ")
-        return tableRepository.sql.createQuery(GenTableAssociation::class) {
-            for (keyword1 in keywords.withIndex()) {
-                if (keyword1.index == 0) {
-                    where(
-                        table.tableAssociationName ilike keyword1.value
-                    )
-                } else {
+        val temp = keyword.replace("_", "\\_").replace("%", "\\%")
+        val keywords = temp.split(" ")
+        return associationRepository.sql.createQuery(GenTableAssociation::class) {
+            for (keyword1 in keywords) {
+                where(
                     or(
-                        table.tableAssociationName ilike keyword1.value
+                        table.tableAssociationName ilike keyword1
                     )
-                }
+                )
             }
             select(table.fetch(ASSOCIATION_FETCHER))
         }.execute()
