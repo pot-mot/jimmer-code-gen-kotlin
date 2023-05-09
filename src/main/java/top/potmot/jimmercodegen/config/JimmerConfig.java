@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.potmot.jimmercodegen.utils.LogOutputUtil;
@@ -18,7 +17,6 @@ import top.potmot.jimmercodegen.utils.LogOutputUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Objects;
 
 @Configuration
 public class JimmerConfig {

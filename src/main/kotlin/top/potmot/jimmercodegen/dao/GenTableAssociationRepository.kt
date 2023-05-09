@@ -1,5 +1,7 @@
 package top.potmot.jimmercodegen.dao;
+
 import org.babyfish.jimmer.spring.repository.KRepository
+import org.babyfish.jimmer.sql.fetcher.Fetcher
 import top.potmot.jimmercodegen.model.GenTableAssociation;
 
 /**
@@ -9,4 +11,8 @@ import top.potmot.jimmercodegen.model.GenTableAssociation;
  * @since 2023-05-07 09:36:26
  */
 interface GenTableAssociationRepository : KRepository<GenTableAssociation, Long> {
+    fun findByTableAssociationNameLikeIgnoreCase(
+        tableAssociationName: String,
+        fetcher: Fetcher<GenTableAssociation>,
+    ): List<GenTableAssociation>
 }

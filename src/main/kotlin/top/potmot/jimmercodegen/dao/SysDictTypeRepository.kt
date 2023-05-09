@@ -1,4 +1,5 @@
 package top.potmot.jimmercodegen.dao;
+
 import org.babyfish.jimmer.spring.repository.KRepository
 import top.potmot.jimmercodegen.model.SysDictType;
 

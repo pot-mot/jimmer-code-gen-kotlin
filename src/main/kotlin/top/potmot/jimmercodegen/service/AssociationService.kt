@@ -98,12 +98,12 @@ class AssociationService(
             result
         }
 
-        private val suffixMatch: (String, String) -> Int = {s1, s2 ->
+        private val suffixMatch: (String, String) -> Int = { s1, s2 ->
             val s1List = s1.split("_").reversed()
             val s2List = s2.split("_").reversed()
             var matchLength = 0
 
-            for (i in 0 until (if (s1List.size < s2List.size) s1List.size else s2List.size )) {
+            for (i in 0 until (if (s1List.size < s2List.size) s1List.size else s2List.size)) {
                 if (s1List[i] == s2List[i]) matchLength++
             }
             matchLength

@@ -83,7 +83,7 @@ public class GenUtils {
         if (!column.getPk().equals("1") && StringUtils.endsWithIgnoreCase(columnName, "id")) {
             column.setIdView("1");
         }
-        
+
         // 分类与状态设置为选择框
         else if (StringUtils.endsWithIgnoreCase(columnName, "status")
                 || StringUtils.endsWithIgnoreCase(columnName, "type")

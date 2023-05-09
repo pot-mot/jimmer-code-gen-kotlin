@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LogOutputUtil {
-    public static void infoSqlLog(String sql, List<Object> variables, Long cost, Object result, Logger logger){
+    public static void infoSqlLog(String sql, List<Object> variables, Long cost, Object result, Logger logger) {
         StringBuilder stringBuilder = new StringBuilder();
         ArrayList<String> args = new ArrayList<>();
         stringBuilder.append("sql: {}\n");
@@ -31,6 +31,8 @@ public class LogOutputUtil {
         } else {
             stringBuilder.append("time: ").append(cost);
         }
+
+        stringBuilder.append(result);
 
         stringBuilder.append("\n");
 

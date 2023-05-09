@@ -1,7 +1,6 @@
 package top.potmot.jimmercodegen.model;
 
 import org.babyfish.jimmer.sql.*
-import top.potmot.jimmercodegen.model.common.BaseEntity
 
 /**
  * 代码生成业务表字段实体类
