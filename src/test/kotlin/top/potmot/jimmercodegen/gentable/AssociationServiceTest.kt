@@ -3,9 +3,9 @@ package top.potmot.jimmercodegen.gentable
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import top.potmot.jimmercodegen.service.AssociationService
-import top.potmot.jimmercodegen.service.ReturnService
-import top.potmot.jimmercodegen.service.TableService
+import top.potmot.external.service.AssociationService
+import top.potmot.external.service.ReturnService
+import top.potmot.external.service.TableService
 import java.io.File
 
 @SpringBootTest
@@ -45,7 +45,7 @@ class AssociationServiceTest (
 
     @Test
     fun result() {
-        File("D:\\java\\project\\jimmer-code-gen\\result\\result.json").writeText(returnService.getTable(205L).toString())
+        File("D:\\java\\project\\jimmer-code-gen\\result\\result.json").writeText(returnService.getAllTable("mes").toString())
     }
 
 }

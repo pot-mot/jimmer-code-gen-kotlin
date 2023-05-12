@@ -27,12 +27,12 @@ export const tables = [{
 }]
 
 export const associations = [{
-    slaveColumn: {
+    targetColumn: {
         id: 1,
         columnName: 'c1',
         columnComment: '列1'
     },
-    masterColumn: {
+    sourceColumn: {
         id: 4,
         columnName: 'c4',
         columnComment: '列4'
@@ -40,12 +40,12 @@ export const associations = [{
     tableAssociationName: '1-4',
     remark: ''
 }, {
-    slaveColumn: {
+    targetColumn: {
         id: 2,
         columnName: 'c2',
         columnComment: '列2'
     },
-    masterColumn: {
+    sourceColumn: {
         id: 3,
         columnName: 'c3',
         columnComment: '列3'

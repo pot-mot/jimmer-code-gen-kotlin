@@ -277,10 +277,10 @@ export const associations = [
         "remark": "计划班组表-计划ID -> 排班计划表-计划ID",
         "id": 27340,
         "tableAssociationName": "cal_plan_team.plan_id to cal_plan.plan_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20177
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20157
         }
     },
@@ -288,10 +288,10 @@ export const associations = [
         "remark": "计划班次表-计划ID -> 排班计划表-计划ID",
         "id": 27341,
         "tableAssociationName": "cal_shift.plan_id to cal_plan.plan_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20191
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20157
         }
     },
@@ -299,10 +299,10 @@ export const associations = [
         "remark": "班组排班表-计划ID -> 排班计划表-计划ID",
         "id": 27342,
         "tableAssociationName": "cal_teamshift.plan_id to cal_plan.plan_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20240
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20157
         }
     },
@@ -310,10 +310,10 @@ export const associations = [
         "remark": "点检设备表-计划ID -> 排班计划表-计划ID",
         "id": 27343,
         "tableAssociationName": "dv_check_machinery.plan_id to cal_plan.plan_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20253
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20157
         }
     },
@@ -321,10 +321,10 @@ export const associations = [
         "remark": "设备点检保养计划头表-计划ID -> 排班计划表-计划ID",
         "id": 27344,
         "tableAssociationName": "dv_check_plan.plan_id to cal_plan.plan_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20268
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20157
         }
     },
@@ -332,10 +332,10 @@ export const associations = [
         "remark": "点检项目表-计划ID -> 排班计划表-计划ID",
         "id": 27345,
         "tableAssociationName": "dv_check_subject.plan_id to cal_plan.plan_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20287
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20157
         }
     },
@@ -343,10 +343,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 计划班组表-流水号",
         "id": 27346,
         "tableAssociationName": "cal_teamshift.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -354,10 +354,10 @@ export const associations = [
         "remark": "点检设备表-流水号 -> 计划班组表-流水号",
         "id": 27347,
         "tableAssociationName": "dv_check_machinery.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20252
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -365,10 +365,10 @@ export const associations = [
         "remark": "点检项目表-流水号 -> 计划班组表-流水号",
         "id": 27348,
         "tableAssociationName": "dv_check_subject.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20286
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -376,10 +376,10 @@ export const associations = [
         "remark": "设备资源表-记录ID -> 计划班组表-流水号",
         "id": 27349,
         "tableAssociationName": "md_workstation_machine.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20637
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -387,10 +387,10 @@ export const associations = [
         "remark": "工装夹具资源表-记录ID -> 计划班组表-流水号",
         "id": 27350,
         "tableAssociationName": "md_workstation_tool.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20652
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -398,10 +398,10 @@ export const associations = [
         "remark": "人力资源表-记录ID -> 计划班组表-流水号",
         "id": 27351,
         "tableAssociationName": "md_workstation_worker.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20667
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -409,10 +409,10 @@ export const associations = [
         "remark": "生产报工记录表-记录ID -> 计划班组表-流水号",
         "id": 27352,
         "tableAssociationName": "pro_feedback.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20682
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -420,10 +420,10 @@ export const associations = [
         "remark": "工艺组成表-记录ID -> 计划班组表-流水号",
         "id": 27353,
         "tableAssociationName": "pro_route_process.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20764
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -431,10 +431,10 @@ export const associations = [
         "remark": "产品制程-记录ID -> 计划班组表-流水号",
         "id": 27354,
         "tableAssociationName": "pro_route_product.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20787
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -442,10 +442,10 @@ export const associations = [
         "remark": "产品制程物料BOM表-记录ID -> 计划班组表-流水号",
         "id": 27355,
         "tableAssociationName": "pro_route_product_bom.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20806
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -453,10 +453,10 @@ export const associations = [
         "remark": "生产任务投料表-记录ID -> 计划班组表-流水号",
         "id": 27356,
         "tableAssociationName": "pro_task_issue.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20866
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -464,10 +464,10 @@ export const associations = [
         "remark": "物料消耗记录表-记录ID -> 计划班组表-流水号",
         "id": 27357,
         "tableAssociationName": "pro_trans_consume.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20891
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -475,10 +475,10 @@ export const associations = [
         "remark": "用户工作站绑定关系-记录ID -> 计划班组表-流水号",
         "id": 27358,
         "tableAssociationName": "pro_user_workstation.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20951
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -486,10 +486,10 @@ export const associations = [
         "remark": "上下工记录表-记录ID -> 计划班组表-流水号",
         "id": 27359,
         "tableAssociationName": "pro_workrecord.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21017
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -497,10 +497,10 @@ export const associations = [
         "remark": "检验单缺陷记录表-缺陷ID -> 计划班组表-流水号",
         "id": 27360,
         "tableAssociationName": "qc_defect_record.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21049
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -508,10 +508,10 @@ export const associations = [
         "remark": "检测模板-检测项表-记录ID -> 计划班组表-流水号",
         "id": 27361,
         "tableAssociationName": "qc_template_index.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21287
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -519,10 +519,10 @@ export const associations = [
         "remark": "检测模板-产品表-记录ID -> 计划班组表-流水号",
         "id": 27362,
         "tableAssociationName": "qc_template_product.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21309
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -530,10 +530,10 @@ export const associations = [
         "remark": "物料消耗记录表-记录ID -> 计划班组表-流水号",
         "id": 27363,
         "tableAssociationName": "wm_item_consume.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21823
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -541,10 +541,10 @@ export const associations = [
         "remark": "物料消耗记录行表-消耗记录ID -> 计划班组表-流水号",
         "id": 27364,
         "tableAssociationName": "wm_item_consume_line.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21848
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -552,10 +552,10 @@ export const associations = [
         "remark": "产品产出记录表-入库单ID -> 计划班组表-流水号",
         "id": 27365,
         "tableAssociationName": "wm_product_produce.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 22032
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -563,10 +563,10 @@ export const associations = [
         "remark": "产品产出记录表行表-产出记录ID -> 计划班组表-流水号",
         "id": 27366,
         "tableAssociationName": "wm_product_produce_line.record_id to cal_plan_team.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 22057
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20176
         }
     },
@@ -574,10 +574,10 @@ export const associations = [
         "remark": "班组排班表-班次ID -> 计划班次表-班次ID",
         "id": 27367,
         "tableAssociationName": "cal_teamshift.shift_id to cal_shift.shift_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20237
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20190
         }
     },
@@ -585,10 +585,10 @@ export const associations = [
         "remark": "计划班组表-班组ID -> 班组表-班组ID",
         "id": 27368,
         "tableAssociationName": "cal_plan_team.team_id to cal_team.team_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20178
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20205
         }
     },
@@ -596,10 +596,10 @@ export const associations = [
         "remark": "班组成员表-班组ID -> 班组表-班组ID",
         "id": 27369,
         "tableAssociationName": "cal_team_member.team_id to cal_team.team_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20219
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20205
         }
     },
@@ -607,10 +607,10 @@ export const associations = [
         "remark": "班组排班表-班组ID -> 班组表-班组ID",
         "id": 27370,
         "tableAssociationName": "cal_teamshift.team_id to cal_team.team_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20235
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20205
         }
     },
@@ -618,10 +618,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 班组排班表-流水号",
         "id": 27371,
         "tableAssociationName": "cal_plan_team.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -629,10 +629,10 @@ export const associations = [
         "remark": "点检设备表-流水号 -> 班组排班表-流水号",
         "id": 27372,
         "tableAssociationName": "dv_check_machinery.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20252
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -640,10 +640,10 @@ export const associations = [
         "remark": "点检项目表-流水号 -> 班组排班表-流水号",
         "id": 27373,
         "tableAssociationName": "dv_check_subject.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20286
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -651,10 +651,10 @@ export const associations = [
         "remark": "设备资源表-记录ID -> 班组排班表-流水号",
         "id": 27374,
         "tableAssociationName": "md_workstation_machine.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20637
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -662,10 +662,10 @@ export const associations = [
         "remark": "工装夹具资源表-记录ID -> 班组排班表-流水号",
         "id": 27375,
         "tableAssociationName": "md_workstation_tool.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20652
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -673,10 +673,10 @@ export const associations = [
         "remark": "人力资源表-记录ID -> 班组排班表-流水号",
         "id": 27376,
         "tableAssociationName": "md_workstation_worker.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20667
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -684,10 +684,10 @@ export const associations = [
         "remark": "生产报工记录表-记录ID -> 班组排班表-流水号",
         "id": 27377,
         "tableAssociationName": "pro_feedback.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20682
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -695,10 +695,10 @@ export const associations = [
         "remark": "工艺组成表-记录ID -> 班组排班表-流水号",
         "id": 27378,
         "tableAssociationName": "pro_route_process.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20764
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -706,10 +706,10 @@ export const associations = [
         "remark": "产品制程-记录ID -> 班组排班表-流水号",
         "id": 27379,
         "tableAssociationName": "pro_route_product.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20787
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -717,10 +717,10 @@ export const associations = [
         "remark": "产品制程物料BOM表-记录ID -> 班组排班表-流水号",
         "id": 27380,
         "tableAssociationName": "pro_route_product_bom.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20806
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -728,10 +728,10 @@ export const associations = [
         "remark": "生产任务投料表-记录ID -> 班组排班表-流水号",
         "id": 27381,
         "tableAssociationName": "pro_task_issue.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20866
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -739,10 +739,10 @@ export const associations = [
         "remark": "物料消耗记录表-记录ID -> 班组排班表-流水号",
         "id": 27382,
         "tableAssociationName": "pro_trans_consume.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20891
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -750,10 +750,10 @@ export const associations = [
         "remark": "用户工作站绑定关系-记录ID -> 班组排班表-流水号",
         "id": 27383,
         "tableAssociationName": "pro_user_workstation.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20951
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -761,10 +761,10 @@ export const associations = [
         "remark": "上下工记录表-记录ID -> 班组排班表-流水号",
         "id": 27384,
         "tableAssociationName": "pro_workrecord.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21017
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -772,10 +772,10 @@ export const associations = [
         "remark": "检验单缺陷记录表-缺陷ID -> 班组排班表-流水号",
         "id": 27385,
         "tableAssociationName": "qc_defect_record.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21049
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -783,10 +783,10 @@ export const associations = [
         "remark": "检测模板-检测项表-记录ID -> 班组排班表-流水号",
         "id": 27386,
         "tableAssociationName": "qc_template_index.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21287
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -794,10 +794,10 @@ export const associations = [
         "remark": "检测模板-产品表-记录ID -> 班组排班表-流水号",
         "id": 27387,
         "tableAssociationName": "qc_template_product.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21309
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -805,10 +805,10 @@ export const associations = [
         "remark": "物料消耗记录表-记录ID -> 班组排班表-流水号",
         "id": 27388,
         "tableAssociationName": "wm_item_consume.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21823
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -816,10 +816,10 @@ export const associations = [
         "remark": "物料消耗记录行表-消耗记录ID -> 班组排班表-流水号",
         "id": 27389,
         "tableAssociationName": "wm_item_consume_line.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21848
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -827,10 +827,10 @@ export const associations = [
         "remark": "产品产出记录表-入库单ID -> 班组排班表-流水号",
         "id": 27390,
         "tableAssociationName": "wm_product_produce.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 22032
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -838,10 +838,10 @@ export const associations = [
         "remark": "产品产出记录表行表-产出记录ID -> 班组排班表-流水号",
         "id": 27391,
         "tableAssociationName": "wm_product_produce_line.record_id to cal_teamshift.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 22057
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20233
         }
     },
@@ -849,10 +849,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 点检设备表-流水号",
         "id": 27392,
         "tableAssociationName": "cal_plan_team.record_id to dv_check_machinery.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20252
         }
     },
@@ -860,10 +860,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 点检设备表-流水号",
         "id": 27393,
         "tableAssociationName": "cal_teamshift.record_id to dv_check_machinery.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20252
         }
     },
@@ -871,10 +871,10 @@ export const associations = [
         "remark": "排班计划表-计划ID -> 设备点检保养计划头表-计划ID",
         "id": 27413,
         "tableAssociationName": "cal_plan.plan_id to dv_check_plan.plan_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20157
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20268
         }
     },
@@ -882,10 +882,10 @@ export const associations = [
         "remark": "计划班组表-计划ID -> 设备点检保养计划头表-计划ID",
         "id": 27414,
         "tableAssociationName": "cal_plan_team.plan_id to dv_check_plan.plan_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20177
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20268
         }
     },
@@ -893,10 +893,10 @@ export const associations = [
         "remark": "计划班次表-计划ID -> 设备点检保养计划头表-计划ID",
         "id": 27415,
         "tableAssociationName": "cal_shift.plan_id to dv_check_plan.plan_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20191
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20268
         }
     },
@@ -904,10 +904,10 @@ export const associations = [
         "remark": "班组排班表-计划ID -> 设备点检保养计划头表-计划ID",
         "id": 27416,
         "tableAssociationName": "cal_teamshift.plan_id to dv_check_plan.plan_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20240
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20268
         }
     },
@@ -915,10 +915,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 点检项目表-流水号",
         "id": 27419,
         "tableAssociationName": "cal_plan_team.record_id to dv_check_subject.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20286
         }
     },
@@ -926,10 +926,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 点检项目表-流水号",
         "id": 27420,
         "tableAssociationName": "cal_teamshift.record_id to dv_check_subject.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20286
         }
     },
@@ -937,10 +937,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 设备资源表-记录ID",
         "id": 27546,
         "tableAssociationName": "cal_plan_team.record_id to md_workstation_machine.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20637
         }
     },
@@ -948,10 +948,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 设备资源表-记录ID",
         "id": 27547,
         "tableAssociationName": "cal_teamshift.record_id to md_workstation_machine.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20637
         }
     },
@@ -959,10 +959,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 工装夹具资源表-记录ID",
         "id": 27567,
         "tableAssociationName": "cal_plan_team.record_id to md_workstation_tool.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20652
         }
     },
@@ -970,10 +970,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 工装夹具资源表-记录ID",
         "id": 27568,
         "tableAssociationName": "cal_teamshift.record_id to md_workstation_tool.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20652
         }
     },
@@ -981,10 +981,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 人力资源表-记录ID",
         "id": 27588,
         "tableAssociationName": "cal_plan_team.record_id to md_workstation_worker.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20667
         }
     },
@@ -992,10 +992,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 人力资源表-记录ID",
         "id": 27589,
         "tableAssociationName": "cal_teamshift.record_id to md_workstation_worker.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20667
         }
     },
@@ -1003,10 +1003,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 生产报工记录表-记录ID",
         "id": 27609,
         "tableAssociationName": "cal_plan_team.record_id to pro_feedback.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20682
         }
     },
@@ -1014,10 +1014,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 生产报工记录表-记录ID",
         "id": 27610,
         "tableAssociationName": "cal_teamshift.record_id to pro_feedback.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20682
         }
     },
@@ -1025,10 +1025,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 工艺组成表-记录ID",
         "id": 27646,
         "tableAssociationName": "cal_plan_team.record_id to pro_route_process.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20764
         }
     },
@@ -1036,10 +1036,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 工艺组成表-记录ID",
         "id": 27647,
         "tableAssociationName": "cal_teamshift.record_id to pro_route_process.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20764
         }
     },
@@ -1047,10 +1047,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 产品制程-记录ID",
         "id": 27667,
         "tableAssociationName": "cal_plan_team.record_id to pro_route_product.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20787
         }
     },
@@ -1058,10 +1058,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 产品制程-记录ID",
         "id": 27668,
         "tableAssociationName": "cal_teamshift.record_id to pro_route_product.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20787
         }
     },
@@ -1069,10 +1069,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 产品制程物料BOM表-记录ID",
         "id": 27688,
         "tableAssociationName": "cal_plan_team.record_id to pro_route_product_bom.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20806
         }
     },
@@ -1080,10 +1080,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 产品制程物料BOM表-记录ID",
         "id": 27689,
         "tableAssociationName": "cal_teamshift.record_id to pro_route_product_bom.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20806
         }
     },
@@ -1091,10 +1091,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 生产任务投料表-记录ID",
         "id": 27717,
         "tableAssociationName": "cal_plan_team.record_id to pro_task_issue.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20866
         }
     },
@@ -1102,10 +1102,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 生产任务投料表-记录ID",
         "id": 27718,
         "tableAssociationName": "cal_teamshift.record_id to pro_task_issue.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20866
         }
     },
@@ -1113,10 +1113,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 物料消耗记录表-记录ID",
         "id": 27738,
         "tableAssociationName": "cal_plan_team.record_id to pro_trans_consume.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20891
         }
     },
@@ -1124,10 +1124,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 物料消耗记录表-记录ID",
         "id": 27739,
         "tableAssociationName": "cal_teamshift.record_id to pro_trans_consume.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20891
         }
     },
@@ -1135,10 +1135,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 用户工作站绑定关系-记录ID",
         "id": 27760,
         "tableAssociationName": "cal_plan_team.record_id to pro_user_workstation.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20951
         }
     },
@@ -1146,10 +1146,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 用户工作站绑定关系-记录ID",
         "id": 27761,
         "tableAssociationName": "cal_teamshift.record_id to pro_user_workstation.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 20951
         }
     },
@@ -1157,10 +1157,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 上下工记录表-记录ID",
         "id": 27817,
         "tableAssociationName": "cal_plan_team.record_id to pro_workrecord.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21017
         }
     },
@@ -1168,10 +1168,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 上下工记录表-记录ID",
         "id": 27818,
         "tableAssociationName": "cal_teamshift.record_id to pro_workrecord.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21017
         }
     },
@@ -1179,10 +1179,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 检验单缺陷记录表-缺陷ID",
         "id": 27838,
         "tableAssociationName": "cal_plan_team.record_id to qc_defect_record.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21049
         }
     },
@@ -1190,10 +1190,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 检验单缺陷记录表-缺陷ID",
         "id": 27839,
         "tableAssociationName": "cal_teamshift.record_id to qc_defect_record.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21049
         }
     },
@@ -1201,10 +1201,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 检测模板-检测项表-记录ID",
         "id": 27930,
         "tableAssociationName": "cal_plan_team.record_id to qc_template_index.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21287
         }
     },
@@ -1212,10 +1212,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 检测模板-检测项表-记录ID",
         "id": 27931,
         "tableAssociationName": "cal_teamshift.record_id to qc_template_index.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21287
         }
     },
@@ -1223,10 +1223,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 检测模板-产品表-记录ID",
         "id": 27951,
         "tableAssociationName": "cal_plan_team.record_id to qc_template_product.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21309
         }
     },
@@ -1234,10 +1234,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 检测模板-产品表-记录ID",
         "id": 27952,
         "tableAssociationName": "cal_teamshift.record_id to qc_template_product.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21309
         }
     },
@@ -1245,10 +1245,10 @@ export const associations = [
         "remark": "日历信息表-调度名称 -> Blob类型的触发器表-调度名称",
         "id": 27972,
         "tableAssociationName": "qrtz_calendars.sched_name to qrtz_blob_triggers.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21334
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21330
         }
     },
@@ -1256,10 +1256,10 @@ export const associations = [
         "remark": "Blob类型的触发器表-调度名称 -> 日历信息表-调度名称",
         "id": 27993,
         "tableAssociationName": "qrtz_blob_triggers.sched_name to qrtz_calendars.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21330
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21334
         }
     },
@@ -1267,10 +1267,10 @@ export const associations = [
         "remark": "Cron类型的触发器表-调度名称 -> 日历信息表-调度名称",
         "id": 27994,
         "tableAssociationName": "qrtz_cron_triggers.sched_name to qrtz_calendars.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21337
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21334
         }
     },
@@ -1278,10 +1278,10 @@ export const associations = [
         "remark": "已触发的触发器表-调度名称 -> 日历信息表-调度名称",
         "id": 27995,
         "tableAssociationName": "qrtz_fired_triggers.sched_name to qrtz_calendars.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21342
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21334
         }
     },
@@ -1289,10 +1289,10 @@ export const associations = [
         "remark": "任务详细信息表-调度名称 -> 日历信息表-调度名称",
         "id": 27996,
         "tableAssociationName": "qrtz_job_details.sched_name to qrtz_calendars.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21355
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21334
         }
     },
@@ -1300,10 +1300,10 @@ export const associations = [
         "remark": "存储的悲观锁信息表-调度名称 -> 日历信息表-调度名称",
         "id": 27997,
         "tableAssociationName": "qrtz_locks.sched_name to qrtz_calendars.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21365
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21334
         }
     },
@@ -1311,10 +1311,10 @@ export const associations = [
         "remark": "暂停的触发器表-调度名称 -> 日历信息表-调度名称",
         "id": 27998,
         "tableAssociationName": "qrtz_paused_trigger_grps.sched_name to qrtz_calendars.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21367
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21334
         }
     },
@@ -1322,10 +1322,10 @@ export const associations = [
         "remark": "调度器状态表-调度名称 -> 日历信息表-调度名称",
         "id": 27999,
         "tableAssociationName": "qrtz_scheduler_state.sched_name to qrtz_calendars.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21369
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21334
         }
     },
@@ -1333,10 +1333,10 @@ export const associations = [
         "remark": "简单触发器的信息表-调度名称 -> 日历信息表-调度名称",
         "id": 28000,
         "tableAssociationName": "qrtz_simple_triggers.sched_name to qrtz_calendars.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21373
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21334
         }
     },
@@ -1344,10 +1344,10 @@ export const associations = [
         "remark": "同步机制的行锁表-调度名称 -> 日历信息表-调度名称",
         "id": 28001,
         "tableAssociationName": "qrtz_simprop_triggers.sched_name to qrtz_calendars.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21379
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21334
         }
     },
@@ -1355,10 +1355,10 @@ export const associations = [
         "remark": "触发器详细信息表-调度名称 -> 日历信息表-调度名称",
         "id": 28002,
         "tableAssociationName": "qrtz_triggers.sched_name to qrtz_calendars.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21393
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21334
         }
     },
@@ -1366,10 +1366,10 @@ export const associations = [
         "remark": "触发器详细信息表-日程表名称 -> 日历信息表-日历名称",
         "id": 28003,
         "tableAssociationName": "qrtz_triggers.calendar_name to qrtz_calendars.calendar_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21406
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21335
         }
     },
@@ -1377,10 +1377,10 @@ export const associations = [
         "remark": "日历信息表-调度名称 -> Cron类型的触发器表-调度名称",
         "id": 28005,
         "tableAssociationName": "qrtz_calendars.sched_name to qrtz_cron_triggers.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21334
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21337
         }
     },
@@ -1388,10 +1388,10 @@ export const associations = [
         "remark": "日历信息表-调度名称 -> 已触发的触发器表-调度名称",
         "id": 28026,
         "tableAssociationName": "qrtz_calendars.sched_name to qrtz_fired_triggers.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21334
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21342
         }
     },
@@ -1399,10 +1399,10 @@ export const associations = [
         "remark": "日历信息表-调度名称 -> 任务详细信息表-调度名称",
         "id": 28036,
         "tableAssociationName": "qrtz_calendars.sched_name to qrtz_job_details.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21334
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21355
         }
     },
@@ -1410,10 +1410,10 @@ export const associations = [
         "remark": "日历信息表-调度名称 -> 存储的悲观锁信息表-调度名称",
         "id": 28054,
         "tableAssociationName": "qrtz_calendars.sched_name to qrtz_locks.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21334
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21365
         }
     },
@@ -1421,10 +1421,10 @@ export const associations = [
         "remark": "日历信息表-调度名称 -> 暂停的触发器表-调度名称",
         "id": 28064,
         "tableAssociationName": "qrtz_calendars.sched_name to qrtz_paused_trigger_grps.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21334
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21367
         }
     },
@@ -1432,10 +1432,10 @@ export const associations = [
         "remark": "日历信息表-调度名称 -> 调度器状态表-调度名称",
         "id": 28080,
         "tableAssociationName": "qrtz_calendars.sched_name to qrtz_scheduler_state.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21334
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21369
         }
     },
@@ -1443,10 +1443,10 @@ export const associations = [
         "remark": "日历信息表-调度名称 -> 简单触发器的信息表-调度名称",
         "id": 28091,
         "tableAssociationName": "qrtz_calendars.sched_name to qrtz_simple_triggers.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21334
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21373
         }
     },
@@ -1454,10 +1454,10 @@ export const associations = [
         "remark": "日历信息表-调度名称 -> 同步机制的行锁表-调度名称",
         "id": 28112,
         "tableAssociationName": "qrtz_calendars.sched_name to qrtz_simprop_triggers.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21334
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21379
         }
     },
@@ -1465,10 +1465,10 @@ export const associations = [
         "remark": "日历信息表-调度名称 -> 触发器详细信息表-调度名称",
         "id": 28133,
         "tableAssociationName": "qrtz_calendars.sched_name to qrtz_triggers.sched_name",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 21334
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21393
         }
     },
@@ -1476,10 +1476,10 @@ export const associations = [
         "remark": "班组成员表-用户ID -> 用户信息表-用户ID",
         "id": 28181,
         "tableAssociationName": "cal_team_member.user_id to sys_user.user_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20220
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21659
         }
     },
@@ -1487,10 +1487,10 @@ export const associations = [
         "remark": "班组成员表-用户ID -> 用户与岗位关联表-用户ID",
         "id": 28186,
         "tableAssociationName": "cal_team_member.user_id to sys_user_post.user_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20220
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21678
         }
     },
@@ -1498,10 +1498,10 @@ export const associations = [
         "remark": "班组成员表-用户ID -> 用户和角色关联表-用户ID",
         "id": 28193,
         "tableAssociationName": "cal_team_member.user_id to sys_user_role.user_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20220
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21680
         }
     },
@@ -1509,10 +1509,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 物料消耗记录表-记录ID",
         "id": 28237,
         "tableAssociationName": "cal_plan_team.record_id to wm_item_consume.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21823
         }
     },
@@ -1520,10 +1520,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 物料消耗记录表-记录ID",
         "id": 28238,
         "tableAssociationName": "cal_teamshift.record_id to wm_item_consume.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 21823
         }
     },
@@ -1531,10 +1531,10 @@ export const associations = [
         "remark": "计划班组表-流水号 -> 产品产出记录表-入库单ID",
         "id": 28328,
         "tableAssociationName": "cal_plan_team.record_id to wm_product_produce.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20176
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 22032
         }
     },
@@ -1542,10 +1542,10 @@ export const associations = [
         "remark": "班组排班表-流水号 -> 产品产出记录表-入库单ID",
         "id": 28329,
         "tableAssociationName": "cal_teamshift.record_id to wm_product_produce.record_id",
-        "masterColumn": {
+        "sourceColumn": {
             "id": 20233
         },
-        "slaveColumn": {
+        "targetColumn": {
             "id": 22032
         }
     }

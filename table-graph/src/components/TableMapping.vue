@@ -1,43 +1,43 @@
 <template>
-  <div v-show="loading > 0" style="font-size: 10vh;">LOADING</div>
-	<div class="mind-mapping" ref="mainContainer"></div>
+  <span v-show="loading > 0" style="font-size: 10vh;color: #fff;position: fixed;">LOADING</span>
+  <div class="mind-mapping" ref="mainContainer"></div>
 </template>
 
 <script lang="ts" setup>
-import G6, {Graph} from '@antv/g6';
+import {Graph} from '@antv/g6';
 import {onMounted, ref, watch} from "vue";
 import {ComboConfig, EdgeConfig, GraphData, NodeConfig} from "@antv/g6-core/lib/types";
 import {api} from "../api/ApiInstance";
 
 const parseColumnResponse = (tables: any, associations: any): GraphData => {
-	let result = {nodes: <NodeConfig[]>[], edges: <EdgeConfig[]>[], combos: <ComboConfig[]>[]}
+  let result = {nodes: <NodeConfig[]>[], edges: <EdgeConfig[]>[], combos: <ComboConfig[]>[]}
 
-	for (const table of tables) {
-		result.combos.push({
-			id: 'C' + table.id,
-			label: table.tableName + "\n" + table.tableComment,
-			collapsed: true
-		})
+  for (const table of tables) {
+    result.combos.push({
+      id: 'C' + table.id,
+      label: table.tableName + "\n" + table.tableComment,
+      collapsed: true
+    })
 
-		for (const column of table.columns) {
-			result.nodes.push({
-				id: 'c' + column.id,
-				label: column.columnName + "\n" + column.columnComment,
-				comboId: 'C' + table.id,
-			})
-		}
-	}
+    for (const column of table.columns) {
+      result.nodes.push({
+        id: 'c' + column.id,
+        label: column.columnName + "\n" + column.columnComment,
+        comboId: 'C' + table.id,
+      })
+    }
+  }
 
-	for (const association of associations) {
-		result.edges.push({
-			target: 'c' + association.slaveColumn.id,
-			source: 'c' + association.masterColumn.id,
-			label: association.tableAssociationName + "\n" + association.remark,
-			endArrow: true
-		})
-	}
+  for (const association of associations) {
+    result.edges.push({
+      target: 'c' + association.targetColumn.id,
+      source: 'c' + association.sourceColumn.id,
+      label: association.tableAssociationName + "\n" + association.remark,
+      endArrow: true
+    })
+  }
 
-	return result
+  return result
 }
 
 const mainContainer = ref()
@@ -50,8 +50,10 @@ const props = defineProps({
 })
 
 const resetGraph = () => {
-  graph = new G6.Graph({
+  graph = new Graph({
     autoPaint: false,
+    fitCenter: true,
+    fitView: true,
     container: <HTMLDivElement>mainContainer.value,
     modes: {
       default: [
@@ -95,6 +97,7 @@ const resetGraph = () => {
       targetAnchor: 1,
       style: {
         endArrow: true,
+        stroke: '#aaa',
       },
       labelCfg: {
         style: {
@@ -123,7 +126,7 @@ let graph: undefined | Graph = undefined;
 const loading = ref(0)
 
 const render = async () => {
-  loading.value ++
+  loading.value++
 
   let tables = await api.returnService.getAllTable({keyword: props.keyword})
   let associations = await api.returnService.getAllAssociation({keyword: props.keyword})
@@ -133,10 +136,11 @@ const render = async () => {
   graph?.data(data);
   graph?.render();
 
-  loading.value --
+  loading.value--
 }
 
 onMounted(() => {
+  resetGraph()
   render()
 })
 
@@ -148,17 +152,12 @@ watch(() => props.keyword, () => {
 
 </script>
 
-<style lang="scss">
-* {
-	margin: 0;
-	padding: 0;
-}
-
+<style lang="scss" scoped>
 .mind-mapping {
-	width: 100vw;
-	height: 80vh;
-	margin: auto;
-	overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  margin: auto;
+  overflow: hidden;
   background-color: #444;
 }
 </style>

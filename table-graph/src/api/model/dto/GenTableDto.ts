@@ -11,7 +11,7 @@ export type GenTableDto = {
         readonly moduleName: string, 
         readonly businessName: string, 
         readonly functionName: string, 
-        readonly functionAuthor: string, 
+        readonly author: string, 
         readonly genType: string, 
         readonly genPath: string, 
         readonly options: string
