@@ -1,6 +1,8 @@
 package top.potmot.external.service
 
+import org.babyfish.jimmer.sql.kt.ast.expression.case
 import org.babyfish.jimmer.sql.kt.ast.expression.ilike
+import org.babyfish.jimmer.sql.kt.ast.expression.like
 import org.babyfish.jimmer.sql.kt.ast.expression.or
 import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
 import org.springframework.beans.factory.annotation.Autowired

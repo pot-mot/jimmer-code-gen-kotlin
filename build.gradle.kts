@@ -40,6 +40,8 @@ dependencies {
     implementation("com.alibaba:druid:${druidVersion}")
 
     implementation("org.apache.commons:commons-lang3")
+
+    implementation("org.apache.velocity:velocity-engine-core:2.3")
 }
 
 // Without this configuration, gradle command can still run.

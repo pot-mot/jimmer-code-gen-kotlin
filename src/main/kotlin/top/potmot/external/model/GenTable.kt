@@ -44,11 +44,6 @@ interface GenTable : BaseEntity {
     val moduleName: String
 
     /**
-     * 生成业务名
-     */
-    val businessName: String
-
-    /**
      * 生成功能名
      */
     val functionName: String

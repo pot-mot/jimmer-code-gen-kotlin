@@ -27,6 +27,10 @@ class GenConfig {
         Companion.tablePrefix = tablePrefix
     }
 
+    fun setLanguage(language: String) {
+        Companion.language = language
+    }
+
     companion object {
         /** 作者  */
         var author: String = ""
@@ -39,5 +43,8 @@ class GenConfig {
 
         /** 表前缀(类名不会包含表前缀)  */
         var tablePrefix: String = ""
+
+        /** 语言，java/kotlin */
+        var language: String = "java"
     }
 }

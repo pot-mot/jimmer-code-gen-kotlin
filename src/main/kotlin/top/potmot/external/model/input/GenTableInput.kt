@@ -20,7 +20,6 @@ data class GenTableInput(
     var className: String,
     var packageName: String,
     var moduleName: String,
-    var businessName: String,
     var functionName: String,
     var author: String,
     var genType: String,

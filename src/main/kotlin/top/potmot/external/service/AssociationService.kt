@@ -3,6 +3,7 @@ package top.potmot.external.service
 import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import top.potmot.external.constant.GenConstants.SEPARATOR
 import top.potmot.external.dao.GenTableAssociationRepository
 import top.potmot.external.dao.GenTableColumnRepository
 import top.potmot.external.dao.GenTableRepository
@@ -99,8 +100,8 @@ class AssociationService(
         }
 
         private val suffixMatch: (String, String) -> Int = { s1, s2 ->
-            val s1List = s1.split("_").reversed()
-            val s2List = s2.split("_").reversed()
+            val s1List = s1.split(SEPARATOR).reversed()
+            val s2List = s2.split(SEPARATOR).reversed()
             var matchLength = 0
 
             for (i in 0 until (if (s1List.size < s2List.size) s1List.size else s2List.size)) {

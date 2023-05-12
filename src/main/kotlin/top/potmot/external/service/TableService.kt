@@ -10,7 +10,7 @@ import top.potmot.external.dao.GenTableRepository
 import top.potmot.external.model.*
 import top.potmot.external.model.input.GenTableColumnInput
 import top.potmot.external.model.input.GenTableInput
-import top.potmot.external.utils.GenUtils
+import top.potmot.external.util.GenUtils
 import javax.sql.DataSource
 
 @Service
@@ -103,7 +103,6 @@ class TableService(
                 null,
                 rs.getString("table_name"),
                 rs.getString("table_comment"),
-                "",
                 "",
                 "",
                 "",
