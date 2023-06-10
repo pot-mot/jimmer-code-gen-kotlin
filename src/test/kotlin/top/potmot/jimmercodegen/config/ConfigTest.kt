@@ -2,7 +2,7 @@ package top.potmot.jimmercodegen.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import top.potmot.external.config.GenConfig
+import top.potmot.config.GenConfig
 
 @SpringBootTest
 public class ConfigTest {

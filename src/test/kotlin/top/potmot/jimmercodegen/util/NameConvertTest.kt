@@ -2,7 +2,7 @@ package top.potmot.jimmercodegen.util
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
-import top.potmot.external.util.GenUtils
+import top.potmot.util.GenUtils
 
 @SpringBootTest
 class NameConvertTest {

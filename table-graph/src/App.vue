@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import TableMapping from "./components/TableMapping.vue";
 import {ref} from "vue";
-import TableER from "./components/TableER.vue";
+import ERMapping from "./components/ERMapping.vue";
 
-const keyword = ref("md")
+const keyword = ref("")
 </script>
 
 <template>
-<!--  <input @change="(event: InputEvent) => {keyword = event.target.value}" style="position: fixed;">-->
-<!--  <TableMapping :keyword="keyword"></TableMapping>-->
-  <TableER></TableER>
+  <TableMapping :keyword="keyword"></TableMapping>
+<!--<ERMapping></ERMapping>-->
 </template>
 
 <style>

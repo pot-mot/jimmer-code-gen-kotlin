@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
-import top.potmot.external.dao.GenTableRepository
-import javax.sql.DataSource
+import top.potmot.dao.GenTableRepository
 
 @SpringBootTest
 class DataSourceTest(

@@ -1,5 +1,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+repositories {
+    // 依赖使用阿里云 maven 源
+    maven {
+        setUrl("https://maven.aliyun.com/repository/public/")
+    }
+    maven {
+        setUrl("https://maven.aliyun.com/repository/spring/")
+    }
+    mavenLocal()
+    mavenCentral()
+}
+
 plugins {
     id("org.springframework.boot") version "2.7.5"
     id("io.spring.dependency-management") version "1.0.12.RELEASE"
@@ -13,7 +25,7 @@ group = "top.potmot"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.7.49"
+val jimmerVersion = "0.7.89"
 val druidVersion = "1.2.15"
 
 repositories {
@@ -32,6 +44,8 @@ dependencies {
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     kapt("org.mapstruct:mapstruct-processor:1.5.3.Final")
     kapt("org.babyfish.jimmer:jimmer-mapstruct-apt:${jimmerVersion}")
+
+    runtimeOnly("com.github.ben-manes.caffeine:caffeine:2.9.1")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 

@@ -1,0 +1,44 @@
+##引入宏定义
+$!{global.vm}
+
+$!{define.vm}
+
+#set($members = $tableInfo.fullColumn)
+
+#filter($members, $entityIgnoreMembers)
+
+##使用宏定义设置回调（保存位置与文件后缀）
+#save("/$!{entityPath}", "$!{entitySuffix}.kt")
+
+##使用宏定义设置包后缀
+#setPackageSuffix("$!{entityPath}")
+
+##使用全局变量实现默认包导入
+$!{autoImport.vm}
+
+import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.GeneratedValue
+import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
+
+#tableComment($entityComment)
+@Entity
+interface $!{tableInfo.name} {
+#foreach($column in $members)
+#if(${column.comment} && ${memberComment})
+    /**
+     * ${column.comment}
+     */
+#end
+#if($column.name.equals("id") || $column.name.equals($tool.firstLowerCase("${tableInfo.name}Id")))
+    @Id
+#if($idGenerateType.length() > 0)
+    @GeneratedValue(strategy = GenerationType.$!idGenerateType)
+#end
+    val $!{column.name}: Long
+#else
+    val $!{column.name}: $!{tool.getClsNameByFullName($column.type)}
+#end
+
+#end
+}

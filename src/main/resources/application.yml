@@ -9,7 +9,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       username: root
       password: root
-      url: jdbc:mysql://localhost:3307/ktg?serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://localhost:3307/carbon?serverTimezone=Asia/Shanghai
 
 jimmer:
   language: kotlin
@@ -19,15 +19,17 @@ jimmer:
   client:
     ts:
       path: /ts
+  show-sql: on
 
 # 代码生成
 gen:
   # 作者
-  author: ruoyi
+  author: author
   # 默认生成包路径 system 需改成自己的模块名称 如 system monitor tool
-  packageName: top.potmot.jimmercodegen
-  # 自动去除表前缀，默认是true
-  autoRemovePre: false
-  # 表前缀（生成类名不会包含表前缀，多个用逗号分隔）
-  tablePrefix: code_
+  packageName: com.example
+#  # 自动去除表前缀，默认是true
+#  autoRemovePre: false
+#  # 表前缀（生成类名不会包含表前缀，多个用逗号分隔）
+#  tablePrefix: t_
 #  show_sql: true
+  language: java

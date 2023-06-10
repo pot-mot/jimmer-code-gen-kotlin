@@ -1,0 +1,70 @@
+##引入宏定义
+$!{global.vm}
+
+$!{define.vm}
+
+#set($members = $tableInfo.fullColumn)
+
+#filter($members, $entityIgnoreMembers)
+
+##使用宏定义设置回调（保存位置与文件后缀）
+#save("/$!{entityPath}", "$!{entitySuffix}.java")
+
+##使用宏定义设置包后缀
+#setPackageSuffix("$!{entityPath}")
+
+##使用全局变量实现默认包导入
+$!{autoImport.vm}
+
+import org.babyfish.jimmer.sql.Entity;
+import org.babyfish.jimmer.sql.GeneratedValue;
+import org.babyfish.jimmer.sql.GenerationType;
+import org.babyfish.jimmer.sql.Id;
+#foreach($column in $members)
+#if($column.name.equals($parentField))
+import org.babyfish.jimmer.sql.ManyToOne;
+import org.babyfish.jimmer.sql.OneToMany;
+import java.util.List;
+#break
+#end
+#end
+#foreach($column in $members)
+#if($column.name.endsWith("Id"))
+import javax.validation.constraints.Null;
+#break
+#end
+#end
+
+#tableComment($entityComment)
+@Entity
+public interface $!{tableInfo.name} {
+#foreach($column in $members)
+#if(${column.comment} && ${memberComment})
+    /**
+     * ${column.comment}
+     */
+#end
+#if($column.name.equals("id"))
+    @Id
+#if($idGenerateType.length() > 0)
+    @GeneratedValue(strategy = GenerationType.$!idGenerateType)
+#end
+    long $!{column.name}();
+#elseif($column.name.endsWith($parentField))
+    @Null
+    @ManyToOne
+    $!{tableInfo.name} $!{parent}();
+
+    @OneToMany(mappedBy = "$!{parent}")
+    List<$!{tableInfo.name}> $!children();
+#elseif($column.name.endsWith("Id"))
+    #set($endIndex = $column.name.length() - 2)
+    #set($class = $column.name.substring(0, $endIndex))
+    @Null
+    $!{tool.firstUpperCase($class)} $!{class}();
+#else
+    $!{tool.getClsNameByFullName($column.type)} $!{column.name}();
+#end
+
+#end
+}
