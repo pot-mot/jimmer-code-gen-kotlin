@@ -4,13 +4,13 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import top.potmot.service.analysis.AssociationService
-import top.potmot.service.visualization.ReturnService
+import top.potmot.service.report.ReportService
 import top.potmot.service.analysis.TableService
 import java.io.File
 
 @SpringBootTest
 class AssociationServiceTest (
-    @Autowired val returnService: ReturnService,
+    @Autowired val reportService: ReportService,
     @Autowired val tableService: TableService,
     @Autowired val associationService: AssociationService
 ) {
@@ -45,7 +45,7 @@ class AssociationServiceTest (
 
     @Test
     fun result() {
-        File("D:\\java\\project\\jimmer-code-gen\\result\\result.json").writeText(returnService.getAllTable("mes").toString())
+        File("D:\\java\\project\\jimmer-code-gen\\result\\result.json").writeText(reportService.getAllTable("mes").toString())
     }
 
 }

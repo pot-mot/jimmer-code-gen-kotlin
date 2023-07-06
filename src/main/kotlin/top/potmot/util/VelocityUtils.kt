@@ -9,8 +9,6 @@ import top.potmot.model.GenTableColumn
 
 /**
  * 模板处理工具类
- *
- * @author ruoyi
  */
 object VelocityUtils {
     /**

@@ -1,5 +1,6 @@
-package top.potmot.service.visualization
+package top.potmot.service.report
 
+import org.babyfish.jimmer.sql.fetcher.Fetcher
 import org.babyfish.jimmer.sql.kt.ast.expression.ilike
 import org.babyfish.jimmer.sql.kt.ast.expression.or
 import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
@@ -11,13 +12,11 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.dao.GenTableAssociationRepository
 import top.potmot.dao.GenTableRepository
 import top.potmot.model.*
-import java.sql.DatabaseMetaData
-import java.sql.ResultSet
 
 
 @RestController
 @CrossOrigin
-class ReturnService(
+class ReportService(
     @Autowired val tableRepository: GenTableRepository,
     @Autowired val associationRepository: GenTableAssociationRepository
 ) {
@@ -53,6 +52,12 @@ class ReturnService(
         }.execute()
     }
 
+    fun getAssociation(fetcher: Fetcher<GenTableAssociation> = ALL_TABLE_FETCHER): List<GenTableAssociation> {
+        return associationRepository.sql.createQuery(GenTableAssociation::class) {
+            select(table.fetch(fetcher))
+        }.execute()
+    }
+
 
     companion object {
         val TABLE_FETCHER = newFetcher(GenTable::class).by {
@@ -69,6 +74,16 @@ class ReturnService(
             sourceColumn()
             tableAssociationName()
             remark()
+        }
+
+        val ALL_TABLE_FETCHER = newFetcher(GenTableAssociation::class).by {
+            allScalarFields()
+            targetTable {
+                allScalarFields()
+            }
+            sourceTable {
+                allScalarFields()
+            }
         }
     }
 }

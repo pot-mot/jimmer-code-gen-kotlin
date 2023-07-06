@@ -6,8 +6,7 @@ import org.babyfish.jimmer.sql.*
  * 代码生成业务表字段实体类
  *
  * @author potmot
- * @since 2023-05-06 23:20:00
- */
+ * @since 2023-05-06 23:20:00 */
 @Entity
 interface GenTableColumn {
     /**

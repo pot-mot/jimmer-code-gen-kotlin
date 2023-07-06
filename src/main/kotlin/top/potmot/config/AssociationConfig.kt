@@ -5,8 +5,6 @@ import org.springframework.stereotype.Component
 
 /**
  * 读取代码生成相关配置
- *
- * @author ruoyi
  */
 @Component
 @ConfigurationProperties(prefix = "gen.association")
@@ -17,6 +15,6 @@ class AssociationConfig {
 
     companion object {
         /** 忽略列  */
-        var ignoreColumns: List<String> = listOf("id", "remark")
+        var ignoreColumns: List<String> = listOf()
     }
 }

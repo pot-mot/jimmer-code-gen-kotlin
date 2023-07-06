@@ -6,8 +6,7 @@ import top.potmot.model.GenTableColumn
 /**
  * 两个库表之间关联判断的策略
  *
- * 其中 source （源实体）对应表为主表，target （目标实体）对应表为子表
- */
+ * 其中 source （源实体）对应表为主表，target （目标实体）对应表为子表 */
 object AssociationStrategy {
     /**
      * 评估两个列之间的关联关系

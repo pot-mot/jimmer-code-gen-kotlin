@@ -21,8 +21,7 @@ import java.util.zip.ZipOutputStream
 /**
  * 表生成业务类
  *
- * @author potmot
- */
+ * @author potmot */
 @Service
 class GenService (
     @Autowired val tableRepository: GenTableRepository

@@ -8,8 +8,7 @@ import top.potmot.model.GenTable
  * 代码生成业务表数据交互类
  *
  * @author potmot
- * @since 2023-05-06 18:45:51
- */
+ * @since 2023-05-06 18:45:51 */
 interface GenTableRepository : KRepository<GenTable, Long> {
     fun findByTableNameLikeIgnoreCase(
         tableName: String,

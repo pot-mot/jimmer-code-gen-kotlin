@@ -11,8 +11,7 @@ import top.potmot.model.GenTableAssociation;
  * 代码生成业务表关联实体类
  *
  * @author potmot
- * @since 2023-05-07 09:36:25
- */
+ * @since 2023-05-07 09:36:25 */
 data class GenTableAssociationInput(
     var id: Long?,
     var tableAssociationName: String,

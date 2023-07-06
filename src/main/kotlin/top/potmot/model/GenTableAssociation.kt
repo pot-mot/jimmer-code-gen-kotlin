@@ -7,8 +7,7 @@ import top.potmot.model.common.BaseEntity
  * 代码生成业务表关联实体类
  *
  * @author potmot
- * @since 2023-05-07 09:36:23
- */
+ * @since 2023-05-07 09:36:23 */
 @Entity
 interface GenTableAssociation : BaseEntity {
     /**

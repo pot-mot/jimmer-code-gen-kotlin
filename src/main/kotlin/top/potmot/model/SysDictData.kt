@@ -7,8 +7,7 @@ import top.potmot.model.common.BaseEntity
  * 字典数据表实体类
  *
  * @author potmot
- * @since 2023-05-06 19:13:44
- */
+ * @since 2023-05-06 19:13:44 */
 @Entity
 interface SysDictData : BaseEntity {
     /**

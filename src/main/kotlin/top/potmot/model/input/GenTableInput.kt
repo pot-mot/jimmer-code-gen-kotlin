@@ -11,8 +11,7 @@ import top.potmot.model.GenTable
  * 代码生成业务表实体类
  *
  * @author potmot
- * @since 2023-05-06 18:45:51
- */
+ * @since 2023-05-06 18:45:51 */
 data class GenTableInput(
     var id: Long?,
     var tableName: String,

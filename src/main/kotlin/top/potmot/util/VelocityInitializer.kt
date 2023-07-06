@@ -5,8 +5,6 @@ import top.potmot.constant.Constants
 
 /**
  * VelocityEngine工厂
- *
- * @author ruoyi
  */
 object VelocityInitializer {
     /**

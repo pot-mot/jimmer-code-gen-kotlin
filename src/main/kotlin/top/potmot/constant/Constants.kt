@@ -2,8 +2,6 @@ package top.potmot.constant
 
 /**
  * 通用常量信息
- *
- * @author ruoyi
  */
 object Constants {
     /**

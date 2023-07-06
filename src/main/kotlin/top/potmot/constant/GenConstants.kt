@@ -3,8 +3,7 @@ package top.potmot.constant
 /**
  * 代码生成通用常量
  *
- * @author potmot
- */
+ * @author potmot */
 object GenConstants {
     /**
      * 数据库命名分割符

@@ -11,8 +11,7 @@ import top.potmot.model.SysDictData
  * 字典数据表实体类
  *
  * @author potmot
- * @since 2023-05-06 19:13:45
- */
+ * @since 2023-05-06 19:13:45 */
 data class SysDictDataInput(
     var sysDictDataCode: Long,
     var dictSort: Int,

@@ -11,8 +11,7 @@ import java.util.*
 /**
  * 代码生成器 工具类
  *
- * @author potmot
- */
+ * @author potmot */
 object GenUtils {
     /**
      * 初始化表信息
