@@ -1,15 +1,21 @@
-package top.potmot.model;
+package top.potmot.model
 
-import org.babyfish.jimmer.sql.*
-import top.potmot.model.common.BaseEntity
+import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.GeneratedValue
+import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.ManyToOne
+import top.potmot.constant.AssociationTypeEnum
 
 /**
  * 代码生成业务表关联实体类
  *
  * @author potmot
- * @since 2023-05-07 09:36:23 */
+ * @since 2023-08-04 13:08:00
+ */
 @Entity
-interface GenTableAssociation : BaseEntity {
+interface GenTableAssociation {
     /**
      * 编号
      */
@@ -25,42 +31,65 @@ interface GenTableAssociation : BaseEntity {
     /**
      * 主表编号
      */
-    @ManyToOne
-    val sourceTable: GenTable
-
     @IdView
     val sourceTableId: Long
 
     /**
-     * 主表字段id
+     * 主表
      */
     @ManyToOne
-    val sourceColumn: GenTableColumn
+    val sourceTable: GenTable
 
+    /**
+     * 主字段编号
+     */
     @IdView
     val sourceColumnId: Long
 
     /**
-     * 从表编号
+     * 主字段
      */
     @ManyToOne
-    val targetTable: GenTable
+    val sourceColumn: GenTableColumn
 
+    /**
+     * 从表编号
+     */
     @IdView
     val targetTableId: Long
 
     /**
-     * 从表字段id
+     * 从表
      */
     @ManyToOne
-    val targetColumn: GenTableColumn
+    val targetTable: GenTable
 
+    /**
+     * 从字段编号
+     */
     @IdView
     val targetColumnId: Long
 
     /**
-     * 关联类别
+     * 从字段
      */
-    val associationCategory: String
+    @ManyToOne
+    val targetColumn: GenTableColumn
+
+    /**
+     * 关联类型（OneToOne, ManyToOne, OneToMany, ManyToMany）
+     */
+    val associationType: AssociationTypeEnum
+
+    /**
+     * 关联表达式
+     */
+    val associationExpress: String
+
+    /**
+     * 自定排序
+     */
+    val orderKey: Long
 
 }
+

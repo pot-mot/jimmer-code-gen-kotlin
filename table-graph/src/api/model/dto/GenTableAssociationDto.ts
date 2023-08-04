@@ -9,6 +9,6 @@ export type GenTableAssociationDto = {
         readonly sourceColumn: {readonly id: number}, 
         readonly targetTable: {readonly id: number}, 
         readonly targetColumn: {readonly id: number}, 
-        readonly associationCategory: string
+        readonly associationType: string
     }
 }

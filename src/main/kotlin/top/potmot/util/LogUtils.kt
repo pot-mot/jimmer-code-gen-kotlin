@@ -4,10 +4,6 @@ import org.slf4j.Logger
 import top.potmot.constant.ConsoleStyle
 
 object LogUtils {
-    fun infoSqlLog(sql: String, logger: Logger) {
-        logger.info(sql)
-    }
-
     fun infoSqlLog(sql: String, variables: List<Any?>, cost: Long, result: Any?, logger: Logger) {
         val stringBuilder = StringBuilder()
         val args = ArrayList<String>()
