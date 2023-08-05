@@ -1,11 +1,13 @@
 package top.potmot.model
 
+import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.OnDissociate
 import top.potmot.constant.AssociationType
 
 /**
@@ -38,6 +40,7 @@ interface GenTableAssociation {
      * 主表
      */
     @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
     val sourceTable: GenTable
 
     /**
@@ -50,6 +53,7 @@ interface GenTableAssociation {
      * 主字段
      */
     @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
     val sourceColumn: GenTableColumn
 
     /**
@@ -62,6 +66,7 @@ interface GenTableAssociation {
      * 从表
      */
     @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
     val targetTable: GenTable
 
     /**
@@ -74,6 +79,7 @@ interface GenTableAssociation {
      * 从字段
      */
     @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
     val targetColumn: GenTableColumn
 
     /**

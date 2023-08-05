@@ -18,4 +18,14 @@ class TestImportTable(
             LogUtils.logTable(it)
         }
     }
+
+    @Test
+    fun importTables() {
+        importTableService.importTables("gen_table")
+    }
+
+    @Test
+    fun clearTables() {
+        importTableService.clearTables()
+    }
 }
