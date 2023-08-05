@@ -6,7 +6,7 @@ import org.apache.velocity.app.Velocity
  * VelocityEngine工厂
  */
 object VelocityInitializer {
-    val UTF8 = "UTF-8"
+    private const val UTF8 = "UTF-8"
 
     /**
      * 初始化vm方法

@@ -27,8 +27,14 @@ class GenConfig {
         /** 是否展示sql, 在查询关联时为性能考考虑请关闭 */
         var showSql: Boolean = false
 
+        /** 表名分隔符 */
+        var separator: String = "_"
+
         /** 语言，java/kotlin */
-        var language: String = "java"
+        var language: Language = Language.JAVA
+
+        /** 默认类型 */
+        var defaultType: String = "String"
     }
 
     fun setAuthor(author: String) {
@@ -51,12 +57,20 @@ class GenConfig {
         Companion.showSql = showSql
     }
 
+    fun setSeparator(separator: String) {
+        Companion.separator = separator
+    }
+
+    fun setDefaultType(defaultType: String) {
+        Companion.defaultType = defaultType
+    }
+
     fun setLanguage(language: String) {
         when (language.lowercase()) {
-            Language.JAVA -> {
+            Language.JAVA.value -> {
                 Companion.language = Language.JAVA
             }
-            Language.KOTLIN -> {
+            Language.KOTLIN.value -> {
                 Companion.language = Language.JAVA
             }
             else -> {

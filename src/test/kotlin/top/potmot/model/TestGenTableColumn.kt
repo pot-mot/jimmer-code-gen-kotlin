@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import top.potmot.constant.QueryTypeEnum
-import top.potmot.constant.SortDirectionEnum
+import top.potmot.constant.QueryType
+import top.potmot.constant.SortDirection
 import top.potmot.dao.GenTableColumnRepository
 import top.potmot.model.input.GenTableColumnInput
 
@@ -37,8 +37,8 @@ class TestGenTableColumn(
         val genTableColumnInsertedFull = genTableColumnRepository.findById(genTableColumnInserted.id).get()
         println(genTableColumnInsertedFull)
         val genTableColumnBeforeUpdate = new(GenTableColumn::class).by(genTableColumnInserted) {
-            queryType = QueryTypeEnum.BETWEEN
-            sortDirection = SortDirectionEnum.DESC
+            queryType = QueryType.BETWEEN
+            sortDirection = SortDirection.DESC
         }
         val genTableColumnUpdated = genTableColumnRepository.save(genTableColumnBeforeUpdate)
         println(genTableColumnUpdated)

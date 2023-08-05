@@ -1,10 +1,16 @@
 package top.potmot.util
 
+import org.babyfish.jimmer.kt.hide
+import org.babyfish.jimmer.kt.new
 import org.slf4j.Logger
 import top.potmot.constant.ConsoleStyle
+import top.potmot.model.GenTable
+import top.potmot.model.by
 
 object LogUtils {
-    fun infoSqlLog(sql: String, variables: List<Any?>, cost: Long, result: Any?, logger: Logger) {
+    private val LOGGER: Logger = org.slf4j.LoggerFactory.getLogger(LogUtils::class.java)
+
+    fun logSql(sql: String, variables: List<Any?>, cost: Long, result: Any?, logger: Logger = LOGGER) {
         val stringBuilder = StringBuilder()
         val args = ArrayList<String>()
         stringBuilder.append("sql: {}\n")
@@ -25,8 +31,22 @@ object LogUtils {
         } else {
             stringBuilder.append("time: ").append(cost)
         }
-        stringBuilder.append("\n").append(result);
+        stringBuilder.append("\n").append(result)
         stringBuilder.append("\n")
         logger.info(stringBuilder.toString(), *args.toTypedArray())
+    }
+
+    fun logTable(table: GenTable, logger: Logger = LOGGER) {
+        val stringBuilder = StringBuilder()
+        val  tableWithoutColumns = new(GenTable::class).by(table) {
+            hide(this, GenTable::columns)
+        }
+        stringBuilder
+            .append("----------------------------\n")
+            .append(tableWithoutColumns).append('\n')
+        table.columns.forEach {
+            stringBuilder.append(it).append('\n')
+        }
+        logger.info(stringBuilder.toString())
     }
 }

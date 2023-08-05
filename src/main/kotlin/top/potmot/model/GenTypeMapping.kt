@@ -1,5 +1,6 @@
 package top.potmot.model
 
+import org.babyfish.jimmer.Formula
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -37,5 +38,8 @@ interface GenTypeMapping {
      */
     val orderKey: Long
 
+    @Formula(dependencies = ["columnType"])
+    val columnTypeRegex: Regex
+        get() = Regex(columnType)
 }
 

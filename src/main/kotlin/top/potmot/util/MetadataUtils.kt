@@ -1,16 +1,18 @@
 package top.potmot.util
 
+import top.potmot.constant.TableType
 import java.sql.Connection
 import java.sql.ResultSet
 
 object MetadataUtils {
     fun getTables(
         connection: Connection,
-        types: Array<String> = arrayOf("TABLE", "VIEW")
+        tablePattern: String? = null,
+        types: Array<String> = arrayOf(TableType.TABLE.value, TableType.VIEW.value),
     ): ResultSet {
         val metaData = connection.metaData
         val catalog = connection.catalog
-        return metaData.getTables(catalog, null, null, types)
+        return metaData.getTables(catalog, null, tablePattern, types)
     }
 
     fun getColumns(
@@ -36,10 +38,10 @@ object MetadataUtils {
         connection: Connection,
         tablePattern: String,
     ): List<String> {
-        var columns = emptyList<String>()
+        val columns = mutableListOf<String>()
         val primaryKeys = getPrimaryKeys(connection, tablePattern)
         while (primaryKeys.next()) {
-            columns = columns + primaryKeys.getString("COLUMN_NAME")
+            columns += primaryKeys.getString("COLUMN_NAME")
         }
         return columns
     }
@@ -57,10 +59,10 @@ object MetadataUtils {
         connection: Connection,
         tablePattern: String,
     ): List<String> {
-        var columns = emptyList<String>()
+        val columns = mutableListOf<String>()
         val foreignKeys = getForeignKeys(connection, tablePattern)
         while (foreignKeys.next()) {
-            columns = columns + foreignKeys.getString("COLUMN_NAME")
+            columns += foreignKeys.getString("COLUMN_NAME")
         }
         return columns
     }
@@ -79,10 +81,10 @@ object MetadataUtils {
         connection: Connection,
         tablePattern: String,
     ): List<String> {
-        var columns = emptyList<String>()
+        val columns = mutableListOf<String>()
         val indexes = getIndexes(connection, tablePattern)
         while (indexes.next()) {
-            columns  = columns + indexes.getString("COLUMN_NAME")
+            columns += indexes.getString("COLUMN_NAME")
         }
         return columns
     }
@@ -100,10 +102,10 @@ object MetadataUtils {
         connection: Connection,
         tablePattern: String,
     ): List<String> {
-        var columns = emptyList<String>()
+        val columns = mutableListOf<String>()
         val uniqueIndexes = getUniqueIndexes(connection, tablePattern)
         while (uniqueIndexes.next()) {
-            columns = columns + uniqueIndexes.getString("COLUMN_NAME")
+            columns += uniqueIndexes.getString("COLUMN_NAME")
         }
         return columns
     }

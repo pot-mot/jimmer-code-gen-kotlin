@@ -4,7 +4,7 @@ import org.babyfish.jimmer.sql.EnumItem
 import org.babyfish.jimmer.sql.EnumType
 
 @EnumType(EnumType.Strategy.NAME)
-enum class AssociationTypeEnum {
+enum class AssociationType {
 
     @EnumItem(name = "OneToOne")
     ONE_TO_ONE,

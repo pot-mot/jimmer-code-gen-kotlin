@@ -6,7 +6,7 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.ManyToOne
-import top.potmot.constant.AssociationTypeEnum
+import top.potmot.constant.AssociationType
 
 /**
  * 代码生成业务表关联实体类
@@ -79,7 +79,7 @@ interface GenTableAssociation {
     /**
      * 关联类型（OneToOne, ManyToOne, OneToMany, ManyToMany）
      */
-    val associationType: AssociationTypeEnum
+    val associationType: AssociationType
 
     /**
      * 关联表达式

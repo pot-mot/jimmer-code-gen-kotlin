@@ -3,14 +3,14 @@ package top.potmot.constant
 /**
  * 生成语言
  */
-object Language {
+enum class Language(val value: String) {
     /**
      * 生成语言 kotlin
      */
-    const val KOTLIN = "kotlin"
+    KOTLIN("kotlin"),
 
     /**
      * 生成语言 java
      */
-    const val JAVA = "java"
+    JAVA("java")
 }

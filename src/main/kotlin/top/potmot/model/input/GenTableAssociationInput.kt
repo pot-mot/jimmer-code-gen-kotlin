@@ -6,7 +6,7 @@ import org.mapstruct.Mapper
 import org.mapstruct.NullValueCheckStrategy
 import org.mapstruct.ReportingPolicy
 import org.mapstruct.factory.Mappers
-import top.potmot.constant.AssociationTypeEnum
+import top.potmot.constant.AssociationType
 import java.time.LocalDateTime
 import top.potmot.model.GenTableAssociation
 
@@ -23,7 +23,7 @@ data class GenTableAssociationInput(
     var sourceColumnId: Long?,
     var targetTableId: Long?,
     var targetColumnId: Long?,
-    var associationType: AssociationTypeEnum? = null,
+    var associationType: AssociationType? = null,
     var associationExpress: String? = null,
     var orderKey: Long? = null,
     var createdTime: LocalDateTime? = null,

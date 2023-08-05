@@ -1,4 +1,4 @@
-package top.potmot.model
+package top.potmot.model.base
 
 import org.babyfish.jimmer.sql.MappedSuperclass
 import java.time.LocalDateTime

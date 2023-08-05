@@ -9,6 +9,7 @@ object GenConstants {
      * 数据库命名分割符
      */
     const val SEPARATOR = "_"
+
     /**
      * 文本框
      */

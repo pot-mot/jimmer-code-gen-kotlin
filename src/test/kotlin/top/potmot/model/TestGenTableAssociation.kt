@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import top.potmot.constant.AssociationTypeEnum
+import top.potmot.constant.AssociationType
 import top.potmot.dao.GenTableAssociationRepository
 import top.potmot.model.input.GenTableAssociationInput
 
@@ -30,7 +30,7 @@ class TestGenTableAssociation(
         val genTableAssociationInserted = genTableAssociationRepository.save(genTableAssociationBeforeInsert)
         println(genTableAssociationInserted)
         val genTableAssociationBeforeUpdate = new(GenTableAssociation::class).by(genTableAssociationInserted) {
-            associationType = AssociationTypeEnum.MANY_TO_MANY
+            associationType = AssociationType.MANY_TO_MANY
         }
         val genTableAssociationUpdated = genTableAssociationRepository.save(genTableAssociationBeforeUpdate)
         println(genTableAssociationUpdated)

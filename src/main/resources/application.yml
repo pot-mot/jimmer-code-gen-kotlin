@@ -9,7 +9,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       username: root
       password: root
-      jdbc-url: jdbc:mysql://localhost:3307/ry-vue?serverTimezone=Asia/Shanghai
+      jdbc-url: jdbc:mysql://localhost:3307/ktg?serverTimezone=Asia/Shanghai
 
 jimmer:
   language: kotlin
@@ -31,5 +31,5 @@ gen:
   # 自动去除表前缀，默认是true
   # autoRemovePre: false
   # 表前缀（生成类名不会包含表前缀，多个用逗号分隔）
-  # tablePrefix: t_
-  # language: java
+#   tablePrefix: t_
+   language: java

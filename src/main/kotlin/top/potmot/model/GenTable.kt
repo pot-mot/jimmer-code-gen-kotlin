@@ -6,12 +6,13 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.ManyToManyView
 import org.babyfish.jimmer.sql.OneToMany
+import top.potmot.model.base.BaseEntity
 
 /**
  * 代码生成业务表实体类
  *
  * @author potmot
- * @since 2023-08-04 13:07:27
+ * @since 2023-08-05 09:51:52
  */
 @Entity
 interface GenTable : BaseEntity {
@@ -33,9 +34,19 @@ interface GenTable : BaseEntity {
     val tableComment: String
 
     /**
-     * 实体类名称
+     * 表种类
+     */
+    val tableType: String
+
+    /**
+     * 类名称
      */
     val className: String
+
+    /**
+     * 类描述
+     */
+    val classComment: String
 
     /**
      * 包名

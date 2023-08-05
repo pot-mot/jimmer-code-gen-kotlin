@@ -8,14 +8,14 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.ManyToManyView
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OneToMany
-import top.potmot.constant.QueryTypeEnum
-import top.potmot.constant.SortDirectionEnum
+import top.potmot.constant.QueryType
+import top.potmot.constant.SortDirection
 
 /**
  * 代码生成业务表字段实体类
  *
  * @author potmot
- * @since 2023-08-04 13:30:23
+ * @since 2023-08-05 10:59:40
  */
 @Entity
 interface GenTableColumn {
@@ -47,6 +47,11 @@ interface GenTableColumn {
      * 列名称
      */
     val columnName: String
+
+    /**
+     * 列 JDBCType 码
+     */
+    val columnTypeCode: Int
 
     /**
      * 列类型
@@ -81,7 +86,7 @@ interface GenTableColumn {
     /**
      * 是否自增（1是）
      */
-    val isIncrement: Boolean
+    val isAutoIncrement: Boolean
 
     /**
      * 是否唯一索引（1是）
@@ -134,6 +139,11 @@ interface GenTableColumn {
     val addSort: Long
 
     /**
+     * 是否为添加必要字段（1是）
+     */
+    val isAddRequired: Boolean
+
+    /**
      * 是否为编辑字段（1是）
      */
     val isEdit: Boolean
@@ -144,9 +154,9 @@ interface GenTableColumn {
     val editSort: Long
 
     /**
-     * 是否为必填字段（1是）
+     * 是否为修改必要字段（1是）
      */
-    val required: Boolean
+    val isEditRequired: Boolean
 
     /**
      * 是否为只读字段（1是）
@@ -166,7 +176,7 @@ interface GenTableColumn {
     /**
      * 查询类型（EQ、NE、GT、GTE、LT、LTE、BETWEEN、IN、LIKE、ILIKE）
      */
-    val queryType: QueryTypeEnum
+    val queryType: QueryType
 
     /**
      * 字典类型
@@ -181,7 +191,12 @@ interface GenTableColumn {
     /**
      * 排序方向（0 ASC 1 DESC）
      */
-    val sortDirection: SortDirectionEnum
+    val sortDirection: SortDirection
+
+    /**
+     * 是否为逻辑删除字段（1是）
+     */
+    val isLogicalDelete: Boolean
 
     /**
      * 出关联
