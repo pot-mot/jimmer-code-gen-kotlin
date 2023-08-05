@@ -242,5 +242,27 @@ interface GenTableColumn {
         deeperProp = "sourceColumn"
     )
     val sourceColumns: List<GenTableColumn>
+
+    /**
+     * 本列指向的从表
+     * example:
+     * book -> author 中的 author.id
+     */
+    @ManyToManyView(
+        prop = "outAssociations",
+        deeperProp = "targetTable"
+    )
+    val targetTables: List<GenTable>
+
+    /**
+     * 指向本列的主表
+     * example:
+     * author <- book 中的 book.authorId
+     */
+    @ManyToManyView(
+        prop = "inAssociations",
+        deeperProp = "sourceTable"
+    )
+    val sourceTables: List<GenTable>
 }
 

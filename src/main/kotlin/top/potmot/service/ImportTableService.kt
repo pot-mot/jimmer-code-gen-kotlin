@@ -15,7 +15,6 @@ import top.potmot.util.GenUtils.initClassInfo
 class ImportTableService (
     @Autowired val metadataDao: MetadataDao,
     @Autowired val genTableRepository: GenTableRepository,
-    @Autowired val genTableColumnRepository: GenTableColumnRepository,
     @Autowired val genTypeMappingRepository: GenTypeMappingRepository
 ) {
     fun getTables(tablePattern: String? = null): List<GenTable> {

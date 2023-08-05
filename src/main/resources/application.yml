@@ -10,6 +10,11 @@ spring:
       username: root
       password: root
       jdbc-url: jdbc:mysql://localhost:3307/ktg?serverTimezone=Asia/Shanghai
+  jackson:
+    # 格式化全局时间字段
+    date-format: yyyy-MM-dd HH:mm:ss
+    # 指定时间区域类型
+    time-zone: GMT+8
 
 jimmer:
   language: kotlin
@@ -18,7 +23,7 @@ jimmer:
   default-list-batch-size: 128
   client:
     ts:
-      path: /ts
+      path: /ts.zip
   show-sql: on
   pretty-sql: on
 

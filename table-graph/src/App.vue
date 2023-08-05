@@ -1,19 +1,7 @@
 <script setup lang="ts">
-import TableMapping from "./components/TableMapping.vue";
-import {ref} from "vue";
-import ERMapping from "./components/ERMapping.vue";
-
-const keyword = ref("")
+import TableInfo from "./components/TableList.vue";
 </script>
 
 <template>
-  <TableMapping :keyword="keyword"></TableMapping>
-<!--<ERMapping></ERMapping>-->
+	<TableInfo/>
 </template>
-
-<style>
-* {
-	margin: 0;
-	padding: 0;
-}
-</style>

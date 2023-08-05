@@ -17,25 +17,25 @@ class CacheConfig {
         return object : CacheFactory {
             override fun createObjectCache(type: ImmutableType): Cache<*, *> {
                 return ChainCacheBuilder<Any, Any>()
-                    .add(CaffeineBinder(1024, Duration.ofMinutes(3)))
+                    .add(CaffeineBinder(1024, Duration.ofSeconds(3)))
                     .build()
             }
 
             override fun createAssociatedIdCache(prop: ImmutableProp): Cache<*, *> {
                 return ChainCacheBuilder<Any, Any>()
-                    .add(CaffeineBinder(1024, Duration.ofMinutes(3)))
+                    .add(CaffeineBinder(1024, Duration.ofSeconds(3)))
                     .build()
             }
 
             override fun createAssociatedIdListCache(prop: ImmutableProp): Cache<*, List<*>> {
                 return ChainCacheBuilder<Any, List<*>>()
-                    .add(CaffeineBinder(1024, Duration.ofMinutes(3)))
+                    .add(CaffeineBinder(1024, Duration.ofSeconds(3)))
                     .build()
             }
 
             override fun createResolverCache(prop: ImmutableProp): Cache<*, *>? {
                 return ChainCacheBuilder<Any, Any>()
-                    .add(CaffeineBinder(1024, Duration.ofMinutes(3)))
+                    .add(CaffeineBinder(1024, Duration.ofSeconds(3)))
                     .build()
             }
         }
