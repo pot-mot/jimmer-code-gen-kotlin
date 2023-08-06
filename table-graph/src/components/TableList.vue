@@ -5,10 +5,8 @@ import {api} from "../api";
 import {GenTableDto} from "../__generated/model/dto";
 import {datetimeFormat} from "../utils/dataFormat";
 import {useLoading} from "../hooks/useLoading";
-import {useVisible} from "../hooks/useVisible";
-import TableInfo from "./TableInfo.vue";
 
-const tables: Ref<ReadonlyArray<GenTableDto['GenTableFetchers/SIMPLE_FETCHER']>> = ref([]);
+const tables: Ref<ReadonlyArray<GenTableDto["NodeSet/TABLE"]>> = ref([]);
 const selection = ref([]);
 const multiple = ref(true);
 const total = ref(0);
@@ -27,7 +25,7 @@ const preview = ref({})
 
 const getList = async () => {
 	add()
-	tables.value = await api.genTableController.list()
+	tables.value = await api.genTableController.listTables()
 	sub()
 }
 
@@ -39,12 +37,12 @@ const handleQuery = () => {
 
 }
 
-const editId: Ref<number | null> = ref(null)
-const {visible, hide, show} = useVisible()
+const dialog = ref()
+const node = ref()
 
-const handleEdit = (genTable: GenTableDto["GenTableFetchers/TABLE_FETCHER"]) => {
-	editId.value = genTable.id
-	show()
+const handleEdit = (genTable: GenTableDto["NodeSet/TABLE"]) => {
+	node.value = genTable.id
+	dialog.value.show()
 }
 
 const handleDelete = () => {
@@ -195,10 +193,6 @@ onMounted(() => {
 		layout="total, size, prev, pager, next"
 		:page-size="10"
 	/>
-
-	<template v-if="editId">
-		<TableInfo :id="editId" :visible="visible" @before-close="hide"></TableInfo>
-	</template>
 </template>
 
 <style scoped>

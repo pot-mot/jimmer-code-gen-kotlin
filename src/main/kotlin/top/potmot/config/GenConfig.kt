@@ -71,7 +71,7 @@ class GenConfig {
                 Companion.language = Language.JAVA
             }
             Language.KOTLIN.value -> {
-                Companion.language = Language.JAVA
+                Companion.language = Language.KOTLIN
             }
             else -> {
                 throw ConfigException("暂不支持 java 和 kotlin 之外的语言")

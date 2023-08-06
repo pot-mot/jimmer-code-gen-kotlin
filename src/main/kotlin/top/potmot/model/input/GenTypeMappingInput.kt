@@ -10,16 +10,16 @@ import java.time.LocalDateTime
 import top.potmot.model.GenTypeMapping
 
 /**
- * 实体输入类
+ * 列到字段类型映射实体输入类
  *
  * @author potmot
- * @since 2023-08-04 13:31:17
+ * @since 2023-08-06 17:23:30
  */
 data class GenTypeMappingInput(
     var id: Long? = null,
     var columnType: String? = null,
     var isRegex: Boolean? = null,
-    var fieldType: String? = null,
+    var propertyType: String? = null,
     var orderKey: Long? = null,
     var createdTime: LocalDateTime? = null,
     var modifiedTime: LocalDateTime? = null,

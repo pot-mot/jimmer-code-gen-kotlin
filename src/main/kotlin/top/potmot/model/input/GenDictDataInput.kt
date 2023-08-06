@@ -7,26 +7,29 @@ import org.mapstruct.NullValueCheckStrategy
 import org.mapstruct.ReportingPolicy
 import org.mapstruct.factory.Mappers
 import java.time.LocalDateTime
-import top.potmot.model.GenTable
+import top.potmot.model.GenDictData
 
 /**
- * 生成表实体输入类
+ * 字典数据实体输入类
  *
  * @author potmot
- * @since 2023-08-06 17:22:58
+ * @since 2023-08-06 17:21:29
  */
-data class GenTableInput(
+data class GenDictDataInput(
     var id: Long? = null,
-    var tableName: String? = null,
-    var tableComment: String? = null,
-    var tableType: String? = null,
-    var orderKey: Long? = null,
+    var dictTypeId: Long? = null,
+    var dictSort: Long? = null,
+    var dictLabel: String? = null,
+    var dictValue: String? = null,
+    var enumName: String? = null,
+    var enumLabel: String? = null,
+    var enumValue: String? = null,
     var createdTime: LocalDateTime? = null,
     var modifiedTime: LocalDateTime? = null,
     var remark: String? = null,
-) : Input<GenTable> {
-    override fun toEntity(): GenTable =
-        CONVERTER.toGenTable(this)
+) : Input<GenDictData> {
+    override fun toEntity(): GenDictData =
+        CONVERTER.toGenDictData(this)
 
     @Mapper
     internal interface Converter {
@@ -34,7 +37,7 @@ data class GenTableInput(
             unmappedTargetPolicy = ReportingPolicy.IGNORE,
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
         )
-        fun toGenTable(input: GenTableInput): GenTable
+        fun toGenDictData(input: GenDictDataInput): GenDictData
     }
 
     companion object {

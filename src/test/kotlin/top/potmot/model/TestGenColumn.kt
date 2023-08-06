@@ -9,38 +9,34 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import top.potmot.constant.QueryType
 import top.potmot.constant.SortDirection
-import top.potmot.dao.GenTableColumnRepository
-import top.potmot.model.input.GenTableColumnInput
+import top.potmot.dao.GenColumnRepository
+import top.potmot.model.input.GenColumnInput
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class TestGenTableColumn(
+class TestGenColumn(
     @Autowired
-    val genTableColumnRepository: GenTableColumnRepository
+    val genTableColumnRepository: GenColumnRepository
 ) {
 
     @Order(1)
     @Test
     fun save() {
-        val genTableColumnBeforeInsert = GenTableColumnInput(
+        val genTableColumnBeforeInsert = GenColumnInput(
             tableId = 1,
             columnName = "test_column",
             columnSort = 1,
             columnType = "varchar",
             columnDefault = "测试列",
             columnComment = "test",
-            fieldName = "test",
-            fieldComment = "测试字段",
-            fieldType = "String",
         )
         val genTableColumnInserted = genTableColumnRepository.save(genTableColumnBeforeInsert)
         val genTableColumnInsertedFull = genTableColumnRepository.findById(genTableColumnInserted.id).get()
         println(genTableColumnInsertedFull)
-        val genTableColumnBeforeUpdate = new(GenTableColumn::class).by(genTableColumnInserted) {
-            queryType = QueryType.BETWEEN
-            sortDirection = SortDirection.DESC
+        val genColumnBeforeUpdate = new(GenColumn::class).by(genTableColumnInserted) {
+            columnDefault = "测试列修改了"
         }
-        val genTableColumnUpdated = genTableColumnRepository.save(genTableColumnBeforeUpdate)
+        val genTableColumnUpdated = genTableColumnRepository.save(genColumnBeforeUpdate)
         println(genTableColumnUpdated)
         genTableColumnRepository.findAll().forEach {
             println(it)

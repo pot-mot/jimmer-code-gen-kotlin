@@ -6,32 +6,34 @@ import org.mapstruct.Mapper
 import org.mapstruct.NullValueCheckStrategy
 import org.mapstruct.ReportingPolicy
 import org.mapstruct.factory.Mappers
-import top.potmot.constant.AssociationType
 import java.time.LocalDateTime
-import top.potmot.model.GenTableAssociation
+import top.potmot.model.GenEntity
 
 /**
- * 代码生成业务表关联实体输入类
+ * 生成实体实体输入类
  *
  * @author potmot
- * @since 2023-08-04 13:08:00
+ * @since 2023-08-06 17:21:51
  */
-data class GenTableAssociationInput(
+data class GenEntityInput(
     var id: Long? = null,
-    var tableAssociationName: String? = null,
-    var sourceTableId: Long?,
-    var sourceColumnId: Long?,
-    var targetTableId: Long?,
-    var targetColumnId: Long?,
-    var associationType: AssociationType? = null,
-    var associationExpress: String? = null,
+    var tableId: Long? = null,
+    var packageName: String? = null,
+    var moduleName: String? = null,
+    var functionName: String? = null,
+    var author: String? = null,
+    var genPath: String? = null,
+    var isAdd: Boolean? = null,
+    var isEdit: Boolean? = null,
+    var isList: Boolean? = null,
+    var isQuery: Boolean? = null,
     var orderKey: Long? = null,
     var createdTime: LocalDateTime? = null,
     var modifiedTime: LocalDateTime? = null,
     var remark: String? = null,
-) : Input<GenTableAssociation> {
-    override fun toEntity(): GenTableAssociation =
-        CONVERTER.toGenTableAssociation(this)
+) : Input<GenEntity> {
+    override fun toEntity(): GenEntity =
+        CONVERTER.toGenEntity(this)
 
     @Mapper
     internal interface Converter {
@@ -39,7 +41,7 @@ data class GenTableAssociationInput(
             unmappedTargetPolicy = ReportingPolicy.IGNORE,
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
         )
-        fun toGenTableAssociation(input: GenTableAssociationInput): GenTableAssociation
+        fun toGenEntity(input: GenEntityInput): GenEntity
     }
 
     companion object {

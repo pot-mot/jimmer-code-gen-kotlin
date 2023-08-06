@@ -11,76 +11,76 @@ import org.babyfish.jimmer.sql.OnDissociate
 import top.potmot.constant.AssociationType
 
 /**
- * 代码生成业务表关联实体类
+ * 生成关联实体类
  *
  * @author potmot
- * @since 2023-08-04 13:08:00
+ * @since 2023-08-06 17:19:36
  */
 @Entity
-interface GenTableAssociation {
+interface GenAssociation {
     /**
-     * 编号
+     * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long
 
     /**
-     * 表关联名称
+     * 关联描述
      */
-    val tableAssociationName: String
+    val associationComment: String
 
     /**
-     * 主表编号
+     * 主实体 ID
      */
     @IdView
-    val sourceTableId: Long
+    val sourceEntityId: Long
 
     /**
-     * 主表
+     * 主实体
      */
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    val sourceTable: GenTable
+    val sourceEntity: GenEntity
 
     /**
-     * 主字段编号
+     * 主属性 ID
      */
     @IdView
-    val sourceColumnId: Long
+    val sourcePropertyId: Long
 
     /**
-     * 主字段
+     * 主属性
      */
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    val sourceColumn: GenTableColumn
+    val sourceProperty: GenProperty
 
     /**
-     * 从表编号
+     * 从实体 ID
      */
     @IdView
-    val targetTableId: Long
+    val targetEntityId: Long
 
     /**
-     * 从表
+     * 从实体
      */
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    val targetTable: GenTable
+    val targetEntity: GenEntity
 
     /**
-     * 从字段编号
+     * 从属性 ID
      */
     @IdView
-    val targetColumnId: Long
+    val targetPropertyId: Long
 
     /**
-     * 从字段
+     * 从属性
      */
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    val targetColumn: GenTableColumn
+    val targetProperty: GenProperty
 
     /**
      * 关联类型（OneToOne, ManyToOne, OneToMany, ManyToMany）

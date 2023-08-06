@@ -23,16 +23,11 @@ class TestGenTable(
         val genTableBeforeInsert = GenTableInput(
             tableName = "user",
             tableComment = "用户表",
-            className = "User",
-            packageName = "com.potmot",
-            moduleName = "user",
-            functionName = "用户",
         )
         val genTableInserted = genTableRepository.save(genTableBeforeInsert)
         println(genTableInserted)
         val genTableBeforeUpdate = new(GenTable::class).by(genTableInserted) {
-            isAdd = false
-            isQuery = false
+            tableComment = "用户表修改了"
         }
         val genTableUpdated = genTableRepository.save(genTableBeforeUpdate)
         println(genTableUpdated)

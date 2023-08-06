@@ -1,17 +1,22 @@
 import type { QueryType, SortDirection } from '../enums';
 
 export type GenTableDto = {
-    'GenTableFetchers/TABLE_FETCHER': {
-        readonly id: number, 
-        readonly tableName: string, 
-        readonly tableComment: string, 
-        readonly tableType: string
-    }, 
-    'GenTableFetchers/TABLE_COLUMN_FETCHER': {
+    'NodeSet/TABLE': {
         readonly id: number, 
         readonly tableName: string, 
         readonly tableComment: string, 
         readonly tableType: string, 
+        readonly createdTime: string, 
+        readonly modifiedTime: string
+    }, 
+    'NodeSet/TABLE_COMPLEX': {
+        readonly id: number, 
+        readonly tableName: string, 
+        readonly tableComment: string, 
+        readonly tableType: string, 
+        readonly createdTime: string, 
+        readonly modifiedTime: string, 
+        readonly remark: string, 
         readonly columns: ReadonlyArray<{
             readonly id: number, 
             readonly columnSort: number, 
@@ -28,22 +33,7 @@ export type GenTableDto = {
             readonly isVirtualColumn: boolean
         }>
     }, 
-    'GenTableFetchers/CLASS_FETCHER': {
-        readonly id: number, 
-        readonly className: string, 
-        readonly classComment: string, 
-        readonly packageName: string, 
-        readonly moduleName: string, 
-        readonly functionName: string, 
-        readonly author: string, 
-        readonly genPath: string, 
-        readonly isAdd: boolean, 
-        readonly isEdit: boolean, 
-        readonly isList: boolean, 
-        readonly isQuery: boolean, 
-        readonly orderKey: number
-    }, 
-    'GenTableFetchers/CLASS_COLUMN_FETCHER': {
+    'NodeSet/CLASS': {
         readonly id: number, 
         readonly className: string, 
         readonly classComment: string, 
@@ -57,6 +47,26 @@ export type GenTableDto = {
         readonly isList: boolean, 
         readonly isQuery: boolean, 
         readonly orderKey: number, 
+        readonly createdTime: string, 
+        readonly modifiedTime: string
+    }, 
+    'NodeSet/CLASS_COMPLEX': {
+        readonly id: number, 
+        readonly className: string, 
+        readonly classComment: string, 
+        readonly packageName: string, 
+        readonly moduleName: string, 
+        readonly functionName: string, 
+        readonly author: string, 
+        readonly genPath: string, 
+        readonly isAdd: boolean, 
+        readonly isEdit: boolean, 
+        readonly isList: boolean, 
+        readonly isQuery: boolean, 
+        readonly orderKey: number, 
+        readonly createdTime: string, 
+        readonly modifiedTime: string, 
+        readonly remark: string, 
         readonly columns: ReadonlyArray<{
             readonly id: number, 
             readonly fieldName: string, 
@@ -80,7 +90,7 @@ export type GenTableDto = {
             readonly isLogicalDelete: boolean
         }>
     }, 
-    'GenTableFetchers/SIMPLE_FETCHER': {
+    'NodeSet/COMMON': {
         readonly id: number, 
         readonly createdTime: string, 
         readonly modifiedTime: string, 
@@ -101,7 +111,7 @@ export type GenTableDto = {
         readonly isQuery: boolean, 
         readonly orderKey: number
     }, 
-    'GenTableFetchers/COLUMN_FETCHER': {
+    'NodeSet/COMPLEX': {
         readonly id: number, 
         readonly createdTime: string, 
         readonly modifiedTime: string, 

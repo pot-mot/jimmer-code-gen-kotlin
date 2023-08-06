@@ -6,18 +6,16 @@ import org.mapstruct.Mapper
 import org.mapstruct.NullValueCheckStrategy
 import org.mapstruct.ReportingPolicy
 import org.mapstruct.factory.Mappers
-import top.potmot.constant.QueryType
-import top.potmot.constant.SortDirection
 import java.time.LocalDateTime
-import top.potmot.model.GenTableColumn
+import top.potmot.model.GenColumn
 
 /**
- * 代码生成业务表字段实体输入类
+ * 生成列实体输入类
  *
  * @author potmot
- * @since 2023-08-05 10:59:55
+ * @since 2023-08-06 17:20:59
  */
-data class GenTableColumnInput(
+data class GenColumnInput(
     var id: Long? = null,
     var tableId: Long? = null,
     var columnSort: Long? = null,
@@ -33,31 +31,12 @@ data class GenTableColumnInput(
     var isUnique: Boolean? = null,
     var isNotNull: Boolean? = null,
     var isVirtualColumn: Boolean? = null,
-    var fieldName: String? = null,
-    var fieldType: String? = null,
-    var fieldComment: String? = null,
-    var isList: Boolean? = null,
-    var listSort: Long? = null,
-    var isAdd: Boolean? = null,
-    var addSort: Long? = null,
-    var isAddRequired: Boolean? = null,
-    var isEdit: Boolean? = null,
-    var editSort: Long? = null,
-    var isEditRequired: Boolean? = null,
-    var readOnly: Boolean? = null,
-    var isQuery: Boolean? = null,
-    var querySort: Long? = null,
-    var queryType: QueryType? = null,
-    var dictType: String? = null,
-    var isSort: Boolean? = null,
-    var sortDirection: SortDirection? = null,
-    var isLogicalDelete: Boolean? = null,
     var createdTime: LocalDateTime? = null,
     var modifiedTime: LocalDateTime? = null,
     var remark: String? = null,
-) : Input<GenTableColumn> {
-    override fun toEntity(): GenTableColumn =
-        CONVERTER.toGenTableColumn(this)
+) : Input<GenColumn> {
+    override fun toEntity(): GenColumn =
+        CONVERTER.toGenColumn(this)
 
     @Mapper
     internal interface Converter {
@@ -65,7 +44,7 @@ data class GenTableColumnInput(
             unmappedTargetPolicy = ReportingPolicy.IGNORE,
             nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
         )
-        fun toGenTableColumn(input: GenTableColumnInput): GenTableColumn
+        fun toGenColumn(input: GenColumnInput): GenColumn
     }
 
     companion object {

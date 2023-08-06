@@ -4,9 +4,12 @@ import org.babyfish.jimmer.kt.new
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import top.potmot.model.GenTable
-import top.potmot.model.GenTableColumn
+import top.potmot.model.GenColumn
 import top.potmot.model.by
-import top.potmot.util.MetadataUtils
+import top.potmot.util.metadata.getColumnResultSet
+import top.potmot.util.metadata.getPkColumnNames
+import top.potmot.util.metadata.getTableResultSet
+import top.potmot.util.metadata.getUniqueColumnNames
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import javax.sql.DataSource
@@ -21,14 +24,14 @@ class MetadataDao(
         }
     }
 
-    fun getColumns(tableName: String): List<GenTableColumn> {
+    fun getColumns(tablePattern: String): List<GenColumn> {
         return dataSource.connection.use { connection ->
-            getColumns(connection, tableName)
+            getColumns(connection, tablePattern)
         }
     }
 
     fun getTables(connection: Connection, tablePattern: String? = null): List<GenTable> {
-        val tablesResultSet = MetadataUtils.getTables(connection, tablePattern)
+        val tablesResultSet = getTableResultSet(connection, tablePattern)
         val genTables = mutableListOf<GenTable>()
         while (tablesResultSet.next()) {
             val tableName = tablesResultSet.getString("TABLE_NAME") ?: ""
@@ -49,13 +52,12 @@ class MetadataDao(
         return genTables
     }
 
-    fun getColumns(connection: Connection, tableName: String): List<GenTableColumn> {
-        val columns = MetadataUtils.getColumns(connection, tableName)
-        val pkColumns = MetadataUtils.getPkColumns(connection, tableName)
-        val uniqueColumns = MetadataUtils.getUniqueColumns(connection, tableName)
-        MetadataUtils.getUniqueIndexes(connection, tableName)
+    fun getColumns(connection: Connection, tablePattern: String): List<GenColumn> {
+        val columns = getColumnResultSet(connection, tablePattern)
+        val pkColumns = getPkColumnNames(connection, tablePattern)
+        val uniqueColumns = getUniqueColumnNames(connection, tablePattern)
         var index = 0L
-        val genColumns = mutableListOf<GenTableColumn>()
+        val genColumns = mutableListOf<GenColumn>()
         while (columns.next()) {
             index++
             val columnName = columns.getString("COLUMN_NAME") ?: ""
@@ -71,7 +73,7 @@ class MetadataDao(
             val isPk = pkColumns.contains(columnName)
             val isUnique = uniqueColumns.contains(columnName)
 
-            val genColumn = new(GenTableColumn::class).by {
+            val genColumn = new(GenColumn::class).by {
                 this.columnSort = index
                 this.columnName = columnName
                 this.columnTypeCode = columnTypeCode

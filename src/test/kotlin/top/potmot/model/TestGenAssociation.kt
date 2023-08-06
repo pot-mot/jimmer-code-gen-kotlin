@@ -8,31 +8,31 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import top.potmot.constant.AssociationType
-import top.potmot.dao.GenTableAssociationRepository
-import top.potmot.model.input.GenTableAssociationInput
+import top.potmot.dao.GenAssociationRepository
+import top.potmot.model.input.GenAssociationInput
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class TestGenTableAssociation(
+class TestGenAssociation(
     @Autowired
-    val genTableAssociationRepository: GenTableAssociationRepository
+    val genTableAssociationRepository: GenAssociationRepository
 ) {
 
     @Order(1)
     @Test
     fun save() {
-        val genTableAssociationBeforeInsert = GenTableAssociationInput(
-            sourceColumnId = 1,
-            sourceTableId = 1,
-            targetColumnId = 1,
-            targetTableId = 1,
+        val genTableAssociationBeforeInsert = GenAssociationInput(
+            sourcePropertyId = 1,
+            sourceEntityId = 1,
+            targetPropertyId = 1,
+            targetEntityId = 1,
         )
         val genTableAssociationInserted = genTableAssociationRepository.save(genTableAssociationBeforeInsert)
         println(genTableAssociationInserted)
-        val genTableAssociationBeforeUpdate = new(GenTableAssociation::class).by(genTableAssociationInserted) {
+        val genAssociationBeforeUpdate = new(GenAssociation::class).by(genTableAssociationInserted) {
             associationType = AssociationType.MANY_TO_MANY
         }
-        val genTableAssociationUpdated = genTableAssociationRepository.save(genTableAssociationBeforeUpdate)
+        val genTableAssociationUpdated = genTableAssociationRepository.save(genAssociationBeforeUpdate)
         println(genTableAssociationUpdated)
         genTableAssociationRepository.findAll().forEach {
             println(it)

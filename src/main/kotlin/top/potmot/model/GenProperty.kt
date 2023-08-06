@@ -6,175 +6,125 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToManyView
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.OneToOne
 import top.potmot.constant.QueryType
 import top.potmot.constant.SortDirection
 
 /**
- * 代码生成业务表字段实体类
+ * 生成字段实体类
  *
  * @author potmot
- * @since 2023-08-05 10:59:40
+ * @since 2023-08-06 17:22:11
  */
 @Entity
-interface GenTableColumn {
+interface GenProperty {
     /**
-     * 编号
+     * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long
 
     /**
-     * 归属表编号
+     * 对应列 ID
      */
     @IdView
-    val tableId: Long
+    val columnId: Long
 
     /**
-     * 归属表
+     * 对应列
+     */
+    @OneToOne
+    @OnDissociate(DissociateAction.DELETE)
+    val column: GenColumn
+
+    /**
+     * 归属实体编号
+     */
+    @IdView
+    val entityId: Long
+
+    /**
+     * 归属实体
      */
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    val table: GenTable
+    val entity: GenEntity
 
     /**
-     * 列在表中顺序
-     */
-    val columnSort: Long
-
-    /**
-     * 列名称
+     * 属性名
      */
     @Key
-    val columnName: String
+    val propertyName: String
 
     /**
-     * 列 JDBCType 码
+     * 属性类型
      */
-    val columnTypeCode: Int
+    val propertyType: String
 
     /**
-     * 列类型
+     * 属性描述
      */
-    val columnType: String
+    val propertyComment: String
 
     /**
-     * 列展示长度
-     */
-    val columnDisplaySize: Long
-
-    /**
-     * 列精度
-     */
-    val columnPrecision: Long
-
-    /**
-     * 列默认值
-     */
-    val columnDefault: String
-
-    /**
-     * 列描述
-     */
-    val columnComment: String
-
-    /**
-     * 是否主键（1是）
-     */
-    val isPk: Boolean
-
-    /**
-     * 是否自增（1是）
-     */
-    val isAutoIncrement: Boolean
-
-    /**
-     * 是否唯一索引（1是）
-     */
-    val isUnique: Boolean
-
-    /**
-     * 是否非空（1是）
-     */
-    val isNotNull: Boolean
-
-    /**
-     * 是否虚拟列（1是）
-     */
-    val isVirtualColumn: Boolean
-
-    /**
-     * 字段名
-     */
-    val fieldName: String
-
-    /**
-     * 字段类型
-     */
-    val fieldType: String
-
-    /**
-     * 字段描述
-     */
-    val fieldComment: String
-
-    /**
-     * 是否为列表字段（1是）
+     * 是否在列表中（1是）
      */
     val isList: Boolean
 
     /**
-     * 字段在列表中顺序
+     * 在列表中顺序
      */
     val listSort: Long
 
     /**
-     * 是否为添加字段（1是）
+     * 是否在新增表单中（1是）
      */
     val isAdd: Boolean
 
     /**
-     * 字段在新增表单中顺序
+     * 在新增表单中顺序
      */
     val addSort: Long
 
     /**
-     * 是否为添加必要字段（1是）
+     * 是否为新增时必填（1是）
      */
     val isAddRequired: Boolean
 
     /**
-     * 是否为编辑字段（1是）
+     * 是否在编辑表单中（1是）
      */
     val isEdit: Boolean
 
     /**
-     * 字段在修改表单中顺序
+     * 在修改表单中顺序
      */
     val editSort: Long
 
     /**
-     * 是否为修改必要字段（1是）
+     * 是否为修改时必填（1是）
      */
     val isEditRequired: Boolean
 
     /**
-     * 是否为只读字段（1是）
+     * 是否为只读（1是）
      */
     val readOnly: Boolean
 
     /**
-     * 是否为查询字段（1是）
+     * 是否为查询属性（1是）
      */
     val isQuery: Boolean
 
     /**
-     * 字段在查询表单中顺序
+     * 在查询属性中顺序
      */
     val querySort: Long
 
@@ -189,7 +139,7 @@ interface GenTableColumn {
     val dictType: String
 
     /**
-     * 是否为排序字段（1是）
+     * 是否为排序属性（1是）
      */
     val isSort: Boolean
 
@@ -199,7 +149,7 @@ interface GenTableColumn {
     val sortDirection: SortDirection
 
     /**
-     * 是否为逻辑删除字段（1是）
+     * 是否为逻辑删除属性（1是）
      */
     val isLogicalDelete: Boolean
 
@@ -209,8 +159,8 @@ interface GenTableColumn {
      * example:
      * book.authorId -> author.id
      */
-    @OneToMany(mappedBy = "sourceColumn")
-    val outAssociations: List<GenTableAssociation>
+    @OneToMany(mappedBy = "sourceProperty")
+    val outAssociations: List<GenAssociation>
 
     /**
      * 入关联
@@ -218,8 +168,8 @@ interface GenTableColumn {
      * example:
      * author.id <- book.authorId
      */
-    @OneToMany(mappedBy = "targetColumn")
-    val inAssociations: List<GenTableAssociation>
+    @OneToMany(mappedBy = "targetProperty")
+    val inAssociations: List<GenAssociation>
 
     /**
      * 本列指向的从列
@@ -228,9 +178,9 @@ interface GenTableColumn {
      */
     @ManyToManyView(
         prop = "outAssociations",
-        deeperProp = "targetColumn"
+        deeperProp = "targetProperty"
     )
-    val targetColumns: List<GenTableColumn>
+    val targetProperties: List<GenProperty>
 
     /**
      * 指向本列的主列
@@ -239,9 +189,9 @@ interface GenTableColumn {
      */
     @ManyToManyView(
         prop = "inAssociations",
-        deeperProp = "sourceColumn"
+        deeperProp = "sourceProperty"
     )
-    val sourceColumns: List<GenTableColumn>
+    val sourceProperties: List<GenProperty>
 
     /**
      * 本列指向的从表
@@ -250,9 +200,9 @@ interface GenTableColumn {
      */
     @ManyToManyView(
         prop = "outAssociations",
-        deeperProp = "targetTable"
+        deeperProp = "targetEntity"
     )
-    val targetTables: List<GenTable>
+    val targetEntities: List<GenEntity>
 
     /**
      * 指向本列的主表
@@ -261,8 +211,8 @@ interface GenTableColumn {
      */
     @ManyToManyView(
         prop = "inAssociations",
-        deeperProp = "sourceTable"
+        deeperProp = "sourceEntity"
     )
-    val sourceTables: List<GenTable>
+    val sourceEntities: List<GenEntity>
 }
 

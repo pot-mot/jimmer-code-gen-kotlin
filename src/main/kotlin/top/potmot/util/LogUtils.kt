@@ -4,6 +4,7 @@ import org.babyfish.jimmer.kt.hide
 import org.babyfish.jimmer.kt.new
 import org.slf4j.Logger
 import top.potmot.constant.ConsoleStyle
+import top.potmot.model.GenEntity
 import top.potmot.model.GenTable
 import top.potmot.model.by
 
@@ -38,13 +39,27 @@ object LogUtils {
 
     fun logTable(table: GenTable, logger: Logger = LOGGER) {
         val stringBuilder = StringBuilder()
-        val  tableWithoutColumns = new(GenTable::class).by(table) {
+        val tableWithoutColumns = new(GenTable::class).by(table) {
             hide(this, GenTable::columns)
         }
         stringBuilder
             .append("----------------------------\n")
             .append(tableWithoutColumns).append('\n')
         table.columns.forEach {
+            stringBuilder.append(it).append('\n')
+        }
+        logger.info(stringBuilder.toString())
+    }
+
+    fun logEntity(entity: GenEntity, logger: Logger = LOGGER) {
+        val stringBuilder = StringBuilder()
+        val entityWithoutProperties = new(GenEntity::class).by(entity) {
+            hide(this, GenEntity::properties)
+        }
+        stringBuilder
+            .append("----------------------------\n")
+            .append(entityWithoutProperties).append('\n')
+        entity.properties.forEach {
             stringBuilder.append(it).append('\n')
         }
         logger.info(stringBuilder.toString())
