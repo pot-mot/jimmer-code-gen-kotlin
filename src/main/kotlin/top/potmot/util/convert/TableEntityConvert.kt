@@ -4,6 +4,7 @@ import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.new
 import top.potmot.config.GenConfig
 import top.potmot.constant.Language
+import top.potmot.constant.QueryType
 import top.potmot.constant.TableType
 import top.potmot.model.GenTable
 import top.potmot.model.GenColumn
@@ -61,6 +62,13 @@ fun columnToField(
         propertyComment = genColumn.columnComment
         isAddRequired = genColumn.isNotNull
         isEditRequired = genColumn.isNotNull
+
+        listSort = genColumn.columnSort
+        addSort = genColumn.columnSort
+        editSort = genColumn.columnSort
+        querySort = genColumn.columnSort
+
+        queryType = getPropertyQueryType(genColumn)
     }
 }
 
@@ -77,4 +85,10 @@ fun getPropertyTypeName(
         Language.JAVA -> jdbcTypeToJavaType(column.columnTypeCode, column.isNotNull).name
         Language.KOTLIN -> jdbcTypeToKotlinType(column.columnTypeCode).qualifiedName ?: defaultType
     }
+}
+
+fun getPropertyQueryType(
+    column: GenColumn,
+): QueryType {
+    return QueryType.EQ
 }

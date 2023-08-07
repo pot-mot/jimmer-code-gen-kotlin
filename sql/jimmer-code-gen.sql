@@ -18,6 +18,8 @@ DROP TABLE IF EXISTS `gen_entity`;
 CREATE TABLE `gen_entity`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `table_id` bigint(0) NOT NULL COMMENT '对应表',
+  `class_name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '类名称',
+  `class_comment` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '类描述',
   `package_name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '包名',
   `module_name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '模块名',
   `function_name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '功能名',
@@ -44,7 +46,7 @@ CREATE TABLE `gen_column`  (
   `column_type` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列类型',
   `column_display_size` bigint(0) NOT NULL DEFAULT 0 COMMENT '列展示长度',
   `column_precision` bigint(0) NOT NULL DEFAULT 0 COMMENT '列精度',
-  `column_default` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列默认值',
+  `column_default` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '列默认值',
   `column_comment` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列描述',
   `is_pk` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否主键（1是）',
   `is_auto_increment` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否自增（1是）',

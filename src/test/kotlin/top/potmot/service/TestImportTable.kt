@@ -6,16 +6,17 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import top.potmot.service.impl.ImportServiceImpl
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Order
+import org.springframework.test.context.ActiveProfiles
 import top.potmot.util.LogUtils
 import java.sql.Types
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
+@ActiveProfiles("test")
 class TestImportTable(
-    @Autowired val importTableService: ImportServiceImpl
+    @Autowired val importTableService: ImportService
 ) {
     @Order(1)
     @Test
@@ -58,6 +59,7 @@ class TestImportTable(
 
         val bio = importTableService.getColumn(table, "bio")
         assertTrue(bio.isPresent)
+        assertEquals(Types.LONGVARCHAR, bio.get().columnTypeCode)
         assertEquals("MEDIUMTEXT", bio.get().columnType)
 
         val gender = importTableService.getColumn(table, "gender")
@@ -68,7 +70,48 @@ class TestImportTable(
 
         val skillSet = importTableService.getColumn(table, "skill_set")
         assertTrue(skillSet.isPresent)
-        assertEquals("JSON",  skillSet.get().columnType)
+        assertEquals(Types.LONGVARCHAR, skillSet.get().columnTypeCode)
+        assertEquals("JSON", skillSet.get().columnType)
+        assertEquals(null, skillSet.get().columnDefault)
 
+        val zipcode =  importTableService.getColumn(table, "zipcode")
+        assertTrue(zipcode.isPresent)
+        assertEquals(Types.VARCHAR, zipcode.get().columnTypeCode)
+        assertEquals("VARCHAR", zipcode.get().columnType)
+        assertEquals("12345", zipcode.get().columnDefault)
+
+        val isApproved = importTableService.getColumn(table, "is_approved")
+        assertTrue(isApproved.isPresent)
+        assertEquals(Types.BIT, isApproved.get().columnTypeCode)
+        assertEquals("1", isApproved.get().columnDefault)
+    }
+
+    @Order(2)
+    @Test
+    fun testPreviewEntities() {
+        val result = importTableService.previewEntities("single_test_table")
+        result.forEach {
+            LogUtils.logEntity(it)
+        }
+        assertNotNull(result)
+        assertTrue(result.size == 1)
+
+        val entity = result[0]
+        assertTrue(!ImmutableObjects.isLoaded(entity, "id"))
+        assertEquals("SingleTestTable", entity.className)
+        assertTrue(ImmutableObjects.isLoaded(entity, "properties"))
+        assertEquals(45, entity.properties.size)
+    }
+
+    @Order(3)
+    @Test
+    fun testImportEntities() {
+        val result = importTableService.importEntities("single_test_table")
+        assertNotNull(result)
+        assertTrue(result.size == 1)
+        val table = importTableService.getTable(result[0].id).get()
+        assertNotNull(table)
+
+        LogUtils.logTable(table)
     }
 }

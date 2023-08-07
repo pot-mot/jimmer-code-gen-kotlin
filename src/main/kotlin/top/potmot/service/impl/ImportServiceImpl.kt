@@ -4,6 +4,8 @@ import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
 import org.babyfish.jimmer.sql.fetcher.Fetcher
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import top.potmot.dao.GenEntityRepository
@@ -15,6 +17,7 @@ import top.potmot.model.GenEntity
 import top.potmot.model.GenProperty
 import top.potmot.model.GenTable
 import top.potmot.model.base.Identifiable
+import top.potmot.model.base.PageQuery
 import top.potmot.service.ImportService
 import top.potmot.util.convert.tableToEntity
 import java.util.*
@@ -122,27 +125,25 @@ class ImportServiceImpl(
     }
 
     override fun getColumn(table: GenTable, columnId: Long): Optional<GenColumn> {
-        return if (ImmutableObjects.isLoaded(table, "columns")) {
-            val result = table.columns.filter { it.id == columnId }
-            if (result.isEmpty()) {
-                Optional.empty<GenEntity>()
-            }
-            Optional.ofNullable(result[0])
-        } else {
-            Optional.empty()
+        if (!ImmutableObjects.isLoaded(table, "columns")) {
+            return Optional.empty()
         }
+
+        val result = table.columns.find { it.id == columnId }
+        return Optional.ofNullable(result)
     }
 
     override fun getColumn(table: GenTable, columnName: String): Optional<GenColumn> {
-        return if (ImmutableObjects.isLoaded(table, "columns")) {
-            val result = table.columns.filter { it.columnName == columnName }
-            if (result.isEmpty()) {
-                Optional.empty<GenEntity>()
-            }
-            Optional.ofNullable(result[0])
-        } else {
-            Optional.empty()
+        if (!ImmutableObjects.isLoaded(table, "columns")) {
+            return Optional.empty()
         }
+
+        val result = table.columns.find { it.columnName == columnName }
+        return Optional.ofNullable(result)
+    }
+
+    override fun getTables(page: Pageable, tableFetcher: Fetcher<GenTable>?): Page<GenTable> {
+        return genTableRepository.findAll(page, tableFetcher)
     }
 
     override fun getTables(tableIds: Iterable<Long>, tableFetcher: Fetcher<GenTable>?): List<Optional<GenTable>> {
@@ -174,33 +175,31 @@ class ImportServiceImpl(
         }
     }
 
+    override fun getEntities(page: Pageable, entityFetcher: Fetcher<GenEntity>?): Page<GenEntity> {
+        return genEntityRepository.findAll(page, entityFetcher)
+    }
+
     override fun getEntities(entityIds: Iterable<Long>, entityFetcher: Fetcher<GenEntity>?): List<Optional<GenEntity>> {
         val entities = genEntityRepository.findByIds(entityIds, entityFetcher)
         return listToOptionalList(entities, entityIds)
     }
 
     override fun getProperty(entity: GenEntity, propertyId: Long): Optional<GenProperty> {
-        return if (ImmutableObjects.isLoaded(entity, "properties")) {
-            val result = entity.properties.filter { it.id == propertyId }
-            if (result.isEmpty()) {
-                Optional.empty<GenEntity>()
-            }
-            Optional.ofNullable(result[0])
-        } else {
-            Optional.empty()
+        if (!ImmutableObjects.isLoaded(entity, "properties")) {
+            return Optional.empty()
         }
+
+        val result = entity.properties.find { it.id == propertyId }
+        return Optional.ofNullable(result)
     }
 
     override fun getProperty(entity: GenEntity, propertyName: String): Optional<GenProperty> {
-        return if (ImmutableObjects.isLoaded(entity, "properties")) {
-            val result = entity.properties.filter { it.propertyName == propertyName }
-            if (result.isEmpty()) {
-                Optional.empty<GenEntity>()
-            }
-            Optional.ofNullable(result[0])
-        } else {
-            Optional.empty()
+        if (!ImmutableObjects.isLoaded(entity, "properties")) {
+            return Optional.empty()
         }
+
+        val result = entity.properties.find { it.propertyName == propertyName }
+        return Optional.ofNullable(result)
     }
 
     fun <T : Identifiable<Long>> listToOptionalList(list: List<T>, ids: Iterable<Long>): List<Optional<T>> {

@@ -1,5 +1,6 @@
 package top.potmot.util
 
+import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.hide
 import org.babyfish.jimmer.kt.new
 import org.slf4j.Logger
@@ -42,38 +43,53 @@ object LogUtils {
     fun logTable(table: GenTable, logger: Logger = LOGGER) {
         val stringBuilder = StringBuilder()
         val tableWithoutColumns = new(GenTable::class).by(table) {
-            hide(this, GenTable::columns)
-            hide(this, GenTable::entity)
-            columns = columns.map {
-                hide(it, GenColumn::property)
-                it
+            if (ImmutableObjects.isLoaded(this, "columns")) {
+                hide(this, GenTable::columns)
+                columns = columns.map {
+                    hide(it, GenColumn::property)
+                    it
+                }
+            }
+            if (ImmutableObjects.isLoaded(this, "entity")) {
+                hide(this, GenTable::entity)
             }
         }
         stringBuilder
             .append("----------------------------\n")
             .append(tableWithoutColumns).append('\n')
-        table.columns.forEach {
-            stringBuilder.append(it).append('\n')
+        if (ImmutableObjects.isLoaded(table, "columns")) {
+            table.columns.forEach {
+                stringBuilder.append(it).append('\n')
+            }
         }
+
         logger.info(stringBuilder.toString())
     }
 
     fun logEntity(entity: GenEntity, logger: Logger = LOGGER) {
         val stringBuilder = StringBuilder()
         val entityWithoutProperties = new(GenEntity::class).by(entity) {
-            hide(this, GenEntity::properties)
-            hide(this, GenEntity::table)
-            properties = properties.map {
-                hide(it, GenProperty::column)
-                it
+            if (ImmutableObjects.isLoaded(this, "properties")) {
+                hide(this, GenEntity::properties)
+                properties = properties.map {
+                    hide(it, GenProperty::column)
+                    it
+                }
+            }
+            if (ImmutableObjects.isLoaded(this, "table")) {
+                hide(this, GenEntity::table)
             }
         }
         stringBuilder
             .append("----------------------------\n")
             .append(entityWithoutProperties).append('\n')
-        entity.properties.forEach {
-            stringBuilder.append(it).append('\n')
+
+        if (ImmutableObjects.isLoaded(entity, "properties")) {
+            entity.properties.forEach {
+                stringBuilder.append(it).append('\n')
+            }
         }
+
         logger.info(stringBuilder.toString())
     }
 }

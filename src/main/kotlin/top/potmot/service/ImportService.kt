@@ -1,6 +1,8 @@
 package top.potmot.service
 
 import org.babyfish.jimmer.sql.fetcher.Fetcher
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import top.potmot.model.GenColumn
 import top.potmot.model.GenEntity
 import top.potmot.model.GenProperty
@@ -10,7 +12,6 @@ import java.util.Optional
 /**
  * 导入服务
  * 用于操作 “向 MainDataSource 即本项目数据源 中导入 来自 GenDataSource 的数据库表，并生成对应的实体信息” 这一流程
- *
  */
 interface ImportService {
     fun previewTables(tablePattern: String? = null): List<GenTable>
@@ -41,6 +42,8 @@ interface ImportService {
 
     fun getColumn(table: GenTable, columnName: String): Optional<GenColumn>
 
+    fun getTables(page: Pageable, tableFetcher: Fetcher<GenTable>? = null): Page<GenTable>
+
     fun getTables(tableIds: Iterable<Long>, tableFetcher: Fetcher<GenTable>? = null): List<Optional<GenTable>>
 
     fun removeTableById(tableId: Long): Boolean
@@ -52,6 +55,8 @@ interface ImportService {
     fun removeTables(tables: Iterable<GenTable>): Int
 
     fun getEntity(entityId: Long, entityFetcher: Fetcher<GenEntity>? = null): Optional<GenEntity>
+
+    fun getEntities(page: Pageable, entityFetcher: Fetcher<GenEntity>? = null): Page<GenEntity>
 
     fun getEntities(entityIds: Iterable<Long>, entityFetcher: Fetcher<GenEntity>? = null): List<Optional<GenEntity>>
 

@@ -1,2 +1,2 @@
-export { GenTableController } from './GenTableController';
-export type { GenTableControllerOptions } from './GenTableController';
+export { ImportController } from './ImportController';
+export type { ImportControllerOptions } from './ImportController';

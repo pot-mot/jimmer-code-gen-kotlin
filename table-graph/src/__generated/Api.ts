@@ -1,12 +1,12 @@
 import type { Executor } from './';
 
-import { GenTableController } from './services';
+import { ImportController } from './services';
 
 export class Api {
     
-    readonly genTableController: GenTableController;
+    readonly importController: ImportController;
     
     constructor(executor: Executor) {
-        this.genTableController = new GenTableController(executor);
+        this.importController = new ImportController(executor);
     }
 }

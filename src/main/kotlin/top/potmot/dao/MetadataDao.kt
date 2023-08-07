@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component
 import top.potmot.model.GenTable
 import top.potmot.model.GenColumn
 import top.potmot.model.by
+import top.potmot.util.database.debugResultSetColumn
 import top.potmot.util.database.getColumnResultSet
 import top.potmot.util.database.getPkColumnNames
 import top.potmot.util.database.getTableResultSet

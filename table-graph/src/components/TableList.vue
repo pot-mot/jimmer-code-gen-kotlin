@@ -6,7 +6,7 @@ import {GenTableDto} from "../__generated/model/dto";
 import {datetimeFormat} from "../utils/dataFormat";
 import {useLoading} from "../hooks/useLoading";
 
-const tables: Ref<ReadonlyArray<GenTableDto["NodeSet/TABLE"]>> = ref([]);
+const tables: Ref<ReadonlyArray<GenTableDto['DEFAULT']>> = ref([]);
 const selection = ref([]);
 const multiple = ref(true);
 const total = ref(0);
@@ -25,7 +25,7 @@ const preview = ref({})
 
 const getList = async () => {
 	add()
-	tables.value = await api.genTableController.listTables()
+	tables.value = (await api.importController.listGenTable({page: {number: 0, size: 10}})).content
 	sub()
 }
 
@@ -40,9 +40,8 @@ const handleQuery = () => {
 const dialog = ref()
 const node = ref()
 
-const handleEdit = (genTable: GenTableDto["NodeSet/TABLE"]) => {
-	node.value = genTable.id
-	dialog.value.show()
+const handleEdit = (genTable: GenTableDto["DEFAULT"]) => {
+
 }
 
 const handleDelete = () => {

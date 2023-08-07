@@ -18,6 +18,8 @@ import top.potmot.model.GenEntity
 data class GenEntityInput(
     var id: Long? = null,
     var tableId: Long? = null,
+    var className: String? = null,
+    var classComment: String? = null,
     var packageName: String? = null,
     var moduleName: String? = null,
     var functionName: String? = null,
