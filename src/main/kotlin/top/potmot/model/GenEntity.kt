@@ -6,13 +6,13 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToManyView
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
 import top.potmot.model.base.BaseEntity
+import top.potmot.model.base.Identifiable
 
 /**
  * 生成实体实体类
@@ -21,13 +21,13 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-06 17:21:36
  */
 @Entity
-interface GenEntity : BaseEntity {
+interface GenEntity : BaseEntity, Identifiable<Long> {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long
+    override val id: Long
 
     /**
      * 对应表 ID

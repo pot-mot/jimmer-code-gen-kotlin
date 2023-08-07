@@ -9,6 +9,7 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
 import top.potmot.model.base.BaseEntity
+import top.potmot.model.base.Identifiable
 
 /**
  * 生成表实体类
@@ -17,13 +18,13 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-06 17:22:35
  */
 @Entity
-interface GenTable : BaseEntity {
+interface GenTable : BaseEntity, Identifiable<Long> {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long
+    override val id: Long
 
     /**
      * 对应实体 ID

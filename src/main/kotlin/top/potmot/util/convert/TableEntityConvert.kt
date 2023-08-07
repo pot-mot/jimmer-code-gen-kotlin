@@ -14,12 +14,14 @@ import top.potmot.model.by
 
 /**
  * 初始化表到实体类的信息
+ * warning: 如果需要保存生成的结果，请一定保证 对应 table 已经 save
  */
 fun tableToEntity(
     genTable: GenTable,
     typeMappings: List<GenTypeMapping> = emptyList()
 ): GenEntity {
     return new(GenEntity::class).by {
+        table = genTable
         if (ImmutableObjects.isLoaded(genTable, "id")) {
             tableId = genTable.id
         }
@@ -43,12 +45,14 @@ fun tableToEntity(
 
 /**
  * 初始化列到字段的信息
+ * warning: 如果需要保存生成的结果，请一定保证 对应 column 已经 save
  */
 fun columnToField(
     genColumn: GenColumn,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): GenProperty {
     return new(GenProperty::class).by {
+        column = genColumn
         if (ImmutableObjects.isLoaded(genColumn, "id")) {
             columnId = genColumn.id
         }

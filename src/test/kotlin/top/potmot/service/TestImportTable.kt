@@ -14,15 +14,22 @@ class TestImportTable(
     @Autowired val importTableService: ImportServiceImpl
 ) {
     @Test
-    fun getEntities() {
-        importTableService.getEntities().forEach {
+    fun previewTables() {
+        importTableService.previewTables().forEach {
+            LogUtils.logTable(it)
+        }
+    }
+
+    @Test
+    fun previewEntities() {
+        importTableService.previewEntities().forEach {
             LogUtils.logEntity(it)
         }
     }
 
     @Test
     fun importTables() {
-        importTableService.importTables("gen_table")
+        importTableService.importEntities("gen_table")
     }
 
     @Test
