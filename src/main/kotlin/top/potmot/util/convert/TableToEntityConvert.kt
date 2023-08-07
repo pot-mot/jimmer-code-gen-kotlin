@@ -36,7 +36,7 @@ fun tableToEntity(
         }
 
         properties = genTable.columns.map {
-            columnToField(it, genTable, typeMappings)
+            columnToField(it, typeMappings)
         }
     }
 }
@@ -46,13 +46,9 @@ fun tableToEntity(
  */
 fun columnToField(
     genColumn: GenColumn,
-    genTable: GenTable,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): GenProperty {
     return new(GenProperty::class).by {
-        if (ImmutableObjects.isLoaded(genColumn, "id")) {
-            entityId = genTable.id
-        }
         if (ImmutableObjects.isLoaded(genColumn, "id")) {
             columnId = genColumn.id
         }
