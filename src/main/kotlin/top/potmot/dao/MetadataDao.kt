@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component
 import top.potmot.model.GenTable
 import top.potmot.model.GenColumn
 import top.potmot.model.by
-import top.potmot.util.metadata.getColumnResultSet
-import top.potmot.util.metadata.getPkColumnNames
-import top.potmot.util.metadata.getTableResultSet
-import top.potmot.util.metadata.getUniqueColumnNames
+import top.potmot.util.database.getColumnResultSet
+import top.potmot.util.database.getPkColumnNames
+import top.potmot.util.database.getTableResultSet
+import top.potmot.util.database.getUniqueColumnNames
 import java.sql.Connection
 import java.sql.DatabaseMetaData
 import javax.sql.DataSource
@@ -66,7 +66,7 @@ class MetadataDao(
             val columnComment = columns.getString("REMARKS") ?: ""
             val columnDisplaySize = columns.getLong("COLUMN_SIZE")
             val columnPrecision = columns.getLong("DECIMAL_DIGITS")
-            val columnDefault = columns.getString("COLUMN_DEF") ?: ""
+            val columnDefault = columns.getString("COLUMN_DEF")
             val isNotNull = columns.getInt("NULLABLE") == DatabaseMetaData.columnNoNulls
             val isAutoIncrement = columns.getString("IS_AUTOINCREMENT") == "YES"
             val isVirtualColumn = columns.getString("IS_GENERATEDCOLUMN") == "YES"

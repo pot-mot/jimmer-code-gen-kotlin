@@ -85,7 +85,7 @@ interface GenColumn {
     /**
      * 列默认值
      */
-    val columnDefault: String
+    val columnDefault: String?
 
     /**
      * 列描述

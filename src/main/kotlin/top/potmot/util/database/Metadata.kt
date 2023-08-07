@@ -1,4 +1,4 @@
-package top.potmot.util.metadata
+package top.potmot.util.database
 
 import top.potmot.constant.TableType
 import java.sql.Connection

@@ -83,7 +83,7 @@ interface GenAssociation {
     val targetProperty: GenProperty
 
     /**
-     * 关联类型（OneToOne, ManyToOne, OneToMany, ManyToMany）
+     * 关联类型
      */
     val associationType: AssociationType
 

@@ -1,17 +1,15 @@
 package top.potmot.service
 
 import org.babyfish.jimmer.sql.fetcher.Fetcher
+import top.potmot.model.GenColumn
 import top.potmot.model.GenEntity
+import top.potmot.model.GenProperty
 import top.potmot.model.GenTable
 import java.util.Optional
 
 /**
  * 导入服务
  * 用于操作 “向 MainDataSource 即本项目数据源 中导入 来自 GenDataSource 的数据库表，并生成对应的实体信息” 这一流程
- *
- * previewTable 预览 metadata 至 GenTable 转换的结果
- *
- * importEntity 完成 metadata 至 GenTable 至 GenEntity 的处理
  *
  */
 interface ImportService {
@@ -39,6 +37,10 @@ interface ImportService {
 
     fun getTable(tableId: Long, tableFetcher: Fetcher<GenTable>? = null): Optional<GenTable>
 
+    fun getColumn(table: GenTable, columnId: Long): Optional<GenColumn>
+
+    fun getColumn(table: GenTable, columnName: String): Optional<GenColumn>
+
     fun getTables(tableIds: Iterable<Long>, tableFetcher: Fetcher<GenTable>? = null): List<Optional<GenTable>>
 
     fun removeTableById(tableId: Long): Boolean
@@ -53,4 +55,7 @@ interface ImportService {
 
     fun getEntities(entityIds: Iterable<Long>, entityFetcher: Fetcher<GenEntity>? = null): List<Optional<GenEntity>>
 
+    fun getProperty(entity: GenEntity, propertyId: Long): Optional<GenProperty>
+
+    fun getProperty(entity: GenEntity, propertyName: String): Optional<GenProperty>
 }

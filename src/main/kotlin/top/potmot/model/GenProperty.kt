@@ -129,7 +129,7 @@ interface GenProperty {
     val querySort: Long
 
     /**
-     * 查询类型（EQ、NE、GT、GTE、LT、LTE、BETWEEN、IN、LIKE、ILIKE）
+     * 查询类型
      */
     val queryType: QueryType
 

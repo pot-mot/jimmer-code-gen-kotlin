@@ -10,7 +10,9 @@ import top.potmot.dao.GenEntityRepository
 import top.potmot.dao.GenTableRepository
 import top.potmot.dao.GenTypeMappingRepository
 import top.potmot.dao.MetadataDao
+import top.potmot.model.GenColumn
 import top.potmot.model.GenEntity
+import top.potmot.model.GenProperty
 import top.potmot.model.GenTable
 import top.potmot.model.base.Identifiable
 import top.potmot.service.ImportService
@@ -65,6 +67,7 @@ class ImportServiceImpl(
         }
     }
 
+    @Transactional
     fun keepTableExist(table: GenTable): GenTable {
         return if (ImmutableObjects.isLoaded(table, "id")) {
             table
@@ -73,12 +76,14 @@ class ImportServiceImpl(
         }
     }
 
+    @Transactional
     override fun importEntity(table: GenTable): GenEntity {
         val typeMappings = genTypeMappingRepository.findAll()
         val entity = tableToEntity(keepTableExist(table), typeMappings)
         return genEntityRepository.save(entity)
     }
 
+    @Transactional
     override fun importEntityById(tableId: Long): Optional<GenEntity> {
         val table = getTable(tableId)
         return if (table.isPresent) {
@@ -88,6 +93,7 @@ class ImportServiceImpl(
         }
     }
 
+    @Transactional
     override fun importEntities(tables: Iterable<GenTable>): List<GenEntity> {
         val typeMappings = genTypeMappingRepository.findAll()
         return tables.map {
@@ -96,10 +102,12 @@ class ImportServiceImpl(
         }
     }
 
+    @Transactional
     override fun importEntities(tablePattern: String?): List<GenEntity> {
         return importEntities(previewTables(tablePattern))
     }
 
+    @Transactional
     override fun importEntitiesByIds(tableIds: Iterable<Long>): List<Optional<GenEntity>> {
         val entities = importEntities(genTableRepository.findByIds(tableIds))
         return listToOptionalList(entities, tableIds)
@@ -110,6 +118,30 @@ class ImportServiceImpl(
             genTableRepository.findById(tableId, tableFetcher)
         } else {
             genTableRepository.findById(tableId)
+        }
+    }
+
+    override fun getColumn(table: GenTable, columnId: Long): Optional<GenColumn> {
+        return if (ImmutableObjects.isLoaded(table, "columns")) {
+            val result = table.columns.filter { it.id == columnId }
+            if (result.isEmpty()) {
+                Optional.empty<GenEntity>()
+            }
+            Optional.ofNullable(result[0])
+        } else {
+            Optional.empty()
+        }
+    }
+
+    override fun getColumn(table: GenTable, columnName: String): Optional<GenColumn> {
+        return if (ImmutableObjects.isLoaded(table, "columns")) {
+            val result = table.columns.filter { it.columnName == columnName }
+            if (result.isEmpty()) {
+                Optional.empty<GenEntity>()
+            }
+            Optional.ofNullable(result[0])
+        } else {
+            Optional.empty()
         }
     }
 
@@ -147,9 +179,28 @@ class ImportServiceImpl(
         return listToOptionalList(entities, entityIds)
     }
 
-    @Transactional
-    fun clearTables() {
-        genTableRepository.deleteAll()
+    override fun getProperty(entity: GenEntity, propertyId: Long): Optional<GenProperty> {
+        return if (ImmutableObjects.isLoaded(entity, "properties")) {
+            val result = entity.properties.filter { it.id == propertyId }
+            if (result.isEmpty()) {
+                Optional.empty<GenEntity>()
+            }
+            Optional.ofNullable(result[0])
+        } else {
+            Optional.empty()
+        }
+    }
+
+    override fun getProperty(entity: GenEntity, propertyName: String): Optional<GenProperty> {
+        return if (ImmutableObjects.isLoaded(entity, "properties")) {
+            val result = entity.properties.filter { it.propertyName == propertyName }
+            if (result.isEmpty()) {
+                Optional.empty<GenEntity>()
+            }
+            Optional.ofNullable(result[0])
+        } else {
+            Optional.empty()
+        }
     }
 
     fun <T : Identifiable<Long>> listToOptionalList(list: List<T>, ids: Iterable<Long>): List<Optional<T>> {

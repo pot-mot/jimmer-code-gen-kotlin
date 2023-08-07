@@ -9,7 +9,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       username: root
       password: root
-      jdbc-url: jdbc:mysql://localhost:3307/ktg?serverTimezone=Asia/Shanghai
+      jdbc-url: jdbc:mysql://localhost:3307/jimmer-code-gen-test?serverTimezone=Asia/Shanghai
   jackson:
     # 格式化全局时间字段
     date-format: yyyy-MM-dd HH:mm:ss
