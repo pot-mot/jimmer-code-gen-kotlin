@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import top.potmot.constant.TableType
 import top.potmot.dao.GenTableRepository
-import top.potmot.model.input.GenTableInput
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
@@ -19,24 +19,18 @@ class TestGenTable(
 
     @Order(1)
     @Test
-    fun save() {
-        val genTableBeforeInsert = GenTableInput(
-            tableName = "user",
-            tableComment = "用户表",
-        )
+    fun testCRUD() {
+        val genTableBeforeInsert = new(GenTable::class).by {
+            tableName = "user"
+            tableComment = "用户表"
+            tableType = TableType.TABLE
+        }
         val genTableInserted = genTableRepository.save(genTableBeforeInsert)
         println(genTableInserted)
         val genTableBeforeUpdate = new(GenTable::class).by(genTableInserted) {
             tableComment = "用户表修改了"
         }
         val genTableUpdated = genTableRepository.save(genTableBeforeUpdate)
-        println(genTableUpdated)
-        genTableRepository.findAll().forEach {
-            println(it)
-        }
         genTableRepository.deleteById(genTableUpdated.id)
-        genTableRepository.findAll().forEach {
-            println(it)
-        }
     }
 }

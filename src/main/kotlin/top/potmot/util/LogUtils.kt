@@ -46,12 +46,14 @@ object LogUtils {
             if (ImmutableObjects.isLoaded(this, "columns")) {
                 hide(this, GenTable::columns)
                 columns = columns.map {
-                    hide(it, GenColumn::property)
+                    if (ImmutableObjects.isLoaded(it, "properties")) {
+                        hide(it, GenColumn::properties)
+                    }
                     it
                 }
             }
-            if (ImmutableObjects.isLoaded(this, "entity")) {
-                hide(this, GenTable::entity)
+            if (ImmutableObjects.isLoaded(this, "entities")) {
+                hide(this, GenTable::entities)
             }
         }
         stringBuilder

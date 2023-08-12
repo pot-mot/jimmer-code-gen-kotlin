@@ -6,30 +6,27 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
-import org.babyfish.jimmer.sql.ManyToManyView
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import org.babyfish.jimmer.sql.OneToMany
-import org.babyfish.jimmer.sql.OneToOne
 import top.potmot.constant.QueryType
 import top.potmot.constant.SortDirection
+import top.potmot.model.base.BaseEntity
 
 /**
  * 生成字段实体类
  *
  * @author potmot
- * @since 2023-08-06 17:22:11
+ * @since 2023-08-12 10:50:21
  */
 @Entity
-interface GenProperty {
+interface GenProperty: BaseEntity {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long
+    override val id: Long
 
     /**
      * 对应列 ID
@@ -40,7 +37,7 @@ interface GenProperty {
     /**
      * 对应列
      */
-    @OneToOne
+    @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val column: GenColumn
 
@@ -64,12 +61,42 @@ interface GenProperty {
     val propertyName: String
 
     /**
+     * 是否Id（1是）
+     */
+    val isId: Boolean
+
+    /**
+     * Id 生成类型
+     */
+    val idGenerationType: String
+
+    /**
+     * 是否为业务键属性（1是）
+     */
+    val isKey: Boolean
+
+    /**
+     * 是否为逻辑删除属性（1是）
+     */
+    val isLogicalDelete: Boolean
+
+    /**
+     * 属性关联类型
+     */
+    val propertyAssociationType: String
+
+    /**
      * 属性类型
      */
     val propertyType: String
 
     /**
-     * 属性描述
+     * 属性注解表达式
+     */
+    val propertyAnnotationExpression: String
+
+    /**
+     * 属性注释
      */
     val propertyComment: String
 
@@ -104,19 +131,19 @@ interface GenProperty {
     val isEdit: Boolean
 
     /**
-     * 在修改表单中顺序
+     * 在编辑表单中顺序
      */
     val editSort: Long
 
     /**
-     * 是否为修改时必填（1是）
+     * 是否为编辑时必填（1是）
      */
     val isEditRequired: Boolean
 
     /**
-     * 是否为只读（1是）
+     * 是否为编辑时只读（1是）
      */
-    val readOnly: Boolean
+    val isEditReadOnly: Boolean
 
     /**
      * 是否为查询属性（1是）
@@ -134,9 +161,9 @@ interface GenProperty {
     val queryType: QueryType
 
     /**
-     * 字典类型
+     * 对应枚举 ID
      */
-    val dictType: String
+    val enumId: Long
 
     /**
      * 是否为排序属性（1是）
@@ -148,71 +175,5 @@ interface GenProperty {
      */
     val sortDirection: SortDirection
 
-    /**
-     * 是否为逻辑删除属性（1是）
-     */
-    val isLogicalDelete: Boolean
-
-    /**
-     * 出关联
-     * 本列作为主列的关联，指向另一张表的字段
-     * example:
-     * book.authorId -> author.id
-     */
-    @OneToMany(mappedBy = "sourceProperty")
-    val outAssociations: List<GenAssociation>
-
-    /**
-     * 入关联
-     * 本列作为从列的关联，被另一张表的字段所指
-     * example:
-     * author.id <- book.authorId
-     */
-    @OneToMany(mappedBy = "targetProperty")
-    val inAssociations: List<GenAssociation>
-
-    /**
-     * 本列指向的从列
-     * example:
-     * book -> author 中的 author.id
-     */
-    @ManyToManyView(
-        prop = "outAssociations",
-        deeperProp = "targetProperty"
-    )
-    val targetProperties: List<GenProperty>
-
-    /**
-     * 指向本列的主列
-     * example:
-     * author <- book 中的 book.authorId
-     */
-    @ManyToManyView(
-        prop = "inAssociations",
-        deeperProp = "sourceProperty"
-    )
-    val sourceProperties: List<GenProperty>
-
-    /**
-     * 本列指向的从表
-     * example:
-     * book -> author 中的 author.id
-     */
-    @ManyToManyView(
-        prop = "outAssociations",
-        deeperProp = "targetEntity"
-    )
-    val targetEntities: List<GenEntity>
-
-    /**
-     * 指向本列的主表
-     * example:
-     * author <- book 中的 book.authorId
-     */
-    @ManyToManyView(
-        prop = "inAssociations",
-        deeperProp = "sourceEntity"
-    )
-    val sourceEntities: List<GenEntity>
 }
 

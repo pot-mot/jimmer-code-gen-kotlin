@@ -25,6 +25,7 @@ jimmer:
     ts:
       path: /ts.zip
   show-sql: on
+  pretty-sql: true
 
 # 代码生成
 gen:

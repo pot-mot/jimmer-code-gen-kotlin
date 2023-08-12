@@ -6,19 +6,19 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.Key
+import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OneToMany
-import org.babyfish.jimmer.sql.OneToOne
+import top.potmot.constant.TableType
 import top.potmot.model.base.BaseEntity
-import top.potmot.model.base.Identifiable
 
 /**
  * 生成表实体类
  *
  * @author potmot
- * @since 2023-08-06 17:22:35
+ * @since 2023-08-12 10:51:09
  */
 @Entity
-interface GenTable : BaseEntity, Identifiable<Long> {
+interface GenTable : BaseEntity {
     /**
      * ID
      */
@@ -27,16 +27,28 @@ interface GenTable : BaseEntity, Identifiable<Long> {
     override val id: Long
 
     /**
-     * 对应实体 ID
+     * 所属组 ID
      */
     @IdView
-    val entityId: Long?
+    val groupId: Long?
+
+    /**
+     * 所属组
+     */
+    @ManyToOne
+    val group: GenTableGroup?
+
+    /**
+     * 对应实体 ID
+     */
+    @IdView("entities")
+    val entityIds: List<Long>
 
     /**
      * 对应实体
      */
-    @OneToOne(mappedBy = "table")
-    val entity: GenEntity?
+    @OneToMany(mappedBy = "table")
+    val entities: List<GenEntity>
 
     /**
      * 表名称
@@ -45,19 +57,25 @@ interface GenTable : BaseEntity, Identifiable<Long> {
     val tableName: String
 
     /**
-     * 表描述
+     * 表注释
      */
     val tableComment: String
 
     /**
      * 表种类
      */
-    val tableType: String
+    val tableType: TableType
 
     /**
      * 自定排序
      */
     val orderKey: Long
+
+    /**
+     * 列 ID
+     */
+    @IdView("columns")
+    val columnIds: List<Long>
 
     /**
      * 列

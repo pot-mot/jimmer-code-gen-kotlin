@@ -9,47 +9,48 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import org.babyfish.jimmer.sql.OneToOne
+import org.babyfish.jimmer.sql.OneToMany
+import top.potmot.model.base.BaseEntity
 
 /**
  * 生成列实体类
  *
  * @author potmot
- * @since 2023-08-06 17:20:38
+ * @since 2023-08-12 10:49:27
  */
 @Entity
-interface GenColumn {
+interface GenColumn: BaseEntity {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long
+    override val id: Long
 
     /**
      * 对应属性 ID
      */
-    @IdView
-    val propertyId: Long?
+    @IdView("properties")
+    val propertyIds: List<Long>
 
     /**
      * 对应属性
      */
-    @OneToOne(mappedBy = "column")
-    val property: GenProperty?
+    @OneToMany(mappedBy = "column")
+    val properties: List<GenProperty>
 
     /**
      * 归属表编号
      */
     @IdView
-    val tableId: Long
+    val tableId: Long?
 
     /**
      * 归属表
      */
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    val table: GenTable
+    val table: GenTable?
 
     /**
      * 列在表中顺序
@@ -63,7 +64,7 @@ interface GenColumn {
     val columnName: String
 
     /**
-     * 列 JDBCType 码
+     * 列对应 JDBCType 码值
      */
     val columnTypeCode: Int
 
@@ -88,7 +89,7 @@ interface GenColumn {
     val columnDefault: String?
 
     /**
-     * 列描述
+     * 列注释
      */
     val columnComment: String
 
@@ -101,6 +102,11 @@ interface GenColumn {
      * 是否自增（1是）
      */
     val isAutoIncrement: Boolean
+
+    /**
+     * 是否外键（1是）
+     */
+    val isFk: Boolean
 
     /**
      * 是否唯一索引（1是）
@@ -116,6 +122,5 @@ interface GenColumn {
      * 是否虚拟列（1是）
      */
     val isVirtualColumn: Boolean
-
 }
 

@@ -7,10 +7,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import top.potmot.constant.QueryType
-import top.potmot.constant.SortDirection
+import org.junit.jupiter.api.Assertions.*
 import top.potmot.dao.GenColumnRepository
-import top.potmot.model.input.GenColumnInput
+import java.sql.Types
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
@@ -21,29 +20,39 @@ class TestGenColumn(
 
     @Order(1)
     @Test
-    fun save() {
-        val genTableColumnBeforeInsert = GenColumnInput(
-            tableId = 1,
-            columnName = "test_column",
-            columnSort = 1,
-            columnType = "varchar",
-            columnDefault = "测试列",
-            columnComment = "test",
-        )
+    fun testCRUD() {
+        val genTableColumnBeforeInsert = new(GenColumn::class).by {
+            tableId = 1
+            columnName = "test_column"
+            columnSort = 1
+            columnTypeCode = Types.VARCHAR
+            columnType = "varchar"
+            columnDefault = "测试列"
+            columnComment = "test"
+            isPk = true
+            isAutoIncrement = true
+        }
         val genTableColumnInserted = genTableColumnRepository.save(genTableColumnBeforeInsert)
-        val genTableColumnInsertedFull = genTableColumnRepository.findById(genTableColumnInserted.id).get()
-        println(genTableColumnInsertedFull)
+
+        assertEquals(1, genTableColumnInserted.tableId)
+        assert(genTableColumnInserted.isPk)
+        assert(genTableColumnInserted.isAutoIncrement)
+        assertEquals("测试列", genTableColumnInserted.columnDefault)
+
         val genColumnBeforeUpdate = new(GenColumn::class).by(genTableColumnInserted) {
-            columnDefault = "测试列修改了"
+            columnDefault = null
+            isPk = false
+            isAutoIncrement = false
         }
+
         val genTableColumnUpdated = genTableColumnRepository.save(genColumnBeforeUpdate)
-        println(genTableColumnUpdated)
-        genTableColumnRepository.findAll().forEach {
-            println(it)
-        }
+
+        assertEquals(genTableColumnInserted.id, genTableColumnUpdated.id)
+        assertEquals(1, genTableColumnUpdated.tableId)
+        assert(!genTableColumnUpdated.isPk)
+        assert(!genTableColumnUpdated.isAutoIncrement)
+        assertEquals(null, genTableColumnUpdated.columnDefault)
+
         genTableColumnRepository.deleteById(genTableColumnUpdated.id)
-        genTableColumnRepository.findAll().forEach {
-            println(it)
-        }
     }
 }

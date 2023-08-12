@@ -15,7 +15,8 @@ import top.potmot.model.by
 
 /**
  * 初始化表到实体类的信息
- * warning: 如果需要保存生成的结果，请一定保证 对应 table 已经 save
+ *
+ * 需要保证 table 的基本属性均被加载
  */
 fun tableToEntity(
     genTable: GenTable,
@@ -33,7 +34,7 @@ fun tableToEntity(
         moduleName = packageNameToModuleName(GenConfig.packageName)
         functionName = tableCommentToFunctionName(genTable.tableComment)
 
-        if (genTable.tableType == TableType.VIEW.value) {
+        if (genTable.tableType == TableType.VIEW) {
             isAdd = false
             isEdit = false
         }
@@ -87,6 +88,7 @@ fun getPropertyTypeName(
     }
 }
 
+// TODO
 fun getPropertyQueryType(
     column: GenColumn,
 ): QueryType {

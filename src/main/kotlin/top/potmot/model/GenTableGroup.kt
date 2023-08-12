@@ -6,19 +6,22 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import top.potmot.constant.AssociationType
+import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.OrderedProp
 import top.potmot.model.base.BaseEntity
+import top.potmot.model.base.TreeNode
 
 /**
- * 生成关联实体类
+ * 生成表分组实体类
  *
  * @author potmot
- * @since 2023-08-12 10:47:36
+ * @since 2023-08-12 10:51:24
  */
 @Entity
-interface GenAssociation: BaseEntity {
+interface GenTableGroup: BaseEntity, TreeNode<GenTableGroup> {
     /**
      * ID
      */
@@ -27,40 +30,36 @@ interface GenAssociation: BaseEntity {
     override val id: Long
 
     /**
-     * 关联注释
-     */
-    val associationComment: String
-
-    /**
-     * 主列 ID
+     * 父组 ID
      */
     @IdView
-    val sourceColumnId: Long
+    override val parentId: Long?
 
     /**
-     * 主列
+     * 父组
      */
+    @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    val sourceColumn: GenColumn
+    override val parent: GenTableGroup?
 
     /**
-     * 从列 ID
+     * 子组
      */
-    @IdView
-    val targetColumnId: Long
+    @OneToMany(mappedBy = "parent", orderedProps = [OrderedProp("orderKey")])
+    override val children: List<GenTableGroup>
 
     /**
-     * 从列
+     * 生成表
      */
-    @ManyToOne
-    @OnDissociate(DissociateAction.DELETE)
-    val targetColumn: GenColumn
+    @OneToMany(mappedBy = "group", orderedProps = [OrderedProp("orderKey")])
+    val genTables: List<GenTable>
 
     /**
-     * 关联类型
+     * 组名称
      */
-    val associationType: AssociationType
+    @Key
+    val groupName: String
 
     /**
      * 自定排序

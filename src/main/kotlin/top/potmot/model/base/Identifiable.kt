@@ -1,5 +1,5 @@
 package top.potmot.model.base
 
-interface Identifiable <E> {
-    val id: E
+interface Identifiable <T> {
+    val id: T
 }
