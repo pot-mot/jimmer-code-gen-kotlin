@@ -1,4 +1,4 @@
-package top.potmot.service.impl
+package top.potmot.service.save
 
 import org.babyfish.jimmer.ImmutableObjects
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,7 +9,6 @@ import top.potmot.dao.GenTableRepository
 import top.potmot.dao.GenTypeMappingRepository
 import top.potmot.model.GenEntity
 import top.potmot.model.GenTable
-import top.potmot.service.TableToEntityMapService
 import top.potmot.util.convert.tableToEntity
 import top.potmot.util.extension.toOptionalList
 import java.util.*
@@ -19,7 +18,7 @@ class TableToEntityMapServiceImpl(
     @Autowired val genEntityRepository: GenEntityRepository,
     @Autowired val genTableRepository: GenTableRepository,
     @Autowired val genTypeMappingRepository: GenTypeMappingRepository
-): TableToEntityMapService {
+) {
     @Transactional
     fun keepTableExist(table: GenTable): GenTable {
         return if (ImmutableObjects.isLoaded(table, "id")) {
@@ -30,14 +29,14 @@ class TableToEntityMapServiceImpl(
     }
 
     @Transactional
-    override fun mapEntity(table: GenTable): GenEntity {
+    fun mapEntity(table: GenTable): GenEntity {
         val typeMappings = genTypeMappingRepository.findAll()
         val entity = tableToEntity(keepTableExist(table), typeMappings)
         return genEntityRepository.save(entity)
     }
 
     @Transactional
-    override fun mapEntityById(tableId: Long): Optional<GenEntity> {
+    fun mapEntityById(tableId: Long): Optional<GenEntity> {
         val table = genTableRepository.findById(tableId)
         return if (table.isPresent) {
             Optional.of(mapEntity(table.get()))
@@ -47,7 +46,7 @@ class TableToEntityMapServiceImpl(
     }
 
     @Transactional
-    override fun mapEntities(tables: Iterable<GenTable>): List<GenEntity> {
+    fun mapEntities(tables: Iterable<GenTable>): List<GenEntity> {
         val typeMappings = genTypeMappingRepository.findAll()
         return tables.map {
             val entity = tableToEntity(keepTableExist(it), typeMappings)
@@ -56,7 +55,7 @@ class TableToEntityMapServiceImpl(
     }
 
     @Transactional
-    override fun mapEntitiesByIds(tableIds: Iterable<Long>): List<Optional<GenEntity>> {
+    fun mapEntitiesByIds(tableIds: Iterable<Long>): List<Optional<GenEntity>> {
         return mapEntities(genTableRepository.findByIds(tableIds)).toOptionalList(tableIds)
     }
 

@@ -1,0 +1,13 @@
+GenTableGroupTreeView {
+    #allScalars
+    tables {
+        #allScalars
+    }
+
+    children {
+        #allScalars
+        tables {
+            #allScalars
+        }
+    }*
+}

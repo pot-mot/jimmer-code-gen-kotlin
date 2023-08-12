@@ -122,5 +122,17 @@ interface GenColumn: BaseEntity {
      * 是否虚拟列（1是）
      */
     val isVirtualColumn: Boolean
+
+    /**
+     * 入关联
+     */
+    @OneToMany(mappedBy = "targetColumn")
+    val inAssociations: List<GenAssociation>
+
+    /**
+     * 出关联
+     */
+    @OneToMany(mappedBy = "sourceColumn")
+    val outAssociations: List<GenAssociation>
 }
 

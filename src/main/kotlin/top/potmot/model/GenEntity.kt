@@ -37,7 +37,7 @@ interface GenEntity : BaseEntity {
      * 对应表
      */
     @ManyToOne
-    @OnDissociate(DissociateAction.DELETE)
+    @OnDissociate(DissociateAction.SET_NULL)
     val table: GenTable?
 
     /**

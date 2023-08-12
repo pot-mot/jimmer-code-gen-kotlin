@@ -50,10 +50,10 @@ interface GenTableGroup: BaseEntity, TreeNode<GenTableGroup> {
     override val children: List<GenTableGroup>
 
     /**
-     * 生成表
+     * 表
      */
     @OneToMany(mappedBy = "group", orderedProps = [OrderedProp("orderKey")])
-    val genTables: List<GenTable>
+    val tables: List<GenTable>
 
     /**
      * 组名称

@@ -1,0 +1,23 @@
+GenTableCommonView {
+    #allScalars
+}
+
+GenTableColumnsView {
+    #allScalars
+
+    columns {
+        #allScalars
+    }
+}
+
+input GenTableCommonInput {
+    #allScalars
+}
+
+input GenTableColumnsInput {
+    #allScalars
+
+    columns {
+        #allScalars
+    }
+}

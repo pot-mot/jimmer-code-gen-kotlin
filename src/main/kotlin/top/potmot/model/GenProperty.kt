@@ -32,14 +32,14 @@ interface GenProperty: BaseEntity {
      * 对应列 ID
      */
     @IdView
-    val columnId: Long
+    val columnId: Long?
 
     /**
      * 对应列
      */
     @ManyToOne
-    @OnDissociate(DissociateAction.DELETE)
-    val column: GenColumn
+    @OnDissociate(DissociateAction.SET_NULL)
+    val column: GenColumn?
 
     /**
      * 归属实体编号

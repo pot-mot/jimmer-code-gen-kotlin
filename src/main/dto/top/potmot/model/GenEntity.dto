@@ -1,0 +1,11 @@
+GenEntityCommonView {
+    #allScalars
+}
+
+GenEntityPropertiesView {
+    #allScalars
+
+    properties {
+        #allScalars
+    }
+}
