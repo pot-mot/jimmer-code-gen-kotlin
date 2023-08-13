@@ -4,8 +4,8 @@ import org.babyfish.jimmer.kt.new
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import top.potmot.constant.TableType
-import top.potmot.model.GenTable
 import top.potmot.model.GenColumn
+import top.potmot.model.GenTable
 import top.potmot.model.by
 import top.potmot.util.database.getColumnResultSet
 import top.potmot.util.database.getFkColumnNames

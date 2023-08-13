@@ -12,10 +12,14 @@ GenTableColumnsView {
 
 input GenTableCommonInput {
     #allScalars
+    -createdTime
+    -modifiedTime
 }
 
 input GenTableColumnsInput {
     #allScalars
+    -createdTime
+    -modifiedTime
 
     columns {
         #allScalars

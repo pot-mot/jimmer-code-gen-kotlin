@@ -32,12 +32,6 @@ interface GenAssociation: BaseEntity {
     val associationComment: String
 
     /**
-     * 主列 ID
-     */
-    @IdView
-    val sourceColumnId: Long
-
-    /**
      * 主列
      */
     @ManyToOne
@@ -45,10 +39,10 @@ interface GenAssociation: BaseEntity {
     val sourceColumn: GenColumn
 
     /**
-     * 从列 ID
+     * 主列 ID
      */
     @IdView
-    val targetColumnId: Long
+    val sourceColumnId: Long
 
     /**
      * 从列
@@ -56,6 +50,12 @@ interface GenAssociation: BaseEntity {
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val targetColumn: GenColumn
+
+    /**
+     * 从列 ID
+     */
+    @IdView
+    val targetColumnId: Long
 
     /**
      * 关联类型

@@ -7,9 +7,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.transaction.annotation.Transactional
 import top.potmot.constant.TableType
 import top.potmot.dao.GenTableRepository
 
+@Transactional
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TestGenTable(

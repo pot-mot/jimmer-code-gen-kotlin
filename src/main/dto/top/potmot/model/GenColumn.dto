@@ -1,3 +1,7 @@
 GenColumnCommonView {
     #allScalars
 }
+
+input GenColumnCommonInput {
+    #allScalars
+}

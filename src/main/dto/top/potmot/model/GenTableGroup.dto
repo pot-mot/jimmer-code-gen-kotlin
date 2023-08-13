@@ -1,3 +1,7 @@
+GenTableGroupCommonView {
+    #allScalars
+}
+
 GenTableGroupTreeView {
     #allScalars
     tables {
@@ -10,4 +14,10 @@ GenTableGroupTreeView {
             #allScalars
         }
     }*
+}
+
+input GenTableGroupCommonInput {
+    #allScalars
+    -createdTime
+    -modifiedTime
 }

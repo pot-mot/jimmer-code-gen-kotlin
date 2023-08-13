@@ -1,0 +1,18 @@
+GenAssociationPreviewView {
+    #allScalars
+    -id
+}
+
+GenAssociationCommonView {
+    #allScalars
+    id(sourceColumn)
+    id(targetColumn)
+}
+
+input GenAssociationCommonInput {
+    #allScalars
+    id(sourceColumn)
+    id(targetColumn)
+    -createdTime
+    -modifiedTime
+}

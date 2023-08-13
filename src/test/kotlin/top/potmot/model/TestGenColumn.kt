@@ -8,9 +8,11 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.junit.jupiter.api.Assertions.*
+import org.springframework.transaction.annotation.Transactional
 import top.potmot.dao.GenColumnRepository
 import java.sql.Types
 
+@Transactional
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TestGenColumn(

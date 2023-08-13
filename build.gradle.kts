@@ -25,7 +25,7 @@ group = "top.potmot"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.7.131"
+val jimmerVersion = "0.7.132"
 val mysqlVersion = "8.0.30"
 val mapstructVersion = "1.5.3.Final"
 val caffeineVersion = "2.9.1"

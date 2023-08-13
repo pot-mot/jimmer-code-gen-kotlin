@@ -1,11 +1,41 @@
 GenEntityCommonView {
     #allScalars
+    id(table)
 }
 
 GenEntityPropertiesView {
     #allScalars
+    id(table)
 
     properties {
         #allScalars
+        id(entity)
+        id(column)
+    }
+}
+
+input GenEntityPropertiesInput {
+    #allScalars
+    id(table)
+    -createdTime
+    -modifiedTime
+
+    properties {
+        #allScalars
+        id(column)
+        -createdTime
+        -modifiedTime
+    }
+}
+
+input GenEntityConfigInput {
+    #allScalars
+    -createdTime
+    -modifiedTime
+
+    properties {
+        #allScalars
+        -createdTime
+        -modifiedTime
     }
 }

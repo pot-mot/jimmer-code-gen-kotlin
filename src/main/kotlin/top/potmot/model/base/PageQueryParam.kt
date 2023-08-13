@@ -1,4 +1,4 @@
-package top.potmot.model.query
+package top.potmot.model.base
 
 import org.springframework.data.domain.PageRequest
 
