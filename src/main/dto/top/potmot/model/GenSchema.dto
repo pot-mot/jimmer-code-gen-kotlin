@@ -1,0 +1,12 @@
+GenSchemaSourceView {
+    #allScalars
+
+    dataSource {
+        #allScalars
+    }
+}
+
+input GenSchemaInsertInput {
+    name
+    id(dataSource)
+}
