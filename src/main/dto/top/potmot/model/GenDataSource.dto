@@ -1,7 +1,4 @@
-input GenDataSourceInsertInput {
-    name
-    url
-    username
-    password
-    type
+input GenDataSourceInput {
+    #allScalars
+    -id
 }

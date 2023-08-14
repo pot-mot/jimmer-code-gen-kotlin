@@ -33,27 +33,27 @@ interface GenTable : BaseEntity {
      * 数据源
      */
     @IdView
-    val dataSourceId: Long
+    val schemaId: Long
 
     /**
-     * 数据源
+     * 数据架构
      */
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    val dataSource: GenDataSource
+    val schema: GenSchema
 
     /**
      * 所属组 ID
      */
     @IdView
-    val groupId: Long?
+    val groupId: Long
 
     /**
      * 所属组
      */
     @ManyToOne
     @OnDissociate(DissociateAction.SET_NULL)
-    val group: GenTableGroup?
+    val group: GenTableGroup
 
     /**
      * 对应实体 ID

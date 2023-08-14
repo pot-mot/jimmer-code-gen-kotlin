@@ -1,13 +1,9 @@
 package top.potmot.service
 
-import top.potmot.model.GenDataSource
-import top.potmot.model.GenTable
 import top.potmot.model.dto.GenColumnCommonView
-import top.potmot.model.dto.GenTableColumnsInput
 import top.potmot.model.dto.GenTableColumnsView
 import top.potmot.model.query.ColumnQuery
 import top.potmot.model.query.TableQuery
-import java.util.*
 
 /**
  * 表业务类

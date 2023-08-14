@@ -8,22 +8,32 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.junit.jupiter.api.Order
 import org.springframework.test.context.ActiveProfiles
 import top.potmot.constant.DataSourceType
+import top.potmot.dao.GenDataSourceRepository
 import top.potmot.dao.GenTableRepository
-import top.potmot.model.dto.GenDataSourceInsertInput
+import top.potmot.model.dto.GenDataSourceInput
+import top.potmot.model.dto.GenSchemaInsertInput
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @ActiveProfiles("test")
-class TestDataSourceService(
-    @Autowired val dataSourceService: DataSourceService,
+class TestSchemaService(
+    @Autowired val genDataSourceRepository: GenDataSourceRepository,
+    @Autowired val schemaService: SchemaService,
     @Autowired val genTableRepository: GenTableRepository
 ) {
     @Order(1)
     @Test
     fun testPreviewTables() {
-        dataSourceService.importTables(GenDataSourceInsertInput(
-            "test", "jdbc:mysql://localhost:3307", "root", "root", DataSourceType.MYSQL
+        val dataSource = genDataSourceRepository.save(GenDataSourceInput(
+            DataSourceType.MYSQL, "localhost", "localhost", "3307", "root", "root"
         ))
+
+        schemaService.importTables(
+            GenSchemaInsertInput (
+                "jimmer-code-gen\\S*",
+                dataSource.id
+            )
+        )
 //
 //        assertTrue(!ImmutableObjects.isLoaded(table, "id"))
 //        assertEquals("single_test_table", table.tableName.lowercase())

@@ -5,7 +5,6 @@ import top.potmot.model.dto.GenTableGroupCommonView
 import top.potmot.model.dto.GenTableGroupMoveInput
 import top.potmot.model.dto.GenTableGroupTreeView
 import top.potmot.model.query.TableGroupQuery
-import java.util.*
 
 /**
  * 表管理业务类
@@ -14,8 +13,7 @@ interface TableGroupService {
     /**
      * 创建组
      */
-    fun createGroup(group: GenTableGroupCommonInput): Optional<GenTableGroupCommonView>
-
+    fun createGroup(group: GenTableGroupCommonInput): GenTableGroupCommonView
     /**
      * 编辑组
      */
@@ -28,9 +26,9 @@ interface TableGroupService {
 
     /**
      * 获取指定组下的递归组树和表
-     * @param groupIds 组 ID，empty 将获得未分组的表，null 将获得所有递归组树
+     * @param groupIds 组 ID，empty 将获得所有的表
      */
-    fun getTableTrees(groupIds: List<Long>? = null): List<GenTableGroupTreeView>
+    fun getTableTrees(groupIds: List<Long>): List<GenTableGroupTreeView>
 
     /**
      * 查询组

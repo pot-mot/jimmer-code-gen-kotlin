@@ -23,7 +23,7 @@ class TestGenTable(
     @Test
     fun testCRUD() {
         val genTableBeforeInsert = new(GenTable::class).by {
-            dataSourceId = 1
+            schemaId = 1
             tableName = "user"
             tableComment = "用户表"
             tableType = TableType.TABLE

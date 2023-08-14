@@ -12,7 +12,7 @@ import top.potmot.constant.DataSourceType
  * 生成数据源实体类
  *
  * @author potmot
- * @since 2023-08-14 15:28:59
+ * @since 2023-08-14 23:07:56
  */
 @Entity
 interface GenDataSource {
@@ -24,16 +24,27 @@ interface GenDataSource {
     val id: Long
 
     /**
-     * 名称
+     * 数据库类型
      */
     @Key
+    val type: DataSourceType
+
+    /**
+     * 名称
+     */
     val name: String
 
     /**
-     * URL
+     * 主机
      */
     @Key
-    val url: String
+    val host: String
+
+    /**
+     * 端口
+     */
+    @Key
+    val port: String
 
     /**
      * 用户名
@@ -46,19 +57,14 @@ interface GenDataSource {
     val password: String
 
     /**
-     * 数据库类型
-     */
-    val type: DataSourceType
-
-    /**
      * 自定排序
      */
     val orderKey: Long
 
     /**
-     * 表
+     * 架构
      */
     @OneToMany(mappedBy = "dataSource")
-    val tables: List<GenTable>
+    val schemas: List<GenSchema>
 }
 

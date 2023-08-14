@@ -83,7 +83,7 @@ class MetadataDao {
                 this.isAutoIncrement = isAutoIncrement
                 this.isUnique = isUnique
                 this.isNotNull = isNotNull
-            }
+           }
 
             genColumns += genColumn
         }

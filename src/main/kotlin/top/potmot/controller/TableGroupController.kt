@@ -16,7 +16,7 @@ class TableGroupController (
 ) {
     @PostMapping
     fun create(@RequestBody group: GenTableGroupCommonInput): GenTableGroupCommonView {
-        return tableGroupService.createGroup(group).get()
+        return tableGroupService.createGroup(group)
     }
 
     @PutMapping
@@ -31,7 +31,7 @@ class TableGroupController (
 
     @GetMapping("/tree")
     fun getTrees(@RequestParam(required = false) groupIds: List<Long>?): List<GenTableGroupTreeView> {
-        return tableGroupService.getTableTrees(groupIds)
+        return tableGroupService.getTableTrees(groupIds ?: emptyList())
     }
 
     @PostMapping("/query")

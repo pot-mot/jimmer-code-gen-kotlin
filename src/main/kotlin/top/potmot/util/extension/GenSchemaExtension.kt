@@ -1,6 +1,7 @@
 package top.potmot.util.extension
 
 import org.babyfish.jimmer.kt.new
+import schemacrawler.schema.Catalog
 import schemacrawler.schema.Column
 import schemacrawler.schema.Schema
 import schemacrawler.schema.Table
@@ -10,78 +11,78 @@ import schemacrawler.tools.utility.SchemaCrawlerUtility
 import top.potmot.constant.TableType
 import top.potmot.model.GenColumn
 import top.potmot.model.GenDataSource
+import top.potmot.model.GenSchema
 import top.potmot.model.GenTable
 import top.potmot.model.GenTableGroup
 import top.potmot.model.by
+import top.potmot.model.dto.GenSchemaInsertInput
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import us.fatehi.utility.datasource.DatabaseConnectionSources
 import us.fatehi.utility.datasource.MultiUseUserCredentials
 import java.util.regex.Pattern
 
+fun GenDataSource.url(): String {
+    return "jdbc:${this.type.name.lowercase()}://${this.host}:${this.port}"
+}
+
 fun GenDataSource.toSource(): DatabaseConnectionSource {
     return DatabaseConnectionSources.newDatabaseConnectionSource(
-        this.url, MultiUseUserCredentials(this.username, this.password)
+        this.url(), MultiUseUserCredentials(this.username, this.password)
     )
 }
 
-fun GenDataSource.toTableGroup(groupId: Long? = null): GenTableGroup {
-    val genDataSource = this
-    val source = genDataSource.toSource()
+fun GenSchemaInsertInput.schemaPattern(): String {
+    return if (this.name.startsWith("`") && this.name.endsWith("`")) {
+        this.name
+    } else if (this.name.contains("-")) {
+        "`${this.name}`"
+    } else {
+        this.name
+    }
+}
+fun Schema.toGenSchema(dataSourceId: Long): GenSchema {
+    val schema = this
+    return new(GenSchema::class).by {
+        this.dataSourceId = dataSourceId
+        this.name = schema.fullName
+    }
+}
+
+fun GenSchema.toGenTableGroup(catalog: Catalog, parentId: Long? = null): GenTableGroup {
+    val genSchema = this
     return new(GenTableGroup::class).by {
-        parentId = groupId
-        groupName = genDataSource.name
-        children = source.getSchemas().map {
-            it.toGenTableGroup(genDataSource.id, source)
+        this.parentId = parentId
+        this.groupName = genSchema.name
+        this.tables = catalog.tables.map {
+            it.toGenTable(genSchema.id)
         }
     }
 }
 
-fun DatabaseConnectionSource.getSchemas(
-    schemaPattern: String? = null
-): Collection<Schema> {
+fun DatabaseConnectionSource.getCatalog(
+    schemaPattern: String? = null,
+    tablePattern: String? = null
+): Catalog {
     val options = SchemaCrawlerOptionsBuilder.newSchemaCrawlerOptions()
         .withLimitOptions(
             LimitOptionsBuilder.builder()
                 .includeSchemas(schemaPattern?.let { Pattern.compile(it) })
-                .toOptions()
-        )
-
-    return SchemaCrawlerUtility.getCatalog(this, options).schemas
-}
-
-fun DatabaseConnectionSource.getTables(
-    schema: Schema,
-    tablePattern: String? = null,
-): Collection<Table> {
-    val options = SchemaCrawlerOptionsBuilder.newSchemaCrawlerOptions()
-        .withLimitOptions(
-            LimitOptionsBuilder.builder()
                 .includeTables(tablePattern?.let { Pattern.compile(it) })
                 .toOptions()
         )
-    return SchemaCrawlerUtility.getCatalog(this, options).getTables(schema)
+    return SchemaCrawlerUtility.getCatalog(this, options)
 }
 
-fun Schema.toGenTableGroup(dataSourceId: Long, source: DatabaseConnectionSource): GenTableGroup {
-    val schema = this
-    return new(GenTableGroup::class).by {
-        groupName = schema.fullName
-        tables = source.getTables(schema).map {
-            it.toGenTable(dataSourceId)
-        }
-    }
-}
-
-fun Table.toGenTable(dataSourceId: Long): GenTable {
+fun Table.toGenTable(schemaId: Long): GenTable {
     val table = this
     return new(GenTable::class).by {
-        this.dataSourceId = dataSourceId
+        this.schemaId = schemaId
         this.tableName = table.name
         this.tableComment = table.remarks
         this.tableType = TableType.fromValue(table.tableType.tableType)
         var index = 0L
         this.columns = table.columns.map {
-            it.toGenColumn(index ++)
+            it.toGenColumn(index++)
         }
     }
 }
