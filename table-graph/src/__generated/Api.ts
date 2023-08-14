@@ -1,12 +1,21 @@
 import type { Executor } from './';
 
-import { ImportController } from './services';
+import { AssociationController, EntityController, TableController, TableGroupController } from './services';
 
 export class Api {
     
-    readonly importController: ImportController;
+    readonly associationController: AssociationController;
+    
+    readonly entityController: EntityController;
+    
+    readonly tableController: TableController;
+    
+    readonly tableGroupController: TableGroupController;
     
     constructor(executor: Executor) {
-        this.importController = new ImportController(executor);
+        this.associationController = new AssociationController(executor);
+        this.entityController = new EntityController(executor);
+        this.tableController = new TableController(executor);
+        this.tableGroupController = new TableGroupController(executor);
     }
 }

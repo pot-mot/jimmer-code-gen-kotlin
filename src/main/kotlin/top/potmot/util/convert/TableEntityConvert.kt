@@ -88,7 +88,7 @@ fun getPropertyTypeName(
     }
 }
 
-// TODO
+// TODO 补充完整类型映射
 fun getPropertyQueryType(
     column: GenColumn,
 ): QueryType {

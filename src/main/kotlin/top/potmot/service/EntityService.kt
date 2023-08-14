@@ -17,10 +17,10 @@ interface EntityService {
     fun mapEntity(table: GenTableColumnsInput): GenEntityPropertiesView
 
     /**
-     * 预览同步后实体
+     * 同步实体
      * 将结合已有的所有由当前 table 衍生出的 GenEntity 重新进行生成
      */
-    fun previewSyncEntity(tableId: Long): List<GenEntityPropertiesView>
+    fun syncEntity(tableId: Long): List<GenEntityPropertiesView>
 
     /**
      * 保存实体

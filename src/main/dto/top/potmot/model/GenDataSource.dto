@@ -1,0 +1,7 @@
+input GenDataSourceInsertInput {
+    name
+    url
+    username
+    password
+    type
+}

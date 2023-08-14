@@ -21,3 +21,8 @@ input GenTableGroupCommonInput {
     -createdTime
     -modifiedTime
 }
+
+input GenTableGroupMoveInput {
+    id
+    id(parent)
+}

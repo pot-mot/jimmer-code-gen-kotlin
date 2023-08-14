@@ -16,7 +16,6 @@ plugins {
     id("org.springframework.boot") version "2.7.13"
     id("io.spring.dependency-management") version "1.0.12.RELEASE"
     kotlin("jvm") version "1.6.21"
-    kotlin("kapt") version "1.6.21"
     kotlin("plugin.spring") version "1.6.21"
     id("com.google.devtools.ksp") version "1.7.10-1.0.6"
 }
@@ -27,9 +26,9 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 val jimmerVersion = "0.7.132"
 val mysqlVersion = "8.0.30"
-val mapstructVersion = "1.5.3.Final"
 val caffeineVersion = "2.9.1"
 val velocityVersion = "2.3"
+val schemacrawlerVersion = "16.20.4"
 
 repositories {
     mavenCentral()
@@ -44,11 +43,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation("org.babyfish.jimmer:jimmer-spring-boot-starter:${jimmerVersion}")
-    implementation("org.mapstruct:mapstruct:${mapstructVersion}")
 
     ksp("org.babyfish.jimmer:jimmer-ksp:${jimmerVersion}")
-    kapt("org.mapstruct:mapstruct-processor:${mapstructVersion}")
-    kapt("org.babyfish.jimmer:jimmer-mapstruct-apt:${jimmerVersion}")
 
     runtimeOnly("com.github.ben-manes.caffeine:caffeine:${caffeineVersion}")
 
@@ -57,6 +53,19 @@ dependencies {
     runtimeOnly("mysql:mysql-connector-java:${mysqlVersion}")
 
     implementation("org.apache.velocity:velocity-engine-core:${velocityVersion}")
+
+    // https://mvnrepository.com/artifact/us.fatehi/schemacrawler
+    implementation("us.fatehi:schemacrawler-api:${schemacrawlerVersion}") {
+        exclude(group = "org.slf4j", module = "slf4j-api")
+    }
+    // https://mvnrepository.com/artifact/us.fatehi/schemacrawler-tools
+    implementation("us.fatehi:schemacrawler-tools:${schemacrawlerVersion}"){
+        exclude(group = "org.slf4j", module = "slf4j-api")
+    }
+    // https://mvnrepository.com/artifact/us.fatehi/schemacrawler-mysql
+    implementation("us.fatehi:schemacrawler-mysql:${schemacrawlerVersion}") {
+        exclude(group = "org.slf4j", module = "slf4j-api")
+    }
 }
 
 // Without this configuration, gradle command can still run.

@@ -17,7 +17,7 @@ import top.potmot.model.base.BaseEntity
  * 生成表实体类
  *
  * @author potmot
- * @since 2023-08-12 10:51:09
+ * @since 2023-08-14 15:29:23
  */
 @Entity
 interface GenTable : BaseEntity {
@@ -27,6 +27,20 @@ interface GenTable : BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override val id: Long
+
+
+    /**
+     * 数据源
+     */
+    @IdView
+    val dataSourceId: Long
+
+    /**
+     * 数据源
+     */
+    @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
+    val dataSource: GenDataSource
 
     /**
      * 所属组 ID

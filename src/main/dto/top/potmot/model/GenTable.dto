@@ -1,9 +1,11 @@
 GenTableCommonView {
     #allScalars
+    id(dataSource)
 }
 
 GenTableColumnsView {
     #allScalars
+    id(dataSource)
 
     columns {
         #allScalars
@@ -12,12 +14,14 @@ GenTableColumnsView {
 
 input GenTableCommonInput {
     #allScalars
+    id(dataSource)
     -createdTime
     -modifiedTime
 }
 
 input GenTableColumnsInput {
     #allScalars
+    id(dataSource)
     -createdTime
     -modifiedTime
 

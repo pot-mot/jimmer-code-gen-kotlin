@@ -17,7 +17,7 @@ class EntityServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun previewSyncEntity(tableId: Long): List<GenEntityPropertiesView> {
+    override fun syncEntity(tableId: Long): List<GenEntityPropertiesView> {
         TODO("Not yet implemented")
     }
 

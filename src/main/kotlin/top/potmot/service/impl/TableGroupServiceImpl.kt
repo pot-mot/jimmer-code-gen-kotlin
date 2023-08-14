@@ -3,15 +3,16 @@ package top.potmot.service.impl
 import org.springframework.stereotype.Service
 import top.potmot.model.dto.GenTableGroupCommonInput
 import top.potmot.model.dto.GenTableGroupCommonView
+import top.potmot.model.dto.GenTableGroupMoveInput
 import top.potmot.model.dto.GenTableGroupTreeView
 import top.potmot.model.query.TableGroupQuery
-import top.potmot.service.TableManageService
+import top.potmot.service.TableGroupService
 import java.util.*
 
 @Service
-class TableManageServiceImpl(
+class TableGroupServiceImpl(
 
-): TableManageService {
+): TableGroupService {
     override fun createGroup(group: GenTableGroupCommonInput): Optional<GenTableGroupCommonView> {
         TODO("Not yet implemented")
     }
@@ -20,7 +21,7 @@ class TableManageServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun moveTables(ids: List<Long>, groupId: Long): Int {
+    override fun moveGroup(group: GenTableGroupMoveInput): GenTableGroupCommonView {
         TODO("Not yet implemented")
     }
 

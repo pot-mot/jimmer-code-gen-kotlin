@@ -12,35 +12,36 @@ import java.util.*
 
 @RestController
 @RequestMapping("/entity")
-class EntityController @Autowired constructor(private val entityService: EntityService) {
-
+class EntityController (
+    @Autowired val entityService: EntityService
+) {
     @PostMapping("/map")
-    fun mapEntity(@RequestBody table: GenTableColumnsInput): GenEntityPropertiesView {
+    fun map(@RequestBody table: GenTableColumnsInput): GenEntityPropertiesView {
         return entityService.mapEntity(table)
     }
 
     @GetMapping("/sync/{tableId}")
-    fun previewSyncEntity(@PathVariable tableId: Long): List<GenEntityPropertiesView> {
-        return entityService.previewSyncEntity(tableId)
+    fun sync(@PathVariable tableId: Long): List<GenEntityPropertiesView> {
+        return entityService.syncEntity(tableId)
     }
 
     @PutMapping("/save")
-    fun saveEntities(@RequestBody entities: List<GenEntityPropertiesInput>): List<Optional<GenEntityPropertiesView>> {
+    fun save(@RequestBody entities: List<GenEntityPropertiesInput>): List<Optional<GenEntityPropertiesView>> {
         return entityService.saveEntities(entities)
     }
 
     @PutMapping("/config")
-    fun configEntity(@RequestBody entity: GenEntityConfigInput): Optional<GenEntityPropertiesView> {
+    fun config(@RequestBody entity: GenEntityConfigInput): Optional<GenEntityPropertiesView> {
         return entityService.configEntity(entity)
     }
 
     @PostMapping("/query")
-    fun queryEntities(@RequestBody query: EntityQuery): List<GenEntityPropertiesView> {
+    fun query(@RequestBody query: EntityQuery): List<GenEntityPropertiesView> {
         return entityService.queryEntities(query)
     }
 
     @DeleteMapping
-    fun deleteEntities(@RequestBody ids: List<Long>): Int {
+    fun delete(@RequestBody ids: List<Long>): Int {
         return entityService.deleteEntities(ids)
     }
 }

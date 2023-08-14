@@ -11,25 +11,26 @@ import java.util.*
 
 @RestController
 @RequestMapping("/association")
-class AssociationController @Autowired constructor(private val associationService: AssociationService) {
-
+class AssociationController(
+    @Autowired val associationService: AssociationService
+) {
     @GetMapping("/select")
-    fun selectAssociations(@RequestParam tableIds: List<Long>): List<GenAssociationPreviewView> {
+    fun select(@RequestParam tableIds: List<Long>): List<GenAssociationPreviewView> {
         return associationService.selectAssociations(tableIds)
     }
 
     @PutMapping("/save")
-    fun saveAssociations(@RequestBody associations: List<GenAssociationCommonInput>): List<Optional<GenAssociationCommonView>> {
+    fun save(@RequestBody associations: List<GenAssociationCommonInput>): List<Optional<GenAssociationCommonView>> {
         return associationService.saveAssociations(associations)
     }
 
     @PostMapping("/query")
-    fun queryAssociations(@RequestBody query: AssociationQuery): List<GenAssociationCommonView> {
+    fun query(@RequestBody query: AssociationQuery): List<GenAssociationCommonView> {
         return associationService.queryAssociations(query)
     }
 
     @DeleteMapping
-    fun deleteAssociations(@RequestBody ids: List<Long>): Int {
+    fun delete(@RequestBody ids: List<Long>): Int {
         return associationService.deleteAssociations(ids)
     }
 }

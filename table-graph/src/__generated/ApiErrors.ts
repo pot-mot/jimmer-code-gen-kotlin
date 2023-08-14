@@ -1,6 +1,12 @@
 export type AllErrors = {};
 
 export type ApiErrors = {
-    "importController": {
+    "associationController": {
+    },
+    "entityController": {
+    },
+    "tableController": {
+    },
+    "tableGroupController": {
     }
 };

@@ -14,28 +14,9 @@ import java.util.*
 
 @Service
 class TableServiceImpl(
-    @Autowired val metadataDao: MetadataDao
+
 ): TableService {
-    override fun viewTables(namePattern: String?): List<GenTable> {
-        return metadataDao.getTables(namePattern)
-    }
-
-    override fun importAllTables(groupId: Long?): List<GenTableColumnsView> {
-        TODO("Not yet implemented")
-    }
-
-    override fun importTables(tables: List<GenTableColumnsInput>, groupId: Long?): List<Optional<GenTableColumnsView>> {
-        TODO("Not yet implemented")
-    }
-
-    override fun refreshAllTables(groupId: Long?): List<GenTableColumnsView> {
-        TODO("Not yet implemented")
-    }
-
-    override fun refreshTables(
-        tables: List<GenTableColumnsInput>,
-        groupId: Long?
-    ): List<Optional<GenTableColumnsView>> {
+    override fun moveTables(ids: List<Long>, groupId: Long): Int {
         TODO("Not yet implemented")
     }
 

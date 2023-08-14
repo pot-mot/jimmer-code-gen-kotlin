@@ -2,6 +2,7 @@ package top.potmot.service
 
 import top.potmot.model.dto.GenTableGroupCommonInput
 import top.potmot.model.dto.GenTableGroupCommonView
+import top.potmot.model.dto.GenTableGroupMoveInput
 import top.potmot.model.dto.GenTableGroupTreeView
 import top.potmot.model.query.TableGroupQuery
 import java.util.*
@@ -9,7 +10,7 @@ import java.util.*
 /**
  * 表管理业务类
  */
-interface TableManageService {
+interface TableGroupService {
     /**
      * 创建组
      */
@@ -21,10 +22,9 @@ interface TableManageService {
     fun editGroup(group: GenTableGroupCommonInput): GenTableGroupCommonView
 
     /**
-     * 移动表所在组
+     * 移动组
      */
-    fun moveTables(ids: List<Long>, groupId: Long): Int
-
+    fun moveGroup(group: GenTableGroupMoveInput): GenTableGroupCommonView
 
     /**
      * 获取指定组下的递归组树和表

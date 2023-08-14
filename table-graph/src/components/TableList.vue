@@ -2,11 +2,10 @@
 import {ref, onMounted, reactive, Ref} from 'vue'
 import {Delete, Download, Edit, Refresh, Search, View} from "@element-plus/icons-vue";
 import {api} from "../api";
-import {GenTableDto} from "../__generated/model/dto";
 import {datetimeFormat} from "../utils/dataFormat";
 import {useLoading} from "../hooks/useLoading";
 
-const tables: Ref<ReadonlyArray<GenTableDto['DEFAULT']>> = ref([]);
+const tables: Ref<ReadonlyArray<GenTable>> = ref([]);
 const selection = ref([]);
 const multiple = ref(true);
 const total = ref(0);
@@ -25,7 +24,7 @@ const preview = ref({})
 
 const getList = async () => {
 	add()
-	tables.value = (await api.importController.listGenTable({page: {number: 0, size: 10}})).content
+	tables.value = await api.tableController.view()
 	sub()
 }
 
@@ -40,7 +39,7 @@ const handleQuery = () => {
 const dialog = ref()
 const node = ref()
 
-const handleEdit = (genTable: GenTableDto["DEFAULT"]) => {
+const handleEdit = () => {
 
 }
 

@@ -1,15 +1,13 @@
+logging:
+  level:
+    top.potmot: debug
+
 spring:
   datasource:
-    main:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      username: root
-      password: root
-      jdbc-url: jdbc:mysql://localhost:3307/jimmer-code-gen?serverTimezone=Asia/Shanghai
-    gen:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      username: root
-      password: root
-      jdbc-url: jdbc:mysql://localhost:3307/ry-vue?serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+    url: jdbc:mysql://localhost:3307/jimmer-code-gen?serverTimezone=Asia/Shanghai
   jackson:
     # 格式化全局时间字段
     date-format: yyyy-MM-dd HH:mm:ss
@@ -36,5 +34,5 @@ gen:
   # 自动去除表前缀，默认是true
   # autoRemovePre: false
   # 表前缀（生成类名不会包含表前缀，多个用逗号分隔）
-#   tablePrefix: t_
-   language: kotlin
+  #   tablePrefix: t_
+  language: kotlin
