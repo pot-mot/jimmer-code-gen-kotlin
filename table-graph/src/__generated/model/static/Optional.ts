@@ -1,4 +1,4 @@
 export interface Optional<T> {
     
-    readonly present: boolean;
+    present: boolean;
 }

@@ -2,15 +2,15 @@ import type { AssociationType } from '../enums';
 
 export interface GenAssociationPreviewView {
     
-    readonly associationComment: string;
+    associationComment: string;
     
-    readonly associationType: AssociationType;
+    associationType: AssociationType;
     
-    readonly createdTime: string;
+    createdTime: string;
     
-    readonly modifiedTime: string;
+    modifiedTime: string;
     
-    readonly orderKey: number;
+    orderKey: number;
     
-    readonly remark: string;
+    remark: string;
 }

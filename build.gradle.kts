@@ -56,15 +56,15 @@ dependencies {
 
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler
     implementation("us.fatehi:schemacrawler-api:${schemacrawlerVersion}") {
-        exclude(group = "org.slf4j", module = "slf4j-api")
+        exclude(group = "org.slf4j", module = "slf4j-nop")
     }
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler-tools
     implementation("us.fatehi:schemacrawler-tools:${schemacrawlerVersion}"){
-        exclude(group = "org.slf4j", module = "slf4j-api")
+        exclude(group = "org.slf4j", module = "slf4j-nop")
     }
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler-mysql
     implementation("us.fatehi:schemacrawler-mysql:${schemacrawlerVersion}") {
-        exclude(group = "org.slf4j", module = "slf4j-api")
+        exclude(group = "org.slf4j", module = "slf4j-nop")
     }
 }
 

@@ -31,7 +31,7 @@ class TableGroupController (
 
     @GetMapping("/tree")
     fun getTrees(@RequestParam(required = false) groupIds: List<Long>?): List<GenTableGroupTreeView> {
-        return tableGroupService.getTableTrees(groupIds ?: emptyList())
+        return tableGroupService.getTableTrees(groupIds)
     }
 
     @PostMapping("/query")

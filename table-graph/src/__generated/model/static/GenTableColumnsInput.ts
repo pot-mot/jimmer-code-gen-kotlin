@@ -2,56 +2,58 @@ import type { TableType } from '../enums';
 
 export interface GenTableColumnsInput {
     
-    readonly columns: ReadonlyArray<GenTableColumnsInput_TargetOf_columns>;
+    columns: GenTableColumnsInput_TargetOf_columns[];
     
-    readonly id?: number;
+    groupId: number;
     
-    readonly orderKey: number;
+    id?: number;
     
-    readonly remark: string;
+    orderKey: number;
     
-    readonly tableComment: string;
+    remark: string;
     
-    readonly tableName: string;
+    schemaId: number;
     
-    readonly tableType: TableType;
+    tableComment: string;
+    
+    tableName: string;
+    
+    tableType: TableType;
 }
 
 export interface GenTableColumnsInput_TargetOf_columns {
     
-    readonly autoIncrement: boolean;
+    autoIncrement: boolean;
     
-    readonly columnComment: string;
+    columnComment: string;
     
-    readonly columnDefault?: string;
+    columnDefault?: string;
     
-    readonly columnDisplaySize: number;
+    columnDisplaySize: number;
     
-    readonly columnName: string;
+    columnName: string;
     
-    readonly columnPrecision: number;
+    columnPrecision: number;
     
-    readonly columnSort: number;
+    columnSort: number;
     
-    readonly columnType: string;
+    columnType: string;
     
-    readonly columnTypeCode: number;
+    columnTypeCode: number;
     
-    readonly createdTime: string;
+    createdTime: string;
     
-    readonly fk: boolean;
+    fk: boolean;
     
-    readonly id?: number;
+    id?: number;
     
-    readonly modifiedTime: string;
+    modifiedTime: string;
     
-    readonly notNull: boolean;
+    notNull: boolean;
     
-    readonly pk: boolean;
+    pk: boolean;
     
-    readonly remark: string;
+    remark: string;
     
-    readonly unique: boolean;
-    
-    readonly virtualColumn: boolean;
+    unique: boolean;
 }

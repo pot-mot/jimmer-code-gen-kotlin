@@ -7,27 +7,15 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    ElButton: typeof import('element-plus/es')['ElButton']
-    ElCol: typeof import('element-plus/es')['ElCol']
-    ElDatePicker: typeof import('element-plus/es')['ElDatePicker']
-    ElDialog: typeof import('element-plus/es')['ElDialog']
-    ElForm: typeof import('element-plus/es')['ElForm']
-    ElFormItem: typeof import('element-plus/es')['ElFormItem']
-    ElIcon: typeof import('element-plus/es')['ElIcon']
-    ElInput: typeof import('element-plus/es')['ElInput']
-    ElPagination: typeof import('element-plus/es')['ElPagination']
-    ElRow: typeof import('element-plus/es')['ElRow']
-    ElTable: typeof import('element-plus/es')['ElTable']
-    ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
-    ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    ElTree: typeof import('element-plus/es')['ElTree']
     ERMapping: typeof import('./src/components/ERMapping.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TableGroupList: typeof import('./src/components/tableMenu/TableGroupList.vue')['default']
+    TableGroupMenu: typeof import('./src/components/tableMenu/TableGroupMenu.vue')['default']
+    TableGroupTree: typeof import('./src/components/tableMenu/TableGroupTree.vue')['default']
+    TableGroupTreeItem: typeof import('./src/components/tableMenu/TableGroupTreeItem.vue')['default']
     TableInfo: typeof import('./src/components/TableInfo.vue')['default']
-    TableList: typeof import('./src/components/TableList.vue')['default']
     TableMapping: typeof import('./src/components/TableMapping.vue')['default']
-  }
-  export interface ComponentCustomProperties {
-    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

@@ -7,13 +7,15 @@
     "dev": "vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
-    "api": "node scripts/generate-api.js"
+    "api": "node scripts/generateApi.js",
+    "rm_ro": "node scripts/removeModelReadonly.js"
   },
   "dependencies": {
     "@antv/g6": "^4.8.8",
     "@antv/x6": "^2.9.7",
     "@element-plus/icons-vue": "^2.1.0",
     "element-plus": "^2.3.9",
+    "immer": "^10.0.2",
     "sass": "^1.60.0",
     "vue": "^3.2.47",
     "vue-router": "^4.0.13"

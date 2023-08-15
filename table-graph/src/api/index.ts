@@ -1,7 +1,7 @@
 import { Api } from "../__generated";
 
 
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = "/api";
 
 export const api = new Api(async({uri, method, body}) => {
     const response = await fetch(`${BASE_URL}${uri}`, {

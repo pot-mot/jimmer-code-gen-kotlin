@@ -28,7 +28,7 @@ interface TableGroupService {
      * 获取指定组下的递归组树和表
      * @param groupIds 组 ID，empty 将获得所有的表
      */
-    fun getTableTrees(groupIds: List<Long>): List<GenTableGroupTreeView>
+    fun getTableTrees(groupIds: List<Long>? = null): List<GenTableGroupTreeView>
 
     /**
      * 查询组

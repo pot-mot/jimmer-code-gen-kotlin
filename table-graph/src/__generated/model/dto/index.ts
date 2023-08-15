@@ -1,1 +1,2 @@
-export type { GenTableDto } from './GenTableDto';
+export type { GenDataSourceDto } from './GenDataSourceDto';
+export type { GenSchemaDto } from './GenSchemaDto';

@@ -2,6 +2,7 @@ package top.potmot.service.impl
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import top.potmot.dao.MetadataDao
 import top.potmot.model.GenTable
 import top.potmot.model.dto.GenColumnCommonView
@@ -16,6 +17,7 @@ import java.util.*
 class TableServiceImpl(
 
 ): TableService {
+    @Transactional
     override fun moveTables(ids: List<Long>, groupId: Long): Int {
         TODO("Not yet implemented")
     }
@@ -28,6 +30,7 @@ class TableServiceImpl(
         TODO("Not yet implemented")
     }
 
+    @Transactional
     override fun deleteTables(ids: Iterable<Long>): Int {
         TODO("Not yet implemented")
     }

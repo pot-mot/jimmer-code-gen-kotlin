@@ -1,6 +1,6 @@
 export interface GenTableGroupMoveInput {
     
-    readonly id?: number;
+    id?: number;
     
-    readonly parentId?: number;
+    parentId?: number;
 }

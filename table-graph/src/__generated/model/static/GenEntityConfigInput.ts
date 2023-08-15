@@ -2,86 +2,86 @@ import type { QueryType, SortDirection } from '../enums';
 
 export interface GenEntityConfigInput {
     
-    readonly add: boolean;
+    add: boolean;
     
-    readonly author: string;
+    author: string;
     
-    readonly classComment: string;
+    classComment: string;
     
-    readonly className: string;
+    className: string;
     
-    readonly edit: boolean;
+    edit: boolean;
     
-    readonly functionName: string;
+    functionName: string;
     
-    readonly genPath: string;
+    genPath: string;
     
-    readonly id?: number;
+    id?: number;
     
-    readonly list: boolean;
+    list: boolean;
     
-    readonly moduleName: string;
+    moduleName: string;
     
-    readonly orderKey: number;
+    orderKey: number;
     
-    readonly packageName: string;
+    packageName: string;
     
-    readonly properties: ReadonlyArray<GenEntityConfigInput_TargetOf_properties>;
+    properties: GenEntityConfigInput_TargetOf_properties[];
     
-    readonly query: boolean;
+    query: boolean;
     
-    readonly remark: string;
+    remark: string;
 }
 
 export interface GenEntityConfigInput_TargetOf_properties {
     
-    readonly add: boolean;
+    add: boolean;
     
-    readonly addRequired: boolean;
+    addRequired: boolean;
     
-    readonly addSort: number;
+    addSort: number;
     
-    readonly edit: boolean;
+    edit: boolean;
     
-    readonly editReadOnly: boolean;
+    editReadOnly: boolean;
     
-    readonly editRequired: boolean;
+    editRequired: boolean;
     
-    readonly editSort: number;
+    editSort: number;
     
-    readonly enumId: number;
+    enumId: number;
     
-    readonly id: boolean;
+    id: boolean;
     
-    readonly idGenerationType: string;
+    idGenerationType: string;
     
-    readonly key: boolean;
+    key: boolean;
     
-    readonly list: boolean;
+    list: boolean;
     
-    readonly listSort: number;
+    listSort: number;
     
-    readonly logicalDelete: boolean;
+    logicalDelete: boolean;
     
-    readonly propertyAnnotationExpression: string;
+    propertyAnnotationExpression: string;
     
-    readonly propertyAssociationType: string;
+    propertyAssociationType: string;
     
-    readonly propertyComment: string;
+    propertyComment: string;
     
-    readonly propertyName: string;
+    propertyName: string;
     
-    readonly propertyType: string;
+    propertyType: string;
     
-    readonly query: boolean;
+    query: boolean;
     
-    readonly querySort: number;
+    querySort: number;
     
-    readonly queryType: QueryType;
+    queryType: QueryType;
     
-    readonly remark: string;
+    remark: string;
     
-    readonly sort: boolean;
+    sort: boolean;
     
-    readonly sortDirection: SortDirection;
+    sortDirection: SortDirection;
 }

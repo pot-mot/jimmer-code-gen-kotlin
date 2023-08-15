@@ -1,6 +1,6 @@
 export interface TimeRangeQueryParam {
     
-    readonly end: string;
+    end: string;
     
-    readonly start: string;
+    start: string;
 }

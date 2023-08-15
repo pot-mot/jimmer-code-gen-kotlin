@@ -2,21 +2,21 @@ import type { AssociationType } from '../enums';
 
 export interface GenAssociationCommonView {
     
-    readonly associationComment: string;
+    associationComment: string;
     
-    readonly associationType: AssociationType;
+    associationType: AssociationType;
     
-    readonly createdTime: string;
+    createdTime: string;
     
-    readonly id: number;
+    id: number;
     
-    readonly modifiedTime: string;
+    modifiedTime: string;
     
-    readonly orderKey: number;
+    orderKey: number;
     
-    readonly remark: string;
+    remark: string;
     
-    readonly sourceColumnId: number;
+    sourceColumnId: number;
     
-    readonly targetColumnId: number;
+    targetColumnId: number;
 }

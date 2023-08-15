@@ -4,5 +4,6 @@ export type TableType =
     'SYSTEM_TABLE' | 
     'GLOBAL_TEMPORARY' | 
     'LOCAL_TEMPORARY' | 
-    'ALIAS'
+    'ALIAS' | 
+    'UNKNOWN'
 ;

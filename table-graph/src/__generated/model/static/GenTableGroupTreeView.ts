@@ -2,76 +2,76 @@ import type { TableType } from '../enums';
 
 export interface GenTableGroupTreeView {
     
-    readonly children?: ReadonlyArray<GenTableGroupTreeView_TargetOf_children>;
+    children?: GenTableGroupTreeView_TargetOf_children[];
     
-    readonly createdTime: string;
+    createdTime: string;
     
-    readonly groupName: string;
+    groupName: string;
     
-    readonly id?: number;
+    id?: number;
     
-    readonly modifiedTime: string;
+    modifiedTime: string;
     
-    readonly orderKey: number;
+    orderKey: number;
     
-    readonly remark: string;
+    remark: string;
     
-    readonly tables: ReadonlyArray<GenTableGroupTreeView_TargetOf_tables>;
+    tables: GenTableGroupTreeView_TargetOf_tables[];
 }
 
 export interface GenTableGroupTreeView_TargetOf_children {
     
-    readonly children?: ReadonlyArray<GenTableGroupTreeView_TargetOf_children>;
+    children?: GenTableGroupTreeView_TargetOf_children[];
     
-    readonly createdTime: string;
+    createdTime: string;
     
-    readonly groupName: string;
+    groupName: string;
     
-    readonly id?: number;
+    id?: number;
     
-    readonly modifiedTime: string;
+    modifiedTime: string;
     
-    readonly orderKey: number;
+    orderKey: number;
     
-    readonly remark: string;
+    remark: string;
     
-    readonly tables: ReadonlyArray<GenTableGroupTreeView_TargetOf_children_TargetOf_tables>;
+    tables: GenTableGroupTreeView_TargetOf_children_TargetOf_tables[];
 }
 
 export interface GenTableGroupTreeView_TargetOf_children_TargetOf_tables {
     
-    readonly createdTime: string;
+    createdTime: string;
     
-    readonly id?: number;
+    id?: number;
     
-    readonly modifiedTime: string;
+    modifiedTime: string;
     
-    readonly orderKey: number;
+    orderKey: number;
     
-    readonly remark: string;
+    remark: string;
     
-    readonly tableComment: string;
+    tableComment: string;
     
-    readonly tableName: string;
+    tableName: string;
     
-    readonly tableType: TableType;
+    tableType: TableType;
 }
 
 export interface GenTableGroupTreeView_TargetOf_tables {
     
-    readonly createdTime: string;
+    createdTime: string;
     
-    readonly id?: number;
+    id?: number;
     
-    readonly modifiedTime: string;
+    modifiedTime: string;
     
-    readonly orderKey: number;
+    orderKey: number;
     
-    readonly remark: string;
+    remark: string;
     
-    readonly tableComment: string;
+    tableComment: string;
     
-    readonly tableName: string;
+    tableName: string;
     
-    readonly tableType: TableType;
+    tableType: TableType;
 }

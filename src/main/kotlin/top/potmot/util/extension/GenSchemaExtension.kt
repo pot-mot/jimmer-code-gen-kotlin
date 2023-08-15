@@ -40,6 +40,11 @@ fun GenSchemaInsertInput.schemaPattern(): String {
         this.name
     }
 }
+
+fun String.removeQuotes(): String {
+    return this.trim('\'', '"', '`')
+}
+
 fun Schema.toGenSchema(dataSourceId: Long): GenSchema {
     val schema = this
     return new(GenSchema::class).by {
@@ -52,9 +57,10 @@ fun GenSchema.toGenTableGroup(catalog: Catalog, parentId: Long? = null): GenTabl
     val genSchema = this
     return new(GenTableGroup::class).by {
         this.parentId = parentId
-        this.groupName = genSchema.name
+        this.groupName = genSchema.name.removeQuotes()
+        var index = 0L
         this.tables = catalog.tables.map {
-            it.toGenTable(genSchema.id)
+            it.toGenTable(genSchema.id, index ++)
         }
     }
 }
@@ -73,7 +79,10 @@ fun DatabaseConnectionSource.getCatalog(
     return SchemaCrawlerUtility.getCatalog(this, options)
 }
 
-fun Table.toGenTable(schemaId: Long): GenTable {
+fun Table.toGenTable(
+    schemaId: Long,
+    orderKey: Long? = null
+): GenTable {
     val table = this
     return new(GenTable::class).by {
         this.schemaId = schemaId
@@ -84,6 +93,7 @@ fun Table.toGenTable(schemaId: Long): GenTable {
         this.columns = table.columns.map {
             it.toGenColumn(index++)
         }
+        orderKey?.let { this.orderKey = it }
     }
 }
 

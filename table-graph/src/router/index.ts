@@ -4,12 +4,12 @@ const routes: RouteRecordRaw[] = [
     {
         path: "",
         name: "list",
-        component: () => import("../components/TableList.vue")
+        component: () => import("../components/tableMenu/TableGroupMenu.vue")
     },
     {
         path: "",
         name: "graph",
-        component: () => import("../components/TableList.vue")
+        component: () => import("../components/tableMenu/TableGroupMenu.vue")
     },
 ]
 

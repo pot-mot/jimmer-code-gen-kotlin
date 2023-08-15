@@ -1,10 +1,10 @@
 export interface GenTableGroupCommonInput {
     
-    readonly groupName: string;
+    groupName: string;
     
-    readonly id?: number;
+    id?: number;
     
-    readonly orderKey: number;
+    orderKey: number;
     
-    readonly remark: string;
+    remark: string;
 }

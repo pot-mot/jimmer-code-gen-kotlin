@@ -1,14 +1,14 @@
 export interface GenTableGroupCommonView {
     
-    readonly createdTime: string;
+    createdTime: string;
     
-    readonly groupName: string;
+    groupName: string;
     
-    readonly id?: number;
+    id?: number;
     
-    readonly modifiedTime: string;
+    modifiedTime: string;
     
-    readonly orderKey: number;
+    orderKey: number;
     
-    readonly remark: string;
+    remark: string;
 }

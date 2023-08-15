@@ -1,6 +1,7 @@
 package top.potmot.service.impl
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import top.potmot.model.dto.GenAssociationCommonInput
 import top.potmot.model.dto.GenAssociationCommonView
 import top.potmot.model.dto.GenAssociationPreviewView
@@ -16,6 +17,7 @@ class AssociationServiceImpl(
         TODO("Not yet implemented")
     }
 
+    @Transactional
     override fun saveAssociations(associations: List<GenAssociationCommonInput>): List<Optional<GenAssociationCommonView>> {
         TODO("Not yet implemented")
     }
@@ -24,6 +26,7 @@ class AssociationServiceImpl(
         TODO("Not yet implemented")
     }
 
+    @Transactional
     override fun deleteAssociations(ids: List<Long>): Int {
         TODO("Not yet implemented")
     }

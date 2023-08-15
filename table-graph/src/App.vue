@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TableInfo from "./components/TableList.vue";
+import TableInfo from "./components/tableMenu/TableGroupMenu.vue";
 </script>
 
 <template>

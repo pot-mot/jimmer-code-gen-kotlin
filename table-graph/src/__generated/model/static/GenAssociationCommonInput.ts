@@ -2,17 +2,17 @@ import type { AssociationType } from '../enums';
 
 export interface GenAssociationCommonInput {
     
-    readonly associationComment: string;
+    associationComment: string;
     
-    readonly associationType: AssociationType;
+    associationType: AssociationType;
     
-    readonly id: number;
+    id: number;
     
-    readonly orderKey: number;
+    orderKey: number;
     
-    readonly remark: string;
+    remark: string;
     
-    readonly sourceColumnId: number;
+    sourceColumnId: number;
     
-    readonly targetColumnId: number;
+    targetColumnId: number;
 }

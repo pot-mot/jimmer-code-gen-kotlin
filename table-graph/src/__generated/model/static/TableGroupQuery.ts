@@ -2,9 +2,9 @@ import type { TimeRangeQueryParam } from './';
 
 export interface TableGroupQuery {
     
-    readonly createdTime?: TimeRangeQueryParam;
+    createdTime?: TimeRangeQueryParam;
     
-    readonly ids?: ReadonlyArray<number>;
+    ids?: number[];
     
-    readonly modifiedTime?: TimeRangeQueryParam;
+    modifiedTime?: TimeRangeQueryParam;
 }

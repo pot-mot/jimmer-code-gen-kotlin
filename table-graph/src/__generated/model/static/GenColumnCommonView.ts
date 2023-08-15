@@ -1,38 +1,36 @@
 export interface GenColumnCommonView {
     
-    readonly autoIncrement: boolean;
+    autoIncrement: boolean;
     
-    readonly columnComment: string;
+    columnComment: string;
     
-    readonly columnDefault?: string;
+    columnDefault?: string;
     
-    readonly columnDisplaySize: number;
+    columnDisplaySize: number;
     
-    readonly columnName: string;
+    columnName: string;
     
-    readonly columnPrecision: number;
+    columnPrecision: number;
     
-    readonly columnSort: number;
+    columnSort: number;
     
-    readonly columnType: string;
+    columnType: string;
     
-    readonly columnTypeCode: number;
+    columnTypeCode: number;
     
-    readonly createdTime: string;
+    createdTime: string;
     
-    readonly fk: boolean;
+    fk: boolean;
     
-    readonly id?: number;
+    id?: number;
     
-    readonly modifiedTime: string;
+    modifiedTime: string;
     
-    readonly notNull: boolean;
+    notNull: boolean;
     
-    readonly pk: boolean;
+    pk: boolean;
     
-    readonly remark: string;
+    remark: string;
     
-    readonly unique: boolean;
-    
-    readonly virtualColumn: boolean;
+    unique: boolean;
 }
