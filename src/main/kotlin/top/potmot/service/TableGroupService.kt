@@ -2,12 +2,11 @@ package top.potmot.service
 
 import top.potmot.model.dto.GenTableGroupCommonInput
 import top.potmot.model.dto.GenTableGroupCommonView
-import top.potmot.model.dto.GenTableGroupMoveInput
-import top.potmot.model.dto.GenTableGroupTreeView
 import top.potmot.model.query.TableGroupQuery
 
 /**
- * 表管理业务类
+ * 表组业务类
+ *
  */
 interface TableGroupService {
     /**
@@ -22,13 +21,7 @@ interface TableGroupService {
     /**
      * 移动组
      */
-    fun moveGroup(group: GenTableGroupMoveInput): GenTableGroupCommonView
-
-    /**
-     * 获取指定组下的递归组树和表
-     * @param groupIds 组 ID，empty 将获得所有的表
-     */
-    fun getTableTrees(groupIds: List<Long>? = null): List<GenTableGroupTreeView>
+    fun moveGroups(ids: List<Long>, groupId: Long): GenTableGroupCommonView
 
     /**
      * 查询组

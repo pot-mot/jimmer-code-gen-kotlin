@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import top.potmot.model.dto.GenColumnCommonView
 import top.potmot.model.dto.GenTableColumnsView
+import top.potmot.model.dto.GenTableGroupTreeView
 import top.potmot.model.query.ColumnQuery
 import top.potmot.model.query.TableQuery
 import top.potmot.service.TableService
@@ -13,11 +14,6 @@ import top.potmot.service.TableService
 class TableController(
     @Autowired val tableService: TableService
 ) {
-    @PutMapping("/move")
-    fun move(@RequestBody ids: List<Long>, @RequestParam groupId: Long): Int {
-        return tableService.moveTables(ids, groupId)
-    }
-
     @GetMapping("/query")
     fun query(
         @RequestBody query: TableQuery
@@ -32,8 +28,8 @@ class TableController(
         return tableService.queryColumns(query)
     }
 
-    @DeleteMapping
-    fun delete(@RequestBody ids: Iterable<Long>): Int {
+    @DeleteMapping("/{ids}")
+    fun delete(@PathVariable ids: List<Long>): Int {
         return tableService.deleteTables(ids)
     }
 }

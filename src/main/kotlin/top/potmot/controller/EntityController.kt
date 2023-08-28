@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*
 import top.potmot.model.dto.GenEntityConfigInput
 import top.potmot.model.dto.GenEntityPropertiesInput
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenTableColumnsInput
 import top.potmot.model.query.EntityQuery
 import top.potmot.service.EntityService
 import java.util.*
@@ -16,22 +15,22 @@ class EntityController (
     @Autowired val entityService: EntityService
 ) {
     @PostMapping("/map")
-    fun map(@RequestBody table: GenTableColumnsInput): GenEntityPropertiesView {
-        return entityService.mapEntity(table)
+    fun map(@RequestBody tableIds: List<Long>): List<GenEntityPropertiesView> {
+        return entityService.mapEntities(tableIds)
     }
 
-    @GetMapping("/sync/{tableId}")
-    fun sync(@PathVariable tableId: Long): List<GenEntityPropertiesView> {
-        return entityService.syncEntity(tableId)
+    @GetMapping("/sync")
+    fun sync(@RequestBody tableIds: List<Long>): List<GenEntityPropertiesView> {
+        return entityService.syncEntities(tableIds)
     }
 
     @PutMapping("/save")
-    fun save(@RequestBody entities: List<GenEntityPropertiesInput>): List<Optional<GenEntityPropertiesView>> {
+    fun save(@RequestBody entities: List<GenEntityPropertiesInput>): List<GenEntityPropertiesView> {
         return entityService.saveEntities(entities)
     }
 
     @PutMapping("/config")
-    fun config(@RequestBody entity: GenEntityConfigInput): Optional<GenEntityPropertiesView> {
+    fun config(@RequestBody entity: GenEntityConfigInput): GenEntityPropertiesView {
         return entityService.configEntity(entity)
     }
 
@@ -40,8 +39,8 @@ class EntityController (
         return entityService.queryEntities(query)
     }
 
-    @DeleteMapping
-    fun delete(@RequestBody ids: List<Long>): Int {
+    @DeleteMapping("/{ids}")
+    fun delete(@PathVariable ids: List<Long>): Int {
         return entityService.deleteEntities(ids)
     }
 }

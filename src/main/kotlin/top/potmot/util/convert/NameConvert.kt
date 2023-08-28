@@ -12,7 +12,7 @@ fun tableNameToClassName(tableName: String): String {
     val tablePrefix = GenConfig.tablePrefix
     var newTableName = tableName
     if (autoRemovePre) {
-        newTableName = replacePrefixes(tableName, tablePrefix.split(","))
+        newTableName = removePrefixes(tableName, tablePrefix.split(","))
     }
     val result = StringBuilder()
 
@@ -90,7 +90,7 @@ fun tableCommentToFunctionName(tableComment: String): String {
  * @param prefixes 前缀数组
  * @return 返回替换后的字符串
  */
-fun replacePrefixes(replacement: String, prefixes: List<String>): String {
+fun removePrefixes(replacement: String, prefixes: List<String>): String {
     // 遍历前缀数组，找到第一个匹配的前缀
     prefixes.forEach { prefix ->
         if (replacement.startsWith(prefix)) {

@@ -7,7 +7,6 @@ import top.potmot.model.dto.GenAssociationCommonView
 import top.potmot.model.dto.GenAssociationPreviewView
 import top.potmot.model.query.AssociationQuery
 import top.potmot.service.AssociationService
-import java.util.*
 
 @RestController
 @RequestMapping("/association")
@@ -20,7 +19,7 @@ class AssociationController(
     }
 
     @PutMapping("/save")
-    fun save(@RequestBody associations: List<GenAssociationCommonInput>): List<Optional<GenAssociationCommonView>> {
+    fun save(@RequestBody associations: List<GenAssociationCommonInput>): List<GenAssociationCommonView> {
         return associationService.saveAssociations(associations)
     }
 
@@ -29,8 +28,8 @@ class AssociationController(
         return associationService.queryAssociations(query)
     }
 
-    @DeleteMapping
-    fun delete(@RequestBody ids: List<Long>): Int {
+    @DeleteMapping("/{ids}")
+    fun delete(@PathVariable ids: List<Long>): Int {
         return associationService.deleteAssociations(ids)
     }
 }

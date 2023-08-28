@@ -3,7 +3,7 @@ package top.potmot.config
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import top.potmot.constant.Language
-import top.potmot.exception.ConfigException
+import top.potmot.error.ConfigException
 
 /**
  * 读取代码生成相关配置

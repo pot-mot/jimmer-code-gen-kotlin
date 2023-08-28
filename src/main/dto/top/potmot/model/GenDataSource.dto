@@ -1,4 +1,17 @@
-input GenDataSourceInput {
+GenDataSourceView {
+    #allScalars
+    -username
+    -password
+}
+
+GenDataSourceSchemasView: GenDataSourceView {
+    schemas {
+        #allScalars
+        id(dataSource)
+    }
+}
+
+inputOnly GenDataSourceInput {
     #allScalars
     -id
 }

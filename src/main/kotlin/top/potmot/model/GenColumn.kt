@@ -48,6 +48,7 @@ interface GenColumn: BaseEntity {
     /**
      * 归属表
      */
+    @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val table: GenTable?

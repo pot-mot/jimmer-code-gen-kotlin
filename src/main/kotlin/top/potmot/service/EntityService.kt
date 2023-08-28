@@ -3,7 +3,6 @@ package top.potmot.service
 import top.potmot.model.dto.GenEntityConfigInput
 import top.potmot.model.dto.GenEntityPropertiesInput
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenTableColumnsInput
 import top.potmot.model.query.EntityQuery
 import java.util.*
 
@@ -12,25 +11,25 @@ import java.util.*
  */
 interface EntityService {
     /**
-     * 预览并保存实体
+     * 映射实体，并且保存
      */
-    fun mapEntity(table: GenTableColumnsInput): GenEntityPropertiesView
+    fun mapEntities(tableIds: List<Long>): List<GenEntityPropertiesView>
 
     /**
-     * 同步实体
+     * 同步实体，并且保存
      * 将结合已有的所有由当前 table 衍生出的 GenEntity 重新进行生成
      */
-    fun syncEntity(tableId: Long): List<GenEntityPropertiesView>
+    fun syncEntities(tableIds: List<Long>): List<GenEntityPropertiesView>
 
     /**
      * 保存实体
      */
-    fun saveEntities(entities: List<GenEntityPropertiesInput>): List<Optional<GenEntityPropertiesView>>
+    fun saveEntities(entities: List<GenEntityPropertiesInput>): List<GenEntityPropertiesView>
 
     /**
      * 配置实体
      */
-    fun configEntity(entity: GenEntityConfigInput): Optional<GenEntityPropertiesView>
+    fun configEntity(entity: GenEntityConfigInput): GenEntityPropertiesView
 
     /**
      * 查询实体

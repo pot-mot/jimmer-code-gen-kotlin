@@ -6,20 +6,23 @@ import schemacrawler.schema.Column
 import schemacrawler.schema.Schema
 import schemacrawler.schema.Table
 import schemacrawler.schemacrawler.LimitOptionsBuilder
+import schemacrawler.schemacrawler.LoadOptionsBuilder
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder
+import schemacrawler.schemacrawler.SchemaInfoLevelBuilder
 import schemacrawler.tools.utility.SchemaCrawlerUtility
 import top.potmot.constant.TableType
+import top.potmot.error.DataSourceException
 import top.potmot.model.GenColumn
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenSchema
 import top.potmot.model.GenTable
 import top.potmot.model.GenTableGroup
 import top.potmot.model.by
-import top.potmot.model.dto.GenSchemaInsertInput
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import us.fatehi.utility.datasource.DatabaseConnectionSources
 import us.fatehi.utility.datasource.MultiUseUserCredentials
 import java.util.regex.Pattern
+
 
 fun GenDataSource.url(): String {
     return "jdbc:${this.type.name.lowercase()}://${this.host}:${this.port}"
@@ -28,17 +31,7 @@ fun GenDataSource.url(): String {
 fun GenDataSource.toSource(): DatabaseConnectionSource {
     return DatabaseConnectionSources.newDatabaseConnectionSource(
         this.url(), MultiUseUserCredentials(this.username, this.password)
-    )
-}
-
-fun GenSchemaInsertInput.schemaPattern(): String {
-    return if (this.name.startsWith("`") && this.name.endsWith("`")) {
-        this.name
-    } else if (this.name.contains("-")) {
-        "`${this.name}`"
-    } else {
-        this.name
-    }
+    ).test()
 }
 
 fun String.removeQuotes(): String {
@@ -65,18 +58,45 @@ fun GenSchema.toGenTableGroup(catalog: Catalog, parentId: Long? = null): GenTabl
     }
 }
 
+fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
+    try {
+        this.get().close()
+        return this
+    } catch (e: Exception) {
+        throw DataSourceException.connectFail("dataSource connect fail", e)
+    }
+}
+
 fun DatabaseConnectionSource.getCatalog(
     schemaPattern: String? = null,
-    tablePattern: String? = null
+    tablePattern: String? = null,
+    withoutTable: Boolean = false,
+    withoutRoutine: Boolean = true,
 ): Catalog {
-    val options = SchemaCrawlerOptionsBuilder.newSchemaCrawlerOptions()
-        .withLimitOptions(
-            LimitOptionsBuilder.builder()
-                .includeSchemas(schemaPattern?.let { Pattern.compile(it) })
-                .includeTables(tablePattern?.let { Pattern.compile(it) })
-                .toOptions()
-        )
-    return SchemaCrawlerUtility.getCatalog(this, options)
+    val limitBuilder = LimitOptionsBuilder.builder()
+    schemaPattern?.let {
+        limitBuilder.includeSchemas(Pattern.compile(it))
+    }
+    tablePattern?.let {
+        limitBuilder.includeTables(Pattern.compile(it))
+    }
+
+    val schemaInfoBuilder = SchemaInfoLevelBuilder.builder()
+
+    if (!withoutTable) {
+        schemaInfoBuilder.setRetrieveTables(true)
+    }
+    if (!withoutRoutine) {
+        schemaInfoBuilder.setRetrieveRoutines(true)
+    }
+
+    return SchemaCrawlerUtility.getCatalog(
+        this,
+        SchemaCrawlerOptionsBuilder
+            .newSchemaCrawlerOptions()
+            .withLimitOptions(limitBuilder.toOptions())
+            .withLoadOptions(LoadOptionsBuilder.builder().withSchemaInfoLevelBuilder(schemaInfoBuilder).toOptions())
+    )
 }
 
 fun Table.toGenTable(

@@ -7,5 +7,5 @@ class TableGroupQuery(
     override val ids: List<Long>? = null,
     override val createdTime: TimeRangeQueryParam? = null,
     override val modifiedTime: TimeRangeQueryParam? = null,
-    names: List<String>? = null,
+    val names: List<String>? = null,
 ) : BaseQuery

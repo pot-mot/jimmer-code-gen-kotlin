@@ -11,28 +11,36 @@ import top.potmot.constant.DataSourceType
 import top.potmot.dao.GenDataSourceRepository
 import top.potmot.dao.GenTableRepository
 import top.potmot.model.dto.GenDataSourceInput
-import top.potmot.model.dto.GenSchemaInsertInput
+import top.potmot.util.extension.toSource
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 @ActiveProfiles("test")
-class TestSchemaService(
+class TestDataSourceService(
     @Autowired val genDataSourceRepository: GenDataSourceRepository,
-    @Autowired val schemaService: SchemaService,
+    @Autowired val dataSourceService: DataSourceService,
     @Autowired val genTableRepository: GenTableRepository
 ) {
-    @Order(1)
     @Test
-    fun testPreviewTables() {
+    @Order(0)
+    fun testConnect() {
+        println(
+            GenDataSourceInput(
+                DataSourceType.MYSQL, "", "", "", "", ""
+            ).toEntity().toSource()
+        )
+    }
+
+    @Test
+    @Order(1)
+    fun testImportTables() {
         val dataSource = genDataSourceRepository.save(GenDataSourceInput(
             DataSourceType.MYSQL, "localhost", "localhost", "3307", "root", "root"
         ))
 
-        schemaService.importTables(
-            GenSchemaInsertInput (
-                "jimmer-code-gen\\S*",
-                dataSource.id
-            )
+        dataSourceService.importSchema(
+            dataSource.id,
+            "jimmer-code-gen\\S*",
         )
 //
 //        assertTrue(!ImmutableObjects.isLoaded(table, "id"))

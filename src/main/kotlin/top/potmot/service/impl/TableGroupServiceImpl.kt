@@ -6,8 +6,6 @@ import org.springframework.transaction.annotation.Transactional
 import top.potmot.dao.GenTableGroupRepository
 import top.potmot.model.dto.GenTableGroupCommonInput
 import top.potmot.model.dto.GenTableGroupCommonView
-import top.potmot.model.dto.GenTableGroupMoveInput
-import top.potmot.model.dto.GenTableGroupTreeView
 import top.potmot.model.query.TableGroupQuery
 import top.potmot.service.TableGroupService
 
@@ -26,19 +24,8 @@ class TableGroupServiceImpl(
     }
 
     @Transactional
-    override fun moveGroup(group: GenTableGroupMoveInput): GenTableGroupCommonView {
-        return GenTableGroupCommonView(genTableGroupRepository.update(group))
-    }
-
-    override fun getTableTrees(groupIds: List<Long>?): List<GenTableGroupTreeView> {
-        if (groupIds == null) {
-            return genTableGroupRepository.findAll(GenTableGroupTreeView.METADATA.fetcher).map {
-                GenTableGroupTreeView(it)
-            }
-        }
-        return genTableGroupRepository.findByIds(ids = groupIds, GenTableGroupTreeView.METADATA.fetcher).map {
-            GenTableGroupTreeView(it)
-        }
+    override fun moveGroups(ids: List<Long>, groupId: Long): GenTableGroupCommonView {
+        TODO("Not yet implemented")
     }
 
     override fun queryGroups(query: TableGroupQuery): List<GenTableGroupCommonView> {

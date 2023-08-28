@@ -3,22 +3,17 @@ package top.potmot.util.extension
 import org.babyfish.jimmer.ImmutableObjects
 import top.potmot.model.GenEntity
 import top.potmot.model.GenProperty
-import java.util.*
 
-fun GenEntity.getProperty(id: Long): Optional<GenProperty> {
+fun GenEntity.getProperty(id: Long): GenProperty? {
     if (!ImmutableObjects.isLoaded(this, "properties")) {
-        return Optional.empty()
+        return null
     }
-
-    val result = this.properties.find { it.id == id }
-    return Optional.ofNullable(result)
+    return this.properties.find { it.id == id }
 }
 
-fun GenEntity.getProperty(name: String): Optional<GenProperty> {
+fun GenEntity.getProperty(name: String): GenProperty? {
     if (!ImmutableObjects.isLoaded(this, "properties")) {
-        return Optional.empty()
+        return null
     }
-
-    val result = this.properties.find { it.propertyName == name }
-    return Optional.ofNullable(result)
+    return this.properties.find { it.propertyName == name }
 }

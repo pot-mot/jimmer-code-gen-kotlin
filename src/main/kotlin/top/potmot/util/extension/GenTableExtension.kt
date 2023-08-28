@@ -5,21 +5,17 @@ import top.potmot.model.GenColumn
 import top.potmot.model.GenTable
 import java.util.*
 
-fun GenTable.getColumn(id: Long): Optional<GenColumn> {
+fun GenTable.getColumn(id: Long): GenColumn? {
     if (!ImmutableObjects.isLoaded(this, "columns")) {
-        return Optional.empty()
+        return null
     }
-
-    val result = this.columns.find { it.id == id }
-    return Optional.ofNullable(result)
+    return this.columns.find { it.id == id }
 }
 
-fun GenTable.getColumn(name: String): Optional<GenColumn> {
+fun GenTable.getColumn(name: String): GenColumn? {
     if (!ImmutableObjects.isLoaded(this, "columns")) {
-        return Optional.empty()
+        return null
     }
-
-    val result = this.columns.find { it.columnName == name }
-    return Optional.ofNullable(result)
+    return this.columns.find { it.columnName == name }
 }
 

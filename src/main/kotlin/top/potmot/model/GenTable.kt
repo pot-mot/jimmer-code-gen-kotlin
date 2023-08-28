@@ -10,6 +10,7 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.OrderedProp
 import top.potmot.constant.TableType
 import top.potmot.model.base.BaseEntity
 
@@ -38,6 +39,7 @@ interface GenTable : BaseEntity {
     /**
      * 数据架构
      */
+    @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val schema: GenSchema
@@ -81,6 +83,7 @@ interface GenTable : BaseEntity {
     /**
      * 表种类
      */
+    @Key
     val tableType: TableType
 
     /**

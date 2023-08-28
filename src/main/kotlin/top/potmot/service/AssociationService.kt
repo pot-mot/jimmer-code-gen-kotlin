@@ -11,14 +11,14 @@ import java.util.*
  */
 interface AssociationService {
     /**
-     * 寻找匹配关联
+     * 从 GenColumn 中寻找匹配关联并存储
      */
     fun selectAssociations(tableIds: List<Long>): List<GenAssociationPreviewView>
 
     /**
      * 保存关联
      */
-    fun saveAssociations(associations: List<GenAssociationCommonInput>): List<Optional<GenAssociationCommonView>>
+    fun saveAssociations(associations: List<GenAssociationCommonInput>): List<GenAssociationCommonView>
 
     /**
      * 查询关联

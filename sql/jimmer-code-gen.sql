@@ -227,7 +227,7 @@ CREATE TABLE `gen_property`
     `edit_sort`                      bigint(0)                                                                                                             NOT NULL DEFAULT 0 COMMENT '在编辑表单中顺序',
     `is_edit_required`               tinyint(1)                                                                                                            NOT NULL DEFAULT 0 COMMENT '是否为编辑时必填（1是）',
     `is_edit_read_only`              tinyint(1)                                                                                                            NOT NULL DEFAULT 0 COMMENT '是否为编辑时只读（1是）',
-    `is_query`                       tinyint(1)                                                                                                            NOT NULL DEFAULT 1 COMMENT '是否为查询属性（1是）',
+    `is_query`                       tinyint(1)                                                                                                            NOT NULL DEFAULT 0 COMMENT '是否为查询属性（1是）',
     `query_sort`                     bigint(0)                                                                                                             NOT NULL DEFAULT 0 COMMENT '在查询属性中顺序',
     `query_type`                     enum ('EQ','NE','GT','GTE','LT','LTE','BETWEEN','IN','LIKE','ILIKE') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'EQ' COMMENT '查询类型',
     `enum_id`                        bigint(0)                                                                                                             NULL COMMENT '对应枚举 ID',

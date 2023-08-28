@@ -6,6 +6,7 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import top.potmot.constant.AssociationType
@@ -34,6 +35,7 @@ interface GenAssociation: BaseEntity {
     /**
      * 主列
      */
+    @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val sourceColumn: GenColumn
@@ -47,6 +49,7 @@ interface GenAssociation: BaseEntity {
     /**
      * 从列
      */
+    @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val targetColumn: GenColumn
@@ -60,6 +63,7 @@ interface GenAssociation: BaseEntity {
     /**
      * 关联类型
      */
+    @Key
     val associationType: AssociationType
 
     /**

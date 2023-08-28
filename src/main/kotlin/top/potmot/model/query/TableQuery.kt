@@ -7,7 +7,8 @@ class TableQuery(
     override val ids: List<Long>? = null,
     override val createdTime: TimeRangeQueryParam? = null,
     override val modifiedTime: TimeRangeQueryParam? = null,
-    keywords: List<String>? = null,
-    columnNames: List<String>? = null,
-    groupIds: List<Long>? = null
+    val keywords: List<String>? = null,
+    val columnName: String? = null,
+    val schemaIds: List<Long>? = null,
+    val groupIds: List<Long>? = null
 ) : BaseQuery

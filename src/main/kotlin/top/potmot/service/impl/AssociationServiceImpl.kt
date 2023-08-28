@@ -18,7 +18,7 @@ class AssociationServiceImpl(
     }
 
     @Transactional
-    override fun saveAssociations(associations: List<GenAssociationCommonInput>): List<Optional<GenAssociationCommonView>> {
+    override fun saveAssociations(associations: List<GenAssociationCommonInput>): List<GenAssociationCommonView> {
         TODO("Not yet implemented")
     }
 

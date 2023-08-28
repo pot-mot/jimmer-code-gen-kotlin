@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional
 import top.potmot.model.dto.GenEntityConfigInput
 import top.potmot.model.dto.GenEntityPropertiesInput
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenTableColumnsInput
 import top.potmot.model.query.EntityQuery
 import top.potmot.service.EntityService
 import java.util.*
@@ -15,22 +14,22 @@ class EntityServiceImpl(
 
 ): EntityService {
     @Transactional
-    override fun mapEntity(table: GenTableColumnsInput): GenEntityPropertiesView {
+    override fun mapEntities(tableIds: List<Long>): List<GenEntityPropertiesView> {
         TODO("Not yet implemented")
     }
 
     @Transactional
-    override fun syncEntity(tableId: Long): List<GenEntityPropertiesView> {
+    override fun syncEntities(tableIds: List<Long>): List<GenEntityPropertiesView> {
         TODO("Not yet implemented")
     }
 
     @Transactional
-    override fun saveEntities(entities: List<GenEntityPropertiesInput>): List<Optional<GenEntityPropertiesView>> {
+    override fun saveEntities(entities: List<GenEntityPropertiesInput>): List<GenEntityPropertiesView> {
         TODO("Not yet implemented")
     }
 
     @Transactional
-    override fun configEntity(entity: GenEntityConfigInput): Optional<GenEntityPropertiesView> {
+    override fun configEntity(entity: GenEntityConfigInput): GenEntityPropertiesView {
         TODO("Not yet implemented")
     }
 

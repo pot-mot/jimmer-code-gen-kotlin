@@ -35,6 +35,7 @@ interface GenSchema {
     /**
      * 数据源
      */
+    @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val dataSource: GenDataSource

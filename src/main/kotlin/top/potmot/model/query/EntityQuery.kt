@@ -7,6 +7,6 @@ class EntityQuery(
     override val ids: List<Long>? = null,
     override val createdTime: TimeRangeQueryParam? = null,
     override val modifiedTime: TimeRangeQueryParam? = null,
-    keywords: List<String>? = null,
-    propertyNames: List<String>? = null,
+    val keywords: List<String>? = null,
+    val propertyNames: List<String>? = null,
 ) : BaseQuery

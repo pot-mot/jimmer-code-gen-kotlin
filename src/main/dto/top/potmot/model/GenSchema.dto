@@ -1,12 +1,13 @@
-GenSchemaSourceView {
+GenSchemaView {
     #allScalars
-
-    dataSource {
-        #allScalars
-    }
+    id(dataSource)
 }
 
-input GenSchemaInsertInput {
-    name
-    id(dataSource)
+GenSchemaTablesView: GenSchemaView {
+    tables {
+        id
+        tableName
+        tableComment
+        tableType
+    }
 }
