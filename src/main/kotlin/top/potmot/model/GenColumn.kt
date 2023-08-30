@@ -56,43 +56,43 @@ interface GenColumn: BaseEntity {
     /**
      * 列在表中顺序
      */
-    val columnSort: Long
+    val orderKey: Long
 
     /**
      * 列名称
      */
     @Key
-    val columnName: String
+    val name: String
 
     /**
      * 列对应 JDBCType 码值
      */
-    val columnTypeCode: Int
+    val typeCode: Int
 
     /**
      * 列类型
      */
-    val columnType: String
+    val type: String
 
     /**
      * 列展示长度
      */
-    val columnDisplaySize: Long
+    val displaySize: Long
 
     /**
      * 列精度
      */
-    val columnPrecision: Long
+    val numericPrecision: Long
 
     /**
      * 列默认值
      */
-    val columnDefault: String?
+    val defaultValue: String?
 
     /**
      * 列注释
      */
-    val columnComment: String
+    val comment: String
 
     /**
      * 是否主键（1是）

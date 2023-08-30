@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import top.potmot.model.dto.GenAssociationCommonInput
 import top.potmot.model.dto.GenAssociationCommonView
-import top.potmot.model.dto.GenAssociationPreviewView
 import top.potmot.model.query.AssociationQuery
 import top.potmot.service.AssociationService
 
@@ -14,8 +13,8 @@ class AssociationController(
     @Autowired val associationService: AssociationService
 ) {
     @GetMapping("/select")
-    fun select(@RequestParam tableIds: List<Long>): List<GenAssociationPreviewView> {
-        return associationService.selectAssociations(tableIds)
+    fun select(@RequestBody tableIds: List<Long>): List<GenAssociationCommonView> {
+        return associationService.selectAssociations(tableIds, GenAssociationCommonView::class)
     }
 
     @PutMapping("/save")
@@ -25,7 +24,7 @@ class AssociationController(
 
     @PostMapping("/query")
     fun query(@RequestBody query: AssociationQuery): List<GenAssociationCommonView> {
-        return associationService.queryAssociations(query)
+        return associationService.queryAssociations(query, GenAssociationCommonView::class)
     }
 
     @DeleteMapping("/{ids}")

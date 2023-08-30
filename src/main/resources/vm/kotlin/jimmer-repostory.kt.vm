@@ -14,6 +14,6 @@ import org.babyfish.jimmer.spring.repository.KRepository
 import $!{tableInfo.savePackageName}.$!{entityPath}.$!{tableInfo.name}
 #end
 
-#tableComment($daoComment)
+#comment($daoComment)
 interface $!{tableInfo.name}$!{daoSuffix} : KRepository<$!{tableInfo.name}, Long> {
 }

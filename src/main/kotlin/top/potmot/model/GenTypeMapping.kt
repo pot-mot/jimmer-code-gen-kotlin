@@ -21,7 +21,7 @@ interface GenTypeMapping: BaseEntity {
     /**
      * 列类型表达式
      */
-    val columnTypeExpression: String
+    val typeExpression: String
 
     /**
      * 是否正则（1是）

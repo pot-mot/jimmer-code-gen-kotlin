@@ -16,7 +16,6 @@ import top.potmot.model.GenColumn
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenSchema
 import top.potmot.model.GenTable
-import top.potmot.model.GenTableGroup
 import top.potmot.model.by
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import us.fatehi.utility.datasource.DatabaseConnectionSources
@@ -34,28 +33,8 @@ fun GenDataSource.toSource(): DatabaseConnectionSource {
     ).test()
 }
 
-fun String.removeQuotes(): String {
-    return this.trim('\'', '"', '`')
-}
-
-fun Schema.toGenSchema(dataSourceId: Long): GenSchema {
-    val schema = this
-    return new(GenSchema::class).by {
-        this.dataSourceId = dataSourceId
-        this.name = schema.fullName
-    }
-}
-
-fun GenSchema.toGenTableGroup(catalog: Catalog, parentId: Long? = null): GenTableGroup {
-    val genSchema = this
-    return new(GenTableGroup::class).by {
-        this.parentId = parentId
-        this.groupName = genSchema.name.removeQuotes()
-        var index = 0L
-        this.tables = catalog.tables.map {
-            it.toGenTable(genSchema.id, index ++)
-        }
-    }
+fun GenDataSource.test() {
+    this.toSource().test().close()
 }
 
 fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
@@ -71,7 +50,12 @@ fun DatabaseConnectionSource.getCatalog(
     schemaPattern: String? = null,
     tablePattern: String? = null,
     withoutTable: Boolean = false,
+    withoutPrimaryKey: Boolean = false,
+    withoutForeignKey: Boolean = false,
+    withoutIndex: Boolean = false,
+    withoutColumn: Boolean = false,
     withoutRoutine: Boolean = true,
+    withoutPrivilege: Boolean = true,
 ): Catalog {
     val limitBuilder = LimitOptionsBuilder.builder()
     schemaPattern?.let {
@@ -85,6 +69,23 @@ fun DatabaseConnectionSource.getCatalog(
 
     if (!withoutTable) {
         schemaInfoBuilder.setRetrieveTables(true)
+        if (!withoutColumn) {
+            schemaInfoBuilder.setRetrieveTableColumns(true)
+        }
+        if (!withoutPrimaryKey) {
+            schemaInfoBuilder.setRetrievePrimaryKeys(true)
+        }
+        if (!withoutForeignKey) {
+            schemaInfoBuilder.setRetrieveForeignKeys(true)
+        }
+        if (!withoutIndex) {
+            schemaInfoBuilder.setRetrieveIndexes(true)
+        }
+
+        if (!withoutPrivilege) {
+            schemaInfoBuilder.setRetrieveTablePrivileges(true)
+            schemaInfoBuilder.setRetrieveTableColumnPrivileges(true)
+        }
     }
     if (!withoutRoutine) {
         schemaInfoBuilder.setRetrieveRoutines(true)
@@ -99,16 +100,39 @@ fun DatabaseConnectionSource.getCatalog(
     )
 }
 
+fun Catalog.toGenSchemas(dataSourceId: Long): List<GenSchema> {
+    val catalog = this
+    return this.schemas.map {schema ->
+        var temp = schema.toGenSchema(dataSourceId)
+        temp = new(GenSchema::class).by(temp) {
+            this.tables = catalog.getTables(schema).map {table ->
+                table.toGenTable()
+            }
+        }
+        temp
+    }
+}
+
+fun Schema.toGenSchema(dataSourceId: Long): GenSchema {
+    val schema = this
+    return new(GenSchema::class).by {
+        this.dataSourceId = dataSourceId
+        this.name = schema.fullName
+    }
+}
+
 fun Table.toGenTable(
-    schemaId: Long,
+    schemaId: Long? = null,
+    groupId: Long? = null,
     orderKey: Long? = null
 ): GenTable {
     val table = this
     return new(GenTable::class).by {
-        this.schemaId = schemaId
-        this.tableName = table.name
-        this.tableComment = table.remarks
-        this.tableType = TableType.fromValue(table.tableType.tableType)
+        schemaId?.let { this.schemaId = it }
+        groupId?.let { this.groupId = it }
+        this.name = table.name
+        this.comment = table.remarks
+        this.type = TableType.fromValue(table.type.tableType)
         var index = 0L
         this.columns = table.columns.map {
             it.toGenColumn(index++)
@@ -120,14 +144,14 @@ fun Table.toGenTable(
 fun Column.toGenColumn(index: Long): GenColumn {
     val column = this
     return new(GenColumn::class).by {
-        this.columnSort = index
-        this.columnName = column.name
-        this.columnType = column.type.name
-        this.columnTypeCode = column.type.javaSqlType.vendorTypeNumber
-        this.columnDisplaySize = column.size.toLong()
-        this.columnPrecision = column.decimalDigits.toLong()
-        this.columnDefault = column.defaultValue
-        this.columnComment = column.remarks
+        this.orderKey = index
+        this.name = column.name
+        this.type = column.type.name
+        this.typeCode = column.type.javaSqlType.vendorTypeNumber
+        this.displaySize = column.size.toLong()
+        this.numericPrecision = column.decimalDigits.toLong()
+        this.defaultValue = column.defaultValue
+        this.comment = column.remarks
         this.isPk = column.isPartOfPrimaryKey
         this.isFk = column.isPartOfForeignKey
         this.isUnique = column.isPartOfUniqueIndex

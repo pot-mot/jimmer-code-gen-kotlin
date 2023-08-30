@@ -16,6 +16,6 @@ fun GenTable.getColumn(name: String): GenColumn? {
     if (!ImmutableObjects.isLoaded(this, "columns")) {
         return null
     }
-    return this.columns.find { it.columnName == name }
+    return this.columns.find { it.name == name }
 }
 

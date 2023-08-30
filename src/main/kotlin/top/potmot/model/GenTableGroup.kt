@@ -59,7 +59,7 @@ interface GenTableGroup: BaseEntity, TreeNode<GenTableGroup> {
      * 组名称
      */
     @Key
-    val groupName: String
+    val name: String
 
     /**
      * 自定排序

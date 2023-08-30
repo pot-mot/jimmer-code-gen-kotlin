@@ -6,8 +6,8 @@ GenSchemaView {
 GenSchemaTablesView: GenSchemaView {
     tables {
         id
-        tableName
-        tableComment
-        tableType
+        name
+        comment
+        type
     }
 }

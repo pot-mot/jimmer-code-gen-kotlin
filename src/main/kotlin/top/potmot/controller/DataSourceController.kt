@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import top.potmot.constant.DataSourceType
 import top.potmot.error.DataSourceErrorCode
-import top.potmot.model.GenDataSource
 import top.potmot.model.GenSchema
 import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.model.dto.GenDataSourceView
@@ -26,8 +25,8 @@ class DataSourceController (
 
     @PostMapping
     @ThrowsAll(DataSourceErrorCode::class)
-    fun save(@RequestBody input: GenDataSourceInput): GenDataSource {
-        return dataSourceService.saveDataSource(input)
+    fun save(@RequestBody dataSource: GenDataSourceInput): GenDataSourceView {
+        return GenDataSourceView(dataSourceService.saveDataSource(dataSource))
     }
 
     @GetMapping

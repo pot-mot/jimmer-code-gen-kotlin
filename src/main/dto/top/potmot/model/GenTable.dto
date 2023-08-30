@@ -15,7 +15,7 @@ GenTableColumnsView {
     }
 }
 
-input GenTableCommonInput {
+inputOnly GenTableCommonInput {
     #allScalars
     id(schema)
     id(group)
@@ -23,13 +23,7 @@ input GenTableCommonInput {
     -modifiedTime
 }
 
-input GenTableColumnsInput {
-    #allScalars
-    id(schema)
-    id(group)
-    -createdTime
-    -modifiedTime
-
+inputOnly GenTableColumnsInput: GenTableCommonInput {
     columns {
         #allScalars
     }

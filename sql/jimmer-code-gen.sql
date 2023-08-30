@@ -7,8 +7,8 @@ CREATE TABLE `gen_data_source`
     `id`            bigint(0)                                                     NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `type`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '数据库类型',
     `name`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '名称',
-    `host`           varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主机',
-    `port`           varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '端口',
+    `host`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主机',
+    `port`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '端口',
     `username`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户名',
     `password`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '密码',
     `order_key`     bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '自定排序',
@@ -25,13 +25,13 @@ CREATE TABLE `gen_data_source`
 DROP TABLE IF EXISTS `gen_schema`;
 CREATE TABLE `gen_schema`
 (
-    `id`            bigint(0)                                                     NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `data_source_id`     bigint(0)                                                NOT NULL COMMENT '数据源 ID',
-    `name`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '名称',
-    `order_key`     bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '自定排序',
-    `created_time`  datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-    `modified_time` datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-    `remark`        varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '备注',
+    `id`             bigint(0)                                                     NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `data_source_id` bigint(0)                                                     NOT NULL COMMENT '数据源 ID',
+    `name`           varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '名称',
+    `order_key`      bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `created_time`   datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time`  datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`         varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 0
@@ -44,7 +44,7 @@ CREATE TABLE `gen_table_group`
 (
     `id`            bigint(0)                                                     NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `parent_id`     bigint(0)                                                     NULL COMMENT '父组',
-    `group_name`    varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '组名称',
+    `name`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '组名称',
     `order_key`     bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`  datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time` datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
@@ -59,16 +59,16 @@ CREATE TABLE `gen_table_group`
 DROP TABLE IF EXISTS `gen_table`;
 CREATE TABLE `gen_table`
 (
-    `id`             bigint(0)                                                     NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `schema_id` bigint(0)                                                          NOT NULL COMMENT '数据架构',
-    `group_id`       bigint(0)                                                     NULL COMMENT '所属组',
-    `table_name`     varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '表名称',
-    `table_comment`  varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '表注释',
-    `table_type`     varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '表种类',
-    `order_key`      bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '自定排序',
-    `created_time`   datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-    `modified_time`  datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-    `remark`         varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '备注',
+    `id`            bigint(0)                                                     NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `schema_id`     bigint(0)                                                     NOT NULL COMMENT '数据架构',
+    `group_id`      bigint(0)                                                     NULL COMMENT '所属组',
+    `name`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '表名称',
+    `comment`       varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '表注释',
+    `type`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '表种类',
+    `order_key`     bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `created_time`  datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time` datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`        varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 0
@@ -106,24 +106,24 @@ CREATE TABLE `gen_entity`
 DROP TABLE IF EXISTS `gen_column`;
 CREATE TABLE `gen_column`
 (
-    `id`                  bigint(0)                                                     NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `table_id`            bigint(0)                                                     NOT NULL COMMENT '归属表',
-    `column_sort`         bigint(0)                                                     NOT NULL COMMENT '列在表中顺序',
-    `column_name`         varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列名称',
-    `column_type_code`    int(0)                                                        NOT NULL COMMENT '列对应 JDBCType 码值',
-    `column_type`         varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列类型',
-    `column_display_size` bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '列展示长度',
-    `column_precision`    bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '列精度',
-    `column_default`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '列默认值',
-    `column_comment`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列注释',
-    `is_pk`               tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否主键（1是）',
-    `is_auto_increment`   tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否自增（1是）',
-    `is_fk`               tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否外键（1是）',
-    `is_unique`           tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否唯一索引（1是）',
-    `is_not_null`         tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否非空（1是）',
-    `created_time`        datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-    `modified_time`       datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-    `remark`              varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '备注',
+    `id`                       bigint(0)                                                     NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `table_id`                 bigint(0)                                                     NOT NULL COMMENT '归属表',
+    `order_key`                bigint(0)                                                     NOT NULL COMMENT '列在表中顺序',
+    `name`                     varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列名称',
+    `type_code`                int(0)                                                        NOT NULL COMMENT '列对应 JDBCType 码值',
+    `type`                     varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列类型',
+    `display_size`             bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '列展示长度',
+    `numeric_numericPrecision` bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '列精度',
+    `default_value`            varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '列默认值',
+    `comment`                  varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列注释',
+    `is_pk`                    tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否主键（1是）',
+    `is_auto_increment`        tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否自增（1是）',
+    `is_fk`                    tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否外键（1是）',
+    `is_unique`                tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否唯一索引（1是）',
+    `is_not_null`              tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否非空（1是）',
+    `created_time`             datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time`            datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`                   varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 0
@@ -134,15 +134,15 @@ CREATE TABLE `gen_column`
 DROP TABLE IF EXISTS `gen_association`;
 CREATE TABLE `gen_association`
 (
-    `id`                  bigint(0)                                                                                               NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `association_comment` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci                                           NOT NULL DEFAULT '' COMMENT '关联注释',
-    `source_column_id`    bigint(0)                                                                                               NOT NULL COMMENT '主列',
-    `target_column_id`    bigint(0)                                                                                               NOT NULL COMMENT '从列',
-    `association_type`    enum ('OneToOne','OneToMany','ManyToOne','ManyToMany') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '关联类型',
-    `order_key`           bigint(0)                                                                                               NOT NULL DEFAULT 0 COMMENT '自定排序',
-    `created_time`        datetime(0)                                                                                             NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-    `modified_time`       datetime(0)                                                                                             NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-    `remark`              varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci                                           NOT NULL DEFAULT '' COMMENT '备注',
+    `id`               bigint(0)                                                                                               NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `comment`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci                                           NOT NULL DEFAULT '' COMMENT '关联注释',
+    `source_column_id` bigint(0)                                                                                               NOT NULL COMMENT '主列',
+    `target_column_id` bigint(0)                                                                                               NOT NULL COMMENT '从列',
+    `association_type` enum ('OneToOne','OneToMany','ManyToOne','ManyToMany') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '关联类型',
+    `order_key`        bigint(0)                                                                                               NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `created_time`     datetime(0)                                                                                             NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time`    datetime(0)                                                                                             NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`           varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci                                           NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 0
@@ -209,7 +209,7 @@ CREATE TABLE `gen_property`
     `id`                             bigint(0)                                                                                                             NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `entity_id`                      bigint(0)                                                                                                             NOT NULL COMMENT '归属实体',
     `column_id`                      bigint(0)                                                                                                             NULL COMMENT '对应列',
-    `property_name`                  varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci                                                         NOT NULL COMMENT '属性名',
+    `name`                           varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci                                                         NOT NULL COMMENT '属性名',
     `is_id`                          tinyint(1)                                                                                                            NOT NULL DEFAULT 0 COMMENT '是否Id（1是）',
     `id_generation_type`             enum ('AUTO', 'USER', 'IDENTITY', 'SEQUENCE') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci                                 DEFAULT 'AUTO' COMMENT 'Id 生成类型',
     `is_key`                         tinyint(1)                                                                                                            NOT NULL DEFAULT 0 COMMENT '是否为业务键属性（1是）',
@@ -247,8 +247,8 @@ DROP TABLE IF EXISTS `gen_enum`;
 CREATE TABLE `gen_enum`
 (
     `id`            bigint(0)                                                     NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `enum_name`     varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT '' COMMENT '枚举名',
-    `enum_comment`  varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT '' COMMENT '枚举注释',
+    `name`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT '' COMMENT '枚举名',
+    `comment`       varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT '' COMMENT '枚举注释',
     `order_key`     bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`  datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time` datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
@@ -266,8 +266,9 @@ CREATE TABLE `gen_enum_item`
 (
     `id`            bigint(0)                                                     NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `enum_id`       bigint(0)                                                     NOT NULL COMMENT '对应枚举 ID',
-    `item_name`     varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT '' COMMENT '元素名',
-    `item_value`    varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT '' COMMENT '元素值',
+    `name`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT '' COMMENT '元素名',
+    `value`         varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT '' COMMENT '元素值',
+    `comment`       varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL     DEFAULT '' COMMENT '元素注释',
     `created_time`  datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time` datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '备注',

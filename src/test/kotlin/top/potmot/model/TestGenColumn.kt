@@ -25,12 +25,12 @@ class TestGenColumn(
     fun testCRUD() {
         val genTableColumnBeforeInsert = new(GenColumn::class).by {
             tableId = 1
-            columnName = "test_column"
-            columnSort = 1
-            columnTypeCode = Types.VARCHAR
-            columnType = "varchar"
-            columnDefault = "测试列"
-            columnComment = "test"
+            name = "test_column"
+            orderKey = 1
+            typeCode = Types.VARCHAR
+            type = "varchar"
+            defaultValue = "测试列"
+            comment = "test"
             isPk = true
             isAutoIncrement = true
         }
@@ -39,10 +39,10 @@ class TestGenColumn(
         assertEquals(1, genTableColumnInserted.tableId)
         assert(genTableColumnInserted.isPk)
         assert(genTableColumnInserted.isAutoIncrement)
-        assertEquals("测试列", genTableColumnInserted.columnDefault)
+        assertEquals("测试列", genTableColumnInserted.defaultValue)
 
         val genColumnBeforeUpdate = new(GenColumn::class).by(genTableColumnInserted) {
-            columnDefault = null
+            defaultValue = null
             isPk = false
             isAutoIncrement = false
         }
@@ -53,7 +53,7 @@ class TestGenColumn(
         assertEquals(1, genTableColumnUpdated.tableId)
         assert(!genTableColumnUpdated.isPk)
         assert(!genTableColumnUpdated.isAutoIncrement)
-        assertEquals(null, genTableColumnUpdated.columnDefault)
+        assertEquals(null, genTableColumnUpdated.defaultValue)
 
         genTableColumnRepository.deleteById(genTableColumnUpdated.id)
     }

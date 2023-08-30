@@ -26,7 +26,7 @@
 //        val packageName = genTable.packageName
 //        val functionName = genTable.functionName
 //        val velocityContext = VelocityContext()
-//        velocityContext.put("tableName", genTable.tableName)
+//        velocityContext.put("name", genTable.name)
 //        velocityContext.put(
 //            "functionName",
 //            if (StringUtils.isNotEmpty(functionName)) functionName else "【请填写功能名称】"

@@ -14,7 +14,7 @@ GenEntityPropertiesView {
     }
 }
 
-input GenEntityPropertiesInput {
+inputOnly GenEntityPropertiesInput {
     #allScalars
     id(table)
     -createdTime
@@ -28,7 +28,7 @@ input GenEntityPropertiesInput {
     }
 }
 
-input GenEntityConfigInput {
+inputOnly GenEntityConfigInput {
     #allScalars
     -createdTime
     -modifiedTime

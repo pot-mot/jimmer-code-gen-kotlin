@@ -58,7 +58,7 @@ interface GenProperty: BaseEntity {
      * 属性名
      */
     @Key
-    val propertyName: String
+    val name: String
 
     /**
      * 是否Id（1是）

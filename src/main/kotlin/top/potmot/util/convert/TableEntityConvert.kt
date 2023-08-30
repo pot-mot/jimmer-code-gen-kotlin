@@ -29,12 +29,12 @@ fun tableToEntity(
         }
         author = GenConfig.author
         packageName = GenConfig.packageName
-        className = tableNameToClassName(genTable.tableName)
-        classComment = genTable.tableComment
+        className = nameToClassName(genTable.name)
+        classComment = genTable.comment
         moduleName = packageNameToModuleName(GenConfig.packageName)
-        functionName = tableCommentToFunctionName(genTable.tableComment)
+        functionName = commentToFunctionName(genTable.comment)
 
-        if (genTable.tableType == TableType.VIEW) {
+        if (genTable.type == TableType.VIEW) {
             isAdd = false
             isEdit = false
         }
@@ -58,16 +58,16 @@ fun columnToField(
         if (ImmutableObjects.isLoaded(genColumn, "id")) {
             columnId = genColumn.id
         }
-        propertyName = columnNameToPropertyName(genColumn.columnName)
+        name = nameToname(genColumn.name)
         propertyType = getPropertyTypeName(genColumn, typeMappings)
-        propertyComment = genColumn.columnComment
+        propertyComment = genColumn.comment
         isAddRequired = genColumn.isNotNull
         isEditRequired = genColumn.isNotNull
 
-        listSort = genColumn.columnSort
-        addSort = genColumn.columnSort
-        editSort = genColumn.columnSort
-        querySort = genColumn.columnSort
+        listSort = genColumn.orderKey
+        addSort = genColumn.orderKey
+        editSort = genColumn.orderKey
+        querySort = genColumn.orderKey
 
         queryType = getPropertyQueryType(genColumn)
     }
@@ -83,8 +83,8 @@ fun getPropertyTypeName(
     defaultType: String = GenConfig.defaultType
 ): String {
     return when (language) {
-        Language.JAVA -> jdbcTypeToJavaType(column.columnTypeCode, column.isNotNull).name
-        Language.KOTLIN -> jdbcTypeToKotlinType(column.columnTypeCode).qualifiedName ?: defaultType
+        Language.JAVA -> jdbcTypeToJavaType(column.typeCode, column.isNotNull).name
+        Language.KOTLIN -> jdbcTypeToKotlinType(column.typeCode).qualifiedName ?: defaultType
     }
 }
 

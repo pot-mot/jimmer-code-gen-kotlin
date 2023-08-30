@@ -10,7 +10,6 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
-import org.babyfish.jimmer.sql.OrderedProp
 import top.potmot.constant.TableType
 import top.potmot.model.base.BaseEntity
 
@@ -48,14 +47,14 @@ interface GenTable : BaseEntity {
      * 所属组 ID
      */
     @IdView
-    val groupId: Long
+    val groupId: Long?
 
     /**
      * 所属组
      */
     @ManyToOne
     @OnDissociate(DissociateAction.SET_NULL)
-    val group: GenTableGroup
+    val group: GenTableGroup?
 
     /**
      * 对应实体 ID
@@ -73,18 +72,18 @@ interface GenTable : BaseEntity {
      * 表名称
      */
     @Key
-    val tableName: String
+    val name: String
 
     /**
      * 表注释
      */
-    val tableComment: String
+    val comment: String
 
     /**
      * 表种类
      */
     @Key
-    val tableType: TableType
+    val type: TableType
 
     /**
      * 自定排序

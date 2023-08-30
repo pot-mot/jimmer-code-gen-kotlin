@@ -7,7 +7,6 @@ import top.potmot.model.dto.GenEntityPropertiesInput
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.query.EntityQuery
 import top.potmot.service.EntityService
-import java.util.*
 
 @RestController
 @RequestMapping("/entity")
@@ -36,7 +35,7 @@ class EntityController (
 
     @PostMapping("/query")
     fun query(@RequestBody query: EntityQuery): List<GenEntityPropertiesView> {
-        return entityService.queryEntities(query)
+        return entityService.queryEntities(query, GenEntityPropertiesView::class)
     }
 
     @DeleteMapping("/{ids}")

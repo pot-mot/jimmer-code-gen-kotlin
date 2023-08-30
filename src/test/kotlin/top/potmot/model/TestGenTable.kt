@@ -8,7 +8,7 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
-import top.potmot.constant.TableType
+import top.potmot.constant.type
 import top.potmot.dao.GenTableRepository
 
 @Transactional
@@ -24,14 +24,14 @@ class TestGenTable(
     fun testCRUD() {
         val genTableBeforeInsert = new(GenTable::class).by {
             schemaId = 1
-            tableName = "user"
-            tableComment = "用户表"
-            tableType = TableType.TABLE
+            name = "user"
+            comment = "用户表"
+            type = type.TABLE
         }
         val genTableInserted = genTableRepository.save(genTableBeforeInsert)
         println(genTableInserted)
         val genTableBeforeUpdate = new(GenTable::class).by(genTableInserted) {
-            tableComment = "用户表修改了"
+            comment = "用户表修改了"
         }
         val genTableUpdated = genTableRepository.save(genTableBeforeUpdate)
         genTableRepository.deleteById(genTableUpdated.id)

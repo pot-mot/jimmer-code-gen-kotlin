@@ -28,7 +28,7 @@ import $!{tableInfo.savePackageName}.$!{entityPath}.$!{tableInfo.name};
 #end
 
 ##表注释（宏定义）
-#tableComment(${inputComment})
+#comment(${inputComment})
 public class $!{tableInfo.name}$!{inputSuffix} implements Input<$!{tableInfo.name}> {
 #foreach($column in $members)
 #if(${column.comment}  && ${memberComment})

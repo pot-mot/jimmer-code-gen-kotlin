@@ -1,10 +1,14 @@
 package top.potmot.service
 
+import org.babyfish.jimmer.View
+import top.potmot.model.GenColumn
+import top.potmot.model.GenEntity
 import top.potmot.model.dto.GenEntityConfigInput
 import top.potmot.model.dto.GenEntityPropertiesInput
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.query.EntityQuery
 import java.util.*
+import kotlin.reflect.KClass
 
 /**
  * 实体业务类
@@ -34,7 +38,7 @@ interface EntityService {
     /**
      * 查询实体
      */
-    fun queryEntities(query: EntityQuery): List<GenEntityPropertiesView>
+    fun <T : View<GenEntity>> queryEntities(query: EntityQuery, viewCLass: KClass<T>): List<T>
 
     /**
      * 删除实体

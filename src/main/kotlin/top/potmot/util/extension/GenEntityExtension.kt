@@ -15,5 +15,5 @@ fun GenEntity.getProperty(name: String): GenProperty? {
     if (!ImmutableObjects.isLoaded(this, "properties")) {
         return null
     }
-    return this.properties.find { it.propertyName == name }
+    return this.properties.find { it.name == name }
 }
