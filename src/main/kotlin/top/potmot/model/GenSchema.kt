@@ -10,6 +10,7 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
+import top.potmot.model.base.BaseEntity
 
 /**
  * 生成数据源实体类
@@ -18,13 +19,13 @@ import org.babyfish.jimmer.sql.OneToMany
  * @since 2023-08-14 15:28:59
  */
 @Entity
-interface GenSchema {
+interface GenSchema: BaseEntity {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long
+    override val id: Long
 
     /**
      * 数据源 ID

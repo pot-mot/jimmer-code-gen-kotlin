@@ -1,33 +1,112 @@
 package top.potmot.service
 
 import org.babyfish.jimmer.View
+import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
+import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.sql.kt.ast.expression.eq
+import org.babyfish.jimmer.sql.kt.ast.expression.gt
+import org.babyfish.jimmer.sql.kt.ast.expression.ilike
+import org.babyfish.jimmer.sql.kt.ast.expression.lt
+import org.babyfish.jimmer.sql.kt.ast.expression.or
+import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import top.potmot.model.GenAssociation
+import top.potmot.model.comment
+import top.potmot.model.createdTime
 import top.potmot.model.dto.GenAssociationCommonInput
 import top.potmot.model.dto.GenAssociationCommonView
+import top.potmot.model.id
 import top.potmot.model.query.AssociationQuery
+import top.potmot.model.sourceColumn
+import top.potmot.model.sourceColumnId
+import top.potmot.model.tableId
+import top.potmot.model.targetColumn
+import top.potmot.model.targetColumnId
 import kotlin.reflect.KClass
 
-/**
- * 关联业务类
- */
-interface AssociationService {
-    /**
-     * 从 GenColumn 中寻找匹配关联并存储
-     */
-    fun <T : View<GenAssociation>> selectAssociations(tableIds: List<Long>, viewClass: KClass<T>): List<T>
+@RestController
+@RequestMapping("/association")
+class AssociationService(
+    @Autowired val sqlClient: KSqlClient
+) {
+    @GetMapping("/select")
+    fun select(tableId: Long): List<GenAssociationCommonView> {
+        return select(tableId, GenAssociationCommonView::class)
+    }
 
-    /**
-     * 保存关联
-     */
-    fun saveAssociations(associations: List<GenAssociationCommonInput>): List<GenAssociationCommonView>
+    @GetMapping("/query")
+    fun query(query: AssociationQuery): List<GenAssociationCommonView> {
+        return query(query, GenAssociationCommonView::class)
+    }
 
-    /**
-     * 查询关联
-     */
-    fun <T : View<GenAssociation>> queryAssociations(query: AssociationQuery, viewClass: KClass<T>): List<T>
+    @PostMapping("/save")
+    @Transactional
+    fun save(@RequestBody associations: List<GenAssociationCommonInput>): Int {
+        var result = 0
+        associations.forEach {
+            result += sqlClient.insert(it).totalAffectedRowCount
+        }
+        return result
+    }
 
-    /**
-     * 删除关联
-     */
-    fun deleteAssociations(ids: List<Long>): Int
+    @DeleteMapping("/{ids}")
+    @Transactional
+    fun delete(@PathVariable ids: List<Long>): Int {
+        return sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
+    }
+
+    fun <T : View<GenAssociation>> query(query: AssociationQuery, viewClass: KClass<T>): List<T> {
+        return sqlClient.createQuery(GenAssociation::class) {
+            query.keywords?.takeIf { it.isNotEmpty() }?.let {
+                query.keywords.forEach {
+                    where(table.comment ilike it)
+                }
+            }
+
+            query.sourceColumnId?.let {
+                where(table.sourceColumnId eq it)
+            }
+            query.sourceTableId?.let {
+                where(table.sourceColumn.tableId eq it)
+            }
+
+            query.targetColumnId?.let {
+                where(table.targetColumnId eq it)
+            }
+            query.targetTableId?.let {
+                where(table.targetColumn.tableId eq it)
+            }
+
+            query.ids?.takeIf { it.isNotEmpty() }?.let {
+                where(table.id valueIn it)
+            }
+            query.createdTime?.let {
+                where(table.createdTime gt it.start)
+                where(table.createdTime lt it.end)
+            }
+            query.modifiedTime?.let {
+                where(table.createdTime gt it.start)
+                where(table.createdTime lt it.end)
+            }
+
+            select(table.fetch(viewClass))
+        }.execute()
+    }
+
+    fun <T : View<GenAssociation>> select(tableId: Long, viewClass: KClass<T>): List<T> {
+        return sqlClient.createQuery(GenAssociation::class) {
+            where(table.sourceColumn.tableId eq tableId)
+            or(table.targetColumn.tableId eq tableId)
+
+            select(table.fetch(viewClass))
+        }.execute()
+    }
 }

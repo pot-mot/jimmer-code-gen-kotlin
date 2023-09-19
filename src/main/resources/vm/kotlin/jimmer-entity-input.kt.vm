@@ -34,7 +34,7 @@ data class $!{tableInfo.name}$!{inputSuffix}(
 #set($count = $count + 1)
 #end
 ) : Input<$!{tableInfo.name}> {
-    override fun toEntity(): $!{tableInfo.name} =
+    fun toEntity(): $!{tableInfo.name} =
         CONVERTER.to$!{tableInfo.name}(this)
 
     @Mapper

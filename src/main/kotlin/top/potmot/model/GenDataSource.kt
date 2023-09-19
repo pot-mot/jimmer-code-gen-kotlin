@@ -7,6 +7,7 @@ import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.OneToMany
 import top.potmot.constant.DataSourceType
+import top.potmot.model.base.BaseEntity
 
 /**
  * 生成数据源实体类
@@ -15,13 +16,13 @@ import top.potmot.constant.DataSourceType
  * @since 2023-08-14 23:07:56
  */
 @Entity
-interface GenDataSource {
+interface GenDataSource: BaseEntity {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long
+    override val id: Long
 
     /**
      * 数据库类型

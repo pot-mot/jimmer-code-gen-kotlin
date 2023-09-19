@@ -7,62 +7,40 @@ import org.babyfish.jimmer.sql.kt.ast.expression.ilike
 import org.babyfish.jimmer.sql.kt.ast.expression.lt
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.model.GenTable
-import top.potmot.model.name
-import top.potmot.model.columns
-import top.potmot.model.createdTime
-import top.potmot.model.groupId
-import top.potmot.model.id
-import top.potmot.model.query.TableQuery
-import top.potmot.model.schemaId
+import top.potmot.model.GenColumn
 import top.potmot.model.comment
-import top.potmot.model.dto.GenTableColumnsView
-import top.potmot.model.dto.GenTableCommonView
+import top.potmot.model.createdTime
+import top.potmot.model.dto.GenColumnCommonView
+import top.potmot.model.id
+import top.potmot.model.name
+import top.potmot.model.query.ColumnQuery
+import top.potmot.model.schemaId
+import top.potmot.model.tableId
 import kotlin.reflect.KClass
 
 @RestController
-@RequestMapping("/table")
-class TableService(
+@RequestMapping("/column")
+class ColumnService(
     @Autowired val sqlClient: KSqlClient
 ) {
-    @GetMapping("/{ids}")
-    fun list(@PathVariable ids: List<Long>): List<GenTableColumnsView> {
-        return query(TableQuery(ids), GenTableColumnsView::class)
-    }
-
     @GetMapping("/query")
-    fun query(query: TableQuery): List<GenTableCommonView> {
-        return query(query, GenTableCommonView::class)
+    fun query(query: ColumnQuery): List<GenColumnCommonView> {
+        return query(query, GenColumnCommonView::class)
     }
 
-    @Transactional
-    @DeleteMapping("/{ids}")
-    fun delete(@PathVariable ids: List<Long>): Int {
-        return sqlClient.deleteByIds(GenTable::class, ids).totalAffectedRowCount
-    }
-
-    fun <T : View<GenTable>> query(query: TableQuery, viewCLass: KClass<T>): List<T> {
-        return sqlClient.createQuery(GenTable::class) {
+    fun <T : View<GenColumn>> query(query: ColumnQuery, viewCLass: KClass<T>): List<T> {
+        return sqlClient.createQuery(GenColumn::class) {
             query.keywords?.takeIf { it.isNotEmpty() }?.let {
                 query.keywords.forEach {
                     where(table.name ilike it)
                     where(table.comment ilike it)
                 }
             }
-            query.groupIds?.takeIf { it.isNotEmpty() }?.let {
-                where(table.groupId valueIn it)
-            }
-            query.schemaIds?.takeIf { it.isNotEmpty() }?.let {
-                where(table.schemaId valueIn it)
-            }
-            query.name?.let {
-                where(table.asTableEx().columns.name ilike it)
+            query.tableIds?.takeIf { it.isNotEmpty() }?.let {
+                where(table.tableId valueIn it)
             }
 
             query.ids?.takeIf { it.isNotEmpty() }?.let {
