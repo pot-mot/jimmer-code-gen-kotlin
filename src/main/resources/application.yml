@@ -31,8 +31,7 @@ gen:
   # author:
   # 默认生成包路径 system 需改成自己的模块名称
   # packageName: com.example
-  # 自动去除表前缀，默认是true
-  # autoRemovePre: false
   # 表前缀（生成类名不会包含表前缀，多个用逗号分隔）
-  #   tablePrefix: t_
+  tablePrefix: gen, t
+  tableSuffix: model, info
   language: kotlin

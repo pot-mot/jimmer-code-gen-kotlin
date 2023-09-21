@@ -6,7 +6,7 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.OneToMany
-import top.potmot.constant.DataSourceType
+import top.potmot.enum.DataSourceType
 import top.potmot.model.base.BaseEntity
 
 /**

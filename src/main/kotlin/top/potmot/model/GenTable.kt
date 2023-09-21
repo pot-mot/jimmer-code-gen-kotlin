@@ -10,7 +10,7 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
-import top.potmot.constant.TableType
+import top.potmot.enum.TableType
 import top.potmot.model.base.BaseEntity
 
 /**

@@ -18,24 +18,34 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import top.potmot.enum.AssociationType
 import top.potmot.model.GenAssociation
 import top.potmot.model.comment
 import top.potmot.model.createdTime
 import top.potmot.model.dto.GenAssociationCommonInput
 import top.potmot.model.dto.GenAssociationCommonView
+import top.potmot.model.dto.GenAssociationMatchView
+import top.potmot.model.dto.GenColumnMatchView
+import top.potmot.model.dto.GenTableColumnsView
 import top.potmot.model.id
 import top.potmot.model.query.AssociationQuery
+import top.potmot.model.query.TableQuery
 import top.potmot.model.sourceColumn
 import top.potmot.model.sourceColumnId
 import top.potmot.model.tableId
 import top.potmot.model.targetColumn
 import top.potmot.model.targetColumnId
+import top.potmot.util.association.AssociationMatch
+import top.potmot.util.association.allMatch
+import top.potmot.util.extension.toColumnMatchViews
 import kotlin.reflect.KClass
+import top.potmot.util.extension.newGenAssociationMatchView
 
 @RestController
 @RequestMapping("/association")
 class AssociationService(
-    @Autowired val sqlClient: KSqlClient
+    @Autowired val sqlClient: KSqlClient,
+    @Autowired val tableService: TableService
 ) {
     @GetMapping("/select")
     fun select(tableId: Long): List<GenAssociationCommonView> {
@@ -61,6 +71,27 @@ class AssociationService(
     @Transactional
     fun delete(@PathVariable ids: List<Long>): Int {
         return sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
+    }
+
+    @PostMapping("/scan")
+    fun scan(@RequestBody tableIds: List<Long>): List<GenAssociationMatchView> {
+        val columns = tableService.query(TableQuery(ids = tableIds), GenTableColumnsView::class).flatMap { it.toColumnMatchViews() }
+        return matchColumns(columns)
+    }
+
+    fun matchColumns(columns: List<GenColumnMatchView>, match: AssociationMatch = allMatch): List<GenAssociationMatchView> {
+        val result = mutableListOf<GenAssociationMatchView>()
+
+        columns.forEach{source ->
+            if (source.table != null)
+            columns.forEach {target ->
+                if (target.table != null && source.id != target.id && match(source, target)) {
+                    result += newGenAssociationMatchView(AssociationType.MANY_TO_ONE, source, target)
+                }
+            }
+        }
+
+        return result
     }
 
     fun <T : View<GenAssociation>> query(query: AssociationQuery, viewClass: KClass<T>): List<T> {

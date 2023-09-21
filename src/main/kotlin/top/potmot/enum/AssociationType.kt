@@ -1,4 +1,4 @@
-package top.potmot.constant
+package top.potmot.enum
 
 import org.babyfish.jimmer.sql.EnumItem
 import org.babyfish.jimmer.sql.EnumType

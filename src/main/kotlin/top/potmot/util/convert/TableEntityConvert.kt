@@ -3,9 +3,9 @@ package top.potmot.util.convert
 import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.new
 import top.potmot.config.GenConfig
-import top.potmot.constant.Language
-import top.potmot.constant.QueryType
-import top.potmot.constant.TableType
+import top.potmot.enum.Language
+import top.potmot.enum.QueryType
+import top.potmot.enum.TableType
 import top.potmot.model.GenColumn
 import top.potmot.model.GenEntity
 import top.potmot.model.GenProperty

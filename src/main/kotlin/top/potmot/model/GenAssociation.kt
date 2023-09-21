@@ -1,5 +1,6 @@
 package top.potmot.model
 
+import org.babyfish.jimmer.Formula
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -9,7 +10,7 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import top.potmot.constant.AssociationType
+import top.potmot.enum.AssociationType
 import top.potmot.model.base.BaseEntity
 
 /**

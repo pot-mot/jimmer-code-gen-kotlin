@@ -1,4 +1,4 @@
-package top.potmot.constant
+package top.potmot.enum
 
 /**
  * 生成语言

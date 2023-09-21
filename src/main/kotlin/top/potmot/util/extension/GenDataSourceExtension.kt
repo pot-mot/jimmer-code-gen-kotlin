@@ -10,7 +10,7 @@ import schemacrawler.schemacrawler.LoadOptionsBuilder
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder
 import schemacrawler.schemacrawler.SchemaInfoLevelBuilder
 import schemacrawler.tools.utility.SchemaCrawlerUtility
-import top.potmot.constant.TableType
+import top.potmot.enum.TableType
 import top.potmot.error.DataSourceException
 import top.potmot.model.GenColumn
 import top.potmot.model.GenDataSource

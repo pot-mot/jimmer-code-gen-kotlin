@@ -8,16 +8,11 @@ import top.potmot.config.GenConfig
  * 例如：HELLO_WORLD -> HelloWorld
  */
 fun nameToClassName(name: String): String {
-    val autoRemovePre = GenConfig.autoRemovePre
-    val tablePrefix = GenConfig.tablePrefix
-    var newname = name
-    if (autoRemovePre) {
-        newname = removePrefixes(name, tablePrefix.split(","))
-    }
+    val newName = name.removePrefixes().removePrefixes()
     val result = StringBuilder()
 
-    // 将 newname 按照 SEPARATOR 进行分割成一个字符串数组并且去掉数组中的空字符串
-    for (camel in newname.split(GenConfig.separator.toRegex())
+    // 将 newName 按照 SEPARATOR 进行分割成一个字符串数组并且去掉数组中的空字符串
+    for (camel in newName.split(GenConfig.separator)
         .dropLastWhile { it.isEmpty() }
         .toTypedArray()) {
         if (camel.isNotEmpty()) {
@@ -84,20 +79,51 @@ fun commentToFunctionName(comment: String): String {
 }
 
 /**
- * 将字符串中的前缀替换为空字符串
+ * 从给定的字符串中移除前缀字符串
  *
- * @param replacement 待替换的字符串
- * @param prefixes 前缀数组
- * @return 返回替换后的字符串
+ * @param target 要处理的字符串
+ * @param prefixes 要移除的前缀列表
+ * @param separator 分隔符
+ * @return 移除前缀后的字符串
  */
-fun removePrefixes(replacement: String, prefixes: List<String>): String {
-    // 遍历前缀数组，找到第一个匹配的前缀
-    prefixes.forEach { prefix ->
-        if (replacement.startsWith(prefix)) {
-            // 如果找到了匹配的前缀，就将其从字符串中删除
-            return replacement.removePrefix(prefix)
+fun String.removePrefixes(
+    prefixes: List<String> = GenConfig.tablePrefix,
+    separator: String = GenConfig.separator
+): String {
+    var result = this
+    for (prefix in prefixes) {
+        if (result.startsWith(prefix)) {
+            result = result.removePrefix(prefix)
+            if (separator.isNotEmpty() && result.startsWith(separator)) {
+                result = result.removePrefix(separator)
+            }
+            break
         }
     }
-    // 如果没有找到匹配的前缀，则返回原始字符串
-    return replacement
+    return result
+}
+
+/**
+ * 从给定的字符串中移除后缀字符串
+ *
+ * @param target 要处理的字符串
+ * @param suffixes 要移除的后缀列表
+ * @param separator 分隔符
+ * @return 移除后缀后的字符串
+ */
+fun String.removeSuffixes(
+    suffixes: List<String> = GenConfig.tableSuffix,
+    separator: String = GenConfig.separator
+): String {
+    var result = this
+    for (suffix in suffixes) {
+        if (result.endsWith(suffix)) {
+            result = result.removeSuffix(suffix)
+            if (separator.isNotEmpty() && result.endsWith(separator)) {
+                result = result.removeSuffix(separator)
+            }
+            break
+        }
+    }
+    return result
 }

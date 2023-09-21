@@ -33,5 +33,4 @@ class SchemaService (
     fun delete(@PathVariable ids: List<Long>): Int {
         return sqlClient.deleteByIds(GenSchema::class, ids).totalAffectedRowCount
     }
-
 }

@@ -1,12 +1,40 @@
 GenAssociationCommonView {
     #allScalars
-    id(sourceColumn)
-    id(targetColumn)
+    sourceColumn {
+        id
+        table {
+            id
+        }
+    }
+    targetColumn {
+       id
+       table {
+           id
+       }
+    }
+}
+
+GenAssociationMatchView {
+    associationType
+    sourceColumn {
+        id
+        table {
+            id
+        }
+    }
+    targetColumn {
+       id
+       table {
+           id
+       }
+    }
 }
 
 inputOnly GenAssociationCommonInput {
     #allScalars
     -id
+    -createdTime
+    -modifiedTime
     id(sourceColumn)
     id(targetColumn)
 }

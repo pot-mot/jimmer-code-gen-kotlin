@@ -2,7 +2,7 @@ package top.potmot.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
-import top.potmot.constant.Language
+import top.potmot.enum.Language
 import top.potmot.error.ConfigException
 
 /**
@@ -18,11 +18,11 @@ class GenConfig {
         /** 生成包路径  */
         var packageName: String = ""
 
-        /** 自动去除表前缀 */
-        var autoRemovePre = false
+        /** 表前缀，配置中由 , 进行分割 */
+        var tablePrefix: List<String> = listOf("")
 
-        /** 表前缀，若开启自动去除表前缀将对自动导入的表进行去前缀处理，此后类名将不会包含表前缀  */
-        var tablePrefix: String = ""
+        /** 表后缀，配置中由 , 进行分割 */
+        var tableSuffix: List<String> = listOf("")
 
         /** 是否展示sql, 在查询关联时为性能考考虑请关闭 */
         var showSql: Boolean = false
@@ -45,12 +45,12 @@ class GenConfig {
         Companion.packageName = packageName
     }
 
-    fun setAutoRemovePre(autoRemovePre: Boolean) {
-        Companion.autoRemovePre = autoRemovePre
+    fun setTablePrefix(tablePrefix: String) {
+        Companion.tablePrefix = tablePrefix.split(",").map { it.trim() }
     }
 
-    fun setTablePrefix(tablePrefix: String) {
-        Companion.tablePrefix = tablePrefix
+    fun setTableSuffix(tablePrefix: String) {
+        Companion.tableSuffix = tablePrefix.split(",").map { it.trim() }
     }
 
     fun setShowSql(showSql: Boolean) {

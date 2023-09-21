@@ -14,4 +14,6 @@ GenDataSourceSchemasView: GenDataSourceView {
 inputOnly GenDataSourceInput {
     #allScalars
     -id
+    -createdTime
+    -modifiedTime
 }

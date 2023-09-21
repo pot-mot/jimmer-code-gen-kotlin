@@ -21,4 +21,7 @@ GenColumnCommonView {
 
 inputOnly GenColumnCommonInput {
     #allScalars
+    -id
+    -createdTime
+    -modifiedTime
 }

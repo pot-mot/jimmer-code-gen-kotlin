@@ -1,4 +1,4 @@
-package top.potmot.constant
+package top.potmot.enum
 
 enum class TableType(val value: String) {
     TABLE("TABLE"),

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.constant.DataSourceType
+import top.potmot.enum.DataSourceType
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenSchema
@@ -44,9 +44,9 @@ class DataSourceService(
     @PostMapping
     @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
-    fun save(@RequestBody dataSource: GenDataSourceInput): Int {
+    fun save(@RequestBody dataSource: GenDataSourceInput): GenDataSourceView {
         dataSource.toEntity().test()
-        return sqlClient.insert(dataSource).totalAffectedRowCount
+        return GenDataSourceView(sqlClient.insert(dataSource).modifiedEntity)
     }
 
     @DeleteMapping("/{ids}")

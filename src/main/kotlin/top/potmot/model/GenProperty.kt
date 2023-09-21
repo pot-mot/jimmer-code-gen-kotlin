@@ -9,8 +9,8 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import top.potmot.constant.QueryType
-import top.potmot.constant.SortDirection
+import top.potmot.enum.QueryType
+import top.potmot.enum.SortDirection
 import top.potmot.model.base.BaseEntity
 
 /**

@@ -4,7 +4,7 @@ import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.hide
 import org.babyfish.jimmer.kt.new
 import org.slf4j.Logger
-import top.potmot.constant.ConsoleStyle
+import top.potmot.enum.ConsoleStyle
 import top.potmot.model.GenColumn
 import top.potmot.model.GenEntity
 import top.potmot.model.GenProperty
