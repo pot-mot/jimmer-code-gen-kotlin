@@ -9,7 +9,7 @@ spring:
     password: root
     url: jdbc:mysql://localhost:3307/jimmer-code-gen?serverTimezone=Asia/Shanghai
   jackson:
-    # 格式化全局时间字段
+    # 格式化全局时间属性
     date-format: yyyy-MM-dd HH:mm:ss
     # 指定时间区域类型
     time-zone: GMT+8

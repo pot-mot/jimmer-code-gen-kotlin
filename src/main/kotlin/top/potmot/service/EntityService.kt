@@ -1,63 +1,98 @@
-//package top.potmot.service
-//
-//import org.babyfish.jimmer.View
-//import org.babyfish.jimmer.sql.kt.KSqlClient
-//import org.springframework.beans.factory.annotation.Autowired
-//import org.springframework.transaction.annotation.Transactional
-//import org.springframework.web.bind.annotation.DeleteMapping
-//import org.springframework.web.bind.annotation.PathVariable
-//import org.springframework.web.bind.annotation.PostMapping
-//import org.springframework.web.bind.annotation.PutMapping
-//import org.springframework.web.bind.annotation.RequestMapping
-//import org.springframework.web.bind.annotation.RestController
-//import top.potmot.model.GenEntity
-//import top.potmot.model.dto.GenEntityConfigInput
-//import top.potmot.model.dto.GenEntityPropertiesInput
-//import top.potmot.model.dto.GenEntityPropertiesView
-//import top.potmot.model.query.EntityQuery
-//import kotlin.reflect.KClass
-//
-//@RestController
-//@RequestMapping("/entity")
-//class EntityService(
-//    @Autowired val sqlClient: KSqlClient
-//) {
-//    @PostMapping("/map")
-//    @Transactional
-//    fun map(tableIds: List<Long>): List<GenEntityPropertiesView> {
-//        TODO("Not yet implemented")
-//    }
-//
-//    @PostMapping("/save")
-//    @Transactional
-//    fun save(entities: List<GenEntityPropertiesInput>): List<GenEntityPropertiesView> {
-//        TODO("Not yet implemented")
-//    }
-//
-//    @PutMapping("/sync")
-//    @Transactional
-//    fun sync(tableIds: List<Long>): List<GenEntityPropertiesView> {
-//        TODO("Not yet implemented")
-//    }
-//
-//    @PutMapping("/config")
-//    @Transactional
-//    fun config(entity: GenEntityConfigInput): GenEntityPropertiesView {
-//        TODO("Not yet implemented")
-//    }
-//
-//    @PostMapping("/query")
-//    fun query(query: EntityQuery): List<GenEntityPropertiesView> {
-//        return query(query, GenEntityPropertiesView::class)
-//    }
-//
-//    fun <T : View<GenEntity>> query(query: EntityQuery, viewCLass: KClass<T>): List<T> {
-//        TODO("Not yet implemented")
-//    }
-//
-//
-//    @DeleteMapping("/{ids}")
-//    fun delete(@PathVariable ids: List<Long>): Int {
-//        TODO("Not yet implemented")
-//    }
-//}
+package top.potmot.service
+
+import org.babyfish.jimmer.View
+import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.sql.kt.ast.expression.eq
+import org.babyfish.jimmer.sql.kt.ast.expression.gt
+import org.babyfish.jimmer.sql.kt.ast.expression.ilike
+import org.babyfish.jimmer.sql.kt.ast.expression.lt
+import org.babyfish.jimmer.sql.kt.ast.expression.or
+import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import top.potmot.model.GenEntity
+import top.potmot.model.classComment
+import top.potmot.model.className
+import top.potmot.model.createdTime
+import top.potmot.model.dto.GenEntityConfigInput
+import top.potmot.model.dto.GenEntityPropertiesView
+import top.potmot.model.dto.GenTableConvertView
+import top.potmot.model.id
+import top.potmot.model.packageName
+import top.potmot.model.query.EntityQuery
+import top.potmot.model.query.TableQuery
+import top.potmot.util.convert.tableToEntity
+import kotlin.reflect.KClass
+
+@RestController
+@RequestMapping("/entity")
+class EntityService(
+    @Autowired val sqlClient: KSqlClient,
+    @Autowired val tableService: TableService,
+) {
+    @PostMapping("/mapping")
+    @Transactional
+    fun mapping(tableIds: List<Long>): List<Long> {
+        val result = mutableListOf<Long>()
+
+        tableService.query(TableQuery(ids = tableIds), GenTableConvertView::class).forEach {
+            result += sqlClient.save(tableToEntity(it.toEntity())).modifiedEntity.id
+        }
+
+        return result
+    }
+
+    @PutMapping("/config")
+    @Transactional
+    fun config(entity: GenEntityConfigInput): Int {
+        return sqlClient.save(entity).totalAffectedRowCount
+    }
+
+    @PostMapping("/query")
+    fun query(query: EntityQuery): List<GenEntityPropertiesView> {
+        return query(query, GenEntityPropertiesView::class)
+    }
+
+    @DeleteMapping("/{ids}")
+    fun delete(@PathVariable ids: List<Long>): Int {
+        return sqlClient.deleteByIds(GenEntity::class, ids).totalAffectedRowCount
+    }
+
+    fun <T : View<GenEntity>> query(query: EntityQuery, viewClass: KClass<T>): List<T> {
+        return sqlClient.createQuery(GenEntity::class) {
+            query.keywords?.takeIf { it.isNotEmpty() }?.let {
+                query.keywords.forEach {
+                    where(table.className ilike it)
+                    or(table.classComment ilike it)
+                    or(table.packageName ilike it)
+                }
+            }
+
+            query.names?.takeIf { it.isNotEmpty() }?.let {
+                query.names.forEach {
+                    where(table.className eq it)
+                }
+            }
+
+            query.ids?.takeIf { it.isNotEmpty() }?.let {
+                where(table.id valueIn it)
+            }
+            query.createdTime?.let {
+                where(table.createdTime gt it.start)
+                where(table.createdTime lt it.end)
+            }
+            query.modifiedTime?.let {
+                where(table.createdTime gt it.start)
+                where(table.createdTime lt it.end)
+            }
+
+            select(table.fetch(viewClass))
+        }.execute()
+    }
+}

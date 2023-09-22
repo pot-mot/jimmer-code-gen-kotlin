@@ -44,9 +44,9 @@ class DataSourceService(
     @PostMapping
     @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
-    fun save(@RequestBody dataSource: GenDataSourceInput): GenDataSourceView {
+    fun save(@RequestBody dataSource: GenDataSourceInput): Long {
         dataSource.toEntity().test()
-        return GenDataSourceView(sqlClient.insert(dataSource).modifiedEntity)
+        return sqlClient.save(dataSource).modifiedEntity.id
     }
 
     @DeleteMapping("/{ids}")

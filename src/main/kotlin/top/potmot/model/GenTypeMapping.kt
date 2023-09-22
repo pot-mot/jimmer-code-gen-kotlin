@@ -7,7 +7,7 @@ import org.babyfish.jimmer.sql.Id
 import top.potmot.model.base.BaseEntity
 
 /**
- * 列到字段类型映射实体类
+ * 列到属性类型映射实体类
  *
  * @author potmot
  * @since 2023-08-12 10:51:39
@@ -29,7 +29,7 @@ interface GenTypeMapping: BaseEntity {
     val isRegex: Boolean
 
     /**
-     * 字段类型
+     * 属性类型
      */
     val propertyType: String
 

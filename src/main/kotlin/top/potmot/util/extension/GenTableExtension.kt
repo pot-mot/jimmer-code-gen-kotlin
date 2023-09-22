@@ -2,13 +2,11 @@ package top.potmot.util.extension
 
 import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.new
-import top.potmot.config.GenConfig
 import top.potmot.model.GenColumn
 import top.potmot.model.GenTable
 import top.potmot.model.by
 import top.potmot.model.dto.GenColumnMatchView
 import top.potmot.model.dto.GenTableColumnsView
-import java.util.*
 
 fun GenTable.getColumn(id: Long): GenColumn? {
     if (!ImmutableObjects.isLoaded(this, "columns")) {

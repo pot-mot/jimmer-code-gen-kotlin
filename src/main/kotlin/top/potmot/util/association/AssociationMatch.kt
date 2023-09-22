@@ -13,10 +13,6 @@ import top.potmot.util.convert.removeSuffixes
  */
 typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatchView) -> Boolean
 
-val allMatch: AssociationMatch = { source, target ->
-    simplePkColumnMatch(source, target) || includeTableNamePkColumnMatch(source, target) || suffixPkColumnMatch(source, target)
-}
-
 /**
  * 简单主键列关联
  * eq:      source                     target

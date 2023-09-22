@@ -4,14 +4,45 @@ GenTableCommonView {
     id(group)
 }
 
-GenTableColumnsView {
-    #allScalars
-    id(schema)
-    id(group)
-
+GenTableColumnsView: GenTableCommonView {
     columns {
         #allScalars
         id(table)
+    }
+}
+
+GenTableConvertView: GenTableColumnsView {
+    columns {
+        inAssociations {
+            associationType
+            sourceColumn {
+                id
+                table {
+                    id
+                }
+            }
+            targetColumn {
+               id
+               table {
+                   id
+               }
+            }
+        }
+        outAssociations {
+            associationType
+            sourceColumn {
+                id
+                table {
+                    id
+                }
+            }
+            targetColumn {
+               id
+               table {
+                   id
+               }
+            }
+        }
     }
 }
 

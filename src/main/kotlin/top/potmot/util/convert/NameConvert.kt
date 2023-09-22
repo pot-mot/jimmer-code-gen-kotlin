@@ -7,7 +7,7 @@ import top.potmot.config.GenConfig
  * 转换表名为类名，即根据一个分割符将一个字符串转成首字母大写其余小写的形式
  * 例如：HELLO_WORLD -> HelloWorld
  */
-fun nameToClassName(name: String): String {
+fun tableNameToClassName(name: String): String {
     val newName = name.removePrefixes().removePrefixes()
     val result = StringBuilder()
 
@@ -29,15 +29,15 @@ fun nameToClassName(name: String): String {
 }
 
 /**
- * 转换列名为字段名，即根据一个分割符将一个字符串转成自第二部分开始首字母大写其余小写的形式
+ * 转换列名为属性名，即根据一个分割符将一个字符串转成自第二部分开始首字母大写其余小写的形式
  * 例如：user_name -> userName
  */
-fun nameToname(name: String): String {
+fun columnNameToPropertyName(name: String): String {
     val sb = StringBuilder(name.length)
     // 标记下一个字符是否需要转换为大写
     var upperCase = false
 
-    // 遍历原始字段名中的每个字符
+    // 遍历原始属性名中的每个字符
     for (c in name.lowercase().split("").dropLastWhile { it.isEmpty() }) {
         // 如果当前字符是分隔符，则标记下一个字符需要转换为大写
         if (c == GenConfig.separator) {

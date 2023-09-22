@@ -86,3 +86,9 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "top.potmot.JimmerCodeGenApplicationKt"
+    }
+}

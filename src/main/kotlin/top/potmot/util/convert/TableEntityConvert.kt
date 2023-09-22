@@ -29,7 +29,7 @@ fun tableToEntity(
         }
         author = GenConfig.author
         packageName = GenConfig.packageName
-        className = nameToClassName(genTable.name)
+        className = tableNameToClassName(genTable.name)
         classComment = genTable.comment
         moduleName = packageNameToModuleName(GenConfig.packageName)
         functionName = commentToFunctionName(genTable.comment)
@@ -40,16 +40,16 @@ fun tableToEntity(
         }
 
         properties = genTable.columns.map {
-            columnToField(it, typeMappings)
+            columnToProperty(it, typeMappings)
         }
     }
 }
 
 /**
- * 初始化列到字段的信息
+ * 初始化列到属性的信息
  * warning: 如果需要保存生成的结果，请一定保证 对应 column 已经 save
  */
-fun columnToField(
+fun columnToProperty(
     genColumn: GenColumn,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): GenProperty {
@@ -58,7 +58,7 @@ fun columnToField(
         if (ImmutableObjects.isLoaded(genColumn, "id")) {
             columnId = genColumn.id
         }
-        name = nameToname(genColumn.name)
+        name = columnNameToPropertyName(genColumn.name)
         propertyType = getPropertyTypeName(genColumn, typeMappings)
         propertyComment = genColumn.comment
         isAddRequired = genColumn.isNotNull
@@ -74,7 +74,7 @@ fun columnToField(
 }
 
 /**
- * 设置字段类型
+ * 设置属性类型
  */
 fun getPropertyTypeName(
     column: GenColumn,
@@ -87,6 +87,10 @@ fun getPropertyTypeName(
         Language.KOTLIN -> jdbcTypeToKotlinType(column.typeCode).qualifiedName ?: defaultType
     }
 }
+
+/**
+ * 设置 ManyToOne 关联属性
+ */
 
 // TODO 补充完整类型映射
 fun getPropertyQueryType(

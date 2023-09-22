@@ -14,7 +14,7 @@ import top.potmot.enum.SortDirection
 import top.potmot.model.base.BaseEntity
 
 /**
- * 生成字段实体类
+ * 生成属性实体类
  *
  * @author potmot
  * @since 2023-08-12 10:50:21

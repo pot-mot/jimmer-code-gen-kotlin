@@ -5,6 +5,7 @@ import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.gt
 import org.babyfish.jimmer.sql.kt.ast.expression.ilike
 import org.babyfish.jimmer.sql.kt.ast.expression.lt
+import org.babyfish.jimmer.sql.kt.ast.expression.or
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
@@ -52,7 +53,7 @@ class TableService(
             query.keywords?.takeIf { it.isNotEmpty() }?.let {
                 query.keywords.forEach {
                     where(table.name ilike it)
-                    where(table.comment ilike it)
+                    or(table.comment ilike it)
                 }
             }
             query.groupIds?.takeIf { it.isNotEmpty() }?.let {

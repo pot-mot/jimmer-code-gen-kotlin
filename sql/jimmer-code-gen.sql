@@ -113,7 +113,7 @@ CREATE TABLE `gen_column`
     `type_code`                int(0)                                                        NOT NULL COMMENT '列对应 JDBCType 码值',
     `type`                     varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列类型',
     `display_size`             bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '列展示长度',
-    `numeric_numericPrecision` bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '列精度',
+    `numeric_precision` bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '列精度',
     `default_value`            varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '列默认值',
     `comment`                  varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列注释',
     `is_pk`                    tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否主键（1是）',
@@ -156,7 +156,7 @@ CREATE TABLE `gen_type_mapping`
     `id`                     bigint(0)                                                     NOT NULL,
     `column_type_expression` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列类型表达式',
     `is_regex`               tinyint(1)                                                    NOT NULL DEFAULT 0 COMMENT '是否正则（1是）',
-    `property_type`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '字段类型',
+    `property_type`          varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '属性类型',
     `order_key`              bigint(0)                                                     NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`           datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time`          datetime(0)                                                   NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
@@ -165,7 +165,7 @@ CREATE TABLE `gen_type_mapping`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 0
   CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '列到字段类型映射'
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '列到属性类型映射'
   ROW_FORMAT = Dynamic;
 
 INSERT INTO `gen_type_mapping`
@@ -240,7 +240,7 @@ CREATE TABLE `gen_property`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 0
   CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成字段'
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成属性'
   ROW_FORMAT = Dynamic;
 
 DROP TABLE IF EXISTS `gen_enum`;

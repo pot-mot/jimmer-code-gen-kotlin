@@ -36,7 +36,7 @@ import top.potmot.model.tableId
 import top.potmot.model.targetColumn
 import top.potmot.model.targetColumnId
 import top.potmot.util.association.AssociationMatch
-import top.potmot.util.association.allMatch
+import top.potmot.util.association.simplePkColumnMatch
 import top.potmot.util.extension.toColumnMatchViews
 import kotlin.reflect.KClass
 import top.potmot.util.extension.newGenAssociationMatchView
@@ -59,10 +59,10 @@ class AssociationService(
 
     @PostMapping("/save")
     @Transactional
-    fun save(@RequestBody associations: List<GenAssociationCommonInput>): Int {
-        var result = 0
+    fun save(@RequestBody associations: List<GenAssociationCommonInput>): List<Long> {
+        val result = mutableListOf<Long>()
         associations.forEach {
-            result += sqlClient.insert(it).totalAffectedRowCount
+            result += sqlClient.save(it).modifiedEntity.id
         }
         return result
     }
@@ -79,7 +79,7 @@ class AssociationService(
         return matchColumns(columns)
     }
 
-    fun matchColumns(columns: List<GenColumnMatchView>, match: AssociationMatch = allMatch): List<GenAssociationMatchView> {
+    fun matchColumns(columns: List<GenColumnMatchView>, match: AssociationMatch = simplePkColumnMatch): List<GenAssociationMatchView> {
         val result = mutableListOf<GenAssociationMatchView>()
 
         columns.forEach{source ->
