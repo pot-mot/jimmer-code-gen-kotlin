@@ -2,12 +2,7 @@ package top.potmot.service
 
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
-import org.babyfish.jimmer.sql.kt.ast.expression.eq
-import org.babyfish.jimmer.sql.kt.ast.expression.gt
-import org.babyfish.jimmer.sql.kt.ast.expression.ilike
-import org.babyfish.jimmer.sql.kt.ast.expression.lt
-import org.babyfish.jimmer.sql.kt.ast.expression.or
-import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
+import org.babyfish.jimmer.sql.kt.ast.expression.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -68,9 +63,13 @@ class EntityService(
         return sqlClient.createQuery(GenEntity::class) {
             query.keywords?.takeIf { it.isNotEmpty() }?.let {
                 query.keywords.forEach {
-                    where(table.className ilike it)
-                    or(table.classComment ilike it)
-                    or(table.packageName ilike it)
+                    where(
+                        or(
+                            table.className ilike it,
+                            table.classComment ilike it,
+                            table.packageName ilike it
+                        )
+                    )
                 }
             }
 
@@ -84,12 +83,10 @@ class EntityService(
                 where(table.id valueIn it)
             }
             query.createdTime?.let {
-                where(table.createdTime gt it.start)
-                where(table.createdTime lt it.end)
+                where(table.createdTime.between(it.start, it.end))
             }
             query.modifiedTime?.let {
-                where(table.createdTime gt it.start)
-                where(table.createdTime lt it.end)
+                where(table.createdTime.between(it.start, it.end))
             }
 
             select(table.fetch(viewClass))

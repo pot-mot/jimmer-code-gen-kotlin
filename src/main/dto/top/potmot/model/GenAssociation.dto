@@ -1,3 +1,7 @@
+GenAssociationIdView {
+    id
+}
+
 GenAssociationCommonView {
     #allScalars
     sourceColumn {

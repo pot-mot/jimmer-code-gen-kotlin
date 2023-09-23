@@ -2,11 +2,7 @@ package top.potmot.service
 
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
-import org.babyfish.jimmer.sql.kt.ast.expression.gt
-import org.babyfish.jimmer.sql.kt.ast.expression.ilike
-import org.babyfish.jimmer.sql.kt.ast.expression.lt
-import org.babyfish.jimmer.sql.kt.ast.expression.or
-import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
+import org.babyfish.jimmer.sql.kt.ast.expression.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -36,8 +32,12 @@ class ColumnService(
         return sqlClient.createQuery(GenColumn::class) {
             query.keywords?.takeIf { it.isNotEmpty() }?.let {
                 query.keywords.forEach {
-                    where(table.name ilike it)
-                    or(table.comment ilike it)
+                    where(
+                        or(
+                            table.comment ilike it,
+                            table.name ilike it
+                        )
+                    )
                 }
             }
             query.tableIds?.takeIf { it.isNotEmpty() }?.let {
@@ -48,12 +48,10 @@ class ColumnService(
                 where(table.id valueIn it)
             }
             query.createdTime?.let {
-                where(table.createdTime gt it.start)
-                where(table.createdTime lt it.end)
+                where(table.createdTime.between(it.start, it.end))
             }
             query.modifiedTime?.let {
-                where(table.createdTime gt it.start)
-                where(table.createdTime lt it.end)
+                where(table.createdTime.between(it.start, it.end))
             }
 
             select(table.fetch(viewCLass))
