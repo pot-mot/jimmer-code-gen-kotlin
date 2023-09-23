@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.enum.AssociationType
-import top.potmot.enum.SelectType
+import top.potmot.enum.*
 import top.potmot.model.GenAssociation
 import top.potmot.model.comment
 import top.potmot.model.createdTime
@@ -92,11 +91,16 @@ class AssociationService(
         return sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
     }
 
-    @PostMapping("/scan")
-    fun scan(@RequestBody tableIds: List<Long>): List<GenAssociationMatchView> {
+    @GetMapping("/matchType")
+    fun listMatchType(): List<AssociationMatchType> {
+        return AssociationMatchType.values().toList()
+    }
+
+    @PostMapping("/match")
+    fun match(@RequestBody tableIds: List<Long>, @RequestParam(defaultValue = "SIMPLE_PK") matchType: AssociationMatchType): List<GenAssociationMatchView> {
         val columns = tableService.query(TableQuery(ids = tableIds), GenTableColumnsView::class)
             .flatMap { it.toColumnMatchViews() }
-        return matchColumns(columns)
+        return matchColumns(columns, matchType.getMatch())
     }
 
     fun matchColumns(

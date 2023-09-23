@@ -30,8 +30,8 @@ class DataSourceService(
     @Autowired val sqlClient: KSqlClient
 ) {
     @GetMapping("/types")
-    fun listTypes(): List<String> {
-        return enumValues<DataSourceType>().map { it.name }
+    fun listTypes(): List<DataSourceType> {
+        return DataSourceType.values().toList()
     }
 
     @GetMapping

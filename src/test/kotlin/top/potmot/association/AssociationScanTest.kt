@@ -10,7 +10,7 @@ import top.potmot.service.AssociationService
 import top.potmot.util.association.includeTableNamePkColumnMatch
 import top.potmot.util.association.simplePkColumnMatch
 import top.potmot.util.association.suffixMatch
-import top.potmot.util.association.suffixPkColumnMatch
+import top.potmot.util.association.pkSuffixColumnMatch
 
 @SpringBootTest
 class  AssociationScanTest(
@@ -80,12 +80,12 @@ class  AssociationScanTest(
         val column5 = GenColumnMatchView(5, "table2_id", "", 0, "", false, false, table2)
         val column6 = GenColumnMatchView(6, "table1_id", "", 0, "", false, false, table2)
 
-        assert(suffixPkColumnMatch(column6, column1))
-        assert(suffixPkColumnMatch(column3, column4))
+        assert(pkSuffixColumnMatch(column6, column1))
+        assert(pkSuffixColumnMatch(column3, column4))
 
         val columns = listOf(column1, column2, column3, column4, column5, column6)
 
-        val matchAssociations = associationService.matchColumns(columns, suffixPkColumnMatch)
+        val matchAssociations = associationService.matchColumns(columns, pkSuffixColumnMatch)
         matchAssociations.forEach { println(it) }
         assertEquals(2, matchAssociations.size)
     }

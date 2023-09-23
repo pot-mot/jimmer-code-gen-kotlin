@@ -45,11 +45,11 @@ val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
 
 /**
  * 后缀相似关联
- * 粗糙匹配，仅判断最后 2 段是否一致
+ * 粗糙匹配，仅判断最后 3 段是否一致
  * eq:      source                     target
  *          prefix_item.group_id           -> prefix_item_group.id
  */
-val suffixPkColumnMatch: AssociationMatch = { source, target ->
+val pkSuffixColumnMatch: AssociationMatch = { source, target ->
     if (target.isPk && target.table!!.id != source.table!!.id) {
         val targetTableName = target.table.name.removePrefixes().removeSuffixes()
         val sourceTableName = source.table.name.removePrefixes().removeSuffixes()
@@ -57,7 +57,7 @@ val suffixPkColumnMatch: AssociationMatch = { source, target ->
         val targetMatchString = "${targetTableName}${GenConfig.separator}${target.name}"
         val sourceMatchString = "${sourceTableName}${GenConfig.separator}${source.name}"
 
-        suffixMatch(targetMatchString, sourceMatchString).size >= 2
+        suffixMatch(targetMatchString, sourceMatchString).size >= 3
     } else {
         false
     }
