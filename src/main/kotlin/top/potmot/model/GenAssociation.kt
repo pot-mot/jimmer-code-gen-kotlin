@@ -58,6 +58,12 @@ interface GenAssociation : BaseEntity {
     @Key
     val associationType: AssociationType
 
+
+    /**
+     * 脱钩行为
+     */
+    val dissociateAction: DissociateAction?
+
     /**
      * 自定排序
      */

@@ -104,9 +104,11 @@ class DataSourceService(
     fun importSchema(
         @PathVariable dataSourceId: Long,
         @PathVariable name: String
-    ): List<GenSchema> {
+    ): Int {
         val dataSource =
             sqlClient.findById(GenDataSource::class, dataSourceId)?.toSource()
+
+        var result = 0
 
         if (dataSource != null) {
             val schemas =
@@ -115,15 +117,12 @@ class DataSourceService(
                     .toGenSchemas(dataSourceId)
             dataSource.close()
 
-            val result = mutableListOf<GenSchema>()
 
             schemas.forEach {
-                result += sqlClient.save(it).modifiedEntity
+                result += sqlClient.save(it).totalAffectedRowCount
             }
-
-            return result
         }
 
-        return emptyList()
+        return result
     }
 }

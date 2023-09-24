@@ -56,15 +56,6 @@ fun columnToProperty(
         name = columnNameToPropertyName(genColumn.name)
         propertyType = getPropertyTypeName(genColumn, typeMappings)
         propertyComment = genColumn.comment
-        isAddRequired = genColumn.isNotNull
-        isEditRequired = genColumn.isNotNull
-
-        listSort = genColumn.orderKey
-        addSort = genColumn.orderKey
-        editSort = genColumn.orderKey
-        querySort = genColumn.orderKey
-
-        queryType = getPropertyQueryType(genColumn)
     }
 }
 
@@ -81,15 +72,4 @@ fun getPropertyTypeName(
         Language.JAVA -> jdbcTypeToJavaType(column.typeCode, column.isNotNull).name
         Language.KOTLIN -> jdbcTypeToKotlinType(column.typeCode).qualifiedName ?: defaultType
     }
-}
-
-/**
- * 设置 ManyToOne 关联属性
- */
-
-// TODO 补充完整类型映射
-fun getPropertyQueryType(
-    column: GenColumn,
-): QueryType {
-    return QueryType.EQ
 }
