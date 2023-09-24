@@ -24,7 +24,7 @@ group = "top.potmot"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.8.16"
+val jimmerVersion = "0.8.23"
 val mysqlVersion = "8.0.30"
 val caffeineVersion = "2.9.1"
 val velocityVersion = "2.3"

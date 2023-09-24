@@ -12,7 +12,7 @@ enum class AssociationMatchType {
 }
 
 fun getAssociationMatch(type: AssociationMatchType): AssociationMatch {
-    return when(type) {
+    return when (type) {
         AssociationMatchType.SIMPLE_PK -> simplePkColumnMatch
         AssociationMatchType.INCLUDE_TABLE_NAME -> includeTableNamePkColumnMatch
         AssociationMatchType.PK_SUFFIX -> pkSuffixColumnMatch

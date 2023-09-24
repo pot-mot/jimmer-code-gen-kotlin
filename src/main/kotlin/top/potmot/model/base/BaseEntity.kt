@@ -7,7 +7,7 @@ import java.time.LocalDateTime
  * 基础实体
  */
 @MappedSuperclass
-interface BaseEntity: Identifiable<Long> {
+interface BaseEntity : Identifiable<Long> {
     /**
      * 创建事件
      */

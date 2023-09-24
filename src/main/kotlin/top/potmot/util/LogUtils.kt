@@ -5,11 +5,7 @@ import org.babyfish.jimmer.kt.hide
 import org.babyfish.jimmer.kt.new
 import org.slf4j.Logger
 import top.potmot.enum.ConsoleStyle
-import top.potmot.model.GenColumn
-import top.potmot.model.GenEntity
-import top.potmot.model.GenProperty
-import top.potmot.model.GenTable
-import top.potmot.model.by
+import top.potmot.model.*
 
 object LogUtils {
     private val LOGGER: Logger = org.slf4j.LoggerFactory.getLogger(LogUtils::class.java)
@@ -42,7 +38,7 @@ object LogUtils {
 
     fun logTable(table: GenTable, logger: Logger = LOGGER) {
         val stringBuilder = StringBuilder()
-        val tableWithoutColumns = new(GenTable::class).by(table) {
+        val tableWithoutColumns = table.copy {
             if (ImmutableObjects.isLoaded(this, "columns")) {
                 hide(this, GenTable::columns)
                 columns = columns.map {

@@ -6,32 +6,20 @@ import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
-import top.potmot.enum.*
-import top.potmot.model.GenAssociation
-import top.potmot.model.comment
-import top.potmot.model.createdTime
+import org.springframework.web.bind.annotation.*
+import top.potmot.enum.AssociationMatchType
+import top.potmot.enum.AssociationType
+import top.potmot.enum.SelectType
+import top.potmot.enum.getMatch
+import top.potmot.model.*
 import top.potmot.model.dto.*
-import top.potmot.model.id
 import top.potmot.model.query.AssociationQuery
 import top.potmot.model.query.TableQuery
-import top.potmot.model.sourceColumn
-import top.potmot.model.sourceColumnId
-import top.potmot.model.tableId
-import top.potmot.model.targetColumn
-import top.potmot.model.targetColumnId
 import top.potmot.util.association.AssociationMatch
 import top.potmot.util.association.simplePkColumnMatch
+import top.potmot.util.extension.newGenAssociationMatchView
 import top.potmot.util.extension.toColumnMatchViews
 import kotlin.reflect.KClass
-import top.potmot.util.extension.newGenAssociationMatchView
 
 @RestController
 @RequestMapping("/association")
@@ -62,7 +50,7 @@ class AssociationService(
 
     @PostMapping("/save")
     @Transactional
-    fun save(@RequestBody associations: List<GenAssociationCommonInput>): List<Long> {
+    fun save(@RequestBody associations: List<GenAssociationInput>): List<Long> {
         val result = mutableListOf<Long>()
 
         associations.forEach {
@@ -79,14 +67,20 @@ class AssociationService(
 
     @DeleteMapping("/table/{tableIds}")
     @Transactional
-    fun deleteByTable(@PathVariable tableIds: List<Long>, @RequestParam(defaultValue = "AND") selectType: SelectType): Int {
+    fun deleteByTable(
+        @PathVariable tableIds: List<Long>,
+        @RequestParam(defaultValue = "AND") selectType: SelectType
+    ): Int {
         val ids = selectByTable(tableIds, selectType, GenAssociationIdView::class).map { it.id }
         return sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
     }
 
     @DeleteMapping("/column/{columnIds}")
     @Transactional
-    fun deleteByColumn(@PathVariable columnIds: List<Long>, @RequestParam(defaultValue = "AND") selectType: SelectType): Int {
+    fun deleteByColumn(
+        @PathVariable columnIds: List<Long>,
+        @RequestParam(defaultValue = "AND") selectType: SelectType
+    ): Int {
         val ids = selectByColumn(columnIds, selectType, GenAssociationIdView::class).map { it.id }
         return sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
     }
@@ -97,7 +91,10 @@ class AssociationService(
     }
 
     @PostMapping("/match")
-    fun match(@RequestBody tableIds: List<Long>, @RequestParam(defaultValue = "SIMPLE_PK") matchType: AssociationMatchType): List<GenAssociationMatchView> {
+    fun match(
+        @RequestBody tableIds: List<Long>,
+        @RequestParam(defaultValue = "SIMPLE_PK") matchType: AssociationMatchType
+    ): List<GenAssociationMatchView> {
         val columns = tableService.query(TableQuery(ids = tableIds), GenTableColumnsView::class)
             .flatMap { it.toColumnMatchViews() }
         return matchColumns(columns, matchType.getMatch())

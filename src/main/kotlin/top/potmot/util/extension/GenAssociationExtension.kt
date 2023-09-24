@@ -11,13 +11,13 @@ fun newGenAssociationMatchView(
 ): GenAssociationMatchView {
     return GenAssociationMatchView(
         associationType,
-        GenAssociationMatchView.TargetOf_sourceColumn.create(
+        GenAssociationMatchView.TargetOf_sourceColumn(
             source.id,
-            GenAssociationMatchView.TargetOf_sourceColumn.TargetOf_table.create(source.table!!.id)
+            GenAssociationMatchView.TargetOf_sourceColumn.TargetOf_table(source.table!!.id)
         ),
-        GenAssociationMatchView.TargetOf_targetColumn.create(
+        GenAssociationMatchView.TargetOf_targetColumn(
             target.id,
-            GenAssociationMatchView.TargetOf_targetColumn.TargetOf_table.create(target.table!!.id)
+            GenAssociationMatchView.TargetOf_targetColumn.TargetOf_table(target.table!!.id)
         ),
     )
 }

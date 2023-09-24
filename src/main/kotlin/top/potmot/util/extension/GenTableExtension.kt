@@ -1,10 +1,9 @@
 package top.potmot.util.extension
 
 import org.babyfish.jimmer.ImmutableObjects
-import org.babyfish.jimmer.kt.new
 import top.potmot.model.GenColumn
 import top.potmot.model.GenTable
-import top.potmot.model.by
+import top.potmot.model.copy
 import top.potmot.model.dto.GenColumnMatchView
 import top.potmot.model.dto.GenTableColumnsView
 
@@ -24,13 +23,12 @@ fun GenTable.getColumn(name: String): GenColumn? {
 
 fun GenTableColumnsView.toColumnMatchViews(): List<GenColumnMatchView> {
     return this.columns.map {
-        val column = it.toEntity()
         val table = this.toEntity()
-
+        val column = it.toEntity().copy {
+            this.table = table
+        }
         GenColumnMatchView(
-            new(GenColumn::class).by(column) {
-                this.table = table
-            }
+            column
         )
     }
 }

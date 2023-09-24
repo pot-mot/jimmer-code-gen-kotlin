@@ -12,11 +12,8 @@ import schemacrawler.schemacrawler.SchemaInfoLevelBuilder
 import schemacrawler.tools.utility.SchemaCrawlerUtility
 import top.potmot.enum.TableType
 import top.potmot.error.DataSourceException
-import top.potmot.model.GenColumn
-import top.potmot.model.GenDataSource
-import top.potmot.model.GenSchema
-import top.potmot.model.GenTable
-import top.potmot.model.by
+import top.potmot.model.*
+import top.potmot.model.dto.GenDataSourceInput
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import us.fatehi.utility.datasource.DatabaseConnectionSources
 import us.fatehi.utility.datasource.MultiUseUserCredentials
@@ -27,14 +24,14 @@ fun GenDataSource.url(): String {
     return "jdbc:${this.type.name.lowercase()}://${this.host}:${this.port}"
 }
 
+fun GenDataSourceInput.test() {
+    this.toEntity().toSource().close()
+}
+
 fun GenDataSource.toSource(): DatabaseConnectionSource {
     return DatabaseConnectionSources.newDatabaseConnectionSource(
         this.url(), MultiUseUserCredentials(this.username, this.password)
     ).test()
-}
-
-fun GenDataSource.test() {
-    this.toSource().test().close()
 }
 
 fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
@@ -102,14 +99,12 @@ fun DatabaseConnectionSource.getCatalog(
 
 fun Catalog.toGenSchemas(dataSourceId: Long): List<GenSchema> {
     val catalog = this
-    return this.schemas.map {schema ->
-        var temp = schema.toGenSchema(dataSourceId)
-        temp = new(GenSchema::class).by(temp) {
-            this.tables = catalog.getTables(schema).map {table ->
+    return this.schemas.map { schema ->
+        schema.toGenSchema(dataSourceId).copy {
+            this.tables = catalog.getTables(schema).map { table ->
                 table.toGenTable()
             }
         }
-        temp
     }
 }
 

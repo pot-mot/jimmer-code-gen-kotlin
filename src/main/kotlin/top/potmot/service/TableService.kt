@@ -2,25 +2,17 @@ package top.potmot.service
 
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
-import org.babyfish.jimmer.sql.kt.ast.expression.*
+import org.babyfish.jimmer.sql.kt.ast.expression.between
+import org.babyfish.jimmer.sql.kt.ast.expression.ilike
+import org.babyfish.jimmer.sql.kt.ast.expression.or
+import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import top.potmot.model.GenTable
-import top.potmot.model.name
-import top.potmot.model.columns
-import top.potmot.model.createdTime
-import top.potmot.model.groupId
-import top.potmot.model.id
-import top.potmot.model.query.TableQuery
-import top.potmot.model.schemaId
-import top.potmot.model.comment
+import org.springframework.web.bind.annotation.*
+import top.potmot.model.*
 import top.potmot.model.dto.GenTableColumnsView
 import top.potmot.model.dto.GenTableCommonView
+import top.potmot.model.query.TableQuery
 import kotlin.reflect.KClass
 
 @RestController

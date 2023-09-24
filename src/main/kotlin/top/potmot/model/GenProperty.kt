@@ -1,14 +1,6 @@
 package top.potmot.model
 
-import org.babyfish.jimmer.sql.DissociateAction
-import org.babyfish.jimmer.sql.Entity
-import org.babyfish.jimmer.sql.GeneratedValue
-import org.babyfish.jimmer.sql.GenerationType
-import org.babyfish.jimmer.sql.Id
-import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.Key
-import org.babyfish.jimmer.sql.ManyToOne
-import org.babyfish.jimmer.sql.OnDissociate
+import org.babyfish.jimmer.sql.*
 import top.potmot.enum.QueryType
 import top.potmot.enum.SortDirection
 import top.potmot.model.base.BaseEntity
@@ -20,7 +12,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-12 10:50:21
  */
 @Entity
-interface GenProperty: BaseEntity {
+interface GenProperty : BaseEntity {
     /**
      * ID
      */

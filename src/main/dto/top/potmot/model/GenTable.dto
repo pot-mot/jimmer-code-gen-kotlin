@@ -46,7 +46,7 @@ GenTableConvertView: GenTableColumnsView {
     }
 }
 
-inputOnly GenTableCommonInput {
+inputOnly GenTableInput {
     #allScalars
     id(schema)
     id(group)
@@ -54,7 +54,7 @@ inputOnly GenTableCommonInput {
     -modifiedTime
 }
 
-inputOnly GenTableColumnsInput: GenTableCommonInput {
+inputOnly GenTableColumnsInput: GenTableInput {
     columns {
         #allScalars
     }

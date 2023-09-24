@@ -1,11 +1,6 @@
 package top.potmot.model
 
-import org.babyfish.jimmer.sql.Entity
-import org.babyfish.jimmer.sql.GeneratedValue
-import org.babyfish.jimmer.sql.GenerationType
-import org.babyfish.jimmer.sql.Id
-import org.babyfish.jimmer.sql.Key
-import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.*
 import top.potmot.enum.DataSourceType
 import top.potmot.model.base.BaseEntity
 
@@ -16,7 +11,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-14 23:07:56
  */
 @Entity
-interface GenDataSource: BaseEntity {
+interface GenDataSource : BaseEntity {
     /**
      * ID
      */
@@ -50,6 +45,7 @@ interface GenDataSource: BaseEntity {
     /**
      * 用户名
      */
+    @Key
     val username: String
 
     /**

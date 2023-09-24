@@ -6,12 +6,7 @@ import top.potmot.config.GenConfig
 import top.potmot.enum.Language
 import top.potmot.enum.QueryType
 import top.potmot.enum.TableType
-import top.potmot.model.GenColumn
-import top.potmot.model.GenEntity
-import top.potmot.model.GenProperty
-import top.potmot.model.GenTable
-import top.potmot.model.GenTypeMapping
-import top.potmot.model.by
+import top.potmot.model.*
 
 /**
  * 初始化表到实体类的信息

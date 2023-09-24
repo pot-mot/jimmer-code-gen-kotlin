@@ -34,7 +34,7 @@ GenAssociationMatchView {
     }
 }
 
-inputOnly GenAssociationCommonInput {
+inputOnly GenAssociationInput {
     #allScalars
     -id
     -createdTime

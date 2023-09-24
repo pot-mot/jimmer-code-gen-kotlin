@@ -13,7 +13,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-12 10:51:39
  */
 @Entity
-interface GenTypeMapping: BaseEntity {
+interface GenTypeMapping : BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override val id: Long

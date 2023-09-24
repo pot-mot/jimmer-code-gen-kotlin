@@ -17,11 +17,5 @@ GenColumnMatchView {
 
 GenColumnCommonView {
     #allScalars
-}
-
-inputOnly GenColumnCommonInput {
-    #allScalars
-    -id
-    -createdTime
-    -modifiedTime
+    id(table)
 }
