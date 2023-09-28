@@ -1,46 +1,46 @@
 GenTableCommonView {
     #allScalars
     id(schema)
-    id(group)
 }
 
-GenTableColumnsView: GenTableCommonView {
+GenTableColumnView: GenTableCommonView {
     columns {
         #allScalars
         id(table)
     }
 }
 
-GenTableConvertView: GenTableColumnsView {
+GenTableAssociationView: GenTableCommonView {
     columns {
+        #allScalars
+        id(table)
+
         inAssociations {
+            id
             associationType
             sourceColumn {
                 id
+                name
+                comment
                 table {
                     id
+                    name
+                    comment
                 }
-            }
-            targetColumn {
-               id
-               table {
-                   id
-               }
             }
         }
         outAssociations {
+            id
             associationType
-            sourceColumn {
+            targetColumn {
                 id
+                name
+                comment
                 table {
                     id
+                    name
+                    comment
                 }
-            }
-            targetColumn {
-               id
-               table {
-                   id
-               }
             }
         }
     }
@@ -49,7 +49,6 @@ GenTableConvertView: GenTableColumnsView {
 inputOnly GenTableInput {
     #allScalars
     id(schema)
-    id(group)
     -createdTime
     -modifiedTime
 }

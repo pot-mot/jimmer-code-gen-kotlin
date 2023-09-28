@@ -15,10 +15,10 @@ import top.potmot.model.*
 import top.potmot.model.dto.*
 import top.potmot.model.query.AssociationQuery
 import top.potmot.model.query.TableQuery
-import top.potmot.util.association.AssociationMatch
-import top.potmot.util.association.simplePkColumnMatch
-import top.potmot.util.extension.newGenAssociationMatchView
-import top.potmot.util.extension.toColumnMatchViews
+import top.potmot.core.association.AssociationMatch
+import top.potmot.core.association.simplePkColumnMatch
+import top.potmot.extension.newGenAssociationMatchView
+import top.potmot.extension.toColumnMatchViews
 import kotlin.reflect.KClass
 
 @RestController
@@ -31,21 +31,21 @@ class AssociationService(
     fun selectByTable(
         @PathVariable tableIds: List<Long>,
         @RequestParam(defaultValue = "OR") selectType: SelectType
-    ): List<GenAssociationMatchView> {
-        return selectByTable(tableIds, selectType, GenAssociationMatchView::class)
+    ): List<GenAssociationView> {
+        return selectByTable(tableIds, selectType, GenAssociationView::class)
     }
 
     @GetMapping("/select/column/{columnIds}")
     fun selectByColumn(
         @PathVariable columnIds: List<Long>,
         @RequestParam(defaultValue = "OR") selectType: SelectType
-    ): List<GenAssociationMatchView> {
-        return selectByColumn(columnIds, selectType, GenAssociationMatchView::class)
+    ): List<GenAssociationView> {
+        return selectByColumn(columnIds, selectType, GenAssociationView::class)
     }
 
     @GetMapping("/query")
-    fun query(query: AssociationQuery): List<GenAssociationCommonView> {
-        return query(query, GenAssociationCommonView::class)
+    fun query(query: AssociationQuery): List<GenAssociationView> {
+        return query(query, GenAssociationView::class)
     }
 
     @PostMapping("/save")
@@ -95,7 +95,7 @@ class AssociationService(
         @RequestBody tableIds: List<Long>,
         @RequestParam(defaultValue = "SIMPLE_PK") matchType: AssociationMatchType
     ): List<GenAssociationMatchView> {
-        val columns = tableService.query(TableQuery(ids = tableIds), GenTableColumnsView::class)
+        val columns = tableService.query(TableQuery(ids = tableIds), GenTableColumnView::class)
             .flatMap { it.toColumnMatchViews() }
         return matchColumns(columns, matchType.getMatch())
     }

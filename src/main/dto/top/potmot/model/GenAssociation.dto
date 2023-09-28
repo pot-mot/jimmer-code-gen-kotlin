@@ -2,19 +2,27 @@ GenAssociationIdView {
     id
 }
 
-GenAssociationCommonView {
+GenAssociationView {
     #allScalars
     sourceColumn {
         id
+        name
+        comment
         table {
             id
+            name
+            comment
         }
     }
     targetColumn {
-       id
-       table {
-           id
-       }
+        id
+        name
+        comment
+        table {
+            id
+            name
+            comment
+        }
     }
 }
 

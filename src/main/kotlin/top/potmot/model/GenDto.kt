@@ -10,6 +10,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-12 10:48:54
  */
 @Entity
+@Table(name = "jimmer-code-gen.gen_dto")
 interface GenDto : BaseEntity {
     /**
      * ID
@@ -22,15 +23,15 @@ interface GenDto : BaseEntity {
      * 对应实体 ID
      */
     @IdView
-    val entityId: Long?
+    val entityId: Long
 
     /**
      * 对应实体
      */
     @Key
     @ManyToOne
-    @OnDissociate(DissociateAction.SET_NULL)
-    val entity: GenEntity?
+    @OnDissociate(DissociateAction.DELETE)
+    val entity: GenEntity
 
     /**
      * 名称

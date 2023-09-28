@@ -3,7 +3,7 @@ package top.potmot.enum
 /**
  * 生成语言
  */
-enum class Language(val value: String) {
+enum class GenLanguage(val value: String) {
     /**
      * 生成语言 kotlin
      */

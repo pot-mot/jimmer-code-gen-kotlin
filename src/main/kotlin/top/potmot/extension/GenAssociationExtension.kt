@@ -1,4 +1,4 @@
-package top.potmot.util.extension
+package top.potmot.extension
 
 import top.potmot.enum.AssociationType
 import top.potmot.model.dto.GenAssociationMatchView

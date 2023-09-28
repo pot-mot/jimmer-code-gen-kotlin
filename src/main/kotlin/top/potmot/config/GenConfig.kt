@@ -2,7 +2,7 @@ package top.potmot.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
-import top.potmot.enum.Language
+import top.potmot.enum.GenLanguage
 import top.potmot.error.ConfigException
 
 /**
@@ -15,14 +15,17 @@ class GenConfig {
         /** 作者  */
         var author: String = ""
 
-        /** 生成包路径  */
-        var packageName: String = ""
+        /** 表名匹配时忽略的前缀，配置中由 , 进行分割 */
+        var tableMatchPrefix: List<String> = listOf("")
 
-        /** 表前缀，配置中由 , 进行分割 */
-        var tablePrefix: List<String> = listOf("")
+        /** 表名匹配时忽略后缀，配置中由 , 进行分割 */
+        var tableMatchSuffix: List<String> = listOf("")
 
-        /** 表后缀，配置中由 , 进行分割 */
-        var tableSuffix: List<String> = listOf("")
+        /** 生成实体时是否依照 tableMatchPrefix 进行前缀移除 */
+        var removeTablePrefixes: Boolean = false
+
+        /** 生成实体时是否依照 tableMatchSuffix 进行后缀移除 */
+        var removeTableSuffixes: Boolean = false
 
         /** 是否展示sql, 在查询关联时为性能考考虑请关闭 */
         var showSql: Boolean = false
@@ -31,7 +34,7 @@ class GenConfig {
         var separator: String = "_"
 
         /** 语言，java/kotlin */
-        var language: Language = Language.JAVA
+        var language: GenLanguage = GenLanguage.JAVA
 
         /** 默认类型 */
         var defaultType: String = "String"
@@ -41,16 +44,20 @@ class GenConfig {
         Companion.author = author
     }
 
-    fun setPackageName(packageName: String) {
-        Companion.packageName = packageName
+    fun setTableMatchPrefix(tableMatchPrefix: String) {
+        Companion.tableMatchPrefix = tableMatchPrefix.split(",").map { it.trim() }
     }
 
-    fun setTablePrefix(tablePrefix: String) {
-        Companion.tablePrefix = tablePrefix.split(",").map { it.trim() }
+    fun setTableMatchSuffix(tableMatchPrefix: String) {
+        Companion.tableMatchSuffix = tableMatchPrefix.split(",").map { it.trim() }
     }
 
-    fun setTableSuffix(tablePrefix: String) {
-        Companion.tableSuffix = tablePrefix.split(",").map { it.trim() }
+    fun setRemoveTablePrefixes(removeTablePrefixes: Boolean) {
+        Companion.removeTablePrefixes = removeTablePrefixes
+    }
+
+    fun setRemoveTableSuffixes(removeTableSuffixes: Boolean) {
+        Companion.removeTableSuffixes = removeTableSuffixes
     }
 
     fun setShowSql(showSql: Boolean) {
@@ -67,12 +74,12 @@ class GenConfig {
 
     fun setLanguage(language: String) {
         when (language.lowercase()) {
-            Language.JAVA.value -> {
-                Companion.language = Language.JAVA
+            GenLanguage.JAVA.value -> {
+                Companion.language = GenLanguage.JAVA
             }
 
-            Language.KOTLIN.value -> {
-                Companion.language = Language.KOTLIN
+            GenLanguage.KOTLIN.value -> {
+                Companion.language = GenLanguage.KOTLIN
             }
 
             else -> {

@@ -1,4 +1,4 @@
-package top.potmot.util.extension
+package top.potmot.extension
 
 import org.babyfish.jimmer.ImmutableObjects
 import top.potmot.model.GenEntity
@@ -16,4 +16,14 @@ fun GenEntity.getProperty(name: String): GenProperty? {
         return null
     }
     return this.properties.find { it.name == name }
+}
+
+fun GenEntity.stringify(): String {
+    TODO()
+    return this.toString()
+}
+
+fun GenProperty.stringify(): String {
+    TODO()
+    return this.toString()
 }

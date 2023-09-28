@@ -49,7 +49,7 @@ object LogUtils {
                 }
             }
             if (ImmutableObjects.isLoaded(this, "entities")) {
-                hide(this, GenTable::entities)
+                hide(this, GenTable::entity)
             }
         }
         stringBuilder

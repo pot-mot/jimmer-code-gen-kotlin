@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import top.potmot.model.*
-import top.potmot.model.dto.GenTableColumnsView
+import top.potmot.model.dto.GenTableAssociationView
+import top.potmot.model.dto.GenTableColumnView
 import top.potmot.model.dto.GenTableCommonView
 import top.potmot.model.query.TableQuery
 import kotlin.reflect.KClass
@@ -20,9 +21,14 @@ import kotlin.reflect.KClass
 class TableService(
     @Autowired val sqlClient: KSqlClient
 ) {
-    @GetMapping("/{ids}")
-    fun list(@PathVariable ids: List<Long>): List<GenTableColumnsView> {
-        return query(TableQuery(ids), GenTableColumnsView::class)
+    @GetMapping("/columnView/{ids}")
+    fun listColumnView(@PathVariable ids: List<Long>): List<GenTableColumnView> {
+        return query(TableQuery(ids), GenTableColumnView::class)
+    }
+
+    @GetMapping("/associationView/{id}")
+    fun getAssociationView(@PathVariable id: Long): GenTableAssociationView? {
+        return query(TableQuery(ids=listOf(id)), GenTableAssociationView::class).getOrNull(0)
     }
 
     @GetMapping("/query")
@@ -47,9 +53,6 @@ class TableService(
                         )
                     )
                 }
-            }
-            query.groupIds?.takeIf { it.isNotEmpty() }?.let {
-                where(table.groupId valueIn it)
             }
             query.schemaIds?.takeIf { it.isNotEmpty() }?.let {
                 where(table.schemaId valueIn it)

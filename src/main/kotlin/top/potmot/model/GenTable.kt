@@ -11,6 +11,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-14 15:29:23
  */
 @Entity
+@Table(name = "jimmer-code-gen.gen_table")
 interface GenTable : BaseEntity {
     /**
      * ID
@@ -35,29 +36,16 @@ interface GenTable : BaseEntity {
     val schema: GenSchema
 
     /**
-     * 所属组 ID
-     */
-    @IdView
-    val groupId: Long?
-
-    /**
-     * 所属组
-     */
-    @ManyToOne
-    @OnDissociate(DissociateAction.SET_NULL)
-    val group: GenTableGroup?
-
-    /**
      * 对应实体 ID
      */
-    @IdView("entities")
-    val entityIds: List<Long>
+    @IdView
+    val entityId: Long?
 
     /**
      * 对应实体
      */
-    @OneToMany(mappedBy = "table")
-    val entities: List<GenEntity>
+    @OneToOne(mappedBy = "table")
+    val entity: GenEntity?
 
     /**
      * 表名称

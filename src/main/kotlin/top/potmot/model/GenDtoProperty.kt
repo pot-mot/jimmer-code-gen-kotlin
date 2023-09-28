@@ -12,6 +12,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-12 10:50:21
  */
 @Entity
+@Table(name = "jimmer-code-gen.gen_dto_property")
 interface GenDtoProperty : BaseEntity {
     /**
      * ID
@@ -23,6 +24,13 @@ interface GenDtoProperty : BaseEntity {
     /**
      * 对应 DTO
      */
+    @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
+    val dto: GenDto
+
+    /**
+     * 对应 DTO ID
+     */
     @IdView
     val dtoId: Long
 
@@ -30,21 +38,14 @@ interface GenDtoProperty : BaseEntity {
      * 对应属性
      */
     @ManyToOne
-    @OnDissociate(DissociateAction.DELETE)
-    val dto: GenDto
+    @OnDissociate(DissociateAction.SET_NULL)
+    val property: GenProperty
 
     /**
      * 对应属性 ID
      */
     @IdView
-    val propertyId: Long?
-
-    /**
-     * 对应属性
-     */
-    @ManyToOne
-    @OnDissociate(DissociateAction.SET_NULL)
-    val property: GenProperty?
+    val propertyId: Long
 
     /**
      * 是否在列表中（1是）

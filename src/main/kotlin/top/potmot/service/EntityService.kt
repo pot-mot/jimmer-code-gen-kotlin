@@ -6,13 +6,14 @@ import org.babyfish.jimmer.sql.kt.ast.expression.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
+import top.potmot.core.convert.columnToProperties
 import top.potmot.model.*
 import top.potmot.model.dto.GenEntityConfigInput
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenTableConvertView
+import top.potmot.model.dto.GenTableAssociationView
 import top.potmot.model.query.EntityQuery
 import top.potmot.model.query.TableQuery
-import top.potmot.util.convert.tableToEntity
+import top.potmot.core.convert.tableToEntity
 import kotlin.reflect.KClass
 
 @RestController
@@ -26,8 +27,8 @@ class EntityService(
     fun mapping(tableIds: List<Long>): List<Long> {
         val result = mutableListOf<Long>()
 
-        tableService.query(TableQuery(ids = tableIds), GenTableConvertView::class).forEach {
-            result += sqlClient.save(tableToEntity(it.toEntity())).modifiedEntity.id
+        tableService.query(TableQuery(ids = tableIds), GenTableAssociationView::class).forEach {
+            result += sqlClient.save(mappingEntity(it)).modifiedEntity.id
         }
 
         return result
@@ -55,9 +56,8 @@ class EntityService(
                 query.keywords.forEach {
                     where(
                         or(
-                            table.className ilike it,
-                            table.classComment ilike it,
-                            table.packageName ilike it
+                            table.name ilike it,
+                            table.comment ilike it,
                         )
                     )
                 }
@@ -65,7 +65,7 @@ class EntityService(
 
             query.names?.takeIf { it.isNotEmpty() }?.let {
                 query.names.forEach {
-                    where(table.className eq it)
+                    where(table.name eq it)
                 }
             }
 
@@ -81,5 +81,26 @@ class EntityService(
 
             select(table.fetch(viewClass))
         }.execute()
+    }
+
+    fun mappingEntity(
+        table: GenTableAssociationView
+    ): GenEntity {
+        val baseEntity = tableToEntity(table)
+
+        val typeMappings = sqlClient.createQuery(GenTypeMapping::class) {
+            select(this.table)
+        }.execute()
+
+        val properties = table.columns.flatMap { column ->
+            columnToProperties(
+                column,
+                typeMappings
+            )
+        }
+
+        return baseEntity.copy {
+            this.properties = properties
+        }
     }
 }

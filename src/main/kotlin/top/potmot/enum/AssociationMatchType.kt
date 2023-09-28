@@ -1,9 +1,9 @@
 package top.potmot.enum
 
-import top.potmot.util.association.AssociationMatch
-import top.potmot.util.association.includeTableNamePkColumnMatch
-import top.potmot.util.association.pkSuffixColumnMatch
-import top.potmot.util.association.simplePkColumnMatch
+import top.potmot.core.association.AssociationMatch
+import top.potmot.core.association.includeTableNamePkColumnMatch
+import top.potmot.core.association.pkSuffixColumnMatch
+import top.potmot.core.association.simplePkColumnMatch
 
 enum class AssociationMatchType {
     SIMPLE_PK,

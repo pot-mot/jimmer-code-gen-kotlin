@@ -1,6 +1,7 @@
 package top.potmot.model
 
 import org.babyfish.jimmer.sql.*
+import top.potmot.enum.AssociationType
 import top.potmot.model.base.BaseEntity
 
 /**
@@ -10,6 +11,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-12 10:50:21
  */
 @Entity
+@Table(name = "jimmer-code-gen.gen_property")
 interface GenProperty : BaseEntity {
     /**
      * ID
@@ -50,6 +52,17 @@ interface GenProperty : BaseEntity {
     @Key
     val name: String
 
+
+    /**
+     * 属性注释
+     */
+    val comment: String
+
+    /**
+     * 属性类型
+     */
+    val type: String
+
     /**
      * 是否Id（1是）
      */
@@ -58,7 +71,7 @@ interface GenProperty : BaseEntity {
     /**
      * Id 生成类型
      */
-    val idGenerationType: String
+    val idGenerationType: GenerationType?
 
     /**
      * 是否为业务键属性（1是）
@@ -73,22 +86,12 @@ interface GenProperty : BaseEntity {
     /**
      * 属性关联类型
      */
-    val propertyAssociationType: String
-
-    /**
-     * 属性类型
-     */
-    val propertyType: String
+    val associationType: AssociationType?
 
     /**
      * 属性注解表达式
      */
-    val propertyAnnotationExpression: String
-
-    /**
-     * 属性注释
-     */
-    val propertyComment: String
+    val annotationExpression: String?
 
     /**
      * 对应枚举 ID

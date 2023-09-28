@@ -1,4 +1,4 @@
-package top.potmot.util.convert
+package top.potmot.core.convert
 
 import java.math.BigDecimal
 import java.sql.Types

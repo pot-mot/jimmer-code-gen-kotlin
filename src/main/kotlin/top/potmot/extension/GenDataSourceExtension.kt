@@ -1,4 +1,4 @@
-package top.potmot.util.extension
+package top.potmot.extension
 
 import org.babyfish.jimmer.kt.new
 import schemacrawler.schema.Catalog
@@ -118,13 +118,11 @@ fun Schema.toGenSchema(dataSourceId: Long): GenSchema {
 
 fun Table.toGenTable(
     schemaId: Long? = null,
-    groupId: Long? = null,
     orderKey: Long? = null
 ): GenTable {
     val table = this
     return new(GenTable::class).by {
         schemaId?.let { this.schemaId = it }
-        groupId?.let { this.groupId = it }
         this.name = table.name
         this.comment = table.remarks
         this.type = TableType.fromValue(table.type.tableType)

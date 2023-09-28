@@ -11,6 +11,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-12 10:47:36
  */
 @Entity
+@Table(name = "jimmer-code-gen.gen_association")
 interface GenAssociation : BaseEntity {
     /**
      * ID
@@ -25,6 +26,12 @@ interface GenAssociation : BaseEntity {
     val comment: String
 
     /**
+     * 主列 ID
+     */
+    @IdView
+    val sourceColumnId: Long
+
+    /**
      * 主列
      */
     @Key
@@ -33,10 +40,10 @@ interface GenAssociation : BaseEntity {
     val sourceColumn: GenColumn
 
     /**
-     * 主列 ID
+     * 从列 ID
      */
     @IdView
-    val sourceColumnId: Long
+    val targetColumnId: Long
 
     /**
      * 从列
@@ -47,16 +54,9 @@ interface GenAssociation : BaseEntity {
     val targetColumn: GenColumn
 
     /**
-     * 从列 ID
-     */
-    @IdView
-    val targetColumnId: Long
-
-    /**
      * 关联类型
      */
-    @Key
-    val associationType: AssociationType
+    val associationType: AssociationType?
 
 
     /**

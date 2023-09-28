@@ -11,7 +11,8 @@ import top.potmot.model.base.TreeNode
  * @since 2023-08-12 10:51:24
  */
 @Entity
-interface GenTableGroup : BaseEntity, TreeNode<GenTableGroup> {
+@Table(name = "jimmer-code-gen.gen_package")
+interface GenPackage : BaseEntity, TreeNode<GenPackage> {
     /**
      * ID
      */
@@ -20,30 +21,29 @@ interface GenTableGroup : BaseEntity, TreeNode<GenTableGroup> {
     override val id: Long
 
     /**
-     * 父组 ID
+     * 父包 ID
      */
     @IdView
     override val parentId: Long?
 
     /**
-     * 父组
+     * 父包
      */
-    @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    override val parent: GenTableGroup?
+    override val parent: GenPackage?
 
     /**
-     * 子组
+     * 子包
      */
     @OneToMany(mappedBy = "parent", orderedProps = [OrderedProp("orderKey")])
-    override val children: List<GenTableGroup>
+    override val children: List<GenPackage>
 
     /**
      * 表
      */
-    @OneToMany(mappedBy = "group", orderedProps = [OrderedProp("orderKey")])
-    val tables: List<GenTable>
+    @OneToMany(mappedBy = "genPackage", orderedProps = [OrderedProp("orderKey")])
+    val entities: List<GenEntity>
 
     /**
      * 组名称

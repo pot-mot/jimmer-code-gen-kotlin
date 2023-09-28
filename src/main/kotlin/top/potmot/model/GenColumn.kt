@@ -10,6 +10,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-12 10:49:27
  */
 @Entity
+@Table(name = "jimmer-code-gen.gen_column")
 interface GenColumn : BaseEntity {
     /**
      * ID
@@ -34,7 +35,7 @@ interface GenColumn : BaseEntity {
      * 归属表编号
      */
     @IdView
-    val tableId: Long?
+    val tableId: Long
 
     /**
      * 归属表
@@ -42,7 +43,7 @@ interface GenColumn : BaseEntity {
     @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    val table: GenTable?
+    val table: GenTable
 
     /**
      * 列在表中顺序

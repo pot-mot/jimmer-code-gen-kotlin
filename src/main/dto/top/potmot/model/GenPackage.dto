@@ -1,0 +1,22 @@
+//GenPackageCommonView {
+//    #allScalars
+//}
+//
+//GenPackageTreeView: GenPackageView  {
+//    entities {
+//        #allScalars
+//    }
+//
+//    children {
+//        #allScalars
+//        entities {
+//            #allScalars
+//        }
+//    }*
+//}
+//
+//input GenPackageInput {
+//    #allScalars
+//    -createdTime
+//    -modifiedTime
+//}

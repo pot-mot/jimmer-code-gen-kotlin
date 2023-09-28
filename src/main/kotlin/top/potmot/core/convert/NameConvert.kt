@@ -1,14 +1,25 @@
-package top.potmot.util.convert
+package top.potmot.core.convert
 
-import org.apache.commons.lang3.StringUtils
 import top.potmot.config.GenConfig
 
 /**
  * 转换表名为类名，即根据一个分割符将一个字符串转成首字母大写其余小写的形式
+ * 将根据系统配置判断移除表前缀或后缀
  * 例如：HELLO_WORLD -> HelloWorld
  */
 fun tableNameToClassName(name: String): String {
-    val newName = name.removePrefixes().removePrefixes()
+    val newName =
+        if (GenConfig.removeTablePrefixes) {
+            name.removePrefixes()
+        } else {
+            name
+        }.let { tempName ->
+            if (GenConfig.removeTableSuffixes) {
+                tempName.removeSuffixes()
+            } else {
+                tempName
+            }
+        }
     val result = StringBuilder()
 
     // 将 newName 按照 SEPARATOR 进行分割成一个字符串数组并且去掉数组中的空字符串
@@ -55,42 +66,17 @@ fun columnNameToPropertyName(name: String): String {
 }
 
 /**
- * 转换包名为模块名
- *
- * @param packageName 包名
- * @return 模块名
- */
-fun packageNameToModuleName(packageName: String): String {
-    val lastIndex = packageName.lastIndexOf(".")
-    val nameLength = packageName.length
-    return StringUtils.substring(packageName, lastIndex + 1, nameLength)
-}
-
-/**
- * 转换表注释为功能名：中文
- * 例如：测试表 -> 测试
- */
-fun commentToFunctionName(comment: String): String {
-    return if (comment.isNotEmpty() && comment.last() == '表') {
-        comment.dropLast(1) // 如果最后一个字符是 "表"，则将其删除
-    } else {
-        comment // 如果最后一个字符不是 "表"，则直接返回原字符串
-    }
-}
-
-/**
  * 从给定的字符串中移除前缀字符串
- *
- * @param target 要处理的字符串
  * @param prefixes 要移除的前缀列表
  * @param separator 分隔符
  * @return 移除前缀后的字符串
  */
 fun String.removePrefixes(
-    prefixes: List<String> = GenConfig.tablePrefix,
+    prefixes: List<String> = GenConfig.tableMatchPrefix,
     separator: String = GenConfig.separator
 ): String {
     var result = this
+
     for (prefix in prefixes) {
         if (result.startsWith(prefix)) {
             result = result.removePrefix(prefix)
@@ -100,22 +86,22 @@ fun String.removePrefixes(
             break
         }
     }
+
     return result
 }
 
 /**
  * 从给定的字符串中移除后缀字符串
- *
- * @param target 要处理的字符串
  * @param suffixes 要移除的后缀列表
  * @param separator 分隔符
  * @return 移除后缀后的字符串
  */
 fun String.removeSuffixes(
-    suffixes: List<String> = GenConfig.tableSuffix,
+    suffixes: List<String> = GenConfig.tableMatchSuffix,
     separator: String = GenConfig.separator
 ): String {
     var result = this
+
     for (suffix in suffixes) {
         if (result.endsWith(suffix)) {
             result = result.removeSuffix(suffix)

@@ -10,6 +10,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-12 10:48:54
  */
 @Entity
+@Table(name = "jimmer-code-gen.gen_entity")
 interface GenEntity : BaseEntity {
     /**
      * ID
@@ -17,6 +18,20 @@ interface GenEntity : BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override val id: Long
+
+    /**
+     * 所属包 ID
+     */
+    @IdView("genPackage")
+    val packageId: Long?
+
+    /**
+     * 所属包
+     */
+    @ManyToOne
+    @JoinColumn(name = "package_id")
+    @OnDissociate(DissociateAction.SET_NULL)
+    val genPackage: GenPackage?
 
     /**
      * 对应表 ID
@@ -27,8 +42,7 @@ interface GenEntity : BaseEntity {
     /**
      * 对应表
      */
-    @Key
-    @ManyToOne
+    @OneToOne
     @OnDissociate(DissociateAction.SET_NULL)
     val table: GenTable?
 
@@ -36,29 +50,12 @@ interface GenEntity : BaseEntity {
      * 类名称
      */
     @Key
-    val className: String
+    val name: String
 
     /**
      * 类注释
      */
-    val classComment: String
-
-    /**
-     * 包名
-     */
-    @Key
-    val packageName: String
-
-    /**
-     * 模块名
-     */
-    @Key
-    val moduleName: String
-
-    /**
-     * 功能名
-     */
-    val functionName: String
+    val comment: String
 
     /**
      * 作者
