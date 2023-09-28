@@ -11,7 +11,7 @@ import top.potmot.model.base.TreeNode
  * @since 2023-08-12 10:51:24
  */
 @Entity
-@Table(name = "jimmer-code-gen.gen_package")
+@Table(name = "jimmer_code_gen.gen_package")
 interface GenPackage : BaseEntity, TreeNode<GenPackage> {
     /**
      * ID

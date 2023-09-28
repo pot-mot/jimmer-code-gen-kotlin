@@ -10,7 +10,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-12 10:51:39
  */
 @Entity
-@Table(name = "jimmer-code-gen.gen_type_mapping")
+@Table(name = "jimmer_code_gen.gen_type_mapping")
 interface GenTypeMapping : BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

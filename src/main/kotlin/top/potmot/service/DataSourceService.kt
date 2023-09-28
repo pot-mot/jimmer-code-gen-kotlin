@@ -17,7 +17,6 @@ import top.potmot.model.copy
 import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.model.dto.GenDataSourceView
 import top.potmot.model.id
-import top.potmot.util.extension.*
 
 @RestController
 @RequestMapping("/dataSource")

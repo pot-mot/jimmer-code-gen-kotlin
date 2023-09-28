@@ -12,7 +12,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-08-12 10:50:21
  */
 @Entity
-@Table(name = "jimmer-code-gen.gen_dto_property")
+@Table(name = "jimmer_code_gen.gen_dto_property")
 interface GenDtoProperty : BaseEntity {
     /**
      * ID

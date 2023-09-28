@@ -7,7 +7,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
-    url: jdbc:mysql://localhost:3307/jimmer-code-gen?serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3307/jimmer_code_gen?serverTimezone=Asia/Shanghai
   jackson:
     # 格式化全局时间属性
     date-format: yyyy-MM-dd HH:mm:ss
@@ -26,7 +26,7 @@ jimmer:
   pretty-sql: true
   database-validation:
     mode: ERROR
-    schema: jimmer-code-gen
+    schema: jimmer_code_gen
 
 # 代码生成
 gen:
