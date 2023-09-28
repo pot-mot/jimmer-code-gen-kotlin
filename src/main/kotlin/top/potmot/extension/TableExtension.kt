@@ -2,7 +2,6 @@ package top.potmot.extension
 
 import org.babyfish.jimmer.ImmutableObjects
 import top.potmot.model.GenColumn
-import top.potmot.model.GenProperty
 import top.potmot.model.GenTable
 import top.potmot.model.copy
 import top.potmot.model.dto.GenColumnMatchView

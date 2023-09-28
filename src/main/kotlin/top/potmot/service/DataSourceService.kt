@@ -7,6 +7,9 @@ import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
+import top.potmot.core.import.getFkAssociation
+import top.potmot.core.import.toGenSchema
+import top.potmot.core.import.toGenSchemas
 import top.potmot.enum.DataSourceType
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.error.DataSourceException
@@ -23,11 +26,17 @@ import top.potmot.model.id
 class DataSourceService(
     @Autowired val sqlClient: KSqlClient
 ) {
+    /**
+     * 获取数据库类型
+     */
     @GetMapping("/types")
     fun listTypes(): List<DataSourceType> {
         return DataSourceType.values().toList()
     }
 
+    /**
+     * 列出所有数据源
+     */
     @GetMapping
     fun list(): List<GenDataSourceView> {
         return sqlClient.createQuery(GenDataSource::class) {
@@ -35,6 +44,9 @@ class DataSourceService(
         }.execute()
     }
 
+    /**
+     * 获取单个数据源
+     */
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): List<GenDataSourceView> {
         return sqlClient.createQuery(GenDataSource::class) {
@@ -43,42 +55,57 @@ class DataSourceService(
         }.execute()
     }
 
+    /**
+     * 插入数据源
+     */
     @PostMapping
     @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
     fun insert(@RequestBody dataSource: GenDataSourceInput): Long {
-        dataSource.test()
+        dataSource.toEntity().test()
         return sqlClient.insert(dataSource).modifiedEntity.id
     }
 
+    /**
+     * 编辑数据源
+     */
     @PutMapping("/{id}")
     @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
     fun edit(@PathVariable id: Long, @RequestBody dataSource: GenDataSourceInput): Int {
-        dataSource.test()
+        dataSource.toEntity().test()
         return sqlClient.update(dataSource.toEntity().copy {
             this.id = id
             this.schemas = emptyList()
         }).totalAffectedRowCount
     }
 
+    /**
+     * 测试数据源
+     */
     @PostMapping("/test")
     @Transactional
     fun test(@RequestBody dataSource: GenDataSourceInput): Boolean {
         return try {
-            dataSource.test()
+            dataSource.toEntity().test()
             true
         } catch (e: DataSourceException) {
             false
         }
     }
 
+    /**
+     * 删除数据源
+     */
     @DeleteMapping("/{ids}")
     @Transactional
     fun delete(@PathVariable ids: List<Long>): Int {
         return sqlClient.deleteByIds(GenDataSource::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
     }
 
+    /**
+     * 预览数据源中全部的 schema
+     */
     @GetMapping("/{dataSourceId}/schema")
     @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
@@ -98,29 +125,39 @@ class DataSourceService(
         return emptyList()
     }
 
+    /**
+     * 导入 schema
+     */
     @PostMapping("/{dataSourceId}/schema/{name}")
     @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
     fun importSchema(
         @PathVariable dataSourceId: Long,
         @PathVariable name: String
-    ): Int {
+    ): List<Long> {
         val dataSource =
             sqlClient.findById(GenDataSource::class, dataSourceId)?.toSource()
 
-        var result = 0
+        val result = mutableListOf<Long>()
 
         if (dataSource != null) {
-            val schemas =
-                dataSource
-                    .getCatalog(schemaPattern = name)
-                    .toGenSchemas(dataSourceId)
-            dataSource.close()
+            val catalog = dataSource.getCatalog(schemaPattern = name)
 
+            val genSchemas = catalog.toGenSchemas(dataSourceId)
 
-            schemas.forEach {
-                result += sqlClient.save(it).totalAffectedRowCount
+            genSchemas.forEach {
+                val newSchemaId = sqlClient.save(it.second).modifiedEntity.id
+
+                result += newSchemaId
+
+                catalog.getTables(it.first).forEach {table ->
+                    table.getFkAssociation(newSchemaId).forEach {association ->
+                        sqlClient.save(association)
+                    }
+                }
             }
+
+            dataSource.close()
         }
 
         return result

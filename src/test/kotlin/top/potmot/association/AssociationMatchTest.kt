@@ -13,15 +13,15 @@ import top.potmot.enum.GenLanguage
 import top.potmot.enum.TableType
 import top.potmot.model.dto.GenColumnMatchView
 import top.potmot.service.AssociationService
-import top.potmot.core.association.includeTableNamePkColumnMatch
-import top.potmot.core.association.simplePkColumnMatch
-import top.potmot.core.association.suffixMatch
-import top.potmot.core.association.pkSuffixColumnMatch
+import top.potmot.core.match.includeTableNamePkColumnMatch
+import top.potmot.core.match.simplePkColumnMatch
+import top.potmot.core.match.suffixMatch
+import top.potmot.core.match.pkSuffixColumnMatch
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class AssociationScanTest(
+class AssociationMatchTest(
     @Autowired val associationService: AssociationService,
 ) {
     @Test

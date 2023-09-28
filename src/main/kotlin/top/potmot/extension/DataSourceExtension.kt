@@ -1,16 +1,11 @@
 package top.potmot.extension
 
-import org.babyfish.jimmer.kt.new
 import schemacrawler.schema.Catalog
-import schemacrawler.schema.Column
-import schemacrawler.schema.Schema
-import schemacrawler.schema.Table
 import schemacrawler.schemacrawler.LimitOptionsBuilder
 import schemacrawler.schemacrawler.LoadOptionsBuilder
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder
 import schemacrawler.schemacrawler.SchemaInfoLevelBuilder
 import schemacrawler.tools.utility.SchemaCrawlerUtility
-import top.potmot.enum.TableType
 import top.potmot.error.DataSourceException
 import top.potmot.model.*
 import top.potmot.model.dto.GenDataSourceInput
@@ -24,16 +19,12 @@ fun GenDataSource.url(): String {
     return "jdbc:${this.type.name.lowercase()}://${this.host}:${this.port}"
 }
 
-fun GenDataSourceInput.test() {
-    this.toEntity().toSource().close()
-}
-
-fun GenDataSource.toSource(): DatabaseConnectionSource {
-    return DatabaseConnectionSources.newDatabaseConnectionSource(
-        this.url(), MultiUseUserCredentials(this.username, this.password)
-    ).test()
-}
-
+/**
+ * 测试数据库连接。
+ *
+ * @return 返回测试后的数据库连接源（DatabaseConnectionSource）对象。
+ * @throws DataSourceException 如果连接失败，则抛出DataSourceException异常。
+ */
 fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
     try {
         this.get().close()
@@ -43,6 +34,36 @@ fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
     }
 }
 
+/**
+ * 从 GenDataSource 转换为 DatabaseConnectionSource
+ *
+ * @return 返回测试后的数据库连接源（DatabaseConnectionSource）对象。
+ * @throws DataSourceException 如果转换失败，则抛出DataSourceException异常。
+ */
+fun GenDataSource.toSource(): DatabaseConnectionSource {
+    return DatabaseConnectionSources.newDatabaseConnectionSource(
+        this.url(), MultiUseUserCredentials(this.username, this.password)
+    ).test()
+}
+
+fun GenDataSource.test() {
+    this.toSource().close()
+}
+
+/**
+ * 获取数据库目录（Catalog）。
+ *
+ * @param schemaPattern 表模式的模式匹配字符串，默认为null。
+ * @param tablePattern 表名的模式匹配字符串，默认为null。
+ * @param withoutTable 是否排除表信息，默认为false。
+ * @param withoutPrimaryKey 是否排除主键信息，默认为false。
+ * @param withoutForeignKey 是否排除外键信息，默认为false。
+ * @param withoutIndex 是否排除索引信息，默认为false。
+ * @param withoutColumn 是否排除列信息，默认为false。
+ * @param withoutRoutine 是否排除存储过程信息，默认为true。
+ * @param withoutPrivilege 是否排除权限信息，默认为true。
+ * @return 返回数据库目录（Catalog）对象。
+ */
 fun DatabaseConnectionSource.getCatalog(
     schemaPattern: String? = null,
     tablePattern: String? = null,
@@ -95,60 +116,4 @@ fun DatabaseConnectionSource.getCatalog(
             .withLimitOptions(limitBuilder.toOptions())
             .withLoadOptions(LoadOptionsBuilder.builder().withSchemaInfoLevelBuilder(schemaInfoBuilder).toOptions())
     )
-}
-
-fun Catalog.toGenSchemas(dataSourceId: Long): List<GenSchema> {
-    val catalog = this
-    return this.schemas.map { schema ->
-        schema.toGenSchema(dataSourceId).copy {
-            this.tables = catalog.getTables(schema).map { table ->
-                table.toGenTable()
-            }
-        }
-    }
-}
-
-fun Schema.toGenSchema(dataSourceId: Long): GenSchema {
-    val schema = this
-    return new(GenSchema::class).by {
-        this.dataSourceId = dataSourceId
-        this.name = schema.fullName
-    }
-}
-
-fun Table.toGenTable(
-    schemaId: Long? = null,
-    orderKey: Long? = null
-): GenTable {
-    val table = this
-    return new(GenTable::class).by {
-        schemaId?.let { this.schemaId = it }
-        this.name = table.name
-        this.comment = table.remarks
-        this.type = TableType.fromValue(table.type.tableType)
-        var index = 0L
-        this.columns = table.columns.map {
-            it.toGenColumn(index++)
-        }
-        orderKey?.let { this.orderKey = it }
-    }
-}
-
-fun Column.toGenColumn(index: Long): GenColumn {
-    val column = this
-    return new(GenColumn::class).by {
-        this.orderKey = index
-        this.name = column.name
-        this.type = column.type.name
-        this.typeCode = column.type.javaSqlType.vendorTypeNumber
-        this.displaySize = column.size.toLong()
-        this.numericPrecision = column.decimalDigits.toLong()
-        this.defaultValue = column.defaultValue
-        this.comment = column.remarks
-        this.isPk = column.isPartOfPrimaryKey
-        this.isFk = column.isPartOfForeignKey
-        this.isUnique = column.isPartOfUniqueIndex
-        this.isAutoIncrement = column.isAutoIncremented
-        this.isNotNull = !column.isNullable
-    }
 }

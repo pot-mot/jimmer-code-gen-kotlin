@@ -1,4 +1,4 @@
-package top.potmot.core.association
+package top.potmot.core.match
 
 import top.potmot.config.GenConfig
 import top.potmot.model.dto.GenColumnMatchView
@@ -14,7 +14,8 @@ import top.potmot.core.convert.removeSuffixes
 typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatchView) -> Boolean
 
 /**
- * 简单主键列关联
+ * 简单主键列关联匹配
+ *
  * eq:      source                     target
  *          table2.table1_id        -> table1.id
  *          table2.table1_id        -> prefix_table1.id
@@ -29,7 +30,8 @@ val simplePkColumnMatch: AssociationMatch = { source, target ->
 }
 
 /**
- * 含表名主键列关联
+ * 含表名主键列关联匹配
+ *
  * eq:      source                     target
  *          table2.table1_id        -> table1.table1_id
  *          table2.table1_id        -> prefix_table1.table1_id
@@ -44,7 +46,8 @@ val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
 }
 
 /**
- * 后缀相似关联
+ * 后缀相似关联匹配
+ *
  * 判断表的最后两段与列的最后两段的累加列表是否一致
  * eq:      source                     target
  *          item.group_id           -> item_group.id

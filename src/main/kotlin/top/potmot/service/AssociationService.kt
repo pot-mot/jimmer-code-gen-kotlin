@@ -15,8 +15,8 @@ import top.potmot.model.*
 import top.potmot.model.dto.*
 import top.potmot.model.query.AssociationQuery
 import top.potmot.model.query.TableQuery
-import top.potmot.core.association.AssociationMatch
-import top.potmot.core.association.simplePkColumnMatch
+import top.potmot.core.match.AssociationMatch
+import top.potmot.core.match.simplePkColumnMatch
 import top.potmot.extension.newGenAssociationMatchView
 import top.potmot.extension.toColumnMatchViews
 import kotlin.reflect.KClass
