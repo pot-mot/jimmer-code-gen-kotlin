@@ -13,11 +13,11 @@ import top.potmot.service.EntityService
 @ActiveProfiles("test-kotlin")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TableEntityConvertTest(
-    @Autowired val service: EntityService
+    @Autowired val entityService: EntityService
 ) {
     @Test
     @Order(1)
     fun testEntityConvert() {
-        service.mapping(listOf(1L)).map { it.toString() }
+        entityService.mapping(listOf(7L))
     }
 }

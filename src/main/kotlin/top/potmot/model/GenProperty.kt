@@ -42,6 +42,7 @@ interface GenProperty : BaseEntity {
     /**
      * 归属实体
      */
+    @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val entity: GenEntity

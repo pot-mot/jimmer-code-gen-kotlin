@@ -39,6 +39,12 @@ fun tableNameToClassName(name: String): String {
     return result.toString()
 }
 
+fun tableNameToPropertyName(name: String): String {
+    return tableNameToClassName(name).replaceFirstChar {
+        it.lowercase()
+    }
+}
+
 /**
  * 转换列名为属性名，即根据一个分割符将一个字符串转成自第二部分开始首字母大写其余小写的形式
  * 例如：user_name -> userName

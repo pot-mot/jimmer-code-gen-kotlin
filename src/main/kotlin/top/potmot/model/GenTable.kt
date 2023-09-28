@@ -61,7 +61,6 @@ interface GenTable : BaseEntity {
     /**
      * 表种类
      */
-    @Key
     val type: TableType
 
     /**

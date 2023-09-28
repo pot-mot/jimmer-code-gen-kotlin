@@ -224,7 +224,7 @@ CREATE TABLE `gen_property`  (
   `comment` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '属性注释',
   `type` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '属性类型',
   `is_id` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否Id（1是）',
-  `id_generation_type` enum('AUTO','USER','IDENTITY','SEQUENCE') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT 'AUTO' COMMENT 'Id 生成类型',
+  `id_generation_type` enum('AUTO','USER','IDENTITY','SEQUENCE') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT 'Id 生成类型',
   `is_key` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否为业务键属性（1是）',
   `is_logical_delete` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否为逻辑删除属性（1是）',
   `association_type` enum('OneToOne','ManyToOne','OneToMany','ManyToMany') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '属性关联类型',

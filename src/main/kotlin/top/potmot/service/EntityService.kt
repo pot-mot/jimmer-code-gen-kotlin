@@ -24,11 +24,13 @@ class EntityService(
 ) {
     @PostMapping("/mapping")
     @Transactional
-    fun mapping(tableIds: List<Long>): List<Long> {
+    fun mapping(@RequestBody tableIds: List<Long>): List<Long> {
         val result = mutableListOf<Long>()
 
         tableService.query(TableQuery(ids = tableIds), GenTableAssociationView::class).forEach {
-            result += sqlClient.save(mappingEntity(it)).modifiedEntity.id
+            result += sqlClient.save(
+                mappingEntity(it)
+            ).modifiedEntity.id
         }
 
         return result
@@ -36,11 +38,11 @@ class EntityService(
 
     @PutMapping("/config")
     @Transactional
-    fun config(entity: GenEntityConfigInput): Int {
+    fun config(@RequestBody entity: GenEntityConfigInput): Int {
         return sqlClient.save(entity).totalAffectedRowCount
     }
 
-    @PostMapping("/query")
+    @GetMapping("/query")
     fun query(query: EntityQuery): List<GenEntityPropertiesView> {
         return query(query, GenEntityPropertiesView::class)
     }

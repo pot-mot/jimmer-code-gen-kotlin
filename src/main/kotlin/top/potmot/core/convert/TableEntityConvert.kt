@@ -95,24 +95,24 @@ fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
     outAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
-    val column = this
+    val sourceColumn = this
+
+    val targetColumn = outAssociation.targetColumn
 
     val ManyToOneProperty = new(GenProperty::class).by {
-        this.column = column.toEntity()
-        this.name = columnNameToPropertyName(column.name).removeSuffix("Id")
-        outAssociation.targetColumn.table?.let {
-            this.type = tableNameToClassName(outAssociation.targetColumn.table.name)
-        }
-        this.comment = column.comment
+        this.column = sourceColumn.toEntity()
+        this.name = tableNameToPropertyName(targetColumn.table.name)
+        this.type = tableNameToClassName(targetColumn.table.name)
+        this.comment = targetColumn.table.comment
         this.associationType = AssociationType.MANY_TO_ONE
         this.annotationExpression = "@ManyToOne"
     }
 
     val IdViewProperty = new(GenProperty::class).by {
-        this.column = column.toEntity()
-        this.name = columnNameToPropertyName(column.name)
-        this.type = getPropertyTypeName(column, typeMappings)
-        this.comment = column.comment + " ID 视图"
+        this.column = sourceColumn.toEntity()
+        this.name = tableNameToPropertyName(targetColumn.table.name) + "Id"
+        this.type = getPropertyTypeName(sourceColumn, typeMappings)
+        this.comment = targetColumn.table.comment + " ID 视图"
         this.associationType = AssociationType.MANY_TO_ONE
         this.annotationExpression = "@IdView(\"${ManyToOneProperty.name}\")"
     }
@@ -124,24 +124,24 @@ fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
     outAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
-    val column = this
+    val sourceColumn = this
+
+    val targetColumn = outAssociation.targetColumn
 
     val OneToOneProperty = new(GenProperty::class).by {
-        this.column = column.toEntity()
-        this.name = columnNameToPropertyName(column.name).removeSuffix("Id")
-        outAssociation.targetColumn.table?.let {
-            this.type = tableNameToClassName(outAssociation.targetColumn.table.name)
-        }
-        this.comment = column.comment
+        this.column = sourceColumn.toEntity()
+        this.name = tableNameToPropertyName(targetColumn.table.name)
+        this.type = tableNameToClassName(outAssociation.targetColumn.table.name)
+        this.comment = targetColumn.table.comment
         this.associationType = AssociationType.ONE_TO_ONE
         this.annotationExpression = "@OneToOne"
     }
 
     val IdViewProperty = new(GenProperty::class).by {
-        this.column = column.toEntity()
-        this.name = columnNameToPropertyName(column.name)
-        this.type = getPropertyTypeName(column, typeMappings)
-        this.comment = column.comment + " ID 视图"
+        this.column = sourceColumn.toEntity()
+        this.name = tableNameToPropertyName(targetColumn.table.name) + "Id"
+        this.type = getPropertyTypeName(sourceColumn, typeMappings)
+        this.comment = targetColumn.table.comment + " ID 视图"
         this.associationType = AssociationType.ONE_TO_ONE
         this.annotationExpression = "@IdView(\"${OneToOneProperty.name}\")"
     }
@@ -153,25 +153,25 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
     inAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
-    val column = this
+    val targetColumn = this
+
+    val sourceColumn = inAssociation.sourceColumn
 
     val OneToManyProperty = new(GenProperty::class).by {
-        this.column = column.toEntity()
-        this.name = columnNameToPropertyName(column.name).removeSuffix("Id") + "s"
-        inAssociation.sourceColumn.table?.let {
-            this.type = tableNameToClassName(inAssociation.sourceColumn.table.name)
-        }
-        this.comment = column.comment
-        this.associationType = AssociationType.MANY_TO_ONE
+        this.column = targetColumn.toEntity()
+        this.name = tableNameToPropertyName(sourceColumn.table.name) + "s"
+        this.type = "List<${tableNameToClassName(sourceColumn.table.name)}>"
+        this.comment = sourceColumn.table.comment
+        this.associationType = AssociationType.ONE_TO_MANY
         this.annotationExpression = "@OneToMany(mapperBy = \"${columnNameToPropertyName(inAssociation.sourceColumn.name)}\")"
     }
 
     val IdViewProperty = new(GenProperty::class).by {
-        this.column = column.toEntity()
-        this.name = columnNameToPropertyName(column.name) + "s"
-        this.type = getPropertyTypeName(column, typeMappings)
-        this.comment = column.comment + " ID 视图"
-        this.associationType = AssociationType.MANY_TO_ONE
+        this.column = targetColumn.toEntity()
+        this.name = tableNameToPropertyName(sourceColumn.table.name) + "Ids"
+        this.type = "List<${getPropertyTypeName(targetColumn, typeMappings)}>"
+        this.comment = sourceColumn.table.comment + " ID 视图"
+        this.associationType = AssociationType.ONE_TO_MANY
         this.annotationExpression = "@IdView(\"${OneToManyProperty.name}\")"
     }
 
@@ -182,24 +182,25 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
     inAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
-    val column = this
+    val targetColumn = this
+
+    val sourceColumn = inAssociation.sourceColumn
+
 
     val OneToOneProperty = new(GenProperty::class).by {
-        this.column = column.toEntity()
-        this.name = columnNameToPropertyName(column.name).removeSuffix("Id")
-        inAssociation.sourceColumn.table?.let {
-            this.type = tableNameToClassName(inAssociation.sourceColumn.table.name)
-        }
-        this.comment = column.comment
+        this.column = targetColumn.toEntity()
+        this.name = tableNameToPropertyName(sourceColumn.table.name)
+        this.type = tableNameToClassName(sourceColumn.table.name)
+        this.comment = sourceColumn.table.comment
         this.associationType = AssociationType.ONE_TO_ONE
         this.annotationExpression = "@OneToOne(mapperBy = \"${columnNameToPropertyName(inAssociation.sourceColumn.name)}\")"
     }
 
     val IdViewProperty = new(GenProperty::class).by {
-        this.column = column.toEntity()
-        this.name = columnNameToPropertyName(column.name)
-        this.type = getPropertyTypeName(column, typeMappings)
-        this.comment = column.comment + " ID 视图"
+        this.column = targetColumn.toEntity()
+        this.name = tableNameToPropertyName(sourceColumn.table.name) + "Id"
+        this.type = getPropertyTypeName(targetColumn, typeMappings)
+        this.comment = sourceColumn.table.comment + " ID 视图"
         this.associationType = AssociationType.ONE_TO_ONE
         this.annotationExpression = "@IdView(\"${OneToOneProperty.name}\")"
     }

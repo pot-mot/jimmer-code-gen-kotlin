@@ -1,6 +1,5 @@
 package top.potmot.import
 
-import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -8,28 +7,38 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.core.import.getFkAssociation
+import top.potmot.enum.DataSourceType
 import top.potmot.extension.getCatalog
 import top.potmot.extension.toSource
-import top.potmot.model.GenDataSource
+import top.potmot.model.dto.GenDataSourceInput
+import top.potmot.service.DataSourceService
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class DataSourceImportTest(
-    @Autowired val sqlClient: KSqlClient
+    @Autowired val dataSourceService: DataSourceService
 ) {
     @Test
     @Order(1)
     fun testImportSchema() {
-        sqlClient.findById(GenDataSource::class, 1L)
-            ?.toSource()
-            ?.getCatalog("jimmer_code_gen")
-            ?.tables
-            ?.forEach {
-                it.getFkAssociation(1L).forEach {
-                    sqlClient.insert(it)
-                }
-            }
+        val insertId = dataSourceService.insert(
+            GenDataSourceInput(
+                name = "test",
+                host = "127.0.0.1",
+                port = "3306",
+                type = DataSourceType.MYSQL,
+                username = "root",
+                password = "root",
+                orderKey = 0L,
+                remark = "test"
+            )
+        )
+
+        val viewSchemas = dataSourceService.viewSchemas(insertId)
+
+        if (viewSchemas.isNotEmpty()) {
+            dataSourceService.importSchema(insertId, viewSchemas[0].name)
+        }
     }
 }
