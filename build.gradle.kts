@@ -27,7 +27,6 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 val jimmerVersion = "0.8.23"
 val mysqlVersion = "8.0.30"
 val caffeineVersion = "2.9.1"
-val velocityVersion = "2.3"
 val schemacrawlerVersion = "16.20.4"
 
 repositories {
@@ -51,8 +50,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     runtimeOnly("mysql:mysql-connector-java:${mysqlVersion}")
-
-    implementation("org.apache.velocity:velocity-engine-core:${velocityVersion}")
 
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler
     implementation("us.fatehi:schemacrawler-api:${schemacrawlerVersion}") {

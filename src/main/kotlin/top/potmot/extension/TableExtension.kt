@@ -32,13 +32,3 @@ fun GenTableColumnView.toColumnMatchViews(): List<GenColumnMatchView> {
         )
     }
 }
-
-fun GenTable.stringify(): String {
-    TODO()
-    return this.toString()
-}
-
-fun GenColumn.stringify(): String {
-    TODO()
-    return this.toString()
-}

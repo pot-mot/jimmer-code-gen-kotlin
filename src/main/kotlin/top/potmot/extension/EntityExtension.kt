@@ -17,13 +17,3 @@ fun GenEntity.getProperty(name: String): GenProperty? {
     }
     return this.properties.find { it.name == name }
 }
-
-fun GenEntity.stringify(): String {
-    TODO()
-    return this.toString()
-}
-
-fun GenProperty.stringify(): String {
-    TODO()
-    return this.toString()
-}

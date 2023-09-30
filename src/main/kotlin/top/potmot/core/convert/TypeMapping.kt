@@ -8,7 +8,7 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 fun jdbcTypeToJavaType(jdbcType: Int, isNotNull: Boolean = true): Class<*> {
     return when (jdbcType) {
-        Types.NULL -> Any::class.java
+        Types.NULL -> JvmType.Object::class.java
         Types.JAVA_OBJECT -> JvmType.Object::class.java
         Types.BIT, Types.BOOLEAN -> if (isNotNull) Boolean::class.java else Boolean::class.javaObjectType
         Types.TINYINT -> if (isNotNull) Byte::class.java else Byte::class.javaObjectType
@@ -21,10 +21,9 @@ fun jdbcTypeToJavaType(jdbcType: Int, isNotNull: Boolean = true): Class<*> {
         Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR, Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR, Types.CLOB, Types.NCLOB, Types.SQLXML, Types.DATALINK -> String::class.java
         Types.DATE, Types.TIME, Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> LocalDateTime::class.java
         Types.BLOB, Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> ByteArray::class.java
-        else -> Any::class.java
+        else -> JvmType.Object::class.java
     }
 }
-
 
 fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any> {
     return when (jdbcType) {

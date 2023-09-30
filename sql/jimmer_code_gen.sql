@@ -26,8 +26,8 @@ CREATE TABLE `gen_association`  (
   `comment` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '关联注释',
   `source_column_id` bigint(0) NOT NULL COMMENT '主列',
   `target_column_id` bigint(0) NOT NULL COMMENT '从列',
-  `association_type` enum('OneToOne','OneToMany','ManyToOne','ManyToMany') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '关联类型',
-  `dissociate_action` enum('NONE','SET_NULL','DELETE') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '脱钩行为',
+  `association_type` enum('OneToOne','OneToMany','ManyToOne','ManyToMany') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '关联类型',
+  `dissociate_action` enum('NONE','SET_NULL','DELETE') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '脱钩行为',
   `order_key` bigint(0) NOT NULL DEFAULT 0 COMMENT '自定排序',
   `created_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `modified_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
@@ -52,7 +52,7 @@ CREATE TABLE `gen_column`  (
   `type` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列类型',
   `display_size` bigint(0) NOT NULL DEFAULT 0 COMMENT '列展示长度',
   `numeric_precision` bigint(0) NOT NULL DEFAULT 0 COMMENT '列精度',
-  `default_value` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '列默认值',
+  `default_value` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '列默认值',
   `comment` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '列注释',
   `is_pk` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否主键（1是）',
   `is_auto_increment` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否自增（1是）',
@@ -87,62 +87,13 @@ CREATE TABLE `gen_data_source`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成数据源' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for gen_dto
--- ----------------------------
-DROP TABLE IF EXISTS `gen_dto`;
-CREATE TABLE `gen_dto`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `entity_id` bigint(0) NOT NULL COMMENT '对应实体',
-  `name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '属性名',
-  `type` enum('VIEW','INSERT','INSERT_ONLY') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'VIEW' COMMENT 'DTO 类型',
-  `created_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `modified_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '备注',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_dto_entity`(`entity_id`) USING BTREE,
-  CONSTRAINT `fk_dto_entity` FOREIGN KEY (`entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成 DTO' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for gen_dto_property
--- ----------------------------
-DROP TABLE IF EXISTS `gen_dto_property`;
-CREATE TABLE `gen_dto_property`  (
-  `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `dto_id` bigint(0) NOT NULL COMMENT '对应 DTO',
-  `property_id` bigint(0) NOT NULL COMMENT '对应属性',
-  `is_list` tinyint(1) NOT NULL DEFAULT 1 COMMENT '是否在列表中（1是）',
-  `list_sort` bigint(0) NOT NULL DEFAULT 0 COMMENT '在列表中顺序',
-  `is_add` tinyint(1) NOT NULL DEFAULT 1 COMMENT '是否在新增表单中（1是）',
-  `add_sort` bigint(0) NOT NULL DEFAULT 0 COMMENT '在新增表单中顺序',
-  `is_add_required` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否为新增时必填（1是）',
-  `is_edit` tinyint(1) NOT NULL DEFAULT 1 COMMENT '是否在编辑表单中（1是）',
-  `edit_sort` bigint(0) NOT NULL DEFAULT 0 COMMENT '在编辑表单中顺序',
-  `is_edit_required` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否为编辑时必填（1是）',
-  `is_edit_read_only` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否为编辑时只读（1是）',
-  `is_query` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否为查询属性（1是）',
-  `query_sort` bigint(0) NOT NULL DEFAULT 0 COMMENT '在查询属性中顺序',
-  `query_type` enum('EQ','NE','GT','GTE','LT','LTE','BETWEEN','IN','LIKE','ILIKE') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'EQ' COMMENT '查询类型',
-  `is_sort` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否为排序属性（1是）',
-  `sort_direction` tinyint(1) NOT NULL DEFAULT 0 COMMENT '排序方向（0 ASC 1 DESC）',
-  `created_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-  `modified_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '备注',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fk_dto_property_dto`(`dto_id`) USING BTREE,
-  INDEX `fk_dto_property_property`(`property_id`) USING BTREE,
-  CONSTRAINT `fk_dto_property_dto` FOREIGN KEY (`dto_id`) REFERENCES `gen_dto` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-  CONSTRAINT `fk_dto_property_property` FOREIGN KEY (`property_id`) REFERENCES `gen_property` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成 DTO 属性' ROW_FORMAT = Dynamic;
-
--- ----------------------------
 -- Table structure for gen_entity
 -- ----------------------------
 DROP TABLE IF EXISTS `gen_entity`;
 CREATE TABLE `gen_entity`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `package_id` bigint(0) NULL DEFAULT NULL COMMENT '所属包',
-  `table_id` bigint(0) NULL DEFAULT NULL COMMENT '对应表',
+  `package_id` bigint(0) NULL COMMENT '所属包',
+  `table_id` bigint(0) NULL COMMENT '对应表',
   `name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '类名称',
   `comment` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '类注释',
   `author` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '作者',
@@ -201,7 +152,7 @@ CREATE TABLE `gen_enum_item`  (
 DROP TABLE IF EXISTS `gen_package`;
 CREATE TABLE `gen_package`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `parent_id` bigint(0) NULL DEFAULT NULL COMMENT '父包',
+  `parent_id` bigint(0) NULL COMMENT '父包',
   `name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '包名称',
   `order_key` bigint(0) NOT NULL DEFAULT 0 COMMENT '自定排序',
   `created_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
@@ -219,17 +170,24 @@ DROP TABLE IF EXISTS `gen_property`;
 CREATE TABLE `gen_property`  (
   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `entity_id` bigint(0) NOT NULL COMMENT '归属实体',
-  `column_id` bigint(0) NULL DEFAULT NULL COMMENT '对应列',
+  `column_id` bigint(0) NULL COMMENT '对应列',
   `name` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '属性名',
   `comment` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '属性注释',
   `type` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '属性类型',
+  `type_table_id` bigint(0) NULL COMMENT '类型对应表',
+  `is_list` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否列表（1是）',
+  `is_not_null` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否非空（1是）',
   `is_id` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否Id（1是）',
   `id_generation_type` enum('AUTO','USER','IDENTITY','SEQUENCE') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT 'Id 生成类型',
   `is_key` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否为业务键属性（1是）',
   `is_logical_delete` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否为逻辑删除属性（1是）',
-  `association_type` enum('OneToOne','ManyToOne','OneToMany','ManyToMany') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '属性关联类型',
-  `annotation_expression` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '属性注解表达式',
-  `enum_id` bigint(0) NULL DEFAULT NULL COMMENT '对应枚举 ID',
+  `is_id_view` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否为 ID 视图属性（1是）',
+  `id_view_annotation` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT 'ID 视图注释',
+  `association_type` enum('OneToOne','OneToMany','ManyToOne','ManyToMany') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '关联类型',
+  `association_annotation` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '关联注释',
+  `dissociate_annotation` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '脱钩注释',
+  `other_annotation` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '其他注释',
+  `enum_id` bigint(0) NULL COMMENT '对应枚举 ID',
   `created_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
   `modified_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '备注',

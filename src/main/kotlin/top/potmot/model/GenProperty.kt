@@ -65,6 +65,29 @@ interface GenProperty : BaseEntity {
     val type: String
 
     /**
+     * 类型对应表
+     */
+    @ManyToOne
+    @OnDissociate(DissociateAction.SET_NULL)
+    val typeTable: GenTable?
+
+    /**
+     * 类型对应表 ID 视图
+     */
+    @IdView
+    val typeTableId: Long?
+
+    /**
+     * 是否列表
+     */
+    val isList: Boolean
+
+    /**
+     * 是否非空（1是）
+     */
+    val isNotNull: Boolean
+
+    /**
      * 是否Id（1是）
      */
     val isId: Boolean
@@ -85,14 +108,34 @@ interface GenProperty : BaseEntity {
     val isLogicalDelete: Boolean
 
     /**
-     * 属性关联类型
+     * 是否为 ID 视图属性（1是）
+     */
+    val isIdView: Boolean
+
+    /**
+     * ID 视图注释
+     */
+    val idViewAnnotation: String?
+
+    /**
+     * 关联类型
      */
     val associationType: AssociationType?
 
     /**
-     * 属性注解表达式
+     * 关联注释
      */
-    val annotationExpression: String?
+    val associationAnnotation: String?
+
+    /**
+     * 脱钩注释
+     */
+    val dissociateAnnotation: String?
+
+    /**
+     * 其他注释
+     */
+    val otherAnnotation: String?
 
     /**
      * 对应枚举 ID

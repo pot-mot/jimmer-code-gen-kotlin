@@ -14,6 +14,10 @@ import top.potmot.model.dto.GenTableAssociationView
 import top.potmot.model.query.EntityQuery
 import top.potmot.model.query.TableQuery
 import top.potmot.core.convert.tableToEntity
+import top.potmot.core.generate.stringify
+import java.io.ByteArrayOutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 import kotlin.reflect.KClass
 
 @RestController
@@ -34,6 +38,23 @@ class EntityService(
         }
 
         return result
+    }
+
+    @PostMapping("/generate")
+    @Transactional
+    fun generate(@RequestBody entityIds: List<Long>): ByteArray {
+        val zipFileStream = ByteArrayOutputStream()
+
+        val zip = ZipOutputStream(zipFileStream)
+
+        query(EntityQuery(ids = entityIds)).forEach { entity ->
+            val zipEntry = ZipEntry("${entity.name}.kt")
+            zip.putNextEntry(zipEntry)
+            zip.write(entity.stringify().toByteArray())
+            zip.closeEntry()
+        }
+
+        return zipFileStream.toByteArray()
     }
 
     @PutMapping("/config")

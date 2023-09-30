@@ -74,10 +74,7 @@ class DataSourceService(
     @Transactional
     fun edit(@PathVariable id: Long, @RequestBody dataSource: GenDataSourceInput): Int {
         dataSource.toEntity().test()
-        return sqlClient.update(dataSource.toEntity().copy {
-            this.id = id
-            this.schemas = emptyList()
-        }).totalAffectedRowCount
+        return sqlClient.update(dataSource.toEntity()).totalAffectedRowCount
     }
 
     /**

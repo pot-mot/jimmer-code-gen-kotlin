@@ -103,9 +103,13 @@ fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
         this.column = sourceColumn.toEntity()
         this.name = tableNameToPropertyName(targetColumn.table.name)
         this.type = tableNameToClassName(targetColumn.table.name)
+        this.typeTableId = targetColumn.table.id
         this.comment = targetColumn.table.comment
         this.associationType = AssociationType.MANY_TO_ONE
-        this.annotationExpression = "@ManyToOne"
+        this.associationAnnotation = "@ManyToOne"
+        outAssociation.dissociateAction?.let {
+            this.dissociateAnnotation = "@OnDissociate(DissociateAction.${outAssociation.dissociateAction})"
+        }
     }
 
     val IdViewProperty = new(GenProperty::class).by {
@@ -113,8 +117,9 @@ fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
         this.name = tableNameToPropertyName(targetColumn.table.name) + "Id"
         this.type = getPropertyTypeName(sourceColumn, typeMappings)
         this.comment = targetColumn.table.comment + " ID 视图"
+        this.isIdView = true
+        this.idViewAnnotation = "@IdView(\"${ManyToOneProperty.name}\")"
         this.associationType = AssociationType.MANY_TO_ONE
-        this.annotationExpression = "@IdView(\"${ManyToOneProperty.name}\")"
     }
 
     return listOf(ManyToOneProperty, IdViewProperty)
@@ -131,10 +136,14 @@ fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
     val OneToOneProperty = new(GenProperty::class).by {
         this.column = sourceColumn.toEntity()
         this.name = tableNameToPropertyName(targetColumn.table.name)
-        this.type = tableNameToClassName(outAssociation.targetColumn.table.name)
+        this.type = tableNameToClassName(targetColumn.table.name)
+        this.typeTableId = targetColumn.table.id
         this.comment = targetColumn.table.comment
         this.associationType = AssociationType.ONE_TO_ONE
-        this.annotationExpression = "@OneToOne"
+        this.associationAnnotation = "@OneToOne"
+        outAssociation.dissociateAction?.let {
+            this.dissociateAnnotation = "@OnDissociate(DissociateAction.${outAssociation.dissociateAction})"
+        }
     }
 
     val IdViewProperty = new(GenProperty::class).by {
@@ -142,8 +151,9 @@ fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
         this.name = tableNameToPropertyName(targetColumn.table.name) + "Id"
         this.type = getPropertyTypeName(sourceColumn, typeMappings)
         this.comment = targetColumn.table.comment + " ID 视图"
+        this.isIdView = true
+        this.idViewAnnotation = "@IdView(\"${OneToOneProperty.name}\")"
         this.associationType = AssociationType.ONE_TO_ONE
-        this.annotationExpression = "@IdView(\"${OneToOneProperty.name}\")"
     }
 
     return listOf(OneToOneProperty, IdViewProperty)
@@ -160,19 +170,27 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
     val OneToManyProperty = new(GenProperty::class).by {
         this.column = targetColumn.toEntity()
         this.name = tableNameToPropertyName(sourceColumn.table.name) + "s"
-        this.type = "List<${tableNameToClassName(sourceColumn.table.name)}>"
+        this.type = tableNameToClassName(sourceColumn.table.name)
+        this.isList = true
+        this.typeTableId = sourceColumn.table.id
         this.comment = sourceColumn.table.comment
+        this.isIdView = true
         this.associationType = AssociationType.ONE_TO_MANY
-        this.annotationExpression = "@OneToMany(mapperBy = \"${columnNameToPropertyName(inAssociation.sourceColumn.name)}\")"
+        this.associationAnnotation = "@OneToMany(mapperBy = \"${columnNameToPropertyName(inAssociation.sourceColumn.name)}\")"
+        inAssociation.dissociateAction?.let {
+            this.dissociateAnnotation = "@OnDissociate(DissociateAction.${inAssociation.dissociateAction})"
+        }
     }
 
     val IdViewProperty = new(GenProperty::class).by {
         this.column = targetColumn.toEntity()
         this.name = tableNameToPropertyName(sourceColumn.table.name) + "Ids"
-        this.type = "List<${getPropertyTypeName(targetColumn, typeMappings)}>"
+        this.type = getPropertyTypeName(targetColumn, typeMappings)
+        this.isList = true
         this.comment = sourceColumn.table.comment + " ID 视图"
+        this.isIdView = true
+        this.idViewAnnotation = "@IdView(\"${OneToManyProperty.name}\")"
         this.associationType = AssociationType.ONE_TO_MANY
-        this.annotationExpression = "@IdView(\"${OneToManyProperty.name}\")"
     }
 
     return listOf(OneToManyProperty, IdViewProperty)
@@ -191,9 +209,13 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
         this.column = targetColumn.toEntity()
         this.name = tableNameToPropertyName(sourceColumn.table.name)
         this.type = tableNameToClassName(sourceColumn.table.name)
+        this.typeTableId = sourceColumn.table.id
         this.comment = sourceColumn.table.comment
         this.associationType = AssociationType.ONE_TO_ONE
-        this.annotationExpression = "@OneToOne(mapperBy = \"${columnNameToPropertyName(inAssociation.sourceColumn.name)}\")"
+        this.associationAnnotation = "@OneToOne(mapperBy = \"${columnNameToPropertyName(inAssociation.sourceColumn.name)}\")"
+        inAssociation.dissociateAction?.let {
+            this.dissociateAnnotation = "@OnDissociate(DissociateAction.${inAssociation.dissociateAction})"
+        }
     }
 
     val IdViewProperty = new(GenProperty::class).by {
@@ -201,8 +223,9 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
         this.name = tableNameToPropertyName(sourceColumn.table.name) + "Id"
         this.type = getPropertyTypeName(targetColumn, typeMappings)
         this.comment = sourceColumn.table.comment + " ID 视图"
+        this.isIdView = true
+        this.idViewAnnotation = "@IdView(\"${OneToOneProperty.name}\")"
         this.associationType = AssociationType.ONE_TO_ONE
-        this.annotationExpression = "@IdView(\"${OneToOneProperty.name}\")"
     }
 
     return listOf(OneToOneProperty, IdViewProperty)
