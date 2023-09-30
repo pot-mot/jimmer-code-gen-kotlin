@@ -81,6 +81,7 @@ fun GenTableAssociationView.TargetOf_columns.toBaseProperty(
         this.name = columnNameToPropertyName(column.name)
         this.type = getPropertyTypeName(column, typeMappings)
         this.comment = column.comment
+        this.isNotNull = column.isNotNull
 
         if (column.isPk) {
             isId = true
@@ -105,6 +106,7 @@ fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
         this.type = tableNameToClassName(targetColumn.table.name)
         this.typeTableId = targetColumn.table.id
         this.comment = targetColumn.table.comment
+        this.isNotNull = sourceColumn.isNotNull
         this.associationType = AssociationType.MANY_TO_ONE
         this.associationAnnotation = "@ManyToOne"
         outAssociation.dissociateAction?.let {
@@ -117,6 +119,7 @@ fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
         this.name = tableNameToPropertyName(targetColumn.table.name) + "Id"
         this.type = getPropertyTypeName(sourceColumn, typeMappings)
         this.comment = targetColumn.table.comment + " ID 视图"
+        this.isNotNull = sourceColumn.isNotNull
         this.isIdView = true
         this.idViewAnnotation = "@IdView(\"${ManyToOneProperty.name}\")"
         this.associationType = AssociationType.MANY_TO_ONE
@@ -139,6 +142,7 @@ fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
         this.type = tableNameToClassName(targetColumn.table.name)
         this.typeTableId = targetColumn.table.id
         this.comment = targetColumn.table.comment
+        this.isNotNull = sourceColumn.isNotNull
         this.associationType = AssociationType.ONE_TO_ONE
         this.associationAnnotation = "@OneToOne"
         outAssociation.dissociateAction?.let {
@@ -151,6 +155,7 @@ fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
         this.name = tableNameToPropertyName(targetColumn.table.name) + "Id"
         this.type = getPropertyTypeName(sourceColumn, typeMappings)
         this.comment = targetColumn.table.comment + " ID 视图"
+        this.isNotNull = sourceColumn.isNotNull
         this.isIdView = true
         this.idViewAnnotation = "@IdView(\"${OneToOneProperty.name}\")"
         this.associationType = AssociationType.ONE_TO_ONE
@@ -174,6 +179,7 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
         this.isList = true
         this.typeTableId = sourceColumn.table.id
         this.comment = sourceColumn.table.comment
+        this.isNotNull = targetColumn.isNotNull
         this.isIdView = true
         this.associationType = AssociationType.ONE_TO_MANY
         this.associationAnnotation = "@OneToMany(mapperBy = \"${columnNameToPropertyName(inAssociation.sourceColumn.name)}\")"
@@ -188,6 +194,7 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
         this.type = getPropertyTypeName(targetColumn, typeMappings)
         this.isList = true
         this.comment = sourceColumn.table.comment + " ID 视图"
+        this.isNotNull = targetColumn.isNotNull
         this.isIdView = true
         this.idViewAnnotation = "@IdView(\"${OneToManyProperty.name}\")"
         this.associationType = AssociationType.ONE_TO_MANY
@@ -211,6 +218,7 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
         this.type = tableNameToClassName(sourceColumn.table.name)
         this.typeTableId = sourceColumn.table.id
         this.comment = sourceColumn.table.comment
+        this.isNotNull = targetColumn.isNotNull
         this.associationType = AssociationType.ONE_TO_ONE
         this.associationAnnotation = "@OneToOne(mapperBy = \"${columnNameToPropertyName(inAssociation.sourceColumn.name)}\")"
         inAssociation.dissociateAction?.let {
@@ -223,6 +231,7 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
         this.name = tableNameToPropertyName(sourceColumn.table.name) + "Id"
         this.type = getPropertyTypeName(targetColumn, typeMappings)
         this.comment = sourceColumn.table.comment + " ID 视图"
+        this.isNotNull = targetColumn.isNotNull
         this.isIdView = true
         this.idViewAnnotation = "@IdView(\"${OneToOneProperty.name}\")"
         this.associationType = AssociationType.ONE_TO_ONE

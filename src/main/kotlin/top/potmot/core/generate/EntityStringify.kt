@@ -24,13 +24,23 @@ ${entity.import()}
  * @since ${LocalDateTime.now()} 
  */
 interface ${entity.name} {
-${properties.map { it.stringify() }}
-}
+${properties.joinToString("") { it.stringify() }}
 """
 }
 
 fun GenEntityPropertiesView.packagePath(): String {
-    return ""
+    val tempPath = mutableListOf<String>()
+
+    if (genPackage != null) {
+        tempPath += genPackage.name
+        var tempParentPackage = genPackage.parent
+        while (tempParentPackage != null) {
+            tempPath += tempParentPackage.name
+            tempParentPackage = tempParentPackage.parent
+        }
+    }
+
+    return tempPath.joinToString(".")
 }
 
 fun GenEntityPropertiesView.TargetOf_properties.shortType(): String {
