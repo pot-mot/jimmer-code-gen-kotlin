@@ -1,10 +1,8 @@
 package top.potmot.core.import
 
 import org.babyfish.jimmer.kt.new
-import schemacrawler.schema.Catalog
-import schemacrawler.schema.Column
-import schemacrawler.schema.Schema
-import schemacrawler.schema.Table
+import org.babyfish.jimmer.sql.DissociateAction
+import schemacrawler.schema.*
 import top.potmot.enum.AssociationType
 import top.potmot.enum.TableType
 import top.potmot.model.*
@@ -97,6 +95,7 @@ fun Table.getFkAssociation(schemaId: Long): List<GenAssociation> {
                     this.sourceColumn = sourceColumn
                     this.targetColumn = targetColumn
                     this.associationType = AssociationType.MANY_TO_ONE
+                    this.dissociateAction = it.deleteRule.toDissociateAction()
                     this.remark = columnRef.toString()
                 }
         }
@@ -104,3 +103,15 @@ fun Table.getFkAssociation(schemaId: Long): List<GenAssociation> {
 
     return result
 }
+
+fun ForeignKeyUpdateRule.toDissociateAction(): DissociateAction {
+    return when(this) {
+        ForeignKeyUpdateRule.noAction -> DissociateAction.NONE
+        ForeignKeyUpdateRule.unknown -> DissociateAction.NONE
+        ForeignKeyUpdateRule.cascade -> DissociateAction.DELETE
+        ForeignKeyUpdateRule.setNull -> DissociateAction.SET_NULL
+        ForeignKeyUpdateRule.setDefault -> DissociateAction.NONE
+        ForeignKeyUpdateRule.restrict -> DissociateAction.NONE
+    }
+}
+

@@ -1,10 +1,6 @@
 package top.potmot.core.generate
 
-import org.babyfish.jimmer.sql.DissociateAction
-import org.babyfish.jimmer.sql.GenerationType
-import org.babyfish.jimmer.sql.Id
-import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.Key
+import org.babyfish.jimmer.sql.*
 import top.potmot.config.GenConfig
 import top.potmot.enum.getAnnotation
 import top.potmot.model.dto.GenEntityPropertiesView
@@ -25,7 +21,7 @@ ${entity.import()}
  */
 interface ${entity.name} {
 ${properties.joinToString("") { it.stringify() }}
-"""
+}"""
 }
 
 fun GenEntityPropertiesView.packagePath(): String {
@@ -109,6 +105,7 @@ fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
     if (property.isId) {
         Id::class.qualifiedName?.let { result += it }
         if (property.idGenerationType != null) {
+            GeneratedValue::class.qualifiedName?.let { result += it }
             GenerationType::class.qualifiedName?.let { result += it }
         }
     } else if (property.isKey) {
@@ -119,6 +116,7 @@ fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
         if (property.associationAnnotation != null) {
             property.associationType.getAnnotation().qualifiedName?.let { result += it }
             if (property.dissociateAnnotation != null) {
+                OnDissociate::class.qualifiedName?.let { result += it }
                 DissociateAction::class.qualifiedName?.let { result += it }
             }
         } else if (property.isIdView) {

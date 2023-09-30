@@ -107,12 +107,11 @@ class AssociationService(
         val result = mutableListOf<GenAssociationMatchView>()
 
         columns.forEach { source ->
-            if (source.table != null)
-                columns.forEach { target ->
-                    if (target.table != null && source.id != target.id && match(source, target)) {
-                        result += newGenAssociationMatchView(AssociationType.MANY_TO_ONE, source, target)
-                    }
+            columns.forEach { target ->
+                if (source.id != target.id && match(source, target)) {
+                    result += newGenAssociationMatchView(AssociationType.MANY_TO_ONE, source, target)
                 }
+            }
         }
 
         return result

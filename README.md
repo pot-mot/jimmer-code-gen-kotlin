@@ -1,7 +1,7 @@
-Jimmer Code Gen 代码生成器
+# Jimmer Code Gen 代码生成器
 
-提供以下两个功能
+## 前端项目地址
 
-**关联编辑** 和 **实体生成**
+[乱跑-了 / table-graph](https://gitee.com/run-around---whats-wrong/table-graph.git)
 
-目前关联编辑并不携带建模部分，仅支持数据库结构的单向导入，且仅支持在实体类间创建 ManyToOne 或 OneToOne 的单指向关系
+

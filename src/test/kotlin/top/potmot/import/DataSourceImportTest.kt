@@ -27,7 +27,7 @@ class DataSourceImportTest(
                 name = "test",
                 host = "127.0.0.1",
                 port = "3306",
-                type = DataSourceType.MYSQL,
+                type = DataSourceType.MySQL,
                 username = "root",
                 password = "root",
                 orderKey = 0L,
