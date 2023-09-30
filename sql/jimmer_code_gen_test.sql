@@ -20,8 +20,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 -- Table structure for single_test_table
 -- ----------------------------
-DROP TABLE IF EXISTS `single_test_table`;
-CREATE TABLE `single_test_table`  (
+DROP TABLE IF EXISTS `single_test`;
+CREATE TABLE `single_test`  (
   `id` int(0) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'John Doe' COMMENT '姓名',
   `age` int(0) NULL DEFAULT NULL COMMENT '年龄',

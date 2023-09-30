@@ -6,6 +6,7 @@ import org.babyfish.jimmer.sql.kt.ast.expression.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
+import top.potmot.config.GenConfig
 import top.potmot.core.convert.columnToProperties
 import top.potmot.model.*
 import top.potmot.model.dto.GenEntityConfigInput
@@ -15,6 +16,8 @@ import top.potmot.model.query.EntityQuery
 import top.potmot.model.query.TableQuery
 import top.potmot.core.convert.tableToEntity
 import top.potmot.core.generate.stringify
+import top.potmot.core.generate.stringifyJava
+import top.potmot.enum.GenLanguage
 import java.io.ByteArrayOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -40,18 +43,48 @@ class EntityService(
         return result
     }
 
+    @GetMapping("/preview/{entityIds}")
+    fun preview(
+        @PathVariable entityIds: List<Long>,
+        @RequestParam(required = false) language: GenLanguage?
+    ): Map<String, String> {
+        val map = mutableMapOf<String, String>()
+
+        query(EntityQuery(ids = entityIds)).forEach { entity ->
+            when (language ?: GenConfig.language) {
+                GenLanguage.KOTLIN -> map["${entity.name}.kt"] = entity.stringify()
+                GenLanguage.JAVA -> map["${entity.name}.java"] = entity.stringifyJava()
+            }
+        }
+
+        return map
+    }
+
     @PostMapping("/generate")
     @Transactional
-    fun generate(@RequestBody entityIds: List<Long>): ByteArray {
+    fun generate(
+        @RequestBody entityIds: List<Long>,
+        @RequestParam(required = false) language: GenLanguage?
+    ): ByteArray {
         val zipFileStream = ByteArrayOutputStream()
 
         val zip = ZipOutputStream(zipFileStream)
 
         query(EntityQuery(ids = entityIds)).forEach { entity ->
-            val zipEntry = ZipEntry("${entity.name}.kt")
-            zip.putNextEntry(zipEntry)
-            zip.write(entity.stringify().toByteArray())
-            zip.closeEntry()
+            when (language ?: GenConfig.language) {
+                GenLanguage.KOTLIN -> {
+                    zip.putNextEntry(ZipEntry("${entity.name}.kt"))
+                    zip.write(entity.stringify().toByteArray())
+                    zip.closeEntry()
+                }
+
+                GenLanguage.JAVA -> {
+                    zip.putNextEntry(ZipEntry("${entity.name}.java"))
+                    zip.write(entity.stringifyJava().toByteArray())
+                    zip.closeEntry()
+                }
+            }
+
         }
 
         return zipFileStream.toByteArray()

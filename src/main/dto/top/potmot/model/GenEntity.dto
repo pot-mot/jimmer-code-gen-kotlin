@@ -7,10 +7,21 @@ GenEntityPropertiesView {
     #allScalars
     id(table)
 
+    genPackage {
+        id
+        name
+
+        parent {
+            id
+            name
+        }*
+    }
+
     properties {
         #allScalars
         id(entity)
         id(column)
+        id(typeTable)
     }
 }
 

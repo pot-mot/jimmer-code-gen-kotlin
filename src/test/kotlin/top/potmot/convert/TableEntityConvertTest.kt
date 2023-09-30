@@ -7,6 +7,7 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import top.potmot.enum.GenLanguage
 import top.potmot.service.EntityService
 
 @SpringBootTest
@@ -17,7 +18,13 @@ class TableEntityConvertTest(
 ) {
     @Test
     @Order(1)
-    fun testEntityConvert() {
-        entityService.mapping(listOf(7L))
+    fun testEntityStringifyJava() {
+        entityService.preview(listOf(1L), GenLanguage.JAVA).values.forEach{ println(it)}
+    }
+
+    @Test
+    @Order(2)
+    fun testEntityStringifyKotlin() {
+        entityService.preview(listOf(1L), GenLanguage.KOTLIN).values.forEach{ println(it)}
     }
 }

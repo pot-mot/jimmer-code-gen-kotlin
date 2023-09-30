@@ -63,6 +63,10 @@ dependencies {
     implementation("us.fatehi:schemacrawler-mysql:${schemacrawlerVersion}") {
         exclude(group = "org.slf4j", module = "slf4j-nop")
     }
+    // https://mvnrepository.com/artifact/us.fatehi/schemacrawler-postgresql
+    implementation("us.fatehi:schemacrawler-postgresql:${schemacrawlerVersion}") {
+        exclude(group = "org.slf4j", module = "slf4j-nop")
+    }
 }
 
 // Without this configuration, gradle command can still run.
