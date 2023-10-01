@@ -7,6 +7,7 @@ import kotlin.Long
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.DissociateAction
+import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.IdView
 import top.potmot.model.base.BaseEntity
 import kotlin.String
@@ -17,6 +18,7 @@ import kotlin.String
  * @author
  * @since 2023-09-30T19:31:11.935
  */
+@Entity
 interface GenEnumItem : BaseEntity {
     /**
      * ID

@@ -19,6 +19,7 @@ ${entity.import()}
  * @author ${GenConfig.author}
  * @since ${LocalDateTime.now()} 
  */
+@Entity
 interface ${entity.name} {
 ${properties.joinToString("") { it.stringify() }}
 }"""
@@ -101,6 +102,8 @@ fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
     val property = this
 
     val result = mutableListOf<String>()
+
+    Entity::class.qualifiedName?.let {result += it}
 
     if (property.isId) {
         Id::class.qualifiedName?.let { result += it }

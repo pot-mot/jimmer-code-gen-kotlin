@@ -182,10 +182,7 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
         this.isNotNull = targetColumn.isNotNull
         this.isIdView = true
         this.associationType = AssociationType.ONE_TO_MANY
-        this.associationAnnotation = "@OneToMany(mappedBy = \"${columnNameToPropertyName(inAssociation.sourceColumn.name)}\")"
-        inAssociation.dissociateAction?.let {
-            this.dissociateAnnotation = "@OnDissociate(DissociateAction.${inAssociation.dissociateAction})"
-        }
+        this.associationAnnotation = "@OneToMany(mappedBy = \"${columnNameToPropertyName(sourceColumn.name)}\")"
     }
 
     val IdViewProperty = new(GenProperty::class).by {
@@ -220,10 +217,7 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
         this.comment = sourceColumn.table.comment
         this.isNotNull = targetColumn.isNotNull
         this.associationType = AssociationType.ONE_TO_ONE
-        this.associationAnnotation = "@OneToOne(mappedBy = \"${columnNameToPropertyName(inAssociation.sourceColumn.name)}\")"
-        inAssociation.dissociateAction?.let {
-            this.dissociateAnnotation = "@OnDissociate(DissociateAction.${inAssociation.dissociateAction})"
-        }
+        this.associationAnnotation = "@OneToOne(mappedBy = \"${columnNameToPropertyName(sourceColumn.name)}\")"
     }
 
     val IdViewProperty = new(GenProperty::class).by {

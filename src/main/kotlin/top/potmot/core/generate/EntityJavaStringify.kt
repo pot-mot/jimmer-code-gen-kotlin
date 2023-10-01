@@ -48,6 +48,8 @@ fun GenEntityPropertiesView.TargetOf_properties.importListJava(): List<String> {
 
     val result = mutableListOf<String>()
 
+    result += Entity::class.java.name
+
     if (property.isId) {
         result += Id::class.java.name
         if (property.idGenerationType != null) {

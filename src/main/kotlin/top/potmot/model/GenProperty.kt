@@ -138,8 +138,16 @@ interface GenProperty : BaseEntity {
     val otherAnnotation: String?
 
     /**
-     * 对应枚举 ID
+     * 生成枚举 ID 视图
      */
+    @IdView
     val enumId: Long?
+
+    /**
+     * 生成枚举
+     */
+    @ManyToOne
+    @OnDissociate(DissociateAction.SET_NULL)
+    val enum: GenEnum?
 }
 

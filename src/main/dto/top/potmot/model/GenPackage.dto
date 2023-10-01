@@ -13,8 +13,16 @@ GenPackageTreeView  {
     }*
 }
 
-input GenPackageInput {
+inputOnly GenPackageInput {
     #allScalars
     -createdTime
     -modifiedTime
+}
+
+inputOnly GenPackageTreeInput: GenPackageInput {
+    parent {
+        #allScalars
+        -createdTime
+        -modifiedTime
+    }*
 }

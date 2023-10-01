@@ -1,15 +1,8 @@
 package top.potmot.model
 
-import org.babyfish.jimmer.sql.Id
-import org.babyfish.jimmer.sql.GeneratedValue
-import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.*
 import kotlin.Long
-import org.babyfish.jimmer.sql.OneToMany
-import org.babyfish.jimmer.sql.OnDissociate
-import org.babyfish.jimmer.sql.DissociateAction
 import kotlin.collections.List
-import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.ManyToOne
 import top.potmot.model.base.BaseEntity
 import kotlin.String
 
@@ -19,6 +12,7 @@ import kotlin.String
  * @author
  * @since 2023-09-30T19:31:11.933
  */
+@Entity
 interface GenEnum : BaseEntity {
     /**
      * ID
@@ -30,8 +24,7 @@ interface GenEnum : BaseEntity {
     /**
      * 生成枚举元素
      */
-    @OneToMany(mappedBy = "enumId")
-    @OnDissociate(DissociateAction.DELETE)
+    @OneToMany(mappedBy = "enum")
     val enumItems: List<GenEnumItem>
 
     /**
@@ -43,8 +36,7 @@ interface GenEnum : BaseEntity {
     /**
      * 生成属性
      */
-    @OneToMany(mappedBy = "enumId")
-    @OnDissociate(DissociateAction.SET_NULL)
+    @OneToMany(mappedBy = "enum")
     val properties: List<GenProperty>
 
     /**
@@ -57,6 +49,7 @@ interface GenEnum : BaseEntity {
      * 生成包
      */
     @ManyToOne
+    @JoinColumn(name = "package_id")
     @OnDissociate(DissociateAction.SET_NULL)
     val genPackage: GenPackage?
 

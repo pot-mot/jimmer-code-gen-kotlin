@@ -37,14 +37,14 @@ interface GenEntity : BaseEntity {
      * 对应表 ID
      */
     @IdView
-    val tableId: Long?
+    val tableId: Long
 
     /**
      * 对应表
      */
     @OneToOne
-    @OnDissociate(DissociateAction.SET_NULL)
-    val table: GenTable?
+    @OnDissociate(DissociateAction.DELETE)
+    val table: GenTable
 
     /**
      * 类名称

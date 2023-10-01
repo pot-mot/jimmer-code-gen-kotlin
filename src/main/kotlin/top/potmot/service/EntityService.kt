@@ -35,7 +35,10 @@ class EntityService(
         val result = mutableListOf<Long>()
 
         tableService.query(TableQuery(ids = tableIds), GenTableAssociationView::class).forEach {
-            result += sqlClient.save(
+            sqlClient.createDelete(GenEntity::class) {
+                where(table.tableId valueIn tableIds)
+            }.execute()
+            result += sqlClient.insert(
                 mappingEntity(it)
             ).modifiedEntity.id
         }
