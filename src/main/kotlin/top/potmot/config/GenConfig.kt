@@ -15,26 +15,47 @@ class GenConfig {
         /** 作者  */
         var author: String = ""
 
-        /** 表名匹配时忽略的前缀，配置中由 , 进行分割 */
-        var tableMatchPrefix: List<String> = listOf("")
+        /**
+         * 表名前缀
+         * 自动匹配关联与实体名生成时生效
+         * 配置文件中由 , 进行分割 */
+        var tablePrefix: List<String> = listOf("")
 
-        /** 表名匹配时忽略后缀，配置中由 , 进行分割 */
-        var tableMatchSuffix: List<String> = listOf("")
+        /**
+         * 表名后缀
+         * 自动匹配关联与实体名生成时生效
+         * 配置文件中由 , 进行分割 */
+        var tableSuffix: List<String> = listOf("")
 
-        /** 生成实体时是否依照 tableMatchPrefix 进行前缀移除 */
-        var removeTablePrefixes: Boolean = false
+        /** 生成实体时是否依照 tablePrefix 进行前缀移除 */
+        var removeTablePrefix: Boolean = true
 
-        /** 生成实体时是否依照 tableMatchSuffix 进行后缀移除 */
-        var removeTableSuffixes: Boolean = false
+        /** 生成实体时是否依照 tableSuffix 进行后缀移除 */
+        var removeTableSuffix: Boolean = true
 
-        /** 是否展示sql, 在查询关联时为性能考考虑请关闭 */
-        var showSql: Boolean = false
+        /**
+         * 列名前缀
+         * 属性体名生成时生效
+         * 配置文件中由 , 进行分割 */
+        var columnPrefix: List<String> = listOf("")
 
-        /** 表名分隔符 */
+        /**
+         * 列名后缀
+         * 属性体名生成时生效
+         * 配置文件中由 , 进行分割 */
+        var columnSuffix: List<String> = listOf("")
+
+        /** 生成属性时是否依照 columnPrefix 进行后缀移除 */
+        var removeColumnPrefix: Boolean = true
+
+        /** 生成属性时是否依照 columnSuffix 进行后缀移除 */
+        var removeColumnSuffix: Boolean = true
+
+        /** 分隔符 */
         var separator: String = "_"
 
         /** 语言，java/kotlin */
-        var language: GenLanguage = GenLanguage.JAVA
+        var language: GenLanguage = GenLanguage.KOTLIN
 
         /** 默认类型 */
         var defaultType: String = "String"
@@ -44,24 +65,36 @@ class GenConfig {
         Companion.author = author
     }
 
-    fun setTableMatchPrefix(tableMatchPrefix: String) {
-        Companion.tableMatchPrefix = tableMatchPrefix.split(",").map { it.trim() }
+    fun setTablePrefix(tablePrefix: String) {
+        Companion.tablePrefix = tablePrefix.split(",").map { it.trim() }
     }
 
-    fun setTableMatchSuffix(tableMatchPrefix: String) {
-        Companion.tableMatchSuffix = tableMatchPrefix.split(",").map { it.trim() }
+    fun setTableSuffix(tableSuffix: String) {
+        Companion.tableSuffix = tableSuffix.split(",").map { it.trim() }
     }
 
-    fun setRemoveTablePrefixes(removeTablePrefixes: Boolean) {
-        Companion.removeTablePrefixes = removeTablePrefixes
+    fun setRemoveTablePrefixes(removeTablePrefix: Boolean) {
+        Companion.removeTablePrefix = removeTablePrefix
     }
 
-    fun setRemoveTableSuffixes(removeTableSuffixes: Boolean) {
-        Companion.removeTableSuffixes = removeTableSuffixes
+    fun setRemoveTableSuffixes(removeTableSuffix: Boolean) {
+        Companion.removeTableSuffix = removeTableSuffix
     }
 
-    fun setShowSql(showSql: Boolean) {
-        Companion.showSql = showSql
+    fun setColumnPrefix(columnPrefix: String) {
+        Companion.columnPrefix = columnPrefix.split(",").map { it.trim() }
+    }
+
+    fun setColumnSuffix(columnSuffix: String) {
+        Companion.columnSuffix = columnSuffix.split(",").map { it.trim() }
+    }
+
+    fun setRemoveColumnPrefixes(removeColumnPrefix: Boolean) {
+        Companion.removeColumnPrefix = removeColumnPrefix
+    }
+
+    fun setRemoveColumnSuffixes(removeColumnSuffix: Boolean) {
+        Companion.removeColumnSuffix = removeColumnSuffix
     }
 
     fun setSeparator(separator: String) {

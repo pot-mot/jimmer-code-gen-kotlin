@@ -34,7 +34,12 @@ gen:
   # 作者
   # author:
   # 表前缀（生成类名不会包含表前缀，多个用逗号分隔）
-  tableMatchPrefix: gen_, t_
-  removeTablePrefixes: false
-  tableMatchSuffix: model, info
+  tablePrefix: gen_, t_
+  removeTablePrefix: false
+  tableSuffix: model, info
+  removeTableSuffix: false
+  columnPrefix: gen_
+  removeColumnPrefix: true
+  columnSuffix:
+  removeColumnSuffix: true
   language: kotlin

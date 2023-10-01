@@ -9,18 +9,19 @@ import top.potmot.config.GenConfig
  */
 fun tableNameToClassName(name: String): String {
     val newName =
-        if (GenConfig.removeTablePrefixes) {
+        if (GenConfig.removeTablePrefix) {
             name.removePrefixes()
         } else {
             name
         }.let { tempName ->
-            if (GenConfig.removeTableSuffixes) {
+            if (GenConfig.removeTableSuffix) {
                 tempName.removeSuffixes()
             } else {
                 tempName
             }
         }
-    val result = StringBuilder()
+
+    val builder = StringBuilder()
 
     // 将 newName 按照 SEPARATOR 进行分割成一个字符串数组并且去掉数组中的空字符串
     for (camel in newName.split(GenConfig.separator)
@@ -28,15 +29,15 @@ fun tableNameToClassName(name: String): String {
         .toTypedArray()) {
         if (camel.isNotEmpty()) {
             // 将字符串的第一个字符转换为大写字符
-            result.append(camel[0].uppercaseChar())
+            builder.append(camel[0].uppercaseChar())
 
             // 将字符串的第二个字符到最后一个字符转换为小写字符
             if (camel.length > 1) {
-                result.append(camel.substring(1).lowercase())
+                builder.append(camel.substring(1).lowercase())
             }
         }
     }
-    return result.toString()
+    return builder.toString()
 }
 
 fun tableNameToPropertyName(name: String): String {
@@ -50,25 +51,38 @@ fun tableNameToPropertyName(name: String): String {
  * 例如：user_name -> userName
  */
 fun columnNameToPropertyName(name: String): String {
-    val sb = StringBuilder(name.length)
+    val newName =
+        if (GenConfig.removeColumnPrefix) {
+            name.removePrefixes(GenConfig.columnPrefix)
+        } else {
+            name
+        }.let { tempName ->
+            if (GenConfig.removeColumnSuffix) {
+                tempName.removeSuffixes(GenConfig.columnSuffix)
+            } else {
+                tempName
+            }
+        }
+
+    val builder = StringBuilder()
     // 标记下一个字符是否需要转换为大写
     var upperCase = false
 
     // 遍历原始属性名中的每个字符
-    for (c in name.lowercase().split("").dropLastWhile { it.isEmpty() }) {
+    for (c in newName.lowercase().split("").dropLastWhile { it.isEmpty() }) {
         // 如果当前字符是分隔符，则标记下一个字符需要转换为大写
         if (c == GenConfig.separator) {
             upperCase = true
         }
         // 如果标记为需要转换为大写，则将当前字符转换为大写字符，并且添加到结果字符串中
         else if (upperCase) {
-            sb.append(c.uppercase())
+            builder.append(c.uppercase())
             upperCase = false
         } else {
-            sb.append(c)
+            builder.append(c)
         }
     }
-    return sb.toString()
+    return builder.toString()
 }
 
 /**
@@ -78,7 +92,7 @@ fun columnNameToPropertyName(name: String): String {
  * @return 移除前缀后的字符串
  */
 fun String.removePrefixes(
-    prefixes: List<String> = GenConfig.tableMatchPrefix,
+    prefixes: List<String> = GenConfig.tablePrefix,
     separator: String = GenConfig.separator
 ): String {
     var result = this
@@ -103,7 +117,7 @@ fun String.removePrefixes(
  * @return 移除后缀后的字符串
  */
 fun String.removeSuffixes(
-    suffixes: List<String> = GenConfig.tableMatchSuffix,
+    suffixes: List<String> = GenConfig.tableSuffix,
     separator: String = GenConfig.separator
 ): String {
     var result = this
@@ -118,4 +132,18 @@ fun String.removeSuffixes(
         }
     }
     return result
+}
+
+/**
+ * 将名词转换为复数形式。
+ * @return 转换后的复数形式
+ */
+fun String.toPlural(): String {
+    val plural: String = when {
+        endsWith("s") || endsWith("x") || endsWith("z") || endsWith("ch") || endsWith("sh") ->
+            this + "es"
+        endsWith("y") -> dropLast(1) + "ies"
+        else -> this + "s"
+    }
+    return plural
 }
