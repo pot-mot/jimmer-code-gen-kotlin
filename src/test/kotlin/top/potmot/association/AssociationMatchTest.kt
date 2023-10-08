@@ -9,14 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import top.potmot.config.GenConfig
+import top.potmot.core.match.includeTableNamePkColumnMatch
+import top.potmot.core.match.pkSuffixColumnMatch
+import top.potmot.core.match.simplePkColumnMatch
+import top.potmot.core.match.suffixMatch
 import top.potmot.enum.GenLanguage
 import top.potmot.enum.TableType
 import top.potmot.model.dto.GenColumnMatchView
 import top.potmot.service.AssociationService
-import top.potmot.core.match.includeTableNamePkColumnMatch
-import top.potmot.core.match.simplePkColumnMatch
-import top.potmot.core.match.suffixMatch
-import top.potmot.core.match.pkSuffixColumnMatch
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin")

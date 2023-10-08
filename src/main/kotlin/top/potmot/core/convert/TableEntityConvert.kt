@@ -6,7 +6,10 @@ import top.potmot.config.GenConfig
 import top.potmot.enum.AssociationType
 import top.potmot.enum.GenLanguage
 import top.potmot.enum.TableType
-import top.potmot.model.*
+import top.potmot.model.GenEntity
+import top.potmot.model.GenProperty
+import top.potmot.model.GenTypeMapping
+import top.potmot.model.by
 import top.potmot.model.dto.GenTableAssociationView
 
 /**

@@ -7,8 +7,7 @@ import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder
 import schemacrawler.schemacrawler.SchemaInfoLevelBuilder
 import schemacrawler.tools.utility.SchemaCrawlerUtility
 import top.potmot.error.DataSourceException
-import top.potmot.model.*
-import top.potmot.model.dto.GenDataSourceInput
+import top.potmot.model.GenDataSource
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import us.fatehi.utility.datasource.DatabaseConnectionSources
 import us.fatehi.utility.datasource.MultiUseUserCredentials

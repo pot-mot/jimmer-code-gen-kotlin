@@ -1,6 +1,17 @@
 package top.potmot.model
 
-import org.babyfish.jimmer.sql.*
+import org.babyfish.jimmer.sql.DissociateAction
+import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.GeneratedValue
+import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.Key
+import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.OnDissociate
+import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.OneToOne
+import org.babyfish.jimmer.sql.Table
 import top.potmot.enum.TableType
 import top.potmot.model.base.BaseEntity
 

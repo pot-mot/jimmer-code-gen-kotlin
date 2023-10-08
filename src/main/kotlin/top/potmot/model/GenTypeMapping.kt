@@ -1,6 +1,10 @@
 package top.potmot.model
 
-import org.babyfish.jimmer.sql.*
+import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.GeneratedValue
+import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.Table
 import top.potmot.model.base.BaseEntity
 
 /**

@@ -8,12 +8,22 @@ import org.babyfish.jimmer.sql.kt.ast.expression.or
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.*
-import top.potmot.model.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import top.potmot.model.GenTable
+import top.potmot.model.columns
+import top.potmot.model.comment
+import top.potmot.model.createdTime
 import top.potmot.model.dto.GenTableAssociationView
 import top.potmot.model.dto.GenTableColumnView
 import top.potmot.model.dto.GenTableCommonView
+import top.potmot.model.id
+import top.potmot.model.name
 import top.potmot.model.query.TableQuery
+import top.potmot.model.schemaId
 import kotlin.reflect.KClass
 
 @RestController

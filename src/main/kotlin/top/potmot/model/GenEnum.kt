@@ -1,10 +1,16 @@
 package top.potmot.model
 
-import org.babyfish.jimmer.sql.*
-import kotlin.Long
-import kotlin.collections.List
+import org.babyfish.jimmer.sql.DissociateAction
+import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.GeneratedValue
+import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.JoinColumn
+import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.OnDissociate
+import org.babyfish.jimmer.sql.OneToMany
 import top.potmot.model.base.BaseEntity
-import kotlin.String
 
 /**
  * 生成枚举

@@ -1,9 +1,9 @@
 package top.potmot.core.match
 
 import top.potmot.config.GenConfig
-import top.potmot.model.dto.GenColumnMatchView
 import top.potmot.core.convert.removePrefixes
 import top.potmot.core.convert.removeSuffixes
+import top.potmot.model.dto.GenColumnMatchView
 
 /**
  * 两个库表之间关联判断的匹配函数

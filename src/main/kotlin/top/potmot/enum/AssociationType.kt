@@ -6,7 +6,10 @@ import org.babyfish.jimmer.sql.ManyToMany
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
-import top.potmot.enum.AssociationType.*
+import top.potmot.enum.AssociationType.MANY_TO_MANY
+import top.potmot.enum.AssociationType.MANY_TO_ONE
+import top.potmot.enum.AssociationType.ONE_TO_MANY
+import top.potmot.enum.AssociationType.ONE_TO_ONE
 import kotlin.reflect.KClass
 
 @EnumType(EnumType.Strategy.NAME)

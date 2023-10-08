@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import top.potmot.enum.DataSourceType
-import top.potmot.extension.getCatalog
-import top.potmot.extension.toSource
 import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.service.DataSourceService
 

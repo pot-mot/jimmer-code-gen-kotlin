@@ -1,6 +1,13 @@
 package top.potmot.core.generate
 
-import org.babyfish.jimmer.sql.*
+import org.babyfish.jimmer.sql.DissociateAction
+import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.GeneratedValue
+import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.Key
+import org.babyfish.jimmer.sql.OnDissociate
 import top.potmot.config.GenConfig
 import top.potmot.enum.getAnnotation
 import top.potmot.model.dto.GenEntityPropertiesView

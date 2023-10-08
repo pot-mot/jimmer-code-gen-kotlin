@@ -2,10 +2,19 @@ package top.potmot.core.import
 
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.DissociateAction
-import schemacrawler.schema.*
+import schemacrawler.schema.Catalog
+import schemacrawler.schema.Column
+import schemacrawler.schema.ForeignKeyUpdateRule
+import schemacrawler.schema.Schema
+import schemacrawler.schema.Table
 import top.potmot.enum.AssociationType
 import top.potmot.enum.TableType
-import top.potmot.model.*
+import top.potmot.model.GenAssociation
+import top.potmot.model.GenColumn
+import top.potmot.model.GenSchema
+import top.potmot.model.GenTable
+import top.potmot.model.by
+import top.potmot.model.copy
 
 fun Catalog.toGenSchemas(dataSourceId: Long): List<Pair<Schema, GenSchema>> {
     val catalog = this
