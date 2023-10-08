@@ -10,12 +10,14 @@ import org.springframework.test.context.ActiveProfiles
 import top.potmot.enum.DataSourceType
 import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.service.DataSourceService
+import top.potmot.service.SchemaService
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class DataSourceImportTest(
-    @Autowired val dataSourceService: DataSourceService
+class SchemaImportTest(
+    @Autowired val dataSourceService: DataSourceService,
+    @Autowired val schemaService: SchemaService
 ) {
     @Test
     @Order(1)
@@ -33,10 +35,10 @@ class DataSourceImportTest(
             )
         )
 
-        val viewSchemas = dataSourceService.viewSchemas(insertId)
+        val viewSchemas = schemaService.view(insertId)
 
         if (viewSchemas.isNotEmpty()) {
-            dataSourceService.importSchema(insertId, viewSchemas[0].name)
+            schemaService.import(insertId, viewSchemas[0].name)
         }
     }
 }

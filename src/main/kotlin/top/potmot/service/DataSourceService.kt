@@ -14,17 +14,11 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.import.getFkAssociation
-import top.potmot.core.import.toGenSchema
-import top.potmot.core.import.toGenSchemas
 import top.potmot.enum.DataSourceType
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.error.DataSourceException
-import top.potmot.extension.getCatalog
 import top.potmot.extension.test
-import top.potmot.extension.toSource
 import top.potmot.model.GenDataSource
-import top.potmot.model.GenSchema
 import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.model.dto.GenDataSourceView
 import top.potmot.model.id
@@ -106,65 +100,5 @@ class DataSourceService(
     @Transactional
     fun delete(@PathVariable ids: List<Long>): Int {
         return sqlClient.deleteByIds(GenDataSource::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
-    }
-
-    /**
-     * 预览数据源中全部的 schema
-     */
-    @GetMapping("/{dataSourceId}/schema")
-    @ThrowsAll(DataSourceErrorCode::class)
-    @Transactional
-    fun viewSchemas(@PathVariable dataSourceId: Long): List<GenSchema> {
-        val dataSource =
-            sqlClient.findById(GenDataSource::class, dataSourceId)?.toSource()
-
-        if (dataSource != null) {
-            val schemas =
-                dataSource
-                    .getCatalog(withoutTable = true)
-                    .schemas.map { schema -> schema.toGenSchema(dataSourceId) }
-            dataSource.close()
-            return schemas
-        }
-
-        return emptyList()
-    }
-
-    /**
-     * 导入 schema
-     */
-    @PostMapping("/{dataSourceId}/schema/{name}")
-    @ThrowsAll(DataSourceErrorCode::class)
-    @Transactional
-    fun importSchema(
-        @PathVariable dataSourceId: Long,
-        @PathVariable name: String
-    ): List<Long> {
-        val dataSource =
-            sqlClient.findById(GenDataSource::class, dataSourceId)?.toSource()
-
-        val result = mutableListOf<Long>()
-
-        if (dataSource != null) {
-            val catalog = dataSource.getCatalog(schemaPattern = name)
-
-            val genSchemas = catalog.toGenSchemas(dataSourceId)
-
-            genSchemas.forEach {
-                val newSchemaId = sqlClient.save(it.second).modifiedEntity.id
-
-                result += newSchemaId
-
-                catalog.getTables(it.first).forEach {table ->
-                    table.getFkAssociation(newSchemaId).forEach {association ->
-                        sqlClient.save(association)
-                    }
-                }
-            }
-
-            dataSource.close()
-        }
-
-        return result
     }
 }
