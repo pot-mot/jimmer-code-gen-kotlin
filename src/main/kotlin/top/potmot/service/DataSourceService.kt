@@ -19,6 +19,7 @@ import top.potmot.error.DataSourceErrorCode
 import top.potmot.error.DataSourceException
 import top.potmot.extension.test
 import top.potmot.model.GenDataSource
+import top.potmot.model.copy
 import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.model.dto.GenDataSourceView
 import top.potmot.model.id
@@ -74,9 +75,11 @@ class DataSourceService(
     @PutMapping("/{id}")
     @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
-    fun edit(@PathVariable id: Long, @RequestBody dataSource: GenDataSourceInput): Int {
+    fun edit(@PathVariable id: Long, @RequestBody dataSource: GenDataSourceInput): Long {
         dataSource.toEntity().test()
-        return sqlClient.update(dataSource.toEntity()).totalAffectedRowCount
+        return sqlClient.update(dataSource.toEntity().copy {
+            this.id = id
+        }).modifiedEntity.id
     }
 
     /**
