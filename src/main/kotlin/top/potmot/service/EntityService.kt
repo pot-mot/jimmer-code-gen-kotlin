@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.config.GenConfig
 import top.potmot.core.convert.columnToProperties
 import top.potmot.core.convert.tableToEntity
-import top.potmot.core.generate.stringify
-import top.potmot.core.generate.stringifyJava
+import top.potmot.core.template.stringify
+import top.potmot.core.template.stringifyJava
 import top.potmot.enum.GenLanguage
 import top.potmot.model.GenEntity
 import top.potmot.model.GenTypeMapping

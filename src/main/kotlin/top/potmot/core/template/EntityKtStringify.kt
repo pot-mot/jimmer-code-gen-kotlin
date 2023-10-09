@@ -1,4 +1,4 @@
-package top.potmot.core.generate
+package top.potmot.core.template
 
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
@@ -12,6 +12,7 @@ import top.potmot.config.GenConfig
 import top.potmot.enum.getAnnotation
 import top.potmot.model.dto.GenEntityPropertiesView
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun GenEntityPropertiesView.stringify(): String {
     val entity = this
@@ -24,7 +25,7 @@ ${entity.import()}
  * ${entity.comment}
  *
  * @author ${GenConfig.author}
- * @since ${LocalDateTime.now()} 
+ * @since ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))} 
  */
 @Entity
 interface ${entity.name} {
