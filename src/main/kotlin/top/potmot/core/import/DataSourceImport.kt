@@ -99,11 +99,13 @@ fun Table.getFkAssociation(schemaId: Long): List<GenAssociation> {
                 }
             }
 
+            val type = if (columnRef.foreignKeyColumn.isPartOfUniqueIndex) AssociationType.ONE_TO_ONE else AssociationType.MANY_TO_ONE
+
             result +=
                 new(GenAssociation::class).by {
                     this.sourceColumn = sourceColumn
                     this.targetColumn = targetColumn
-                    this.associationType = AssociationType.MANY_TO_ONE
+                    this.associationType = type
                     this.dissociateAction = it.deleteRule.toDissociateAction()
                     this.remark = columnRef.toString()
                 }

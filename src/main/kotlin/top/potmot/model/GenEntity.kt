@@ -56,6 +56,7 @@ interface GenEntity : BaseEntity {
      */
     @OneToOne
     @OnDissociate(DissociateAction.DELETE)
+    @Key
     val table: GenTable
 
     /**

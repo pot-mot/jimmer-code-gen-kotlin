@@ -3,6 +3,7 @@ package top.potmot.core.match
 import top.potmot.config.GenConfig
 import top.potmot.core.convert.removePrefixes
 import top.potmot.core.convert.removeSuffixes
+import top.potmot.enum.AssociationType
 import top.potmot.model.dto.GenColumnMatchView
 
 /**
@@ -11,7 +12,7 @@ import top.potmot.model.dto.GenColumnMatchView
  *
  * warning 请一定要保证 column 获取到了 table
  */
-typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatchView) -> Boolean
+typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatchView) -> AssociationType?
 
 /**
  * 简单主键列关联匹配
@@ -21,11 +22,19 @@ typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatch
  *          table2.table1_id        -> prefix_table1.id
  */
 val simplePkColumnMatch: AssociationMatch = { source, target ->
-    if (target.isPk && target.table != null && source.table != null && target.table.id != source.table.id) {
+    if (target.isPk && target.table.id != source.table.id) {
         val targetTableName = target.table.name.removePrefixes().removeSuffixes()
-        "${targetTableName}${GenConfig.separator}${target.name}" == source.name
+        if ("${targetTableName}${GenConfig.separator}${target.name}" == source.name) {
+            if (source.isUnique) {
+                AssociationType.ONE_TO_ONE
+            } else {
+                AssociationType.MANY_TO_ONE
+            }
+        } else {
+            null
+        }
     } else {
-        false
+        null
     }
 }
 
@@ -37,11 +46,19 @@ val simplePkColumnMatch: AssociationMatch = { source, target ->
  *          table2.table1_id        -> prefix_table1.table1_id
  */
 val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
-    if (target.isPk && target.table != null && source.table != null && target.table.id != source.table.id) {
+    if (target.isPk && target.table.id != source.table.id) {
         val targetTableName = target.table.name.removePrefixes().removeSuffixes()
-        target.name.contains(targetTableName) && target.name == source.name
+        if (target.name.contains(targetTableName) && target.name == source.name) {
+            if (source.isUnique) {
+                AssociationType.ONE_TO_ONE
+            } else {
+                AssociationType.MANY_TO_ONE
+            }
+        } else {
+            null
+        }
     } else {
-        false
+        null
     }
 }
 
@@ -54,7 +71,7 @@ val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
  *          （取 item, group, id）      （取 item, group, id）
  */
 val pkSuffixColumnMatch: AssociationMatch = { source, target ->
-    if (target.isPk && target.table != null && source.table != null && target.table.id != source.table.id) {
+    if (target.isPk && target.table.id != source.table.id) {
 
         val separator = GenConfig.separator
 
@@ -66,9 +83,17 @@ val pkSuffixColumnMatch: AssociationMatch = { source, target ->
             source.table.name.removePrefixes().removeSuffixes().split(separator).takeLast(2) +
                 source.name.split(separator).takeLast(2)
 
-        sourceMatchList == targetMatchList
+        if (sourceMatchList == targetMatchList) {
+            if (source.isUnique) {
+                AssociationType.ONE_TO_ONE
+            } else {
+                AssociationType.MANY_TO_ONE
+            }
+        } else {
+            null
+        }
     } else {
-        false
+        null
     }
 }
 

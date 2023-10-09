@@ -6,6 +6,8 @@ GenColumnMatchView {
     type
     isPk
     isFk
+    isUnique
+    isNotNull
 
     table {
         id

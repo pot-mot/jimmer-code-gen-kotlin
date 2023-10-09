@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.match.AssociationMatch
 import top.potmot.core.match.simplePkColumnMatch
 import top.potmot.enum.AssociationMatchType
-import top.potmot.enum.AssociationType
 import top.potmot.enum.SelectType
 import top.potmot.enum.getMatch
 import top.potmot.extension.newGenAssociationMatchView
@@ -132,8 +131,9 @@ class AssociationService(
 
         columns.forEach { source ->
             columns.forEach { target ->
-                if (source.id != target.id && match(source, target)) {
-                    result += newGenAssociationMatchView(AssociationType.MANY_TO_ONE, source, target)
+                val type = match(source, target)
+                if (source.id != target.id && type != null) {
+                    result += newGenAssociationMatchView(type, source, target)
                 }
             }
         }

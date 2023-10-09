@@ -85,6 +85,7 @@ fun GenTableAssociationView.TargetOf_columns.toBaseProperty(
         this.type = getPropertyTypeName(column, typeMappings)
         this.comment = column.comment
         this.isNotNull = column.isNotNull
+        this.isKey = column.isUnique
 
         if (column.isPk) {
             isId = true
