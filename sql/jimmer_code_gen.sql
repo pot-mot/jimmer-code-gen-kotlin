@@ -11,7 +11,7 @@
  Target Server Version : 80030
  File Encoding         : 65001
 
- Date: 09/10/2023 09:46:48
+ Date: 09/10/2023 11:16:40
 */
 
 SET NAMES utf8mb4;
@@ -26,7 +26,7 @@ CREATE TABLE `gen_association`  (
   `comment` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '' COMMENT '关联注释',
   `source_column_id` bigint(0) NOT NULL COMMENT '主列',
   `target_column_id` bigint(0) NOT NULL COMMENT '从列',
-  `association_type` enum('OneToOne','OneToMany','ManyToOne','ManyToMany') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '关联类型',
+  `association_type` enum('OneToOne','OneToMany','ManyToOne','ManyToMany') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '关联类型',
   `dissociate_action` enum('NONE','SET_NULL','DELETE') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '脱钩行为',
   `order_key` bigint(0) NOT NULL DEFAULT 0 COMMENT '自定排序',
   `created_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',

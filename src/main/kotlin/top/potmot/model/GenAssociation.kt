@@ -65,7 +65,7 @@ interface GenAssociation : BaseEntity {
     /**
      * 关联类型
      */
-    val associationType: AssociationType?
+    val associationType: AssociationType
 
 
     /**
