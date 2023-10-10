@@ -25,6 +25,7 @@ import top.potmot.core.template.stringify
 import top.potmot.core.template.stringifyJava
 import top.potmot.enum.GenLanguage
 import top.potmot.model.GenEntity
+import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.comment
 import top.potmot.model.copy
@@ -46,19 +47,23 @@ import kotlin.reflect.KClass
 @RequestMapping("/entity")
 class EntityService(
     @Autowired val sqlClient: KSqlClient,
-    @Autowired val tableService: TableService,
 ) {
-    @PostMapping("/mapping")
+    @PostMapping("/convert")
     @Transactional
-    fun mapping(@RequestBody tableIds: List<Long>): List<Long> {
+    fun convert(@RequestBody tableIds: List<Long>): List<Long> {
         val result = mutableListOf<Long>()
 
-        tableService.query(TableQuery(ids = tableIds), GenTableAssociationView::class).forEach {
+        sqlClient.createQuery(GenTable::class) {
+            where(
+                table.id valueIn tableIds
+            )
+            select(table.fetch(GenTableAssociationView::class))
+        }.forEach {
             sqlClient.createDelete(GenEntity::class) {
                 where(table.tableId valueIn tableIds)
             }.execute()
             result += sqlClient.insert(
-                mappingEntity(it)
+                convertTableToEntity(it)
             ).modifiedEntity.id
         }
 
@@ -161,7 +166,7 @@ class EntityService(
         }.execute()
     }
 
-    fun mappingEntity(
+    fun convertTableToEntity(
         table: GenTableAssociationView
     ): GenEntity {
         val baseEntity = tableToEntity(table)

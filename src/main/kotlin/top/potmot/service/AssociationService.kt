@@ -26,6 +26,7 @@ import top.potmot.enum.getMatch
 import top.potmot.extension.newGenAssociationMatchView
 import top.potmot.extension.toColumnMatchViews
 import top.potmot.model.GenAssociation
+import top.potmot.model.GenColumn
 import top.potmot.model.comment
 import top.potmot.model.createdTime
 import top.potmot.model.dto.GenAssociationIdView
@@ -47,8 +48,7 @@ import kotlin.reflect.KClass
 @RestController
 @RequestMapping("/association")
 class AssociationService(
-    @Autowired val sqlClient: KSqlClient,
-    @Autowired val tableService: TableService
+    @Autowired val sqlClient: KSqlClient
 ) {
     @GetMapping("/select/table/{tableIds}")
     fun selectByTable(
@@ -118,8 +118,12 @@ class AssociationService(
         @RequestBody tableIds: List<Long>,
         @RequestParam(defaultValue = "SIMPLE_PK") matchType: AssociationMatchType
     ): List<GenAssociationMatchView> {
-        val columns = tableService.query(TableQuery(ids = tableIds), GenTableColumnView::class)
-            .flatMap { it.toColumnMatchViews() }
+        val columns = sqlClient.createQuery(GenColumn::class) {
+            where(
+                table.tableId valueIn tableIds
+            )
+            select(table.fetch(GenColumnMatchView::class))
+        }.execute()
         return matchColumns(columns, matchType.getMatch())
     }
 
