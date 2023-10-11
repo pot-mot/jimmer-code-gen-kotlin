@@ -134,6 +134,7 @@ fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
         this.comment = manyToOneProperty.comment + " ID 视图"
         this.isIdView = true
         this.idViewAnnotation = "@IdView(\"${manyToOneProperty.name}\")"
+        this.isKey = false
     }
 
     return listOf(manyToOneProperty, idViewProperty)
@@ -167,6 +168,7 @@ fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
         this.comment = oneToOneProperty.comment + " ID 视图"
         this.isIdView = true
         this.idViewAnnotation = "@IdView(\"${oneToOneProperty.name}\")"
+        this.isKey = false
     }
 
     return listOf(oneToOneProperty, idViewProperty)
@@ -186,9 +188,11 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
         this.name = tableNameToPropertyName(sourceColumn.table.name).toPlural()
         this.type = tableNameToClassName(sourceColumn.table.name)
         this.isList = true
+        this.isNotNull = true
         this.typeTableId = sourceColumn.table.id
         this.comment = sourceColumn.table.comment
         this.associationAnnotation = "@OneToMany(mappedBy = \"${tableNameToPropertyName(sourceColumn.table.name)}\")"
+        this.isKey = false
     }
 
     val idViewProperty = baseProperty.copy {
@@ -196,9 +200,11 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
 
         this.name = tableNameToPropertyName(sourceColumn.table.name) + "Ids"
         this.isList = true
+        this.isNotNull = true
         this.comment = oneToManyProperty.comment + " ID 视图"
         this.isIdView = true
         this.idViewAnnotation = "@IdView(\"${oneToManyProperty.name}\")"
+        this.isKey = false
     }
 
     return listOf(oneToManyProperty, idViewProperty)
@@ -220,6 +226,7 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
         this.typeTableId = sourceColumn.table.id
         this.comment = sourceColumn.table.comment
         this.associationAnnotation = "@OneToOne(mappedBy = \"${tableNameToPropertyName(sourceColumn.table.name)}\")"
+        this.isKey = false
     }
 
     val idViewProperty = baseProperty.copy {
@@ -229,6 +236,7 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
         this.comment = oneToOneProperty.comment + " ID 视图"
         this.isIdView = true
         this.idViewAnnotation = "@IdView(\"${oneToOneProperty.name}\")"
+        this.isKey = false
     }
 
     return listOf(oneToOneProperty, idViewProperty)

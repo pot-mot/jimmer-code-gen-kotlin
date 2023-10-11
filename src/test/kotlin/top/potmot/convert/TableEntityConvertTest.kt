@@ -53,7 +53,7 @@ class TableEntityConvertTest {
 
     @Test
     @Order(2)
-    fun testOutColumnConvert() {
+    fun testOutManyColumnConvert() {
         val column = GenTableAssociationView.TargetOf_columns(
             1, LocalDateTime.now(), LocalDateTime.now(), "remark", 0,
             "many_to_one_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
@@ -67,7 +67,7 @@ class TableEntityConvertTest {
                             2, "table2", ""
                         )
                     )
-                )
+                ),
             )
         )
 
@@ -99,7 +99,7 @@ class TableEntityConvertTest {
 
     @Test
     @Order(3)
-    fun testInColumnConvert() {
+    fun testInManyColumnConvert() {
         val column = GenTableAssociationView.TargetOf_columns(
             1, LocalDateTime.now(), LocalDateTime.now(), "remark", 0,
             "one_to_many_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
@@ -133,7 +133,7 @@ class TableEntityConvertTest {
         assertEquals(2, oneToManyProperty.typeTableId)
         assert(oneToManyProperty.isList)
 
-        assert(!oneToManyProperty.isNotNull)
+        assert(oneToManyProperty.isNotNull)
         assert(!oneToManyProperty.isKey)
         assertEquals(AssociationType.ONE_TO_MANY, oneToManyProperty.associationType)
         assertEquals("@OneToMany(mappedBy = \"table2\")", oneToManyProperty.associationAnnotation)
@@ -146,6 +146,103 @@ class TableEntityConvertTest {
 
         assert(idViewProperty.isIdView)
         assertEquals(AssociationType.ONE_TO_MANY, idViewProperty.associationType)
+        assertEquals("@IdView(\"${oneToManyProperty.name}\")", idViewProperty.idViewAnnotation)
+    }
+
+    @Test
+    @Order(4)
+    fun testOutOneColumnConvert() {
+        val column = GenTableAssociationView.TargetOf_columns(
+            1, LocalDateTime.now(), LocalDateTime.now(), "remark", 0,
+            "one_to_one_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
+            false, false, true, true, true, 1,
+            outAssociations = listOf(
+                GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations(
+                    1, AssociationType.ONE_TO_ONE, DissociateAction.DELETE,
+                    GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn(
+                        2, "one_to_one_property", "",
+                        GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn.TargetOf_table(
+                            2, "table2", ""
+                        )
+                    )
+                ),
+            )
+        )
+
+        val properties = columnToProperties(column)
+
+        assertEquals(2, properties.size)
+
+        val manyToOneProperty = properties[0]
+
+        assertEquals("table2", manyToOneProperty.name)
+        assertEquals("Table2", manyToOneProperty.type)
+        assertEquals(2, manyToOneProperty.typeTableId)
+
+        assert(manyToOneProperty.isNotNull)
+        assert(manyToOneProperty.isKey)
+        assertEquals(AssociationType.ONE_TO_ONE, manyToOneProperty.associationType)
+        assertEquals("@OneToOne", manyToOneProperty.associationAnnotation)
+        assertEquals("@OnDissociate(DissociateAction.DELETE)", manyToOneProperty.dissociateAnnotation)
+
+        val idViewProperty = properties[1]
+
+        assertEquals("table2Id", idViewProperty.name)
+        assertEquals("kotlin.Long", idViewProperty.type)
+
+        assert(idViewProperty.isIdView)
+        assertEquals(AssociationType.ONE_TO_ONE, idViewProperty.associationType)
+        assertEquals("@IdView(\"${manyToOneProperty.name}\")", idViewProperty.idViewAnnotation)
+    }
+
+    @Test
+    @Order(5)
+    fun testInOneColumnConvert() {
+        val column = GenTableAssociationView.TargetOf_columns(
+            1, LocalDateTime.now(), LocalDateTime.now(), "remark", 0,
+            "one_to_one_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
+            false, false, false, true, false, 1,
+            inAssociations = listOf(
+                GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations(
+                    1, AssociationType.ONE_TO_ONE, DissociateAction.DELETE,
+                    GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn(
+                        2, "one_to_one_property", "",
+                        GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn.TargetOf_table(
+                            2, "table2", ""
+                        )
+                    )
+                )
+            )
+        )
+
+        val properties = columnToProperties(column)
+
+        assertEquals(3, properties.size)
+
+        val baseProperty = properties[0]
+
+        assertEquals("oneToOneProperty", baseProperty.name)
+        assertEquals("kotlin.Long", baseProperty.type)
+        assert(baseProperty.isKey)
+
+        val oneToManyProperty = properties[1]
+
+        assertEquals("table2", oneToManyProperty.name)
+        assertEquals("Table2", oneToManyProperty.type)
+        assertEquals(2, oneToManyProperty.typeTableId)
+
+        assert(!oneToManyProperty.isNotNull)
+        assert(!oneToManyProperty.isKey)
+        assertEquals(AssociationType.ONE_TO_ONE, oneToManyProperty.associationType)
+        assertEquals("@OneToOne(mappedBy = \"table2\")", oneToManyProperty.associationAnnotation)
+
+        val idViewProperty = properties[2]
+
+        assertEquals("table2Id", idViewProperty.name)
+        assertEquals("kotlin.Long", idViewProperty.type)
+
+        assert(idViewProperty.isIdView)
+        assertEquals(AssociationType.ONE_TO_ONE, idViewProperty.associationType)
         assertEquals("@IdView(\"${oneToManyProperty.name}\")", idViewProperty.idViewAnnotation)
     }
 }
