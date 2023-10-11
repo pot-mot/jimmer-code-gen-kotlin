@@ -24,7 +24,6 @@ import top.potmot.enum.AssociationMatchType
 import top.potmot.enum.SelectType
 import top.potmot.enum.getMatch
 import top.potmot.extension.newGenAssociationMatchView
-import top.potmot.extension.toColumnMatchViews
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenColumn
 import top.potmot.model.comment
@@ -34,10 +33,8 @@ import top.potmot.model.dto.GenAssociationInput
 import top.potmot.model.dto.GenAssociationMatchView
 import top.potmot.model.dto.GenAssociationView
 import top.potmot.model.dto.GenColumnMatchView
-import top.potmot.model.dto.GenTableColumnView
 import top.potmot.model.id
 import top.potmot.model.query.AssociationQuery
-import top.potmot.model.query.TableQuery
 import top.potmot.model.sourceColumn
 import top.potmot.model.sourceColumnId
 import top.potmot.model.tableId

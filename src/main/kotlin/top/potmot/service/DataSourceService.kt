@@ -32,8 +32,8 @@ class DataSourceService(
     /**
      * 获取数据库类型
      */
-    @GetMapping("/types")
-    fun listTypes(): List<DataSourceType> {
+    @GetMapping("/type")
+    fun listType(): List<DataSourceType> {
         return DataSourceType.values().toList()
     }
 

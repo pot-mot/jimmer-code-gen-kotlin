@@ -18,11 +18,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.config.GenConfig
 import top.potmot.core.convert.columnToProperties
 import top.potmot.core.convert.tableToEntity
-import top.potmot.core.template.stringify
-import top.potmot.core.template.stringifyJava
+import top.potmot.core.generate.generateCode
+import top.potmot.core.generate.toZipByteArray
 import top.potmot.enum.GenLanguage
 import top.potmot.model.GenEntity
 import top.potmot.model.GenTable
@@ -36,11 +35,7 @@ import top.potmot.model.dto.GenTableAssociationView
 import top.potmot.model.id
 import top.potmot.model.name
 import top.potmot.model.query.EntityQuery
-import top.potmot.model.query.TableQuery
 import top.potmot.model.tableId
-import java.io.ByteArrayOutputStream
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 import kotlin.reflect.KClass
 
 @RestController
@@ -48,6 +43,11 @@ import kotlin.reflect.KClass
 class EntityService(
     @Autowired val sqlClient: KSqlClient,
 ) {
+    @GetMapping("/language")
+    fun listLanguage(): List<GenLanguage> {
+        return GenLanguage.values().toList()
+    }
+
     @PostMapping("/convert")
     @Transactional
     fun convert(@RequestBody tableIds: List<Long>): List<Long> {
@@ -75,16 +75,17 @@ class EntityService(
         @PathVariable entityIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
     ): Map<String, String> {
-        val map = mutableMapOf<String, String>()
+        val result = mutableMapOf<String, String>()
 
-        query(EntityQuery(ids = entityIds)).forEach { entity ->
-            when (language ?: GenConfig.language) {
-                GenLanguage.KOTLIN -> map["${entity.name}.kt"] = entity.stringify()
-                GenLanguage.JAVA -> map["${entity.name}.java"] = entity.stringifyJava()
-            }
+        query(
+            EntityQuery(ids = entityIds),
+            GenEntityPropertiesView::class
+        ).forEach {
+            val codeMap = generateCode(it)
+            result.putAll(codeMap)
         }
 
-        return map
+        return result
     }
 
     @PostMapping("/generate")
@@ -93,28 +94,9 @@ class EntityService(
         @RequestBody entityIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
     ): ByteArray {
-        val zipFileStream = ByteArrayOutputStream()
-
-        val zip = ZipOutputStream(zipFileStream)
-
-        query(EntityQuery(ids = entityIds)).forEach { entity ->
-            when (language ?: GenConfig.language) {
-                GenLanguage.KOTLIN -> {
-                    zip.putNextEntry(ZipEntry("${entity.name}.kt"))
-                    zip.write(entity.stringify().toByteArray())
-                    zip.closeEntry()
-                }
-
-                GenLanguage.JAVA -> {
-                    zip.putNextEntry(ZipEntry("${entity.name}.java"))
-                    zip.write(entity.stringifyJava().toByteArray())
-                    zip.closeEntry()
-                }
-            }
-
-        }
-
-        return zipFileStream.toByteArray()
+        return preview(entityIds, language)
+            .mapValues { it.value.toByteArray() }
+            .toZipByteArray()
     }
 
     @PutMapping("/config")

@@ -1,0 +1,50 @@
+package top.potmot.config
+
+import top.potmot.enum.GenLanguage
+
+data class GenConfigProperties(
+    /** 作者  */
+    val author: String? = null,
+
+    /**
+     * 表名前缀
+     * 自动匹配关联与实体名生成时生效
+     * 配置文件中由 , 进行分割 */
+    val tablePrefix: List<String>? = null,
+
+    /**
+     * 表名后缀
+     * 自动匹配关联与实体名生成时生效
+     * 配置文件中由 , 进行分割 */
+    val tableSuffix: List<String>? = null,
+
+    /** 生成实体时是否依照 tablePrefix 进行前缀移除 */
+    val removeTablePrefix: Boolean? = null,
+
+    /** 生成实体时是否依照 tableSuffix 进行后缀移除 */
+    val removeTableSuffix: Boolean? = null,
+
+    /**
+     * 列名前缀
+     * 属性体名生成时生效
+     * 配置文件中由 , 进行分割 */
+    val columnPrefix: List<String>? = null,
+
+    /**
+     * 列名后缀
+     * 属性体名生成时生效
+     * 配置文件中由 , 进行分割 */
+    val columnSuffix: List<String>? = null,
+
+    /** 生成属性时是否依照 columnPrefix 进行后缀移除 */
+    val removeColumnPrefix: Boolean? = null,
+
+    /** 生成属性时是否依照 columnSuffix 进行后缀移除 */
+    val removeColumnSuffix: Boolean? = null,
+
+    /** 分隔符 */
+    val separator: String? = null,
+
+    /** 语言，java/kotlin */
+    val language: GenLanguage? = null,
+)

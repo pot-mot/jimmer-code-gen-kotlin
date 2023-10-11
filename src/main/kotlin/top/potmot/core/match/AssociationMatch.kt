@@ -23,7 +23,7 @@ typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatch
  */
 val simplePkColumnMatch: AssociationMatch = { source, target ->
     if (target.isPk && target.table.id != source.table.id) {
-        val targetTableName = target.table.name.removePrefixes().removeSuffixes()
+        val targetTableName = target.table.name.removePrefixes(GenConfig.tablePrefix).removeSuffixes(GenConfig.tableSuffix)
         if ("${targetTableName}${GenConfig.separator}${target.name}" == source.name) {
             if (source.isUnique) {
                 AssociationType.ONE_TO_ONE
@@ -47,7 +47,7 @@ val simplePkColumnMatch: AssociationMatch = { source, target ->
  */
 val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
     if (target.isPk && target.table.id != source.table.id) {
-        val targetTableName = target.table.name.removePrefixes().removeSuffixes()
+        val targetTableName = target.table.name.removePrefixes(GenConfig.tablePrefix).removeSuffixes(GenConfig.tableSuffix)
         if (target.name.contains(targetTableName) && target.name == source.name) {
             if (source.isUnique) {
                 AssociationType.ONE_TO_ONE
@@ -76,11 +76,11 @@ val pkSuffixColumnMatch: AssociationMatch = { source, target ->
         val separator = GenConfig.separator
 
         val targetMatchList =
-            target.table.name.removePrefixes().removeSuffixes().split(separator).takeLast(2) +
+            target.table.name.removePrefixes(GenConfig.tablePrefix).removeSuffixes(GenConfig.tableSuffix).split(separator).takeLast(2) +
                 target.name.split(separator).takeLast(2)
 
         val sourceMatchList =
-            source.table.name.removePrefixes().removeSuffixes().split(separator).takeLast(2) +
+            source.table.name.removePrefixes(GenConfig.tablePrefix).removeSuffixes(GenConfig.tableSuffix).split(separator).takeLast(2) +
                 source.name.split(separator).takeLast(2)
 
         if (sourceMatchList == targetMatchList) {

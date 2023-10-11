@@ -18,10 +18,11 @@ import top.potmot.model.copy
 
 fun Catalog.toGenSchemas(dataSourceId: Long): List<Pair<Schema, GenSchema>> {
     val catalog = this
-    return this.schemas.map { schema ->
+
+    return schemas.map { schema ->
         val genSchema = schema.toGenSchema(dataSourceId).copy {
-            this.tables = catalog.getTables(schema).map { table ->
-                table.toGenTable()
+            tables = catalog.getTables(schema).map {
+                it.toGenTable()
             }
         }
         Pair(schema, genSchema)

@@ -10,12 +10,12 @@ import top.potmot.config.GenConfig
 fun tableNameToClassName(name: String): String {
     val newName =
         if (GenConfig.removeTablePrefix) {
-            name.removePrefixes()
+            name.removePrefixes(GenConfig.tablePrefix)
         } else {
             name
         }.let { tempName ->
             if (GenConfig.removeTableSuffix) {
-                tempName.removeSuffixes()
+                tempName.removeSuffixes(GenConfig.tableSuffix)
             } else {
                 tempName
             }
@@ -92,7 +92,7 @@ fun columnNameToPropertyName(name: String): String {
  * @return 移除前缀后的字符串
  */
 fun String.removePrefixes(
-    prefixes: List<String> = GenConfig.tablePrefix,
+    prefixes: List<String>,
     separator: String = GenConfig.separator
 ): String {
     var result = this
@@ -117,7 +117,7 @@ fun String.removePrefixes(
  * @return 移除后缀后的字符串
  */
 fun String.removeSuffixes(
-    suffixes: List<String> = GenConfig.tableSuffix,
+    suffixes: List<String>,
     separator: String = GenConfig.separator
 ): String {
     var result = this

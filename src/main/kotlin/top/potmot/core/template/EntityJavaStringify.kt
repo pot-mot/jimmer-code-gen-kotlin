@@ -11,77 +11,71 @@ import org.babyfish.jimmer.sql.OnDissociate
 import top.potmot.config.GenConfig
 import top.potmot.enum.getAnnotation
 import top.potmot.model.dto.GenEntityPropertiesView
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
-fun GenEntityPropertiesView.stringifyJava(): String {
-    val entity = this
+fun GenEntityPropertiesView.javaClassStringify(): String {
+    return """package ${packagePath()};
 
-    return """package ${entity.packagePath()}
-
-${entity.importJava()}
+${import()}
 
 /**
- * ${entity.comment}
- *
+ * $comment
+ * $remark
  * @author ${GenConfig.author}
- * @since ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))} 
+ * @since ${now()} 
  */
-interface ${entity.name} {
-${properties.joinToString("") { it.stringifyJava() }}
+interface $name {
+${properties.joinToString("") { it.javaPropertyStringify() }}
 }"""
 }
 
-fun GenEntityPropertiesView.packagePathJava(): String {
-    return this.packagePath() + ";"
-}
-
-fun GenEntityPropertiesView.TargetOf_properties.stringifyJava(): String {
-    val property = this
+private fun GenEntityPropertiesView.TargetOf_properties.javaPropertyStringify(): String {
     return """
     /**
-     * ${property.comment}
-     */${property.annotation()}
-    ${if (property.isNotNull) "@NotNull" else ""}
-    ${property.shortType()} ${property.name};
+     * $comment
+     * $remark
+     */${annotation()}
+    ${if (isNotNull) "@NotNull" else ""}
+    ${type()} $name;
 """
 }
 
-fun GenEntityPropertiesView.importJava(): String {
-    return this.properties.flatMap { it.importListJava() }.distinct().joinToString("\n") { "import $it;" }
+private fun GenEntityPropertiesView.import(): String {
+    return this.properties.flatMap { it.importList() }.distinct().joinToString("\n") { "import $it;" }
 }
 
-fun GenEntityPropertiesView.TargetOf_properties.importListJava(): List<String> {
-    val property = this
-
+private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
     val result = mutableListOf<String>()
 
     result += Entity::class.java.name
 
-    if (property.isId) {
+    if (isNotNull) {
+        result += org.jetbrains.annotations.Nullable::class.java.name
+    }
+
+    if (isId) {
         result += Id::class.java.name
-        if (property.idGenerationType != null) {
+        if (idGenerationType != null) {
             result += GeneratedValue::class.java.name
             result += GenerationType::class.java.name
         }
-    } else if (property.isKey) {
+    } else if (isKey) {
         result += Key::class.java.name
     }
 
-    if (property.associationType != null) {
-        if (property.associationAnnotation != null) {
-            result += property.associationType.getAnnotation()::class.java.name
-            if (property.dissociateAnnotation != null) {
+    if (associationType != null) {
+        if (associationAnnotation != null) {
+            result += associationType.getAnnotation()::class.java.name
+            if (dissociateAnnotation != null) {
                 result += OnDissociate::class.java.name
                 result += DissociateAction::class.java.name
             }
-        } else if (property.isIdView) {
+        } else if (isIdView) {
             result += IdView::class.java.name
         }
     }
 
-    result += property.type
-    if (property.isList) {
+    result += type
+    if (isList) {
         result += List::class.java.name
     }
 

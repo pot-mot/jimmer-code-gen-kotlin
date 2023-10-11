@@ -6,9 +6,9 @@ import java.time.LocalDateTime
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
-fun jdbcTypeToJavaType(jdbcType: Int, isNotNull: Boolean = true): Class<*> {
+fun jdbcTypeToJavaType(jdbcType: Int, isNotNull: Boolean = true): Class<*>? {
     return when (jdbcType) {
-        Types.NULL -> JvmType.Object::class.java
+        Types.NULL -> null
         Types.JAVA_OBJECT -> JvmType.Object::class.java
         Types.BIT, Types.BOOLEAN -> if (isNotNull) Boolean::class.java else Boolean::class.javaObjectType
         Types.TINYINT -> if (isNotNull) Byte::class.java else Byte::class.javaObjectType
@@ -21,13 +21,13 @@ fun jdbcTypeToJavaType(jdbcType: Int, isNotNull: Boolean = true): Class<*> {
         Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR, Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR, Types.CLOB, Types.NCLOB, Types.SQLXML, Types.DATALINK -> String::class.java
         Types.DATE, Types.TIME, Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> LocalDateTime::class.java
         Types.BLOB, Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> ByteArray::class.java
-        else -> JvmType.Object::class.java
+        else -> null
     }
 }
 
-fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any> {
+fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
     return when (jdbcType) {
-        Types.NULL -> Any::class
+        Types.NULL -> null
         Types.JAVA_OBJECT -> JvmType.Object::class
         Types.BIT, Types.BOOLEAN -> Boolean::class
         Types.TINYINT -> Byte::class
@@ -40,6 +40,6 @@ fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any> {
         Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR, Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR, Types.CLOB, Types.NCLOB, Types.SQLXML, Types.DATALINK -> String::class
         Types.DATE, Types.TIME, Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> LocalDateTime::class
         Types.BLOB, Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> ByteArray::class
-        else -> Any::class
+        else -> null
     }
 }

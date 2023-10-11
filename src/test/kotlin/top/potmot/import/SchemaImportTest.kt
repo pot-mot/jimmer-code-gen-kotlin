@@ -35,7 +35,7 @@ class SchemaImportTest(
             )
         )
 
-        val viewSchemas = schemaService.view(insertId)
+        val viewSchemas = schemaService.preview(insertId)
 
         if (viewSchemas.isNotEmpty()) {
             schemaService.import(insertId, viewSchemas[0].name)

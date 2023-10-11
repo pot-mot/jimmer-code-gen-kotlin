@@ -10,21 +10,22 @@ import top.potmot.model.GenEntity
 import top.potmot.model.GenProperty
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.by
+import top.potmot.model.copy
 import top.potmot.model.dto.GenTableAssociationView
 
 /**
  * 表到实体转换
  */
 fun tableToEntity(
-    table: GenTableAssociationView,
+    genTable: GenTableAssociationView,
 ): GenEntity {
     return new(GenEntity::class).by {
-        this.table = table.toEntity()
-        this.author = GenConfig.author
-        this.name = tableNameToClassName(table.name)
-        this.comment = table.comment
+        table = genTable.toEntity()
+        author = GenConfig.author
+        name = tableNameToClassName(genTable.name)
+        comment = genTable.comment
 
-        if (table.type == TableType.VIEW) {
+        if (genTable.type == TableType.VIEW) {
             isAdd = false
             isEdit = false
         }
@@ -46,28 +47,44 @@ fun tableToEntity(
  * warning: 为保证保存时关联成立，请保证对应 column 具有 id
  */
 fun columnToProperties(
-    column: GenTableAssociationView.TargetOf_columns,
+    genColumn: GenTableAssociationView.TargetOf_columns,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
+    if (genColumn.isPk) {
+        val idProperty = genColumn.toBaseProperty(typeMappings).copy {
+            isId = true
+            isNotNull = true
+            isKey = false
+            isList = false
+            isLogicalDelete = false
+            isIdView = false
+            if (genColumn.isAutoIncrement) {
+                idGenerationType = GenerationType.IDENTITY
+            }
+        }
+
+        return listOf(idProperty)
+    }
+
     val properties = mutableListOf<GenProperty>()
 
-    column.outAssociations.forEach {
+    genColumn.outAssociations.forEach {
         if (it.associationType == AssociationType.MANY_TO_ONE) {
-            properties += column.toManyToOneProperty(it, typeMappings)
+            properties += genColumn.toManyToOneProperty(it, typeMappings)
         } else if (it.associationType == AssociationType.ONE_TO_ONE) {
-            properties += column.toOneToOneProperty(it, typeMappings)
+            properties += genColumn.toOneToOneProperty(it, typeMappings)
         }
     }
 
     if (properties.isEmpty()) {
-        properties += column.toBaseProperty(typeMappings)
+        properties += genColumn.toBaseProperty(typeMappings)
     }
 
-    column.inAssociations.forEach {
+    genColumn.inAssociations.forEach {
         if (it.associationType == AssociationType.MANY_TO_ONE) {
-            properties += column.getOneToManyProperty(it, typeMappings)
+            properties += genColumn.getOneToManyProperty(it, typeMappings)
         } else if (it.associationType == AssociationType.ONE_TO_ONE) {
-            properties += column.getOneToOneProperty(it, typeMappings)
+            properties += genColumn.getOneToOneProperty(it, typeMappings)
         }
     }
 
@@ -82,17 +99,10 @@ fun GenTableAssociationView.TargetOf_columns.toBaseProperty(
     return new(GenProperty::class).by {
         this.column = column.toEntity()
         this.name = columnNameToPropertyName(column.name)
-        this.type = getPropertyTypeName(column, typeMappings)
+        this.type = column.typeName(typeMappings)
         this.comment = column.comment
         this.isNotNull = column.isNotNull
         this.isKey = column.isUnique
-
-        if (column.isPk) {
-            isId = true
-            if (column.isAutoIncrement) {
-                idGenerationType = GenerationType.IDENTITY
-            }
-        }
     }
 }
 
@@ -100,155 +110,139 @@ fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
     outAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
-    val sourceColumn = this
-
     val targetColumn = outAssociation.targetColumn
 
-    val ManyToOneProperty = new(GenProperty::class).by {
-        this.column = sourceColumn.toEntity()
+    val baseProperty = toBaseProperty(typeMappings)
+
+    val manyToOneProperty = baseProperty.copy {
+        this.associationType = AssociationType.MANY_TO_ONE
+
         this.name = tableNameToPropertyName(targetColumn.table.name)
         this.type = tableNameToClassName(targetColumn.table.name)
         this.typeTableId = targetColumn.table.id
         this.comment = targetColumn.table.comment
-        this.isNotNull = sourceColumn.isNotNull
-        this.associationType = AssociationType.MANY_TO_ONE
         this.associationAnnotation = "@ManyToOne"
         outAssociation.dissociateAction?.let {
             this.dissociateAnnotation = "@OnDissociate(DissociateAction.${outAssociation.dissociateAction})"
         }
     }
 
-    val IdViewProperty = new(GenProperty::class).by {
-        this.column = sourceColumn.toEntity()
-        this.name = tableNameToPropertyName(targetColumn.table.name) + "Id"
-        this.type = getPropertyTypeName(sourceColumn, typeMappings)
-        this.comment = targetColumn.table.comment + " ID 视图"
-        this.isNotNull = sourceColumn.isNotNull
-        this.isIdView = true
-        this.idViewAnnotation = "@IdView(\"${ManyToOneProperty.name}\")"
+    val idViewProperty = baseProperty.copy {
         this.associationType = AssociationType.MANY_TO_ONE
+
+        this.name = manyToOneProperty.name + "Id"
+        this.comment = manyToOneProperty.comment + " ID 视图"
+        this.isIdView = true
+        this.idViewAnnotation = "@IdView(\"${manyToOneProperty.name}\")"
     }
 
-    return listOf(ManyToOneProperty, IdViewProperty)
+    return listOf(manyToOneProperty, idViewProperty)
 }
 
 fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
     outAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
-    val sourceColumn = this
-
     val targetColumn = outAssociation.targetColumn
 
-    val OneToOneProperty = new(GenProperty::class).by {
-        this.column = sourceColumn.toEntity()
+    val baseProperty = toBaseProperty(typeMappings)
+
+    val oneToOneProperty = baseProperty.copy {
+        this.associationType = AssociationType.ONE_TO_ONE
+
         this.name = tableNameToPropertyName(targetColumn.table.name)
         this.type = tableNameToClassName(targetColumn.table.name)
         this.typeTableId = targetColumn.table.id
         this.comment = targetColumn.table.comment
-        this.isNotNull = sourceColumn.isNotNull
-        this.associationType = AssociationType.ONE_TO_ONE
         this.associationAnnotation = "@OneToOne"
         outAssociation.dissociateAction?.let {
             this.dissociateAnnotation = "@OnDissociate(DissociateAction.${outAssociation.dissociateAction})"
         }
     }
 
-    val IdViewProperty = new(GenProperty::class).by {
-        this.column = sourceColumn.toEntity()
-        this.name = tableNameToPropertyName(targetColumn.table.name) + "Id"
-        this.type = getPropertyTypeName(sourceColumn, typeMappings)
-        this.comment = targetColumn.table.comment + " ID 视图"
-        this.isNotNull = sourceColumn.isNotNull
-        this.isIdView = true
-        this.idViewAnnotation = "@IdView(\"${OneToOneProperty.name}\")"
+    val idViewProperty = baseProperty.copy {
         this.associationType = AssociationType.ONE_TO_ONE
+
+        this.name = oneToOneProperty.name + "Id"
+        this.comment = oneToOneProperty.comment + " ID 视图"
+        this.isIdView = true
+        this.idViewAnnotation = "@IdView(\"${oneToOneProperty.name}\")"
     }
 
-    return listOf(OneToOneProperty, IdViewProperty)
+    return listOf(oneToOneProperty, idViewProperty)
 }
 
 fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
     inAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
-    val targetColumn = this
-
     val sourceColumn = inAssociation.sourceColumn
 
-    val OneToManyProperty = new(GenProperty::class).by {
-        this.column = targetColumn.toEntity()
+    val baseProperty = toBaseProperty(typeMappings)
+
+    val oneToManyProperty = baseProperty.copy {
+        this.associationType = AssociationType.ONE_TO_MANY
+
         this.name = tableNameToPropertyName(sourceColumn.table.name).toPlural()
         this.type = tableNameToClassName(sourceColumn.table.name)
         this.isList = true
         this.typeTableId = sourceColumn.table.id
         this.comment = sourceColumn.table.comment
-        this.isNotNull = targetColumn.isNotNull
-        this.isIdView = true
-        this.associationType = AssociationType.ONE_TO_MANY
         this.associationAnnotation = "@OneToMany(mappedBy = \"${tableNameToPropertyName(sourceColumn.table.name)}\")"
     }
 
-    val IdViewProperty = new(GenProperty::class).by {
-        this.column = targetColumn.toEntity()
-        this.name = tableNameToPropertyName(sourceColumn.table.name) + "Ids"
-        this.type = getPropertyTypeName(targetColumn, typeMappings)
-        this.isList = true
-        this.comment = sourceColumn.table.comment + " ID 视图"
-        this.isNotNull = targetColumn.isNotNull
-        this.isIdView = true
-        this.idViewAnnotation = "@IdView(\"${OneToManyProperty.name}\")"
+    val idViewProperty = baseProperty.copy {
         this.associationType = AssociationType.ONE_TO_MANY
+
+        this.name = tableNameToPropertyName(sourceColumn.table.name) + "Ids"
+        this.isList = true
+        this.comment = oneToManyProperty.comment + " ID 视图"
+        this.isIdView = true
+        this.idViewAnnotation = "@IdView(\"${oneToManyProperty.name}\")"
     }
 
-    return listOf(OneToManyProperty, IdViewProperty)
+    return listOf(oneToManyProperty, idViewProperty)
 }
 
 fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
     inAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
-    val targetColumn = this
-
     val sourceColumn = inAssociation.sourceColumn
 
+    val baseProperty = toBaseProperty(typeMappings)
 
-    val OneToOneProperty = new(GenProperty::class).by {
-        this.column = targetColumn.toEntity()
+    val oneToOneProperty = baseProperty.copy {
+        this.associationType = AssociationType.ONE_TO_ONE
+
         this.name = tableNameToPropertyName(sourceColumn.table.name)
         this.type = tableNameToClassName(sourceColumn.table.name)
         this.typeTableId = sourceColumn.table.id
         this.comment = sourceColumn.table.comment
-        this.isNotNull = targetColumn.isNotNull
-        this.associationType = AssociationType.ONE_TO_ONE
         this.associationAnnotation = "@OneToOne(mappedBy = \"${tableNameToPropertyName(sourceColumn.table.name)}\")"
     }
 
-    val IdViewProperty = new(GenProperty::class).by {
-        this.column = targetColumn.toEntity()
-        this.name = tableNameToPropertyName(sourceColumn.table.name) + "Id"
-        this.type = getPropertyTypeName(targetColumn, typeMappings)
-        this.comment = sourceColumn.table.comment + " ID 视图"
-        this.isNotNull = targetColumn.isNotNull
-        this.isIdView = true
-        this.idViewAnnotation = "@IdView(\"${OneToOneProperty.name}\")"
+    val idViewProperty = baseProperty.copy {
         this.associationType = AssociationType.ONE_TO_ONE
+
+        this.name = tableNameToPropertyName(sourceColumn.table.name) + "Id"
+        this.comment = oneToOneProperty.comment + " ID 视图"
+        this.isIdView = true
+        this.idViewAnnotation = "@IdView(\"${oneToOneProperty.name}\")"
     }
 
-    return listOf(OneToOneProperty, IdViewProperty)
+    return listOf(oneToOneProperty, idViewProperty)
 }
 
 /**
  * 设置属性类型
  */
-fun getPropertyTypeName(
-    column: GenTableAssociationView.TargetOf_columns,
+private fun GenTableAssociationView.TargetOf_columns.typeName(
     typeMappings: List<GenTypeMapping> = emptyList(),
     language: GenLanguage = GenConfig.language,
-    defaultType: String = GenConfig.defaultType
 ): String {
     return when (language) {
-        GenLanguage.JAVA -> jdbcTypeToJavaType(column.typeCode, column.isNotNull).name
-        GenLanguage.KOTLIN -> jdbcTypeToKotlinType(column.typeCode).qualifiedName ?: defaultType
+        GenLanguage.JAVA -> jdbcTypeToJavaType(typeCode, isNotNull)?.name ?: type
+        GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeCode)?.qualifiedName ?: type
     }
 }

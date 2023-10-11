@@ -4,6 +4,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import top.potmot.enum.GenLanguage
 import top.potmot.error.ConfigException
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.full.isSupertypeOf
+import kotlin.reflect.full.memberProperties
 
 /**
  * 读取代码生成相关配置
@@ -19,13 +22,13 @@ class GenConfig {
          * 表名前缀
          * 自动匹配关联与实体名生成时生效
          * 配置文件中由 , 进行分割 */
-        var tablePrefix: List<String> = listOf("")
+        var tablePrefix: List<String> = emptyList()
 
         /**
          * 表名后缀
          * 自动匹配关联与实体名生成时生效
          * 配置文件中由 , 进行分割 */
-        var tableSuffix: List<String> = listOf("")
+        var tableSuffix: List<String> = emptyList()
 
         /** 生成实体时是否依照 tablePrefix 进行前缀移除 */
         var removeTablePrefix: Boolean = true
@@ -37,13 +40,13 @@ class GenConfig {
          * 列名前缀
          * 属性体名生成时生效
          * 配置文件中由 , 进行分割 */
-        var columnPrefix: List<String> = listOf("")
+        var columnPrefix: List<String> = emptyList()
 
         /**
          * 列名后缀
          * 属性体名生成时生效
          * 配置文件中由 , 进行分割 */
-        var columnSuffix: List<String> = listOf("")
+        var columnSuffix: List<String> = emptyList()
 
         /** 生成属性时是否依照 columnPrefix 进行后缀移除 */
         var removeColumnPrefix: Boolean = true
@@ -56,9 +59,6 @@ class GenConfig {
 
         /** 语言，java/kotlin */
         var language: GenLanguage = GenLanguage.KOTLIN
-
-        /** 默认类型 */
-        var defaultType: String = "String"
     }
 
     fun setAuthor(author: String) {
@@ -101,10 +101,6 @@ class GenConfig {
         Companion.separator = separator
     }
 
-    fun setDefaultType(defaultType: String) {
-        Companion.defaultType = defaultType
-    }
-
     fun setLanguage(language: String) {
         when (language.lowercase()) {
             GenLanguage.JAVA.value -> {
@@ -117,6 +113,20 @@ class GenConfig {
 
             else -> {
                 throw ConfigException("暂不支持 java 和 kotlin 之外的语言")
+            }
+        }
+    }
+
+    fun merge(newConfig: GenConfigProperties) {
+        val configClass = Companion::class
+        val propertiesClass = GenConfigProperties::class
+
+        configClass.memberProperties.forEach { configProperty ->
+            val property = propertiesClass.memberProperties.find { it.name == configProperty.name }
+            if (property != null && property.returnType.classifier == configProperty.returnType.classifier && configProperty is KMutableProperty<*>) {
+                property.get(newConfig)?.let {
+                    configProperty.setter.call(Companion, it)
+                }
             }
         }
     }
