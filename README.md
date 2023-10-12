@@ -28,9 +28,9 @@
 - [TableEntityConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fconvert%2FTableEntityConvert.kt) 表到实体转换
 - [TypeMapping.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fconvert%2FTypeMapping.kt) 类型映射
 
-### import 导入
+### load 导入
 
-包含 [DataSourceImport.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fimport%2FDataSourceImport.kt) 数据源导入，可导入 schema、table、column 三级数据，并根据外键和索引生成基础的 Association 关联
+包含 [DataSourceLoad.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fload%2FDataSourceLoad.kt) 数据源导入，可导入 schema、table、column 三级数据，并根据外键和索引生成基础的 Association 关联
 
 ### match 匹配
 

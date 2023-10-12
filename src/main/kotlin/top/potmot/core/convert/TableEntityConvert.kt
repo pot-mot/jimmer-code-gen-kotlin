@@ -3,6 +3,7 @@ package top.potmot.core.convert
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.GenerationType
 import top.potmot.config.GenConfig
+import top.potmot.core.immutable.copyProperties
 import top.potmot.enum.AssociationType
 import top.potmot.enum.GenLanguage
 import top.potmot.enum.TableType
@@ -10,7 +11,6 @@ import top.potmot.model.GenEntity
 import top.potmot.model.GenProperty
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.by
-import top.potmot.model.copy
 import top.potmot.model.dto.GenTableAssociationView
 
 /**
@@ -37,7 +37,7 @@ fun tableToEntity(
  * 具备关联时将生成关联字段
  * TODO 目前仅支持 ManyToOne 和 OneToOne，不支持 ManyToMany
  * 目前转换规则如下:
- * outAssociations 出关联（一般场景下一列应该只有一种指向，则虽然代码中为 forEach，但实际操作为单指）
+ * outAssociations 出关联（一般场景下一列应该只有一个 out 指向）
  *     -> 当前列转换成 ManyToOne 并补充 IdView
  *     -> 当前列转换成 OneToOne 并补充 IdView
  * inAssociations 入关联
@@ -50,22 +50,6 @@ fun columnToProperties(
     genColumn: GenTableAssociationView.TargetOf_columns,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
-    if (genColumn.isPk) {
-        val idProperty = genColumn.toBaseProperty(typeMappings).copy {
-            isId = true
-            isNotNull = true
-            isKey = false
-            isList = false
-            isLogicalDelete = false
-            isIdView = false
-            if (genColumn.isAutoIncrement) {
-                idGenerationType = GenerationType.IDENTITY
-            }
-        }
-
-        return listOf(idProperty)
-    }
-
     val properties = mutableListOf<GenProperty>()
 
     genColumn.outAssociations.forEach {
@@ -77,7 +61,24 @@ fun columnToProperties(
     }
 
     if (properties.isEmpty()) {
-        properties += genColumn.toBaseProperty(typeMappings)
+        val baseProperty = genColumn.toBaseProperty(typeMappings)
+        properties += if (genColumn.isPk) {
+            new(GenProperty::class).by {
+                copyProperties(baseProperty, this)
+
+                isId = true
+                isNotNull = true
+                isKey = false
+                isList = false
+                isLogicalDelete = false
+                isIdView = false
+                if (genColumn.isAutoIncrement) {
+                    idGenerationType = GenerationType.IDENTITY
+                }
+            }
+        } else {
+            baseProperty
+        }
     }
 
     genColumn.inAssociations.forEach {
@@ -91,13 +92,16 @@ fun columnToProperties(
     return properties
 }
 
+/**
+ * 转换为基础属性
+ */
 fun GenTableAssociationView.TargetOf_columns.toBaseProperty(
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): GenProperty {
     val column = this
 
     return new(GenProperty::class).by {
-        this.column = column.toEntity()
+        this.columnId = column.id
         this.name = columnNameToPropertyName(column.name)
         this.type = column.typeName(typeMappings)
         this.comment = column.comment
@@ -106,18 +110,26 @@ fun GenTableAssociationView.TargetOf_columns.toBaseProperty(
     }
 }
 
+/**
+ * 转换为 ManyToOne 属性
+ * 基于 outAssociation 进行
+ */
 fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
     outAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
+    val sourceColumn = this
+
     val targetColumn = outAssociation.targetColumn
 
     val baseProperty = toBaseProperty(typeMappings)
 
-    val manyToOneProperty = baseProperty.copy {
+    val manyToOneProperty = new(GenProperty::class).by {
+        copyProperties(baseProperty, this)
+
         this.associationType = AssociationType.MANY_TO_ONE
 
-        this.name = tableNameToPropertyName(targetColumn.table.name)
+        this.name = sourceColumn.name.toOutPropertyName()
         this.type = tableNameToClassName(targetColumn.table.name)
         this.typeTableId = targetColumn.table.id
         this.comment = targetColumn.table.comment
@@ -127,7 +139,9 @@ fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
         }
     }
 
-    val idViewProperty = baseProperty.copy {
+    val idViewProperty = new(GenProperty::class).by {
+        copyProperties(baseProperty, this)
+
         this.associationType = AssociationType.MANY_TO_ONE
 
         this.name = manyToOneProperty.name + "Id"
@@ -140,18 +154,26 @@ fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
     return listOf(manyToOneProperty, idViewProperty)
 }
 
+/**
+ * 转换为 OneToOne 属性
+ * 基于 outAssociation 进行
+ */
 fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
     outAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
+    val sourceColumn = this
+
     val targetColumn = outAssociation.targetColumn
 
     val baseProperty = toBaseProperty(typeMappings)
 
-    val oneToOneProperty = baseProperty.copy {
+    val oneToOneProperty = new(GenProperty::class).by {
+        copyProperties(baseProperty, this)
+
         this.associationType = AssociationType.ONE_TO_ONE
 
-        this.name = tableNameToPropertyName(targetColumn.table.name)
+        this.name = sourceColumn.name.toOutPropertyName()
         this.type = tableNameToClassName(targetColumn.table.name)
         this.typeTableId = targetColumn.table.id
         this.comment = targetColumn.table.comment
@@ -161,7 +183,8 @@ fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
         }
     }
 
-    val idViewProperty = baseProperty.copy {
+    val idViewProperty = new(GenProperty::class).by {
+        copyProperties(baseProperty, this)
         this.associationType = AssociationType.ONE_TO_ONE
 
         this.name = oneToOneProperty.name + "Id"
@@ -174,6 +197,13 @@ fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
     return listOf(oneToOneProperty, idViewProperty)
 }
 
+private fun String.toOutPropertyName(): String =
+    columnNameToPropertyName(this).removeSuffix("Id")
+
+/**
+ * 获取 OneToMany 属性
+ * 基于 inAssociation 进行
+ */
 fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
     inAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
@@ -182,7 +212,8 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
 
     val baseProperty = toBaseProperty(typeMappings)
 
-    val oneToManyProperty = baseProperty.copy {
+    val oneToManyProperty = new(GenProperty::class).by {
+        copyProperties(baseProperty, this)
         this.associationType = AssociationType.ONE_TO_MANY
 
         this.name = tableNameToPropertyName(sourceColumn.table.name).toPlural()
@@ -191,11 +222,12 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
         this.isNotNull = true
         this.typeTableId = sourceColumn.table.id
         this.comment = sourceColumn.table.comment
-        this.associationAnnotation = "@OneToMany(mappedBy = \"${tableNameToPropertyName(sourceColumn.table.name)}\")"
+        this.associationAnnotation = "@OneToMany(mappedBy = \"${sourceColumn.name.toOutPropertyName()}\")"
         this.isKey = false
     }
 
-    val idViewProperty = baseProperty.copy {
+    val idViewProperty = new(GenProperty::class).by {
+        copyProperties(baseProperty, this)
         this.associationType = AssociationType.ONE_TO_MANY
 
         this.name = tableNameToPropertyName(sourceColumn.table.name) + "Ids"
@@ -210,6 +242,25 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
     return listOf(oneToManyProperty, idViewProperty)
 }
 
+/**
+ * 将名词转换为复数形式。
+ * @return 转换后的复数形式
+ */
+private fun String.toPlural(): String {
+    val plural: String = when {
+        endsWith("s") || endsWith("x") || endsWith("z") || endsWith("ch") || endsWith("sh") ->
+            this + "es"
+
+        endsWith("y") -> dropLast(1) + "ies"
+        else -> this + "s"
+    }
+    return plural
+}
+
+/**
+ * 获取 OneToOne 属性
+ * 基于 inAssociation 进行
+ */
 fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
     inAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
@@ -218,18 +269,20 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
 
     val baseProperty = toBaseProperty(typeMappings)
 
-    val oneToOneProperty = baseProperty.copy {
+    val oneToOneProperty = new(GenProperty::class).by {
+        copyProperties(baseProperty, this)
         this.associationType = AssociationType.ONE_TO_ONE
 
         this.name = tableNameToPropertyName(sourceColumn.table.name)
         this.type = tableNameToClassName(sourceColumn.table.name)
         this.typeTableId = sourceColumn.table.id
         this.comment = sourceColumn.table.comment
-        this.associationAnnotation = "@OneToOne(mappedBy = \"${tableNameToPropertyName(sourceColumn.table.name)}\")"
+        this.associationAnnotation = "@OneToOne(mappedBy = \"${sourceColumn.name.toOutPropertyName()}\")"
         this.isKey = false
     }
 
-    val idViewProperty = baseProperty.copy {
+    val idViewProperty = new(GenProperty::class).by {
+        copyProperties(baseProperty, this)
         this.associationType = AssociationType.ONE_TO_ONE
 
         this.name = tableNameToPropertyName(sourceColumn.table.name) + "Id"

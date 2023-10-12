@@ -6,6 +6,9 @@ import java.time.LocalDateTime
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
+/**
+ * java.sql.Types 映射为 java 类型
+ */
 fun jdbcTypeToJavaType(jdbcType: Int, isNotNull: Boolean = true): Class<*>? {
     return when (jdbcType) {
         Types.NULL -> null
@@ -25,6 +28,9 @@ fun jdbcTypeToJavaType(jdbcType: Int, isNotNull: Boolean = true): Class<*>? {
     }
 }
 
+/**
+ * java.sql.Types 映射为 kotlin 类型
+ */
 fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
     return when (jdbcType) {
         Types.NULL -> null

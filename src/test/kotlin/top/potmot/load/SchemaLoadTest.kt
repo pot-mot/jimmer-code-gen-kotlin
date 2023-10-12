@@ -1,4 +1,4 @@
-package top.potmot.import
+package top.potmot.load
 
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
@@ -15,13 +15,13 @@ import top.potmot.service.SchemaService
 @SpringBootTest
 @ActiveProfiles("test-kotlin")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class SchemaImportTest(
+class SchemaLoadTest(
     @Autowired val dataSourceService: DataSourceService,
     @Autowired val schemaService: SchemaService
 ) {
     @Test
     @Order(1)
-    fun testImportSchema() {
+    fun testLoadSchema() {
         val insertId = dataSourceService.insert(
             GenDataSourceInput(
                 name = "test",
@@ -38,7 +38,7 @@ class SchemaImportTest(
         val viewSchemas = schemaService.preview(insertId)
 
         if (viewSchemas.isNotEmpty()) {
-            schemaService.import(insertId, viewSchemas[0].name)
+            schemaService.load(insertId, viewSchemas[0].name)
         }
     }
 }

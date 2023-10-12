@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 @SpringBootTest
 @ActiveProfiles("test-kotlin")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class TableEntityConvertTest {
+class ColumnPropertyConvertTest {
     @Test
     @Order(1)
     fun testIdColumnConvert() {
@@ -77,7 +77,7 @@ class TableEntityConvertTest {
 
         val manyToOneProperty = properties[0]
 
-        assertEquals("table2", manyToOneProperty.name)
+        assertEquals("manyToOneProperty", manyToOneProperty.name)
         assertEquals("Table2", manyToOneProperty.type)
         assertEquals(2, manyToOneProperty.typeTableId)
 
@@ -89,7 +89,7 @@ class TableEntityConvertTest {
 
         val idViewProperty = properties[1]
 
-        assertEquals("table2Id", idViewProperty.name)
+        assertEquals("manyToOnePropertyId", idViewProperty.name)
         assertEquals("kotlin.Long", idViewProperty.type)
 
         assert(idViewProperty.isIdView)
@@ -136,7 +136,7 @@ class TableEntityConvertTest {
         assert(oneToManyProperty.isNotNull)
         assert(!oneToManyProperty.isKey)
         assertEquals(AssociationType.ONE_TO_MANY, oneToManyProperty.associationType)
-        assertEquals("@OneToMany(mappedBy = \"table2\")", oneToManyProperty.associationAnnotation)
+        assertEquals("@OneToMany(mappedBy = \"manyToOneProperty\")", oneToManyProperty.associationAnnotation)
 
         val idViewProperty = properties[2]
 
@@ -173,26 +173,26 @@ class TableEntityConvertTest {
 
         assertEquals(2, properties.size)
 
-        val manyToOneProperty = properties[0]
+        val oneToOneProperty = properties[0]
 
-        assertEquals("table2", manyToOneProperty.name)
-        assertEquals("Table2", manyToOneProperty.type)
-        assertEquals(2, manyToOneProperty.typeTableId)
+        assertEquals("oneToOneProperty", oneToOneProperty.name)
+        assertEquals("Table2", oneToOneProperty.type)
+        assertEquals(2, oneToOneProperty.typeTableId)
 
-        assert(manyToOneProperty.isNotNull)
-        assert(manyToOneProperty.isKey)
-        assertEquals(AssociationType.ONE_TO_ONE, manyToOneProperty.associationType)
-        assertEquals("@OneToOne", manyToOneProperty.associationAnnotation)
-        assertEquals("@OnDissociate(DissociateAction.DELETE)", manyToOneProperty.dissociateAnnotation)
+        assert(oneToOneProperty.isNotNull)
+        assert(oneToOneProperty.isKey)
+        assertEquals(AssociationType.ONE_TO_ONE, oneToOneProperty.associationType)
+        assertEquals("@OneToOne", oneToOneProperty.associationAnnotation)
+        assertEquals("@OnDissociate(DissociateAction.DELETE)", oneToOneProperty.dissociateAnnotation)
 
         val idViewProperty = properties[1]
 
-        assertEquals("table2Id", idViewProperty.name)
+        assertEquals("oneToOnePropertyId", idViewProperty.name)
         assertEquals("kotlin.Long", idViewProperty.type)
 
         assert(idViewProperty.isIdView)
         assertEquals(AssociationType.ONE_TO_ONE, idViewProperty.associationType)
-        assertEquals("@IdView(\"${manyToOneProperty.name}\")", idViewProperty.idViewAnnotation)
+        assertEquals("@IdView(\"${oneToOneProperty.name}\")", idViewProperty.idViewAnnotation)
     }
 
     @Test
@@ -234,7 +234,7 @@ class TableEntityConvertTest {
         assert(!oneToManyProperty.isNotNull)
         assert(!oneToManyProperty.isKey)
         assertEquals(AssociationType.ONE_TO_ONE, oneToManyProperty.associationType)
-        assertEquals("@OneToOne(mappedBy = \"table2\")", oneToManyProperty.associationAnnotation)
+        assertEquals("@OneToOne(mappedBy = \"oneToOneProperty\")", oneToManyProperty.associationAnnotation)
 
         val idViewProperty = properties[2]
 

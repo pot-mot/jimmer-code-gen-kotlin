@@ -12,18 +12,20 @@ import top.potmot.model.dto.GenColumnMatchView
  *
  * warning 请一定要保证 column 获取到了 table
  */
-typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatchView) -> AssociationType?
+typealias AssociationMatch = (
+    source: GenColumnMatchView,
+    target: GenColumnMatchView
+) -> AssociationType?
 
 /**
  * 简单主键列关联匹配
- *
  * eq:      source                     target
  *          table2.table1_id        -> table1.id
  *          table2.table1_id        -> prefix_table1.id
  */
 val simplePkColumnMatch: AssociationMatch = { source, target ->
     if (target.isPk && target.table.id != source.table.id) {
-        val targetTableName = target.table.name.removePrefixes(GenConfig.tablePrefix).removeSuffixes(GenConfig.tableSuffix)
+        val targetTableName = target.table.name.clearTableMatchName()
         if ("${targetTableName}${GenConfig.separator}${target.name}" == source.name) {
             if (source.isUnique) {
                 AssociationType.ONE_TO_ONE
@@ -40,14 +42,13 @@ val simplePkColumnMatch: AssociationMatch = { source, target ->
 
 /**
  * 含表名主键列关联匹配
- *
  * eq:      source                     target
  *          table2.table1_id        -> table1.table1_id
  *          table2.table1_id        -> prefix_table1.table1_id
  */
 val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
     if (target.isPk && target.table.id != source.table.id) {
-        val targetTableName = target.table.name.removePrefixes(GenConfig.tablePrefix).removeSuffixes(GenConfig.tableSuffix)
+        val targetTableName = target.table.name.clearTableMatchName()
         if (target.name.contains(targetTableName) && target.name == source.name) {
             if (source.isUnique) {
                 AssociationType.ONE_TO_ONE
@@ -76,12 +77,12 @@ val pkSuffixColumnMatch: AssociationMatch = { source, target ->
         val separator = GenConfig.separator
 
         val targetMatchList =
-            target.table.name.removePrefixes(GenConfig.tablePrefix).removeSuffixes(GenConfig.tableSuffix).split(separator).takeLast(2) +
-                target.name.split(separator).takeLast(2)
+            target.table.name.clearTableMatchName().split(separator).takeLast(2) +
+                    target.name.split(separator).takeLast(2)
 
         val sourceMatchList =
-            source.table.name.removePrefixes(GenConfig.tablePrefix).removeSuffixes(GenConfig.tableSuffix).split(separator).takeLast(2) +
-                source.name.split(separator).takeLast(2)
+            source.table.name.clearTableMatchName().split(separator).takeLast(2) +
+                    source.name.split(separator).takeLast(2)
 
         if (sourceMatchList == targetMatchList) {
             if (source.isUnique) {
@@ -114,3 +115,10 @@ fun suffixMatch(s1: List<String>, s2: List<String>): List<String> {
         .takeWhile { (a, b) -> a == b }
         .map { pair -> pair.first }
 }
+
+/**
+ * 完全移除表名的前后缀
+ */
+private fun String.clearTableMatchName(): String =
+    this.removePrefixes(GenConfig.tablePrefix).removeSuffixes(GenConfig.tableSuffix)
+

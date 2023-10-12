@@ -22,7 +22,7 @@ import top.potmot.core.match.AssociationMatch
 import top.potmot.core.match.simplePkColumnMatch
 import top.potmot.enum.AssociationMatchType
 import top.potmot.enum.SelectType
-import top.potmot.enum.getMatch
+import top.potmot.enum.toMatchMethod
 import top.potmot.extension.newGenAssociationMatchView
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenColumn
@@ -121,7 +121,7 @@ class AssociationService(
             )
             select(table.fetch(GenColumnMatchView::class))
         }.execute()
-        return matchColumns(columns, matchType.getMatch())
+        return matchColumns(columns, matchType.toMatchMethod())
     }
 
     fun matchColumns(

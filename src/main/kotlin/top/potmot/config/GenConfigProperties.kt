@@ -3,8 +3,17 @@ package top.potmot.config
 import top.potmot.enum.GenLanguage
 
 data class GenConfigProperties(
+    /** 分隔符 */
+    val separator: String? = null,
+
+    /** 语言，java/kotlin */
+    val language: GenLanguage? = null,
+
     /** 作者  */
     val author: String? = null,
+
+    /** 逻辑删除默认配置 */
+    val logicalDeletedAnnotation: String? = null,
 
     /**
      * 表名前缀
@@ -41,10 +50,4 @@ data class GenConfigProperties(
 
     /** 生成属性时是否依照 columnSuffix 进行后缀移除 */
     val removeColumnSuffix: Boolean? = null,
-
-    /** 分隔符 */
-    val separator: String? = null,
-
-    /** 语言，java/kotlin */
-    val language: GenLanguage? = null,
 )

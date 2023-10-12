@@ -28,15 +28,10 @@ enum class AssociationType {
     MANY_TO_MANY,
 }
 
-fun getAssociationAnnotation(type: AssociationType): KClass<out Annotation> {
-    return when (type) {
+fun AssociationType.toAnnotation(): KClass<out Annotation> =
+    when (this) {
         ONE_TO_ONE -> OneToOne::class
         MANY_TO_ONE -> ManyToOne::class
         ONE_TO_MANY -> OneToMany::class
         MANY_TO_MANY -> ManyToMany::class
     }
-}
-
-fun AssociationType.getAnnotation(): KClass<out Annotation> {
-    return getAssociationAnnotation(this)
-}

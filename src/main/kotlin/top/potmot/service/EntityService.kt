@@ -95,7 +95,6 @@ class EntityService(
         @RequestParam(required = false) language: GenLanguage?
     ): ByteArray {
         return preview(entityIds, language)
-            .mapValues { it.value.toByteArray() }
             .toZipByteArray()
     }
 

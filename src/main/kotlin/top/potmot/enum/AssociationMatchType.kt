@@ -11,14 +11,9 @@ enum class AssociationMatchType {
     PK_SUFFIX,
 }
 
-fun getAssociationMatch(type: AssociationMatchType): AssociationMatch {
-    return when (type) {
+fun AssociationMatchType.toMatchMethod(): AssociationMatch =
+    when (this) {
         AssociationMatchType.SIMPLE_PK -> simplePkColumnMatch
         AssociationMatchType.INCLUDE_TABLE_NAME -> includeTableNamePkColumnMatch
         AssociationMatchType.PK_SUFFIX -> pkSuffixColumnMatch
     }
-}
-
-fun AssociationMatchType.getMatch(): AssociationMatch {
-    return getAssociationMatch(this)
-}

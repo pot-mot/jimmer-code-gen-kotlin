@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component
 import top.potmot.enum.GenLanguage
 import top.potmot.error.ConfigException
 import kotlin.reflect.KMutableProperty
-import kotlin.reflect.full.isSupertypeOf
 import kotlin.reflect.full.memberProperties
 
 /**
@@ -15,8 +14,17 @@ import kotlin.reflect.full.memberProperties
 @ConfigurationProperties(prefix = "gen")
 class GenConfig {
     companion object {
+        /** 分隔符 */
+        var separator: String = "_"
+
+        /** 语言，java/kotlin */
+        var language: GenLanguage = GenLanguage.KOTLIN
+
         /** 作者  */
         var author: String = ""
+
+        /** 逻辑删除默认配置 */
+        var logicalDeletedAnnotation: String = "@LogicalDeleted(\"true\")"
 
         /**
          * 表名前缀
@@ -53,12 +61,10 @@ class GenConfig {
 
         /** 生成属性时是否依照 columnSuffix 进行后缀移除 */
         var removeColumnSuffix: Boolean = true
+    }
 
-        /** 分隔符 */
-        var separator: String = "_"
-
-        /** 语言，java/kotlin */
-        var language: GenLanguage = GenLanguage.KOTLIN
+    fun setLogicalDeletedConfig(logicalDeletedConfig: String) {
+        Companion.logicalDeletedAnnotation = logicalDeletedConfig
     }
 
     fun setAuthor(author: String) {

@@ -11,22 +11,25 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.import.getFkAssociation
-import top.potmot.core.import.toGenSchema
-import top.potmot.core.import.toGenSchemas
+import top.potmot.core.load.getCatalog
+import top.potmot.core.load.getFkAssociation
+import top.potmot.core.load.getSchemas
 import top.potmot.error.DataSourceErrorCode
-import top.potmot.extension.getCatalog
 import top.potmot.extension.toSource
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenSchema
 import top.potmot.model.dataSourceId
 import top.potmot.model.dto.GenSchemaView
 import top.potmot.model.id
+import us.fatehi.utility.datasource.DatabaseConnectionSource
 
 @RestController
 class SchemaService(
     @Autowired val sqlClient: KSqlClient
 ) {
+    private fun getDataSource(id: Long): DatabaseConnectionSource? =
+        sqlClient.findById(GenDataSource::class, id)?.toSource()
+
     /**
      * 预览数据源中全部的 schema
      */
@@ -34,14 +37,14 @@ class SchemaService(
     @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
     fun preview(@PathVariable dataSourceId: Long): List<GenSchema> {
-        val dataSource =
-            sqlClient.findById(GenDataSource::class, dataSourceId)?.toSource()
+        val dataSource = getDataSource(dataSourceId)
 
         if (dataSource != null) {
             val schemas =
                 dataSource
                     .getCatalog(withoutTable = true)
-                    .schemas.map { schema -> schema.toGenSchema(dataSourceId) }
+                    .getSchemas(dataSourceId, withTable = false, withColumn = false)
+                    .map { it.second }
             dataSource.close()
             return schemas
         }
@@ -55,19 +58,18 @@ class SchemaService(
     @PostMapping("/dataSource/{dataSourceId}/schema/{name}")
     @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
-    fun import(
+    fun load(
         @PathVariable dataSourceId: Long,
         @PathVariable name: String
     ): List<Long> {
-        val dataSource =
-            sqlClient.findById(GenDataSource::class, dataSourceId)?.toSource()
+        val dataSource = getDataSource(dataSourceId)
 
         val result = mutableListOf<Long>()
 
         if (dataSource != null) {
             val catalog = dataSource.getCatalog(schemaPattern = name)
 
-            val genSchemas = catalog.toGenSchemas(dataSourceId)
+            val genSchemas = catalog.getSchemas(dataSourceId)
 
             genSchemas.forEach {
                 val newSchemaId = sqlClient.save(it.second).modifiedEntity.id
@@ -75,9 +77,10 @@ class SchemaService(
                 result += newSchemaId
 
                 catalog.getTables(it.first).forEach { table ->
-                    table.getFkAssociation(newSchemaId).forEach { association ->
-                        sqlClient.save(association)
-                    }
+                    table.getFkAssociation(newSchemaId)
+                        .forEach { association ->
+                            sqlClient.save(association)
+                        }
                 }
             }
 
