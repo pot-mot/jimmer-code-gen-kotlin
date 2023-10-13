@@ -3,11 +3,9 @@ logging:
     top.potmot: info
 
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: root
-    url: jdbc:mysql://localhost:3307/jimmer_code_gen?serverTimezone=Asia/Shanghai
+  profiles:
+    active: postgresql
+
   jackson:
     # 格式化全局时间属性
     date-format: yyyy-MM-dd HH:mm:ss
@@ -16,7 +14,6 @@ spring:
 
 jimmer:
   language: kotlin
-  dialect: org.babyfish.jimmer.sql.dialect.MySqlDialect
   default-batch-size: 128
   default-list-batch-size: 128
   client:

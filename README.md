@@ -10,15 +10,31 @@
 
 ## 启动项目
 
-**！！ 目前数据库脚本仅支持 MySQL 8**
+**！！ 目前经验证的数据库脚本仅支持 MySQL 8 和 PostgreSQL 16**
 
 **！！本项目通过外部导入数据源进行生成，所以无需和开发用数据源一致**
 
 **！！生成数据源涉及的认证信息均无加密，建议仅在内网环境使用**
 
-运行项目 sql 脚本 [jimmer_code_gen.sql](sql%2Fmysql%2Fjimmer_code_gen.sql)
+### 运行项目 sql 脚本
 
-之后于 IDEA 中正常构建运行即可
+- MySQL: 
+[jimmer_code_gen.sql](sql%2Fmysql%2Fjimmer_code_gen.sql)  
+创建 schema **jimmer_code_gen** 运行脚本创建数据库表
+
+- PostgreSQL
+[jimmer_code_gen.sql](sql%2Fpostgresql%2Fjimmer_code_gen.sql)  
+在默认 database **postgres** 中创建 schema **jimmer_code_gen** 运行脚本创建数据库表
+
+### 修改项目配置
+
+- [application.yml](src%2Fmain%2Fresources%2Fapplication.yml)
+- [application-mysql.yml](src%2Fmain%2Fresources%2Fapplication-mysql.yml)
+- [application-postgresql.yml](src%2Fmain%2Fresources%2Fapplication-postgresql.yml)
+
+### IDEA 中运行
+
+[JimmerCodeGenApplication.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2FJimmerCodeGenApplication.kt)
 
 ## 核心代码说明
 
@@ -50,11 +66,7 @@ typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatch
 
 将实体对象转换为对应语言实体类代码的模版
 - [JavaEntityStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FJavaEntityStringify.kt)
-- [KotlinEntityStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FKotlinEntityStringify.kt)[EntityKtStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FEntityKtStringify.kt) 
-
-前端表单模版
-
-- [FormElementUIStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FFormElementUIStringify.kt)
+- [KotlinEntityStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FKotlinEntityStringify.kt)
 
 #### 拓展点
 
