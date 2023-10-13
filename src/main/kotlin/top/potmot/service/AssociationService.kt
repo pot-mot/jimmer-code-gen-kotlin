@@ -22,7 +22,6 @@ import top.potmot.core.match.AssociationMatch
 import top.potmot.core.match.simplePkColumnMatch
 import top.potmot.enum.AssociationMatchType
 import top.potmot.enum.SelectType
-import top.potmot.enum.toMatchMethod
 import top.potmot.extension.newGenAssociationMatchView
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenColumn

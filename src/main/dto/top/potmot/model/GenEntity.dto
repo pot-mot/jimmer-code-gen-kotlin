@@ -21,21 +21,41 @@ GenEntityPropertiesView {
         #allScalars
         id(entity)
         id(column)
-        id(typeTable)
-    }
-}
+        typeTable {
+            id
 
-inputOnly GenEntityPropertiesInput {
-    #allScalars
-    id(table)
-    -createdTime
-    -modifiedTime
+            entity {
+                id
+                name
+                comment
 
-    properties {
-        #allScalars
-        id(column)
-        -createdTime
-        -modifiedTime
+                genPackage {
+                    id
+                    name
+
+                    parent {
+                        id
+                        name
+                    }*
+                }
+            }
+        }
+
+        enum {
+            id
+            name
+            comment
+
+            genPackage {
+                id
+                name
+
+                parent {
+                    id
+                    name
+                }*
+            }
+        }
     }
 }
 

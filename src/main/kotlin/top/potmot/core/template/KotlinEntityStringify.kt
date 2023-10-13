@@ -1,6 +1,12 @@
 package top.potmot.core.template
 
 import top.potmot.config.GenConfig
+import top.potmot.core.generate.annotation
+import top.potmot.core.generate.importClassList
+import top.potmot.core.generate.importEntityList
+import top.potmot.core.generate.now
+import top.potmot.core.generate.packagePath
+import top.potmot.core.generate.type
 import top.potmot.model.dto.GenEntityPropertiesView
 
 fun GenEntityPropertiesView.kotlinClassStringify(): String {
@@ -39,7 +45,7 @@ private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<Strin
         it.qualifiedName
     }.toMutableList()
 
-    importList += type
+    importList += importEntityList()
 
-    return importList
+    return importList.filter { it.isNotEmpty() }
 }

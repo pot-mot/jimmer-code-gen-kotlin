@@ -218,9 +218,9 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
 
         this.name = tableNameToPropertyName(sourceColumn.table.name).toPlural()
         this.type = tableNameToClassName(sourceColumn.table.name)
+        this.typeTableId = sourceColumn.table.id
         this.isList = true
         this.isNotNull = true
-        this.typeTableId = sourceColumn.table.id
         this.comment = sourceColumn.table.comment
         this.associationAnnotation = "@OneToMany(mappedBy = \"${sourceColumn.name.toOutPropertyName()}\")"
         this.isKey = false

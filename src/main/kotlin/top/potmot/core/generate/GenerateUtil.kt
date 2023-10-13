@@ -1,4 +1,4 @@
-package top.potmot.core.template
+package top.potmot.core.generate
 
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
@@ -10,7 +10,7 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.OnDissociate
 import top.potmot.config.GenConfig
-import top.potmot.enum.toAnnotation
+import top.potmot.extension.toPath
 import top.potmot.model.dto.GenEntityPropertiesView
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -20,6 +20,9 @@ fun now(): String = LocalDateTime.now().format(
     DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 )
 
+fun GenEntityPropertiesView.packagePath(): String =
+    genPackage?.toEntity()?.toPath() ?: ""
+
 fun GenEntityPropertiesView.TargetOf_properties.type(): String {
     val baseType = type.split(".").last()
 
@@ -28,21 +31,6 @@ fun GenEntityPropertiesView.TargetOf_properties.type(): String {
     } else {
         baseType
     }
-}
-
-fun GenEntityPropertiesView.packagePath(): String {
-    val tempPath = mutableListOf<String>()
-
-    if (genPackage != null) {
-        tempPath += genPackage.name
-        var tempParentPackage = genPackage.parent
-        while (tempParentPackage != null) {
-            tempPath += tempParentPackage.name
-            tempParentPackage = tempParentPackage.parent
-        }
-    }
-
-    return tempPath.joinToString(".")
 }
 
 fun GenEntityPropertiesView.TargetOf_properties.annotation(): String {
@@ -114,6 +102,32 @@ fun GenEntityPropertiesView.TargetOf_properties.importClassList(): List<KClass<*
 
     if (isList) {
         result += List::class
+    }
+
+    return result
+}
+
+fun GenEntityPropertiesView.TargetOf_properties.importEntityList(): List<String> {
+    val result = mutableListOf<String>()
+
+    result +=
+        if (typeTable?.entity != null) {
+            if (typeTable.entity.genPackage != null) {
+                typeTable.entity.genPackage.toEntity().toPath() + "." + typeTable.entity.name
+            } else {
+                typeTable.entity.name
+            }
+        } else {
+            type
+        }
+
+    if (enum != null) {
+        result +=
+            if (enum.genPackage != null) {
+                enum.genPackage.toEntity().toPath() + "." + enum.name
+            } else {
+                enum.name
+            }
     }
 
     return result

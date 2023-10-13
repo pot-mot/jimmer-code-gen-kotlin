@@ -41,15 +41,15 @@ interface GenEnumItem : BaseEntity {
     /**
      * 元素名
      */
-    val name: String?
+    val name: String
 
     /**
      * 元素值
      */
-    val value: String?
+    val value: String
 
     /**
      * 元素注释
      */
-    val comment: String?
+    val comment: String
 }

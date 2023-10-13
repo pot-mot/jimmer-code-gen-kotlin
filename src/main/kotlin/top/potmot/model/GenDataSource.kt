@@ -50,6 +50,11 @@ interface GenDataSource : BaseEntity {
     val port: String
 
     /**
+     * 链接后缀
+     */
+    val urlSuffix: String
+
+    /**
      * 用户名
      */
     @Key

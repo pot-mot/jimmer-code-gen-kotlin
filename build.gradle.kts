@@ -26,6 +26,7 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 val jimmerVersion = "0.8.23"
 val mysqlVersion = "8.0.30"
+val postgreVersion = "42.6.0"
 val caffeineVersion = "2.9.1"
 val schemacrawlerVersion = "16.20.4"
 
@@ -50,6 +51,9 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     runtimeOnly("mysql:mysql-connector-java:${mysqlVersion}")
+
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    implementation("org.postgresql:postgresql:${postgreVersion}")
 
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler
     implementation("us.fatehi:schemacrawler-api:${schemacrawlerVersion}") {

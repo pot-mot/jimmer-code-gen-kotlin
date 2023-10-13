@@ -16,7 +16,7 @@
 
 **！！生成数据源涉及的认证信息均无加密，建议仅在内网环境使用**
 
-运行项目 sql 脚本 [jimmer_code_gen.sql](sql%2Fjimmer_code_gen.sql)
+运行项目 sql 脚本 [jimmer_code_gen.sql](sql%2Fmysql%2Fjimmer_code_gen.sql)
 
 之后于 IDEA 中正常构建运行即可
 
@@ -48,7 +48,13 @@ typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatch
 
 ### template 模版
 
-目前包含 [EntityJavaStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FEntityJavaStringify.kt) 和 [EntityKtStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FEntityKtStringify.kt) 两种将实体对象转换为对应语言实体类代码的模版
+将实体对象转换为对应语言实体类代码的模版
+- [JavaEntityStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FJavaEntityStringify.kt)
+- [KotlinEntityStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FKotlinEntityStringify.kt)[EntityKtStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FEntityKtStringify.kt) 
+
+前端表单模版
+
+- [FormElementUIStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FFormElementUIStringify.kt)
 
 #### 拓展点
 

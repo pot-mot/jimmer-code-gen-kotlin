@@ -68,12 +68,12 @@ interface GenEnum : BaseEntity {
     /**
      * 枚举名
      */
-    val name: String?
+    val name: String
 
     /**
      * 枚举注释
      */
-    val comment: String?
+    val comment: String
 
     /**
      * 自定排序

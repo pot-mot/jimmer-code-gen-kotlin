@@ -11,6 +11,7 @@ import top.potmot.enum.DataSourceType
 import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.service.DataSourceService
 import top.potmot.service.SchemaService
+import java.sql.DriverManager
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin")
@@ -21,14 +22,39 @@ class SchemaLoadTest(
 ) {
     @Test
     @Order(1)
-    fun testLoadSchema() {
+    fun testLoadMysqlSchema() {
         val insertId = dataSourceService.insert(
             GenDataSourceInput(
                 name = "test",
                 host = "127.0.0.1",
                 port = "3306",
+                urlSuffix = "",
                 type = DataSourceType.MySQL,
                 username = "root",
+                password = "root",
+                orderKey = 0L,
+                remark = "test"
+            )
+        )
+
+        val viewSchemas = schemaService.preview(insertId)
+
+        if (viewSchemas.isNotEmpty()) {
+            schemaService.load(insertId, viewSchemas[0].name)
+        }
+    }
+
+    @Test
+    @Order(2)
+    fun testLoadPostgreSchema() {
+        val insertId = dataSourceService.insert(
+            GenDataSourceInput(
+                name = "test",
+                host = "127.0.0.1",
+                port = "5432",
+                urlSuffix = "/postgres",
+                type = DataSourceType.PostgreSQL,
+                username = "postgres",
                 password = "root",
                 orderKey = 0L,
                 remark = "test"

@@ -1,5 +1,6 @@
 package top.potmot.extension
 
+import top.potmot.enum.DataSourceType.*
 import top.potmot.error.DataSourceException
 import top.potmot.model.GenDataSource
 import us.fatehi.utility.datasource.DatabaseConnectionSource
@@ -7,9 +8,11 @@ import us.fatehi.utility.datasource.DatabaseConnectionSources
 import us.fatehi.utility.datasource.MultiUseUserCredentials
 
 
-fun GenDataSource.url(): String {
-    return "jdbc:${this.type.name.lowercase()}://${this.host}:${this.port}"
-}
+fun GenDataSource.url(): String =
+    when (this.type) {
+        MySQL -> "jdbc:mysql://${host}:${port}${urlSuffix}"
+        PostgreSQL -> "jdbc:postgresql://${host}:${port}${urlSuffix}"
+    }
 
 /**
  * 测试数据库连接。
