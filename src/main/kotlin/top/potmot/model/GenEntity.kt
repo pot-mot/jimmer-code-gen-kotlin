@@ -76,27 +76,22 @@ interface GenEntity : BaseEntity {
     val author: String
 
     /**
-     * 生成路径（不填默认项目路径）
-     */
-    val genPath: String
-
-    /**
-     * 是否生成添加功能（1是）
+     * 是否生成添加功能
      */
     val isAdd: Boolean
 
     /**
-     * 是否生成编辑功能（1是）
+     * 是否生成编辑功能
      */
     val isEdit: Boolean
 
     /**
-     * 是否生成列表功能（1是）
+     * 是否生成列表功能
      */
     val isList: Boolean
 
     /**
-     * 是否生成查询功能（1是）
+     * 是否生成查询功能
      */
     val isQuery: Boolean
 

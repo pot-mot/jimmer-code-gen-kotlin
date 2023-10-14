@@ -8,7 +8,7 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.enum.GenLanguage
+import top.potmot.enumeration.GenLanguage
 import top.potmot.service.ConfigService
 
 @SpringBootTest

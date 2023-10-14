@@ -12,8 +12,8 @@ import schemacrawler.schemacrawler.LoadOptionsBuilder
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder
 import schemacrawler.schemacrawler.SchemaInfoLevelBuilder
 import schemacrawler.tools.utility.SchemaCrawlerUtility
-import top.potmot.enum.AssociationType
-import top.potmot.enum.TableType
+import top.potmot.enumeration.AssociationType
+import top.potmot.enumeration.TableType
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenColumn
 import top.potmot.model.GenSchema

@@ -1,4 +1,4 @@
-package top.potmot.core.generate
+package top.potmot.core.template.entity
 
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
@@ -16,14 +16,15 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
 
-fun now(): String = LocalDateTime.now().format(
-    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-)
+fun now(formatPattern: String = "yyyy-MM-dd HH:mm:ss"): String =
+    LocalDateTime.now().format(
+        DateTimeFormatter.ofPattern(formatPattern)
+    )
 
 fun GenEntityPropertiesView.packagePath(): String =
     genPackage?.toEntity()?.toPath() ?: ""
 
-fun GenEntityPropertiesView.TargetOf_properties.type(): String {
+fun GenEntityPropertiesView.TargetOf_properties.shortTypeName(): String {
     val baseType = type.split(".").last()
 
     return if (isList) {
@@ -33,34 +34,97 @@ fun GenEntityPropertiesView.TargetOf_properties.type(): String {
     }
 }
 
+private fun String.toTextBlock(wrapLength: Int = 40, separator: String = " "): List<String> {
+    val list = mutableListOf<String>()
+
+    val words = this.split(separator)
+
+    var currentLine = ""
+
+    // 遍历每个单词，并将它们添加到当前行
+    for (word in words) {
+        // 如果当前行加上当前单词的长度超过了wrapLength，则将当前行添加到列表中，并开始一个新行
+        if (currentLine.length + word.length > wrapLength) {
+            list += currentLine.trim()
+            currentLine = ""
+        }
+
+        // 将当前单词添加到当前行，并添加一个空格
+        currentLine += word
+    }
+
+    // 添加最后一行到列表中
+    if (currentLine.isNotBlank()) {
+        list += currentLine.trim()
+    }
+
+
+    return list
+}
+
+fun GenEntityPropertiesView.blockComment(): String {
+    val list = mutableListOf<String>()
+
+    comment.toTextBlock().let {
+        if (it.isNotEmpty()) list += it
+    }
+
+    remark.toTextBlock().let {
+        if (it.isNotEmpty()) list += it
+    }
+
+    if (list.isNotEmpty()) {
+        list += ""
+    }
+
+    list += "@author ${author.ifEmpty { GenConfig.author }}"
+    list += "@since ${now()}"
+
+    return "/**\n" + list.joinToString("\n") { " * $it" } + "\n */"
+}
+
+fun GenEntityPropertiesView.TargetOf_properties.blockComment(): String {
+    val list = mutableListOf<String>()
+
+    comment.toTextBlock().let {
+        if (it.isNotEmpty()) list += it
+    }
+
+    remark.toTextBlock().let {
+        if (it.isNotEmpty()) list += it
+    }
+
+    return "    /**\n" + list.joinToString("\n") { "     * $it" } + "\n     */"
+}
+
 fun GenEntityPropertiesView.TargetOf_properties.annotation(): String {
-    val builder = StringBuilder()
+    val list = mutableListOf<String>()
 
     if (isId) {
-        builder.append("    @Id\n")
+        list += "@Id"
         if (idGenerationType != null) {
-            builder.append("    @GeneratedValue(strategy = GenerationType.${idGenerationType})\n")
+            list += "@GeneratedValue(strategy = GenerationType.${idGenerationType})"
         }
     } else if (isKey) {
-        builder.append("    @Key\n")
+        list += "@Key"
     }
 
     if (isLogicalDelete) {
-        builder.append("    ${GenConfig.logicalDeletedAnnotation}")
+        list += GenConfig.logicalDeletedAnnotation
     }
 
     if (associationType != null) {
         if (associationAnnotation != null) {
-            builder.append("    ${associationAnnotation}\n")
+            list += associationAnnotation
             if (dissociateAnnotation != null) {
-                builder.append("    ${dissociateAnnotation}\n")
+                list += dissociateAnnotation
             }
-        } else if (isIdView) {
-            builder.append("    ${idViewAnnotation}\n")
+        } else if (isIdView && idViewAnnotation != null) {
+            list += idViewAnnotation
         }
     }
 
-    val resultStr = builder.toString()
+    val resultStr = list.joinToString("\n") { "    $it" }
 
     return if (resultStr.isNotEmpty()) {
         "\n" + resultStr.removeSuffix("\n")

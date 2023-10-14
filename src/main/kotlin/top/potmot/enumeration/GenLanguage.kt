@@ -1,4 +1,4 @@
-package top.potmot.enum
+package top.potmot.enumeration
 
 /**
  * 生成语言

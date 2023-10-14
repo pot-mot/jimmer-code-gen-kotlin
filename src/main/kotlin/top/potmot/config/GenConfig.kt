@@ -2,7 +2,8 @@ package top.potmot.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
-import top.potmot.enum.GenLanguage
+import top.potmot.enumeration.DataSourceType
+import top.potmot.enumeration.GenLanguage
 import top.potmot.error.ConfigException
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
@@ -16,6 +17,9 @@ class GenConfig {
     companion object {
         /** 分隔符 */
         var separator: String = "_"
+
+        /** 数据源类型 */
+        var dataSourceType: DataSourceType = DataSourceType.MySQL
 
         /** 语言，java/kotlin */
         var language: GenLanguage = GenLanguage.KOTLIN
@@ -63,8 +67,8 @@ class GenConfig {
         var removeColumnSuffix: Boolean = true
     }
 
-    fun setLogicalDeletedConfig(logicalDeletedConfig: String) {
-        Companion.logicalDeletedAnnotation = logicalDeletedConfig
+    fun setLogicalDeletedConfig(logicalDeletedAnnotation: String) {
+        Companion.logicalDeletedAnnotation = logicalDeletedAnnotation
     }
 
     fun setAuthor(author: String) {
@@ -119,6 +123,22 @@ class GenConfig {
 
             else -> {
                 throw ConfigException("暂不支持 java 和 kotlin 之外的语言")
+            }
+        }
+    }
+
+    fun setDataSourceType(dataSourceType: String) {
+        when (dataSourceType.lowercase()) {
+            DataSourceType.MySQL.name.lowercase() -> {
+                Companion.dataSourceType = DataSourceType.MySQL
+            }
+
+            DataSourceType.PostgreSQL.name.lowercase() -> {
+                Companion.dataSourceType = DataSourceType.PostgreSQL
+            }
+
+            else -> {
+                throw ConfigException("暂不支持 MySQL 和 PostgreSQL 之外的其他数据源")
             }
         }
     }

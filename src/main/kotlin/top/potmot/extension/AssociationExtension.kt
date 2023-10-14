@@ -1,6 +1,6 @@
 package top.potmot.extension
 
-import top.potmot.enum.AssociationType
+import top.potmot.enumeration.AssociationType
 import top.potmot.model.dto.GenAssociationMatchView
 import top.potmot.model.dto.GenColumnMatchView
 

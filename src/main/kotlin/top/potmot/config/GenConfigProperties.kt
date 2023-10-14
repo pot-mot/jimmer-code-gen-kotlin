@@ -1,6 +1,6 @@
 package top.potmot.config
 
-import top.potmot.enum.GenLanguage
+import top.potmot.enumeration.GenLanguage
 
 data class GenConfigProperties(
     /** 分隔符 */

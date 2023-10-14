@@ -13,9 +13,9 @@ import top.potmot.core.match.includeTableNamePkColumnMatch
 import top.potmot.core.match.pkSuffixColumnMatch
 import top.potmot.core.match.simplePkColumnMatch
 import top.potmot.core.match.suffixMatch
-import top.potmot.enum.AssociationType
-import top.potmot.enum.GenLanguage
-import top.potmot.enum.TableType
+import top.potmot.enumeration.AssociationType
+import top.potmot.enumeration.GenLanguage
+import top.potmot.enumeration.TableType
 import top.potmot.model.dto.GenColumnMatchView
 import top.potmot.service.AssociationService
 

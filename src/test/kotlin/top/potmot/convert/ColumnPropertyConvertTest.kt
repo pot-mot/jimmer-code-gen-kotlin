@@ -10,7 +10,7 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import top.potmot.core.convert.columnToProperties
-import top.potmot.enum.AssociationType
+import top.potmot.enumeration.AssociationType
 import top.potmot.model.dto.GenTableAssociationView
 import java.sql.Types
 import java.time.LocalDateTime

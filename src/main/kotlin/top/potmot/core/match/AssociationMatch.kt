@@ -3,7 +3,7 @@ package top.potmot.core.match
 import top.potmot.config.GenConfig
 import top.potmot.core.convert.removePrefixes
 import top.potmot.core.convert.removeSuffixes
-import top.potmot.enum.AssociationType
+import top.potmot.enumeration.AssociationType
 import top.potmot.model.dto.GenColumnMatchView
 
 /**

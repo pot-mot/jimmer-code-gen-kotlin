@@ -1,4 +1,4 @@
-package top.potmot.enum
+package top.potmot.enumeration
 
 import top.potmot.core.match.AssociationMatch
 import top.potmot.core.match.includeTableNamePkColumnMatch

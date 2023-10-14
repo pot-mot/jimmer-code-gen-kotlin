@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import top.potmot.config.GenConfig
+import top.potmot.core.generate.generateDDL
+import top.potmot.enumeration.DataSourceType
 import top.potmot.model.GenTable
 import top.potmot.model.columns
 import top.potmot.model.comment
@@ -44,6 +48,26 @@ class TableService(
     @GetMapping("/query")
     fun query(query: TableQuery): List<GenTableCommonView> {
         return query(query, GenTableCommonView::class)
+    }
+
+    @GetMapping("/ddl/{id}")
+    fun getDDL(
+        @PathVariable id: Long,
+        @RequestParam(required = false) dataSourceTypes: List<DataSourceType>?
+    ): Map<String, String> {
+        val map = mutableMapOf<String, String>()
+
+        getAssociationView(id)?.let {
+            if (dataSourceTypes.isNullOrEmpty()) {
+                map["${it.name}${GenConfig.separator}${GenConfig.dataSourceType}.sql"] = generateDDL(it)
+            } else {
+                dataSourceTypes.forEach { dataSourceType ->
+                    map["${it.name}${GenConfig.separator}${dataSourceType}.sql"] = generateDDL(it, dataSourceType)
+                }
+            }
+        }
+
+        return map
     }
 
     @Transactional

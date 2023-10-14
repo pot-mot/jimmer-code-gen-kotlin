@@ -4,9 +4,9 @@ import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.GenerationType
 import top.potmot.config.GenConfig
 import top.potmot.core.immutable.copyProperties
-import top.potmot.enum.AssociationType
-import top.potmot.enum.GenLanguage
-import top.potmot.enum.TableType
+import top.potmot.enumeration.AssociationType
+import top.potmot.enumeration.GenLanguage
+import top.potmot.enumeration.TableType
 import top.potmot.model.GenEntity
 import top.potmot.model.GenProperty
 import top.potmot.model.GenTypeMapping

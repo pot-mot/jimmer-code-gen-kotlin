@@ -7,11 +7,10 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.enum.DataSourceType
+import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.service.DataSourceService
 import top.potmot.service.SchemaService
-import java.sql.DriverManager
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin")

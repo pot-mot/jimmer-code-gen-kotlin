@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.enum.DataSourceType
+import top.potmot.enumeration.DataSourceType
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.error.DataSourceException
 import top.potmot.extension.test

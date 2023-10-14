@@ -1,4 +1,4 @@
-package top.potmot.enum
+package top.potmot.enumeration
 
 enum class DataSourceType {
     MySQL,

@@ -1,4 +1,4 @@
-package top.potmot.enum
+package top.potmot.enumeration
 
 enum class ConsoleStyle(val code: String) {
     RESET("\u001b[0m"),

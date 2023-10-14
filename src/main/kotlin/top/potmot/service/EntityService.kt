@@ -22,7 +22,7 @@ import top.potmot.core.convert.columnToProperties
 import top.potmot.core.convert.tableToEntity
 import top.potmot.core.generate.generateCode
 import top.potmot.core.generate.toZipByteArray
-import top.potmot.enum.GenLanguage
+import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenEntity
 import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
@@ -81,8 +81,9 @@ class EntityService(
             EntityQuery(ids = entityIds),
             GenEntityPropertiesView::class
         ).forEach {
-            val codeMap = generateCode(it)
-            result.putAll(codeMap)
+            val codeMap =
+                if (language != null) generateCode(it, language) else generateCode(it)
+            result += codeMap
         }
 
         return result

@@ -26,7 +26,7 @@ interface GenTypeMapping : BaseEntity {
     val typeExpression: String
 
     /**
-     * 是否正则（1是）
+     * 是否正则
      */
     val isRegex: Boolean
 

@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.match.AssociationMatch
 import top.potmot.core.match.simplePkColumnMatch
-import top.potmot.enum.AssociationMatchType
-import top.potmot.enum.SelectType
+import top.potmot.enumeration.AssociationMatchType
+import top.potmot.enumeration.SelectType
 import top.potmot.extension.newGenAssociationMatchView
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenColumn

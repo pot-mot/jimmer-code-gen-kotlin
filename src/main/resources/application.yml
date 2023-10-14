@@ -25,12 +25,13 @@ jimmer:
   database-validation:
     mode: ERROR
     schema: jimmer_code_gen
+  default-enum-strategy: NAME
 
 # 代码生成
 gen:
   # 作者
   # author:
-  # 表前缀（生成类名不会包含表前缀，多个用逗号分隔）
+  language: kotlin
   tablePrefix: gen_, t_
   removeTablePrefix: false
   tableSuffix: model, info
@@ -39,4 +40,3 @@ gen:
   removeColumnPrefix: true
   columnSuffix:
   removeColumnSuffix: true
-  language: kotlin

@@ -18,7 +18,7 @@ fun jdbcTypeToJavaType(jdbcType: Int, isNotNull: Boolean = true): Class<*>? {
         Types.SMALLINT -> if (isNotNull) Short::class.java else Short::class.javaObjectType
         Types.INTEGER -> if (isNotNull) Int::class.java else Int::class.javaObjectType
         Types.BIGINT -> if (isNotNull) Long::class.java else Long::class.javaObjectType
-        Types.REAL -> if (isNotNull) Float::class.java else Long::class.javaObjectType
+        Types.REAL -> if (isNotNull) Float::class.java else Float::class.javaObjectType
         Types.FLOAT, Types.DOUBLE -> if (isNotNull) Double::class.java else Double::class.javaObjectType
         Types.DECIMAL, Types.NUMERIC -> BigDecimal::class.java
         Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR, Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR, Types.CLOB, Types.NCLOB, Types.SQLXML, Types.DATALINK -> String::class.java

@@ -1,6 +1,6 @@
 package top.potmot.extension
 
-import top.potmot.enum.DataSourceType.*
+import top.potmot.enumeration.DataSourceType.*
 import top.potmot.error.DataSourceException
 import top.potmot.model.GenDataSource
 import us.fatehi.utility.datasource.DatabaseConnectionSource

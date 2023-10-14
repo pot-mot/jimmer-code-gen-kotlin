@@ -1,26 +1,15 @@
-package top.potmot.enum
+package top.potmot.enumeration
 
-import org.babyfish.jimmer.sql.EnumItem
-import org.babyfish.jimmer.sql.EnumType
 import org.babyfish.jimmer.sql.ManyToMany
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
 import kotlin.reflect.KClass
 
-@EnumType(EnumType.Strategy.NAME)
 enum class AssociationType {
-
-    @EnumItem(name = "OneToOne")
     ONE_TO_ONE,
-
-    @EnumItem(name = "ManyToOne")
     MANY_TO_ONE,
-
-    @EnumItem(name = "OneToMany")
     ONE_TO_MANY,
-
-    @EnumItem(name = "ManyToMany")
     MANY_TO_MANY;
 
     fun toAnnotation(): KClass<out Annotation> =
@@ -30,4 +19,15 @@ enum class AssociationType {
             ONE_TO_MANY -> OneToMany::class
             MANY_TO_MANY -> ManyToMany::class
         }
+
+    companion object {
+        fun fromValue(value: String?): AssociationType? {
+            if (value == null) return null
+            return try {
+                AssociationType.valueOf(value.uppercase())
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
 }

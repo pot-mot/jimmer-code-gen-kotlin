@@ -97,27 +97,27 @@ interface GenColumn : BaseEntity {
     val comment: String
 
     /**
-     * 是否主键（1是）
+     * 是否主键
      */
     val isPk: Boolean
 
     /**
-     * 是否自增（1是）
+     * 是否自增
      */
     val isAutoIncrement: Boolean
 
     /**
-     * 是否外键（1是）
+     * 是否外键
      */
     val isFk: Boolean
 
     /**
-     * 是否唯一索引（1是）
+     * 是否唯一索引
      */
     val isUnique: Boolean
 
     /**
-     * 是否非空（1是）
+     * 是否非空
      */
     val isNotNull: Boolean
 

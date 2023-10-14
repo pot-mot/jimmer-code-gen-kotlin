@@ -26,6 +26,8 @@
 [jimmer_code_gen.sql](sql%2Fpostgresql%2Fjimmer_code_gen.sql)  
 在默认 database **postgres** 中创建 schema **jimmer_code_gen** 运行脚本创建数据库表
 
+修改对应 [application.yml](src%2Fmain%2Fresources%2Fapplication.yml) 中的 `spring.profiles.active`
+
 ### 修改项目配置
 
 - [application.yml](src%2Fmain%2Fresources%2Fapplication.yml)

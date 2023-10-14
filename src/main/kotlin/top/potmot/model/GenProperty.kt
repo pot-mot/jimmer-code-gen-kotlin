@@ -10,7 +10,7 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Table
-import top.potmot.enum.AssociationType
+import top.potmot.enumeration.AssociationType
 import top.potmot.model.base.BaseEntity
 
 /**
@@ -92,12 +92,12 @@ interface GenProperty : BaseEntity {
     val isList: Boolean
 
     /**
-     * 是否非空（1是）
+     * 是否非空
      */
     val isNotNull: Boolean
 
     /**
-     * 是否Id（1是）
+     * 是否Id
      */
     val isId: Boolean
 
@@ -107,17 +107,17 @@ interface GenProperty : BaseEntity {
     val idGenerationType: GenerationType?
 
     /**
-     * 是否为业务键属性（1是）
+     * 是否为业务键属性
      */
     val isKey: Boolean
 
     /**
-     * 是否为逻辑删除属性（1是）
+     * 是否为逻辑删除属性
      */
     val isLogicalDelete: Boolean
 
     /**
-     * 是否为 ID 视图属性（1是）
+     * 是否为 ID 视图属性
      */
     val isIdView: Boolean
 
