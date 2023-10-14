@@ -20,7 +20,7 @@ fun tableToEntity(
     genTable: GenTableAssociationView,
 ): GenEntity {
     return new(GenEntity::class).by {
-        table = genTable.toEntity()
+        tableId = genTable.toEntity().id
         author = GenConfig.author
         name = tableNameToClassName(genTable.name)
         comment = genTable.comment
