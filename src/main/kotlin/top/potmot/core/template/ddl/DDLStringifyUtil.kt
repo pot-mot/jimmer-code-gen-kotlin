@@ -1,7 +1,6 @@
 package top.potmot.core.template.ddl
 
 import org.babyfish.jimmer.sql.DissociateAction
-import top.potmot.config.GenConfig
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DataSourceType.*
 import top.potmot.model.dto.GenTableAssociationView
@@ -32,15 +31,15 @@ fun GenTableAssociationView.TargetOf_columns.createFkConstraint(
     outAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations,
     dataSourceType: DataSourceType
 ): String =
-    "CONSTRAINT $indexName FOREIGN KEY (${name.escape(dataSourceType)})" +
+    "CONSTRAINT ${indexName.escape(dataSourceType)} FOREIGN KEY (${name.escape(dataSourceType)})" +
         " REFERENCES ${outAssociation.targetColumn.table.name.escape(dataSourceType)} (${outAssociation.targetColumn.name.escape(dataSourceType)})" +
         " ${outAssociation.dissociateAction?.toOnDeleteAction() ?: ""}" +
         " ON UPDATE RESTRICT"
 
-private fun String.escape(dataSourceType: DataSourceType): String =
+fun String.escape(dataSourceType: DataSourceType): String =
     when (dataSourceType) {
-        MySQL -> "`$this`"
-        PostgreSQL -> this
+        MySQL -> if (this.startsWith("`") && this.endsWith("`")) this else "`$this`"
+        PostgreSQL -> if (this.startsWith("\"") && this.endsWith("\"")) this else "\"$this\""
     }
 
 private fun DissociateAction.toOnDeleteAction(): String =

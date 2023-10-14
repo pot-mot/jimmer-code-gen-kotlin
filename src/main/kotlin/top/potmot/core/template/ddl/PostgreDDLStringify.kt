@@ -4,10 +4,13 @@ import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenTableAssociationView
 import java.sql.Types
 
+private fun String.escape(): String =
+    this.escape(DataSourceType.PostgreSQL)
+
 fun GenTableAssociationView.postgreTableStringify(): String {
     return """
-DROP TABLE IF EXISTS $name;
-CREATE TABLE $name
+DROP TABLE IF EXISTS ${name.escape()};
+CREATE TABLE ${name.escape()}
 (
 ${columns.map { it.postgreColumnStringify() }.joinToString(",\n") { "    ${it.trim()}" }}       
 );
@@ -20,9 +23,9 @@ ${fkStringify().joinToString("\n") { "$it;" }}
 
 fun GenTableAssociationView.TargetOf_columns.postgreColumnStringify(): String =
     if (isPk) {
-        "$name ${pkColumnType()} PRIMARY KEY"
+        "${name.escape()} ${pkColumnType()} PRIMARY KEY"
     } else {
-        "$name $type" +
+        "${name.escape()} $type" +
                 " ${if (isNotNull) "NOT NULL" else ""}" +
                 " ${if (!defaultValue.isNullOrBlank()) "DEFAULT $defaultValue" else if (!isNotNull) "DEFAULT NULL" else ""}"
     }
@@ -45,10 +48,10 @@ private fun GenTableAssociationView.fkStringify(): List<String> {
     for (fkColumn in fkColumns()) {
         val indexName = "idx_${name}_${fkColumn.name}"
 
-        list += "CREATE ${if (fkColumn.isUnique) "UNIQUE " else ""}INDEX $indexName ON $name (${fkColumn.name})"
+        list += "CREATE ${if (fkColumn.isUnique) "UNIQUE " else ""}INDEX ${indexName.escape()} ON ${name.escape()} (${fkColumn.name.escape()})"
 
         for (outAssociation in fkColumn.outAssociations) {
-            list += "ALTER TABLE $name ADD " + fkColumn.createFkConstraint(indexName, outAssociation, DataSourceType.PostgreSQL)
+            list += "ALTER TABLE ${name.escape()} ADD " + fkColumn.createFkConstraint(indexName, outAssociation, DataSourceType.PostgreSQL)
         }
     }
 
@@ -58,10 +61,10 @@ private fun GenTableAssociationView.fkStringify(): List<String> {
 private fun GenTableAssociationView.commentStringify(): List<String> {
     val list = mutableListOf<String>()
 
-    list += "COMMENT ON TABLE $name IS '$comment'"
+    list += "COMMENT ON TABLE ${name.escape()} IS '$comment'"
 
     columns.forEach {
-        list += "COMMENT ON COLUMN ${name}.${it.name} IS '$comment'"
+        list += "COMMENT ON COLUMN ${name.escape()}.${it.name.escape()} IS '$comment'"
     }
 
     return list

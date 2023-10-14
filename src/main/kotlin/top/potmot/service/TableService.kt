@@ -59,10 +59,10 @@ class TableService(
 
         getAssociationView(id)?.let {
             if (dataSourceTypes.isNullOrEmpty()) {
-                map["${it.name}${GenConfig.separator}${GenConfig.dataSourceType}.sql"] = generateDDL(it)
+                map["${it.schema.dataSource.type.name.lowercase()}${GenConfig.separator}${it.name}.sql"] = generateDDL(it)
             } else {
                 dataSourceTypes.forEach { dataSourceType ->
-                    map["${it.name}${GenConfig.separator}${dataSourceType}.sql"] = generateDDL(it, dataSourceType)
+                    map["${dataSourceType.name.lowercase()}${GenConfig.separator}${it.name}.sql"] = generateDDL(it, dataSourceType)
                 }
             }
         }

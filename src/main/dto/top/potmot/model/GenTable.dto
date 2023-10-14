@@ -11,6 +11,15 @@ GenTableColumnView: GenTableCommonView {
 }
 
 GenTableAssociationView: GenTableCommonView {
+    schema {
+        name
+
+        dataSource {
+            name
+            type
+        }
+    }
+
     columns {
         #allScalars
         id(table)

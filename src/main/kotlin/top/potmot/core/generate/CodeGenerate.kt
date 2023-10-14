@@ -13,7 +13,7 @@ import top.potmot.model.dto.GenTableAssociationView
 
 fun generateDDL(
     table: GenTableAssociationView,
-    dataSourceType: DataSourceType = GenConfig.dataSourceType
+    dataSourceType: DataSourceType = table.schema.dataSource.type
 ): String =
     when (dataSourceType) {
         MySQL -> table.mysqlTableStringify()
