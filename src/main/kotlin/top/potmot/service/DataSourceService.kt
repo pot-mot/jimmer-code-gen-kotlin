@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import top.potmot.contract.dataSourceTemplate
 import top.potmot.enumeration.DataSourceType
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.error.DataSourceException
@@ -21,6 +22,7 @@ import top.potmot.extension.test
 import top.potmot.model.GenDataSource
 import top.potmot.model.copy
 import top.potmot.model.dto.GenDataSourceInput
+import top.potmot.model.dto.GenDataSourceTemplateView
 import top.potmot.model.dto.GenDataSourceView
 import top.potmot.model.id
 
@@ -29,6 +31,16 @@ import top.potmot.model.id
 class DataSourceService(
     @Autowired val sqlClient: KSqlClient
 ) {
+    /**
+     * 获取默认数据库配置
+     */
+    @GetMapping("/type/{dataSourceType}/default")
+    fun getDefaultDataSource(
+        @PathVariable dataSourceType: DataSourceType
+    ): GenDataSourceTemplateView {
+        return dataSourceType.dataSourceTemplate()
+    }
+
     /**
      * 获取数据库类型
      */

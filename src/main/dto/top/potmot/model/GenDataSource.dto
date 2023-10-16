@@ -4,6 +4,14 @@ GenDataSourceView {
     -password
 }
 
+GenDataSourceTemplateView: GenDataSourceView {
+    -id
+    -createdTime
+    -modifiedTime
+    -orderKey
+    +username
+}
+
 GenDataSourceSchemasView: GenDataSourceView {
     schemas {
         #allScalars

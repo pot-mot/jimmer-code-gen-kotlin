@@ -15,11 +15,11 @@ import kotlin.reflect.full.memberProperties
 @ConfigurationProperties(prefix = "gen")
 class GenConfig {
     companion object {
-        /** 分隔符 */
-        var separator: String = "_"
-
         /** 数据源类型 */
         var dataSourceType: DataSourceType = DataSourceType.MySQL
+
+        /** 分隔符 */
+        var separator: String = "_"
 
         /** 语言，java/kotlin */
         var language: GenLanguage = GenLanguage.KOTLIN
