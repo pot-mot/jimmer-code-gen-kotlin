@@ -24,10 +24,10 @@ typealias AssociationMatch = (
  *          table2.table1_id        -> prefix_table1.id
  */
 val simplePkColumnMatch: AssociationMatch = { source, target ->
-    if (target.isPk && target.table.id != source.table.id) {
+    if (target.partOfPk && target.table.id != source.table.id) {
         val targetTableName = target.table.name.clearTableMatchName()
         if ("${targetTableName}${GenConfig.separator}${target.name}" == source.name) {
-            if (source.isUnique) {
+            if (source.unique) {
                 AssociationType.ONE_TO_ONE
             } else {
                 AssociationType.MANY_TO_ONE
@@ -47,10 +47,10 @@ val simplePkColumnMatch: AssociationMatch = { source, target ->
  *          table2.table1_id        -> prefix_table1.table1_id
  */
 val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
-    if (target.isPk && target.table.id != source.table.id) {
+    if (target.partOfPk && target.table.id != source.table.id) {
         val targetTableName = target.table.name.clearTableMatchName()
         if (target.name.contains(targetTableName) && target.name == source.name) {
-            if (source.isUnique) {
+            if (source.unique) {
                 AssociationType.ONE_TO_ONE
             } else {
                 AssociationType.MANY_TO_ONE
@@ -72,7 +72,7 @@ val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
  *          （取 item, group, id）      （取 item, group, id）
  */
 val pkSuffixColumnMatch: AssociationMatch = { source, target ->
-    if (target.isPk && target.table.id != source.table.id) {
+    if (target.partOfPk && target.table.id != source.table.id) {
 
         val separator = GenConfig.separator
 
@@ -85,7 +85,7 @@ val pkSuffixColumnMatch: AssociationMatch = { source, target ->
                     source.name.split(separator).takeLast(2)
 
         if (sourceMatchList == targetMatchList) {
-            if (source.isUnique) {
+            if (source.unique) {
                 AssociationType.ONE_TO_ONE
             } else {
                 AssociationType.MANY_TO_ONE

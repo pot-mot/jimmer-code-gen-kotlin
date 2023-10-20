@@ -26,19 +26,19 @@ ${fkStringify().joinToString(",\n") { "    ${it.trim()}" }}
 
 fun GenTableAssociationView.TargetOf_columns.mysqlColumnStringify(): String =
     "${name.escape()} ${fullType()}" +
-            " ${if (isNotNull) "NOT NULL" else ""}" +
-            " ${if (isPk && isAutoIncrement) "AUTO_INCREMENT" else ""}" +
-            " ${if (!defaultValue.isNullOrBlank()) "DEFAULT $defaultValue" else if (!isNotNull) "DEFAULT NULL" else ""}" +
+            " ${if (notNull) "NOT NULL" else ""}" +
+            " ${if (partOfPk && autoIncrement) "AUTO_INCREMENT" else ""}" +
+            " ${if (!defaultValue.isNullOrBlank()) "DEFAULT $defaultValue" else if (!notNull) "DEFAULT NULL" else ""}" +
             " COMMENT '$comment'"
 
 private fun GenTableAssociationView.pkColumn(): GenTableAssociationView.TargetOf_columns? =
-    this.columns.firstOrNull { it.isPk }
+    this.columns.firstOrNull { it.partOfPk }
 
 private fun GenTableAssociationView.pkStringify(): String =
     "PRIMARY KEY (${(pkColumn()?.name ?: "").escape()}) USING BTREE"
 
 private fun GenTableAssociationView.fkColumns(): List<GenTableAssociationView.TargetOf_columns> =
-    this.columns.filter { it.isFk }
+    this.columns.filter { it.partOfFk }
 
 private fun GenTableAssociationView.fkStringify(): List<String> {
     val list = mutableListOf<String>()
@@ -46,7 +46,7 @@ private fun GenTableAssociationView.fkStringify(): List<String> {
     for (fkColumn in fkColumns()) {
         val indexName = "idx_${name}_${fkColumn.name}"
 
-        list += "${if (fkColumn.isUnique) "UNIQUE " else ""}INDEX ${indexName.escape()} (${fkColumn.name.escape()}) USING BTREE"
+        list += "${if (fkColumn.unique) "UNIQUE " else ""}INDEX ${indexName.escape()} (${fkColumn.name.escape()}) USING BTREE"
 
         for (outAssociation in fkColumn.outAssociations) {
             list += fkColumn.createFkConstraint(indexName, outAssociation, DataSourceType.MySQL)

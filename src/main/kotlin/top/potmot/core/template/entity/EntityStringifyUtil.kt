@@ -27,7 +27,7 @@ fun GenEntityPropertiesView.packagePath(): String =
 fun GenEntityPropertiesView.TargetOf_properties.shortTypeName(): String {
     val baseType = type.split(".").last()
 
-    return if (isList) {
+    return if (listType) {
         "List<$baseType>"
     } else {
         baseType
@@ -100,16 +100,16 @@ fun GenEntityPropertiesView.TargetOf_properties.blockComment(): String {
 fun GenEntityPropertiesView.TargetOf_properties.annotation(): String {
     val list = mutableListOf<String>()
 
-    if (isId) {
+    if (idProperty) {
         list += "@Id"
         if (idGenerationType != null) {
             list += "@GeneratedValue(strategy = GenerationType.${idGenerationType})"
         }
-    } else if (isKey) {
+    } else if (keyProperty) {
         list += "@Key"
     }
 
-    if (isLogicalDelete) {
+    if (logicalDelete) {
         list += GenConfig.logicalDeletedAnnotation
     }
 
@@ -119,7 +119,7 @@ fun GenEntityPropertiesView.TargetOf_properties.annotation(): String {
             if (dissociateAnnotation != null) {
                 list += dissociateAnnotation
             }
-        } else if (isIdView && idViewAnnotation != null) {
+        } else if (idView && idViewAnnotation != null) {
             list += idViewAnnotation
         }
     }
@@ -138,17 +138,17 @@ fun GenEntityPropertiesView.TargetOf_properties.importClassList(): List<KClass<*
 
     result += Entity::class
 
-    if (isId) {
+    if (idProperty) {
         result += Id::class
         if (idGenerationType != null) {
             result += GeneratedValue::class
             result += GenerationType::class
         }
-    } else if (isKey) {
+    } else if (idProperty) {
         result += Key::class
     }
 
-    if (isLogicalDelete) {
+    if (logicalDelete) {
         result += LogicalDeleted::class
     }
 
@@ -159,12 +159,12 @@ fun GenEntityPropertiesView.TargetOf_properties.importClassList(): List<KClass<*
                 result += OnDissociate::class
                 result += DissociateAction::class
             }
-        } else if (isIdView) {
+        } else if (idView) {
             result += IdView::class
         }
     }
 
-    if (isList) {
+    if (listType) {
         result += List::class
     }
 

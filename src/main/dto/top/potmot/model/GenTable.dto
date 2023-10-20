@@ -38,7 +38,7 @@ GenTableAssociationView {
             id
             associationType
             dissociateAction
-            isFake
+            fake
             sourceColumn {
                 id
                 name
@@ -54,7 +54,7 @@ GenTableAssociationView {
             id
             associationType
             dissociateAction
-            isFake
+            fake
             targetColumn {
                 id
                 name

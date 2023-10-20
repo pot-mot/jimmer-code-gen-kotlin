@@ -16,7 +16,7 @@ ${properties.joinToString("") { it.javaPropertyStringify() }}
 
 private fun GenEntityPropertiesView.TargetOf_properties.javaPropertyStringify(): String {
     return """
-${blockComment()}${annotation()}${if (isNotNull) "\n    @NotNull" else ""}
+${blockComment()}${annotation()}${if (notNull) "\n    @NotNull" else ""}
     ${shortTypeName()} $name;
 """
 }
@@ -31,7 +31,7 @@ private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<Strin
 
     importList += importEntityList()
 
-    if (isNotNull) {
+    if (notNull) {
         importList += org.jetbrains.annotations.Nullable::class.java.name
     }
 

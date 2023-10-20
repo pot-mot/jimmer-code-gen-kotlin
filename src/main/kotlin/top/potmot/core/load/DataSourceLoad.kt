@@ -160,11 +160,11 @@ private fun Column.toGenColumn(
         this.numericPrecision = column.decimalDigits.toLong()
         this.defaultValue = column.defaultValue
         this.comment = column.remarks
-        this.isPk = column.isPartOfPrimaryKey
-        this.isFk = column.isPartOfForeignKey
-        this.isUnique = column.isPartOfUniqueIndex
-        this.isAutoIncrement = column.isAutoIncremented
-        this.isNotNull = !column.isNullable
+        this.partOfPk = column.isPartOfPrimaryKey
+        this.partOfFk = column.isPartOfForeignKey
+        this.unique = column.isPartOfUniqueIndex
+        this.autoIncrement = column.isAutoIncremented
+        this.notNull = !column.isNullable
     }
 }
 
@@ -203,7 +203,7 @@ fun Table.getFkAssociation(schemaId: Long): List<GenAssociation> {
                     this.targetColumn = targetColumn
                     this.associationType = type
                     this.dissociateAction = it.deleteRule.toDissociateAction()
-                    this.isFake = false
+                    this.fake = false
                     this.remark = columnRef.toString()
                 }
         }

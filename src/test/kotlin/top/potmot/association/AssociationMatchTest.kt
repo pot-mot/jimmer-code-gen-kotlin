@@ -20,7 +20,7 @@ import top.potmot.model.dto.GenColumnMatchView
 import top.potmot.service.AssociationService
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin")
+@ActiveProfiles("test-kotlin", "mysql")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class AssociationMatchTest(
     @Autowired val associationService: AssociationService,

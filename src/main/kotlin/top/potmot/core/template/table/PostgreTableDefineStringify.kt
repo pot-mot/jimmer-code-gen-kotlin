@@ -25,12 +25,12 @@ ${fkStringify().joinToString("\n") { "$it;" }}
 }
 
 fun GenTableAssociationView.TargetOf_columns.postgreColumnStringify(): String =
-    if (isPk) {
+    if (partOfPk) {
         "${name.escape()} ${pkColumnType()} PRIMARY KEY"
     } else {
         "${name.escape()} $type" +
-                " ${if (isNotNull) "NOT NULL" else ""}" +
-                " ${if (!defaultValue.isNullOrBlank()) "DEFAULT $defaultValue" else if (!isNotNull) "DEFAULT NULL" else ""}"
+                " ${if (notNull) "NOT NULL" else ""}" +
+                " ${if (!defaultValue.isNullOrBlank()) "DEFAULT $defaultValue" else if (!notNull) "DEFAULT NULL" else ""}"
     }
 
 private fun GenTableAssociationView.TargetOf_columns.pkColumnType(): String =
@@ -43,7 +43,7 @@ private fun GenTableAssociationView.TargetOf_columns.pkColumnType(): String =
     }
 
 private fun GenTableAssociationView.fkColumns(): List<GenTableAssociationView.TargetOf_columns> =
-    this.columns.filter { it.isFk }
+    this.columns.filter { it.partOfFk }
 
 private fun GenTableAssociationView.fkStringify(): List<String> {
     val list = mutableListOf<String>()
@@ -51,7 +51,7 @@ private fun GenTableAssociationView.fkStringify(): List<String> {
     for (fkColumn in fkColumns()) {
         val indexName = "idx_${name}_${fkColumn.name}"
 
-        list += "CREATE ${if (fkColumn.isUnique) "UNIQUE " else ""}INDEX ${indexName.escape()} ON ${name.escape()} (${fkColumn.name.escape()})"
+        list += "CREATE ${if (fkColumn.unique) "UNIQUE " else ""}INDEX ${indexName.escape()} ON ${name.escape()} (${fkColumn.name.escape()})"
 
         for (outAssociation in fkColumn.outAssociations) {
             list += "ALTER TABLE ${name.escape()} ADD " + fkColumn.createFkConstraint(indexName, outAssociation, DataSourceType.PostgreSQL)

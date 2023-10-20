@@ -139,11 +139,11 @@ CREATE TABLE "gen_column"
     "numeric_precision" bigint      NOT NULL DEFAULT 0,
     "default_value"     text        NULL     DEFAULT NULL,
     "comment"           text        NOT NULL,
-    "is_pk"             boolean     NOT NULL DEFAULT FALSE,
-    "is_auto_increment" boolean     NOT NULL DEFAULT FALSE,
-    "is_fk"             boolean     NOT NULL DEFAULT FALSE,
-    "is_unique"         boolean     NOT NULL DEFAULT FALSE,
-    "is_not_null"       boolean     NOT NULL DEFAULT FALSE,
+    "part_of_pk"             boolean     NOT NULL DEFAULT FALSE,
+    "auto_increment" boolean     NOT NULL DEFAULT FALSE,
+    "part_of_fk"             boolean     NOT NULL DEFAULT FALSE,
+    "unique"         boolean     NOT NULL DEFAULT FALSE,
+    "not_null"       boolean     NOT NULL DEFAULT FALSE,
     "created_time"      timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "remark"            text        NOT NULL DEFAULT ''
@@ -162,11 +162,11 @@ COMMENT ON COLUMN "gen_column"."display_size" IS '列展示长度';
 COMMENT ON COLUMN "gen_column"."numeric_precision" IS '列精度';
 COMMENT ON COLUMN "gen_column"."default_value" IS '列默认值';
 COMMENT ON COLUMN "gen_column"."comment" IS '列注释';
-COMMENT ON COLUMN "gen_column"."is_pk" IS '是否主键';
-COMMENT ON COLUMN "gen_column"."is_auto_increment" IS '是否自增';
-COMMENT ON COLUMN "gen_column"."is_fk" IS '是否外键';
-COMMENT ON COLUMN "gen_column"."is_unique" IS '是否唯一索引';
-COMMENT ON COLUMN "gen_column"."is_not_null" IS '是否非空';
+COMMENT ON COLUMN "gen_column"."part_of_pk" IS '是否主键';
+COMMENT ON COLUMN "gen_column"."auto_increment" IS '是否自增';
+COMMENT ON COLUMN "gen_column"."part_of_fk" IS '是否外键';
+COMMENT ON COLUMN "gen_column"."unique" IS '是否唯一索引';
+COMMENT ON COLUMN "gen_column"."not_null" IS '是否非空';
 COMMENT ON COLUMN "gen_column"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_column"."modified_time" IS '修改时间';
 COMMENT ON COLUMN "gen_column"."remark" IS '备注';
@@ -188,7 +188,7 @@ CREATE TABLE "gen_association"
     "target_column_id"  bigint      NOT NULL REFERENCES "gen_column" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
     "association_type"  text        NOT NULL,
     "dissociate_action" text        NULL     DEFAULT NULL,
-    "is_fake"          boolean      NOT NULL DEFAULT TRUE,
+    "fake"          boolean      NOT NULL DEFAULT TRUE,
     "order_key"         bigint      NOT NULL DEFAULT 0,
     "created_time"      timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -205,7 +205,7 @@ COMMENT ON COLUMN "gen_association"."source_column_id" IS '主列';
 COMMENT ON COLUMN "gen_association"."target_column_id" IS '从列';
 COMMENT ON COLUMN "gen_association"."association_type" IS '关联类型';
 COMMENT ON COLUMN "gen_association"."dissociate_action" IS '脱钩行为';
-COMMENT ON COLUMN "gen_association"."is_fake" IS '是否伪外键';
+COMMENT ON COLUMN "gen_association"."fake" IS '是否伪外键';
 COMMENT ON COLUMN "gen_association"."order_key" IS '自定排序';
 COMMENT ON COLUMN "gen_association"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_association"."modified_time" IS '修改时间';
@@ -259,10 +259,6 @@ CREATE TABLE "gen_entity"
     "name"          text        NOT NULL,
     "comment"       text        NOT NULL,
     "author"        text        NOT NULL DEFAULT '',
-    "is_add"        boolean     NOT NULL DEFAULT TRUE,
-    "is_edit"       boolean     NOT NULL DEFAULT TRUE,
-    "is_list"       boolean     NOT NULL DEFAULT TRUE,
-    "is_query"      boolean     NOT NULL DEFAULT TRUE,
     "order_key"     bigint      NOT NULL DEFAULT 0,
     "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -280,10 +276,6 @@ COMMENT ON COLUMN "gen_entity"."table_id" IS '对应表';
 COMMENT ON COLUMN "gen_entity"."name" IS '类名称';
 COMMENT ON COLUMN "gen_entity"."comment" IS '类注释';
 COMMENT ON COLUMN "gen_entity"."author" IS '作者';
-COMMENT ON COLUMN "gen_entity"."is_add" IS '是否生成添加功能';
-COMMENT ON COLUMN "gen_entity"."is_edit" IS '是否生成编辑功能';
-COMMENT ON COLUMN "gen_entity"."is_list" IS '是否生成列表功能';
-COMMENT ON COLUMN "gen_entity"."is_query" IS '是否生成查询功能';
 COMMENT ON COLUMN "gen_entity"."order_key" IS '自定排序';
 COMMENT ON COLUMN "gen_entity"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_entity"."modified_time" IS '修改时间';
@@ -373,13 +365,13 @@ CREATE TABLE "gen_property"
     "comment"                text        NOT NULL,
     "type"                   text        NOT NULL,
     "type_table_id"          bigint      NULL     DEFAULT NULL REFERENCES "gen_table" ("id") ON DELETE SET NULL ON UPDATE RESTRICT,
-    "is_list"                boolean     NOT NULL DEFAULT FALSE,
-    "is_not_null"            boolean     NOT NULL DEFAULT FALSE,
-    "is_id"                  boolean     NOT NULL DEFAULT FALSE,
+    "list_type"                boolean     NOT NULL DEFAULT FALSE,
+    "not_null"            boolean     NOT NULL DEFAULT FALSE,
+    "id_property"                  boolean     NOT NULL DEFAULT FALSE,
     "id_generation_type"     text        NULL     DEFAULT NULL,
-    "is_key"                 boolean     NOT NULL DEFAULT FALSE,
-    "is_logical_delete"      boolean     NOT NULL DEFAULT FALSE,
-    "is_id_view"             boolean     NOT NULL DEFAULT FALSE,
+    "key_property"                 boolean     NOT NULL DEFAULT FALSE,
+    "logical_delete"      boolean     NOT NULL DEFAULT FALSE,
+    "id_view"             boolean     NOT NULL DEFAULT FALSE,
     "id_view_annotation"     text        NULL     DEFAULT NULL,
     "association_type"       text        NULL     DEFAULT NULL,
     "association_annotation" text        NULL     DEFAULT NULL,
@@ -404,13 +396,13 @@ COMMENT ON COLUMN "gen_property"."name" IS '属性名';
 COMMENT ON COLUMN "gen_property"."comment" IS '属性注释';
 COMMENT ON COLUMN "gen_property"."type" IS '属性类型';
 COMMENT ON COLUMN "gen_property"."type_table_id" IS '类型对应表';
-COMMENT ON COLUMN "gen_property"."is_list" IS '是否列表';
-COMMENT ON COLUMN "gen_property"."is_not_null" IS '是否非空';
-COMMENT ON COLUMN "gen_property"."is_id" IS '是否Id';
+COMMENT ON COLUMN "gen_property"."list_type" IS '是否列表';
+COMMENT ON COLUMN "gen_property"."not_null" IS '是否非空';
+COMMENT ON COLUMN "gen_property"."id_property" IS '是否Id';
 COMMENT ON COLUMN "gen_property"."id_generation_type" IS 'Id 生成类型';
-COMMENT ON COLUMN "gen_property"."is_key" IS '是否为业务键属性';
-COMMENT ON COLUMN "gen_property"."is_logical_delete" IS '是否为逻辑删除属性';
-COMMENT ON COLUMN "gen_property"."is_id_view" IS '是否为 ID 视图属性';
+COMMENT ON COLUMN "gen_property"."key_property" IS '是否为业务键属性';
+COMMENT ON COLUMN "gen_property"."logical_delete" IS '是否为逻辑删除属性';
+COMMENT ON COLUMN "gen_property"."id_view" IS '是否为 ID 视图属性';
 COMMENT ON COLUMN "gen_property"."id_view_annotation" IS 'ID 视图注释';
 COMMENT ON COLUMN "gen_property"."association_type" IS '关联类型';
 COMMENT ON COLUMN "gen_property"."association_annotation" IS '关联注释';
@@ -434,7 +426,7 @@ CREATE TABLE "gen_type_mapping"
 (
     "id"              BIGSERIAL PRIMARY KEY,
     "type_expression" text        NOT NULL,
-    "is_regex"        boolean     NOT NULL DEFAULT FALSE,
+    "regex"        boolean     NOT NULL DEFAULT FALSE,
     "property_type"   text        NOT NULL,
     "order_key"       bigint      NOT NULL DEFAULT 0,
     "created_time"    timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -445,7 +437,7 @@ CREATE TABLE "gen_type_mapping"
 COMMENT ON TABLE "gen_type_mapping" IS '列到属性类型映射';
 COMMENT ON COLUMN "gen_type_mapping"."id" IS 'ID';
 COMMENT ON COLUMN "gen_type_mapping"."type_expression" IS '类型表达式';
-COMMENT ON COLUMN "gen_type_mapping"."is_regex" IS '是否正则';
+COMMENT ON COLUMN "gen_type_mapping"."regex" IS '是否正则';
 COMMENT ON COLUMN "gen_type_mapping"."property_type" IS '属性类型';
 COMMENT ON COLUMN "gen_type_mapping"."order_key" IS '自定排序';
 COMMENT ON COLUMN "gen_type_mapping"."created_time" IS '创建时间';

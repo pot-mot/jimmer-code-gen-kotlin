@@ -99,27 +99,27 @@ interface GenColumn : BaseEntity {
     /**
      * 是否主键
      */
-    val isPk: Boolean
+    val partOfPk: Boolean
 
     /**
      * 是否自增
      */
-    val isAutoIncrement: Boolean
+    val autoIncrement: Boolean
 
     /**
      * 是否外键
      */
-    val isFk: Boolean
+    val partOfFk: Boolean
 
     /**
      * 是否唯一索引
      */
-    val isUnique: Boolean
+    val unique: Boolean
 
     /**
      * 是否非空
      */
-    val isNotNull: Boolean
+    val notNull: Boolean
 
     /**
      * 入关联

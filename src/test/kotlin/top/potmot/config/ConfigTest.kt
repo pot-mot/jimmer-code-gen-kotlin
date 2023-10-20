@@ -12,7 +12,7 @@ import top.potmot.enumeration.GenLanguage
 import top.potmot.service.ConfigService
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin")
+@ActiveProfiles("test-kotlin", "mysql")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class AssociationMatchTest(
     @Autowired val configService: ConfigService

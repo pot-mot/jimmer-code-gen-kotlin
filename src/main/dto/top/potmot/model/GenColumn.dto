@@ -4,10 +4,10 @@ GenColumnMatchView {
     comment
     typeCode
     type
-    isPk
-    isFk
-    isUnique
-    isNotNull
+    partOfPk
+    partOfFk
+    unique
+    notNull
 
     table {
         id

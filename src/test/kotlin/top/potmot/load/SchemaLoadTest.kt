@@ -13,7 +13,7 @@ import top.potmot.service.DataSourceService
 import top.potmot.service.SchemaService
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin")
+@ActiveProfiles("test-kotlin", "mysql")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class SchemaLoadTest(
     @Autowired val dataSourceService: DataSourceService,

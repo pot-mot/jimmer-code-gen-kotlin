@@ -89,17 +89,17 @@ interface GenProperty : BaseEntity {
     /**
      * 是否列表
      */
-    val isList: Boolean
+    val listType: Boolean
 
     /**
      * 是否非空
      */
-    val isNotNull: Boolean
+    val notNull: Boolean
 
     /**
      * 是否Id
      */
-    val isId: Boolean
+    val idProperty: Boolean
 
     /**
      * Id 生成类型
@@ -109,17 +109,17 @@ interface GenProperty : BaseEntity {
     /**
      * 是否为业务键属性
      */
-    val isKey: Boolean
+    val keyProperty: Boolean
 
     /**
      * 是否为逻辑删除属性
      */
-    val isLogicalDelete: Boolean
+    val logicalDelete: Boolean
 
     /**
      * 是否为 ID 视图属性
      */
-    val isIdView: Boolean
+    val idView: Boolean
 
     /**
      * ID 视图注释

@@ -76,27 +76,6 @@ interface GenEntity : BaseEntity {
     val author: String
 
     /**
-     * 是否生成添加功能
-     */
-    val isAdd: Boolean
-
-    /**
-     * 是否生成编辑功能
-     */
-    val isEdit: Boolean
-
-    /**
-     * 是否生成列表功能
-     */
-    val isList: Boolean
-
-    /**
-     * 是否生成查询功能
-     */
-    val isQuery: Boolean
-
-
-    /**
      * 自定排序
      */
     val orderKey: Long

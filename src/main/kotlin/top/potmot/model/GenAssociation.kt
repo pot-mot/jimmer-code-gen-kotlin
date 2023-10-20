@@ -76,7 +76,7 @@ interface GenAssociation : BaseEntity {
     /**
      * 是否伪外键
      */
-    val isFake: Boolean
+    val fake: Boolean
 
     /**
      * 自定排序
