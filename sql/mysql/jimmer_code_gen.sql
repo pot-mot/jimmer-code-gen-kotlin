@@ -23,7 +23,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `gen_data_source`;
 CREATE TABLE `gen_data_source`
 (
-    `id`            bigint(0)    NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `type`          varchar(500) NOT NULL COMMENT '数据库类型',
     `name`          varchar(500) NOT NULL COMMENT '名称',
     `host`          varchar(500) NOT NULL COMMENT '主机',
@@ -31,7 +31,7 @@ CREATE TABLE `gen_data_source`
     `url_suffix`    varchar(500) NOT NULL COMMENT '链接后缀',
     `username`      varchar(500) NOT NULL COMMENT '用户名',
     `password`      varchar(500) NOT NULL COMMENT '密码',
-    `order_key`     bigint(0)    NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `order_key`     bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
@@ -47,10 +47,10 @@ CREATE TABLE `gen_data_source`
 DROP TABLE IF EXISTS `gen_schema`;
 CREATE TABLE `gen_schema`
 (
-    `id`             bigint(0)    NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `data_source_id` bigint(0)    NOT NULL COMMENT '数据源 ID',
+    `id`             bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `data_source_id` bigint       NOT NULL COMMENT '数据源 ID',
     `name`           varchar(500) NOT NULL COMMENT '名称',
-    `order_key`      bigint(0)    NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `order_key`      bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`   datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`         varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
@@ -68,12 +68,12 @@ CREATE TABLE `gen_schema`
 DROP TABLE IF EXISTS `gen_table`;
 CREATE TABLE `gen_table`
 (
-    `id`            bigint(0)    NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `schema_id`     bigint(0)    NOT NULL COMMENT '数据架构',
+    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `schema_id`     bigint       NOT NULL COMMENT '数据架构',
     `name`          varchar(500) NOT NULL COMMENT '表名称',
     `comment`       varchar(500) NOT NULL COMMENT '表注释',
     `type`          varchar(500) NOT NULL COMMENT '表种类',
-    `order_key`     bigint(0)    NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `order_key`     bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
@@ -91,14 +91,14 @@ CREATE TABLE `gen_table`
 DROP TABLE IF EXISTS `gen_column`;
 CREATE TABLE `gen_column`
 (
-    `id`                bigint(0)    NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `table_id`          bigint(0)    NOT NULL COMMENT '归属表',
-    `order_key`         bigint(0)    NOT NULL COMMENT '列在表中顺序',
+    `id`                bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `table_id`          bigint       NOT NULL COMMENT '归属表',
+    `order_key`         bigint       NOT NULL COMMENT '列在表中顺序',
     `name`              varchar(500) NOT NULL COMMENT '列名称',
     `type_code`         int(0)       NOT NULL COMMENT '列对应 JDBCType 码值',
     `type`              varchar(500) NOT NULL COMMENT '列类型',
-    `display_size`      bigint(0)    NOT NULL DEFAULT 0 COMMENT '列展示长度',
-    `numeric_precision` bigint(0)    NOT NULL DEFAULT 0 COMMENT '列精度',
+    `display_size`      bigint       NOT NULL DEFAULT 0 COMMENT '列展示长度',
+    `numeric_precision` bigint       NOT NULL DEFAULT 0 COMMENT '列精度',
     `default_value`     varchar(500) NULL     DEFAULT NULL COMMENT '列默认值',
     `comment`           varchar(500) NOT NULL COMMENT '列注释',
     `is_pk`             tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否主键',
@@ -123,13 +123,14 @@ CREATE TABLE `gen_column`
 DROP TABLE IF EXISTS `gen_association`;
 CREATE TABLE `gen_association`
 (
-    `id`                bigint(0)                                                      NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `id`                bigint                                                         NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `comment`           varchar(500)                                                   NOT NULL DEFAULT '' COMMENT '关联注释',
-    `source_column_id`  bigint(0)                                                      NOT NULL COMMENT '主列',
-    `target_column_id`  bigint(0)                                                      NOT NULL COMMENT '从列',
+    `source_column_id`  bigint                                                         NOT NULL COMMENT '主列',
+    `target_column_id`  bigint                                                         NOT NULL COMMENT '从列',
     `association_type`  enum ('ONE_TO_ONE','ONE_TO_MANY','MANY_TO_ONE','MANY_TO_MANY') NOT NULL COMMENT '关联类型',
     `dissociate_action` enum ('NONE','SET_NULL','DELETE')                              NULL     DEFAULT NULL COMMENT '脱钩行为',
-    `order_key`         bigint(0)                                                      NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `is_fake`           tinyint(1)                                                     NOT NULL DEFAULT 1 COMMENT '是否伪外键',
+    `order_key`         bigint                                                         NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`      datetime(0)                                                    NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time`     datetime(0)                                                    NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`            varchar(500)                                                   NOT NULL DEFAULT '' COMMENT '备注',
@@ -149,10 +150,10 @@ CREATE TABLE `gen_association`
 DROP TABLE IF EXISTS `gen_package`;
 CREATE TABLE `gen_package`
 (
-    `id`            bigint(0)    NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `parent_id`     bigint(0)    NULL     DEFAULT NULL COMMENT '父包',
+    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `parent_id`     bigint       NULL     DEFAULT NULL COMMENT '父包',
     `name`          varchar(500) NOT NULL COMMENT '包名称',
-    `order_key`     bigint(0)    NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `order_key`     bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
@@ -170,9 +171,9 @@ CREATE TABLE `gen_package`
 DROP TABLE IF EXISTS `gen_entity`;
 CREATE TABLE `gen_entity`
 (
-    `id`            bigint(0)    NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `package_id`    bigint(0)    NULL     DEFAULT NULL COMMENT '所属包',
-    `table_id`      bigint(0)    NOT NULL COMMENT '对应表',
+    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `package_id`    bigint       NULL     DEFAULT NULL COMMENT '所属包',
+    `table_id`      bigint       NOT NULL COMMENT '对应表',
     `name`          varchar(500) NOT NULL COMMENT '类名称',
     `comment`       varchar(500) NOT NULL COMMENT '类注释',
     `author`        varchar(500) NOT NULL DEFAULT '' COMMENT '作者',
@@ -180,7 +181,7 @@ CREATE TABLE `gen_entity`
     `is_edit`       tinyint(1)   NOT NULL DEFAULT 1 COMMENT '是否生成编辑功能',
     `is_list`       tinyint(1)   NOT NULL DEFAULT 1 COMMENT '是否生成列表功能',
     `is_query`      tinyint(1)   NOT NULL DEFAULT 1 COMMENT '是否生成查询功能',
-    `order_key`     bigint(0)    NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `order_key`     bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
@@ -201,11 +202,11 @@ CREATE TABLE `gen_entity`
 DROP TABLE IF EXISTS `gen_enum`;
 CREATE TABLE `gen_enum`
 (
-    `id`            bigint(0)    NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `package_id`    bigint(0)    NULL     DEFAULT NULL COMMENT '所属包',
+    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `package_id`    bigint       NULL     DEFAULT NULL COMMENT '所属包',
     `name`          varchar(500) NOT NULL COMMENT '枚举名',
     `comment`       varchar(500) NOT NULL COMMENT '枚举注释',
-    `order_key`     bigint(0)    NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `order_key`     bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
@@ -223,8 +224,8 @@ CREATE TABLE `gen_enum`
 DROP TABLE IF EXISTS `gen_enum_item`;
 CREATE TABLE `gen_enum_item`
 (
-    `id`            bigint(0)    NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `enum_id`       bigint(0)    NOT NULL COMMENT '对应枚举 ID',
+    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `enum_id`       bigint       NOT NULL COMMENT '对应枚举 ID',
     `name`          varchar(500) NOT NULL COMMENT '元素名',
     `value`         varchar(500) NOT NULL COMMENT '元素值',
     `comment`       varchar(500) NOT NULL DEFAULT '' COMMENT '元素注释',
@@ -245,13 +246,13 @@ CREATE TABLE `gen_enum_item`
 DROP TABLE IF EXISTS `gen_property`;
 CREATE TABLE `gen_property`
 (
-    `id`                     bigint(0)                                                      NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `entity_id`              bigint(0)                                                      NOT NULL COMMENT '归属实体',
-    `column_id`              bigint(0)                                                      NULL     DEFAULT NULL COMMENT '对应列',
+    `id`                     bigint                                                         NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `entity_id`              bigint                                                         NOT NULL COMMENT '归属实体',
+    `column_id`              bigint                                                         NULL     DEFAULT NULL COMMENT '对应列',
     `name`                   varchar(500)                                                   NOT NULL COMMENT '属性名',
     `comment`                varchar(500)                                                   NOT NULL COMMENT '属性注释',
     `type`                   varchar(500)                                                   NOT NULL COMMENT '属性类型',
-    `type_table_id`          bigint(0)                                                      NULL     DEFAULT NULL COMMENT '类型对应表',
+    `type_table_id`          bigint                                                         NULL     DEFAULT NULL COMMENT '类型对应表',
     `is_list`                tinyint(1)                                                     NOT NULL DEFAULT 0 COMMENT '是否列表',
     `is_not_null`            tinyint(1)                                                     NOT NULL DEFAULT 0 COMMENT '是否非空',
     `is_id`                  tinyint(1)                                                     NOT NULL DEFAULT 0 COMMENT '是否Id',
@@ -264,7 +265,7 @@ CREATE TABLE `gen_property`
     `association_annotation` varchar(500)                                                   NULL     DEFAULT NULL COMMENT '关联注释',
     `dissociate_annotation`  varchar(500)                                                   NULL     DEFAULT NULL COMMENT '脱钩注释',
     `other_annotation`       varchar(500)                                                   NULL     DEFAULT NULL COMMENT '其他注释',
-    `enum_id`                bigint(0)                                                      NULL     DEFAULT NULL COMMENT '对应枚举 ID',
+    `enum_id`                bigint                                                         NULL     DEFAULT NULL COMMENT '对应枚举 ID',
     `created_time`           datetime(0)                                                    NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time`          datetime(0)                                                    NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`                 varchar(500)                                                   NOT NULL DEFAULT '' COMMENT '备注',
@@ -288,11 +289,11 @@ CREATE TABLE `gen_property`
 DROP TABLE IF EXISTS `gen_type_mapping`;
 CREATE TABLE `gen_type_mapping`
 (
-    `id`              bigint(0)    NOT NULL,
+    `id`              bigint       NOT NULL,
     `type_expression` varchar(500) NOT NULL COMMENT '类型表达式',
     `is_regex`        tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否正则',
     `property_type`   varchar(500) NOT NULL COMMENT '属性类型',
-    `order_key`       bigint(0)    NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `order_key`       bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`    datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time`   datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`          varchar(500) NOT NULL DEFAULT '' COMMENT '备注',

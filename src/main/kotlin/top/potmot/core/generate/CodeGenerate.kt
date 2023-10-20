@@ -1,24 +1,10 @@
 package top.potmot.core.generate
 
 import top.potmot.config.GenConfig
-import top.potmot.core.template.ddl.mysqlTableStringify
-import top.potmot.core.template.ddl.postgreTableStringify
 import top.potmot.core.template.entity.javaClassStringify
 import top.potmot.core.template.entity.kotlinClassStringify
-import top.potmot.enumeration.DataSourceType
-import top.potmot.enumeration.DataSourceType.*
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenTableAssociationView
-
-fun generateDDL(
-    table: GenTableAssociationView,
-    dataSourceType: DataSourceType = table.schema.dataSource.type
-): String =
-    when (dataSourceType) {
-        MySQL -> table.mysqlTableStringify()
-        PostgreSQL -> table.postgreTableStringify()
-    }
 
 fun generateCode(
     entity: GenEntityPropertiesView,

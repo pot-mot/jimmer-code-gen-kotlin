@@ -1,18 +1,10 @@
 package top.potmot.extension
 
-import top.potmot.enumeration.DataSourceType.*
 import top.potmot.error.DataSourceException
 import top.potmot.model.GenDataSource
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import us.fatehi.utility.datasource.DatabaseConnectionSources
 import us.fatehi.utility.datasource.MultiUseUserCredentials
-
-
-fun GenDataSource.url(): String =
-    when (this.type) {
-        MySQL -> "jdbc:mysql://${host}:${port}${urlSuffix}"
-        PostgreSQL -> "jdbc:postgresql://${host}:${port}${urlSuffix}"
-    }
 
 /**
  * 测试数据库连接。
@@ -37,7 +29,7 @@ fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
  */
 fun GenDataSource.toSource(): DatabaseConnectionSource {
     return DatabaseConnectionSources.newDatabaseConnectionSource(
-        this.url(), MultiUseUserCredentials(this.username, this.password)
+        this.url, MultiUseUserCredentials(this.username, this.password)
     ).test()
 }
 

@@ -1,6 +1,11 @@
 GenTableCommonView {
     #allScalars
-    id(schema)
+    schema {
+        id
+        dataSource {
+            id
+        }
+    }
 }
 
 GenTableColumnView: GenTableCommonView {
@@ -10,11 +15,16 @@ GenTableColumnView: GenTableCommonView {
     }
 }
 
-GenTableAssociationView: GenTableCommonView {
+GenTableAssociationView {
+    #allScalars
+    id(entity)
+
     schema {
+        id
         name
 
         dataSource {
+            id
             name
             type
         }
@@ -28,6 +38,7 @@ GenTableAssociationView: GenTableCommonView {
             id
             associationType
             dissociateAction
+            isFake
             sourceColumn {
                 id
                 name
@@ -43,6 +54,7 @@ GenTableAssociationView: GenTableCommonView {
             id
             associationType
             dissociateAction
+            isFake
             targetColumn {
                 id
                 name

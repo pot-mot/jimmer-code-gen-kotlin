@@ -32,24 +32,6 @@ class DataSourceService(
     @Autowired val sqlClient: KSqlClient
 ) {
     /**
-     * 获取默认数据库配置
-     */
-    @GetMapping("/type/{dataSourceType}/default")
-    fun getDefaultDataSource(
-        @PathVariable dataSourceType: DataSourceType
-    ): GenDataSourceTemplateView {
-        return dataSourceType.dataSourceTemplate()
-    }
-
-    /**
-     * 获取数据库类型
-     */
-    @GetMapping("/type")
-    fun listType(): List<DataSourceType> {
-        return DataSourceType.values().toList()
-    }
-
-    /**
      * 列出所有数据源
      */
     @GetMapping
@@ -63,11 +45,30 @@ class DataSourceService(
      * 获取单个数据源
      */
     @GetMapping("/{id}")
-    fun get(@PathVariable id: Long): List<GenDataSourceView> {
+    fun get(@PathVariable id: Long): GenDataSourceView? {
         return sqlClient.createQuery(GenDataSource::class) {
             where(table.id eq id)
             select(table.fetch(GenDataSourceView::class))
         }.execute()
+            .firstOrNull()
+    }
+
+    /**
+     * 获取数据库类型
+     */
+    @GetMapping("/type")
+    fun listType(): List<DataSourceType> {
+        return DataSourceType.values().toList()
+    }
+
+    /**
+     * 获取默认数据库配置
+     */
+    @GetMapping("/type/{dataSourceType}/default")
+    fun getDefaultDataSource(
+        @PathVariable dataSourceType: DataSourceType
+    ): GenDataSourceTemplateView {
+        return dataSourceType.dataSourceTemplate()
     }
 
     /**

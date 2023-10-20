@@ -1,4 +1,4 @@
-package top.potmot.core.template.ddl
+package top.potmot.core.template.table
 
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenTableAssociationView
@@ -8,6 +8,9 @@ private fun String.escape(): String =
 
 fun GenTableAssociationView.mysqlTableStringify(): String {
     return """
+-- ----------------------------
+-- Table structure for $name
+-- ----------------------------
 DROP TABLE IF EXISTS ${name.escape()};
 CREATE TABLE ${name.escape()}
 (

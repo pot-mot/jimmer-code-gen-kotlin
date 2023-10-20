@@ -1,4 +1,4 @@
-package top.potmot.core.template.ddl
+package top.potmot.core.template.table
 
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenTableAssociationView
@@ -9,7 +9,10 @@ private fun String.escape(): String =
 
 fun GenTableAssociationView.postgreTableStringify(): String {
     return """
-DROP TABLE IF EXISTS ${name.escape()};
+-- ----------------------------
+-- Table structure for $name
+-- ----------------------------
+DROP TABLE IF EXISTS ${name.escape()} CASCADE;
 CREATE TABLE ${name.escape()}
 (
 ${columns.map { it.postgreColumnStringify() }.joinToString(",\n") { "    ${it.trim()}" }}       
@@ -64,7 +67,7 @@ private fun GenTableAssociationView.commentStringify(): List<String> {
     list += "COMMENT ON TABLE ${name.escape()} IS '$comment'"
 
     columns.forEach {
-        list += "COMMENT ON COLUMN ${name.escape()}.${it.name.escape()} IS '$comment'"
+        list += "COMMENT ON COLUMN ${name.escape()}.${it.name.escape()} IS '${it.comment}'"
     }
 
     return list

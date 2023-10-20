@@ -1,4 +1,4 @@
-package top.potmot.core.template.ddl
+package top.potmot.core.template.table
 
 import org.babyfish.jimmer.sql.DissociateAction
 import top.potmot.enumeration.DataSourceType

@@ -203,6 +203,7 @@ fun Table.getFkAssociation(schemaId: Long): List<GenAssociation> {
                     this.targetColumn = targetColumn
                     this.associationType = type
                     this.dissociateAction = it.deleteRule.toDissociateAction()
+                    this.isFake = false
                     this.remark = columnRef.toString()
                 }
         }

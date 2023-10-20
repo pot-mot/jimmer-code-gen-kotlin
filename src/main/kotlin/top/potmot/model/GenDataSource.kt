@@ -1,5 +1,6 @@
 package top.potmot.model
 
+import org.babyfish.jimmer.Formula
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -53,6 +54,10 @@ interface GenDataSource : BaseEntity {
      * 链接后缀
      */
     val urlSuffix: String
+
+    @Formula(dependencies = ["host", "port", "urlSuffix", "type"])
+    val url: String
+        get() = "jdbc:${type.name.lowercase()}://${host}:${port}${urlSuffix}"
 
     /**
      * 用户名

@@ -1,11 +1,6 @@
 GenEntityCommonView {
     #allScalars
     id(table)
-}
-
-GenEntityPropertiesView {
-    #allScalars
-    id(table)
 
     genPackage {
         id
@@ -16,7 +11,9 @@ GenEntityPropertiesView {
             name
         }*
     }
+}
 
+GenEntityPropertiesView: GenEntityCommonView {
     properties {
         #allScalars
         id(entity)

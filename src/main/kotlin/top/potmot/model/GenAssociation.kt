@@ -74,6 +74,11 @@ interface GenAssociation : BaseEntity {
     val dissociateAction: DissociateAction?
 
     /**
+     * 是否伪外键
+     */
+    val isFake: Boolean
+
+    /**
      * 自定排序
      */
     val orderKey: Long

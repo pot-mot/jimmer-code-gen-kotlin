@@ -23,12 +23,15 @@ import top.potmot.core.convert.tableToEntity
 import top.potmot.core.generate.generateCode
 import top.potmot.core.generate.toZipByteArray
 import top.potmot.enumeration.GenLanguage
+import top.potmot.model.GenDataSource
 import top.potmot.model.GenEntity
 import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.comment
 import top.potmot.model.copy
 import top.potmot.model.createdTime
+import top.potmot.model.dto.GenDataSourceView
+import top.potmot.model.dto.GenEntityCommonView
 import top.potmot.model.dto.GenEntityConfigInput
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenTableAssociationView
@@ -43,6 +46,28 @@ import kotlin.reflect.KClass
 class EntityService(
     @Autowired val sqlClient: KSqlClient,
 ) {
+    /**
+     * 列出所有数据源
+     */
+    @GetMapping
+    fun list(): List<GenEntityCommonView> {
+        return sqlClient.createQuery(GenEntity::class) {
+            select(table.fetch(GenEntityCommonView::class))
+        }.execute()
+    }
+
+    /**
+     * 获取单个数据源
+     */
+    @GetMapping("/{id}")
+    fun get(@PathVariable id: Long): GenEntityPropertiesView? {
+        return sqlClient.createQuery(GenEntity::class) {
+            where(table.id eq id)
+            select(table.fetch(GenEntityPropertiesView::class))
+        }.execute()
+            .firstOrNull()
+    }
+
     @GetMapping("/language")
     fun listLanguage(): List<GenLanguage> {
         return GenLanguage.values().toList()

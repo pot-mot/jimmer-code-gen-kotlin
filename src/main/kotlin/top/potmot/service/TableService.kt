@@ -12,11 +12,8 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.config.GenConfig
-import top.potmot.core.generate.generateDDL
-import top.potmot.enumeration.DataSourceType
+import top.potmot.core.generate.generateTableDefine
 import top.potmot.model.GenTable
 import top.potmot.model.columns
 import top.potmot.model.comment
@@ -50,21 +47,14 @@ class TableService(
         return query(query, GenTableCommonView::class)
     }
 
-    @GetMapping("/ddl/{id}")
-    fun getDDL(
-        @PathVariable id: Long,
-        @RequestParam(required = false) dataSourceTypes: List<DataSourceType>?
+    @GetMapping("/define/{id}")
+    fun getTableDefine(
+        @PathVariable id: Long
     ): Map<String, String> {
         val map = mutableMapOf<String, String>()
 
         getAssociationView(id)?.let {
-            if (dataSourceTypes.isNullOrEmpty()) {
-                map["${it.schema.dataSource.type.name.lowercase()}${GenConfig.separator}${it.name}.sql"] = generateDDL(it)
-            } else {
-                dataSourceTypes.forEach { dataSourceType ->
-                    map["${dataSourceType.name.lowercase()}${GenConfig.separator}${it.name}.sql"] = generateDDL(it, dataSourceType)
-                }
-            }
+            map += generateTableDefine(it)
         }
 
         return map
