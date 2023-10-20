@@ -6,7 +6,7 @@ GenColumnMatchView {
     type
     partOfPk
     partOfFk
-    unique
+    partOfUniqueIdx
     notNull
 
     table {

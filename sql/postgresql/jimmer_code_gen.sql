@@ -142,7 +142,7 @@ CREATE TABLE "gen_column"
     "part_of_pk"             boolean     NOT NULL DEFAULT FALSE,
     "auto_increment" boolean     NOT NULL DEFAULT FALSE,
     "part_of_fk"             boolean     NOT NULL DEFAULT FALSE,
-    "unique"         boolean     NOT NULL DEFAULT FALSE,
+    "part_of_unique_idx"         boolean     NOT NULL DEFAULT FALSE,
     "not_null"       boolean     NOT NULL DEFAULT FALSE,
     "created_time"      timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -165,7 +165,7 @@ COMMENT ON COLUMN "gen_column"."comment" IS '列注释';
 COMMENT ON COLUMN "gen_column"."part_of_pk" IS '是否主键';
 COMMENT ON COLUMN "gen_column"."auto_increment" IS '是否自增';
 COMMENT ON COLUMN "gen_column"."part_of_fk" IS '是否外键';
-COMMENT ON COLUMN "gen_column"."unique" IS '是否唯一索引';
+COMMENT ON COLUMN "gen_column"."part_of_unique_idx" IS '是否唯一索引';
 COMMENT ON COLUMN "gen_column"."not_null" IS '是否非空';
 COMMENT ON COLUMN "gen_column"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_column"."modified_time" IS '修改时间';

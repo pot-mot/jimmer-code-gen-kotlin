@@ -51,7 +51,7 @@ private fun GenTableAssociationView.fkStringify(): List<String> {
     for (fkColumn in fkColumns()) {
         val indexName = "idx_${name}_${fkColumn.name}"
 
-        list += "CREATE ${if (fkColumn.unique) "UNIQUE " else ""}INDEX ${indexName.escape()} ON ${name.escape()} (${fkColumn.name.escape()})"
+        list += "CREATE ${if (fkColumn.partOfUniqueIdx) "UNIQUE " else ""}INDEX ${indexName.escape()} ON ${name.escape()} (${fkColumn.name.escape()})"
 
         for (outAssociation in fkColumn.outAssociations) {
             list += "ALTER TABLE ${name.escape()} ADD " + fkColumn.createFkConstraint(indexName, outAssociation, DataSourceType.PostgreSQL)

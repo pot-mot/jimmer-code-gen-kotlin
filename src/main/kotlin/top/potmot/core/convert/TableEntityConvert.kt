@@ -100,7 +100,7 @@ fun GenTableAssociationView.TargetOf_columns.toBaseProperty(
         this.type = column.typeName(typeMappings)
         this.comment = column.comment
         this.notNull = column.notNull
-        this.keyProperty = column.unique
+        this.keyProperty = column.partOfUniqueIdx
     }
 }
 

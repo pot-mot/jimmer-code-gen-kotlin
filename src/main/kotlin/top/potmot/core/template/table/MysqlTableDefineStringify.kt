@@ -46,7 +46,7 @@ private fun GenTableAssociationView.fkStringify(): List<String> {
     for (fkColumn in fkColumns()) {
         val indexName = "idx_${name}_${fkColumn.name}"
 
-        list += "${if (fkColumn.unique) "UNIQUE " else ""}INDEX ${indexName.escape()} (${fkColumn.name.escape()}) USING BTREE"
+        list += "${if (fkColumn.partOfUniqueIdx) "UNIQUE " else ""}INDEX ${indexName.escape()} (${fkColumn.name.escape()}) USING BTREE"
 
         for (outAssociation in fkColumn.outAssociations) {
             list += fkColumn.createFkConstraint(indexName, outAssociation, DataSourceType.MySQL)

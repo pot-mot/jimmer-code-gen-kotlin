@@ -104,7 +104,7 @@ CREATE TABLE `gen_column`
     `part_of_pk`        tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否主键',
     `auto_increment`    tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否自增',
     `part_of_fk`        tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否外键',
-    `unique`            tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否唯一索引',
+    `part_of_unique_idx`            tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否唯一索引',
     `not_null`          tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否非空',
     `created_time`      datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time`     datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',

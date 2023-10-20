@@ -114,7 +114,7 @@ interface GenColumn : BaseEntity {
     /**
      * 是否唯一索引
      */
-    val unique: Boolean
+    val partOfUniqueIdx: Boolean
 
     /**
      * 是否非空

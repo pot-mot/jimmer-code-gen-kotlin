@@ -4,7 +4,7 @@ logging:
 
 spring:
   profiles:
-    active: mysql
+    active: postgresql
 
   jackson:
     # 格式化全局时间属性
