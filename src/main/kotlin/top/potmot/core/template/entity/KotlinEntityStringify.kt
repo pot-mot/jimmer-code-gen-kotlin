@@ -5,25 +5,26 @@ import top.potmot.model.dto.GenEntityPropertiesView
 fun GenEntityPropertiesView.kotlinClassStringify(): String {
     return """package ${packagePath()}
 
+import org.babyfish.jimmer.sql.Entity
 ${import()}
 
 ${blockComment()}
 @Entity
 interface $name {
-${properties.joinToString("") { it.kotlinPropertyStringify() }}
+${properties.joinToString("\n\n") { it.kotlinPropertyStringify() }}
 }"""
 }
 
 private fun GenEntityPropertiesView.TargetOf_properties.kotlinPropertyStringify(): String {
-    return """
-${blockComment()}${annotation()}
-    val $name: ${shortTypeName()}${if (notNull) "" else "?"}
-"""
+    return """${blockComment()}${annotation()}
+    val $name: ${shortTypeName()}${if (notNull) "" else "?"}"""
 }
 
-private fun GenEntityPropertiesView.import(): String {
-    return this.properties.flatMap { it.importList() }.distinct().joinToString("\n") { "import $it" }
-}
+private fun GenEntityPropertiesView.import(): String =
+    properties
+        .flatMap { it.importList() }
+        .distinct()
+        .joinToString("\n") { "import $it" }
 
 private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
     val importList = importClassList().mapNotNull {

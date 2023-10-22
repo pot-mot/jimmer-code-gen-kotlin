@@ -1,7 +1,6 @@
 package top.potmot.core.template.entity
 
 import org.babyfish.jimmer.sql.DissociateAction
-import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
@@ -136,15 +135,13 @@ fun GenEntityPropertiesView.TargetOf_properties.annotation(): String {
 fun GenEntityPropertiesView.TargetOf_properties.importClassList(): List<KClass<*>> {
     val result = mutableListOf<KClass<*>>()
 
-    result += Entity::class
-
     if (idProperty) {
         result += Id::class
         if (idGenerationType != null) {
             result += GeneratedValue::class
             result += GenerationType::class
         }
-    } else if (idProperty) {
+    } else if (keyProperty) {
         result += Key::class
     }
 
@@ -154,7 +151,7 @@ fun GenEntityPropertiesView.TargetOf_properties.importClassList(): List<KClass<*
 
     if (associationType != null) {
         if (associationAnnotation != null) {
-            result += associationType.toAnnotation()::class
+            result += associationType.toAnnotation()
             if (dissociateAnnotation != null) {
                 result += OnDissociate::class
                 result += DissociateAction::class

@@ -5,24 +5,26 @@ import top.potmot.model.dto.GenEntityPropertiesView
 fun GenEntityPropertiesView.javaClassStringify(): String {
     return """package ${packagePath()};
 
+import org.babyfish.jimmer.sql.Entity;
 ${import()}
 
 ${blockComment()}
 @Entity
 interface $name {
-${properties.joinToString("") { it.javaPropertyStringify() }}
+${properties.joinToString("\n\n") { it.javaPropertyStringify() }}
 }"""
 }
 
 private fun GenEntityPropertiesView.TargetOf_properties.javaPropertyStringify(): String {
-    return """
-${blockComment()}${annotation()}${if (notNull) "\n    @NotNull" else ""}
-    ${shortTypeName()} $name;
-"""
+    return """${blockComment()}${annotation()}${if (notNull) "\n    @NotNull" else ""}
+    ${shortTypeName()} $name;"""
 }
 
 private fun GenEntityPropertiesView.import(): String =
-    properties.flatMap { it.importList() }.distinct().joinToString("\n") { "import $it;" }
+    properties
+        .flatMap { it.importList() }
+        .distinct()
+        .joinToString("\n") { "import $it;" }
 
 private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
     val importList = importClassList().mapNotNull {
@@ -32,7 +34,7 @@ private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<Strin
     importList += importEntityList()
 
     if (notNull) {
-        importList += org.jetbrains.annotations.Nullable::class.java.name
+        importList += org.jetbrains.annotations.NotNull::class.java.name
     }
 
     return importList.filter { it.isNotEmpty() }

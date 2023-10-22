@@ -12,5 +12,5 @@ fun GenPackage.toPath(): String {
         tempParentPackage = tempParentPackage.parent
     }
 
-    return tempPath.joinToString(".")
+    return tempPath.reversed().joinToString(".")
 }
