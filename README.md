@@ -30,6 +30,8 @@
 
 ### 修改项目配置
 
+- [GenConfig.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fconfig%2FGenConfig.kt)
+- [GenConfigProperties.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fconfig%2FGenConfigProperties.kt)
 - [application.yml](src%2Fmain%2Fresources%2Fapplication.yml)
 - [application-mysql.yml](src%2Fmain%2Fresources%2Fapplication-mysql.yml)
 - [application-postgresql.yml](src%2Fmain%2Fresources%2Fapplication-postgresql.yml)
