@@ -8,20 +8,25 @@ private fun String.escape(): String =
     this.escape(DataSourceType.PostgreSQL)
 
 fun GenTableAssociationView.postgreTableStringify(): String {
-    return """
--- ----------------------------
+    var base = """-- ----------------------------
 -- Table structure for $name
 -- ----------------------------
 DROP TABLE IF EXISTS ${name.escape()} CASCADE;
 CREATE TABLE ${name.escape()}
 (
 ${columns.map { it.postgreColumnStringify() }.joinToString(",\n") { "    ${it.trim()}" }}       
-);
+);"""
 
-${commentStringify().joinToString("\n") { "$it;" }}
+    commentStringify().joinToString("\n") { "$it;" }.takeIf { it.isNotEmpty() }?.let {
+        base += "\n\n" + it
+    }
 
-${fkStringify().joinToString("\n") { "$it;" }}
-"""
+
+    fkStringify().joinToString("\n") { "$it;" }.takeIf { it.isNotEmpty() }?.let {
+        base += "\n\n" + it
+    }
+
+    return base
 }
 
 fun GenTableAssociationView.TargetOf_columns.postgreColumnStringify(): String =
@@ -54,7 +59,11 @@ private fun GenTableAssociationView.fkStringify(): List<String> {
         list += "CREATE ${if (fkColumn.partOfUniqueIdx) "UNIQUE " else ""}INDEX ${indexName.escape()} ON ${name.escape()} (${fkColumn.name.escape()})"
 
         for (outAssociation in fkColumn.outAssociations) {
-            list += "ALTER TABLE ${name.escape()} ADD " + fkColumn.createFkConstraint(indexName, outAssociation, DataSourceType.PostgreSQL)
+            list += "ALTER TABLE ${name.escape()} ADD " + fkColumn.createFkConstraint(
+                indexName,
+                outAssociation,
+                DataSourceType.PostgreSQL
+            )
         }
     }
 
@@ -64,10 +73,14 @@ private fun GenTableAssociationView.fkStringify(): List<String> {
 private fun GenTableAssociationView.commentStringify(): List<String> {
     val list = mutableListOf<String>()
 
-    list += "COMMENT ON TABLE ${name.escape()} IS '$comment'"
+    if (comment.isNotEmpty()) {
+        list += "COMMENT ON TABLE ${name.escape()} IS '$comment'"
+    }
 
     columns.forEach {
-        list += "COMMENT ON COLUMN ${name.escape()}.${it.name.escape()} IS '${it.comment}'"
+        if (it.comment.isNotEmpty()) {
+            list += "COMMENT ON COLUMN ${name.escape()}.${it.name.escape()} IS '${it.comment}'"
+        }
     }
 
     return list

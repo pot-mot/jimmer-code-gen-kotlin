@@ -1,18 +1,3 @@
-GenPackageTreeView  {
-    #allScalars
-
-    entities {
-        #allScalars
-    }
-
-    children {
-        #allScalars
-        entities {
-            #allScalars
-        }
-    }*
-}
-
 inputOnly GenPackageInput {
     #allScalars
     -createdTime

@@ -7,8 +7,7 @@ private fun String.escape(): String =
     this.escape(DataSourceType.MySQL)
 
 fun GenTableAssociationView.mysqlTableStringify(): String {
-    return """
--- ----------------------------
+    return """-- ----------------------------
 -- Table structure for $name
 -- ----------------------------
 DROP TABLE IF EXISTS ${name.escape()};

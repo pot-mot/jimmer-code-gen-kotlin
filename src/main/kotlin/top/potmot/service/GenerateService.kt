@@ -1,10 +1,9 @@
 package top.potmot.service
 
 import org.babyfish.jimmer.sql.kt.KSqlClient
-import org.babyfish.jimmer.sql.kt.ast.expression.isNull
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -23,33 +22,34 @@ import top.potmot.model.GenTypeMapping
 import top.potmot.model.copy
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenTableAssociationView
-import top.potmot.model.entityId
 import top.potmot.model.id
-import top.potmot.model.query.EntityQuery
 import top.potmot.model.tableId
 
 @RestController
 @RequestMapping("/generate")
 class GenerateService(
     @Autowired val sqlClient: KSqlClient,
+    @Autowired val transactionTemplate: TransactionTemplate
 ) {
     @PostMapping("/convert")
-    @Transactional
     fun convert(@RequestBody tableIds: List<Long>): List<Long> {
         val result = mutableListOf<Long>()
 
-        sqlClient.createQuery(GenTable::class) {
-            where(
-                table.id valueIn tableIds
-            )
-            select(table.fetch(GenTableAssociationView::class))
-        }.forEach {
-            sqlClient.createDelete(GenEntity::class) {
-                where(table.tableId valueIn tableIds)
+        transactionTemplate.execute {
+            val tables = sqlClient.createQuery(GenTable::class) {
+                where(
+                    table.id valueIn tableIds
+                )
+                select(table.fetch(GenTableAssociationView::class))
             }.execute()
-            result += sqlClient.insert(
-                convertTableToEntity(it)
-            ).modifiedEntity.id
+
+            sqlClient.createDelete(GenEntity::class) {
+                where(table.tableId valueIn tables.map { table -> table.id })
+            }.execute()
+
+            tables.map {  convertTableToEntity(it) }.forEach {
+                result += sqlClient.insert(it).modifiedEntity.id
+            }
         }
 
         return result
@@ -75,7 +75,6 @@ class GenerateService(
     }
 
     @PostMapping("/entity")
-    @Transactional
     fun generate(
         @RequestBody entityIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
@@ -85,25 +84,27 @@ class GenerateService(
     }
 
     @PostMapping("/table")
-    @Transactional
     fun generateByTable(
         @RequestBody tableIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
     ): ByteArray {
-        sqlClient.createQuery(GenTable::class) {
-            where(table.id valueIn tableIds)
-            where(table.entityId.isNull())
-            select(table.id)
-        }.execute().apply {
-            convert(this)
-        }
-
-        sqlClient.createQuery(GenEntity::class) {
+        val generatedEntityIdAndTableIds = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId valueIn tableIds)
+            select(table.id, table.tableId)
+        }.execute()
+
+        val generatedEntityIds = generatedEntityIdAndTableIds.map { it._1 }.toMutableSet()
+        val generatedTableIds = generatedEntityIdAndTableIds.map { it._2 }.toSet()
+
+        // 为未生成 entity 的 table 生成 entity
+        val convertTableIds = sqlClient.createQuery(GenTable::class) {
+            where(table.id valueIn (tableIds - generatedTableIds))
             select(table.id)
-        }.execute().apply {
-            return generate(this, language)
-        }
+        }.execute()
+
+        generatedEntityIds += convert(convertTableIds)
+
+        return generate(generatedEntityIds.toList(), language)
     }
 
     fun convertTableToEntity(
