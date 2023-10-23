@@ -6,8 +6,8 @@ import top.potmot.enumeration.DataSourceType.*
 import top.potmot.model.dto.GenTableAssociationView
 import java.sql.Types
 
-fun GenTableAssociationView.TargetOf_columns.fullType(): String =
-    when (this.typeCode) {
+fun getFullType(typeCode: Int, type: String, displaySize: Long, numericPrecision: Long): String =
+    when (typeCode) {
         Types.NULL -> type
         Types.JAVA_OBJECT -> type
         Types.BIT, Types.BOOLEAN,
@@ -25,6 +25,9 @@ fun GenTableAssociationView.TargetOf_columns.fullType(): String =
         Types.BLOB, Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> "$type($displaySize)"
         else -> type
     }
+
+fun GenTableAssociationView.TargetOf_columns.fullType(): String =
+    getFullType(typeCode, type, displaySize, numericPrecision)
 
 fun GenTableAssociationView.TargetOf_columns.createFkConstraint(
     indexName: String,

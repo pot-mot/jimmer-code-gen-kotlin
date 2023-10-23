@@ -4,6 +4,7 @@ import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.GenerationType
 import top.potmot.config.GenConfig
 import top.potmot.core.immutable.copyProperties
+import top.potmot.core.template.table.fullType
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenEntity
@@ -293,9 +294,22 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
  * 设置属性类型
  */
 private fun GenTableAssociationView.TargetOf_columns.typeName(
-    typeMappings: List<GenTypeMapping> = emptyList(),
+    typeMappings: List<GenTypeMapping>,
     language: GenLanguage = GenConfig.language,
 ): String {
+    for (typeMapping in typeMappings) {
+        val matchResult =
+            if (typeMapping.regex) {
+                Regex(typeMapping.typeExpression).matches(fullType())
+            } else {
+                typeMapping.typeExpression == fullType()
+            }
+
+        if (matchResult) {
+            return typeMapping.propertyType
+        }
+    }
+
     return when (language) {
         GenLanguage.JAVA -> jdbcTypeToJavaType(typeCode, notNull)?.name ?: type
         GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeCode)?.qualifiedName ?: type

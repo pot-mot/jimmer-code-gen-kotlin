@@ -1,5 +1,6 @@
 package top.potmot.model
 
+import org.babyfish.jimmer.Formula
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -11,6 +12,7 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.Table
+import top.potmot.core.template.table.getFullType
 import top.potmot.model.base.BaseEntity
 
 /**
@@ -85,6 +87,10 @@ interface GenColumn : BaseEntity {
      * 列精度
      */
     val numericPrecision: Long
+
+    @Formula(dependencies = ["typeCode", "type", "displaySize", "numericPrecision"])
+    val fullType: String
+        get() = getFullType(typeCode, type, displaySize, numericPrecision)
 
     /**
      * 列默认值

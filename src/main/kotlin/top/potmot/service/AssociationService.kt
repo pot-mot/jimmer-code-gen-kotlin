@@ -46,20 +46,26 @@ import kotlin.reflect.KClass
 class AssociationService(
     @Autowired val sqlClient: KSqlClient
 ) {
-    @GetMapping("/select/table/{tableIds}")
+    @GetMapping("/table")
     fun selectByTable(
-        @PathVariable tableIds: List<Long>,
+        @RequestParam tableIds: List<Long>,
         @RequestParam(defaultValue = "OR") selectType: SelectType
     ): List<GenAssociationView> {
         return selectByTable(tableIds, selectType, GenAssociationView::class)
     }
 
-    @GetMapping("/select/column/{columnIds}")
+    @GetMapping("/column")
     fun selectByColumn(
-        @PathVariable columnIds: List<Long>,
+        @RequestParam sourceColumnIds: List<Long>,
+        @RequestParam targetColumnIds: List<Long>,
         @RequestParam(defaultValue = "OR") selectType: SelectType
     ): List<GenAssociationView> {
-        return selectByColumn(columnIds, selectType, GenAssociationView::class)
+        return selectByColumn(
+            sourceColumnIds,
+            targetColumnIds,
+            selectType,
+            GenAssociationView::class
+        )
     }
 
     @GetMapping("/query")
@@ -84,23 +90,24 @@ class AssociationService(
         return sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
     }
 
-    @DeleteMapping("/table/{tableIds}")
+    @DeleteMapping("/table")
     @Transactional
     fun deleteByTable(
-        @PathVariable tableIds: List<Long>,
+        @RequestParam tableIds: List<Long>,
         @RequestParam(defaultValue = "AND") selectType: SelectType
     ): Int {
         val ids = selectByTable(tableIds, selectType, GenAssociationIdView::class).map { it.id }
         return sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
     }
 
-    @DeleteMapping("/column/{columnIds}")
+    @DeleteMapping("/column")
     @Transactional
     fun deleteByColumn(
-        @PathVariable columnIds: List<Long>,
+        @RequestParam sourceColumnIds: List<Long>,
+        @RequestParam targetColumnIds: List<Long>,
         @RequestParam(defaultValue = "AND") selectType: SelectType
     ): Int {
-        val ids = selectByColumn(columnIds, selectType, GenAssociationIdView::class).map { it.id }
+        val ids = selectByColumn(sourceColumnIds, targetColumnIds, selectType, GenAssociationIdView::class).map { it.id }
         return sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
     }
 
@@ -207,25 +214,26 @@ class AssociationService(
     }
 
     fun <T : View<GenAssociation>> selectByColumn(
-        columnIds: List<Long>,
+        sourceColumnIds: List<Long>,
+        targetColumnIds: List<Long>,
         selectType: SelectType,
         viewClass: KClass<T>
     ): List<T> {
         return sqlClient.createQuery(GenAssociation::class) {
-            columnIds.takeIf { it.isNotEmpty() }?.let {
+            if (sourceColumnIds.isNotEmpty() || targetColumnIds.isNotEmpty()) {
                 when (selectType) {
                     SelectType.AND -> {
                         where(
-                            table.sourceColumn.id valueIn it,
-                            table.targetColumn.id valueIn it
+                            table.sourceColumn.id valueIn sourceColumnIds,
+                            table.targetColumn.id valueIn targetColumnIds
                         )
                     }
 
                     SelectType.OR -> {
                         where(
                             or(
-                                table.sourceColumn.id valueIn it,
-                                table.targetColumn.id valueIn it
+                                table.sourceColumn.id valueIn sourceColumnIds,
+                                table.targetColumn.id valueIn targetColumnIds
                             )
                         )
                     }
