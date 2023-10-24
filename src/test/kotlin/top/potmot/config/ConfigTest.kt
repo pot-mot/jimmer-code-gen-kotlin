@@ -32,7 +32,7 @@ class AssociationMatchTest(
         configService.setConfig(GenConfigProperties(language = GenLanguage.JAVA))
         Assertions.assertEquals(GenLanguage.JAVA, GenConfig.language)
 
-        val testColumnPrefix = listOf("C_")
+        val testColumnPrefix = "C_"
         configService.setConfig(GenConfigProperties(columnPrefix = testColumnPrefix))
         Assertions.assertEquals(testColumnPrefix, GenConfig.columnPrefix)
 

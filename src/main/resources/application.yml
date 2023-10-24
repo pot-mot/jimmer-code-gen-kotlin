@@ -32,11 +32,11 @@ gen:
   # 作者
   # author:
   language: kotlin
-  tablePrefix: gen_, t_
+  tablePrefix:
   removeTablePrefix: false
-  tableSuffix: model, info
+  tableSuffix:
   removeTableSuffix: false
-  columnPrefix: gen_
-  removeColumnPrefix: true
+  columnPrefix:
+  removeColumnPrefix: false
   columnSuffix:
-  removeColumnSuffix: true
+  removeColumnSuffix: false

@@ -10,13 +10,13 @@ import top.potmot.config.GenConfig
 import top.potmot.config.GenConfigProperties
 
 @RestController
-@RequestMapping("/service")
+@RequestMapping("/config")
 class ConfigService (
     @Autowired val genConfig: GenConfig
 ) {
     @GetMapping
-    fun getConfig(): GenConfig.Companion {
-        return GenConfig.Companion
+    fun getConfig(): GenConfig {
+        return genConfig
     }
 
     @PutMapping

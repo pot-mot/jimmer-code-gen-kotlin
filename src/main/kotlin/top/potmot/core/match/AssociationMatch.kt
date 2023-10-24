@@ -120,5 +120,5 @@ fun suffixMatch(s1: List<String>, s2: List<String>): List<String> {
  * 完全移除表名的前后缀
  */
 private fun String.clearTableMatchName(): String =
-    this.removePrefixes(GenConfig.tablePrefix).removeSuffixes(GenConfig.tableSuffix)
+    this.removePrefixes(GenConfig.tablePrefixes()).removeSuffixes(GenConfig.tableSuffixes())
 

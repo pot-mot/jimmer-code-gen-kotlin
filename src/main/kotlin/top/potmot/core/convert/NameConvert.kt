@@ -125,14 +125,14 @@ private fun String.clearTableName(): String =
     this
         .let {
             if (GenConfig.removeTablePrefix) {
-                removePrefixes(GenConfig.tablePrefix)
+                removePrefixes(GenConfig.tablePrefixes())
             } else {
                 it
             }
         }
         .let {
             if (GenConfig.removeTableSuffix) {
-                removeSuffixes(GenConfig.tableSuffix)
+                removeSuffixes(GenConfig.tableSuffixes())
             } else {
                 it
             }
@@ -145,14 +145,14 @@ private fun String.clearColumnName(): String =
     this
         .let {
             if (GenConfig.removeColumnPrefix) {
-                removePrefixes(GenConfig.columnPrefix)
+                removePrefixes(GenConfig.columnPrefixes())
             } else {
                 it
             }
         }
         .let {
             if (GenConfig.removeColumnSuffix) {
-                removeSuffixes(GenConfig.columnSuffix)
+                removeSuffixes(GenConfig.columnSuffixes())
             } else {
                 it
             }

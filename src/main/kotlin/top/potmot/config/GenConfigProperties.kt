@@ -19,13 +19,13 @@ data class GenConfigProperties(
      * 表名前缀
      * 自动匹配关联与实体名生成时生效
      * 配置文件中由 , 进行分割 */
-    val tablePrefix: List<String>? = null,
+    val tablePrefix: String? = null,
 
     /**
      * 表名后缀
      * 自动匹配关联与实体名生成时生效
      * 配置文件中由 , 进行分割 */
-    val tableSuffix: List<String>? = null,
+    val tableSuffix: String? = null,
 
     /** 生成实体时是否依照 tablePrefix 进行前缀移除 */
     val removeTablePrefix: Boolean? = null,
@@ -37,15 +37,15 @@ data class GenConfigProperties(
      * 列名前缀
      * 属性体名生成时生效
      * 配置文件中由 , 进行分割 */
-    val columnPrefix: List<String>? = null,
+    val columnPrefix: String? = null,
 
     /**
      * 列名后缀
      * 属性体名生成时生效
      * 配置文件中由 , 进行分割 */
-    val columnSuffix: List<String>? = null,
+    val columnSuffix: String? = null,
 
-    /** 生成属性时是否依照 columnPrefix 进行后缀移除 */
+    /** 生成属性时是否依照 columnPrefix 进行前缀移除 */
     val removeColumnPrefix: Boolean? = null,
 
     /** 生成属性时是否依照 columnSuffix 进行后缀移除 */
