@@ -1,12 +1,12 @@
 package top.potmot.service
 
-import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.new
-import org.babyfish.jimmer.spring.cfg.JimmerProperties
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.isNull
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -26,9 +26,9 @@ import top.potmot.model.parentId
 
 @RestController
 @RequestMapping("/package")
+@Transactional
 class PackageService(
     @Autowired val sqlClient: KSqlClient,
-    private val jimmerProperties: JimmerProperties
 ) {
     @GetMapping
     fun list(): List<GenPackageTreeView> {
@@ -52,6 +52,7 @@ class PackageService(
         }
 
         for (i in 1 until names.size) {
+            if (names[i].isBlank()) continue
             val temp = new(GenPackage::class).by {
                 name = names[i]
             }
@@ -101,5 +102,10 @@ class PackageService(
             where(table.id eq id)
             set(table.packageId, packageId)
         }.execute()
+    }
+
+    @DeleteMapping("{ids}")
+    fun delete(@PathVariable ids: List<Long>): Int {
+        return sqlClient.deleteByIds(GenPackage::class, ids).totalAffectedRowCount
     }
 }

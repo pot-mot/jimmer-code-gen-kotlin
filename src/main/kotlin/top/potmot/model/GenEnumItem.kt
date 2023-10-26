@@ -6,6 +6,7 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import top.potmot.model.base.BaseEntity
@@ -28,6 +29,7 @@ interface GenEnumItem : BaseEntity {
     /**
      * 生成枚举
      */
+    @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val enum: GenEnum
@@ -41,6 +43,7 @@ interface GenEnumItem : BaseEntity {
     /**
      * 元素名
      */
+    @Key
     val name: String
 
     /**

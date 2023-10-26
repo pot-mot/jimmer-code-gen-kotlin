@@ -46,11 +46,7 @@ class DataSourceService(
      */
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenDataSourceView? {
-        return sqlClient.createQuery(GenDataSource::class) {
-            where(table.id eq id)
-            select(table.fetch(GenDataSourceView::class))
-        }.execute()
-            .firstOrNull()
+        return sqlClient.findById(GenDataSourceView::class, id)
     }
 
     /**

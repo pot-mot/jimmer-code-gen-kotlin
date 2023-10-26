@@ -7,6 +7,7 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
+import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
@@ -33,29 +34,18 @@ interface GenEnum : BaseEntity {
      * 生成枚举元素
      */
     @OneToMany(mappedBy = "enum")
-    val enumItems: List<GenEnumItem>
+    val items: List<GenEnumItem>
 
     /**
      * 生成枚举元素 ID 视图
      */
-    @IdView("enumItems")
-    val enumItemIds: List<Long>
-
-    /**
-     * 生成属性
-     */
-    @OneToMany(mappedBy = "enum")
-    val properties: List<GenProperty>
-
-    /**
-     * 生成属性 ID 视图
-     */
-    @IdView("properties")
-    val propertyIds: List<Long>
+    @IdView("items")
+    val itemIds: List<Long>
 
     /**
      * 生成包
      */
+    @Key
     @ManyToOne
     @JoinColumn(name = "package_id")
     @OnDissociate(DissociateAction.SET_NULL)
@@ -70,6 +60,7 @@ interface GenEnum : BaseEntity {
     /**
      * 枚举名
      */
+    @Key
     val name: String
 
     /**

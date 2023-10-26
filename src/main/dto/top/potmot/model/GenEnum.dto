@@ -1,0 +1,24 @@
+GenEnumView {
+    #allScalars
+    id(genPackage)
+}
+
+GenEnumItemsView {
+    #allScalars
+    id(genPackage)
+
+    items {
+        #allScalars
+    }
+}
+
+inputOnly GenEnumItemsInput {
+    id(genPackage)
+    name
+    comment
+
+    items {
+        name
+        value
+    }
+}

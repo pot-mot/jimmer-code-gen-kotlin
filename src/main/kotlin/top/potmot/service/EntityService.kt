@@ -51,11 +51,7 @@ class EntityService(
      */
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenEntityPropertiesView? {
-        return sqlClient.createQuery(GenEntity::class) {
-            where(table.id eq id)
-            select(table.fetch(GenEntityPropertiesView::class))
-        }.execute()
-            .firstOrNull()
+        return sqlClient.findById(GenEntityPropertiesView::class, id)
     }
 
     @GetMapping("/language")
