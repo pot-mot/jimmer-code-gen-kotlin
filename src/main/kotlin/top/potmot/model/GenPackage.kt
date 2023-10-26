@@ -40,6 +40,7 @@ interface GenPackage : BaseEntity, TreeNode<GenPackage> {
     /**
      * 父包
      */
+    @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     override val parent: GenPackage?

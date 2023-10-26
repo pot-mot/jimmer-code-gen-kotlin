@@ -2,20 +2,31 @@ GenPackageTreeView {
      #allScalars
      id(parent)
 
-     children {
-        #allScalars
-     }*
-
-     entities {
+    entities {
         id
         name
         id(table)
-     }
+    }
 
-     enums {
+    enums {
         id
         name
-     }
+    }
+
+    children {
+        #allScalars
+
+        entities {
+            id
+            name
+            id(table)
+        }
+
+        enums {
+            id
+            name
+        }
+    }*
 }
 
 inputOnly GenPackageInput {

@@ -24,6 +24,7 @@ private fun GenEntityPropertiesView.import(): String =
     properties
         .flatMap { it.importList() }
         .distinct()
+        .let { importListFilter(it) }
         .joinToString("\n") { "import $it;" }
 
 private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {

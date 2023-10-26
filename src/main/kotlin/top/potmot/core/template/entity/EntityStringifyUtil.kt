@@ -193,3 +193,9 @@ fun GenEntityPropertiesView.TargetOf_properties.importEntityList(): List<String>
 
     return result
 }
+
+fun importListFilter(importList: List<String>): List<String> =
+    importList.filter {
+        !it.startsWith("kotlin.") && !it.startsWith("java.lang.") &&
+                it.split(".").size >= 2
+    }

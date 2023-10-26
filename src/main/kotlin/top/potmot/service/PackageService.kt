@@ -1,5 +1,6 @@
 package top.potmot.service
 
+import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.spring.cfg.JimmerProperties
 import org.babyfish.jimmer.sql.kt.KSqlClient
@@ -47,13 +48,13 @@ class PackageService(
 
         var currentPackage: GenPackage = new(GenPackage::class).by {
             name = names[0]
-            parentId?.let {
-                this.parentId = it
-            }
+            this.parentId = parentId
         }
 
         for (i in 1 until names.size) {
-            val temp = new(GenPackage::class).by { name = names[i] }
+            val temp = new(GenPackage::class).by {
+                name = names[i]
+            }
             currentPackage = new(GenPackage::class).by(temp) {
                 parent = currentPackage
             }
