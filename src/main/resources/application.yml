@@ -24,7 +24,7 @@ jimmer:
 # 代码生成
 gen:
   language: kotlin
-  table-prefix: t_
+  table-prefix: t_,gen_
   table-suffix:
   table-comment-prefix:
   table-comment-suffix: 表
