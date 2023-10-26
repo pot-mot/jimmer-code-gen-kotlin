@@ -10,6 +10,7 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.Table
 import top.potmot.model.base.BaseEntity
 
 /**
@@ -19,6 +20,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-09-30T19:31:11.933
  */
 @Entity
+@Table(name = "jimmer_code_gen.gen_enum")
 interface GenEnum : BaseEntity {
     /**
      * ID

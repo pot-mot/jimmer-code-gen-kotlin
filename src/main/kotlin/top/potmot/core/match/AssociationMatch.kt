@@ -1,8 +1,7 @@
 package top.potmot.core.match
 
 import top.potmot.config.GenConfig
-import top.potmot.core.convert.removePrefixes
-import top.potmot.core.convert.removeSuffixes
+import top.potmot.core.convert.clearTableName
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.dto.GenColumnMatchView
 
@@ -25,7 +24,7 @@ typealias AssociationMatch = (
  */
 val simplePkColumnMatch: AssociationMatch = { source, target ->
     if (target.partOfPk && target.table.id != source.table.id) {
-        val targetTableName = target.table.name.clearTableMatchName()
+        val targetTableName = target.table.name.clearTableName()
         if ("${targetTableName}${GenConfig.separator}${target.name}" == source.name) {
             if (source.partOfUniqueIdx) {
                 AssociationType.ONE_TO_ONE
@@ -48,7 +47,7 @@ val simplePkColumnMatch: AssociationMatch = { source, target ->
  */
 val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
     if (target.partOfPk && target.table.id != source.table.id) {
-        val targetTableName = target.table.name.clearTableMatchName()
+        val targetTableName = target.table.name.clearTableName()
         if (target.name.contains(targetTableName) && target.name == source.name) {
             if (source.partOfUniqueIdx) {
                 AssociationType.ONE_TO_ONE
@@ -77,11 +76,11 @@ val pkSuffixColumnMatch: AssociationMatch = { source, target ->
         val separator = GenConfig.separator
 
         val targetMatchList =
-            target.table.name.clearTableMatchName().split(separator).takeLast(2) +
+            target.table.name.clearTableName().split(separator).takeLast(2) +
                     target.name.split(separator).takeLast(2)
 
         val sourceMatchList =
-            source.table.name.clearTableMatchName().split(separator).takeLast(2) +
+            source.table.name.clearTableName().split(separator).takeLast(2) +
                     source.name.split(separator).takeLast(2)
 
         if (sourceMatchList == targetMatchList) {
@@ -115,10 +114,3 @@ fun suffixMatch(s1: List<String>, s2: List<String>): List<String> {
         .takeWhile { (a, b) -> a == b }
         .map { pair -> pair.first }
 }
-
-/**
- * 完全移除表名的前后缀
- */
-private fun String.clearTableMatchName(): String =
-    this.removePrefixes(GenConfig.tablePrefixes()).removeSuffixes(GenConfig.tableSuffixes())
-

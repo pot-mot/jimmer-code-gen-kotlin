@@ -11,19 +11,43 @@ import top.potmot.model.GenEntity
 import top.potmot.model.GenProperty
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.by
+import top.potmot.model.copy
 import top.potmot.model.dto.GenTableAssociationView
+
+fun GenTableAssociationView.toGenEntity(
+    typeMappings: List<GenTypeMapping> = emptyList(),
+): GenEntity =
+    convertTableToEntity(this, typeMappings)
+
+private fun convertTableToEntity(
+    table: GenTableAssociationView,
+    typeMappings: List<GenTypeMapping> = emptyList(),
+): GenEntity {
+    val baseEntity = tableToEntity(table)
+
+    val properties = table.columns.flatMap { column ->
+        columnToProperties(
+            column,
+            typeMappings
+        )
+    }
+
+    return baseEntity.copy {
+        this.properties = properties
+    }
+}
 
 /**
  * 表到实体转换
  */
-fun tableToEntity(
+private fun tableToEntity(
     genTable: GenTableAssociationView,
 ): GenEntity {
     return new(GenEntity::class).by {
         tableId = genTable.toEntity().id
         author = GenConfig.author
         name = tableNameToClassName(genTable.name)
-        comment = genTable.comment
+        comment = genTable.comment.clearTableComment()
     }
 }
 
@@ -41,7 +65,7 @@ fun tableToEntity(
  *
  * warning: 为保证保存时关联成立，请保证对应 column 具有 id
  */
-fun columnToProperties(
+private fun columnToProperties(
     genColumn: GenTableAssociationView.TargetOf_columns,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
@@ -99,7 +123,7 @@ fun GenTableAssociationView.TargetOf_columns.toBaseProperty(
         this.columnId = column.id
         this.name = columnNameToPropertyName(column.name)
         this.type = column.typeName(typeMappings)
-        this.comment = column.comment
+        this.comment = column.comment.clearColumnComment()
         this.notNull = column.notNull
         this.keyProperty = column.partOfUniqueIdx
     }
@@ -127,7 +151,7 @@ fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
         this.name = sourceColumn.name.toOutPropertyName()
         this.type = tableNameToClassName(targetColumn.table.name)
         this.typeTableId = targetColumn.table.id
-        this.comment = targetColumn.table.comment
+        this.comment = targetColumn.table.comment.clearTableComment()
         this.associationAnnotation = "@ManyToOne"
         outAssociation.dissociateAction?.let {
             this.dissociateAnnotation = "@OnDissociate(DissociateAction.${outAssociation.dissociateAction})"
@@ -171,7 +195,7 @@ fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
         this.name = sourceColumn.name.toOutPropertyName()
         this.type = tableNameToClassName(targetColumn.table.name)
         this.typeTableId = targetColumn.table.id
-        this.comment = targetColumn.table.comment
+        this.comment = targetColumn.table.comment.clearTableComment()
         this.associationAnnotation = "@OneToOne"
         outAssociation.dissociateAction?.let {
             this.dissociateAnnotation = "@OnDissociate(DissociateAction.${outAssociation.dissociateAction})"
@@ -216,7 +240,7 @@ fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
         this.typeTableId = sourceColumn.table.id
         this.listType = true
         this.notNull = true
-        this.comment = sourceColumn.table.comment
+        this.comment = sourceColumn.table.comment.clearTableComment()
         this.associationAnnotation = "@OneToMany(mappedBy = \"${sourceColumn.name.toOutPropertyName()}\")"
         this.keyProperty = false
     }
@@ -271,7 +295,7 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
         this.name = tableNameToPropertyName(sourceColumn.table.name)
         this.type = tableNameToClassName(sourceColumn.table.name)
         this.typeTableId = sourceColumn.table.id
-        this.comment = sourceColumn.table.comment
+        this.comment = sourceColumn.table.comment.clearTableComment()
         this.associationAnnotation = "@OneToOne(mappedBy = \"${sourceColumn.name.toOutPropertyName()}\")"
         this.keyProperty = false
     }

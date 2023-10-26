@@ -7,6 +7,7 @@ import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.ilike
 import org.babyfish.jimmer.sql.kt.ast.expression.or
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
+import org.babyfish.jimmer.sql.kt.ast.table.isNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -23,8 +24,10 @@ import top.potmot.model.createdTime
 import top.potmot.model.dto.GenEntityCommonView
 import top.potmot.model.dto.GenEntityConfigInput
 import top.potmot.model.dto.GenEntityPropertiesView
+import top.potmot.model.genPackage
 import top.potmot.model.id
 import top.potmot.model.name
+import top.potmot.model.packageId
 import top.potmot.model.query.EntityQuery
 import kotlin.reflect.KClass
 
@@ -93,6 +96,14 @@ class EntityService(
                 query.names.forEach {
                     where(table.name eq it)
                 }
+            }
+
+            query.packageIds?.takeIf { it.isNotEmpty() }?.let {
+                where(table.packageId valueIn it)
+            }
+
+            query.nonPackage?.takeIf { it }?.let {
+                where(table.genPackage.isNull())
             }
 
             query.ids?.takeIf { it.isNotEmpty() }?.let {

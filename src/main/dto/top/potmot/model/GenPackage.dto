@@ -1,13 +1,26 @@
-inputOnly GenPackageInput {
-    #allScalars
-    -createdTime
-    -modifiedTime
+GenPackageTreeView {
+     #allScalars
+     id(parent)
+
+     children {
+        #allScalars
+     }*
+
+     entities {
+        id
+        name
+        id(table)
+     }
+
+     enums {
+        id
+        name
+     }
 }
 
-inputOnly GenPackageTreeInput: GenPackageInput {
-    parent {
-        #allScalars
-        -createdTime
-        -modifiedTime
-    }*
+inputOnly GenPackageInput {
+    id
+    id(parent)
+    name
+    orderKey?
 }

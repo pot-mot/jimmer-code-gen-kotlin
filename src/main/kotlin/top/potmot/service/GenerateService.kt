@@ -11,15 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.convert.columnToProperties
-import top.potmot.core.convert.tableToEntity
+import top.potmot.core.convert.toGenEntity
 import top.potmot.core.generate.generateCode
 import top.potmot.core.generate.toZipByteArray
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenEntity
 import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
-import top.potmot.model.copy
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenTableAssociationView
 import top.potmot.model.id
@@ -47,7 +45,11 @@ class GenerateService(
                 where(table.tableId valueIn tables.map { table -> table.id })
             }.execute()
 
-            tables.map {  convertTableToEntity(it) }.forEach {
+            val typeMapping = sqlClient.createQuery(GenTypeMapping::class) {
+                select(table)
+            }.execute()
+
+            tables.map { it.toGenEntity(typeMapping) }.forEach {
                 result += sqlClient.insert(it).modifiedEntity.id
             }
         }
@@ -105,26 +107,5 @@ class GenerateService(
         generatedEntityIds += convert(convertTableIds)
 
         return generate(generatedEntityIds.toList(), language)
-    }
-
-    fun convertTableToEntity(
-        table: GenTableAssociationView
-    ): GenEntity {
-        val baseEntity = tableToEntity(table)
-
-        val typeMappings = sqlClient.createQuery(GenTypeMapping::class) {
-            select(this.table)
-        }.execute()
-
-        val properties = table.columns.flatMap { column ->
-            columnToProperties(
-                column,
-                typeMappings
-            )
-        }
-
-        return baseEntity.copy {
-            this.properties = properties
-        }
     }
 }

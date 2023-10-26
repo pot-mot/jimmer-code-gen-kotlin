@@ -121,40 +121,21 @@ fun String.removeSuffixes(
 /**
  * 根据配置清理表名的前缀和后缀
  */
-private fun String.clearTableName(): String =
-    this
-        .let {
-            if (GenConfig.removeTablePrefix) {
-                removePrefixes(GenConfig.tablePrefixes())
-            } else {
-                it
-            }
-        }
-        .let {
-            if (GenConfig.removeTableSuffix) {
-                removeSuffixes(GenConfig.tableSuffixes())
-            } else {
-                it
-            }
-        }
+fun String.clearTableName(): String =
+    this.removePrefixes(GenConfig.tablePrefixes())
+        .removeSuffixes(GenConfig.tableSuffixes())
+
+fun String.clearTableComment(): String =
+    this.removePrefixes(GenConfig.tableCommentPrefixes())
+        .removeSuffixes(GenConfig.tableCommentSuffixes())
 
 /**
  * 根据配置清理列名的前缀和后缀
  */
-private fun String.clearColumnName(): String =
-    this
-        .let {
-            if (GenConfig.removeColumnPrefix) {
-                removePrefixes(GenConfig.columnPrefixes())
-            } else {
-                it
-            }
-        }
-        .let {
-            if (GenConfig.removeColumnSuffix) {
-                removeSuffixes(GenConfig.columnSuffixes())
-            } else {
-                it
-            }
-        }
+fun String.clearColumnName(): String =
+    this.removePrefixes(GenConfig.columnPrefixes())
+        .removeSuffixes(GenConfig.columnSuffixes())
 
+fun String.clearColumnComment(): String =
+    this.removePrefixes(GenConfig.columnCommentPrefixes())
+        .removeSuffixes(GenConfig.columnCommentSuffixes())

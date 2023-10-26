@@ -1,16 +1,10 @@
+spring:
+  profiles:
+    active: mysql
+
 logging:
   level:
     top.potmot: info
-
-spring:
-  profiles:
-    active: postgresql
-
-  jackson:
-    # 格式化全局时间属性
-    date-format: yyyy-MM-dd HH:mm:ss
-    # 指定时间区域类型
-    time-zone: GMT+8
 
 jimmer:
   language: kotlin
@@ -29,14 +23,12 @@ jimmer:
 
 # 代码生成
 gen:
-  # 作者
-  # author:
   language: kotlin
-  tablePrefix:
-  removeTablePrefix: false
-  tableSuffix:
-  removeTableSuffix: false
-  columnPrefix:
-  removeColumnPrefix: false
-  columnSuffix:
-  removeColumnSuffix: false
+  table-prefix: t_
+  table-suffix:
+  table-comment-prefix:
+  table-comment-suffix: 表
+  column-prefix:
+  column-suffix:
+  column-comment-prefix:
+  column-comment-suffix:

@@ -8,4 +8,6 @@ class EntityQuery(
     val modifiedTime: TimeRangeQueryParam? = null,
     val keywords: List<String>? = null,
     val names: List<String>? = null,
+    val packageIds: List<Long>? = null,
+    val nonPackage: Boolean? = null,
 )

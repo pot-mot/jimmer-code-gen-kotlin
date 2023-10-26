@@ -57,6 +57,24 @@ interface GenPackage : BaseEntity, TreeNode<GenPackage> {
     val entities: List<GenEntity>
 
     /**
+     * 生成实体ID视图
+     */
+    @IdView("entities")
+    val entityIds: List<Long>
+
+    /**
+     * 生成枚举
+     */
+    @OneToMany(mappedBy = "genPackage", orderedProps = [OrderedProp("orderKey")])
+    val enums: List<GenEnum>
+
+    /**
+     * 生成枚举ID视图
+     */
+    @IdView("enums")
+    val enumIds: List<Long>
+
+    /**
      * 组名称
      */
     @Key

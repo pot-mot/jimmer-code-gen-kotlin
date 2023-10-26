@@ -1,5 +1,6 @@
 package top.potmot.core.template.table
 
+import top.potmot.config.GenConfig
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenTableAssociationView
 
@@ -40,6 +41,8 @@ private fun GenTableAssociationView.fkColumns(): List<GenTableAssociationView.Ta
     this.columns.filter { it.partOfFk }
 
 private fun GenTableAssociationView.fkStringify(): List<String> {
+    if (!GenConfig.tableDefineWithFk) return emptyList()
+
     val list = mutableListOf<String>()
 
     for (fkColumn in fkColumns()) {
