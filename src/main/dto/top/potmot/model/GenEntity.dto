@@ -17,6 +17,7 @@ GenEntityPropertiesView: GenEntityCommonView {
     table {
         id
         name
+        comment
 
         schema {
             id
