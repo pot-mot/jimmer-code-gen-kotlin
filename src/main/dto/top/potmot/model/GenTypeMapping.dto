@@ -1,0 +1,6 @@
+inputOnly GenTypeMappingInput {
+    typeExpression
+    regex
+    propertyType
+    remark?
+}

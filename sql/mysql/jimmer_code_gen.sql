@@ -285,7 +285,7 @@ CREATE TABLE `gen_property`
 DROP TABLE IF EXISTS `gen_type_mapping`;
 CREATE TABLE `gen_type_mapping`
 (
-    `id`              bigint       NOT NULL,
+    `id`              bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `type_expression` varchar(500) NOT NULL COMMENT '类型表达式',
     `regex`           tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否正则',
     `property_type`   varchar(500) NOT NULL COMMENT '属性类型',

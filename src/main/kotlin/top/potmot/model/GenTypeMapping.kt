@@ -4,6 +4,7 @@ import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.Table
 import top.potmot.model.base.BaseEntity
 
@@ -23,16 +24,19 @@ interface GenTypeMapping : BaseEntity {
     /**
      * 列类型表达式
      */
+    @Key
     val typeExpression: String
 
     /**
      * 是否正则
      */
+    @Key
     val regex: Boolean
 
     /**
      * 属性类型
      */
+    @Key
     val propertyType: String
 
     /**

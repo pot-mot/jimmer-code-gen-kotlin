@@ -60,8 +60,8 @@ class TableService(
         return map
     }
 
-    @Transactional
     @DeleteMapping("/{ids}")
+    @Transactional
     fun delete(@PathVariable ids: List<Long>): Int {
         return sqlClient.deleteByIds(GenTable::class, ids).totalAffectedRowCount
     }
