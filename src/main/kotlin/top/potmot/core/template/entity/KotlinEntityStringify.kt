@@ -6,10 +6,12 @@ fun GenEntityPropertiesView.kotlinClassStringify(): String {
     return """package ${packagePath()}
 
 import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.Table
 ${import()}
 
 ${blockComment()}
 @Entity
+@Table(name = "${table.schema.name}.${table.name}")
 interface $name {
 ${properties.joinToString("\n\n") { it.kotlinPropertyStringify() }}
 }"""
