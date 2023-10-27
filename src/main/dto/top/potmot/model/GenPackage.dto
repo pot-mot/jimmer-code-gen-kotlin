@@ -21,12 +21,14 @@ GenPackageTreeView {
         entities {
             id
             name
+            comment
             id(table)
         }
 
         enums {
             id
             name
+            comment
         }
     }*
 }
