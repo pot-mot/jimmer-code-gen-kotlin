@@ -2,6 +2,11 @@ package top.potmot.core.template.entity
 
 import top.potmot.model.dto.GenEntityPropertiesView
 
+
+/**
+ * java 语言下的实体生成
+ */
+
 fun GenEntityPropertiesView.javaClassStringify(): String {
     return """package ${packagePath()};
 
@@ -17,9 +22,10 @@ ${properties.joinToString("\n\n") { it.javaPropertyStringify() }}
 }"""
 }
 
+
 private fun GenEntityPropertiesView.TargetOf_properties.javaPropertyStringify(): String {
     return """${blockComment()}${annotation()}${if (notNull) "\n    @NotNull" else ""}
-    ${shortTypeName()} $name;"""
+    ${shortType()} $name;"""
 }
 
 private fun GenEntityPropertiesView.import(): String =
@@ -34,7 +40,7 @@ private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<Strin
         it.qualifiedName
     }.toMutableList()
 
-    importList += importEntityList()
+    importList += fullType()
 
     if (notNull) {
         importList += org.jetbrains.annotations.NotNull::class.java.name
@@ -42,3 +48,23 @@ private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<Strin
 
     return importList.filter { it.isNotEmpty() }
 }
+
+/**
+ * java 语言下的枚举生成
+ */
+
+fun GenEntityPropertiesView.javaEnumsStringify(): List<Pair<String, String>> =
+    properties.filter { it.enum != null }
+        .map { it.enum!! }
+        .map { Pair(name, it.javaEnumStringify()) }
+
+private fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum.javaEnumStringify(): String =
+    """package ${packagePath()};
+
+import org.babyfish.jimmer.sql.EnumType;
+
+${blockComment()}
+@EnumType(EnumType.Strategy.$enumType)
+public enum $name {
+${items.joinToString("\n\n") { it.toEntity().stringify(enumType) }}
+}"""

@@ -19,15 +19,4 @@ enum class AssociationType {
             ONE_TO_MANY -> OneToMany::class
             MANY_TO_MANY -> ManyToMany::class
         }
-
-    companion object {
-        fun fromValue(value: String?): AssociationType? {
-            if (value == null) return null
-            return try {
-                AssociationType.valueOf(value.uppercase())
-            } catch (e: Exception) {
-                null
-            }
-        }
-    }
 }

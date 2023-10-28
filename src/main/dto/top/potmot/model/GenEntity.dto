@@ -53,6 +53,16 @@ GenEntityPropertiesView: GenEntityCommonView {
             id
             name
             comment
+            remark
+            enumType
+
+            items {
+                id
+                name
+                value
+                comment
+                remark
+            }
 
             genPackage {
                 id

@@ -9,7 +9,9 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.OnDissociate
 import top.potmot.config.GenConfig
+import top.potmot.enumeration.EnumType
 import top.potmot.extension.toPath
+import top.potmot.model.GenEnumItem
 import top.potmot.model.dto.GenEntityPropertiesView
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -23,14 +25,61 @@ fun now(formatPattern: String = "yyyy-MM-dd HH:mm:ss"): String =
 fun GenEntityPropertiesView.packagePath(): String =
     genPackage?.toEntity()?.toPath() ?: ""
 
-fun GenEntityPropertiesView.TargetOf_properties.shortTypeName(): String {
-    val baseType = type.split(".").last()
+fun GenEntityPropertiesView.TargetOf_properties.TargetOf_typeTable.packagePath(): String =
+    entity?.genPackage?.toEntity()?.toPath() ?: ""
+
+fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum.packagePath(): String =
+    genPackage?.toEntity()?.toPath() ?: ""
+
+/**
+ * 获取属性的简单类型名
+ * 判断过程如下：
+ *  1. 优先采用枚举类型
+ *  2. 使用 typeTable 对应的 Entity
+ *  3. 使用映射后的 type
+ */
+fun GenEntityPropertiesView.TargetOf_properties.shortType(): String {
+    if (enum != null) {
+        return enum.name
+    }
+
+    val baseType =
+        if (typeTable?.entity != null) {
+            typeTable.entity.name
+        } else {
+            type.split(".").last()
+        }
 
     return if (listType) {
         "List<$baseType>"
     } else {
         baseType
     }
+}
+
+fun GenEntityPropertiesView.TargetOf_properties.fullType(): String {
+    if (enum != null) {
+        val packagePath = enum.packagePath()
+
+        return if (packagePath.isNotBlank()) {
+            packagePath + "." + enum.name
+        } else {
+            enum.name
+        }
+    }
+
+
+    if (typeTable?.entity != null) {
+        val packagePath = typeTable.packagePath()
+
+        return if (packagePath.isNotBlank()) {
+            packagePath + "." + typeTable.entity.name
+        } else {
+            typeTable.entity.name
+        }
+    }
+
+    return type
 }
 
 private fun String.toTextBlock(wrapLength: Int = 40, separator: String = " "): List<String> {
@@ -61,7 +110,12 @@ private fun String.toTextBlock(wrapLength: Int = 40, separator: String = " "): L
     return list
 }
 
-fun GenEntityPropertiesView.blockComment(): String {
+private fun getBlockComment(
+    comment: String,
+    remark: String = "",
+    retract: String = "",
+    params: Map<String, String> = emptyMap(),
+): String {
     val list = mutableListOf<String>()
 
     comment.toTextBlock().let {
@@ -72,29 +126,29 @@ fun GenEntityPropertiesView.blockComment(): String {
         if (it.isNotEmpty()) list += it
     }
 
-    if (list.isNotEmpty()) {
+    if (params.isNotEmpty()) {
         list += ""
     }
 
-    list += "@author ${author.ifEmpty { GenConfig.author }}"
-    list += "@since ${now()}"
-
-    return "/**\n" + list.joinToString("\n") { " * $it" } + "\n */"
-}
-
-fun GenEntityPropertiesView.TargetOf_properties.blockComment(): String {
-    val list = mutableListOf<String>()
-
-    comment.toTextBlock().let {
-        if (it.isNotEmpty()) list += it
+    params.forEach { (key, value) ->
+        list += "@$key $value"
     }
 
-    remark.toTextBlock().let {
-        if (it.isNotEmpty()) list += it
-    }
-
-    return "    /**\n" + list.joinToString("\n") { "     * $it" } + "\n     */"
+    return "$retract/**\n" + list.joinToString("\n") { "$retract * $it" } + "\n$retract */"
 }
+
+fun GenEntityPropertiesView.blockComment(): String =
+    getBlockComment(
+        comment, remark, params = mapOf(
+            Pair("author", author.ifEmpty { GenConfig.author }),
+            Pair("since", now())
+        )
+    )
+
+fun GenEntityPropertiesView.TargetOf_properties.blockComment(): String = getBlockComment(comment, remark, "    ")
+
+fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum.blockComment(): String =
+    getBlockComment(comment, remark, "    ")
 
 fun GenEntityPropertiesView.TargetOf_properties.annotation(): String {
     val list = mutableListOf<String>()
@@ -168,35 +222,19 @@ fun GenEntityPropertiesView.TargetOf_properties.importClassList(): List<KClass<*
     return result
 }
 
-fun GenEntityPropertiesView.TargetOf_properties.importEntityList(): List<String> {
-    val result = mutableListOf<String>()
-
-    result +=
-        if (typeTable?.entity != null) {
-            if (typeTable.entity.genPackage != null) {
-                typeTable.entity.genPackage.toEntity().toPath() + "." + typeTable.entity.name
-            } else {
-                typeTable.entity.name
-            }
-        } else {
-            type
-        }
-
-    if (enum != null) {
-        result +=
-            if (enum.genPackage != null) {
-                enum.genPackage.toEntity().toPath() + "." + enum.name
-            } else {
-                enum.name
-            }
-    }
-
-    return result
-}
 
 fun importListFilter(importList: List<String>): List<String> =
-    importList.filter {
-        !(it.startsWith("kotlin.") && it.split(".").size == 2)
-                && !(it.startsWith("java.lang.") && it.split(".").size == 3)
-                && it.split(".").size >= 2
+    importList.filter { importItem ->
+        !(importItem.startsWith("kotlin.") && importItem.split(".").size == 2)
+                &&
+                !(importItem.startsWith("java.lang.") && importItem.split(".").size == 3)
+                &&
+                (importItem.split(".").filter { it.isNotBlank() }.size >= 2)
     }
+
+fun GenEnumItem.stringify(enumType: EnumType?): String =
+    when (enumType) {
+        EnumType.NAME -> "@EnumItem(name = \"$value\")\n"
+        EnumType.ORDINAL -> "@EnumItem(ordinal = $value)\n"
+        null -> ""
+    } + name

@@ -12,6 +12,7 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.Table
+import top.potmot.enumeration.EnumType
 import top.potmot.model.base.BaseEntity
 
 /**
@@ -69,8 +70,12 @@ interface GenEnum : BaseEntity {
     val comment: String
 
     /**
+     * 枚举类型
+     */
+    val enumType: EnumType?
+
+    /**
      * 自定排序
      */
     val orderKey: Long
-
 }

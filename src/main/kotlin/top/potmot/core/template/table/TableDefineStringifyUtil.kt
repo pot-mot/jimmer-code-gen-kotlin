@@ -6,7 +6,7 @@ import top.potmot.enumeration.DataSourceType.*
 import top.potmot.model.dto.GenTableAssociationView
 import java.sql.Types
 
-fun getFullType(typeCode: Int, type: String, displaySize: Long, numericPrecision: Long): String =
+private fun getFullType(typeCode: Int, type: String, displaySize: Long, numericPrecision: Long): String =
     when (typeCode) {
         Types.NULL -> type
         Types.JAVA_OBJECT -> type

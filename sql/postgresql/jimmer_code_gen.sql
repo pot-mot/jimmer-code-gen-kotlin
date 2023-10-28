@@ -296,6 +296,7 @@ CREATE TABLE "gen_enum"
     "package_id"    bigint      NULL     DEFAULT NULL REFERENCES "gen_package" ("id") ON DELETE SET NULL ON UPDATE RESTRICT,
     "name"          text        NOT NULL,
     "comment"       text        NOT NULL,
+    "enum_type"     text        NULL,
     "order_key"     bigint      NOT NULL DEFAULT 0,
     "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -309,6 +310,7 @@ COMMENT ON COLUMN "gen_enum"."id" IS 'ID';
 COMMENT ON COLUMN "gen_enum"."package_id" IS '所属包';
 COMMENT ON COLUMN "gen_enum"."name" IS '枚举名';
 COMMENT ON COLUMN "gen_enum"."comment" IS '枚举注释';
+COMMENT ON COLUMN "gen_enum"."enum_type" IS '枚举类型';
 COMMENT ON COLUMN "gen_enum"."order_key" IS '自定排序';
 COMMENT ON COLUMN "gen_enum"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_enum"."modified_time" IS '修改时间';

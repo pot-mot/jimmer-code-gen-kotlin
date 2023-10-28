@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: mysql
+    active: postgresql
 
 logging:
   level:
