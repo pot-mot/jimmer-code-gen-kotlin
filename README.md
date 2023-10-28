@@ -1,4 +1,15 @@
-# Jimmer Code Gen 代码生成器
+# Jimmer Code Gen 代码生成器 模型重构分支
+
+> ## 重构内容
+> 将原本 table -> entity 的生成方式改为以 model 为中心的生成方式
+> 
+> **即实现以下转换**:
+> - model -> entity
+> - table -> model
+> - model -> table
+> 
+> 同时将前端的依赖核心从 table 迁移到 model
+> 
 
 项目基于 Kotlin + Gradle + [SchemaCrawler](https://github.com/schemacrawler/SchemaCrawler) 编写
 
