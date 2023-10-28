@@ -54,7 +54,7 @@
 
 ### match 匹配
 
-包含 [AssociationMatch.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fmatch%2FAssociationMatch.kt)AssociationMatch 关联匹配，可根据列间比较返回关联
+包含 [AssociationMatch.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fmatch%2FAssociationMatch.kt) 关联匹配，可根据列间比较返回关联
 
 #### 拓展点
 
@@ -64,13 +64,28 @@ typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatch
 
 可通过继续实现 top.potmot.core.AssociationMatch 进行更多种类列关联的半自动匹配
 
-(注意，需要补充 [AssociationMatchType.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fenum%2FAssociationMatchType.kt) 枚举 )
+(注意，需要补充 [AssociationMatchType.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fenumeration%2FAssociationMatchType.kt) 枚举 )
 
 ### template 模版
 
 将实体对象转换为对应语言实体类代码的模版
-- [JavaEntityStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FJavaEntityStringify.kt)
-- [KotlinEntityStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FKotlinEntityStringify.kt)
+
+#### 实体
+
+调用处:
+- [CodeGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fgenerate%2FCodeGenerate.kt)
+
+具体模版:
+- [JavaEntityStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Fentity%2FJavaEntityStringify.kt)
+- [KotlinEntityStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Fentity%2FKotlinEntityStringify.kt)
+
+#### 表定义
+调用处:
+- [DataBaseGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fgenerate%2FDataBaseGenerate.kt)
+
+具体模版:
+- [MysqlTableDefineStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Ftable%2FMysqlTableDefineStringify.kt)
+- [PostgreTableDefineStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Ftable%2FPostgreTableDefineStringify.kt)
 
 #### 拓展点
 
