@@ -29,6 +29,7 @@ val mysqlVersion = "8.0.30"
 val postgreVersion = "42.6.0"
 val caffeineVersion = "2.9.1"
 val schemacrawlerVersion = "16.20.4"
+val liquibaseVersion = "4.24.0"
 
 repositories {
     mavenCentral()
@@ -71,6 +72,9 @@ dependencies {
     implementation("us.fatehi:schemacrawler-postgresql:${schemacrawlerVersion}") {
         exclude(group = "org.slf4j", module = "slf4j-nop")
     }
+
+    // https://mvnrepository.com/artifact/org.liquibase/liquibase-core
+    implementation("org.liquibase:liquibase-core:${liquibaseVersion}")
 }
 
 // Without this configuration, gradle command can still run.
