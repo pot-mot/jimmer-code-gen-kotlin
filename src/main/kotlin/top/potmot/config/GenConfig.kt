@@ -151,6 +151,9 @@ object GenConfig {
     }
 
     fun merge(newConfig: GenConfigProperties) {
+        newConfig.dataSourceType?.let {
+            dataSourceType = it
+        }
         newConfig.separator?.let {
             separator = it
         }

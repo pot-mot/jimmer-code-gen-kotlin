@@ -1,6 +1,8 @@
 spring:
   profiles:
     active: mysql
+  liquibase:
+    enabled: false
 
 logging:
   level:

@@ -72,6 +72,16 @@ class EntityGenerateTest {
         )
 
 
+        val baseTable = GenEntityPropertiesView.TargetOf_table(
+            id = 1,
+            name = "table",
+            comment = "comment",
+            schema = GenEntityPropertiesView.TargetOf_table.TargetOf_schema(
+                id = 1,
+                name = "schema",
+            )
+        )
+
         val baseEntity = GenEntityPropertiesView(
             id = 1,
             createdTime = LocalDateTime.now(),
@@ -81,7 +91,7 @@ class EntityGenerateTest {
             comment = "comment",
             author = "Potmot",
             orderKey = 1,
-            tableId = 1,
+            table = baseTable,
             genPackage = basePackage,
             properties = listOf(
                 pkProperty,
@@ -92,13 +102,12 @@ class EntityGenerateTest {
         val kotlinExpected = """package com.example.test
 
 import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.Table
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
-import kotlin.Long
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
-import Entity
 
 /**
  * comment
@@ -107,6 +116,7 @@ import Entity
  * @author Potmot
  */
 @Entity
+@Table(name = "schema.table")
 interface Entity {
     /**
      * ID
@@ -134,14 +144,13 @@ interface Entity {
         val javaExpected = """package com.example.test;
 
 import org.babyfish.jimmer.sql.Entity;
+import org.babyfish.jimmer.sql.Table;
 import org.babyfish.jimmer.sql.Id;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
-import kotlin.Long;
 import org.jetbrains.annotations.NotNull;
 import org.babyfish.jimmer.sql.Key;
 import org.babyfish.jimmer.sql.ManyToOne;
-import Entity;
 
 /**
  * comment
@@ -150,6 +159,7 @@ import Entity;
  * @author Potmot
  */
 @Entity
+@Table(name = "schema.table")
 interface Entity {
     /**
      * ID

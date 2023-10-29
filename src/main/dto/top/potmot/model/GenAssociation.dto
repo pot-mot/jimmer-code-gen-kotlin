@@ -8,6 +8,8 @@ GenAssociationView {
         id
         name
         comment
+        type
+
         table {
             id
             name
@@ -18,6 +20,8 @@ GenAssociationView {
         id
         name
         comment
+        type
+
         table {
             id
             name

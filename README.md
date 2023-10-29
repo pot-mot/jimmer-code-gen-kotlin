@@ -7,7 +7,7 @@
 > **将 table 与 datasource 解除强关联，允许 table 单独存在**
 > 
 
-项目基于 Kotlin + Gradle + [SchemaCrawler](https://github.com/schemacrawler/SchemaCrawler) 编写
+项目基于 Kotlin + Gradle + [SchemaCrawler](https://github.com/schemacrawler/SchemaCrawler) + [Liquibase](https://www.bing.com/search?q=liquibase&form=ANNTH1&refig=ef394be2e4284bdbbe5b442876a12d57&pc=NMTS) 编写
 
 目前支持根据数据库元数据生成 jimmer 实体类与简单关联属性
 

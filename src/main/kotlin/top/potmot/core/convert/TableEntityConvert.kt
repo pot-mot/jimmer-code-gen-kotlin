@@ -65,7 +65,7 @@ private fun tableToEntity(
  *
  * warning: 为保证保存时关联成立，请保证对应 column 具有 id
  */
-private fun columnToProperties(
+fun columnToProperties(
     genColumn: GenTableAssociationView.TargetOf_columns,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {

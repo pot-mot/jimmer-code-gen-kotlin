@@ -1,8 +1,12 @@
 package top.potmot.config
 
+import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 
 data class GenConfigProperties(
+    /** 数据源类型 */
+    var dataSourceType: DataSourceType? = null,
+
     /** 分隔符 */
     val separator: String? = null,
 

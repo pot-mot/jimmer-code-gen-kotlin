@@ -1,22 +1,6 @@
 GenTableCommonView {
     #allScalars
-    schema {
-        id
-        dataSource {
-            id
-        }
-    }
-}
 
-GenTableColumnView: GenTableCommonView {
-    columns {
-        #allScalars
-        id(table)
-    }
-}
-
-GenTableAssociationView {
-    #allScalars
     id(entity)
 
     schema {
@@ -29,7 +13,16 @@ GenTableAssociationView {
             type
         }
     }
+}
 
+GenTableColumnView: GenTableCommonView {
+    columns {
+        #allScalars
+        id(table)
+    }
+}
+
+GenTableAssociationView: GenTableCommonView {
     columns {
         #allScalars
         id(table)

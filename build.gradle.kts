@@ -29,7 +29,7 @@ val mysqlVersion = "8.0.30"
 val postgreVersion = "42.6.0"
 val caffeineVersion = "2.9.1"
 val schemacrawlerVersion = "16.20.4"
-val liquibaseVersion = "4.24.0"
+val liquibaseVersion = "4.22.0"
 
 repositories {
     mavenCentral()
