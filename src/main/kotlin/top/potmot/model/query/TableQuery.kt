@@ -9,4 +9,5 @@ class TableQuery(
     val keywords: List<String>? = null,
     val name: String? = null,
     val schemaIds: List<Long>? = null,
+    val nonSchema: Boolean? = null,
 )

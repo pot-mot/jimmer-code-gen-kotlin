@@ -8,7 +8,7 @@ import top.potmot.model.dto.GenTableAssociationView
 
 fun generateTableDefine(
     table: GenTableAssociationView,
-    dataSourceTypes: List<DataSourceType> = listOf(table.schema.dataSource.type)
+    dataSourceTypes: List<DataSourceType> = listOf(table.schema?.dataSource?.type ?: GenConfig.dataSourceType)
 ): Map<String, String> {
     val map = mutableMapOf<String, String>()
 

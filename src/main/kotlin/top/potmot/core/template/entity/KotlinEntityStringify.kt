@@ -16,7 +16,7 @@ ${import()}
 
 ${blockComment()}
 @Entity
-@Table(name = "${table.schema.name}.${table.name}")
+${tableAnnotation()}
 interface $name {
 ${properties.joinToString("\n\n") { it.kotlinPropertyStringify() }}
 }"""

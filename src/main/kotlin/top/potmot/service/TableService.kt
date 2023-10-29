@@ -4,6 +4,7 @@ import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.between
 import org.babyfish.jimmer.sql.kt.ast.expression.ilike
+import org.babyfish.jimmer.sql.kt.ast.expression.isNull
 import org.babyfish.jimmer.sql.kt.ast.expression.or
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.springframework.beans.factory.annotation.Autowired
@@ -77,6 +78,9 @@ class TableService(
                         )
                     )
                 }
+            }
+            query.nonSchema?.let {
+                where(table.schemaId.isNull())
             }
             query.schemaIds?.takeIf { it.isNotEmpty() }?.let {
                 where(table.schemaId valueIn it)

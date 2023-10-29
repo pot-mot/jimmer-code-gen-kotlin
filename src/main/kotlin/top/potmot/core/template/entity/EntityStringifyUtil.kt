@@ -17,6 +17,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
 
+fun GenEntityPropertiesView.tableAnnotation(): String =
+    "@Table(name = \"${table.schema?.name?.let { "$it." } ?: ""}${table.name}\")"
+
 fun now(formatPattern: String = "yyyy-MM-dd HH:mm:ss"): String =
     LocalDateTime.now().format(
         DateTimeFormatter.ofPattern(formatPattern)

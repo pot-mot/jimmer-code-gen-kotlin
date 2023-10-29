@@ -1,19 +1,3 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : localhost3307
- Source Server Type    : MySQL
- Source Server Version : 80030
- Source Host           : localhost:3307
- Source Schema         : jimmer_code_gen
-
- Target Server Type    : MySQL
- Target Server Version : 80030
- File Encoding         : 65001
-
- Date: 09/10/2023 11:16:40
-*/
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -69,7 +53,7 @@ DROP TABLE IF EXISTS `gen_table`;
 CREATE TABLE `gen_table`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `schema_id`     bigint       NOT NULL COMMENT '数据架构',
+    `schema_id`     bigint       NULL COMMENT '数据架构',
     `name`          varchar(500) NOT NULL COMMENT '表名称',
     `comment`       varchar(500) NOT NULL COMMENT '表注释',
     `type`          varchar(500) NOT NULL COMMENT '表种类',

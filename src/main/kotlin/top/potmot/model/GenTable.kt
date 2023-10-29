@@ -36,7 +36,7 @@ interface GenTable : BaseEntity {
      * 数据源
      */
     @IdView
-    val schemaId: Long
+    val schemaId: Long?
 
     /**
      * 数据架构
@@ -44,7 +44,7 @@ interface GenTable : BaseEntity {
     @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    val schema: GenSchema
+    val schema: GenSchema?
 
     /**
      * 对应实体 ID
