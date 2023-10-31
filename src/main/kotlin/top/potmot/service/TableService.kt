@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.generate.generateTableDefine
@@ -22,6 +24,7 @@ import top.potmot.model.createdTime
 import top.potmot.model.dto.GenTableAssociationView
 import top.potmot.model.dto.GenTableColumnView
 import top.potmot.model.dto.GenTableCommonView
+import top.potmot.model.dto.GenTableInput
 import top.potmot.model.id
 import top.potmot.model.name
 import top.potmot.model.query.TableQuery
@@ -59,6 +62,14 @@ class TableService(
         }
 
         return map
+    }
+
+    @PostMapping
+    @Transactional
+    fun create(
+        @RequestBody input: GenTableInput
+    ): Long {
+        return sqlClient.insert(input).modifiedEntity.id
     }
 
     @DeleteMapping("/{ids}")

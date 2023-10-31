@@ -39,7 +39,7 @@ class PackageService(
     }
 
     @PostMapping
-    fun createPackage(
+    fun create(
         @RequestParam path: String,
         @RequestParam(required = false) parentId: Long?
     ): Long? {

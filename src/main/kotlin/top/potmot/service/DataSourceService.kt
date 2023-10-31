@@ -68,12 +68,12 @@ class DataSourceService(
     }
 
     /**
-     * 插入数据源
+     * 创建数据源
      */
     @PostMapping
     @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
-    fun insert(@RequestBody dataSource: GenDataSourceInput): Long {
+    fun create(@RequestBody dataSource: GenDataSourceInput): Long {
         dataSource.toEntity().test()
         return sqlClient.insert(dataSource).modifiedEntity.id
     }

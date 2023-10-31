@@ -31,13 +31,6 @@ interface GenTable : BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override val id: Long
 
-
-    /**
-     * 数据源
-     */
-    @IdView
-    val schemaId: Long?
-
     /**
      * 数据架构
      */
@@ -45,6 +38,12 @@ interface GenTable : BaseEntity {
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val schema: GenSchema?
+
+    /**
+     * 所属架构ID视图
+     */
+    @IdView
+    val schemaId: Long?
 
     /**
      * 对应实体 ID

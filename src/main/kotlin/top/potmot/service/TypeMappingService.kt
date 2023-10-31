@@ -30,7 +30,7 @@ class TypeMappingService(
     }
 
     @PostMapping
-    fun add(@RequestBody typeMapping: GenTypeMappingInput): Long {
+    fun create(@RequestBody typeMapping: GenTypeMappingInput): Long {
         return sqlClient.insert(typeMapping).modifiedEntity.id
     }
 
