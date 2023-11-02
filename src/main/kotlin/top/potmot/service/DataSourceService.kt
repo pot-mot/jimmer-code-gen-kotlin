@@ -3,7 +3,6 @@ package top.potmot.service
 import org.babyfish.jimmer.client.ThrowsAll
 import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
-import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -24,7 +23,6 @@ import top.potmot.model.copy
 import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.model.dto.GenDataSourceTemplateView
 import top.potmot.model.dto.GenDataSourceView
-import top.potmot.model.id
 
 @RestController
 @RequestMapping("/dataSource")
@@ -50,7 +48,7 @@ class DataSourceService(
     }
 
     /**
-     * 获取数据库类型
+     * 获取数据源类型
      */
     @GetMapping("/type")
     fun listType(): List<DataSourceType> {

@@ -23,7 +23,7 @@ import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.dataSourceId
 import top.potmot.model.dto.GenSchemaView
-import top.potmot.model.dto.GenTableAssociationView
+import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.id
 import top.potmot.model.schemaId
 import us.fatehi.utility.datasource.DatabaseConnectionSource
@@ -101,7 +101,7 @@ class SchemaService(
                 // 转换成实体并进行保存
                 val genTables = sqlClient.createQuery(GenTable::class) {
                     where(table.schemaId eq newSchemaId)
-                    select(table.fetch(GenTableAssociationView::class))
+                    select(table.fetch(GenTableAssociationsView::class))
                 }.execute()
 
                 genTables.map { it.toGenEntity(typeMapping) }.forEach {

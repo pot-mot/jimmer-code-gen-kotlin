@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import top.potmot.core.convert.columnToProperties
 import top.potmot.enumeration.AssociationType
-import top.potmot.model.dto.GenTableAssociationView
+import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 import java.time.LocalDateTime
 
@@ -25,7 +25,7 @@ class ColumnPropertyConvertTest {
         val name = "id_property"
         val comment = "PK COLUMN"
 
-        val column = GenTableAssociationView.TargetOf_columns(
+        val column = GenTableAssociationsView.TargetOf_columns(
             1, LocalDateTime.now(), LocalDateTime.now(), "remark", 0,
             name, Types.BIGINT, "bigint", 0, 0, null, comment,
             true, true, false, true, true, 1
@@ -54,16 +54,16 @@ class ColumnPropertyConvertTest {
     @Test
     @Order(2)
     fun testOutManyColumnConvert() {
-        val column = GenTableAssociationView.TargetOf_columns(
+        val column = GenTableAssociationsView.TargetOf_columns(
             1, LocalDateTime.now(), LocalDateTime.now(), "remark", 0,
             "many_to_one_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
             false, false, true, false, false, 1,
             outAssociations = listOf(
-                GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations(
+                GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations(
                     1, AssociationType.MANY_TO_ONE, DissociateAction.DELETE, true,
-                    GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn(
+                    GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn(
                         2, "one_to_many_property", "",
-                        GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn.TargetOf_table(
+                        GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn.TargetOf_table(
                             2, "table2", ""
                         )
                     )
@@ -100,16 +100,16 @@ class ColumnPropertyConvertTest {
     @Test
     @Order(3)
     fun testInManyColumnConvert() {
-        val column = GenTableAssociationView.TargetOf_columns(
+        val column = GenTableAssociationsView.TargetOf_columns(
             1, LocalDateTime.now(), LocalDateTime.now(), "remark", 0,
             "one_to_many_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
             false, false, false, false, false, 1,
             inAssociations = listOf(
-                GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations(
+                GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations(
                     1, AssociationType.MANY_TO_ONE, DissociateAction.DELETE, true,
-                    GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn(
+                    GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn(
                         2, "many_to_one_property", "",
-                        GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn.TargetOf_table(
+                        GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn.TargetOf_table(
                             2, "table2", ""
                         )
                     )
@@ -152,16 +152,16 @@ class ColumnPropertyConvertTest {
     @Test
     @Order(4)
     fun testOutOneColumnConvert() {
-        val column = GenTableAssociationView.TargetOf_columns(
+        val column = GenTableAssociationsView.TargetOf_columns(
             1, LocalDateTime.now(), LocalDateTime.now(), "remark", 0,
             "one_to_one_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
             false, false, true, true, true, 1,
             outAssociations = listOf(
-                GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations(
+                GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations(
                     1, AssociationType.ONE_TO_ONE, DissociateAction.DELETE, true,
-                    GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn(
+                    GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn(
                         2, "one_to_one_property", "",
-                        GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn.TargetOf_table(
+                        GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn.TargetOf_table(
                             2, "table2", ""
                         )
                     )
@@ -198,16 +198,16 @@ class ColumnPropertyConvertTest {
     @Test
     @Order(5)
     fun testInOneColumnConvert() {
-        val column = GenTableAssociationView.TargetOf_columns(
+        val column = GenTableAssociationsView.TargetOf_columns(
             1, LocalDateTime.now(), LocalDateTime.now(), "remark", 0,
             "one_to_one_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
             false, false, false, true, false, 1,
             inAssociations = listOf(
-                GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations(
+                GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations(
                     1, AssociationType.ONE_TO_ONE, DissociateAction.DELETE, true,
-                    GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn(
+                    GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn(
                         2, "one_to_one_property", "",
-                        GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn.TargetOf_table(
+                        GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn.TargetOf_table(
                             2, "table2", ""
                         )
                     )

@@ -12,15 +12,15 @@ import top.potmot.model.GenProperty
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.by
 import top.potmot.model.copy
-import top.potmot.model.dto.GenTableAssociationView
+import top.potmot.model.dto.GenTableAssociationsView
 
-fun GenTableAssociationView.toGenEntity(
+fun GenTableAssociationsView.toGenEntity(
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): GenEntity =
     convertTableToEntity(this, typeMappings)
 
 private fun convertTableToEntity(
-    table: GenTableAssociationView,
+    table: GenTableAssociationsView,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): GenEntity {
     val baseEntity = tableToEntity(table)
@@ -41,7 +41,7 @@ private fun convertTableToEntity(
  * 表到实体转换
  */
 private fun tableToEntity(
-    genTable: GenTableAssociationView,
+    genTable: GenTableAssociationsView,
 ): GenEntity {
     return new(GenEntity::class).by {
         tableId = genTable.toEntity().id
@@ -66,7 +66,7 @@ private fun tableToEntity(
  * warning: 为保证保存时关联成立，请保证对应 column 具有 id
  */
 fun columnToProperties(
-    genColumn: GenTableAssociationView.TargetOf_columns,
+    genColumn: GenTableAssociationsView.TargetOf_columns,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
     val properties = mutableListOf<GenProperty>()
@@ -114,7 +114,7 @@ fun columnToProperties(
 /**
  * 转换为基础属性
  */
-fun GenTableAssociationView.TargetOf_columns.toBaseProperty(
+fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): GenProperty {
     val column = this
@@ -133,8 +133,8 @@ fun GenTableAssociationView.TargetOf_columns.toBaseProperty(
  * 转换为 ManyToOne 属性
  * 基于 outAssociation 进行
  */
-fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
-    outAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations,
+fun GenTableAssociationsView.TargetOf_columns.toManyToOneProperty(
+    outAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
     val sourceColumn = this
@@ -177,8 +177,8 @@ fun GenTableAssociationView.TargetOf_columns.toManyToOneProperty(
  * 转换为 OneToOne 属性
  * 基于 outAssociation 进行
  */
-fun GenTableAssociationView.TargetOf_columns.toOneToOneProperty(
-    outAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations,
+fun GenTableAssociationsView.TargetOf_columns.toOneToOneProperty(
+    outAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
     val sourceColumn = this
@@ -223,8 +223,8 @@ private fun String.toOutPropertyName(): String =
  * 获取 OneToMany 属性
  * 基于 inAssociation 进行
  */
-fun GenTableAssociationView.TargetOf_columns.getOneToManyProperty(
-    inAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations,
+fun GenTableAssociationsView.TargetOf_columns.getOneToManyProperty(
+    inAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
     val sourceColumn = inAssociation.sourceColumn
@@ -280,8 +280,8 @@ private fun String.toPlural(): String {
  * 获取 OneToOne 属性
  * 基于 inAssociation 进行
  */
-fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
-    inAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_inAssociations,
+fun GenTableAssociationsView.TargetOf_columns.getOneToOneProperty(
+    inAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> {
     val sourceColumn = inAssociation.sourceColumn
@@ -317,7 +317,7 @@ fun GenTableAssociationView.TargetOf_columns.getOneToOneProperty(
 /**
  * 设置属性类型
  */
-private fun GenTableAssociationView.TargetOf_columns.typeName(
+private fun GenTableAssociationsView.TargetOf_columns.typeName(
     typeMappings: List<GenTypeMapping>,
     language: GenLanguage = GenConfig.language,
 ): String {

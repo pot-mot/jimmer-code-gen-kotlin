@@ -25,7 +25,7 @@ import top.potmot.extension.toSource
 import top.potmot.model.GenColumn
 import top.potmot.model.GenDataSource
 import top.potmot.model.dto.GenAssociationView
-import top.potmot.model.dto.GenTableColumnView
+import top.potmot.model.dto.GenTableColumnsView
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -38,7 +38,7 @@ import java.util.*
 /**
  * 转换 GenColumn 为 ColumnConfig
  */
-private fun GenTableColumnView.TargetOf_columns.toColumnConfig(): ColumnConfig {
+private fun GenTableColumnsView.TargetOf_columns.toColumnConfig(): ColumnConfig {
     val columnConfig = ColumnConfig()
 
     // 基本信息
@@ -59,9 +59,9 @@ private fun GenTableColumnView.TargetOf_columns.toColumnConfig(): ColumnConfig {
 }
 
 /**
- * 转换 GenTableColumnView 为 CreateTableChange
+ * 转换 GenTableColumnsView 为 CreateTableChange
  */
-private fun GenTableColumnView.toCreateTableChange(): CreateTableChange {
+private fun GenTableColumnsView.toCreateTableChange(): CreateTableChange {
     val createTableChange = CreateTableChange()
 
     // 基本信息
@@ -80,9 +80,9 @@ private fun GenTableColumnView.toCreateTableChange(): CreateTableChange {
 }
 
 /**
- * 从 GenTableColumnView 中获取 AddUniqueConstraintChange
+ * 从 GenTableColumnsView 中获取 AddUniqueConstraintChange
  */
-private fun GenTableColumnView.getAddUniqueConstraintChange(): AddUniqueConstraintChange {
+private fun GenTableColumnsView.getAddUniqueConstraintChange(): AddUniqueConstraintChange {
     val addUniqueConstraintChange = AddUniqueConstraintChange()
 
     addUniqueConstraintChange.constraintName = "business_key__$name"
@@ -195,7 +195,7 @@ private fun GenAssociationView.toManyToManyChanges(): List<Change> {
 
 
 fun createDatabaseChangeLog(
-    tables: List<GenTableColumnView>,
+    tables: List<GenTableColumnsView>,
     associations: List<GenAssociationView>
 ): DatabaseChangeLog {
     val changeLog = DatabaseChangeLog()
@@ -307,7 +307,7 @@ private fun changeLogToCreateSql(
 }
 
 fun GenDataSource.createSql(
-    tables: List<GenTableColumnView>,
+    tables: List<GenTableColumnsView>,
     associations: List<GenAssociationView>
 ): String {
     val databaseChangeLog = createDatabaseChangeLog(tables, associations)

@@ -10,7 +10,7 @@ import top.potmot.core.liquibase.createSql
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.TableType
 import top.potmot.model.dto.GenDataSourceInput
-import top.potmot.model.dto.GenTableColumnView
+import top.potmot.model.dto.GenTableColumnsView
 import java.time.LocalDateTime
 
 @SpringBootTest
@@ -32,7 +32,7 @@ class TestLiquibaseCreateSql {
             remark = "test"
         ).toEntity()
 
-        val column1 = GenTableColumnView.TargetOf_columns(
+        val column1 = GenTableColumnsView.TargetOf_columns(
             id = 1,
             createdTime = LocalDateTime.now(),
             modifiedTime = LocalDateTime.now(),
@@ -53,7 +53,7 @@ class TestLiquibaseCreateSql {
             tableId = 1
         )
 
-        val column2 = GenTableColumnView.TargetOf_columns(
+        val column2 = GenTableColumnsView.TargetOf_columns(
             id = 2,
             createdTime = LocalDateTime.now(),
             modifiedTime = LocalDateTime.now(),
@@ -74,7 +74,7 @@ class TestLiquibaseCreateSql {
             tableId = 1
         )
 
-        val table = GenTableColumnView(
+        val table = GenTableColumnsView(
             id = 1,
             createdTime = LocalDateTime.now(),
             modifiedTime = LocalDateTime.now(),
@@ -83,10 +83,10 @@ class TestLiquibaseCreateSql {
             comment = "comment",
             orderKey = 1,
             type = TableType.TABLE,
-            schema = GenTableColumnView.TargetOf_schema(
+            schema = GenTableColumnsView.TargetOf_schema(
                 id = 1,
                 name = "jimmer-code-gen",
-                dataSource = GenTableColumnView.TargetOf_schema.TargetOf_dataSource(
+                dataSource = GenTableColumnsView.TargetOf_schema.TargetOf_dataSource(
                     id = 1,
                     name = "dataSource",
                     type = DataSourceType.MySQL
@@ -121,7 +121,7 @@ class TestLiquibaseCreateSql {
             remark = "test"
         ).toEntity()
 
-        val column1 = GenTableColumnView.TargetOf_columns(
+        val column1 = GenTableColumnsView.TargetOf_columns(
             id = 1,
             createdTime = LocalDateTime.now(),
             modifiedTime = LocalDateTime.now(),
@@ -142,7 +142,7 @@ class TestLiquibaseCreateSql {
             tableId = 1
         )
 
-        val column2 = GenTableColumnView.TargetOf_columns(
+        val column2 = GenTableColumnsView.TargetOf_columns(
             id = 2,
             createdTime = LocalDateTime.now(),
             modifiedTime = LocalDateTime.now(),
@@ -163,7 +163,7 @@ class TestLiquibaseCreateSql {
             tableId = 1
         )
 
-        val table = GenTableColumnView(
+        val table = GenTableColumnsView(
             id = 1,
             createdTime = LocalDateTime.now(),
             modifiedTime = LocalDateTime.now(),
@@ -172,10 +172,10 @@ class TestLiquibaseCreateSql {
             comment = "comment",
             orderKey = 1,
             type = TableType.TABLE,
-            schema = GenTableColumnView.TargetOf_schema(
+            schema = GenTableColumnsView.TargetOf_schema(
                 id = 1,
                 name = "jimmer-code-gen",
-                dataSource = GenTableColumnView.TargetOf_schema.TargetOf_dataSource(
+                dataSource = GenTableColumnsView.TargetOf_schema.TargetOf_dataSource(
                     id = 1,
                     name = "dataSource",
                     type = DataSourceType.MySQL

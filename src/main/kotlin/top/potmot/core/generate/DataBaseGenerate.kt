@@ -4,10 +4,10 @@ import top.potmot.config.GenConfig
 import top.potmot.core.template.table.mysqlTableStringify
 import top.potmot.core.template.table.postgreTableStringify
 import top.potmot.enumeration.DataSourceType
-import top.potmot.model.dto.GenTableAssociationView
+import top.potmot.model.dto.GenTableAssociationsView
 
 fun generateTableDefine(
-    table: GenTableAssociationView,
+    table: GenTableAssociationsView,
     dataSourceTypes: List<DataSourceType> = listOf(table.schema?.dataSource?.type ?: GenConfig.dataSourceType)
 ): Map<String, String> {
     val map = mutableMapOf<String, String>()

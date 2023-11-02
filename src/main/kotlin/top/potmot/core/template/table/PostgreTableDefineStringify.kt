@@ -2,13 +2,13 @@ package top.potmot.core.template.table
 
 import top.potmot.config.GenConfig
 import top.potmot.enumeration.DataSourceType
-import top.potmot.model.dto.GenTableAssociationView
+import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 
 private fun String.escape(): String =
     this.escape(DataSourceType.PostgreSQL)
 
-fun GenTableAssociationView.postgreTableStringify(): String {
+fun GenTableAssociationsView.postgreTableStringify(): String {
     var base = """-- ----------------------------
 -- Table structure for $name
 -- ----------------------------
@@ -30,7 +30,7 @@ ${columns.map { it.postgreColumnStringify() }.joinToString(",\n") { "    ${it.tr
     return base
 }
 
-fun GenTableAssociationView.TargetOf_columns.postgreColumnStringify(): String =
+fun GenTableAssociationsView.TargetOf_columns.postgreColumnStringify(): String =
     if (partOfPk) {
         "${name.escape()} ${pkColumnType()} PRIMARY KEY"
     } else {
@@ -39,7 +39,7 @@ fun GenTableAssociationView.TargetOf_columns.postgreColumnStringify(): String =
                 " ${if (!defaultValue.isNullOrBlank()) "DEFAULT $defaultValue" else if (!notNull) "DEFAULT NULL" else ""}"
     }
 
-private fun GenTableAssociationView.TargetOf_columns.pkColumnType(): String =
+private fun GenTableAssociationsView.TargetOf_columns.pkColumnType(): String =
     when (this.typeCode) {
         Types.TINYINT -> "SMALLSERIAL"
         Types.SMALLINT -> "SMALLSERIAL"
@@ -48,10 +48,10 @@ private fun GenTableAssociationView.TargetOf_columns.pkColumnType(): String =
         else -> "SERIAL"
     }
 
-private fun GenTableAssociationView.fkColumns(): List<GenTableAssociationView.TargetOf_columns> =
+private fun GenTableAssociationsView.fkColumns(): List<GenTableAssociationsView.TargetOf_columns> =
     this.columns.filter { it.partOfFk }
 
-private fun GenTableAssociationView.fkStringify(): List<String> {
+private fun GenTableAssociationsView.fkStringify(): List<String> {
     if (!GenConfig.tableDefineWithFk) return emptyList()
 
     val list = mutableListOf<String>()
@@ -73,7 +73,7 @@ private fun GenTableAssociationView.fkStringify(): List<String> {
     return list
 }
 
-private fun GenTableAssociationView.commentStringify(): List<String> {
+private fun GenTableAssociationsView.commentStringify(): List<String> {
     val list = mutableListOf<String>()
 
     if (comment.isNotEmpty()) {

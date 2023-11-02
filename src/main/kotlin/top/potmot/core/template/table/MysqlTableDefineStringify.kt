@@ -2,12 +2,12 @@ package top.potmot.core.template.table
 
 import top.potmot.config.GenConfig
 import top.potmot.enumeration.DataSourceType
-import top.potmot.model.dto.GenTableAssociationView
+import top.potmot.model.dto.GenTableAssociationsView
 
 private fun String.escape(): String =
     this.escape(DataSourceType.MySQL)
 
-fun GenTableAssociationView.mysqlTableStringify(): String {
+fun GenTableAssociationsView.mysqlTableStringify(): String {
     return """-- ----------------------------
 -- Table structure for $name
 -- ----------------------------
@@ -24,23 +24,23 @@ ${fkStringify().joinToString(",\n") { "    ${it.trim()}" }}
 """
 }
 
-fun GenTableAssociationView.TargetOf_columns.mysqlColumnStringify(): String =
+fun GenTableAssociationsView.TargetOf_columns.mysqlColumnStringify(): String =
     "${name.escape()} ${fullType()}" +
             " ${if (notNull) "NOT NULL" else ""}" +
             " ${if (partOfPk && autoIncrement) "AUTO_INCREMENT" else ""}" +
             " ${if (!defaultValue.isNullOrBlank()) "DEFAULT $defaultValue" else if (!notNull) "DEFAULT NULL" else ""}" +
             " COMMENT '$comment'"
 
-private fun GenTableAssociationView.pkColumn(): GenTableAssociationView.TargetOf_columns? =
+private fun GenTableAssociationsView.pkColumn(): GenTableAssociationsView.TargetOf_columns? =
     this.columns.firstOrNull { it.partOfPk }
 
-private fun GenTableAssociationView.pkStringify(): String =
+private fun GenTableAssociationsView.pkStringify(): String =
     "PRIMARY KEY (${(pkColumn()?.name ?: "").escape()}) USING BTREE"
 
-private fun GenTableAssociationView.fkColumns(): List<GenTableAssociationView.TargetOf_columns> =
+private fun GenTableAssociationsView.fkColumns(): List<GenTableAssociationsView.TargetOf_columns> =
     this.columns.filter { it.partOfFk }
 
-private fun GenTableAssociationView.fkStringify(): List<String> {
+private fun GenTableAssociationsView.fkStringify(): List<String> {
     if (!GenConfig.tableDefineWithFk) return emptyList()
 
     val list = mutableListOf<String>()

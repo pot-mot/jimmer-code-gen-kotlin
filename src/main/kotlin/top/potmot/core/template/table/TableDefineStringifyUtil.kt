@@ -3,7 +3,7 @@ package top.potmot.core.template.table
 import org.babyfish.jimmer.sql.DissociateAction
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DataSourceType.*
-import top.potmot.model.dto.GenTableAssociationView
+import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 
 private fun getFullType(typeCode: Int, type: String, displaySize: Long, numericPrecision: Long): String =
@@ -26,12 +26,12 @@ private fun getFullType(typeCode: Int, type: String, displaySize: Long, numericP
         else -> type
     }
 
-fun GenTableAssociationView.TargetOf_columns.fullType(): String =
+fun GenTableAssociationsView.TargetOf_columns.fullType(): String =
     getFullType(typeCode, type, displaySize, numericPrecision)
 
-fun GenTableAssociationView.TargetOf_columns.createFkConstraint(
+fun GenTableAssociationsView.TargetOf_columns.createFkConstraint(
     indexName: String,
-    outAssociation: GenTableAssociationView.TargetOf_columns.TargetOf_outAssociations,
+    outAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations,
     dataSourceType: DataSourceType
 ): String =
     "CONSTRAINT ${indexName.escape(dataSourceType)} FOREIGN KEY (${name.escape(dataSourceType)})" +

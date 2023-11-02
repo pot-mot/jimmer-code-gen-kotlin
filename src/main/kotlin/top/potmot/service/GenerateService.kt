@@ -19,7 +19,7 @@ import top.potmot.model.GenEntity
 import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenTableAssociationView
+import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.id
 import top.potmot.model.tableId
 
@@ -38,7 +38,7 @@ class GenerateService(
                 where(
                     table.id valueIn tableIds
                 )
-                select(table.fetch(GenTableAssociationView::class))
+                select(table.fetch(GenTableAssociationsView::class))
             }.execute()
 
             sqlClient.createDelete(GenEntity::class) {

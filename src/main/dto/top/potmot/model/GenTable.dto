@@ -19,14 +19,14 @@ GenTableCommonView {
     }
 }
 
-GenTableColumnView: GenTableCommonView {
+GenTableColumnsView: GenTableCommonView {
     columns {
         #allScalars
         id(table)
     }
 }
 
-GenTableAssociationView: GenTableCommonView {
+GenTableAssociationsView: GenTableCommonView {
     columns {
         #allScalars
         id(table)
