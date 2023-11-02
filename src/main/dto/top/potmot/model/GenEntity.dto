@@ -77,7 +77,7 @@ GenEntityPropertiesView: GenEntityCommonView {
     }
 }
 
-inputOnly GenEntityConfigInput {
+input GenEntityConfigInput {
     #allScalars
     -createdTime
     -modifiedTime

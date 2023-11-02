@@ -46,11 +46,34 @@ GenAssociationMatchView {
     }
 }
 
-inputOnly GenAssociationInput {
+input GenAssociationInput {
     #allScalars
     -id
     -createdTime
     -modifiedTime
     id(sourceColumn)
     id(targetColumn)
+}
+
+input GenAssociationModelInput {
+    associationType
+
+    sourceColumn {
+        name
+        type
+
+        table {
+            name
+            comment
+        }
+    }
+    targetColumn {
+        name
+        type
+
+        table {
+            name
+            comment
+        }
+    }
 }

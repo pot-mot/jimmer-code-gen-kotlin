@@ -1,4 +1,4 @@
-inputOnly GenTypeMappingInput {
+input GenTypeMappingInput {
     typeExpression
     regex
     propertyType

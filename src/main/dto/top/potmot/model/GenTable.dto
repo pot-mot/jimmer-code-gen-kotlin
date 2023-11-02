@@ -66,15 +66,21 @@ GenTableAssociationsView: GenTableCommonView {
     }
 }
 
-inputOnly GenTableInput {
+input GenTableInput {
     #allScalars
-    id(schema)
+    schema {
+        id
+        name
+    }
+
     -createdTime
     -modifiedTime
 }
 
-inputOnly GenTableColumnsInput: GenTableInput {
+input GenTableColumnsInput: GenTableInput {
     columns {
         #allScalars
+        -createdTime
+        -modifiedTime
     }
 }

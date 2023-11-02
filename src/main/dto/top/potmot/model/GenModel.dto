@@ -1,0 +1,8 @@
+GenModelView {
+    #allScalars
+}
+
+input GenModelInput {
+    name
+    value
+}

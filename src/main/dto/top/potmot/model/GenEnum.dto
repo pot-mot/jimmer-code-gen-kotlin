@@ -12,7 +12,7 @@ GenEnumItemsView {
     }
 }
 
-inputOnly GenEnumItemsInput {
+input GenEnumItemsInput {
     id(genPackage)
     name
     comment

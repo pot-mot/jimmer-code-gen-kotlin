@@ -7,6 +7,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TABLE IF EXISTS "gen_model" CASCADE;
 DROP TABLE IF EXISTS "gen_data_source" CASCADE;
 DROP TABLE IF EXISTS "gen_schema" CASCADE;
 DROP TABLE IF EXISTS "gen_table" CASCADE;
@@ -18,6 +19,33 @@ DROP TABLE IF EXISTS "gen_enum" CASCADE;
 DROP TABLE IF EXISTS "gen_enum_item" CASCADE;
 DROP TABLE IF EXISTS "gen_property" CASCADE;
 DROP TABLE IF EXISTS "gen_type_mapping" CASCADE;
+
+-- ----------------------------
+-- Table structure for gen_model
+-- ----------------------------
+CREATE TABLE "gen_model"
+(
+    "id"     BIGSERIAL PRIMARY KEY,
+    "name"   text NOT NULL,
+    "value"  text NOT NULL,
+    "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark" text NOT NULL
+);
+
+COMMENT ON TABLE "gen_model" IS '生成模型';
+COMMENT ON COLUMN "gen_model"."id" IS 'ID';
+COMMENT ON COLUMN "gen_model"."name" IS '名称';
+COMMENT ON COLUMN "gen_model"."value" IS '模型 JSON 数据';
+COMMENT ON COLUMN "gen_model"."created_time" IS '创建时间';
+COMMENT ON COLUMN "gen_model"."modified_time" IS '修改时间';
+COMMENT ON COLUMN "gen_model"."remark" IS '备注';
+
+CREATE TRIGGER "trg_update_gen_model_modified_time"
+    BEFORE UPDATE
+    ON "gen_model"
+    FOR EACH ROW
+EXECUTE FUNCTION update_modified_time();
 
 -- ----------------------------
 -- Table structure for gen_data_source

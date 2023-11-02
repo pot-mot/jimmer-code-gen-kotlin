@@ -24,8 +24,8 @@ import top.potmot.enumeration.AssociationType
 import top.potmot.extension.toSource
 import top.potmot.model.GenColumn
 import top.potmot.model.GenDataSource
-import top.potmot.model.dto.GenAssociationView
-import top.potmot.model.dto.GenTableColumnsView
+import top.potmot.model.dto.GenAssociationModelInput
+import top.potmot.model.dto.GenTableColumnsInput
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -38,7 +38,7 @@ import java.util.*
 /**
  * 转换 GenColumn 为 ColumnConfig
  */
-private fun GenTableColumnsView.TargetOf_columns.toColumnConfig(): ColumnConfig {
+private fun GenTableColumnsInput.TargetOf_columns.toColumnConfig(): ColumnConfig {
     val columnConfig = ColumnConfig()
 
     // 基本信息
@@ -59,9 +59,9 @@ private fun GenTableColumnsView.TargetOf_columns.toColumnConfig(): ColumnConfig 
 }
 
 /**
- * 转换 GenTableColumnsView 为 CreateTableChange
+ * 转换 GenTableColumnsInput 为 CreateTableChange
  */
-private fun GenTableColumnsView.toCreateTableChange(): CreateTableChange {
+private fun GenTableColumnsInput.toCreateTableChange(): CreateTableChange {
     val createTableChange = CreateTableChange()
 
     // 基本信息
@@ -80,9 +80,9 @@ private fun GenTableColumnsView.toCreateTableChange(): CreateTableChange {
 }
 
 /**
- * 从 GenTableColumnsView 中获取 AddUniqueConstraintChange
+ * 从 GenTableColumnsInput 中获取 AddUniqueConstraintChange
  */
-private fun GenTableColumnsView.getAddUniqueConstraintChange(): AddUniqueConstraintChange {
+private fun GenTableColumnsInput.getAddUniqueConstraintChange(): AddUniqueConstraintChange {
     val addUniqueConstraintChange = AddUniqueConstraintChange()
 
     addUniqueConstraintChange.constraintName = "business_key__$name"
@@ -94,7 +94,10 @@ private fun GenTableColumnsView.getAddUniqueConstraintChange(): AddUniqueConstra
     return addUniqueConstraintChange
 }
 
-private fun fkName(sourceColumn: GenAssociationView.TargetOf_sourceColumn, targetColumn: GenAssociationView.TargetOf_targetColumn): String =
+private fun fkName(
+    sourceColumn: GenAssociationModelInput.TargetOf_sourceColumn,
+    targetColumn: GenAssociationModelInput.TargetOf_targetColumn
+): String =
     "fk_" + "${sourceColumn.table.name.clearTableName()}_${sourceColumn.name.clearColumnName()}" +
             "__${targetColumn.table.name.clearTableName()}_${targetColumn.name.clearColumnName()}"
 
@@ -112,7 +115,7 @@ private fun GenColumn.getUniqueConstraintChange(): AddUniqueConstraintChange {
  * 从 GenAssociation 转化为 普通外键变更记录
  * 即生成外键与可能存在的唯一约束
  */
-private fun GenAssociationView.toFkChanges(): List<Change> {
+private fun GenAssociationModelInput.toFkChanges(): List<Change> {
     val fkChange = AddForeignKeyConstraintChange()
 
     fkChange.constraintName = fkName(sourceColumn, targetColumn)
@@ -149,7 +152,7 @@ private fun GenAssociationView.toFkChanges(): List<Change> {
  * 从 GenAssociation 转化为 多对多变更记录
  * 即生成中间表与两个关联外键
  */
-private fun GenAssociationView.toManyToManyChanges(): List<Change> {
+private fun GenAssociationModelInput.toManyToManyChanges(): List<Change> {
     val sourceTableName = sourceColumn.table.name.clearTableName()
     val targetTableName = targetColumn.table.name.clearTableName()
 
@@ -195,8 +198,8 @@ private fun GenAssociationView.toManyToManyChanges(): List<Change> {
 
 
 fun createDatabaseChangeLog(
-    tables: List<GenTableColumnsView>,
-    associations: List<GenAssociationView>
+    tables: List<GenTableColumnsInput>,
+    associations: List<GenAssociationModelInput>
 ): DatabaseChangeLog {
     val changeLog = DatabaseChangeLog()
     val changeSet = ChangeSet("1", GenConfig.author, false, false, null, null, null, null)
@@ -307,8 +310,8 @@ private fun changeLogToCreateSql(
 }
 
 fun GenDataSource.createSql(
-    tables: List<GenTableColumnsView>,
-    associations: List<GenAssociationView>
+    tables: List<GenTableColumnsInput>,
+    associations: List<GenAssociationModelInput>
 ): String {
     val databaseChangeLog = createDatabaseChangeLog(tables, associations)
 

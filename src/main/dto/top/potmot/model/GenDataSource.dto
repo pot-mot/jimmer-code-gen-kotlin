@@ -19,7 +19,7 @@ GenDataSourceSchemasView: GenDataSourceView {
     }
 }
 
-inputOnly GenDataSourceInput {
+input GenDataSourceInput {
     #allScalars
     -id
     -createdTime

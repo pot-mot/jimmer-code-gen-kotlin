@@ -33,7 +33,7 @@ GenPackageTreeView {
     }*
 }
 
-inputOnly GenPackageInput {
+input GenPackageInput {
     id
     id(parent)
     name
