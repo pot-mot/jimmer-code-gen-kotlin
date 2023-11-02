@@ -46,31 +46,31 @@ import kotlin.reflect.KClass
 class AssociationService(
     @Autowired val sqlClient: KSqlClient
 ) {
+    @GetMapping("/query")
+    fun query(query: AssociationQuery): List<GenAssociationView> {
+        return query(query, GenAssociationView::class)
+    }
+
     @GetMapping("/table")
-    fun selectByTable(
+    fun queryByTable(
         @RequestParam tableIds: List<Long>,
         @RequestParam(defaultValue = "OR") selectType: SelectType
     ): List<GenAssociationView> {
-        return selectByTable(tableIds, selectType, GenAssociationView::class)
+        return queryByTable(tableIds, selectType, GenAssociationView::class)
     }
 
     @GetMapping("/column")
-    fun selectByColumn(
+    fun queryByColumn(
         @RequestParam sourceColumnIds: List<Long>,
         @RequestParam targetColumnIds: List<Long>,
         @RequestParam(defaultValue = "OR") selectType: SelectType
     ): List<GenAssociationView> {
-        return selectByColumn(
+        return queryByColumn(
             sourceColumnIds,
             targetColumnIds,
             selectType,
             GenAssociationView::class
         )
-    }
-
-    @GetMapping("/query")
-    fun query(query: AssociationQuery): List<GenAssociationView> {
-        return query(query, GenAssociationView::class)
     }
 
     @PostMapping("/save")
@@ -96,7 +96,7 @@ class AssociationService(
         @RequestParam tableIds: List<Long>,
         @RequestParam(defaultValue = "AND") selectType: SelectType
     ): Int {
-        val ids = selectByTable(tableIds, selectType, GenAssociationIdView::class).map { it.id }
+        val ids = queryByTable(tableIds, selectType, GenAssociationIdView::class).map { it.id }
         return sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
     }
 
@@ -107,7 +107,7 @@ class AssociationService(
         @RequestParam targetColumnIds: List<Long>,
         @RequestParam(defaultValue = "AND") selectType: SelectType
     ): Int {
-        val ids = selectByColumn(sourceColumnIds, targetColumnIds, selectType, GenAssociationIdView::class).map { it.id }
+        val ids = queryByColumn(sourceColumnIds, targetColumnIds, selectType, GenAssociationIdView::class).map { it.id }
         return sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
     }
 
@@ -184,7 +184,7 @@ class AssociationService(
         }.execute()
     }
 
-    fun <T : View<GenAssociation>> selectByTable(
+    fun <T : View<GenAssociation>> queryByTable(
         tableIds: List<Long>,
         selectType: SelectType,
         viewClass: KClass<T>
@@ -213,7 +213,7 @@ class AssociationService(
         }.execute()
     }
 
-    fun <T : View<GenAssociation>> selectByColumn(
+    fun <T : View<GenAssociation>> queryByColumn(
         sourceColumnIds: List<Long>,
         targetColumnIds: List<Long>,
         selectType: SelectType,

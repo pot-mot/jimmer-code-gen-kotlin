@@ -1,3 +1,7 @@
+GenTableIdView {
+    id
+}
+
 GenTableCommonView {
     #allScalars
 

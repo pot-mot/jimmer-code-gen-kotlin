@@ -24,6 +24,7 @@ import top.potmot.model.createdTime
 import top.potmot.model.dto.GenTableAssociationView
 import top.potmot.model.dto.GenTableColumnView
 import top.potmot.model.dto.GenTableCommonView
+import top.potmot.model.dto.GenTableIdView
 import top.potmot.model.dto.GenTableInput
 import top.potmot.model.id
 import top.potmot.model.name
@@ -36,19 +37,24 @@ import kotlin.reflect.KClass
 class TableService(
     @Autowired val sqlClient: KSqlClient
 ) {
-    @GetMapping("/columnView/{ids}")
-    fun listColumnView(@PathVariable ids: List<Long>): List<GenTableColumnView> {
-        return query(TableQuery(ids), GenTableColumnView::class)
+    @GetMapping("/query/id")
+    fun queryIdView(query: TableQuery): List<GenTableIdView> {
+        return query(query, GenTableIdView::class)
     }
 
-    @GetMapping("/associationView/{id}")
-    fun getAssociationView(@PathVariable id: Long): GenTableAssociationView? {
-        return query(TableQuery(ids=listOf(id)), GenTableAssociationView::class).getOrNull(0)
+    @GetMapping("/query/common")
+    fun queryCommonView(query: TableQuery): List<GenTableCommonView> {
+        return query(query, GenTableCommonView::class)
+    }
+
+    @GetMapping("/query/columns")
+    fun queryColumnView(query: TableQuery): List<GenTableColumnView> {
+        return query(query, GenTableColumnView::class)
     }
 
     @GetMapping("/query")
-    fun query(query: TableQuery): List<GenTableCommonView> {
-        return query(query, GenTableCommonView::class)
+    fun queryAssociationView(query: TableQuery): List<GenTableAssociationView> {
+        return query(query, GenTableAssociationView::class)
     }
 
     @GetMapping("/define/{id}")
@@ -57,7 +63,7 @@ class TableService(
     ): Map<String, String> {
         val map = mutableMapOf<String, String>()
 
-        getAssociationView(id)?.let {
+        queryAssociationView(TableQuery(ids = listOf(id))).firstOrNull()?.let {
             map += generateTableDefine(it)
         }
 
