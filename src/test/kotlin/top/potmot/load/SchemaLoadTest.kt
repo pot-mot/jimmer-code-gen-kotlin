@@ -22,7 +22,7 @@ class SchemaLoadTest(
     @Test
     @Order(1)
     fun testLoadMysqlSchema() {
-        val insertId = dataSourceService.insert(
+        val insertId = dataSourceService.create(
             GenDataSourceInput(
                 name = "test",
                 host = "127.0.0.1",
@@ -46,7 +46,7 @@ class SchemaLoadTest(
     @Test
     @Order(2)
     fun testLoadPostgreSchema() {
-        val insertId = dataSourceService.insert(
+        val insertId = dataSourceService.create(
             GenDataSourceInput(
                 name = "test",
                 host = "127.0.0.1",

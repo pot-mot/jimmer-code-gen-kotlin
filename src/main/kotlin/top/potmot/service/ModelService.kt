@@ -2,6 +2,7 @@ package top.potmot.service
 
 import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.sql.kt.ast.expression.desc
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -12,14 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.liquibase.createSql
 import top.potmot.enumeration.DataBaseType
+import top.potmot.extension.createSql
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenModel
-import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenModelInput
 import top.potmot.model.dto.GenModelView
-import top.potmot.model.dto.GenTableColumnsInput
+import top.potmot.model.modifiedTime
 
 @RestController
 @RequestMapping("/model")
@@ -29,7 +29,10 @@ class ModelService(
 ) {
     @GetMapping
     fun list(): List<GenModelView> {
-        return sqlClient.entities.findAllViews(GenModelView::class) {}
+        return sqlClient.createQuery(GenModel::class) {
+            orderBy(table.modifiedTime.desc())
+            select(table.fetch(GenModelView::class))
+        }.execute()
     }
 
     @GetMapping("/type")
@@ -52,13 +55,25 @@ class ModelService(
         return sqlClient.deleteByIds(GenModel::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
     }
 
+    @PostMapping("/sql")
+    fun toSql(
+        @RequestParam id: Long,
+        @RequestParam dataSourceId: Long,
+    ): String? {
+        val model = sqlClient.findById(GenModelView::class, id)
+        val dataSource = sqlClient.findById(GenDataSource::class, dataSourceId)
+
+        return dataSource?.let {
+            model?.createSql(it)
+        }
+    }
+
     @PostMapping("/load")
     @Transactional
     fun loadToDataSource(
         @RequestParam id: Long,
-        @RequestParam tables: List<GenTableColumnsInput>,
-        @RequestParam associations: List<GenAssociationModelInput>
+        @RequestParam dataSourceId: Long,
     ): String? {
-        return sqlClient.findById(GenDataSource::class, id)?.createSql(tables, associations)
+        TODO()
     }
 }

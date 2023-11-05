@@ -10,8 +10,7 @@ import top.potmot.core.liquibase.createSql
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.TableType
 import top.potmot.model.dto.GenDataSourceInput
-import top.potmot.model.dto.GenTableColumnsView
-import java.time.LocalDateTime
+import top.potmot.model.dto.GenTableColumnsInput
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin", "postgresql")
@@ -32,10 +31,8 @@ class TestLiquibaseCreateSql {
             remark = "test"
         ).toEntity()
 
-        val column1 = GenTableColumnsView.TargetOf_columns(
+        val column1 = GenTableColumnsInput.TargetOf_columns(
             id = 1,
-            createdTime = LocalDateTime.now(),
-            modifiedTime = LocalDateTime.now(),
             remark = "remark",
             orderKey = 2,
             name = "Name",
@@ -50,13 +47,10 @@ class TestLiquibaseCreateSql {
             partOfFk = true,
             partOfUniqueIdx = true,
             notNull = true,
-            tableId = 1
         )
 
-        val column2 = GenTableColumnsView.TargetOf_columns(
+        val column2 = GenTableColumnsInput.TargetOf_columns(
             id = 2,
-            createdTime = LocalDateTime.now(),
-            modifiedTime = LocalDateTime.now(),
             remark = "Another remark",
             orderKey = 3,
             name = "Another Name",
@@ -71,26 +65,18 @@ class TestLiquibaseCreateSql {
             partOfFk = false,
             partOfUniqueIdx = true,
             notNull = true,
-            tableId = 1
         )
 
-        val table = GenTableColumnsView(
+        val table = GenTableColumnsInput(
             id = 1,
-            createdTime = LocalDateTime.now(),
-            modifiedTime = LocalDateTime.now(),
             remark = "",
             name = "table",
             comment = "comment",
             orderKey = 1,
             type = TableType.TABLE,
-            schema = GenTableColumnsView.TargetOf_schema(
+            schema = GenTableColumnsInput.TargetOf_schema(
                 id = 1,
                 name = "jimmer-code-gen",
-                dataSource = GenTableColumnsView.TargetOf_schema.TargetOf_dataSource(
-                    id = 1,
-                    name = "dataSource",
-                    type = DataSourceType.MySQL
-                )
             ),
             columns = listOf(
                 column1,
@@ -121,10 +107,8 @@ class TestLiquibaseCreateSql {
             remark = "test"
         ).toEntity()
 
-        val column1 = GenTableColumnsView.TargetOf_columns(
+        val column1 = GenTableColumnsInput.TargetOf_columns(
             id = 1,
-            createdTime = LocalDateTime.now(),
-            modifiedTime = LocalDateTime.now(),
             remark = "remark",
             orderKey = 2,
             name = "Name",
@@ -139,13 +123,10 @@ class TestLiquibaseCreateSql {
             partOfFk = true,
             partOfUniqueIdx = true,
             notNull = true,
-            tableId = 1
         )
 
-        val column2 = GenTableColumnsView.TargetOf_columns(
+        val column2 = GenTableColumnsInput.TargetOf_columns(
             id = 2,
-            createdTime = LocalDateTime.now(),
-            modifiedTime = LocalDateTime.now(),
             remark = "Another remark",
             orderKey = 3,
             name = "Another Name",
@@ -160,26 +141,18 @@ class TestLiquibaseCreateSql {
             partOfFk = false,
             partOfUniqueIdx = true,
             notNull = true,
-            tableId = 1
         )
 
-        val table = GenTableColumnsView(
+        val table = GenTableColumnsInput(
             id = 1,
-            createdTime = LocalDateTime.now(),
-            modifiedTime = LocalDateTime.now(),
             remark = "",
             name = "table",
             comment = "comment",
             orderKey = 1,
             type = TableType.TABLE,
-            schema = GenTableColumnsView.TargetOf_schema(
+            schema = GenTableColumnsInput.TargetOf_schema(
                 id = 1,
                 name = "jimmer-code-gen",
-                dataSource = GenTableColumnsView.TargetOf_schema.TargetOf_dataSource(
-                    id = 1,
-                    name = "dataSource",
-                    type = DataSourceType.MySQL
-                )
             ),
             columns = listOf(
                 column1,

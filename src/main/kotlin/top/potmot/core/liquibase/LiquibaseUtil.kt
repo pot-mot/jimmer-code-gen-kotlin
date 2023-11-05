@@ -215,8 +215,8 @@ fun createDatabaseChangeLog(
             it.toManyToManyChanges()
         } else {
             it.toFkChanges()
-        }.forEach {
-            changeSet.addChange(it)
+        }.forEach {change ->
+            changeSet.addChange(change)
         }
     }
 
