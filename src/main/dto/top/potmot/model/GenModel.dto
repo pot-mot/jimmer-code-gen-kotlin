@@ -3,6 +3,8 @@ GenModelView {
 }
 
 input GenModelInput {
+    id
     name
-    value
+    remark
+    value?
 }

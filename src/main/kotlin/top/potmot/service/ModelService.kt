@@ -33,8 +33,8 @@ class ModelService(
     }
 
     @GetMapping("/type")
-    fun listDataBaseType(): List<Pair<String, Int>> =
-        DataBaseType.values().map {
+    fun listDataBaseType(): Map<String, Int> =
+        DataBaseType.values().associate {
             Pair(it.name, it.code)
         }
 

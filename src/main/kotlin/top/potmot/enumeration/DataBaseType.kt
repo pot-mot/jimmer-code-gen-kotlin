@@ -14,7 +14,7 @@ enum class DataBaseType(
     DECIMAL(Types.DECIMAL),
     VARCHAR(Types.VARCHAR),
     XML(Types.SQLXML),
-    DATA(Types.DATE),
+    DATE(Types.DATE),
     TIME(Types.TIME),
     TIMESTAMP(Types.TIMESTAMP),
     BLOB(Types.BLOB);
