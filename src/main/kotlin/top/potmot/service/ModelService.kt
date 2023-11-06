@@ -1,6 +1,7 @@
 package top.potmot.service
 
 import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
+import org.babyfish.jimmer.sql.ast.tuple.Tuple2
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.desc
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,8 +18,11 @@ import top.potmot.enumeration.DataBaseType
 import top.potmot.extension.createSql
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenModel
+import top.potmot.model.copy
+import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenModelInput
 import top.potmot.model.dto.GenModelView
+import top.potmot.model.dto.GenTableColumnsInput
 import top.potmot.model.modifiedTime
 
 @RestController
@@ -47,6 +51,41 @@ class ModelService(
         @RequestBody input: GenModelInput
     ): Long {
         return sqlClient.save(input).modifiedEntity.id
+    }
+
+    @PostMapping("/insert/{schemaId}")
+    @Transactional
+    fun insertToSchema(
+        @PathVariable schemaId: Long,
+        @RequestParam tables: List<GenTableColumnsInput>,
+        @RequestParam associations: List<GenAssociationModelInput>,
+    ): Tuple2<List<Long>, List<Long>> {
+        val tableIds = mutableListOf<Long>()
+
+        val associationIds = mutableListOf<Long>()
+
+        tables
+            .map {
+                it.toEntity().copy {
+                    this.schemaId = schemaId
+                }
+            }
+            .forEach {
+                tableIds += sqlClient.insert(it).modifiedEntity.id
+            }
+
+        associations
+            .map {
+                it.toEntity().copy {
+                    this.sourceColumn().table().schemaId = schemaId
+                    this.targetColumn().table().schemaId = schemaId
+                }
+            }
+            .forEach {
+                associationIds += sqlClient.insert(it).modifiedEntity.id
+            }
+
+        return Tuple2(tableIds, associationIds)
     }
 
     @DeleteMapping("/{ids}")
