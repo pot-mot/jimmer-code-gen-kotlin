@@ -94,7 +94,7 @@ interface GenProperty : BaseEntity {
     /**
      * 是否非空
      */
-    val notNull: Boolean
+    val typeNotNull: Boolean
 
     /**
      * 是否Id

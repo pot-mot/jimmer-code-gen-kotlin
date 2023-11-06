@@ -9,17 +9,17 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 /**
  * java.sql.Types 映射为 java 类型
  */
-fun jdbcTypeToJavaType(jdbcType: Int, notNull: Boolean = true): Class<*>? {
+fun jdbcTypeToJavaType(jdbcType: Int, typeNotNull: Boolean = true): Class<*>? {
     return when (jdbcType) {
         Types.NULL -> null
         Types.JAVA_OBJECT -> JvmType.Object::class.java
-        Types.BIT, Types.BOOLEAN -> if (notNull) Boolean::class.java else Boolean::class.javaObjectType
-        Types.TINYINT -> if (notNull) Byte::class.java else Byte::class.javaObjectType
-        Types.SMALLINT -> if (notNull) Short::class.java else Short::class.javaObjectType
-        Types.INTEGER -> if (notNull) Int::class.java else Int::class.javaObjectType
-        Types.BIGINT -> if (notNull) Long::class.java else Long::class.javaObjectType
-        Types.REAL -> if (notNull) Float::class.java else Float::class.javaObjectType
-        Types.FLOAT, Types.DOUBLE -> if (notNull) Double::class.java else Double::class.javaObjectType
+        Types.BIT, Types.BOOLEAN -> if (typeNotNull) Boolean::class.java else Boolean::class.javaObjectType
+        Types.TINYINT -> if (typeNotNull) Byte::class.java else Byte::class.javaObjectType
+        Types.SMALLINT -> if (typeNotNull) Short::class.java else Short::class.javaObjectType
+        Types.INTEGER -> if (typeNotNull) Int::class.java else Int::class.javaObjectType
+        Types.BIGINT -> if (typeNotNull) Long::class.java else Long::class.javaObjectType
+        Types.REAL -> if (typeNotNull) Float::class.java else Float::class.javaObjectType
+        Types.FLOAT, Types.DOUBLE -> if (typeNotNull) Double::class.java else Double::class.javaObjectType
         Types.DECIMAL, Types.NUMERIC -> BigDecimal::class.java
         Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR, Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR, Types.CLOB, Types.NCLOB, Types.SQLXML, Types.DATALINK -> String::class.java
         Types.DATE, Types.TIME, Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> LocalDateTime::class.java

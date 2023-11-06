@@ -35,8 +35,8 @@ fun GenTableAssociationsView.TargetOf_columns.postgreColumnStringify(): String =
         "${name.escape()} ${pkColumnType()} PRIMARY KEY"
     } else {
         "${name.escape()} $type" +
-                " ${if (notNull) "NOT NULL" else ""}" +
-                " ${if (!defaultValue.isNullOrBlank()) "DEFAULT $defaultValue" else if (!notNull) "DEFAULT NULL" else ""}"
+                " ${if (typeNotNull) "NOT NULL" else ""}" +
+                " ${if (!defaultValue.isNullOrBlank()) "DEFAULT $defaultValue" else if (!typeNotNull) "DEFAULT NULL" else ""}"
     }
 
 private fun GenTableAssociationsView.TargetOf_columns.pkColumnType(): String =

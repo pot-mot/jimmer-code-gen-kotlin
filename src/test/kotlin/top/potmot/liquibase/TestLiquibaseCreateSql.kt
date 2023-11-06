@@ -46,7 +46,7 @@ class TestLiquibaseCreateSql {
             autoIncrement = true,
             partOfFk = true,
             partOfUniqueIdx = true,
-            notNull = true,
+            typeNotNull = true,
         )
 
         val column2 = GenTableColumnsInput.TargetOf_columns(
@@ -64,7 +64,7 @@ class TestLiquibaseCreateSql {
             autoIncrement = false,
             partOfFk = false,
             partOfUniqueIdx = true,
-            notNull = true,
+            typeNotNull = true,
         )
 
         val table = GenTableColumnsInput(
@@ -122,7 +122,7 @@ class TestLiquibaseCreateSql {
             autoIncrement = true,
             partOfFk = true,
             partOfUniqueIdx = true,
-            notNull = true,
+            typeNotNull = true,
         )
 
         val column2 = GenTableColumnsInput.TargetOf_columns(
@@ -140,7 +140,7 @@ class TestLiquibaseCreateSql {
             autoIncrement = false,
             partOfFk = false,
             partOfUniqueIdx = true,
-            notNull = true,
+            typeNotNull = true,
         )
 
         val table = GenTableColumnsInput(

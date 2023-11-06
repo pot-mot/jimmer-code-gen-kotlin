@@ -171,7 +171,7 @@ CREATE TABLE "gen_column"
     "auto_increment"     boolean     NOT NULL DEFAULT FALSE,
     "part_of_fk"         boolean     NOT NULL DEFAULT FALSE,
     "part_of_unique_idx" boolean     NOT NULL DEFAULT FALSE,
-    "not_null"           boolean     NOT NULL DEFAULT FALSE,
+    "type_not_null"           boolean     NOT NULL DEFAULT FALSE,
     "created_time"       timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time"      timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "remark"             text        NOT NULL DEFAULT ''
@@ -194,7 +194,7 @@ COMMENT ON COLUMN "gen_column"."part_of_pk" IS '是否主键';
 COMMENT ON COLUMN "gen_column"."auto_increment" IS '是否自增';
 COMMENT ON COLUMN "gen_column"."part_of_fk" IS '是否外键';
 COMMENT ON COLUMN "gen_column"."part_of_unique_idx" IS '是否唯一索引';
-COMMENT ON COLUMN "gen_column"."not_null" IS '是否非空';
+COMMENT ON COLUMN "gen_column"."type_not_null" IS '是否非空';
 COMMENT ON COLUMN "gen_column"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_column"."modified_time" IS '修改时间';
 COMMENT ON COLUMN "gen_column"."remark" IS '备注';
@@ -396,7 +396,7 @@ CREATE TABLE "gen_property"
     "type"                   text        NOT NULL,
     "type_table_id"          bigint      NULL     DEFAULT NULL REFERENCES "gen_table" ("id") ON DELETE SET NULL ON UPDATE RESTRICT,
     "list_type"              boolean     NOT NULL DEFAULT FALSE,
-    "not_null"               boolean     NOT NULL DEFAULT FALSE,
+    "type_not_null"               boolean     NOT NULL DEFAULT FALSE,
     "id_property"            boolean     NOT NULL DEFAULT FALSE,
     "id_generation_type"     text        NULL     DEFAULT NULL,
     "key_property"           boolean     NOT NULL DEFAULT FALSE,
@@ -427,7 +427,7 @@ COMMENT ON COLUMN "gen_property"."comment" IS '属性注释';
 COMMENT ON COLUMN "gen_property"."type" IS '属性类型';
 COMMENT ON COLUMN "gen_property"."type_table_id" IS '类型对应表';
 COMMENT ON COLUMN "gen_property"."list_type" IS '是否列表';
-COMMENT ON COLUMN "gen_property"."not_null" IS '是否非空';
+COMMENT ON COLUMN "gen_property"."type_not_null" IS '是否非空';
 COMMENT ON COLUMN "gen_property"."id_property" IS '是否Id';
 COMMENT ON COLUMN "gen_property"."id_generation_type" IS 'Id 生成类型';
 COMMENT ON COLUMN "gen_property"."key_property" IS '是否为业务键属性';

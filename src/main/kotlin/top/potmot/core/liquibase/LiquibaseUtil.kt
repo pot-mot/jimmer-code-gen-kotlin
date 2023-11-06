@@ -51,7 +51,7 @@ private fun GenTableColumnsInput.TargetOf_columns.toColumnConfig(): ColumnConfig
 
     //处理约束
     val constraints = ConstraintsConfig()
-    constraints.setNullable(!notNull)
+    constraints.setNullable(!typeNotNull)
     constraints.setPrimaryKey(partOfPk)
     columnConfig.setConstraints(constraints)
 

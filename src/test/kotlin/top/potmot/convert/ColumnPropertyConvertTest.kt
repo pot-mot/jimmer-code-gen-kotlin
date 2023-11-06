@@ -43,7 +43,7 @@ class ColumnPropertyConvertTest {
         assertEquals(column.id, idProperty.columnId)
 
         assert(idProperty.idProperty)
-        assert(idProperty.notNull)
+        assert(idProperty.typeNotNull)
         assertEquals(GenerationType.IDENTITY, idProperty.idGenerationType)
         assert(!idProperty.keyProperty)
         assert(!idProperty.listType)
@@ -81,7 +81,7 @@ class ColumnPropertyConvertTest {
         assertEquals("Table2", manyToOneProperty.type)
         assertEquals(2, manyToOneProperty.typeTableId)
 
-        assert(!manyToOneProperty.notNull)
+        assert(!manyToOneProperty.typeNotNull)
         assert(!manyToOneProperty.keyProperty)
         assertEquals(AssociationType.MANY_TO_ONE, manyToOneProperty.associationType)
         assertEquals("@ManyToOne", manyToOneProperty.associationAnnotation)
@@ -133,7 +133,7 @@ class ColumnPropertyConvertTest {
         assertEquals(2, oneToManyProperty.typeTableId)
         assert(oneToManyProperty.listType)
 
-        assert(oneToManyProperty.notNull)
+        assert(oneToManyProperty.typeNotNull)
         assert(!oneToManyProperty.keyProperty)
         assertEquals(AssociationType.ONE_TO_MANY, oneToManyProperty.associationType)
         assertEquals("@OneToMany(mappedBy = \"manyToOneProperty\")", oneToManyProperty.associationAnnotation)
@@ -179,7 +179,7 @@ class ColumnPropertyConvertTest {
         assertEquals("Table2", oneToOneProperty.type)
         assertEquals(2, oneToOneProperty.typeTableId)
 
-        assert(oneToOneProperty.notNull)
+        assert(oneToOneProperty.typeNotNull)
         assert(oneToOneProperty.keyProperty)
         assertEquals(AssociationType.ONE_TO_ONE, oneToOneProperty.associationType)
         assertEquals("@OneToOne", oneToOneProperty.associationAnnotation)
@@ -231,7 +231,7 @@ class ColumnPropertyConvertTest {
         assertEquals("Table2", oneToManyProperty.type)
         assertEquals(2, oneToManyProperty.typeTableId)
 
-        assert(!oneToManyProperty.notNull)
+        assert(!oneToManyProperty.typeNotNull)
         assert(!oneToManyProperty.keyProperty)
         assertEquals(AssociationType.ONE_TO_ONE, oneToManyProperty.associationType)
         assertEquals("@OneToOne(mappedBy = \"oneToOneProperty\")", oneToManyProperty.associationAnnotation)

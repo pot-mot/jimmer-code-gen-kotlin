@@ -7,7 +7,7 @@ GenColumnMatchView {
     partOfPk
     partOfFk
     partOfUniqueIdx
-    notNull
+    typeNotNull
 
     table {
         id

@@ -164,7 +164,7 @@ private fun Column.toGenColumn(
         this.partOfFk = column.isPartOfForeignKey
         this.partOfUniqueIdx = column.isPartOfUniqueIndex
         this.autoIncrement = column.isAutoIncremented
-        this.notNull = !column.isNullable
+        this.typeNotNull = !column.isNullable
     }
 }
 

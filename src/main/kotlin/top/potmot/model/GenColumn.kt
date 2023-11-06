@@ -119,7 +119,7 @@ interface GenColumn : BaseEntity {
     /**
      * 是否非空
      */
-    val notNull: Boolean
+    val typeNotNull: Boolean
 
     /**
      * 入关联

@@ -3,8 +3,8 @@ package top.potmot.service
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.between
+import org.babyfish.jimmer.sql.kt.ast.expression.isNull
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
-import org.babyfish.jimmer.sql.kt.ast.table.isNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -57,7 +57,7 @@ class EnumService(
             }
 
             query.nonPackage?.takeIf { it }?.let {
-                where(table.genPackage.isNull())
+                where(table.packageId.isNull())
             }
 
             query.ids?.takeIf { it.isNotEmpty() }?.let {

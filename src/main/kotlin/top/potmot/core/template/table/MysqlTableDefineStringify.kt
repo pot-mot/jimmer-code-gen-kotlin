@@ -26,9 +26,9 @@ ${fkStringify().joinToString(",\n") { "    ${it.trim()}" }}
 
 fun GenTableAssociationsView.TargetOf_columns.mysqlColumnStringify(): String =
     "${name.escape()} ${fullType()}" +
-            " ${if (notNull) "NOT NULL" else ""}" +
+            " ${if (typeNotNull) "NOT NULL" else ""}" +
             " ${if (partOfPk && autoIncrement) "AUTO_INCREMENT" else ""}" +
-            " ${if (!defaultValue.isNullOrBlank()) "DEFAULT $defaultValue" else if (!notNull) "DEFAULT NULL" else ""}" +
+            " ${if (!defaultValue.isNullOrBlank()) "DEFAULT $defaultValue" else if (!typeNotNull) "DEFAULT NULL" else ""}" +
             " COMMENT '$comment'"
 
 private fun GenTableAssociationsView.pkColumn(): GenTableAssociationsView.TargetOf_columns? =

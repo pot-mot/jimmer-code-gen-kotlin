@@ -1,6 +1,7 @@
 package top.potmot.core.template.entity
 
 import top.potmot.model.dto.GenEntityPropertiesView
+import javax.validation.constraints.NotNull
 
 
 /**
@@ -24,7 +25,7 @@ ${properties.joinToString("\n\n") { it.javaPropertyStringify() }}
 
 
 private fun GenEntityPropertiesView.TargetOf_properties.javaPropertyStringify(): String {
-    return """${blockComment()}${annotation()}${if (notNull) "\n    @NotNull" else ""}
+    return """${blockComment()}${annotation()}${if (typeNotNull) "\n    @NotNull" else ""}
     ${shortType()} $name;"""
 }
 
@@ -42,8 +43,8 @@ private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<Strin
 
     importList += fullType()
 
-    if (notNull) {
-        importList += org.jetbrains.annotations.NotNull::class.java.name
+    if (typeNotNull) {
+        importList += NotNull::class.java.name
     }
 
     return importList.filter { it.isNotEmpty() }

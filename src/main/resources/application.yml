@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: postgresql
+    active: mysql
   liquibase:
     enabled: false
 

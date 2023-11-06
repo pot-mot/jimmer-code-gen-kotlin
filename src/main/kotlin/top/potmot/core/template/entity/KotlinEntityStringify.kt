@@ -24,7 +24,7 @@ ${properties.joinToString("\n\n") { it.kotlinPropertyStringify() }}
 
 private fun GenEntityPropertiesView.TargetOf_properties.kotlinPropertyStringify(): String {
     return """${blockComment()}${annotation()}
-    val $name: ${shortType()}${if (notNull) "" else "?"}"""
+    val $name: ${shortType()}${if (typeNotNull) "" else "?"}"""
 }
 
 private fun GenEntityPropertiesView.import(): String =
