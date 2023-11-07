@@ -24,10 +24,10 @@ class EntityGenerateTest {
         val basePackage = GenEntityPropertiesView.TargetOf_genPackage(
             id = 1,
             name = "test",
-            parent = GenEntityPropertiesView.TargetOf_genPackage.TargetOf_parent(
+            parent = GenEntityPropertiesView.TargetOf_genPackage.TargetOf_parent_2(
                 id = 1,
                 name = "example",
-                parent = GenEntityPropertiesView.TargetOf_genPackage.TargetOf_parent(
+                parent = GenEntityPropertiesView.TargetOf_genPackage.TargetOf_parent_2(
                     id = 1,
                     name = "com"
                 )
@@ -76,7 +76,7 @@ class EntityGenerateTest {
             id = 1,
             name = "table",
             comment = "comment",
-            schema = GenEntityPropertiesView.TargetOf_table.TargetOf_schema(
+            schema = GenEntityPropertiesView.TargetOf_table.TargetOf_schema_2(
                 id = 1,
                 name = "schema",
             )

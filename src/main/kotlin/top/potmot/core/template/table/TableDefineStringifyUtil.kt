@@ -1,9 +1,11 @@
 package top.potmot.core.template.table
 
 import org.babyfish.jimmer.sql.DissociateAction
+import org.babyfish.jimmer.sql.DissociateAction.*
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DataSourceType.*
 import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.model.dto.GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations_2 as OutAssociation
 import java.sql.Types
 
 private fun getFullType(typeCode: Int, type: String, displaySize: Long, numericPrecision: Long): String =
@@ -31,7 +33,7 @@ fun GenTableAssociationsView.TargetOf_columns.fullType(): String =
 
 fun GenTableAssociationsView.TargetOf_columns.createFkConstraint(
     indexName: String,
-    outAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations,
+    outAssociation: OutAssociation,
     dataSourceType: DataSourceType
 ): String =
     "CONSTRAINT ${indexName.escape(dataSourceType)} FOREIGN KEY (${name.escape(dataSourceType)})" +
@@ -47,7 +49,9 @@ fun String.escape(dataSourceType: DataSourceType): String =
 
 private fun DissociateAction.toOnDeleteAction(): String =
     when (this) {
-        DissociateAction.NONE -> ""
-        DissociateAction.SET_NULL -> "ON DELETE SET NULL"
-        DissociateAction.DELETE -> "ON DELETE CASCADE"
+        NONE -> ""
+        SET_NULL -> "ON DELETE SET NULL"
+        DELETE -> "ON DELETE CASCADE"
+        LAX -> ""
+        CHECK -> ""
     }

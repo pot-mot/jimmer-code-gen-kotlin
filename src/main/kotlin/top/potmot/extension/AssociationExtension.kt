@@ -13,11 +13,11 @@ fun newGenAssociationMatchView(
         associationType,
         GenAssociationMatchView.TargetOf_sourceColumn(
             source.id,
-            GenAssociationMatchView.TargetOf_sourceColumn.TargetOf_table(source.table.id)
+            GenAssociationMatchView.TargetOf_sourceColumn.TargetOf_table_2(source.table.id)
         ),
         GenAssociationMatchView.TargetOf_targetColumn(
             target.id,
-            GenAssociationMatchView.TargetOf_targetColumn.TargetOf_table(target.table.id)
+            GenAssociationMatchView.TargetOf_targetColumn.TargetOf_table_2(target.table.id)
         ),
     )
 }

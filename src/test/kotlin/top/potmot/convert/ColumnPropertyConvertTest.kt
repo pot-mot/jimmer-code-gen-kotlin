@@ -59,11 +59,11 @@ class ColumnPropertyConvertTest {
             "many_to_one_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
             false, false, true, false, false, 1,
             outAssociations = listOf(
-                GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations(
+                GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations_2(
                     1, AssociationType.MANY_TO_ONE, DissociateAction.DELETE, true,
-                    GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn(
+                    GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations_2.TargetOf_targetColumn_3(
                         2, "one_to_many_property", "",
-                        GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn.TargetOf_table(
+                        GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations_2.TargetOf_targetColumn_3.TargetOf_table_4(
                             2, "table2", ""
                         )
                     )
@@ -105,11 +105,11 @@ class ColumnPropertyConvertTest {
             "one_to_many_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
             false, false, false, false, false, 1,
             inAssociations = listOf(
-                GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations(
+                GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations_2(
                     1, AssociationType.MANY_TO_ONE, DissociateAction.DELETE, true,
-                    GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn(
+                    GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations_2.TargetOf_sourceColumn_3(
                         2, "many_to_one_property", "",
-                        GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn.TargetOf_table(
+                        GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations_2.TargetOf_sourceColumn_3.TargetOf_table_4(
                             2, "table2", ""
                         )
                     )
@@ -157,11 +157,11 @@ class ColumnPropertyConvertTest {
             "one_to_one_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
             false, false, true, true, true, 1,
             outAssociations = listOf(
-                GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations(
+                GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations_2(
                     1, AssociationType.ONE_TO_ONE, DissociateAction.DELETE, true,
-                    GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn(
+                    GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations_2.TargetOf_targetColumn_3(
                         2, "one_to_one_property", "",
-                        GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations.TargetOf_targetColumn.TargetOf_table(
+                        GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations_2.TargetOf_targetColumn_3.TargetOf_table_4(
                             2, "table2", ""
                         )
                     )
@@ -203,11 +203,11 @@ class ColumnPropertyConvertTest {
             "one_to_one_property", Types.BIGINT, "bigint", 0, 0, null, "comment",
             false, false, false, true, false, 1,
             inAssociations = listOf(
-                GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations(
+                GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations_2(
                     1, AssociationType.ONE_TO_ONE, DissociateAction.DELETE, true,
-                    GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn(
+                    GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations_2.TargetOf_sourceColumn_3(
                         2, "one_to_one_property", "",
-                        GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations.TargetOf_sourceColumn.TargetOf_table(
+                        GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations_2.TargetOf_sourceColumn_3.TargetOf_table_4(
                             2, "table2", ""
                         )
                     )

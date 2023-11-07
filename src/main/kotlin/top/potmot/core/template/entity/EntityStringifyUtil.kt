@@ -28,10 +28,10 @@ fun now(formatPattern: String = "yyyy-MM-dd HH:mm:ss"): String =
 fun GenEntityPropertiesView.packagePath(): String =
     genPackage?.toEntity()?.toPath() ?: ""
 
-fun GenEntityPropertiesView.TargetOf_properties.TargetOf_typeTable.packagePath(): String =
+fun GenEntityPropertiesView.TargetOf_properties.TargetOf_typeTable_2.packagePath(): String =
     entity?.genPackage?.toEntity()?.toPath() ?: ""
 
-fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum.packagePath(): String =
+fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.packagePath(): String =
     genPackage?.toEntity()?.toPath() ?: ""
 
 /**
@@ -150,7 +150,7 @@ fun GenEntityPropertiesView.blockComment(): String =
 
 fun GenEntityPropertiesView.TargetOf_properties.blockComment(): String = getBlockComment(comment, remark, "    ")
 
-fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum.blockComment(): String =
+fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.blockComment(): String =
     getBlockComment(comment, remark, "    ")
 
 fun GenEntityPropertiesView.TargetOf_properties.annotation(): String {

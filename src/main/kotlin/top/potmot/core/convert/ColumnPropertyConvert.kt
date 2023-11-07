@@ -11,7 +11,8 @@ import top.potmot.model.GenPropertyDraft
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.by
 import top.potmot.model.dto.GenTableAssociationsView
-
+import top.potmot.model.dto.GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations_2 as InAssociation
+import top.potmot.model.dto.GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations_2 as OutAssociation
 
 /**
  * 这部分为处理列到属性映射的工具函数
@@ -109,14 +110,14 @@ fun createIdViewProperty(
 
 typealias OutAssociationConvert = (
     sourceColumn: GenTableAssociationsView.TargetOf_columns,
-    outAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations,
+    outAssociation: OutAssociation,
     typeMappings: List<GenTypeMapping>,
 ) -> List<GenProperty>
 
 fun toOutAssociationProperty(
     baseProperty: GenProperty,
     sourceColumn: GenTableAssociationsView.TargetOf_columns,
-    outAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations,
+    outAssociation: OutAssociation,
     plural: Boolean = false
 ): GenProperty {
     val targetColumn = outAssociation.targetColumn
@@ -181,13 +182,13 @@ val toManyToManyProperty: OutAssociationConvert = { sourceColumn,
 
 typealias InAssociationConvert = (
     targetColumn: GenTableAssociationsView.TargetOf_columns,
-    inAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations,
+    inAssociation: InAssociation,
     typeMappings: List<GenTypeMapping>,
 ) -> List<GenProperty>
 
 fun toInAssociationProperty(
     baseProperty: GenProperty,
-    inAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations,
+    inAssociation: InAssociation,
     plural: Boolean = false,
     mappedByPlural: Boolean = false
 ): GenProperty {
@@ -326,49 +327,49 @@ private fun String.toSingular(): String {
  */
 
 fun GenTableAssociationsView.TargetOf_columns.toOneToOneProperty(
-    outAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations,
+    outAssociation: OutAssociation,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> =
     toOneToOneProperty(this, outAssociation, typeMappings)
 
 fun GenTableAssociationsView.TargetOf_columns.toManyToOneProperty(
-    outAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations,
+    outAssociation: OutAssociation,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> =
     toManyToOneProperty(this, outAssociation, typeMappings)
 
 fun GenTableAssociationsView.TargetOf_columns.toOneToManyProperty(
-    outAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations,
+    outAssociation: OutAssociation,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> =
     toOneToManyProperty(this, outAssociation, typeMappings)
 
 fun GenTableAssociationsView.TargetOf_columns.toManyToManyProperty(
-    outAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations,
+    outAssociation: OutAssociation,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> =
     toManyToManyProperty(this, outAssociation, typeMappings)
 
 fun GenTableAssociationsView.TargetOf_columns.getOneToOneProperty(
-    inAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations,
+    inAssociation: InAssociation,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> =
     getOneToOneProperty(this, inAssociation, typeMappings)
 
 fun GenTableAssociationsView.TargetOf_columns.getOneToManyProperty(
-    inAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations,
+    inAssociation: InAssociation,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> =
     getOneToManyProperty(this, inAssociation, typeMappings)
 
 fun GenTableAssociationsView.TargetOf_columns.getManyToOneProperty(
-    inAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations,
+    inAssociation: InAssociation,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> =
     getManyToOneProperty(this, inAssociation, typeMappings)
 
 fun GenTableAssociationsView.TargetOf_columns.getManyToManyProperty(
-    inAssociation: GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations,
+    inAssociation: InAssociation,
     typeMappings: List<GenTypeMapping> = emptyList(),
 ): List<GenProperty> =
     getManyToManyProperty(this, inAssociation, typeMappings)
