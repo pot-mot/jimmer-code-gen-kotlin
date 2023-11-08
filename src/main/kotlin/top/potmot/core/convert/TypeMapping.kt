@@ -1,5 +1,10 @@
 package top.potmot.core.convert
 
+import top.potmot.config.GenConfig
+import top.potmot.core.template.table.fullType
+import top.potmot.enumeration.GenLanguage
+import top.potmot.model.GenTypeMapping
+import top.potmot.model.dto.GenTableAssociationsView
 import java.math.BigDecimal
 import java.sql.Types
 import java.time.LocalDateTime
@@ -47,5 +52,30 @@ fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
         Types.DATE, Types.TIME, Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> LocalDateTime::class
         Types.BLOB, Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> ByteArray::class
         else -> null
+    }
+}
+
+/**
+ * 设置属性类型
+ */
+fun GenTableAssociationsView.TargetOf_columns.mappingPropertyType(
+    typeMappings: List<GenTypeMapping>,
+    language: GenLanguage = GenConfig.language,
+): String {
+    for (typeMapping in typeMappings) {
+        val matchResult =
+            if (typeMapping.regex) {
+                Regex(typeMapping.typeExpression).matches(fullType())
+            } else {
+                typeMapping.typeExpression == fullType()
+            }
+        if (matchResult) {
+            return typeMapping.propertyType
+        }
+    }
+
+    return when (language) {
+        GenLanguage.JAVA -> jdbcTypeToJavaType(typeCode, typeNotNull)?.name ?: type
+        GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeCode)?.qualifiedName ?: type
     }
 }

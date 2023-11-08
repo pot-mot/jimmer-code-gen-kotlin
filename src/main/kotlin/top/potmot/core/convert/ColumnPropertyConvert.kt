@@ -1,39 +1,178 @@
 package top.potmot.core.convert
 
+import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.new
-import top.potmot.config.GenConfig
+import org.babyfish.jimmer.sql.GenerationType
 import top.potmot.core.immutable.copyProperties
-import top.potmot.core.template.table.fullType
 import top.potmot.enumeration.AssociationType
-import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenProperty
 import top.potmot.model.GenPropertyDraft
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.by
+import top.potmot.enumeration.AssociationType.*
 import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.dto.GenTableAssociationsView.TargetOf_columns.TargetOf_inAssociations_2 as InAssociation
-import top.potmot.model.dto.GenTableAssociationsView.TargetOf_columns.TargetOf_outAssociations_2 as OutAssociation
 
 /**
- * 这部分为处理列到属性映射的工具函数
- * 基于关联类型（many or one）和关联方向（in or out）
- * 得到以下一个基本函数和八个关联属性函数：
+ * 列到属性转换
+ * 具备关联时将生成关联字段 和 IdView
  *
- * toBaseProperty
- *
- * 出关联（主动向外发散的关联，使用 to 表示当前列【转化】为关联列）
- * toOneToOneProperty
- * toManyToOneProperty
- * toOneToManyProperty
- * toManyToManyProperty
- *
- * 入关联（因为入关联与列本身无关，所以使用 get 表示【追加】而不是从原始列进行转化）
- * getOneToOneProperty
- * getOneToManyProperty
- * getManyToOneProperty
- * getManyToManyProperty
+ * warning: 为保证保存时关联成立，请保证对应 column 具有 id
  */
+fun columnToProperties(
+    column: GenTableAssociationsView.TargetOf_columns,
+    typeMappings: List<GenTypeMapping> = emptyList(),
+): List<GenProperty> {
+    val properties = mutableListOf<GenProperty>()
 
+    val baseProperty = column.toBaseProperty(typeMappings)
+
+    val defaultProperty =
+        new(GenProperty::class).by {
+            copyProperties(baseProperty, this)
+
+            if (column.partOfPk) {
+                idProperty = true
+                typeNotNull = true
+                keyProperty = false
+                logicalDelete = false
+                idView = false
+                if (column.autoIncrement) {
+                    idGenerationType = GenerationType.IDENTITY
+                }
+            } else if (column.partOfUniqueIdx) {
+                keyProperty = true
+            }
+        }
+
+    var includeDefaultProperty = true
+
+    column.outAssociations.forEach { outAssociation ->
+        if (outAssociation.associationType == MANY_TO_ONE || outAssociation.associationType == ONE_TO_ONE) {
+            includeDefaultProperty = false
+        }
+
+        val sourceColumn = column
+
+        val targetColumn = outAssociation.targetColumn
+
+        val targetPlural = outAssociation.associationType == ONE_TO_MANY || outAssociation.associationType == MANY_TO_MANY
+
+        /**
+         * 这个属性为对外关联的 target 在 source 类中的映射
+         */
+        val associationProperty = new(GenProperty::class).by {
+            copyProperties(baseProperty, this)
+
+            name = tableNameToPropertyName(targetColumn.table.name)
+            comment = targetColumn.table.comment.clearTableComment()
+            type = tableNameToClassName(targetColumn.table.name)
+            typeTableId = targetColumn.table.id
+
+            when (outAssociation.associationType) {
+                ONE_TO_ONE, MANY_TO_ONE -> {
+                    setAssociation(
+                        outAssociation.associationType,
+                        joinColumn = JoinColumnProps(joinColumnName = columnNameToPropertyName(targetColumn.name))
+                    )
+                    outAssociation.dissociateAction?.let {
+                        this.dissociateAnnotation = "@OnDissociate(DissociateAction.${it})"
+                    }
+                }
+
+                MANY_TO_MANY -> {
+                    keyProperty = false
+                    setAssociation(
+                        outAssociation.associationType,
+                        joinTable = JoinTableProps(
+                            joinTableName = mappingTableName(sourceColumn.table.name, targetColumn.table.name),
+                            joinColumnName = columnNameToPropertyName(targetColumn.name).toPlural(),
+                            inverseJoinColumnName = columnNameToPropertyName(sourceColumn.name).toPlural()
+                        )
+                    )
+                }
+
+                ONE_TO_MANY -> {
+                    keyProperty = false
+                    setAssociation(
+                        outAssociation.associationType,
+                        mappedBy = tableNameToPropertyName(targetColumn.name)
+                    )
+                }
+            }
+
+            // 当目标为复数时，该属性也为复数
+            if (targetPlural) toPlural()
+        }
+
+        val idViewProperty = createIdViewProperty(baseProperty, associationProperty)
+
+        properties += associationProperty
+        properties += idViewProperty
+    }
+
+    column.inAssociations.forEach { inAssociation ->
+        if (inAssociation.associationType == ONE_TO_MANY) {
+            includeDefaultProperty = false
+        }
+
+        val targetColumn = column
+
+        val sourceColumn = inAssociation.sourceColumn
+
+        val sourcePlural = inAssociation.associationType == MANY_TO_ONE || inAssociation.associationType == MANY_TO_MANY
+
+        val targetPlural = inAssociation.associationType == ONE_TO_MANY || inAssociation.associationType == MANY_TO_MANY
+
+        /**
+         * 这个属性为向内关联的 source 在 target 类中的映射
+         */
+        val associationProperty = new(GenProperty::class).by {
+            copyProperties(baseProperty, this)
+
+            name = tableNameToPropertyName(sourceColumn.table.name)
+            comment = sourceColumn.table.comment.clearTableComment()
+            type = tableNameToClassName(sourceColumn.table.name)
+            typeTableId = sourceColumn.table.id
+
+            val mappedBy = tableNameToPropertyName(targetColumn.table.name).let {
+                if (targetPlural) it.toPlural() else it
+            }
+
+            when(inAssociation.associationType) {
+                ONE_TO_ONE, MANY_TO_ONE, MANY_TO_MANY -> {
+                    keyProperty = false
+                    setAssociation(
+                        inAssociation.associationType.reverse(),
+                        mappedBy,
+                    )
+                }
+
+                ONE_TO_MANY  -> {
+                    setAssociation(
+                        MANY_TO_ONE,
+                        joinColumn = JoinColumnProps(joinColumnName = columnNameToPropertyName(sourceColumn.name))
+                    )
+                    inAssociation.dissociateAction?.let {
+                        this.dissociateAnnotation = "@OnDissociate(DissociateAction.${it})"
+                    }
+                }
+            }
+
+            if (sourcePlural) toPlural()
+        }
+
+        val idViewProperty = createIdViewProperty(baseProperty, associationProperty)
+
+        properties += associationProperty
+        properties += idViewProperty
+    }
+
+    if (includeDefaultProperty) {
+        properties += defaultProperty
+    }
+
+    return properties
+}
 
 /**
  * 转换为基础属性
@@ -46,35 +185,69 @@ fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
     return new(GenProperty::class).by {
         this.columnId = column.id
         this.name = columnNameToPropertyName(column.name)
-        this.type = column.typeName(typeMappings)
+        this.type = column.mappingPropertyType(typeMappings)
         this.comment = column.comment.clearColumnComment()
         this.typeNotNull = column.typeNotNull
         this.keyProperty = column.partOfUniqueIdx
+        this.listType = false
     }
+}
+
+private fun AssociationType.reverse() =
+    when (this) {
+        MANY_TO_ONE -> ONE_TO_MANY
+        ONE_TO_MANY -> MANY_TO_ONE
+        else -> this
+    }
+
+private data class JoinColumnProps(
+    val joinColumnName: String,
+) {
+    fun toAnnotation() = "@JoinColumn(name = \"$joinColumnName\")"
+}
+
+private data class JoinTableProps(
+    val joinTableName: String,
+    val joinColumnName: String,
+    val inverseJoinColumnName: String,
+) {
+    fun toAnnotation() = """@JoinTable(
+    name = "$joinTableName",
+    joinColumnName = "$joinColumnName",
+    inverseJoinColumnName = "$inverseJoinColumnName"
+)"""
 }
 
 private fun GenPropertyDraft.setAssociation(
     associationType: AssociationType,
-    reverse: Boolean = false,
     mappedBy: String? = null,
+    joinColumn: JoinColumnProps? = null,
+    joinTable: JoinTableProps? = null,
 ) {
-    val tempAssociationType =
-        if (reverse) {
-            when (associationType) {
-                AssociationType.MANY_TO_ONE -> AssociationType.ONE_TO_MANY
-                AssociationType.ONE_TO_MANY -> AssociationType.MANY_TO_ONE
-                else -> associationType
-            }
-        } else {
-            associationType
-        }
+    this.associationType = associationType
 
-    this.associationType = tempAssociationType
-
-    this.associationAnnotation = "@" + tempAssociationType.toAnnotation().simpleName
+    this.associationAnnotation = "@" + associationType.toAnnotation().simpleName
     mappedBy?.takeIf { it.isNotBlank() }?.let {
         this.associationAnnotation += "(mappedBy = \"${it}\")"
     }
+    joinColumn?.let {
+        this.associationAnnotation += "\n${it.toAnnotation()}"
+    }
+    joinTable?.let {
+        this.associationAnnotation += "\n${it.toAnnotation()}"
+    }
+}
+
+private fun mappingTableName(sourceTableName: String, targetTableName: String): String =
+    "${sourceTableName.clearTableName()}_${targetTableName.clearTableName()}_mapping"
+
+private fun GenPropertyDraft.toPlural() {
+    if (ImmutableObjects.isLoaded(this, "name")) {
+        this.name = this.name.toPlural()
+    }
+    this.listType = true
+    this.typeNotNull = true
+    this.keyProperty = false
 }
 
 /**
@@ -87,12 +260,11 @@ private fun GenPropertyDraft.setAssociation(
 fun createIdViewProperty(
     baseProperty: GenProperty,
     associationProperty: GenProperty,
-    plural: Boolean = false
 ): GenProperty {
     return new(GenProperty::class).by {
         copyProperties(baseProperty, this)
 
-        if (plural) {
+        if (associationProperty.listType) {
             this.name = associationProperty.name.toSingular() + "Ids"
             this.listType = true
             this.typeNotNull = true
@@ -107,269 +279,3 @@ fun createIdViewProperty(
         this.keyProperty = false
     }
 }
-
-typealias OutAssociationConvert = (
-    sourceColumn: GenTableAssociationsView.TargetOf_columns,
-    outAssociation: OutAssociation,
-    typeMappings: List<GenTypeMapping>,
-) -> List<GenProperty>
-
-fun toOutAssociationProperty(
-    baseProperty: GenProperty,
-    sourceColumn: GenTableAssociationsView.TargetOf_columns,
-    outAssociation: OutAssociation,
-    plural: Boolean = false
-): GenProperty {
-    val targetColumn = outAssociation.targetColumn
-
-    return new(GenProperty::class).by {
-        copyProperties(baseProperty, this)
-
-        if (plural) {
-            this.name = this.name.toPlural()
-            this.listType = true
-            this.typeNotNull = true
-        } else {
-            this.name = sourceColumn.name.toOutPropertyName()
-        }
-
-        this.type = tableNameToClassName(targetColumn.table.name)
-        this.typeTableId = targetColumn.table.id
-        this.comment = targetColumn.table.comment.clearTableComment()
-
-        setAssociation(outAssociation.associationType)
-        outAssociation.dissociateAction?.let {
-            this.dissociateAnnotation = "@OnDissociate(DissociateAction.${it})"
-        }
-    }
-}
-
-val toOneToOneProperty: OutAssociationConvert = { sourceColumn,
-                                                  outAssociation,
-                                                  typeMappings ->
-    val baseProperty = sourceColumn.toBaseProperty(typeMappings)
-
-    val associationProperty = toOutAssociationProperty(baseProperty, sourceColumn, outAssociation)
-
-    val idViewProperty = createIdViewProperty(baseProperty, associationProperty)
-
-    listOf(associationProperty, idViewProperty)
-}
-
-val toManyToOneProperty: OutAssociationConvert = { sourceColumn,
-                                                   outAssociation,
-                                                   typeMappings ->
-    val baseProperty = sourceColumn.toBaseProperty(typeMappings)
-
-    val associationProperty = toOutAssociationProperty(baseProperty, sourceColumn, outAssociation)
-
-    val idViewProperty = createIdViewProperty(baseProperty, associationProperty)
-
-    listOf(associationProperty, idViewProperty)
-}
-
-val toOneToManyProperty: OutAssociationConvert = { sourceColumn,
-                                                   outAssociation,
-                                                   typeMappings ->
-    TODO()
-}
-
-val toManyToManyProperty: OutAssociationConvert = { sourceColumn,
-                                                    outAssociation,
-                                                    typeMappings ->
-    TODO()
-}
-
-typealias InAssociationConvert = (
-    targetColumn: GenTableAssociationsView.TargetOf_columns,
-    inAssociation: InAssociation,
-    typeMappings: List<GenTypeMapping>,
-) -> List<GenProperty>
-
-fun toInAssociationProperty(
-    baseProperty: GenProperty,
-    inAssociation: InAssociation,
-    plural: Boolean = false,
-    mappedByPlural: Boolean = false
-): GenProperty {
-    val sourceColumn = inAssociation.sourceColumn
-
-    return new(GenProperty::class).by {
-        copyProperties(baseProperty, this)
-
-        this.name = tableNameToPropertyName(sourceColumn.table.name)
-        this.type = tableNameToClassName(sourceColumn.table.name)
-        this.typeTableId = sourceColumn.table.id
-        this.comment = sourceColumn.table.comment.clearTableComment()
-        this.keyProperty = false
-
-        if (plural) {
-            this.name = this.name.toPlural()
-            this.listType = true
-            this.typeNotNull = true
-        }
-
-        setAssociation(
-            inAssociation.associationType,
-            true,
-            sourceColumn.name.toOutPropertyName().let {
-                if (mappedByPlural) {
-                    it.toPlural()
-                } else {
-                    it
-                }
-            }
-        )
-        inAssociation.dissociateAction?.let {
-            this.dissociateAnnotation = "@OnDissociate(DissociateAction.${it})"
-        }
-    }
-}
-
-val getOneToOneProperty: InAssociationConvert = { targetColumn,
-                                                  inAssociation,
-                                                  typeMappings ->
-    val baseProperty = targetColumn.toBaseProperty(typeMappings)
-
-    val associationProperty = toInAssociationProperty(baseProperty, inAssociation)
-
-    val idViewProperty = createIdViewProperty(baseProperty, associationProperty)
-
-    listOf(associationProperty, idViewProperty)
-}
-
-val getOneToManyProperty: InAssociationConvert = { targetColumn,
-                                                   inAssociation,
-                                                   typeMappings ->
-    val baseProperty = targetColumn.toBaseProperty(typeMappings)
-
-    val associationProperty = toInAssociationProperty(baseProperty, inAssociation, plural = true)
-
-    val idViewProperty = createIdViewProperty(baseProperty, associationProperty, plural = true)
-
-    listOf(associationProperty, idViewProperty)
-}
-
-val getManyToOneProperty: InAssociationConvert = { targetColumn,
-                                                   inAssociation,
-                                                   typeMappings ->
-    TODO()
-}
-
-val getManyToManyProperty: InAssociationConvert = { targetColumn,
-                                                    inAssociation,
-                                                    typeMappings ->
-    TODO()
-}
-
-/**
- * 转换成出关联属性名
- */
-private fun String.toOutPropertyName(): String =
-    columnNameToPropertyName(this).removeSuffix("Id")
-
-/**
- * 设置属性类型
- */
-private fun GenTableAssociationsView.TargetOf_columns.typeName(
-    typeMappings: List<GenTypeMapping>,
-    language: GenLanguage = GenConfig.language,
-): String {
-    for (typeMapping in typeMappings) {
-        val matchResult =
-            if (typeMapping.regex) {
-                Regex(typeMapping.typeExpression).matches(fullType())
-            } else {
-                typeMapping.typeExpression == fullType()
-            }
-        if (matchResult) {
-            return typeMapping.propertyType
-        }
-    }
-
-    return when (language) {
-        GenLanguage.JAVA -> jdbcTypeToJavaType(typeCode, typeNotNull)?.name ?: type
-        GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeCode)?.qualifiedName ?: type
-    }
-}
-
-/**
- * 将名词转换为复数形式。
- * @return 转换后的复数形式
- */
-private fun String.toPlural(): String {
-    val plural: String = when {
-        endsWith("s") || endsWith("x") || endsWith("z") || endsWith("ch") || endsWith("sh") ->
-            this + "es"
-
-        endsWith("y") -> dropLast(1) + "ies"
-        else -> this + "s"
-    }
-    return plural
-}
-
-/**
- * 将名词转换为单数形式。
- * @return 转换后的单数形式
- */
-private fun String.toSingular(): String {
-    val singular: String = when {
-        endsWith("ies") -> dropLast(3) + "y"
-        endsWith("es") -> dropLast(2)
-        endsWith("s") -> dropLast(1)
-        else -> this
-    }
-    return singular
-}
-
-/**
- * 扩展方法，只是为了方便调用
- */
-
-fun GenTableAssociationsView.TargetOf_columns.toOneToOneProperty(
-    outAssociation: OutAssociation,
-    typeMappings: List<GenTypeMapping> = emptyList(),
-): List<GenProperty> =
-    toOneToOneProperty(this, outAssociation, typeMappings)
-
-fun GenTableAssociationsView.TargetOf_columns.toManyToOneProperty(
-    outAssociation: OutAssociation,
-    typeMappings: List<GenTypeMapping> = emptyList(),
-): List<GenProperty> =
-    toManyToOneProperty(this, outAssociation, typeMappings)
-
-fun GenTableAssociationsView.TargetOf_columns.toOneToManyProperty(
-    outAssociation: OutAssociation,
-    typeMappings: List<GenTypeMapping> = emptyList(),
-): List<GenProperty> =
-    toOneToManyProperty(this, outAssociation, typeMappings)
-
-fun GenTableAssociationsView.TargetOf_columns.toManyToManyProperty(
-    outAssociation: OutAssociation,
-    typeMappings: List<GenTypeMapping> = emptyList(),
-): List<GenProperty> =
-    toManyToManyProperty(this, outAssociation, typeMappings)
-
-fun GenTableAssociationsView.TargetOf_columns.getOneToOneProperty(
-    inAssociation: InAssociation,
-    typeMappings: List<GenTypeMapping> = emptyList(),
-): List<GenProperty> =
-    getOneToOneProperty(this, inAssociation, typeMappings)
-
-fun GenTableAssociationsView.TargetOf_columns.getOneToManyProperty(
-    inAssociation: InAssociation,
-    typeMappings: List<GenTypeMapping> = emptyList(),
-): List<GenProperty> =
-    getOneToManyProperty(this, inAssociation, typeMappings)
-
-fun GenTableAssociationsView.TargetOf_columns.getManyToOneProperty(
-    inAssociation: InAssociation,
-    typeMappings: List<GenTypeMapping> = emptyList(),
-): List<GenProperty> =
-    getManyToOneProperty(this, inAssociation, typeMappings)
-
-fun GenTableAssociationsView.TargetOf_columns.getManyToManyProperty(
-    inAssociation: InAssociation,
-    typeMappings: List<GenTypeMapping> = emptyList(),
-): List<GenProperty> =
-    getManyToManyProperty(this, inAssociation, typeMappings)

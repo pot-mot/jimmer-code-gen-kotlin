@@ -5,9 +5,9 @@ import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.between
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.ilike
+import org.babyfish.jimmer.sql.kt.ast.expression.isNull
 import org.babyfish.jimmer.sql.kt.ast.expression.or
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
-import org.babyfish.jimmer.sql.kt.ast.table.isNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -24,7 +24,6 @@ import top.potmot.model.createdTime
 import top.potmot.model.dto.GenEntityCommonView
 import top.potmot.model.dto.GenEntityConfigInput
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.genPackage
 import top.potmot.model.id
 import top.potmot.model.name
 import top.potmot.model.packageId
@@ -99,7 +98,7 @@ class EntityService(
             }
 
             query.nonPackage?.takeIf { it }?.let {
-                where(table.genPackage.isNull())
+                where(table.packageId.isNull())
             }
 
             query.ids?.takeIf { it.isNotEmpty() }?.let {

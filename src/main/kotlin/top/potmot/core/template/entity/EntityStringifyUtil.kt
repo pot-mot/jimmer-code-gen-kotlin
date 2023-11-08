@@ -171,7 +171,7 @@ fun GenEntityPropertiesView.TargetOf_properties.annotation(): String {
 
     if (associationType != null) {
         if (associationAnnotation != null) {
-            list += associationAnnotation
+            list += associationAnnotation.split("\n")
             if (dissociateAnnotation != null) {
                 list += dissociateAnnotation
             }

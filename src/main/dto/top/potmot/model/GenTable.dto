@@ -29,7 +29,11 @@ GenTableColumnsView: GenTableCommonView {
 GenTableAssociationsView: GenTableCommonView {
     columns {
         #allScalars
-        id(table)
+        table {
+            id
+            name
+            comment
+        }
 
         inAssociations {
             id
