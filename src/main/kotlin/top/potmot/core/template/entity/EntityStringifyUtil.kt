@@ -95,12 +95,8 @@ private fun createBlockComment(
     TemplateBuilder(
         indentation,
     ).apply {
-        toBlockLines(comment)?.forEach {
-            line(" * $it")
-        }
-        toBlockLines(remark)?.forEach {
-            line(" * $it")
-        }
+        block(comment) { " * $it"}
+        block(remark) { " * $it"}
 
         if (params.isNotEmpty() && !isEmptyOrBlank()) {
             line(" * ")

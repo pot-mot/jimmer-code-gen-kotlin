@@ -56,7 +56,7 @@ class EntityGenerateTest {
             id = 2,
             createdTime = LocalDateTime.now(),
             modifiedTime = LocalDateTime.now(),
-            remark = "remark",
+            remark = "remark p1.\n${"remark p2 ".repeat(10)}\n",
             name = "manyToOneProperty",
             comment = "comment",
             type = "Entity",
@@ -86,7 +86,7 @@ class EntityGenerateTest {
             id = 1,
             createdTime = LocalDateTime.now(),
             modifiedTime = LocalDateTime.now(),
-            remark = "remark",
+            remark = "remark p1.\n${"remark p2 ".repeat(10)}\n",
             name = "Entity",
             comment = "comment",
             author = "Potmot",
@@ -111,7 +111,10 @@ import org.babyfish.jimmer.sql.ManyToOne
 
 /**
  * comment
- * remark
+ * remark p1.
+ * remark p2 remark p2 remark p2 remark p2
+ * remark p2 remark p2 remark p2 remark p2
+ * remark p2 remark p2
  * 
  * @author Potmot
  */
@@ -127,7 +130,10 @@ interface Entity {
     
     /**
      * comment
-     * remark
+     * remark p1.
+     * remark p2 remark p2 remark p2 remark p2
+     * remark p2 remark p2 remark p2 remark p2
+     * remark p2 remark p2
      */
     @Key
     @ManyToOne
@@ -155,7 +161,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * comment
- * remark
+ * remark p1.
+ * remark p2 remark p2 remark p2 remark p2
+ * remark p2 remark p2 remark p2 remark p2
+ * remark p2 remark p2
  * 
  * @author Potmot
  */
@@ -171,7 +180,10 @@ interface Entity {
     
     /**
      * comment
-     * remark
+     * remark p1.
+     * remark p2 remark p2 remark p2 remark p2
+     * remark p2 remark p2 remark p2 remark p2
+     * remark p2 remark p2
      */
     @Key
     @ManyToOne

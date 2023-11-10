@@ -1,5 +1,7 @@
 package top.potmot.core.template
 
+import javax.swing.JPopupMenu.Separator
+
 /**
  * 模版创建者
  */
@@ -57,27 +59,21 @@ class TemplateBuilder {
         stringBuilder.appendLine(string)
     }
 
-    fun lines(stringArray: Array<String>?) {
-        stringArray?.forEach {
-            line(it)
+    fun lines(stringList: List<String>, format: (String) -> String = { it }) {
+        stringList.forEach {
+            line(format(it))
         }
     }
 
-    fun lines(stringList: List<String>?) {
-        stringList?.forEach {
-            line(it)
+    fun lines(string: String?, lineSeparate: String = "\n", format: (String) -> String = { it }) {
+        string?.split(lineSeparate)?.forEach {
+            line(format(it))
         }
     }
 
-    fun lines(string: String?) {
-        string?.split("\n")?.forEach {
-            line(it)
-        }
-    }
-
-    fun joinParts(stringList: List<String>?, separate: String? = null) {
+    fun joinParts(stringList: List<String>?, separate: String? = null, format: (String) -> String = { it }) {
         stringList?.forEachIndexed { index, it ->
-            lines(it)
+            lines(format(it))
 
             if (index < stringList.size - 1) {
                 if (!separate.isNullOrBlank()) {
@@ -89,39 +85,54 @@ class TemplateBuilder {
         }
     }
 
-    fun toBlockLines(string: String?, wrapLength: Int = 40, separator: String = " "): List<String>? {
+    private fun toBlockLines(
+        string: String?,
+        lineLength: Int = 40,
+        paragraphSeparator: String = "\n",
+        wordSeparator: String = " "
+    ): List<String>? {
         if (string.isNullOrBlank()) return null
 
         val list = mutableListOf<String>()
 
-        val words = string.split(separator)
+        val paragraphs = string.split(paragraphSeparator)
 
-        var currentLine = ""
+        paragraphs.forEach { paragraph ->
+            val words = paragraph.split(wordSeparator)
 
-        // 遍历每个单词，并将它们添加到当前行
-        for (word in words) {
-            // 如果当前行加上当前单词的长度超过了wrapLength，则将当前行添加到列表中，并开始一个新行
-            if (currentLine.length + word.length > wrapLength) {
-                list += currentLine.trim()
-                currentLine = ""
+            var currentLine = ""
+
+            // 遍历每个单词，并将它们添加到当前行
+            for (word in words) {
+                // 如果当前行加上当前单词的长度超过了 lineLength，则将当前行添加到列表中，并开始一个新行
+                if (currentLine.length + word.length > lineLength) {
+                    list += currentLine.trim()
+                    currentLine = ""
+                }
+
+                // 将当前单词添加到当前行，并添加一个分隔
+                currentLine += word
+                currentLine += wordSeparator
             }
 
-            // 将当前单词添加到当前行，并添加一个空格
-            currentLine += word
-        }
-
-        // 添加最后一行到列表中
-        if (currentLine.isNotBlank()) {
-            list += currentLine.trim()
+            // 添加最后一行到列表中
+            if (currentLine.isNotBlank()) {
+                list += currentLine.trim()
+            }
         }
 
         return list
     }
 
-    fun block(string: String?, wrapLength: Int = 40, separator: String = " ") {
-        toBlockLines(string, wrapLength, separator)?.forEach {
-            appendIndentation()
-            stringBuilder.appendLine(it)
+    fun block(
+        string: String?,
+        lineLength: Int = 40,
+        paragraphSeparator: String = "\n",
+        wordSeparator: String = " ",
+        format: (String) -> String = { it }
+    ) {
+        toBlockLines(string, lineLength, paragraphSeparator, wordSeparator)?.forEach {
+            line(format(it))
         }
     }
 

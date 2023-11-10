@@ -16,7 +16,7 @@ fun GenEntityPropertiesView.javaClassStringify(): String =
         separate()
         line("import org.babyfish.jimmer.sql.Entity;")
         line("import org.babyfish.jimmer.sql.Table;")
-        lines(importList())
+        lines(importList()) { "import $it;" }
         separate()
 
         lines(blockComment())
@@ -45,7 +45,6 @@ private fun GenEntityPropertiesView.importList(): List<String> =
         .flatMap { it.importList() }
         .distinct()
         .let { importListFilter(it) }
-        .map { "import $it;" }
 
 private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
     val importList = importClassList().mapNotNull {
