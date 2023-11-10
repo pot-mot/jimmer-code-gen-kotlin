@@ -45,7 +45,7 @@ fun mockModelDataView(
             sourceNameAssociationMap[it.sourceColumn.table.name]!! += it
         }
 
-        if (!targetNameAssociationMap.containsKey(it.sourceColumn.table.name)) {
+        if (!targetNameAssociationMap.containsKey(it.targetColumn.table.name)) {
             targetNameAssociationMap[it.targetColumn.table.name] = mutableListOf(it)
         } else {
             targetNameAssociationMap[it.targetColumn.table.name]!! += (it)
