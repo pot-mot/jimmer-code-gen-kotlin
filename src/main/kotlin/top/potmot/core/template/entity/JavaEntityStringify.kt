@@ -1,40 +1,51 @@
 package top.potmot.core.template.entity
 
+import org.jetbrains.annotations.Nullable
+import top.potmot.core.template.TemplateBuilder
 import top.potmot.model.dto.GenEntityPropertiesView
-import javax.validation.constraints.NotNull
 import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as TargetOfEnum
 
 /**
  * java 语言下的实体生成
  */
 
-fun GenEntityPropertiesView.javaClassStringify(): String {
-    return """package ${packagePath()};
+fun GenEntityPropertiesView.javaClassStringify(): String =
+    TemplateBuilder().apply {
+        line("package ${packagePath()};")
 
-import org.babyfish.jimmer.sql.Entity;
-import org.babyfish.jimmer.sql.Table;
-${import()}
+        separate()
+        line("import org.babyfish.jimmer.sql.Entity;")
+        line("import org.babyfish.jimmer.sql.Table;")
+        lines(importList())
+        separate()
 
-${blockComment()}
-@Entity
-${tableAnnotation()}
-interface $name {
-${properties.joinToString("\n\n") { it.javaPropertyStringify() }}
-}"""
-}
+        lines(blockComment())
+        line("@Entity")
+        lines(annotation())
+        line("interface $name {")
+
+        increaseIndentation()
+        joinParts(properties.map { it.javaPropertyStringify() })
+        decreaseIndentation()
+
+        line("}")
+    }.build()
 
 
-private fun GenEntityPropertiesView.TargetOf_properties.javaPropertyStringify(): String {
-    return """${blockComment()}${annotation()}${if (typeNotNull) "\n    @NotNull" else ""}
-    ${shortType()} $name;"""
-}
+private fun GenEntityPropertiesView.TargetOf_properties.javaPropertyStringify(): String =
+    TemplateBuilder().apply {
+        lines(blockComment())
+        lines(annotation())
+        if (!typeNotNull) { line("@Nullable") }
+        line("${shortType()} $name;")
+    }.build()
 
-private fun GenEntityPropertiesView.import(): String =
+private fun GenEntityPropertiesView.importList(): List<String> =
     properties
         .flatMap { it.importList() }
         .distinct()
         .let { importListFilter(it) }
-        .joinToString("\n") { "import $it;" }
+        .map { "import $it;" }
 
 private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
     val importList = importClassList().mapNotNull {
@@ -43,8 +54,8 @@ private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<Strin
 
     importList += fullType()
 
-    if (typeNotNull) {
-        importList += NotNull::class.java.name
+    if (!typeNotNull) {
+        importList += Nullable::class.java.name
     }
 
     return importList.filter { it.isNotEmpty() }
@@ -60,12 +71,20 @@ fun GenEntityPropertiesView.javaEnumsStringify(): List<Pair<String, String>> =
         .map { Pair(name, it.javaEnumStringify()) }
 
 private fun TargetOfEnum.javaEnumStringify(): String =
-    """package ${packagePath()};
+    TemplateBuilder().apply {
+        line("package ${packagePath()};")
 
-import org.babyfish.jimmer.sql.EnumType;
+        separate()
+        line("import org.babyfish.jimmer.sql.EnumType;")
+        separate()
 
-${blockComment()}
-@EnumType(EnumType.Strategy.$enumType)
-public enum $name {
-${items.joinToString("\n\n") { it.toEntity().stringify(enumType) }}
-}"""
+        lines(blockComment())
+        line("@EnumType(EnumType.Strategy.$enumType)")
+        line("public enum $name {")
+
+        increaseIndentation()
+        joinParts(items.map { it.toEntity().stringify(enumType) })
+        decreaseIndentation()
+
+        line("}")
+    }.build()

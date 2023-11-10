@@ -1,5 +1,6 @@
 package top.potmot.core.template.entity
 
+import top.potmot.core.template.TemplateBuilder
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as TargetOfEnum
 
@@ -7,32 +8,42 @@ import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf
  * java 语言下的实体生成
  */
 
-fun GenEntityPropertiesView.kotlinClassStringify(): String {
-    return """package ${packagePath()}
+fun GenEntityPropertiesView.kotlinClassStringify(): String =
+    TemplateBuilder().apply {
+        line("package ${packagePath()}")
 
-import org.babyfish.jimmer.sql.Entity
-import org.babyfish.jimmer.sql.Table
-${import()}
+        separate()
+        line("import org.babyfish.jimmer.sql.Entity")
+        line("import org.babyfish.jimmer.sql.Table")
+        lines(importList())
+        separate()
 
-${blockComment()}
-@Entity
-${tableAnnotation()}
-interface $name {
-${properties.joinToString("\n\n") { it.kotlinPropertyStringify() }}
-}"""
-}
+        lines(blockComment())
+        line("@Entity")
+        lines(annotation())
+        line("interface $name {")
 
-private fun GenEntityPropertiesView.TargetOf_properties.kotlinPropertyStringify(): String {
-    return """${blockComment()}${annotation()}
-    val $name: ${shortType()}${if (typeNotNull) "" else "?"}"""
-}
+        increaseIndentation()
+        joinParts(properties.map { it.kotlinPropertyStringify() })
+        decreaseIndentation()
 
-private fun GenEntityPropertiesView.import(): String =
+        line("}")
+
+    }.build()
+
+private fun GenEntityPropertiesView.TargetOf_properties.kotlinPropertyStringify(): String =
+    TemplateBuilder().apply {
+        lines(blockComment())
+        lines(annotation())
+        line("val $name: ${shortType()}${if (typeNotNull) "" else "?"}")
+    }.build()
+
+private fun GenEntityPropertiesView.importList(): List<String> =
     properties
         .flatMap { it.importList() }
         .distinct()
         .let { importListFilter(it) }
-        .joinToString("\n") { "import $it" }
+        .map { "import $it" }
 
 private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
     val importList = importClassList().mapNotNull {
@@ -54,12 +65,20 @@ fun GenEntityPropertiesView.kotlinEnumsStringify(): List<Pair<String, String>> =
         .map { Pair(name, it.kotlinEnumStringify()) }
 
 private fun TargetOfEnum.kotlinEnumStringify(): String =
-    """package ${packagePath()}
+    TemplateBuilder().apply {
+        line("package ${packagePath()}")
 
-import org.babyfish.jimmer.sql.EnumType
+        separate()
+        line("import org.babyfish.jimmer.sql.EnumType")
+        separate()
 
-${blockComment()}
-@EnumType(EnumType.Strategy.$enumType)
-enum class $name {
-${items.joinToString("\n\n") { it.toEntity().stringify(enumType) }}  
-}"""
+        lines(blockComment())
+        line("@EnumType(EnumType.Strategy.$enumType)")
+        line("enum class $name {")
+
+        increaseIndentation()
+        joinParts(items.map { it.toEntity().stringify(enumType) })
+        decreaseIndentation()
+
+        line("}")
+    }.build()

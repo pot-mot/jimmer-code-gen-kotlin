@@ -20,7 +20,7 @@ import java.time.LocalDateTime
 class EntityGenerateTest {
     @Test
     @Order(1)
-    fun testKotlinEntityGenerate() {
+    fun testEntityGenerate() {
         val basePackage = GenEntityPropertiesView.TargetOf_genPackage(
             id = 1,
             name = "test",
@@ -124,7 +124,7 @@ interface Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     val id: Long
-
+    
     /**
      * comment
      * remark
@@ -132,7 +132,8 @@ interface Entity {
     @Key
     @ManyToOne
     val manyToOneProperty: Entity?
-}"""
+}
+"""
 
         assertEquals(
             kotlinExpected,
@@ -148,9 +149,9 @@ import org.babyfish.jimmer.sql.Table;
 import org.babyfish.jimmer.sql.Id;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
-import org.jetbrains.annotations.NotNull;
 import org.babyfish.jimmer.sql.Key;
 import org.babyfish.jimmer.sql.ManyToOne;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * comment
@@ -166,17 +167,18 @@ interface Entity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @NotNull
     Long id;
-
+    
     /**
      * comment
      * remark
      */
     @Key
     @ManyToOne
+    @Nullable
     Entity manyToOneProperty;
-}"""
+}
+"""
 
         assertEquals(
             javaExpected,
