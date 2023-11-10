@@ -26,11 +26,7 @@ val simplePkColumnMatch: AssociationMatch = { source, target ->
     if (target.partOfPk && target.table.id != source.table.id) {
         val targetTableName = target.table.name.clearTableName()
         if ("${targetTableName}${GenConfig.separator}${target.name}" == source.name) {
-            if (source.partOfUniqueIdx) {
-                AssociationType.ONE_TO_ONE
-            } else {
-                AssociationType.MANY_TO_ONE
-            }
+            AssociationType.MANY_TO_ONE
         } else {
             null
         }
@@ -84,11 +80,7 @@ val pkSuffixColumnMatch: AssociationMatch = { source, target ->
                     source.name.split(separator).takeLast(2)
 
         if (sourceMatchList == targetMatchList) {
-            if (source.partOfUniqueIdx) {
-                AssociationType.ONE_TO_ONE
-            } else {
-                AssociationType.MANY_TO_ONE
-            }
+            AssociationType.MANY_TO_ONE
         } else {
             null
         }

@@ -1,18 +1,17 @@
 package top.potmot.extension
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.babyfish.jimmer.jackson.ImmutableModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import top.potmot.core.liquibase.createSql
-import top.potmot.model.GenAssociation
 import top.potmot.model.GenDataSource
-import top.potmot.model.GenTable
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenModelView
 import top.potmot.model.dto.GenTableColumnsInput
 
-private val mapper = ObjectMapper()
+private val mapper = jacksonObjectMapper()
     .registerModule(ImmutableModule())
     .registerModule(JavaTimeModule())
 
@@ -25,13 +24,13 @@ fun GenModelView.valueToData(): Pair<List<GenTableColumnsInput>, List<GenAssocia
     val tables = mutableListOf<GenTableColumnsInput>()
     val associations = mutableListOf<GenAssociationModelInput>()
 
-    val jsonNode = ObjectMapper().readTree(this.value)
+    val jsonNode = mapper.readTree(this.value)
 
     val cells = jsonNode.path("json").path("cells").toList()
 
     cells.forEach { cell ->
         if (cell.path("shape").textValue() == "edge") {
-            TODO()
+            associations += cell.path("data").path("association").toAssociation()
         } else if (cell.path("shape").textValue() == "model") {
             tables += cell.path("data").path("table").toTable()
         }
@@ -41,9 +40,9 @@ fun GenModelView.valueToData(): Pair<List<GenTableColumnsInput>, List<GenAssocia
 }
 
 private fun JsonNode.toTable(): GenTableColumnsInput {
-    return GenTableColumnsInput(mapper.readValue(this.toString(), GenTable::class.java))
+    return mapper.readValue<GenTableColumnsInput>(this.toString())
 }
 
 private fun JsonNode.toAssociation(): GenAssociationModelInput {
-    return GenAssociationModelInput(mapper.readValue(this.toString(), GenAssociation::class.java))
+    return mapper.readValue<GenAssociationModelInput>(this.toString())
 }

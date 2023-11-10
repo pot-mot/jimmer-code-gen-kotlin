@@ -60,6 +60,7 @@ input GenAssociationModelInput {
 
     sourceColumn {
         name
+        comment
         type
 
         table {
@@ -69,6 +70,7 @@ input GenAssociationModelInput {
     }
     targetColumn {
         name
+        comment
         type
 
         table {

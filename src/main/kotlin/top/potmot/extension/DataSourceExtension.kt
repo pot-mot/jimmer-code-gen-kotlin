@@ -21,6 +21,10 @@ fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
     }
 }
 
+fun GenDataSource.execute(sql: String): Boolean {
+    return this.toSource().get().prepareStatement(sql).execute()
+}
+
 /**
  * 从 GenDataSource 转换为 DatabaseConnectionSource
  *

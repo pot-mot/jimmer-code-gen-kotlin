@@ -32,14 +32,15 @@ private fun convertTableToEntity(
         ImmutableObjects.isLoaded(it, "associationType")
     }
 
-    val commonProperties = associationIsLoadedMap[false] ?: emptyList()
+    val unloadAssociationProperties = associationIsLoadedMap[false] ?: emptyList()
 
     val associationPropertiesMap = associationIsLoadedMap[true]?.groupBy {
         it.associationType
     } ?: emptyMap()
 
     val resortProperties =
-        commonProperties +
+        unloadAssociationProperties +
+                (associationPropertiesMap[null] ?: emptyList()) +
                 (associationPropertiesMap[ONE_TO_ONE] ?: emptyList()) +
                 (associationPropertiesMap[MANY_TO_ONE] ?: emptyList()) +
                 (associationPropertiesMap[ONE_TO_MANY] ?: emptyList()) +
@@ -57,9 +58,10 @@ private fun tableToEntity(
     genTable: GenTableAssociationsView,
 ): GenEntity {
     return new(GenEntity::class).by {
-        tableId = genTable.toEntity().id
+        table().id = genTable.id
         author = GenConfig.author
         name = tableNameToClassName(genTable.name)
         comment = genTable.comment.clearTableComment()
+        remark = genTable.remark
     }
 }

@@ -72,7 +72,7 @@ fun columnToProperties(
                 ONE_TO_ONE, MANY_TO_ONE -> {
                     setAssociation(
                         outAssociation.associationType,
-                        joinColumn = JoinColumnProps(joinColumnName = columnNameToPropertyName(targetColumn.name))
+                        joinColumn = JoinColumnProps(joinColumnName = sourceColumn.name)
                     )
                     outAssociation.dissociateAction?.let {
                         this.dissociateAnnotation = "@OnDissociate(DissociateAction.${it})"
@@ -80,13 +80,16 @@ fun columnToProperties(
                 }
 
                 MANY_TO_MANY -> {
+                    val sourceTableName = sourceColumn.table.name.clearTableName()
+                    val targetTableName =  targetColumn.table.name.clearTableName()
+
                     keyProperty = false
                     setAssociation(
                         outAssociation.associationType,
                         joinTable = JoinTableProps(
-                            joinTableName = mappingTableName(sourceColumn.table.name, targetColumn.table.name),
-                            joinColumnName = columnNameToPropertyName(targetColumn.name).toPlural(),
-                            inverseJoinColumnName = columnNameToPropertyName(sourceColumn.name).toPlural()
+                            joinTableName = mappingTableName(sourceTableName, targetTableName),
+                            joinColumnName = "${sourceTableName}_id",
+                            inverseJoinColumnName = "${targetTableName}_id",
                         )
                     )
                 }
@@ -150,7 +153,7 @@ fun columnToProperties(
                 ONE_TO_MANY  -> {
                     setAssociation(
                         MANY_TO_ONE,
-                        joinColumn = JoinColumnProps(joinColumnName = columnNameToPropertyName(sourceColumn.name))
+                        joinColumn = JoinColumnProps(joinColumnName = sourceColumn.name)
                     )
                     inAssociation.dissociateAction?.let {
                         this.dissociateAnnotation = "@OnDissociate(DissociateAction.${it})"
@@ -185,11 +188,23 @@ fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
     return new(GenProperty::class).by {
         this.columnId = column.id
         this.name = columnNameToPropertyName(column.name)
-        this.type = column.mappingPropertyType(typeMappings)
         this.comment = column.comment.clearColumnComment()
-        this.typeNotNull = column.typeNotNull
-        this.keyProperty = column.partOfUniqueIdx
+        this.type = column.mappingPropertyType(typeMappings)
+        this.typeTableId = null
         this.listType = false
+        this.typeNotNull = column.typeNotNull
+        this.idProperty = false
+        this.idGenerationType  = null
+        this.keyProperty = column.partOfUniqueIdx
+        this.logicalDelete = false
+        this.idView = false
+        this.idViewAnnotation = null
+        this.associationType = null
+        this.associationAnnotation = null
+        this.dissociateAnnotation = null
+        this.otherAnnotation = null
+        this.enumId = null
+        this.remark = column.remark
     }
 }
 
@@ -255,7 +270,6 @@ private fun GenPropertyDraft.toPlural() {
  *
  * @param baseProperty 基础属性
  * @param associationProperty 关联属性
- * @param plural 是否复数形式，默认单数形式
  */
 fun createIdViewProperty(
     baseProperty: GenProperty,

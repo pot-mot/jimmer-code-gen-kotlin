@@ -1,6 +1,5 @@
 package top.potmot.convert
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.babyfish.jimmer.jackson.ImmutableModule
 import org.babyfish.jimmer.sql.GenerationType
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -16,6 +15,7 @@ import top.potmot.model.GenColumn
 import top.potmot.model.dto.GenTableAssociationsView
 import java.time.LocalDateTime
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin", "mysql")
@@ -23,7 +23,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 class ColumnPropertyConvertTest {
     private val now = LocalDateTime.now()
 
-    private val mapper = ObjectMapper()
+    private val mapper = jacksonObjectMapper()
         .registerModule(ImmutableModule())
         .registerModule(JavaTimeModule())
 
@@ -150,7 +150,7 @@ class ColumnPropertyConvertTest {
         assertEquals(AssociationType.MANY_TO_ONE, manyToOneProperty.associationType)
         assertEquals(
             """@ManyToOne
-@JoinColumn(name = "oneToManyColumn")"""
+@JoinColumn(name = "many_to_one_column")"""
             , manyToOneProperty.associationAnnotation)
         assertEquals("@OnDissociate(DissociateAction.DELETE)", manyToOneProperty.dissociateAnnotation)
 
@@ -229,7 +229,7 @@ class ColumnPropertyConvertTest {
         assertEquals(AssociationType.ONE_TO_ONE, oneToOneProperty.associationType)
         assertEquals(
             """@OneToOne
-@JoinColumn(name = "oneToOneColumn")"""
+@JoinColumn(name = "one_to_one_column")"""
             , oneToOneProperty.associationAnnotation)
         assertEquals("@OnDissociate(DissociateAction.DELETE)", oneToOneProperty.dissociateAnnotation)
 
@@ -317,8 +317,8 @@ class ColumnPropertyConvertTest {
             """@ManyToMany
 @JoinTable(
     name = "table1_table2_mapping",
-    joinColumnName = "mappedManyToManyColumns",
-    inverseJoinColumnName = "manyToManyColumns"
+    joinColumnName = "table1_id",
+    inverseJoinColumnName = "table2_id"
 )"""
             , manyToManyProperty.associationAnnotation)
 
