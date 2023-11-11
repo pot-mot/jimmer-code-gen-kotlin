@@ -82,23 +82,8 @@ class GenerateService(
         @RequestParam tableIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
     ): Map<String, String> {
-        val generatedEntityIdAndTableIds = sqlClient.createQuery(GenEntity::class) {
-            where(table.tableId valueIn tableIds)
-            select(table.id, table.tableId)
-        }.execute()
-
-        val generatedEntityIds = generatedEntityIdAndTableIds.map { it._1 }.toMutableSet()
-        val generatedTableIds = generatedEntityIdAndTableIds.map { it._2 }.toSet()
-
-        // 为未生成 entity 的 table 生成 entity
-        val convertTableIds = sqlClient.createQuery(GenTable::class) {
-            where(table.id valueIn (tableIds - generatedTableIds))
-            select(table.id)
-        }.execute()
-
-        generatedEntityIds += convert(convertTableIds)
-
-        return preview(generatedEntityIds.toList(), language)
+        val entityIds = convert(tableIds)
+        return preview(entityIds.toList(), language)
     }
 
     @GetMapping("/preview/model")
