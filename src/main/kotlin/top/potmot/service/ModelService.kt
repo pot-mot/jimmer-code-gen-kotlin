@@ -119,7 +119,7 @@ class ModelService(
     }
 
     @PostMapping("/sql")
-    fun createSql(
+    fun previewSql(
         @RequestParam id: Long,
         @RequestParam dataSourceId: Long,
     ): String? {

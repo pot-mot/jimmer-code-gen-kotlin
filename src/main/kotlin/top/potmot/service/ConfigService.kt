@@ -1,6 +1,5 @@
 package top.potmot.service
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -11,18 +10,16 @@ import top.potmot.config.GenConfigProperties
 
 @RestController
 @RequestMapping("/config")
-class ConfigService (
-    @Autowired val genConfig: GenConfig
-) {
+class ConfigService {
     @GetMapping
     fun getConfig(): GenConfig {
-        return genConfig
+        return GenConfig
     }
 
     @PutMapping
     fun setConfig(
         @RequestBody newConfig: GenConfigProperties
     ) {
-        genConfig.merge(newConfig)
+        GenConfig.merge(newConfig)
     }
 }

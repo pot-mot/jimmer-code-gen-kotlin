@@ -13,7 +13,19 @@ GenEntityCommonView {
     }
 }
 
-GenEntityPropertiesView: GenEntityCommonView {
+GenEntityPropertiesView {
+    #allScalars
+
+    genPackage {
+        id
+        name
+
+        parent {
+            id
+            name
+        }*
+    }
+
     table {
         id
         name

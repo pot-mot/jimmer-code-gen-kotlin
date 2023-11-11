@@ -3,7 +3,10 @@ GenSchemaView {
     id(dataSource)
 }
 
-GenSchemaTablesView: GenSchemaView {
+GenSchemaTablesView {
+    #allScalars
+    id(dataSource)
+
     tables {
         id
         name

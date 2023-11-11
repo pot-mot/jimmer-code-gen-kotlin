@@ -9,8 +9,8 @@ val mysqlDataSourceTemplate = GenDataSourceTemplateView(
     type = MySQL,
     host = "127.0.0.1",
     port = "3306",
-    username = "root",
     urlSuffix = "",
+    username = "root",
     remark = "MySQL DataSource",
 )
 
@@ -19,8 +19,8 @@ val postgreDataSourceTemplate = GenDataSourceTemplateView(
     type = PostgreSQL,
     host = "127.0.0.1",
     port = "5432",
-    username = "postgres",
     urlSuffix = "/postgres",
+    username = "postgres",
     remark = "PostgreSQL DataSource",
 )
 

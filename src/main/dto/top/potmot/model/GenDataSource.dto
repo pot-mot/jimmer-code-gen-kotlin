@@ -4,15 +4,21 @@ GenDataSourceView {
     -password
 }
 
-GenDataSourceTemplateView: GenDataSourceView {
-    -id
-    -createdTime
-    -modifiedTime
-    -orderKey
-    +username
+GenDataSourceTemplateView {
+    name
+    type
+    host
+    port
+    urlSuffix
+    username
+    remark
 }
 
-GenDataSourceSchemasView: GenDataSourceView {
+GenDataSourceSchemasView {
+    #allScalars
+    -username
+    -password
+
     schemas {
         #allScalars
         id(dataSource)

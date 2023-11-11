@@ -4,7 +4,6 @@ GenTableIdView {
 
 GenTableCommonView {
     #allScalars
-
     id(entity)
 
     schema {
@@ -19,14 +18,42 @@ GenTableCommonView {
     }
 }
 
-GenTableColumnsView: GenTableCommonView {
+GenTableColumnsView {
+    #allScalars
+    id(entity)
+
+    schema {
+        id
+        name
+
+        dataSource {
+            id
+            name
+            type
+        }
+    }
+
     columns {
         #allScalars
         id(table)
     }
 }
 
-GenTableAssociationsView: GenTableCommonView {
+GenTableAssociationsView {
+    #allScalars
+    id(entity)
+
+    schema {
+        id
+        name
+
+        dataSource {
+            id
+            name
+            type
+        }
+    }
+
     columns {
         #allScalars
         table {
@@ -76,12 +103,19 @@ input GenTableInput {
         id
         name
     }
-
     -createdTime
     -modifiedTime
 }
 
-input GenTableColumnsInput: GenTableInput {
+input GenTableColumnsInput {
+    #allScalars
+    schema {
+        id
+        name
+    }
+    -createdTime
+    -modifiedTime
+
     columns {
         #allScalars
         -createdTime
