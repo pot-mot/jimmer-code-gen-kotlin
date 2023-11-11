@@ -27,13 +27,13 @@ fun now(formatPattern: String = "yyyy-MM-dd HH:mm:ss"): String =
     )
 
 fun GenEntityPropertiesView.packagePath(): String =
-    genPackage?.toEntity()?.toPath() ?: ""
+    genPackage?.toEntity()?.toPath() ?: GenConfig.defaultPackagePath
 
 fun GenEntityPropertiesView.TargetOf_properties.TargetOf_typeTable_2.packagePath(): String =
-    entity?.genPackage?.toEntity()?.toPath() ?: ""
+    entity?.genPackage?.toEntity()?.toPath() ?: GenConfig.defaultPackagePath
 
 fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.packagePath(): String =
-    genPackage?.toEntity()?.toPath() ?: ""
+    genPackage?.toEntity()?.toPath() ?: GenConfig.defaultPackagePath
 
 /**
  * 获取属性的简单类型名

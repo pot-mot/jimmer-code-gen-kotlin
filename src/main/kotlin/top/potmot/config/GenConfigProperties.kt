@@ -16,6 +16,9 @@ data class GenConfigProperties(
     /** 作者  */
     val author: String? = null,
 
+    /** 默认包路径  */
+    val defaultPackagePath: String? = null,
+
     /** 生成 tableDefine 时携带外键 */
     val tableDefineWithFk: Boolean? = null,
 

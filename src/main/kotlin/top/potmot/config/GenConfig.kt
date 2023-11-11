@@ -27,6 +27,9 @@ object GenConfig {
     /** 作者  */
     var author: String = ""
 
+    /** 默认包路径  */
+    var defaultPackagePath: String = "com.example"
+
     /** 逻辑删除默认配置 */
     var logicalDeletedAnnotation: String = "@LogicalDeleted(\"true\")"
 
@@ -168,6 +171,10 @@ object GenConfig {
 
         newConfig.author?.let {
             author = it
+        }
+
+        newConfig.defaultPackagePath?.let {
+            defaultPackagePath = it
         }
 
         newConfig.logicalDeletedAnnotation?.let {
