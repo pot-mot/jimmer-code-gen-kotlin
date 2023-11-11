@@ -5,7 +5,6 @@ import org.babyfish.jimmer.sql.Table
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
-import org.babyfish.jimmer.sql.Key
 import top.potmot.model.base.BaseEntity
 
 /**
@@ -27,7 +26,6 @@ interface GenModel : BaseEntity {
     /**
      * 名称
      */
-    @Key
     val name: String
 
     /**

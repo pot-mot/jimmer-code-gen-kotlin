@@ -65,10 +65,10 @@ class ModelService(
 
     @PutMapping
     @Transactional
-    fun save(
+    fun update(
         @RequestBody input: GenModelInput
     ): Long {
-        return sqlClient.save(input).modifiedEntity.id
+        return sqlClient.update(input).modifiedEntity.id
     }
 
     @PostMapping("/value")
