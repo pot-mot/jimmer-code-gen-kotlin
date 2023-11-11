@@ -28,7 +28,7 @@ class TestModelToSql (
 
         assert(models.isNotEmpty())
 
-        val sql = modelService.createSql(models[0].id, dataSources[0].id)
+        val sql = modelService.previewSql(models[0].id, dataSources[0].id)
 
         assert(sql != null)
 

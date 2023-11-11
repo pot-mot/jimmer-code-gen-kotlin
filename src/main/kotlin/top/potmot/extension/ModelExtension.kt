@@ -20,11 +20,11 @@ fun GenModelView.createSql(dataSource: GenDataSource): String {
     return dataSource.createSql(data.first, data.second)
 }
 
-fun GenModelView.valueToData(): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> {
+fun valueToData(value: String): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> {
     val tables = mutableListOf<GenTableColumnsInput>()
     val associations = mutableListOf<GenAssociationModelInput>()
 
-    val jsonNode = mapper.readTree(this.value)
+    val jsonNode = mapper.readTree(value)
 
     val cells = jsonNode.path("json").path("cells").toList()
 
@@ -38,6 +38,9 @@ fun GenModelView.valueToData(): Pair<List<GenTableColumnsInput>, List<GenAssocia
 
     return Pair(tables, associations)
 }
+
+fun GenModelView.valueToData(): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> =
+    valueToData(this.value)
 
 private fun JsonNode.toTable(): GenTableColumnsInput {
     return mapper.readValue<GenTableColumnsInput>(this.toString())
