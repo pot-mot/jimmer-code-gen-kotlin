@@ -2,9 +2,11 @@
 
 > ## 重构内容
 > 
-> 在经过思考后，核心 model 确定为 table
-> 则重构内容由 增加额外 model 实体并提供转换迁移至
+> 核心 model 确定为 table
+> 
 > **将 table 与 datasource 解除强关联，允许 table 单独存在**
+> 
+> **补充 table 与 association 和 model 可空的关联，实现 table 与 model 的关联**
 > 
 
 项目基于 Kotlin + Gradle + [SchemaCrawler](https://github.com/schemacrawler/SchemaCrawler) + [Liquibase](https://www.bing.com/search?q=liquibase&form=ANNTH1&refig=ef394be2e4284bdbbe5b442876a12d57&pc=NMTS) 编写
