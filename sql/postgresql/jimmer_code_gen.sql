@@ -7,30 +7,129 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TABLE IF EXISTS "gen_package" CASCADE;
+DROP TABLE IF EXISTS "gen_enum" CASCADE;
+DROP TABLE IF EXISTS "gen_enum_item" CASCADE;
 DROP TABLE IF EXISTS "gen_model" CASCADE;
 DROP TABLE IF EXISTS "gen_data_source" CASCADE;
 DROP TABLE IF EXISTS "gen_schema" CASCADE;
 DROP TABLE IF EXISTS "gen_table" CASCADE;
 DROP TABLE IF EXISTS "gen_column" CASCADE;
 DROP TABLE IF EXISTS "gen_association" CASCADE;
-DROP TABLE IF EXISTS "gen_package" CASCADE;
 DROP TABLE IF EXISTS "gen_entity" CASCADE;
-DROP TABLE IF EXISTS "gen_enum" CASCADE;
-DROP TABLE IF EXISTS "gen_enum_item" CASCADE;
 DROP TABLE IF EXISTS "gen_property" CASCADE;
 DROP TABLE IF EXISTS "gen_type_mapping" CASCADE;
+
+-- ----------------------------
+-- Table structure for gen_package
+-- ----------------------------
+CREATE TABLE "gen_package"
+(
+    "id"            BIGSERIAL PRIMARY KEY,
+    "parent_id"     bigint      NULL     DEFAULT NULL REFERENCES "gen_package" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
+    "name"          text        NOT NULL,
+    "order_key"     bigint      NOT NULL DEFAULT 0,
+    "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark"        text        NOT NULL DEFAULT ''
+);
+
+CREATE INDEX "fk_package_parent" ON "gen_package" ("parent_id");
+
+COMMENT ON TABLE "gen_package" IS '生成包';
+COMMENT ON COLUMN "gen_package"."id" IS 'ID';
+COMMENT ON COLUMN "gen_package"."parent_id" IS '父包';
+COMMENT ON COLUMN "gen_package"."name" IS '包名称';
+COMMENT ON COLUMN "gen_package"."order_key" IS '自定排序';
+COMMENT ON COLUMN "gen_package"."created_time" IS '创建时间';
+COMMENT ON COLUMN "gen_package"."modified_time" IS '修改时间';
+COMMENT ON COLUMN "gen_package"."remark" IS '备注';
+
+CREATE TRIGGER "trg_update_gen_package_modified_time"
+    BEFORE UPDATE
+    ON "gen_package"
+    FOR EACH ROW
+EXECUTE FUNCTION update_modified_time();
+
+-- ----------------------------
+-- Table structure for gen_enum
+-- ----------------------------
+CREATE TABLE "gen_enum"
+(
+    "id"            BIGSERIAL PRIMARY KEY,
+    "package_id"    bigint      NULL     DEFAULT NULL REFERENCES "gen_package" ("id") ON DELETE SET NULL ON UPDATE RESTRICT,
+    "name"          text        NOT NULL,
+    "comment"       text        NOT NULL,
+    "enum_type"     text        NULL,
+    "order_key"     bigint      NOT NULL DEFAULT 0,
+    "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark"        text        NOT NULL DEFAULT ''
+);
+
+CREATE INDEX "fk_enum_package" ON "gen_enum" ("package_id");
+
+COMMENT ON TABLE "gen_enum" IS '生成枚举';
+COMMENT ON COLUMN "gen_enum"."id" IS 'ID';
+COMMENT ON COLUMN "gen_enum"."package_id" IS '所属包';
+COMMENT ON COLUMN "gen_enum"."name" IS '枚举名';
+COMMENT ON COLUMN "gen_enum"."comment" IS '枚举注释';
+COMMENT ON COLUMN "gen_enum"."enum_type" IS '枚举类型';
+COMMENT ON COLUMN "gen_enum"."order_key" IS '自定排序';
+COMMENT ON COLUMN "gen_enum"."created_time" IS '创建时间';
+COMMENT ON COLUMN "gen_enum"."modified_time" IS '修改时间';
+COMMENT ON COLUMN "gen_enum"."remark" IS '备注';
+
+CREATE TRIGGER "trg_update_gen_enum_modified_time"
+    BEFORE UPDATE
+    ON "gen_enum"
+    FOR EACH ROW
+EXECUTE FUNCTION update_modified_time();
+
+-- ----------------------------
+-- Table structure for gen_enum_item
+-- ----------------------------
+CREATE TABLE "gen_enum_item"
+(
+    "id"            BIGSERIAL PRIMARY KEY,
+    "enum_id"       bigint      NOT NULL REFERENCES "gen_enum" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
+    "name"          text        NOT NULL,
+    "value"         text        NOT NULL,
+    "comment"       text        NOT NULL DEFAULT '',
+    "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark"        text        NOT NULL DEFAULT ''
+);
+
+CREATE INDEX "fk_enum_item_enum" ON "gen_enum_item" ("enum_id");
+
+COMMENT ON TABLE "gen_enum_item" IS '生成枚举元素';
+COMMENT ON COLUMN "gen_enum_item"."id" IS 'ID';
+COMMENT ON COLUMN "gen_enum_item"."enum_id" IS '对应枚举 ID';
+COMMENT ON COLUMN "gen_enum_item"."name" IS '元素名';
+COMMENT ON COLUMN "gen_enum_item"."value" IS '元素值';
+COMMENT ON COLUMN "gen_enum_item"."comment" IS '元素注释';
+COMMENT ON COLUMN "gen_enum_item"."created_time" IS '创建时间';
+COMMENT ON COLUMN "gen_enum_item"."modified_time" IS '修改时间';
+COMMENT ON COLUMN "gen_enum_item"."remark" IS '备注';
+
+CREATE TRIGGER "trg_update_gen_enum_item_modified_time"
+    BEFORE UPDATE
+    ON "gen_enum_item"
+    FOR EACH ROW
+EXECUTE FUNCTION update_modified_time();
 
 -- ----------------------------
 -- Table structure for gen_model
 -- ----------------------------
 CREATE TABLE "gen_model"
 (
-    "id"     BIGSERIAL PRIMARY KEY,
-    "name"   text NOT NULL,
-    "value"  text NOT NULL,
+    "id"            BIGSERIAL PRIMARY KEY,
+    "name"          text        NOT NULL,
+    "value"         text        NOT NULL,
     "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark" text NOT NULL
+    "remark"        text        NOT NULL
 );
 
 COMMENT ON TABLE "gen_model" IS '生成模型';
@@ -123,6 +222,7 @@ EXECUTE FUNCTION update_modified_time();
 CREATE TABLE "gen_table"
 (
     "id"            BIGSERIAL PRIMARY KEY,
+    "model_id"      bigint      NULL REFERENCES "gen_model" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
     "schema_id"     bigint      NULL REFERENCES "gen_schema" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
     "name"          text        NOT NULL,
     "comment"       text        NOT NULL,
@@ -133,10 +233,12 @@ CREATE TABLE "gen_table"
     "remark"        text        NOT NULL DEFAULT ''
 );
 
+CREATE INDEX "fk_table_model" ON "gen_table" ("model_id");
 CREATE INDEX "fk_table_schema" ON "gen_table" ("schema_id");
 
 COMMENT ON TABLE "gen_table" IS '生成表';
 COMMENT ON COLUMN "gen_table"."id" IS 'ID';
+COMMENT ON COLUMN "gen_table"."model_id" IS '模型';
 COMMENT ON COLUMN "gen_table"."schema_id" IS '数据架构';
 COMMENT ON COLUMN "gen_table"."name" IS '表名称';
 COMMENT ON COLUMN "gen_table"."comment" IS '表注释';
@@ -171,13 +273,17 @@ CREATE TABLE "gen_column"
     "auto_increment"     boolean     NOT NULL DEFAULT FALSE,
     "part_of_fk"         boolean     NOT NULL DEFAULT FALSE,
     "part_of_unique_idx" boolean     NOT NULL DEFAULT FALSE,
-    "type_not_null"           boolean     NOT NULL DEFAULT FALSE,
+    "type_not_null"      boolean     NOT NULL DEFAULT FALSE,
+    "business_key"       boolean     NOT NULL DEFAULT FALSE,
+    "logical_delete"     boolean     NOT NULL DEFAULT FALSE,
+    "enum_id"            bigint      NULL     DEFAULT NULL REFERENCES "gen_enum" ("id") ON DELETE SET NULL ON UPDATE RESTRICT,
     "created_time"       timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time"      timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "remark"             text        NOT NULL DEFAULT ''
 );
 
 CREATE INDEX "fk_column_table" ON "gen_column" ("table_id");
+CREATE INDEX "fk_column_enum" ON "gen_column" ("enum_id");
 
 COMMENT ON TABLE "gen_column" IS '生成列';
 COMMENT ON COLUMN "gen_column"."id" IS 'ID';
@@ -195,6 +301,9 @@ COMMENT ON COLUMN "gen_column"."auto_increment" IS '是否自增';
 COMMENT ON COLUMN "gen_column"."part_of_fk" IS '是否外键';
 COMMENT ON COLUMN "gen_column"."part_of_unique_idx" IS '是否唯一索引';
 COMMENT ON COLUMN "gen_column"."type_not_null" IS '是否非空';
+COMMENT ON COLUMN "gen_column"."business_key" IS '是否为业务键';
+COMMENT ON COLUMN "gen_column"."logical_delete" IS '是否为逻辑删除';
+COMMENT ON COLUMN "gen_column"."enum_id" IS '枚举';
 COMMENT ON COLUMN "gen_column"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_column"."modified_time" IS '修改时间';
 COMMENT ON COLUMN "gen_column"."remark" IS '备注';
@@ -211,6 +320,7 @@ EXECUTE FUNCTION update_modified_time();
 CREATE TABLE "gen_association"
 (
     "id"                BIGSERIAL PRIMARY KEY,
+    "model_id"          bigint      NULL REFERENCES "gen_model" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
     "comment"           text        NOT NULL DEFAULT '',
     "source_column_id"  bigint      NOT NULL REFERENCES "gen_column" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
     "target_column_id"  bigint      NOT NULL REFERENCES "gen_column" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
@@ -223,11 +333,13 @@ CREATE TABLE "gen_association"
     "remark"            text        NOT NULL DEFAULT ''
 );
 
+CREATE INDEX "fk_association_model" ON "gen_association" ("model_id");
 CREATE INDEX "fk_association_source_column" ON "gen_association" ("source_column_id");
 CREATE INDEX "fk_association_target_column" ON "gen_association" ("target_column_id");
 
 COMMENT ON TABLE "gen_association" IS '生成关联';
 COMMENT ON COLUMN "gen_association"."id" IS 'ID';
+COMMENT ON COLUMN "gen_association"."model_id" IS '模型';
 COMMENT ON COLUMN "gen_association"."comment" IS '关联注释';
 COMMENT ON COLUMN "gen_association"."source_column_id" IS '主列';
 COMMENT ON COLUMN "gen_association"."target_column_id" IS '从列';
@@ -242,37 +354,6 @@ COMMENT ON COLUMN "gen_association"."remark" IS '备注';
 CREATE TRIGGER "trg_update_gen_association_modified_time"
     BEFORE UPDATE
     ON "gen_association"
-    FOR EACH ROW
-EXECUTE FUNCTION update_modified_time();
-
--- ----------------------------
--- Table structure for gen_package
--- ----------------------------
-CREATE TABLE "gen_package"
-(
-    "id"            BIGSERIAL PRIMARY KEY,
-    "parent_id"     bigint      NULL     DEFAULT NULL REFERENCES "gen_package" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
-    "name"          text        NOT NULL,
-    "order_key"     bigint      NOT NULL DEFAULT 0,
-    "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"        text        NOT NULL DEFAULT ''
-);
-
-CREATE INDEX "fk_package_parent" ON "gen_package" ("parent_id");
-
-COMMENT ON TABLE "gen_package" IS '生成包';
-COMMENT ON COLUMN "gen_package"."id" IS 'ID';
-COMMENT ON COLUMN "gen_package"."parent_id" IS '父包';
-COMMENT ON COLUMN "gen_package"."name" IS '包名称';
-COMMENT ON COLUMN "gen_package"."order_key" IS '自定排序';
-COMMENT ON COLUMN "gen_package"."created_time" IS '创建时间';
-COMMENT ON COLUMN "gen_package"."modified_time" IS '修改时间';
-COMMENT ON COLUMN "gen_package"."remark" IS '备注';
-
-CREATE TRIGGER "trg_update_gen_package_modified_time"
-    BEFORE UPDATE
-    ON "gen_package"
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_time();
 
@@ -316,74 +397,6 @@ CREATE TRIGGER "trg_update_gen_entity_modified_time"
 EXECUTE FUNCTION update_modified_time();
 
 -- ----------------------------
--- Table structure for gen_enum
--- ----------------------------
-CREATE TABLE "gen_enum"
-(
-    "id"            BIGSERIAL PRIMARY KEY,
-    "package_id"    bigint      NULL     DEFAULT NULL REFERENCES "gen_package" ("id") ON DELETE SET NULL ON UPDATE RESTRICT,
-    "name"          text        NOT NULL,
-    "comment"       text        NOT NULL,
-    "enum_type"     text        NULL,
-    "order_key"     bigint      NOT NULL DEFAULT 0,
-    "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"        text        NOT NULL DEFAULT ''
-);
-
-CREATE INDEX "fk_enum_package" ON "gen_enum" ("package_id");
-
-COMMENT ON TABLE "gen_enum" IS '生成枚举';
-COMMENT ON COLUMN "gen_enum"."id" IS 'ID';
-COMMENT ON COLUMN "gen_enum"."package_id" IS '所属包';
-COMMENT ON COLUMN "gen_enum"."name" IS '枚举名';
-COMMENT ON COLUMN "gen_enum"."comment" IS '枚举注释';
-COMMENT ON COLUMN "gen_enum"."enum_type" IS '枚举类型';
-COMMENT ON COLUMN "gen_enum"."order_key" IS '自定排序';
-COMMENT ON COLUMN "gen_enum"."created_time" IS '创建时间';
-COMMENT ON COLUMN "gen_enum"."modified_time" IS '修改时间';
-COMMENT ON COLUMN "gen_enum"."remark" IS '备注';
-
-CREATE TRIGGER "trg_update_gen_enum_modified_time"
-    BEFORE UPDATE
-    ON "gen_enum"
-    FOR EACH ROW
-EXECUTE FUNCTION update_modified_time();
-
--- ----------------------------
--- Table structure for gen_enum_item
--- ----------------------------
-CREATE TABLE "gen_enum_item"
-(
-    "id"            BIGSERIAL PRIMARY KEY,
-    "enum_id"       bigint      NOT NULL REFERENCES "gen_enum" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
-    "name"          text        NOT NULL,
-    "value"         text        NOT NULL,
-    "comment"       text        NOT NULL DEFAULT '',
-    "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"        text        NOT NULL DEFAULT ''
-);
-
-CREATE INDEX "fk_enum_item_enum" ON "gen_enum_item" ("enum_id");
-
-COMMENT ON TABLE "gen_enum_item" IS '生成枚举元素';
-COMMENT ON COLUMN "gen_enum_item"."id" IS 'ID';
-COMMENT ON COLUMN "gen_enum_item"."enum_id" IS '对应枚举 ID';
-COMMENT ON COLUMN "gen_enum_item"."name" IS '元素名';
-COMMENT ON COLUMN "gen_enum_item"."value" IS '元素值';
-COMMENT ON COLUMN "gen_enum_item"."comment" IS '元素注释';
-COMMENT ON COLUMN "gen_enum_item"."created_time" IS '创建时间';
-COMMENT ON COLUMN "gen_enum_item"."modified_time" IS '修改时间';
-COMMENT ON COLUMN "gen_enum_item"."remark" IS '备注';
-
-CREATE TRIGGER "trg_update_gen_enum_item_modified_time"
-    BEFORE UPDATE
-    ON "gen_enum_item"
-    FOR EACH ROW
-EXECUTE FUNCTION update_modified_time();
-
--- ----------------------------
 -- Table structure for gen_property
 -- ----------------------------
 CREATE TABLE "gen_property"
@@ -396,7 +409,7 @@ CREATE TABLE "gen_property"
     "type"                   text        NOT NULL,
     "type_table_id"          bigint      NULL     DEFAULT NULL REFERENCES "gen_table" ("id") ON DELETE SET NULL ON UPDATE RESTRICT,
     "list_type"              boolean     NOT NULL DEFAULT FALSE,
-    "type_not_null"               boolean     NOT NULL DEFAULT FALSE,
+    "type_not_null"          boolean     NOT NULL DEFAULT FALSE,
     "id_property"            boolean     NOT NULL DEFAULT FALSE,
     "id_generation_type"     text        NULL     DEFAULT NULL,
     "key_property"           boolean     NOT NULL DEFAULT FALSE,

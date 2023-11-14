@@ -102,12 +102,12 @@ class EntityGenerateTest {
         val kotlinExpected = """package com.example.test
 
 import org.babyfish.jimmer.sql.Entity
-import org.babyfish.jimmer.sql.Table
-import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.Table
 
 /**
  * comment
@@ -151,12 +151,12 @@ interface Entity {
         val javaExpected = """package com.example.test;
 
 import org.babyfish.jimmer.sql.Entity;
-import org.babyfish.jimmer.sql.Table;
-import org.babyfish.jimmer.sql.Id;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
+import org.babyfish.jimmer.sql.Id;
 import org.babyfish.jimmer.sql.Key;
 import org.babyfish.jimmer.sql.ManyToOne;
+import org.babyfish.jimmer.sql.Table;
 import org.jetbrains.annotations.Nullable;
 
 /**

@@ -1,43 +1,50 @@
 package top.potmot.service
 
+import org.babyfish.jimmer.client.ThrowsAll
 import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
-import org.babyfish.jimmer.sql.ast.tuple.Tuple2
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.desc
+import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.enumeration.DataBaseType
-import top.potmot.extension.createSql
-import top.potmot.extension.execute
+import top.potmot.core.generate.generateTableDefine
+import top.potmot.core.generate.generateTableDefines
+import top.potmot.enumeration.DataSourceType
+import top.potmot.error.DataSourceErrorCode
 import top.potmot.extension.valueToData
-import top.potmot.model.GenDataSource
+import top.potmot.model.GenAssociation
 import top.potmot.model.GenModel
-import top.potmot.model.copy
+import top.potmot.model.GenTable
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenModelInput
 import top.potmot.model.dto.GenModelView
+import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTableColumnsInput
+import top.potmot.model.modelId
 import top.potmot.model.modifiedTime
+import java.sql.JDBCType
 
 @RestController
 @RequestMapping("/model")
 class ModelService(
-    @Autowired val sqlClient: KSqlClient,
-    @Autowired val transactionTemplate: TransactionTemplate
+    @Autowired val sqlClient: KSqlClient
 ) {
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenModelView? {
         return sqlClient.findById(GenModelView::class, id)
+    }
+
+    @GetMapping("/valueData/{id}")
+    fun getValueData(@PathVariable id: Long): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>>? {
+        return sqlClient.findById(GenModelView::class, id)?.valueToData()
     }
 
 
@@ -51,74 +58,35 @@ class ModelService(
 
     @GetMapping("/type")
     fun listDataBaseType(): Map<String, Int> =
-        DataBaseType.values().associate {
-            Pair(it.name, it.code)
+        JDBCType.values().associate {
+            Pair(it.name, it.vendorTypeNumber)
         }
 
     @PostMapping
     @Transactional
-    fun create(
+    fun save(
         @RequestBody input: GenModelInput
     ): Long {
-        return sqlClient.insert(input).modifiedEntity.id
-    }
-
-    @PutMapping
-    @Transactional
-    fun update(
-        @RequestBody input: GenModelInput
-    ): Long {
-        return sqlClient.update(input).modifiedEntity.id
-    }
-
-    @PostMapping("/value")
-    @Transactional
-    fun insertValue(
-        @RequestParam id: Long,
-        @RequestParam schemaId: Long?,
-    ): Tuple2<List<Long>, List<Long>>? {
-        val model = sqlClient.findById(GenModelView::class, id)
-
-        return model?.let {
-            val data = it.valueToData()
-            insertValueData(schemaId, data.first, data.second)
-        }
-    }
-
-    @PostMapping("/valueData")
-    fun insertValueData(
-        @RequestParam schemaId: Long?,
-        @RequestParam tables: List<GenTableColumnsInput>,
-        @RequestParam associations: List<GenAssociationModelInput>,
-    ): Tuple2<List<Long>, List<Long>> {
-        val tableIds = mutableListOf<Long>()
-
-        val associationIds = mutableListOf<Long>()
-
-        transactionTemplate.execute {
-            tables
-                .map {
-                    it.toEntity().copy {
-                        this.schemaId = schemaId
-                    }
-                }
-                .forEach {
-                    tableIds += sqlClient.insert(it).modifiedEntity.id
-                }
-
-            associations
-                .map {
-                    it.toEntity().copy {
-                        this.sourceColumn().table().schemaId = schemaId
-                        this.targetColumn().table().schemaId = schemaId
-                    }
-                }
-                .forEach {
-                    associationIds += sqlClient.insert(it).modifiedEntity.id
-                }
+        val modelId = if (input.id == null) {
+            sqlClient.insert(input).modifiedEntity.id
+        } else {
+            sqlClient.update(input).modifiedEntity.id
         }
 
-        return Tuple2(tableIds, associationIds)
+        getValueData(modelId)?.apply {
+            sqlClient.createDelete(GenTable::class) {
+                where(table.modelId eq modelId)
+            }.execute()
+
+            sqlClient.createDelete(GenAssociation::class) {
+                where(table.modelId eq modelId)
+            }.execute()
+
+            first.forEach { sqlClient.insert(it)}
+            second.forEach { sqlClient.insert(it)}
+        }
+
+        return modelId
     }
 
     @DeleteMapping("/{ids}")
@@ -128,32 +96,58 @@ class ModelService(
     }
 
     @PostMapping("/sql")
+    @ThrowsAll(DataSourceErrorCode::class)
     fun previewSql(
         @RequestParam id: Long,
-        @RequestParam dataSourceId: Long,
-    ): String? {
-        val model = sqlClient.findById(GenModelView::class, id)
-        val dataSource = sqlClient.findById(GenDataSource::class, dataSourceId)
+        @RequestParam(required = false) type: DataSourceType?
+    ): Map<String, String> {
+        val map = mutableMapOf<String, String>()
 
-        return dataSource?.let {
-            model?.createSql(it)
+        val tables = sqlClient.createQuery(GenTable::class) {
+            where(table.modelId eq id)
+            select(table.fetch(GenTableAssociationsView::class))
+        }.execute()
+
+        val types = listOfNotNull(type)
+
+        map += generateTableDefines(tables, types)
+
+        tables.forEach {
+            map += generateTableDefine(it, types)
         }
+
+        return map
     }
 
-    @PostMapping("/sql/execute")
-    @Transactional
-    fun executeSql(
-        @RequestParam id: Long,
-        @RequestParam dataSourceId: Long,
-        @RequestParam schemaName: String,
-    ): Boolean? {
-        val model = sqlClient.findById(GenModelView::class, id)
-        val dataSource = sqlClient.findById(GenDataSource::class, dataSourceId)
+//    @PostMapping("/sql")
+//    @ThrowsAll(DataSourceErrorCode::class)
+//    fun previewSql(
+//        @RequestParam id: Long,
+//        @RequestParam dataSourceId: Long,
+//    ): String? {
+//        val model = sqlClient.findById(GenModelView::class, id)
+//        val dataSource = sqlClient.findById(GenDataSource::class, dataSourceId)
+//
+//        return dataSource?.let {
+//            model?.createSql(it)
+//        }
+//    }
 
-        return dataSource?.let {
-            model?.createSql(it)?.let {sql ->
-                dataSource.execute(sql)
-            }
-        } ?: false
-    }
+//    @PostMapping("/sql/execute")
+//    @ThrowsAll(DataSourceErrorCode::class)
+//    @Transactional
+//    fun executeSql(
+//        @RequestParam id: Long,
+//        @RequestParam dataSourceId: Long,
+//        @RequestParam schemaName: String,
+//    ): IntArray? {
+//        val model = sqlClient.findById(GenModelView::class, id)
+//        val dataSource = sqlClient.findById(GenDataSource::class, dataSourceId)
+//
+//        return dataSource?.let {
+//            model?.createSql(it)?.let { sql ->
+//                dataSource.execute(schemaName, sql)
+//            }
+//        }
+//    }
 }

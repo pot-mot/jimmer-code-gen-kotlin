@@ -2,17 +2,83 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
+-- Table structure for gen_package
+-- ----------------------------
+DROP TABLE IF EXISTS `gen_package`;
+CREATE TABLE `gen_package`
+(
+    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `parent_id`     bigint       NULL     DEFAULT NULL COMMENT '父包',
+    `name`          varchar(500) NOT NULL COMMENT '包名称',
+    `order_key`     bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `fk_package_parent` (`parent_id`) USING BTREE,
+    CONSTRAINT `fk_package_parent` FOREIGN KEY (`parent_id`) REFERENCES `gen_package` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成包'
+  ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for gen_enum
+-- ----------------------------
+DROP TABLE IF EXISTS `gen_enum`;
+CREATE TABLE `gen_enum`
+(
+    `id`            bigint                   NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `package_id`    bigint                   NULL     DEFAULT NULL COMMENT '所属包',
+    `name`          varchar(500)             NOT NULL COMMENT '枚举名',
+    `comment`       varchar(500)             NOT NULL COMMENT '枚举注释',
+    `enum_type`     enum ('NAME', 'ORDINAL') NULL     DEFAULT NULL COMMENT '枚举类型',
+    `order_key`     bigint                   NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `created_time`  datetime(0)              NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time` datetime(0)              NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`        varchar(500)             NOT NULL DEFAULT '' COMMENT '备注',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `fk_enum_package` (`package_id`) USING BTREE,
+    CONSTRAINT `fk_enum_package` FOREIGN KEY (`package_id`) REFERENCES `gen_package` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成枚举'
+  ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for gen_enum_item
+-- ----------------------------
+DROP TABLE IF EXISTS `gen_enum_item`;
+CREATE TABLE `gen_enum_item`
+(
+    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `enum_id`       bigint       NOT NULL COMMENT '对应枚举 ID',
+    `name`          varchar(500) NOT NULL COMMENT '元素名',
+    `value`         varchar(500) NOT NULL COMMENT '元素值',
+    `comment`       varchar(500) NOT NULL DEFAULT '' COMMENT '元素注释',
+    `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `fk_enum_item_enum` (`enum_id`) USING BTREE,
+    CONSTRAINT `fk_enum_item_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成枚举元素'
+  ROW_FORMAT = Dynamic;
+
+-- ----------------------------
 -- Table structure for gen_model
 -- ----------------------------
 DROP TABLE IF EXISTS `gen_model`;
 CREATE TABLE `gen_model`
 (
-    `id`     bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `name`   varchar(500) NOT NULL COMMENT '名称',
-    `value`  longtext     NOT NULL COMMENT '模型 JSON 数据',
+    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `name`          varchar(500) NOT NULL COMMENT '名称',
+    `value`         longtext     NOT NULL COMMENT '模型 JSON 数据',
     `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-    `remark` varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
+    `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -71,6 +137,7 @@ DROP TABLE IF EXISTS `gen_table`;
 CREATE TABLE `gen_table`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `model_id`      bigint       NULL COMMENT '模型',
     `schema_id`     bigint       NULL COMMENT '数据架构',
     `name`          varchar(500) NOT NULL COMMENT '表名称',
     `comment`       varchar(500) NOT NULL COMMENT '表注释',
@@ -80,7 +147,9 @@ CREATE TABLE `gen_table`
     `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
+    INDEX `fk_table_model` (`model_id`) USING BTREE,
     INDEX `fk_table_schema` (`schema_id`) USING BTREE,
+    CONSTRAINT `fk_table_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_table_schema` FOREIGN KEY (`schema_id`) REFERENCES `gen_schema` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -107,13 +176,18 @@ CREATE TABLE `gen_column`
     `auto_increment`     tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否自增',
     `part_of_fk`         tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否外键',
     `part_of_unique_idx` tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否唯一索引',
-    `type_not_null`           tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否非空',
+    `type_not_null`      tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否非空',
+    `business_key`       tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否为业务键',
+    `logical_delete`     tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否为逻辑删除',
+    `enum_id`            bigint       NULL     DEFAULT NULL COMMENT '对应枚举 ID',
     `created_time`       datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time`      datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`             varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `fk_column_table` (`table_id`) USING BTREE,
-    CONSTRAINT `fk_column_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    INDEX `fk_column_enum` (`enum_id`) USING BTREE,
+    CONSTRAINT `fk_column_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `fk_column_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成列'
@@ -126,6 +200,7 @@ DROP TABLE IF EXISTS `gen_association`;
 CREATE TABLE `gen_association`
 (
     `id`                bigint                                                         NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `model_id`          bigint                                                         NULL COMMENT '模型',
     `comment`           varchar(500)                                                   NOT NULL DEFAULT '' COMMENT '关联注释',
     `source_column_id`  bigint                                                         NOT NULL COMMENT '主列',
     `target_column_id`  bigint                                                         NOT NULL COMMENT '从列',
@@ -137,34 +212,15 @@ CREATE TABLE `gen_association`
     `modified_time`     datetime(0)                                                    NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`            varchar(500)                                                   NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
+    INDEX `fk_association_model` (`model_id`) USING BTREE,
     INDEX `fk_association_source_column` (`source_column_id`) USING BTREE,
     INDEX `fk_association_target_column` (`target_column_id`) USING BTREE,
+    CONSTRAINT `fk_association_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_association_source_column` FOREIGN KEY (`source_column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_association_target_column` FOREIGN KEY (`target_column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成关联'
-  ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for gen_package
--- ----------------------------
-DROP TABLE IF EXISTS `gen_package`;
-CREATE TABLE `gen_package`
-(
-    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `parent_id`     bigint       NULL     DEFAULT NULL COMMENT '父包',
-    `name`          varchar(500) NOT NULL COMMENT '包名称',
-    `order_key`     bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
-    `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-    `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-    `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
-    PRIMARY KEY (`id`) USING BTREE,
-    INDEX `fk_package_parent` (`parent_id`) USING BTREE,
-    CONSTRAINT `fk_package_parent` FOREIGN KEY (`parent_id`) REFERENCES `gen_package` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成包'
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -195,51 +251,6 @@ CREATE TABLE `gen_entity`
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for gen_enum
--- ----------------------------
-DROP TABLE IF EXISTS `gen_enum`;
-CREATE TABLE `gen_enum`
-(
-    `id`            bigint                   NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `package_id`    bigint                   NULL     DEFAULT NULL COMMENT '所属包',
-    `name`          varchar(500)             NOT NULL COMMENT '枚举名',
-    `comment`       varchar(500)             NOT NULL COMMENT '枚举注释',
-    `enum_type`     enum ('NAME', 'ORDINAL') NULL     DEFAULT NULL COMMENT '枚举类型',
-    `order_key`     bigint                   NOT NULL DEFAULT 0 COMMENT '自定排序',
-    `created_time`  datetime(0)              NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-    `modified_time` datetime(0)              NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-    `remark`        varchar(500)             NOT NULL DEFAULT '' COMMENT '备注',
-    PRIMARY KEY (`id`) USING BTREE,
-    INDEX `fk_enum_package` (`package_id`) USING BTREE,
-    CONSTRAINT `fk_enum_package` FOREIGN KEY (`package_id`) REFERENCES `gen_package` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
-) ENGINE = InnoDB
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成枚举'
-  ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for gen_enum_item
--- ----------------------------
-DROP TABLE IF EXISTS `gen_enum_item`;
-CREATE TABLE `gen_enum_item`
-(
-    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `enum_id`       bigint       NOT NULL COMMENT '对应枚举 ID',
-    `name`          varchar(500) NOT NULL COMMENT '元素名',
-    `value`         varchar(500) NOT NULL COMMENT '元素值',
-    `comment`       varchar(500) NOT NULL DEFAULT '' COMMENT '元素注释',
-    `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-    `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-    `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
-    PRIMARY KEY (`id`) USING BTREE,
-    INDEX `fk_enum_item_enum` (`enum_id`) USING BTREE,
-    CONSTRAINT `fk_enum_item_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成枚举元素'
-  ROW_FORMAT = Dynamic;
-
--- ----------------------------
 -- Table structure for gen_property
 -- ----------------------------
 DROP TABLE IF EXISTS `gen_property`;
@@ -253,7 +264,7 @@ CREATE TABLE `gen_property`
     `type`                   varchar(500)                                                   NOT NULL COMMENT '属性类型',
     `type_table_id`          bigint                                                         NULL     DEFAULT NULL COMMENT '类型对应表',
     `list_type`              tinyint(1)                                                     NOT NULL DEFAULT 0 COMMENT '是否列表',
-    `type_not_null`               tinyint(1)                                                     NOT NULL DEFAULT 0 COMMENT '是否非空',
+    `type_not_null`          tinyint(1)                                                     NOT NULL DEFAULT 0 COMMENT '是否非空',
     `id_property`            tinyint(1)                                                     NOT NULL DEFAULT 0 COMMENT '是否Id',
     `id_generation_type`     enum ('AUTO','USER','IDENTITY','SEQUENCE')                     NULL     DEFAULT NULL COMMENT 'Id 生成类型',
     `key_property`           tinyint(1)                                                     NOT NULL DEFAULT 0 COMMENT '是否为业务键属性',

@@ -3,6 +3,7 @@ package top.potmot.core.convert
 import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.GenerationType
+import top.potmot.config.GenConfig
 import top.potmot.core.immutable.copyProperties
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.GenProperty
@@ -107,10 +108,11 @@ fun columnToProperties(
             if (targetPlural) toPlural()
         }
 
-        val idViewProperty = createIdViewProperty(baseProperty, associationProperty)
-
         properties += associationProperty
-        properties += idViewProperty
+
+        if (GenConfig.idViewProperty) {
+            properties += createIdViewProperty(baseProperty, associationProperty)
+        }
     }
 
     column.inAssociations.forEach { inAssociation ->
@@ -164,10 +166,11 @@ fun columnToProperties(
             if (sourcePlural) toPlural()
         }
 
-        val idViewProperty = createIdViewProperty(baseProperty, associationProperty)
-
         properties += associationProperty
-        properties += idViewProperty
+
+        if(GenConfig.idViewProperty) {
+            properties += createIdViewProperty(baseProperty, associationProperty)
+        }
     }
 
     if (includeDefaultProperty) {
@@ -195,8 +198,9 @@ fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
         this.typeNotNull = column.typeNotNull
         this.idProperty = false
         this.idGenerationType  = null
-        this.keyProperty = column.partOfUniqueIdx
-        this.logicalDelete = false
+        this.keyProperty = column.businessKey
+        this.logicalDelete = column.logicalDelete
+        this.enumId = column.enumId
         this.idView = false
         this.idViewAnnotation = null
         this.associationType = null
@@ -245,10 +249,10 @@ private fun GenPropertyDraft.setAssociation(
     mappedBy?.takeIf { it.isNotBlank() }?.let {
         this.associationAnnotation += "(mappedBy = \"${it}\")"
     }
-    joinColumn?.let {
+    joinColumn?.takeIf { GenConfig.joinColumnAnnotation }?.let {
         this.associationAnnotation += "\n${it.toAnnotation()}"
     }
-    joinTable?.let {
+    joinTable?.takeIf { GenConfig.joinTableAnnotation }?.let {
         this.associationAnnotation += "\n${it.toAnnotation()}"
     }
 }

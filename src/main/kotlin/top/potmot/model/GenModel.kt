@@ -5,6 +5,8 @@ import org.babyfish.jimmer.sql.Table
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.OneToMany
 import top.potmot.model.base.BaseEntity
 
 /**
@@ -32,4 +34,28 @@ interface GenModel : BaseEntity {
      * 模型JSON数据
      */
     val value: String
+
+    /**
+     * 生成
+     */
+    @OneToMany(mappedBy = "model")
+    val tables: List<GenTable>
+
+    /**
+     * 生成 ID 视图
+     */
+    @IdView("tables")
+    val tableIds: List<Long>
+
+    /**
+     * 生成关联
+     */
+    @OneToMany(mappedBy = "model")
+    val associations: List<GenAssociation>
+
+    /**
+     * 生成关联 ID 视图
+     */
+    @IdView("associations")
+    val associationIds: List<Long>
 }

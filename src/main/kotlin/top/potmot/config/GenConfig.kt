@@ -30,8 +30,17 @@ object GenConfig {
     /** 默认包路径  */
     var defaultPackagePath: String = "com.example"
 
+    /** 是否生成 IdView 属性 */
+    var idViewProperty: Boolean = true
+
     /** 逻辑删除默认配置 */
     var logicalDeletedAnnotation: String = "@LogicalDeleted(\"true\")"
+
+    /** 是否生成 JoinTable 注释 */
+    var joinTableAnnotation: Boolean = true
+
+    /** 是否生成 JoinColumn 注释 */
+    var joinColumnAnnotation: Boolean = true
 
     /**
      * 表名前缀
@@ -179,6 +188,18 @@ object GenConfig {
 
         newConfig.logicalDeletedAnnotation?.let {
             logicalDeletedAnnotation = it
+        }
+
+        newConfig.idViewProperty?.let {
+            idViewProperty = it
+        }
+
+        newConfig.joinTableAnnotation?.let {
+            joinTableAnnotation = it
+        }
+
+        newConfig.joinColumnAnnotation?.let {
+            joinColumnAnnotation = it
         }
 
         newConfig.tablePrefix?.let {

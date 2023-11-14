@@ -1,4 +1,4 @@
-package top.potmot.liquibase
+package top.potmot.dataSource
 
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
@@ -13,7 +13,7 @@ import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.model.dto.GenTableColumnsInput
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "postgresql")
+@ActiveProfiles("test-kotlin", "mysql")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TestLiquibaseCreateSql {
     @Test
@@ -47,6 +47,8 @@ class TestLiquibaseCreateSql {
             partOfFk = true,
             partOfUniqueIdx = true,
             typeNotNull = true,
+            businessKey = false,
+            logicalDelete = false,
         )
 
         val column2 = GenTableColumnsInput.TargetOf_columns(
@@ -65,6 +67,8 @@ class TestLiquibaseCreateSql {
             partOfFk = false,
             partOfUniqueIdx = true,
             typeNotNull = true,
+            businessKey = false,
+            logicalDelete = false,
         )
 
         val table = GenTableColumnsInput(
@@ -123,6 +127,8 @@ class TestLiquibaseCreateSql {
             partOfFk = true,
             partOfUniqueIdx = true,
             typeNotNull = true,
+            businessKey = false,
+            logicalDelete = false,
         )
 
         val column2 = GenTableColumnsInput.TargetOf_columns(
@@ -141,6 +147,8 @@ class TestLiquibaseCreateSql {
             partOfFk = false,
             partOfUniqueIdx = true,
             typeNotNull = true,
+            businessKey = false,
+            logicalDelete = false,
         )
 
         val table = GenTableColumnsInput(

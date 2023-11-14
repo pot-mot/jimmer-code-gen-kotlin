@@ -90,25 +90,9 @@ fun DatabaseConnectionSource.getCatalog(
     )
 }
 
-fun Catalog.getSchemas(
-    dataSourceId: Long,
-    withTable: Boolean = true,
-    withColumn: Boolean = true
-): List<Pair<Schema, GenSchema>> =
-    schemas.map { schema ->
-        val genSchema =
-            schema.toGenSchema(
-                dataSourceId,
-                this,
-                withTable,
-                withColumn
-            )
-        Pair(schema, genSchema)
-    }
-
-private fun Schema.toGenSchema(
-    dataSourceId: Long,
+fun Schema.toGenSchema(
     catalog: Catalog,
+    dataSourceId: Long,
     withTable: Boolean = true,
     withColumn: Boolean = true
 ): GenSchema {
@@ -125,7 +109,7 @@ private fun Schema.toGenSchema(
     }
 }
 
-private fun Table.toGenTable(
+fun Table.toGenTable(
     schemaId: Long? = null,
     orderKey: Long? = null,
     withColumn: Boolean = true
@@ -147,7 +131,7 @@ private fun Table.toGenTable(
     }
 }
 
-private fun Column.toGenColumn(
+fun Column.toGenColumn(
     index: Long
 ): GenColumn {
     val column = this
@@ -168,44 +152,41 @@ private fun Column.toGenColumn(
     }
 }
 
-fun Table.getFkAssociation(schemaId: Long): List<GenAssociation> {
+fun Table.getFkAssociation(tableNameMap: Map<String, GenTable>): List<GenAssociation> {
     val result = mutableListOf<GenAssociation>()
 
     this.foreignKeys.forEach {
         it.columnReferences.forEach { columnRef ->
-            val fkColumnNameList = columnRef.foreignKeyColumn.fullName.split(".").reversed()
-            val pkColumnNameList = columnRef.primaryKeyColumn.fullName.split(".").reversed()
+            val sourceNameList = columnRef.foreignKeyColumn.fullName.split(".").reversed()
+            val sourceTableName = sourceNameList[1]
+            val sourceColumnName = sourceNameList[0]
 
-            val sourceColumn = new(GenColumn::class).by {
-                name = fkColumnNameList[0]
-                table = new(GenTable::class).by {
-                    name = fkColumnNameList[1]
-                    this.schemaId = schemaId
-                    type = TableType.TABLE
+            val sourceColumnId = tableNameMap[sourceTableName]?.columns
+                ?.find {column -> column.name == sourceColumnName }?.id
+
+            if (sourceColumnId != null) {
+                val targetNameList = columnRef.primaryKeyColumn.fullName.split(".").reversed()
+                val targetTableName = targetNameList[1]
+                val targetColumnName = targetNameList[0]
+
+                val targetColumnId = tableNameMap[targetTableName]?.columns
+                    ?.find { column -> column.name == targetColumnName }?.id
+
+                if (targetColumnId != null) {
+                    val type =
+                        if (columnRef.foreignKeyColumn.isPartOfUniqueIndex) AssociationType.ONE_TO_ONE else AssociationType.MANY_TO_ONE
+
+                    result +=
+                        new(GenAssociation::class).by {
+                            this.sourceColumnId = sourceColumnId
+                            this.targetColumnId = targetColumnId
+                            this.associationType = type
+                            this.dissociateAction = it.deleteRule.toDissociateAction()
+                            this.fake = false
+                            this.remark = columnRef.toString()
+                        }
                 }
             }
-
-            val targetColumn = new(GenColumn::class).by {
-                name = pkColumnNameList[0]
-                table = new(GenTable::class).by {
-                    name = pkColumnNameList[1]
-                    this.schemaId = schemaId
-                    type = TableType.TABLE
-                }
-            }
-
-            val type =
-                if (columnRef.foreignKeyColumn.isPartOfUniqueIndex) AssociationType.ONE_TO_ONE else AssociationType.MANY_TO_ONE
-
-            result +=
-                new(GenAssociation::class).by {
-                    this.sourceColumn = sourceColumn
-                    this.targetColumn = targetColumn
-                    this.associationType = type
-                    this.dissociateAction = it.deleteRule.toDissociateAction()
-                    this.fake = false
-                    this.remark = columnRef.toString()
-                }
         }
     }
 

@@ -32,15 +32,28 @@ interface GenTable : BaseEntity {
     override val id: Long
 
     /**
-     * 数据架构
+     * 生成模型
      */
     @Key
+    @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
+    val model: GenModel?
+
+    /**
+     * 生成模型 ID 视图
+     */
+    @IdView("model")
+    val modelId: Long?
+
+    /**
+     * 数据架构
+     */
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val schema: GenSchema?
 
     /**
-     * 所属架构ID视图
+     * 所属架构 ID视图
      */
     @IdView
     val schemaId: Long?

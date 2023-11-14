@@ -56,14 +56,20 @@ input GenAssociationInput {
 }
 
 input GenAssociationModelInput {
+    id(model)
     associationType
+    dissociateAction
+    fake
+    comment
 
     sourceColumn {
         name
         comment
         type
+        typeCode
 
         table {
+            id(model)
             name
             comment
         }
@@ -72,8 +78,10 @@ input GenAssociationModelInput {
         name
         comment
         type
+        typeCode
 
         table {
+            id(model)
             name
             comment
         }

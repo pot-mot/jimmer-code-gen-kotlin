@@ -51,19 +51,19 @@
 
 ## 核心代码说明
 
-### convert 转换
-
-- [NameConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fconvert%2FNameConvert.kt) 命名转换
-- [TableEntityConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fconvert%2FTableEntityConvert.kt) 表到实体转换
-- [TypeMapping.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fconvert%2FTypeMapping.kt) 类型映射
+以下是整个代码生成器的流程
 
 ### load 导入
 
-包含 [DataSourceLoad.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fload%2FDataSourceLoad.kt) 数据源导入，可导入 schema、table、column 三级数据，并根据外键和索引生成基础的 Association 关联
+这是可选的一步，也可以直接通过模型设计器创建
+
+[DataSourceLoad.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fload%2FDataSourceLoad.kt) 数据源导入，可导入 schema、table、column 三级数据，并根据外键和索引生成基础的关联
 
 ### match 匹配
 
-包含 [AssociationMatch.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fmatch%2FAssociationMatch.kt) 关联匹配，可根据列间比较返回关联
+自动关联匹配，快速扫描列建立关联
+
+[AssociationMatch.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fmatch%2FAssociationMatch.kt)
 
 #### 拓展点
 
@@ -73,11 +73,30 @@ typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatch
 
 可通过继续实现 top.potmot.core.AssociationMatch 进行更多种类列关联的半自动匹配
 
-(注意，需要补充 [AssociationMatchType.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fenumeration%2FAssociationMatchType.kt) 枚举 )
+(注意，需要补充 [AssociationMatchType.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fenumeration%2FAssociationMatchType.kt) 枚举才可在前端显示 )
 
-### template 模版
+### convert 转换
 
-将实体对象转换为对应语言实体类代码的模版
+将数据库组成部分（table 与 association）转换成实体对象（entity）
+
+#### 业务类
+[GenerateService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FGenerateService.kt)
+
+#### 工具函数
+
+- [NameConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fconvert%2FNameConvert.kt) 命名转换
+- [TypeMapping.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fconvert%2FTypeMapping.kt) 类型映射
+- [TableEntityConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fconvert%2FTableEntityConvert.kt) 表到实体转换
+- [ColumnPropertyConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fconvert%2FColumnPropertyConvert.kt) 列到属性转换
+
+
+### template and generate 模版与生成
+
+将实体对象转换为对应语言实体类代码的模版，并最终生成文件
+
+#### 业务类
+
+[GenerateService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FGenerateService.kt)
 
 #### 实体
 

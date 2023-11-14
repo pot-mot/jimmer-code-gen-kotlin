@@ -13,8 +13,6 @@ fun GenEntityPropertiesView.kotlinClassStringify(): String =
         line("package ${packagePath()}")
 
         separate()
-        line("import org.babyfish.jimmer.sql.Entity")
-        line("import org.babyfish.jimmer.sql.Table")
         lines(importList()) { "import $it" }
         separate()
 
@@ -39,10 +37,12 @@ private fun GenEntityPropertiesView.TargetOf_properties.kotlinPropertyStringify(
     }.build()
 
 private fun GenEntityPropertiesView.importList(): List<String> =
-    properties
-        .flatMap { it.importList() }
+    (importClassList().mapNotNull { it.qualifiedName }
+            + properties.flatMap { it.importList() })
         .distinct()
         .let { importListFilter(it) }
+        .sorted()
+
 
 private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
     val importList = importClassList().mapNotNull {

@@ -36,6 +36,7 @@ GenTableColumnsView {
     columns {
         #allScalars
         id(table)
+        id(enum)
     }
 }
 
@@ -56,11 +57,15 @@ GenTableAssociationsView {
 
     columns {
         #allScalars
+        fullType
+
         table {
             id
             name
             comment
         }
+
+        id(enum)
 
         inAssociations {
             id
@@ -97,18 +102,9 @@ GenTableAssociationsView {
     }
 }
 
-input GenTableInput {
-    #allScalars
-    schema {
-        id
-        name
-    }
-    -createdTime
-    -modifiedTime
-}
-
 input GenTableColumnsInput {
     #allScalars
+    id(model)
     schema {
         id
         name
@@ -118,6 +114,7 @@ input GenTableColumnsInput {
 
     columns {
         #allScalars
+        id(enum)
         -createdTime
         -modifiedTime
     }

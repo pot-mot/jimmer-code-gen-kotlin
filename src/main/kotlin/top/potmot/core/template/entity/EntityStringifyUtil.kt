@@ -1,13 +1,17 @@
 package top.potmot.core.template.entity
 
 import org.babyfish.jimmer.sql.DissociateAction
+import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.JoinColumn
+import org.babyfish.jimmer.sql.JoinTable
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.OnDissociate
+import org.babyfish.jimmer.sql.Table
 import top.potmot.config.GenConfig
 import top.potmot.core.template.TemplateBuilder
 import top.potmot.enumeration.EnumType
@@ -150,6 +154,15 @@ fun GenEntityPropertiesView.TargetOf_properties.annotation(): String =
         }
     }.build()
 
+fun GenEntityPropertiesView.importClassList(): List<KClass<*>> {
+    val result = mutableListOf<KClass<*>>()
+
+    result += Entity::class
+    result += Table::class
+
+    return result
+}
+
 fun GenEntityPropertiesView.TargetOf_properties.importClassList(): List<KClass<*>> {
     val result = mutableListOf<KClass<*>>()
 
@@ -170,6 +183,15 @@ fun GenEntityPropertiesView.TargetOf_properties.importClassList(): List<KClass<*
     if (associationType != null) {
         if (associationAnnotation != null) {
             result += associationType.toAnnotation()
+
+            if (associationAnnotation.contains("@JoinTable")) {
+                result += JoinTable::class
+            }
+
+            if (associationAnnotation.contains("@JoinColumn")) {
+                result += JoinColumn::class
+            }
+
             if (dissociateAnnotation != null) {
                 result += OnDissociate::class
                 result += DissociateAction::class

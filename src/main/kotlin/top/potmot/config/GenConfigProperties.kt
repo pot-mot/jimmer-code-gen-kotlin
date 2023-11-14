@@ -22,8 +22,17 @@ data class GenConfigProperties(
     /** 生成 tableDefine 时携带外键 */
     val tableDefineWithFk: Boolean? = null,
 
+    /** 是否生成 IdView 注释 */
+    var idViewProperty: Boolean? = null,
+
     /** 逻辑删除默认配置 */
     val logicalDeletedAnnotation: String? = null,
+
+    /** 是否生成 JoinTable 注释 */
+    var joinTableAnnotation: Boolean? = null,
+
+    /** 是否生成 JoinColumn 注释 */
+    var joinColumnAnnotation: Boolean? = null,
 
     /**
      * 表名前缀

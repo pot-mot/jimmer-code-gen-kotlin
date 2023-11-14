@@ -4,5 +4,6 @@ import org.babyfish.jimmer.error.ErrorFamily
 
 @ErrorFamily
 enum class DataSourceErrorCode {
-    CONNECT_FAIL
+    CONNECT_FAIL,
+    SQL_EXECUTE_FAIL
 }

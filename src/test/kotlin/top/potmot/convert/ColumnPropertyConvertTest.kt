@@ -59,6 +59,9 @@ class ColumnPropertyConvertTest {
     "partOfFk": false,
     "partOfUniqueIdx": true,
     "typeNotNull": true,
+    "logicalDelete": false,
+    "businessKey": false,
+    "enumId": null,
     "inAssociations": [],
     "outAssociations": []
 }""".trimIndent()
@@ -112,6 +115,9 @@ class ColumnPropertyConvertTest {
     "partOfFk": true,
     "partOfUniqueIdx": false,
     "typeNotNull": false,
+    "logicalDelete": false,
+    "businessKey": false,
+    "enumId": null,
     "inAssociations": [],
     "outAssociations": [
         {
@@ -191,6 +197,9 @@ class ColumnPropertyConvertTest {
     "partOfFk": true,
     "partOfUniqueIdx": true,
     "typeNotNull": true,
+    "logicalDelete": false,
+    "businessKey": false,
+    "enumId": null,
     "inAssociations": [],
     "outAssociations": [
         {
@@ -225,7 +234,7 @@ class ColumnPropertyConvertTest {
         assertEquals(2, oneToOneProperty.typeTableId)
 
         assert(oneToOneProperty.typeNotNull)
-        assert(oneToOneProperty.keyProperty)
+        assert(!oneToOneProperty.keyProperty)
         assertEquals(AssociationType.ONE_TO_ONE, oneToOneProperty.associationType)
         assertEquals(
             """@OneToOne
@@ -270,6 +279,9 @@ class ColumnPropertyConvertTest {
     "partOfFk": true,
     "partOfUniqueIdx": false,
     "typeNotNull": true,
+    "logicalDelete": false,
+    "businessKey": false,
+    "enumId": null,
     "inAssociations": [],
     "outAssociations": [
         {
@@ -360,6 +372,9 @@ class ColumnPropertyConvertTest {
     "partOfFk": false,
     "partOfUniqueIdx": false,
     "typeNotNull": false,
+    "logicalDelete": false,
+    "businessKey": false,
+    "enumId": null,
     "inAssociations": [
         {
             "id": 1,
@@ -442,6 +457,9 @@ class ColumnPropertyConvertTest {
     "partOfFk": false,
     "partOfUniqueIdx": true,
     "typeNotNull": false,
+    "logicalDelete": false,
+    "businessKey": false,
+    "enumId": null,
     "inAssociations": [
         {
             "id": 1,
@@ -523,6 +541,9 @@ class ColumnPropertyConvertTest {
     "partOfFk": true,
     "partOfUniqueIdx": false,
     "typeNotNull": true,
+    "logicalDelete": false,
+    "businessKey": false,
+    "enumId": null,
     "inAssociations": [
         {
             "id": 1,

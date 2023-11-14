@@ -1,6 +1,7 @@
 package top.potmot.extension
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import org.babyfish.jimmer.jackson.ImmutableModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -20,7 +21,7 @@ fun GenModelView.createSql(dataSource: GenDataSource): String {
     return dataSource.createSql(data.first, data.second)
 }
 
-fun valueToData(value: String): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> {
+fun valueToData(modelId: Long, value: String): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> {
     val tables = mutableListOf<GenTableColumnsInput>()
     val associations = mutableListOf<GenAssociationModelInput>()
 
@@ -30,9 +31,13 @@ fun valueToData(value: String): Pair<List<GenTableColumnsInput>, List<GenAssocia
 
     cells.forEach { cell ->
         if (cell.path("shape").textValue() == "edge") {
-            associations += cell.path("data").path("association").toAssociation()
+            cell.path("data").path("association").takeIf { it.isMissingNode.not() }?.let {
+                associations += it.toAssociation(modelId)
+            }
         } else if (cell.path("shape").textValue() == "model") {
-            tables += cell.path("data").path("table").toTable()
+            cell.path("data").path("table").takeIf { it.isMissingNode.not() }?.let {
+                tables += it.toTable(modelId)
+            }
         }
     }
 
@@ -40,12 +45,32 @@ fun valueToData(value: String): Pair<List<GenTableColumnsInput>, List<GenAssocia
 }
 
 fun GenModelView.valueToData(): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> =
-    valueToData(this.value)
+    valueToData(this.id, this.value)
 
-private fun JsonNode.toTable(): GenTableColumnsInput {
+private fun JsonNode.toTable(modelId: Long): GenTableColumnsInput {
+    if (this.isObject) {
+        val node = this as ObjectNode
+        node.put("modelId", modelId)
+    }
     return mapper.readValue<GenTableColumnsInput>(this.toString())
 }
 
-private fun JsonNode.toAssociation(): GenAssociationModelInput {
+private fun JsonNode.toAssociation(modelId: Long): GenAssociationModelInput {
+    if (this.isObject) {
+        val node = this as ObjectNode
+        node.put("modelId", modelId)
+        node.path("sourceColumn").path("table").let {
+            if (it.isObject) {
+                val sourceTable = it as ObjectNode
+                sourceTable.put("modelId", modelId)
+            }
+        }
+        node.path("targetColumn").path("table").let {
+            if (it.isObject) {
+                val targetTable = it as ObjectNode
+                targetTable.put("modelId", modelId)
+            }
+        }
+    }
     return mapper.readValue<GenAssociationModelInput>(this.toString())
 }

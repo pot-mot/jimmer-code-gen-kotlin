@@ -1,7 +1,6 @@
 package top.potmot.core.convert
 
 import top.potmot.config.GenConfig
-import top.potmot.core.template.table.fullType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.dto.GenTableAssociationsView
@@ -65,9 +64,9 @@ fun GenTableAssociationsView.TargetOf_columns.mappingPropertyType(
     for (typeMapping in typeMappings) {
         val matchResult =
             if (typeMapping.regex) {
-                Regex(typeMapping.typeExpression).matches(fullType())
+                Regex(typeMapping.typeExpression).matches(fullType)
             } else {
-                typeMapping.typeExpression == fullType()
+                typeMapping.typeExpression == fullType
             }
         if (matchResult) {
             return typeMapping.propertyType

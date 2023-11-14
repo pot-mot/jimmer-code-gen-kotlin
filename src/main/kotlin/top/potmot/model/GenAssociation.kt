@@ -30,6 +30,18 @@ interface GenAssociation : BaseEntity {
     override val id: Long
 
     /**
+     * 生成模型
+     */
+    @ManyToOne
+    val model: GenModel?
+
+    /**
+     * 生成模型 ID 视图
+     */
+    @IdView("model")
+    val modelId: Long?
+
+    /**
      * 关联注释
      */
     val comment: String

@@ -20,9 +20,9 @@ import liquibase.serializer.core.xml.XMLChangeLogSerializer
 import top.potmot.config.GenConfig
 import top.potmot.core.convert.clearColumnName
 import top.potmot.core.convert.clearTableName
+import top.potmot.core.template.table.getFullType
 import top.potmot.enumeration.AssociationType
 import top.potmot.extension.toSource
-import top.potmot.model.GenColumn
 import top.potmot.model.GenDataSource
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenTableColumnsInput
@@ -33,6 +33,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.io.StringWriter
 import java.net.URI
+import java.sql.Types
 import java.util.*
 
 /**
@@ -43,11 +44,42 @@ private fun GenTableColumnsInput.TargetOf_columns.toColumnConfig(): ColumnConfig
 
     // 基本信息
     columnConfig.name = name
-    columnConfig.remarks = comment + "\n" + remark
-    columnConfig.type = type
-    columnConfig.defaultOnNull = defaultValue.isNullOrBlank()
+    columnConfig.remarks = comment
+    columnConfig.type = getFullType(typeCode, type, displaySize, numericPrecision)
     columnConfig.isAutoIncrement = autoIncrement
-    columnConfig.defaultValue = defaultValue
+
+    defaultValue.let {
+        try {
+            // TODO 默认值转换存在极大兼容问题
+            when (typeCode) {
+                Types.NULL -> columnConfig.defaultOnNull = true
+
+                Types.BIT, Types.BOOLEAN -> columnConfig.defaultValueBoolean = defaultValue.toBoolean()
+
+                Types.TINYINT,
+                Types.SMALLINT,
+                Types.INTEGER,
+                Types.BIGINT -> columnConfig.defaultValueNumeric = defaultValue?.toLong()
+
+                Types.REAL,
+                Types.FLOAT, Types.DOUBLE,
+                Types.DECIMAL, Types.NUMERIC -> columnConfig.defaultValueNumeric = defaultValue?.toDouble()
+
+                Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR, Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR, Types.CLOB, Types.NCLOB, Types.SQLXML, Types.DATALINK -> columnConfig.defaultValue =
+                    defaultValue
+
+                Types.DATE, Types.TIME, Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> columnConfig.defaultOnNull =
+                    true
+
+                Types.BLOB, Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> columnConfig.defaultOnNull = true
+
+                else -> columnConfig.defaultValue = defaultValue
+            }
+        } catch (e: Exception) {
+            columnConfig.defaultOnNull = true
+        }
+    }
+
 
     //处理约束
     val constraints = ConstraintsConfig()
@@ -66,9 +98,7 @@ private fun GenTableColumnsInput.toCreateTableChange(): CreateTableChange {
 
     // 基本信息
     createTableChange.tableName = name
-    createTableChange.tableType = type.toString()
-    createTableChange.remarks = comment + "\n" + remark
-    createTableChange.remarks = comment + "\n" + remark
+    createTableChange.remarks = comment
 
     schema?.let {
         createTableChange.schemaName = it.name
@@ -82,17 +112,16 @@ private fun GenTableColumnsInput.toCreateTableChange(): CreateTableChange {
 /**
  * 从 GenTableColumnsInput 中获取 AddUniqueConstraintChange
  */
-private fun GenTableColumnsInput.getAddUniqueConstraintChange(): AddUniqueConstraintChange {
-    val addUniqueConstraintChange = AddUniqueConstraintChange()
+private fun GenTableColumnsInput.getAddUniqueConstraintChange(): List<AddUniqueConstraintChange> =
+    columns.filter { it.partOfUniqueIdx && !it.partOfPk }.map {
+        val addUniqueConstraintChange = AddUniqueConstraintChange()
 
-    addUniqueConstraintChange.constraintName = "business_key__$name"
-    addUniqueConstraintChange.tableName = name
+        addUniqueConstraintChange.constraintName = "u_idx_${it.name}"
+        addUniqueConstraintChange.tableName = name
+        addUniqueConstraintChange.columnNames = it.name
 
-    addUniqueConstraintChange.columnNames =
-        columns.filter { it.partOfPk || it.partOfFk || it.partOfUniqueIdx }.joinToString(",") { it.name }
-
-    return addUniqueConstraintChange
-}
+        addUniqueConstraintChange
+    }
 
 private fun fkName(
     sourceColumn: GenAssociationModelInput.TargetOf_sourceColumn,
@@ -101,21 +130,11 @@ private fun fkName(
     "fk_" + "${sourceColumn.table.name.clearTableName()}_${sourceColumn.name.clearColumnName()}" +
             "__${targetColumn.table.name.clearTableName()}_${targetColumn.name.clearColumnName()}"
 
-private fun GenColumn.getUniqueConstraintChange(): AddUniqueConstraintChange {
-    val addUniqueConstraintChange = AddUniqueConstraintChange()
-
-    addUniqueConstraintChange.constraintName = name
-    addUniqueConstraintChange.tableName = table.name
-    addUniqueConstraintChange.columnNames = name
-
-    return addUniqueConstraintChange
-}
-
 /**
  * 从 GenAssociation 转化为 普通外键变更记录
  * 即生成外键与可能存在的唯一约束
  */
-private fun GenAssociationModelInput.toFkChanges(): List<Change> {
+private fun GenAssociationModelInput.toFkChange(): AddForeignKeyConstraintChange {
     val fkChange = AddForeignKeyConstraintChange()
 
     fkChange.constraintName = fkName(sourceColumn, targetColumn)
@@ -126,26 +145,7 @@ private fun GenAssociationModelInput.toFkChanges(): List<Change> {
     fkChange.referencedTableName = targetColumn.table.name
     fkChange.referencedColumnNames = targetColumn.name
 
-    // 为列添加唯一性约束
-    val uniqueConstraintChanges = when (associationType) {
-        AssociationType.ONE_TO_ONE ->
-            listOf(
-                targetColumn.toEntity().getUniqueConstraintChange(),
-                sourceColumn.toEntity().getUniqueConstraintChange())
-
-        AssociationType.MANY_TO_ONE ->
-            listOf(
-                targetColumn.toEntity().getUniqueConstraintChange())
-
-        AssociationType.ONE_TO_MANY ->
-            listOf(
-                sourceColumn.toEntity().getUniqueConstraintChange())
-
-        AssociationType.MANY_TO_MANY ->
-            emptyList<Change>()
-    }
-
-    return listOf(fkChange, *uniqueConstraintChanges.toTypedArray())
+    return fkChange
 }
 
 /**
@@ -206,17 +206,18 @@ fun createDatabaseChangeLog(
     changeLog.addChangeSet(changeSet)
 
     tables.forEach {
-        changeSet.addChange(it.toCreateTableChange())
-        changeSet.addChange(it.getAddUniqueConstraintChange())
+        it.toCreateTableChange()
+            .apply { changeSet.addChange(this) }
+        it.getAddUniqueConstraintChange().forEach { changeSet.addChange(it) }
     }
 
     associations.forEach {
         if (it.associationType == AssociationType.MANY_TO_MANY) {
             it.toManyToManyChanges()
+                .forEach { changeSet.addChange(it) }
         } else {
-            it.toFkChanges()
-        }.forEach {change ->
-            changeSet.addChange(change)
+            it.toFkChange()
+                .apply { changeSet.addChange(this) }
         }
     }
 
@@ -295,14 +296,36 @@ private fun changeLogToCreateSql(
     val scanner = Scanner(sql)
     while (scanner.hasNextLine()) {
         val line = scanner.nextLine()
+        // 过滤非必要的行
         if (line.contains("DATABASECHANGELOGLOCK", ignoreCase = true) ||
             line.contains("DATABASECHANGELOG", ignoreCase = true) ||
-            line.contains("SET SEARCH_PATH", ignoreCase = true)
+            line.contains("SET SEARCH_PATH", ignoreCase = true) ||
+            line.startsWith("--") ||
+            line.isBlank()
         ) {
             continue
         }
-        sb.append(line)
-        sb.append('\n')
+
+        // 格式化一下建表语句
+        if (line.startsWith("CREATE TABLE")) {
+            val indent = "    "
+            val startIndex = line.indexOf("(")
+            val endIndex = line.lastIndexOf(")")
+
+            sb.appendLine(line.substring(0, startIndex + 1))
+
+            val columns = line
+                .substring(startIndex + 1, endIndex)
+                .split(",")
+                .joinToString(",\n") {"$indent${it.trim()}"}
+
+            sb.appendLine(columns)
+
+            sb.appendLine(line.substring(endIndex))
+
+        } else {
+            sb.appendLine(line)
+        }
     }
     sql = sb.toString()
 

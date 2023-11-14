@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.load.getCatalog
 import top.potmot.core.load.getFkAssociation
-import top.potmot.core.load.getSchemas
+import top.potmot.core.load.toGenSchema
+import top.potmot.core.load.toGenTable
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.extension.toSource
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenSchema
+import top.potmot.model.GenTable
 import top.potmot.model.dataSourceId
 import top.potmot.model.dto.GenSchemaView
 import top.potmot.model.id
@@ -43,8 +45,10 @@ class SchemaService(
             val schemas =
                 dataSource
                     .getCatalog(withoutTable = true)
-                    .getSchemas(dataSourceId, withTable = false, withColumn = false)
-                    .map { it.second }
+                    .let {catalog ->
+                        catalog.schemas.map{ it.toGenSchema(catalog, dataSourceId, withTable = false)}
+                    }
+                    .map { it }
             dataSource.close()
             return schemas
         }
@@ -70,23 +74,39 @@ class SchemaService(
             // 获取目录
             val catalog = dataSource.getCatalog(schemaPattern = name)
 
-            val genSchemas = catalog.getSchemas(dataSourceId)
-
             // 遍历 schema 进行保存 （因为一个 schema name 有可能会获取到多个不同的 schema）
-            genSchemas.forEach {(schema, genSchema) ->
-                val newSchemaId = sqlClient.save(genSchema).modifiedEntity.id
+            catalog.schemas.forEach {schema ->
+                val genSchema = schema.toGenSchema(
+                    catalog,
+                    dataSourceId,
+                    withTable = false
+                )
 
-                result += newSchemaId
+                val newSchemaId = sqlClient.save(genSchema).modifiedEntity.id
 
                 val tables = catalog.getTables(schema)
 
+                val genTableNameMap = mutableMapOf<String, GenTable>()
+
                 // 获取 table 的外键以生成关联
                 tables.forEach { table ->
-                    table.getFkAssociation(newSchemaId)
+                    val genTable = table.toGenTable(
+                        schemaId = newSchemaId
+                    )
+
+                    genTableNameMap[genTable.name] = sqlClient.save(genTable) {
+                        this.setKeyProps(GenTable::schema, GenTable::name)
+                    }.modifiedEntity
+                }
+
+                tables.forEach { table ->
+                    table.getFkAssociation(genTableNameMap)
                         .forEach { association ->
                             sqlClient.save(association)
                         }
                 }
+
+                result += newSchemaId
             }
 
             dataSource.close()

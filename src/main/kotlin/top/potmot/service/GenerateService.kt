@@ -1,6 +1,7 @@
 package top.potmot.service
 
 import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.convert.mockModelEntity
 import top.potmot.core.convert.toGenEntity
 import top.potmot.core.generate.generateCode
 import top.potmot.core.generate.toZipByteArray
@@ -19,9 +19,9 @@ import top.potmot.model.GenEntity
 import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenModelView
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.id
+import top.potmot.model.modelId
 import top.potmot.model.tableId
 
 @RestController
@@ -91,21 +91,11 @@ class GenerateService(
         @RequestParam modelId: Long,
         @RequestParam(required = false) language: GenLanguage?
     ): Map<String, String> {
-        val result = mutableMapOf<String, String>()
-
-        val typeMappings = sqlClient.createQuery(GenTypeMapping::class) {
-            select(table)
+        val tableIds = sqlClient.createQuery(GenTable::class) {
+            where(table.modelId eq modelId)
+            select(table.id)
         }.execute()
-
-        sqlClient.findById(GenModelView::class, modelId)?.let {model ->
-            model
-                .mockModelEntity(typeMappings)
-                .forEach {entity ->
-                    result += if (language != null) generateCode(entity, language) else generateCode(entity)
-                }
-        }
-
-        return result
+        return previewByTable(tableIds, language)
     }
 
     @PostMapping("/entity")
