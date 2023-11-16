@@ -20,9 +20,9 @@ import liquibase.serializer.core.xml.XMLChangeLogSerializer
 import top.potmot.config.GenConfig
 import top.potmot.core.convert.clearColumnName
 import top.potmot.core.convert.clearTableName
-import top.potmot.core.template.table.getFullType
 import top.potmot.enumeration.AssociationType
 import top.potmot.extension.toSource
+import top.potmot.extension.getFullType
 import top.potmot.model.GenDataSource
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenTableColumnsInput

@@ -73,17 +73,19 @@ class ModelService(
             sqlClient.update(input).modifiedEntity.id
         }
 
-        getValueData(modelId)?.apply {
-            sqlClient.createDelete(GenTable::class) {
-                where(table.modelId eq modelId)
-            }.execute()
+        if (!input.value.isNullOrBlank()) {
+            getValueData(modelId)?.apply {
+                sqlClient.createDelete(GenTable::class) {
+                    where(table.modelId eq modelId)
+                }.execute()
 
-            sqlClient.createDelete(GenAssociation::class) {
-                where(table.modelId eq modelId)
-            }.execute()
+                sqlClient.createDelete(GenAssociation::class) {
+                    where(table.modelId eq modelId)
+                }.execute()
 
-            first.forEach { sqlClient.insert(it)}
-            second.forEach { sqlClient.insert(it)}
+                first.forEach { sqlClient.insert(it)}
+                second.forEach { sqlClient.insert(it)}
+            }
         }
 
         return modelId

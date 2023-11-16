@@ -1,11 +1,9 @@
 package top.potmot.core.template
 
-import javax.swing.JPopupMenu.Separator
-
 /**
  * 模版创建者
  */
-class TemplateBuilder {
+open class TemplateBuilder {
     private val stringBuilder = StringBuilder()
     private var indentation = 0
     private var indentationLength = 4
@@ -31,6 +29,9 @@ class TemplateBuilder {
             stringBuilder.append(" ")
         }
     }
+
+    fun indent(): String =
+        " ".repeat(indentation)
 
     fun increaseIndentation() {
         indentation += indentationLength

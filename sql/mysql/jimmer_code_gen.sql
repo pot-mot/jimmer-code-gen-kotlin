@@ -15,7 +15,7 @@ CREATE TABLE `gen_package`
     `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX `fk_package_parent` (`parent_id`) USING BTREE,
+    INDEX `idx_package_parent` (`parent_id`) USING BTREE,
     CONSTRAINT `fk_package_parent` FOREIGN KEY (`parent_id`) REFERENCES `gen_package` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -38,7 +38,7 @@ CREATE TABLE `gen_enum`
     `modified_time` datetime(0)              NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500)             NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX `fk_enum_package` (`package_id`) USING BTREE,
+    INDEX `idx_enum_package` (`package_id`) USING BTREE,
     CONSTRAINT `fk_enum_package` FOREIGN KEY (`package_id`) REFERENCES `gen_package` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -60,7 +60,7 @@ CREATE TABLE `gen_enum_item`
     `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX `fk_enum_item_enum` (`enum_id`) USING BTREE,
+    INDEX `idx_enum_item_enum` (`enum_id`) USING BTREE,
     CONSTRAINT `fk_enum_item_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -123,7 +123,7 @@ CREATE TABLE `gen_schema`
     `modified_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`         varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX `fk_schema_data_source` (`data_source_id`) USING BTREE,
+    INDEX `idx_schema_data_source` (`data_source_id`) USING BTREE,
     CONSTRAINT `fk_schema_data_source` FOREIGN KEY (`data_source_id`) REFERENCES `gen_data_source` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -147,8 +147,8 @@ CREATE TABLE `gen_table`
     `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX `fk_table_model` (`model_id`) USING BTREE,
-    INDEX `fk_table_schema` (`schema_id`) USING BTREE,
+    INDEX `idx_table_model` (`model_id`) USING BTREE,
+    INDEX `idx_table_schema` (`schema_id`) USING BTREE,
     CONSTRAINT `fk_table_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_table_schema` FOREIGN KEY (`schema_id`) REFERENCES `gen_schema` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
@@ -184,8 +184,8 @@ CREATE TABLE `gen_column`
     `modified_time`      datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`             varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX `fk_column_table` (`table_id`) USING BTREE,
-    INDEX `fk_column_enum` (`enum_id`) USING BTREE,
+    INDEX `idx_column_table` (`table_id`) USING BTREE,
+    INDEX `idx_column_enum` (`enum_id`) USING BTREE,
     CONSTRAINT `fk_column_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_column_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
 ) ENGINE = InnoDB
@@ -212,9 +212,9 @@ CREATE TABLE `gen_association`
     `modified_time`     datetime(0)                                                    NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`            varchar(500)                                                   NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX `fk_association_model` (`model_id`) USING BTREE,
-    INDEX `fk_association_source_column` (`source_column_id`) USING BTREE,
-    INDEX `fk_association_target_column` (`target_column_id`) USING BTREE,
+    INDEX `idx_association_model` (`model_id`) USING BTREE,
+    INDEX `idx_association_source_column` (`source_column_id`) USING BTREE,
+    INDEX `idx_association_target_column` (`target_column_id`) USING BTREE,
     CONSTRAINT `fk_association_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_association_source_column` FOREIGN KEY (`source_column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_association_target_column` FOREIGN KEY (`target_column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
@@ -241,8 +241,8 @@ CREATE TABLE `gen_entity`
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `u_entity_table` (`table_id`) USING BTREE,
-    INDEX `fk_entity_package` (`package_id`) USING BTREE,
-    INDEX `fk_entity_table` (`table_id`) USING BTREE,
+    INDEX `idx_entity_package` (`package_id`) USING BTREE,
+    INDEX `idx_entity_table` (`table_id`) USING BTREE,
     CONSTRAINT `fk_entity_package` FOREIGN KEY (`package_id`) REFERENCES `gen_package` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
     CONSTRAINT `fk_entity_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
@@ -280,10 +280,10 @@ CREATE TABLE `gen_property`
     `modified_time`          datetime(0)                                                    NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`                 varchar(500)                                                   NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX `fk_property_column` (`column_id`) USING BTREE,
-    INDEX `fk_property_entity` (`entity_id`) USING BTREE,
-    INDEX `fk_property_enum` (`enum_id`) USING BTREE,
-    INDEX `fk_property_type_table` (`type_table_id`) USING BTREE,
+    INDEX `idx_property_column` (`column_id`) USING BTREE,
+    INDEX `idx_property_entity` (`entity_id`) USING BTREE,
+    INDEX `idx_property_enum` (`enum_id`) USING BTREE,
+    INDEX `idx_property_type_table` (`type_table_id`) USING BTREE,
     CONSTRAINT `fk_property_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
     CONSTRAINT `fk_property_entity` FOREIGN KEY (`entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_property_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,

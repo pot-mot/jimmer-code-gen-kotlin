@@ -1,15 +1,10 @@
 package top.potmot.core.template.table
 
-import top.potmot.core.template.TemplateBuilder
-import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 
-private fun String.escape(): String =
-    this.escape(DataSourceType.MySQL)
-
 fun Collection<GenTableAssociationsView>.mysqlTablesStringify(): String =
-    TemplateBuilder().apply {
+    MysqlTableContext().apply {
         forEach {
             line(dropTable(it.name))
         }
@@ -17,72 +12,131 @@ fun Collection<GenTableAssociationsView>.mysqlTablesStringify(): String =
         separate()
 
         forEach {
-            lines(it.createTable())
+            lines(createTable(it))
             separate()
         }
 
         forEach {
-            lines(it.fksStringify(DataSourceType.MySQL))
+            lines(it.associationsStringify())
             separate()
         }
     }.build()
 
 fun GenTableAssociationsView.mysqlTableStringify(): String =
-    TemplateBuilder().apply {
+    MysqlTableContext().apply {
         line(dropTable(name))
         separate()
-        lines(createTable())
+        lines(createTable(this@mysqlTableStringify))
         separate()
-        lines(fksStringify(DataSourceType.MySQL))
+        lines(associationsStringify())
     }.build()
 
-private fun GenTableAssociationsView.createTable(): String =
-    TemplateBuilder().apply {
-        line("CREATE TABLE ${name.escape()} (")
+class MysqlTableContext : TableContext() {
+    override fun String.escape(): String =
+        "`${removePrefix("`").removeSuffix("`")}`"
 
-        increaseIndentation()
-        lines(columns.map { it.mysqlColumnStringify().trim() }) {"$it,"}
-        line(pkStringify())
-        decreaseIndentation()
-
-        append(
-            """
-) ENGINE = InnoDB
-  CHARACTER SET = utf8mb4
-  COMMENT = '$comment'
-  ROW_FORMAT = Dynamic;
+    private fun defaultParams(comment: String): String =
         """
+  ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COMMENT = '${comment}'
+  ROW_FORMAT = Dynamic  
+"""
+
+    override fun createTable(
+        table: GenTableAssociationsView,
+        content: List<String>,
+        append: String
+    ): String =
+        super.createTable(
+            table,
+            content,
+            append = append + defaultParams(table.comment)
         )
-    }.build()
 
-private fun dropTable(name: String) =
-    "DROP TABLE IF EXISTS ${name.escape()};"
-
-fun GenTableAssociationsView.TargetOf_columns.mysqlColumnStringify(): String =
-    "${name.escape()} ${mysqlType()}" +
-            " ${if (typeNotNull) "NOT NULL" else ""}" +
-            " ${if (partOfPk && autoIncrement) "AUTO_INCREMENT" else ""}" +
-            " ${
-                if (!defaultValue.isNullOrBlank())
-                    "DEFAULT $defaultValue"
-                else if (!typeNotNull)
-                    "DEFAULT NULL"
-                else ""
-            }" +
-            " COMMENT '$comment'"
-
-// TODO 处理数据库中特殊类型
-fun GenTableAssociationsView.TargetOf_columns.mysqlType(): String =
-    if (typeCode == Types.LONGVARCHAR || typeCode == Types.LONGNVARCHAR) {
-        "LONGTEXT"
-    } else if (type.uppercase() == "ENUM"){
-        "VARCHAR(50)"
-    } else {
-        fullType
+    override fun createMappingTable(
+        sourceTableName: String,
+        sourceTableComment: String,
+        sourceColumnName: String,
+        targetTableName: String,
+        targetTableComment: String,
+        targetColumnName: String,
+        columnType: String,
+        lines: List<String>,
+        append: String,
+        mappingTableName: String,
+        mappingTableComment: String,
+        mappingSourceColumnName: String,
+        mappingTargetColumnName: String
+    ): String {
+        return super.createMappingTable(
+            sourceTableName,
+            sourceTableComment,
+            sourceColumnName,
+            targetTableName,
+            targetTableComment,
+            targetColumnName,
+            columnType,
+            lines,
+            append + defaultParams(mappingTableComment),
+            mappingTableName,
+            mappingTableComment,
+            mappingSourceColumnName,
+            mappingTargetColumnName
+        )
     }
 
-private fun GenTableAssociationsView.pkColumn(): GenTableAssociationsView.TargetOf_columns? =
-    this.columns.firstOrNull { it.partOfPk }
+    override fun typeStringify(
+        type: String,
+        typeCode: Int,
+        displaySize: Long,
+        numericPrecision: Long,
+        fullType: String,
+        partOfPk: Boolean,
+        partOfUniqueIdx: Boolean,
+        partOfFk: Boolean,
+        autoIncrement: Boolean,
+        mappingTable: Boolean,
+    ): String =
+        if (typeCode == Types.LONGVARCHAR || typeCode == Types.LONGNVARCHAR) {
+            "LONGTEXT"
+        } else if (type.uppercase().startsWith("ENUM")) {
+            "VARCHAR(50)"
+        } else {
+            fullType
+        }
 
-private fun GenTableAssociationsView.pkStringify(): String =
-    "PRIMARY KEY (${(pkColumn()?.name ?: "").escape()}) USING BTREE"
+    override fun GenTableAssociationsView.TargetOf_columns.columnStringify(): String {
+        val sb = StringBuilder()
+
+        sb.append(name.escape())
+            .append(' ')
+            .append(typeStringify())
+
+        if (partOfPk) {
+            sb.append(" PRIMARY KEY")
+
+            if (autoIncrement) {
+                sb.append(" AUTO_INCREMENT")
+            } else if (!defaultValue.isNullOrBlank()) {
+                sb.append(" DEFAULT ").append(defaultValue)
+            }
+        } else {
+            if (typeNotNull) {
+                sb.append(" NOT NULL")
+            }
+
+            if (!defaultValue.isNullOrBlank()) {
+                sb.append(" DEFAULT ").append(defaultValue)
+            } else if (!typeNotNull) {
+                sb.append(" DEFAULT NULL")
+            }
+        }
+
+        if (comment.isNotEmpty()) {
+            sb.append(" COMMENT '${comment}'")
+        }
+
+        return sb.toString()
+    }
+}
