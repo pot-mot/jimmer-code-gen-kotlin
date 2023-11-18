@@ -1,9 +1,7 @@
 package top.potmot.core.convert
 
-import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.new
 import top.potmot.config.GenConfig
-import top.potmot.enumeration.AssociationType.*
 import top.potmot.model.GenEntity
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.by
@@ -28,26 +26,12 @@ private fun convertTableToEntity(
         )
     }
 
-    val associationIsLoadedMap = properties.groupBy {
-        ImmutableObjects.isLoaded(it, "associationType")
-    }
-
-    val unloadAssociationProperties = associationIsLoadedMap[false] ?: emptyList()
-
-    val associationPropertiesMap = associationIsLoadedMap[true]?.groupBy {
-        it.associationType
-    } ?: emptyMap()
-
-    val resortProperties =
-        unloadAssociationProperties +
-                (associationPropertiesMap[null] ?: emptyList()) +
-                (associationPropertiesMap[ONE_TO_ONE] ?: emptyList()) +
-                (associationPropertiesMap[MANY_TO_ONE] ?: emptyList()) +
-                (associationPropertiesMap[ONE_TO_MANY] ?: emptyList()) +
-                (associationPropertiesMap[MANY_TO_MANY] ?: emptyList())
-
     return baseEntity.copy {
-        this.properties = resortProperties
+        this.properties = properties.mapIndexed { index, genProperty ->
+            genProperty.copy {
+                orderKey = index.toLong()
+            }
+        }
     }
 }
 

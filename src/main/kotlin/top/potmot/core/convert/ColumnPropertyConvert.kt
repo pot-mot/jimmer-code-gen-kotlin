@@ -174,7 +174,7 @@ fun columnToProperties(
     }
 
     if (includeDefaultProperty) {
-        properties += defaultProperty
+        properties.add(0, defaultProperty)
     }
 
     return properties
@@ -207,8 +207,8 @@ fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
         this.associationAnnotation = null
         this.dissociateAnnotation = null
         this.otherAnnotation = null
-        this.enumId = null
         this.remark = column.remark
+        this.orderKey = column.orderKey
     }
 }
 

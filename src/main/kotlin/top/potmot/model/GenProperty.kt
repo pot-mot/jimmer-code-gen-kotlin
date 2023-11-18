@@ -147,6 +147,11 @@ interface GenProperty : BaseEntity {
     val otherAnnotation: String?
 
     /**
+     * 自定排序
+     */
+    val orderKey: Long
+
+    /**
      * 生成枚举 ID 视图
      */
     @IdView

@@ -11,6 +11,7 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
+import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import top.potmot.enumeration.TableType
 import top.potmot.model.base.BaseEntity
@@ -100,7 +101,7 @@ interface GenTable : BaseEntity {
     /**
      * 列
      */
-    @OneToMany(mappedBy = "table")
+    @OneToMany(mappedBy = "table", orderedProps = [OrderedProp(value = "orderKey")])
     val columns: List<GenColumn>
 }
 

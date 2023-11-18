@@ -94,19 +94,20 @@ abstract class TableContext : TemplateBuilder() {
         targetTableName: String,
         targetColumnName: String,
 
+        associationName: String = "fk__${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}_" +
+                "_${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}",
+
         dissociateAction: DissociateAction?
     ): String =
         buildString {
-            appendLine(alterTable(sourceTableName.escape()))
-            appendLine(
-                "ADD CONSTRAINT ${
-                    ("fk__${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}_" +
-                            "_${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}")
-                        .escape()
-                }"
-            )
-            appendLine(" FOREIGN KEY (${sourceColumnName.escape()}) REFERENCES ${targetTableName.escape()} (${targetColumnName.escape()})")
-            append(" ${dissociateAction?.toOnDeleteAction() ?: ""} ON UPDATE RESTRICT;")
+            if (GenConfig.tableDefineWithFk) {
+                appendLine(alterTable(sourceTableName.escape()))
+                appendLine("ADD CONSTRAINT ${associationName.escape()}")
+                appendLine(" FOREIGN KEY (${sourceColumnName.escape()}) REFERENCES ${targetTableName.escape()} (${targetColumnName.escape()})")
+                append(" ${dissociateAction?.toOnDeleteAction() ?: ""} ON UPDATE RESTRICT;")
+            } else {
+                append("-- fake association $associationName")
+            }
         }
 
     open fun createMappingTable(
@@ -187,8 +188,6 @@ abstract class TableContext : TemplateBuilder() {
      * 根据 out association 生成外键约束、唯一性约束和关联表
      */
     open fun GenTableAssociationsView.associationsStringify(): List<String> {
-        if (!GenConfig.tableDefineWithFk) return emptyList()
-
         val list = mutableListOf<String>()
 
         for (column in outColumns()) {
@@ -233,7 +232,6 @@ abstract class TableContext : TemplateBuilder() {
                     }
                 }
             }
-
         }
         return list
     }

@@ -276,6 +276,7 @@ CREATE TABLE `gen_property`
     `dissociate_annotation`  varchar(500)                                                   NULL     DEFAULT NULL COMMENT '脱钩注释',
     `other_annotation`       varchar(500)                                                   NULL     DEFAULT NULL COMMENT '其他注释',
     `enum_id`                bigint                                                         NULL     DEFAULT NULL COMMENT '对应枚举 ID',
+    `order_key`              bigint                                                         NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`           datetime(0)                                                    NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time`          datetime(0)                                                    NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`                 varchar(500)                                                   NOT NULL DEFAULT '' COMMENT '备注',

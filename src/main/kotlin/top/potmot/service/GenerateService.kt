@@ -22,7 +22,6 @@ import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.id
 import top.potmot.model.modelId
-import top.potmot.model.tableId
 
 @RestController
 @RequestMapping("/generate")
@@ -42,16 +41,12 @@ class GenerateService(
                 select(table.fetch(GenTableAssociationsView::class))
             }.execute()
 
-            sqlClient.createDelete(GenEntity::class) {
-                where(table.tableId valueIn tables.map { table -> table.id })
-            }.execute()
-
             val typeMappings = sqlClient.createQuery(GenTypeMapping::class) {
                 select(table)
             }.execute()
 
             tables.map { it.toGenEntity(typeMappings) }.forEach {
-                result += sqlClient.insert(it).modifiedEntity.id
+                result += sqlClient.save(it).modifiedEntity.id
             }
         }
 

@@ -421,6 +421,7 @@ CREATE TABLE "gen_property"
     "dissociate_annotation"  text        NULL     DEFAULT NULL,
     "other_annotation"       text        NULL     DEFAULT NULL,
     "enum_id"                bigint      NULL     DEFAULT NULL REFERENCES "gen_enum" ("id") ON DELETE SET NULL ON UPDATE RESTRICT,
+    "order_key"              bigint      NOT NULL DEFAULT 0,
     "created_time"           timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time"          timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "remark"                 text        NOT NULL DEFAULT ''
@@ -452,6 +453,7 @@ COMMENT ON COLUMN "gen_property"."association_annotation" IS '关联注释';
 COMMENT ON COLUMN "gen_property"."dissociate_annotation" IS '脱钩注释';
 COMMENT ON COLUMN "gen_property"."other_annotation" IS '其他注释';
 COMMENT ON COLUMN "gen_property"."enum_id" IS '对应枚举 ID';
+COMMENT ON COLUMN "gen_property"."order_key" IS '自定排序';
 COMMENT ON COLUMN "gen_property"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_property"."modified_time" IS '修改时间';
 COMMENT ON COLUMN "gen_property"."remark" IS '备注';

@@ -75,15 +75,14 @@ class ModelService(
 
         if (!input.value.isNullOrBlank()) {
             getValueData(modelId)?.apply {
-                sqlClient.createDelete(GenTable::class) {
-                    where(table.modelId eq modelId)
-                }.execute()
+                // 差量更新 table
+                first.forEach { sqlClient.save(it) }
 
+                // 全量更新 association
                 sqlClient.createDelete(GenAssociation::class) {
                     where(table.modelId eq modelId)
                 }.execute()
 
-                first.forEach { sqlClient.insert(it)}
                 second.forEach { sqlClient.insert(it)}
             }
         }
