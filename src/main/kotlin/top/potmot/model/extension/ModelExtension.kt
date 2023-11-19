@@ -1,4 +1,4 @@
-package top.potmot.extension
+package top.potmot.model.extension
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -15,11 +15,6 @@ import top.potmot.model.dto.GenTableColumnsInput
 private val mapper = jacksonObjectMapper()
     .registerModule(ImmutableModule())
     .registerModule(JavaTimeModule())
-
-fun GenModelView.createSql(dataSource: GenDataSource): String {
-    val data = valueToData()
-    return dataSource.createSql(data.first, data.second)
-}
 
 fun valueToData(modelId: Long, value: String): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> {
     val tables = mutableListOf<GenTableColumnsInput>()
@@ -73,4 +68,9 @@ private fun JsonNode.toAssociation(modelId: Long): GenAssociationModelInput {
         }
     }
     return mapper.readValue<GenAssociationModelInput>(this.toString())
+}
+
+fun GenModelView.createSql(dataSource: GenDataSource): String {
+    val data = valueToData()
+    return dataSource.createSql(data.first, data.second)
 }

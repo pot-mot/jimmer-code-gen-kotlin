@@ -19,7 +19,7 @@ import top.potmot.core.generate.generateTableDefine
 import top.potmot.core.generate.generateTableDefines
 import top.potmot.enumeration.DataSourceType
 import top.potmot.error.DataSourceErrorCode
-import top.potmot.extension.valueToData
+import top.potmot.model.extension.valueToData
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenModel
 import top.potmot.model.GenTable
@@ -57,7 +57,7 @@ class ModelService(
     }
 
     @GetMapping("/type")
-    fun listDataBaseType(): Map<String, Int> =
+    fun listDatabaseType(): Map<String, Int> =
         JDBCType.values().associate {
             Pair(it.name, it.vendorTypeNumber)
         }

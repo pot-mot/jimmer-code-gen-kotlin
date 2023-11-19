@@ -1,4 +1,4 @@
-package top.potmot.extension
+package top.potmot.model.extension
 
 import top.potmot.model.GenPackage
 

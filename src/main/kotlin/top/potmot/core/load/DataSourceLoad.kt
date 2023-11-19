@@ -152,6 +152,10 @@ fun Column.toGenColumn(
     }
 }
 
+/**
+ * 根据 Table 生成 Fk Association 关联，
+ * 要求 GenTable 已经 save，具有 columns，columns 具有 id 与 name
+ */
 fun Table.getFkAssociation(tableNameMap: Map<String, GenTable>): List<GenAssociation> {
     val result = mutableListOf<GenAssociation>()
 

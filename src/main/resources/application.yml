@@ -15,6 +15,7 @@ jimmer:
   client:
     ts:
       path: /ts.zip
+      mutable: true
   show-sql: on
   pretty-sql: true
   id-only-target-checking-level: ALL

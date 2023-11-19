@@ -20,6 +20,7 @@ import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.model.dto.GenTypeMappingView
 import top.potmot.model.id
 import top.potmot.model.modelId
 
@@ -42,7 +43,7 @@ class GenerateService(
             }.execute()
 
             val typeMappings = sqlClient.createQuery(GenTypeMapping::class) {
-                select(table)
+                select(table.fetch(GenTypeMappingView::class))
             }.execute()
 
             tables.map { it.toGenEntity(typeMappings) }.forEach {

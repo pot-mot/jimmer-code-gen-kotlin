@@ -8,7 +8,6 @@ import top.potmot.core.immutable.copyProperties
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.GenProperty
 import top.potmot.model.GenPropertyDraft
-import top.potmot.model.GenTypeMapping
 import top.potmot.model.by
 import top.potmot.enumeration.AssociationType.*
 import top.potmot.model.dto.GenTableAssociationsView
@@ -21,11 +20,11 @@ import top.potmot.model.dto.GenTableAssociationsView
  */
 fun columnToProperties(
     column: GenTableAssociationsView.TargetOf_columns,
-    typeMappings: List<GenTypeMapping> = emptyList(),
+    typeMapping: (column: GenTableAssociationsView.TargetOf_columns) -> String = {it.getPropertyType()},
 ): List<GenProperty> {
     val properties = mutableListOf<GenProperty>()
 
-    val baseProperty = column.toBaseProperty(typeMappings)
+    val baseProperty = column.toBaseProperty(typeMapping)
 
     val defaultProperty =
         new(GenProperty::class).by {
@@ -184,7 +183,7 @@ fun columnToProperties(
  * 转换为基础属性
  */
 fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
-    typeMappings: List<GenTypeMapping> = emptyList(),
+    typeMapping: (column: GenTableAssociationsView.TargetOf_columns) -> String,
 ): GenProperty {
     val column = this
 
@@ -192,7 +191,7 @@ fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
         this.columnId = column.id
         this.name = columnNameToPropertyName(column.name)
         this.comment = column.comment.clearColumnComment()
-        this.type = column.mappingPropertyType(typeMappings)
+        this.type = typeMapping(column)
         this.typeTableId = null
         this.listType = false
         this.typeNotNull = column.typeNotNull

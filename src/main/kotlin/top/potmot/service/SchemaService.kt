@@ -16,7 +16,7 @@ import top.potmot.core.load.getFkAssociation
 import top.potmot.core.load.toGenSchema
 import top.potmot.core.load.toGenTable
 import top.potmot.error.DataSourceErrorCode
-import top.potmot.extension.toSource
+import top.potmot.model.extension.toSource
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenSchema
 import top.potmot.model.GenTable

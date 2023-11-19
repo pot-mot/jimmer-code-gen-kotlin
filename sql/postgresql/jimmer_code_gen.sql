@@ -470,8 +470,9 @@ EXECUTE FUNCTION update_modified_time();
 CREATE TABLE "gen_type_mapping"
 (
     "id"              BIGSERIAL PRIMARY KEY,
+    "data_source_type" text NOT NULL,
     "type_expression" text        NOT NULL,
-    "regex"           boolean     NOT NULL DEFAULT FALSE,
+    "language"        text        NOT NULL,
     "property_type"   text        NOT NULL,
     "order_key"       bigint      NOT NULL DEFAULT 0,
     "created_time"    timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -481,8 +482,9 @@ CREATE TABLE "gen_type_mapping"
 
 COMMENT ON TABLE "gen_type_mapping" IS '列到属性类型映射';
 COMMENT ON COLUMN "gen_type_mapping"."id" IS 'ID';
-COMMENT ON COLUMN "gen_type_mapping"."type_expression" IS '类型表达式';
-COMMENT ON COLUMN "gen_type_mapping"."regex" IS '是否正则';
+COMMENT ON COLUMN "gen_type_mapping"."data_source_type" IS '数据源类型';
+COMMENT ON COLUMN "gen_type_mapping"."type_expression" IS '数据库类型表达式';
+COMMENT ON COLUMN "gen_type_mapping"."language" IS '语言';
 COMMENT ON COLUMN "gen_type_mapping"."property_type" IS '属性类型';
 COMMENT ON COLUMN "gen_type_mapping"."order_key" IS '自定排序';
 COMMENT ON COLUMN "gen_type_mapping"."created_time" IS '创建时间';

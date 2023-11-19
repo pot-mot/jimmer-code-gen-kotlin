@@ -1,4 +1,4 @@
-package top.potmot.extension
+package top.potmot.model.extension
 
 import org.babyfish.jimmer.ImmutableObjects
 import top.potmot.model.GenEntity

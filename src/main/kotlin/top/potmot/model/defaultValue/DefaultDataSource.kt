@@ -1,10 +1,10 @@
-package top.potmot.contract
+package top.potmot.model.defaultValue
 
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DataSourceType.*
 import top.potmot.model.dto.GenDataSourceTemplateView
 
-val mysqlDataSourceTemplate = GenDataSourceTemplateView(
+private val mysqlDefaultDataSource = GenDataSourceTemplateView(
     name = "mysql",
     type = MySQL,
     host = "127.0.0.1",
@@ -14,7 +14,7 @@ val mysqlDataSourceTemplate = GenDataSourceTemplateView(
     remark = "MySQL DataSource",
 )
 
-val postgreDataSourceTemplate = GenDataSourceTemplateView(
+private val postgreDefaultDataSource = GenDataSourceTemplateView(
     name = "postgres",
     type = PostgreSQL,
     host = "127.0.0.1",
@@ -25,8 +25,8 @@ val postgreDataSourceTemplate = GenDataSourceTemplateView(
 )
 
 
-fun DataSourceType.dataSourceTemplate(): GenDataSourceTemplateView =
+fun DataSourceType.default(): GenDataSourceTemplateView =
     when(this) {
-        MySQL -> mysqlDataSourceTemplate
-        PostgreSQL -> postgreDataSourceTemplate
+        MySQL -> mysqlDefaultDataSource
+        PostgreSQL -> postgreDefaultDataSource
     }

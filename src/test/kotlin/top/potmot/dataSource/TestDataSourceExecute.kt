@@ -7,7 +7,7 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import top.potmot.enumeration.DataSourceType
-import top.potmot.extension.execute
+import top.potmot.model.extension.execute
 import top.potmot.model.dto.GenDataSourceInput
 
 

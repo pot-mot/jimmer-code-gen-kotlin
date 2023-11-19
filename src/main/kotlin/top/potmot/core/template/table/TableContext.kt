@@ -7,7 +7,7 @@ import top.potmot.core.convert.clearTableComment
 import top.potmot.core.convert.clearTableName
 import top.potmot.core.template.TemplateBuilder
 import top.potmot.enumeration.AssociationType.*
-import top.potmot.extension.outColumns
+import top.potmot.model.extension.outColumns
 import top.potmot.model.dto.GenTableAssociationsView
 
 abstract class TableContext : TemplateBuilder() {

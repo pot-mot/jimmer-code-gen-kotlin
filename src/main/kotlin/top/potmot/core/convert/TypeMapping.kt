@@ -1,9 +1,10 @@
 package top.potmot.core.convert
 
 import top.potmot.config.GenConfig
+import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
-import top.potmot.model.GenTypeMapping
 import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.model.dto.GenTypeMappingView
 import java.math.BigDecimal
 import java.sql.Types
 import java.time.LocalDateTime
@@ -13,7 +14,7 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 /**
  * java.sql.Types 映射为 java 类型
  */
-fun jdbcTypeToJavaType(jdbcType: Int, typeNotNull: Boolean = true): Class<*>? {
+private fun jdbcTypeToJavaType(jdbcType: Int, typeNotNull: Boolean = true): Class<*>? {
     return when (jdbcType) {
         Types.NULL -> null
         Types.JAVA_OBJECT -> JvmType.Object::class.java
@@ -35,7 +36,7 @@ fun jdbcTypeToJavaType(jdbcType: Int, typeNotNull: Boolean = true): Class<*>? {
 /**
  * java.sql.Types 映射为 kotlin 类型
  */
-fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
+private fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
     return when (jdbcType) {
         Types.NULL -> null
         Types.JAVA_OBJECT -> JvmType.Object::class
@@ -54,27 +55,50 @@ fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
     }
 }
 
-/**
- * 设置属性类型
- */
-fun GenTableAssociationsView.TargetOf_columns.mappingPropertyType(
-    typeMappings: List<GenTypeMapping>,
-    language: GenLanguage = GenConfig.language,
-): String {
+private fun mappingPropertyType(
+    databaseTypeString: String,
+    typeMappings: List<GenTypeMappingView>,
+    dataSourceType: DataSourceType,
+    language: GenLanguage
+): String? {
     for (typeMapping in typeMappings) {
-        val matchResult =
-            if (typeMapping.regex) {
-                Regex(typeMapping.typeExpression).matches(fullType)
-            } else {
-                typeMapping.typeExpression == fullType
-            }
+        if (typeMapping.dataSourceType != dataSourceType) {
+            continue
+        }
+        if (typeMapping.language != language) {
+            continue
+        }
+        if (typeMapping.typeExpression.isBlank()) {
+            continue
+        }
+        if (typeMapping.propertyType.isBlank()) {
+            continue
+        }
+        if (databaseTypeString.isBlank()) {
+            continue
+        }
+
+        val matchResult = Regex(typeMapping.typeExpression).matches(databaseTypeString)
+
         if (matchResult) {
             return typeMapping.propertyType
         }
     }
 
-    return when (language) {
+    return null
+}
+
+fun GenTableAssociationsView.TargetOf_columns.getPropertyType (
+    dataSourceType: DataSourceType = GenConfig.dataSourceType,
+    language: GenLanguage = GenConfig.language,
+    typeMappings: List<GenTypeMappingView> = emptyList(),
+): String =
+    mappingPropertyType(
+        "${type}(${displaySize},${numericPrecision})",
+        typeMappings,
+        dataSourceType,
+        language,
+    ) ?: when(language) {
         GenLanguage.JAVA -> jdbcTypeToJavaType(typeCode, typeNotNull)?.name ?: type
         GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeCode)?.qualifiedName ?: type
     }
-}

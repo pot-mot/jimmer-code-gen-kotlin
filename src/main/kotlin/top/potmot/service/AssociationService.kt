@@ -22,7 +22,7 @@ import top.potmot.core.match.AssociationMatch
 import top.potmot.core.match.simplePkColumnMatch
 import top.potmot.enumeration.AssociationMatchType
 import top.potmot.enumeration.SelectType
-import top.potmot.extension.newGenAssociationMatchView
+import top.potmot.model.extension.newGenAssociationMatchView
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenColumn
 import top.potmot.model.comment
@@ -109,11 +109,6 @@ class AssociationService(
     ): Int {
         val ids = queryByColumn(sourceColumnIds, targetColumnIds, selectType, GenAssociationIdView::class).map { it.id }
         return sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
-    }
-
-    @GetMapping("/matchType")
-    fun listMatchType(): List<AssociationMatchType> {
-        return AssociationMatchType.values().toList()
     }
 
     @PostMapping("/match")

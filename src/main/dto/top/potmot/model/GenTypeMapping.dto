@@ -1,6 +1,11 @@
+GenTypeMappingView {
+    #allScalars
+}
+
 input GenTypeMappingInput {
+    dataSourceType
     typeExpression
-    regex
+    language
     propertyType
     remark?
 }

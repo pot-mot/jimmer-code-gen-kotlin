@@ -12,7 +12,7 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.Table
-import top.potmot.extension.getFullType
+import top.potmot.model.extension.getFullType
 import top.potmot.model.base.BaseEntity
 
 /**

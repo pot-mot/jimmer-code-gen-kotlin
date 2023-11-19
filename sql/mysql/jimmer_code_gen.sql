@@ -300,14 +300,15 @@ CREATE TABLE `gen_property`
 DROP TABLE IF EXISTS `gen_type_mapping`;
 CREATE TABLE `gen_type_mapping`
 (
-    `id`              bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `type_expression` varchar(500) NOT NULL COMMENT '类型表达式',
-    `regex`           tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否正则',
-    `property_type`   varchar(500) NOT NULL COMMENT '属性类型',
-    `order_key`       bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
-    `created_time`    datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-    `modified_time`   datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-    `remark`          varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
+    `id`               bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `data_source_type` varchar(500) NOT NULL COMMENT '数据源类型',
+    `type_expression`  varchar(500) NOT NULL COMMENT '数据库类型表达式',
+    `language`         varchar(500) NOT NULL COMMENT '语言',
+    `property_type`    varchar(500) NOT NULL COMMENT '属性类型',
+    `order_key`        bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `created_time`     datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time`    datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`           varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4

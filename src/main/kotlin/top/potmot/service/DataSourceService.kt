@@ -12,12 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.contract.dataSourceTemplate
+import top.potmot.model.defaultValue.default
 import top.potmot.enumeration.DataSourceType
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.error.DataSourceException
-import top.potmot.extension.test
+import top.potmot.model.extension.test
 import top.potmot.model.GenDataSource
 import top.potmot.model.copy
 import top.potmot.model.dto.GenDataSourceInput
@@ -48,22 +49,22 @@ class DataSourceService(
     }
 
     /**
-     * 获取数据源类型
+     * 获取默认数据库配置
      */
-    @GetMapping("/type")
-    fun listType(): List<DataSourceType> {
-        return DataSourceType.values().toList()
-    }
+    @GetMapping("/default")
+    fun getDefault(
+        @RequestParam dataSourceType: DataSourceType
+    ): GenDataSourceTemplateView =
+        dataSourceType.default()
 
     /**
      * 获取默认数据库配置
      */
-    @GetMapping("/type/{dataSourceType}/default")
-    fun getDefaultDataSource(
-        @PathVariable dataSourceType: DataSourceType
-    ): GenDataSourceTemplateView {
-        return dataSourceType.dataSourceTemplate()
-    }
+    @GetMapping("/defaults")
+    fun getDefaults(): List<GenDataSourceTemplateView> =
+        DataSourceType.values().map {
+            it.default()
+        }
 
     /**
      * 创建数据源

@@ -15,7 +15,7 @@ import org.babyfish.jimmer.sql.Table
 import top.potmot.config.GenConfig
 import top.potmot.core.template.TemplateBuilder
 import top.potmot.enumeration.EnumType
-import top.potmot.extension.toPath
+import top.potmot.model.extension.toPath
 import top.potmot.model.GenEnumItem
 import top.potmot.model.dto.GenEntityPropertiesView
 import java.time.LocalDateTime
