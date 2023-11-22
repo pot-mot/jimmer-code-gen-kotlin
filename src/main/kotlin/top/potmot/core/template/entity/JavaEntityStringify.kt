@@ -1,25 +1,25 @@
 package top.potmot.core.template.entity
 
 import org.jetbrains.annotations.Nullable
-import top.potmot.core.template.TemplateBuilder
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as TargetOfEnum
+import top.potmot.model.extension.packagePath
+import top.potmot.model.extension.shortType
+import kotlin.reflect.KClass
 
 /**
  * java 语言下的实体生成
  */
 
 fun GenEntityPropertiesView.javaClassStringify(): String =
-    TemplateBuilder().apply {
+    JavaEntityStringifyContext().apply {
         line("package ${packagePath()};")
 
         separate()
-        lines(importList()) { "import $it;" }
+        lines(importLines()) { "import $it;" }
         separate()
 
         lines(blockComment())
-        line("@Entity")
-        lines(annotation())
+        lines(annotationLines())
         line("interface $name {")
 
         increaseIndentation()
@@ -31,58 +31,57 @@ fun GenEntityPropertiesView.javaClassStringify(): String =
 
 
 private fun GenEntityPropertiesView.TargetOf_properties.javaPropertyStringify(): String =
-    TemplateBuilder().apply {
+    JavaEntityStringifyContext().apply {
         lines(blockComment())
-        lines(annotation())
-        if (!typeNotNull) { line("@Nullable") }
+        lines(annotationLines())
         line("${shortType()} $name;")
     }.build()
-
-private fun GenEntityPropertiesView.importList(): List<String> =
-    (importClassList().map { it.java.name }
-            + properties.flatMap { it.importList() })
-        .distinct()
-        .let { importListFilter(it) }
-        .sorted()
-
-private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
-    val importList = importClassList().map {
-        it.java.name
-    }.toMutableList()
-
-    importList += fullType()
-
-    if (!typeNotNull) {
-        importList += Nullable::class.java.name
-    }
-
-    return importList.filter { it.isNotEmpty() }
-}
 
 /**
  * java 语言下的枚举生成
  */
-
 fun GenEntityPropertiesView.javaEnumsStringify(): List<Pair<String, String>> =
     properties.filter { it.enum != null }
         .map { it.enum!! }
         .map { Pair(name, it.javaEnumStringify()) }
 
-private fun TargetOfEnum.javaEnumStringify(): String =
-    TemplateBuilder().apply {
+private fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.javaEnumStringify(): String =
+    JavaEntityStringifyContext().apply {
         line("package ${packagePath()};")
 
         separate()
-        line("import org.babyfish.jimmer.sql.EnumType;")
+        lines(importLines()) { "import $it;" }
         separate()
 
         lines(blockComment())
-        line("@EnumType(EnumType.Strategy.$enumType)")
+        lines(annotationLines())
         line("public enum $name {")
 
         increaseIndentation()
-        joinParts(items.map { it.toEntity().stringify(enumType) })
+        joinParts(items.map { "${it.enumItemAnnotation(enumType)}\n${it.name}" })
         decreaseIndentation()
 
         line("}")
     }.build()
+
+class JavaEntityStringifyContext : EntityStringifyContext() {
+    override fun getImportClasses(property: GenEntityPropertiesView.TargetOf_properties): List<KClass<*>> {
+        return super.getImportClasses(property).let {
+            if (!property.typeNotNull) {
+                it + Nullable::class
+            } else {
+                it
+            }
+        }
+    }
+
+    override fun getAnnotationLines(property: GenEntityPropertiesView.TargetOf_properties): List<String> {
+        return super.getAnnotationLines(property).let {
+            if (!property.typeNotNull) {
+                it + "@Nullable"
+            } else {
+                it
+            }
+        }
+    }
+}

@@ -50,6 +50,7 @@ class EntityGenerateTest {
             keyProperty = false,
             logicalDelete = false,
             idView = false,
+            orderKey = 1,
         )
 
         val manyToOneProperty = GenEntityPropertiesView.TargetOf_properties(
@@ -69,6 +70,7 @@ class EntityGenerateTest {
             associationType = AssociationType.MANY_TO_ONE,
             associationAnnotation = "@ManyToOne",
             entityId = 1,
+            orderKey = 2,
         )
 
 

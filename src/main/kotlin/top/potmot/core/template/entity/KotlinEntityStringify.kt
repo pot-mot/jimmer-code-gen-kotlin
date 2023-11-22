@@ -1,7 +1,8 @@
 package top.potmot.core.template.entity
 
-import top.potmot.core.template.TemplateBuilder
 import top.potmot.model.dto.GenEntityPropertiesView
+import top.potmot.model.extension.packagePath
+import top.potmot.model.extension.shortType
 import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as TargetOfEnum
 
 /**
@@ -9,16 +10,15 @@ import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf
  */
 
 fun GenEntityPropertiesView.kotlinClassStringify(): String =
-    TemplateBuilder().apply {
+    EntityStringifyContext().apply {
         line("package ${packagePath()}")
 
         separate()
-        lines(importList()) { "import $it" }
+        lines(importLines()) { "import $it" }
         separate()
 
         lines(blockComment())
-        line("@Entity")
-        lines(annotation())
+        lines(annotationLines())
         line("interface $name {")
 
         increaseIndentation()
@@ -30,33 +30,11 @@ fun GenEntityPropertiesView.kotlinClassStringify(): String =
     }.build()
 
 private fun GenEntityPropertiesView.TargetOf_properties.kotlinPropertyStringify(): String =
-    TemplateBuilder().apply {
+    EntityStringifyContext().apply {
         lines(blockComment())
-        lines(annotation())
+        lines(annotationLines())
         line("val $name: ${shortType()}${if (typeNotNull) "" else "?"}")
     }.build()
-
-private fun GenEntityPropertiesView.importList(): List<String> =
-    (importClassList().mapNotNull { it.qualifiedName }
-            + properties.flatMap { it.importList() })
-        .distinct()
-        .let { importListFilter(it) }
-        .sorted()
-
-
-private fun GenEntityPropertiesView.TargetOf_properties.importList(): List<String> {
-    val importList = importClassList().mapNotNull {
-        it.qualifiedName
-    }.toMutableList()
-
-    importList += fullType()
-
-    return importList.filter { it.isNotEmpty() }
-}
-
-/**
- * kotlin 语言下的枚举生成
- */
 
 fun GenEntityPropertiesView.kotlinEnumsStringify(): List<Pair<String, String>> =
     properties.filter { it.enum != null }
@@ -64,7 +42,7 @@ fun GenEntityPropertiesView.kotlinEnumsStringify(): List<Pair<String, String>> =
         .map { Pair(name, it.kotlinEnumStringify()) }
 
 private fun TargetOfEnum.kotlinEnumStringify(): String =
-    TemplateBuilder().apply {
+    EntityStringifyContext().apply {
         line("package ${packagePath()}")
 
         separate()
@@ -72,11 +50,11 @@ private fun TargetOfEnum.kotlinEnumStringify(): String =
         separate()
 
         lines(blockComment())
-        line("@EnumType(EnumType.Strategy.$enumType)")
+        lines(annotationLines())
         line("enum class $name {")
 
         increaseIndentation()
-        joinParts(items.map { it.toEntity().stringify(enumType) })
+        joinParts(items.map { "${it.enumItemAnnotation(enumType)}\n${it.name};" })
         decreaseIndentation()
 
         line("}")

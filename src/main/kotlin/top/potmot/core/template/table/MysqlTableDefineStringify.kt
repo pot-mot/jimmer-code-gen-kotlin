@@ -4,7 +4,7 @@ import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 
 fun Collection<GenTableAssociationsView>.mysqlTablesStringify(): String =
-    MysqlTableContext().apply {
+    MysqlTableStringifyContext().apply {
         forEach {
             line(dropTable(it.name))
         }
@@ -23,7 +23,7 @@ fun Collection<GenTableAssociationsView>.mysqlTablesStringify(): String =
     }.build()
 
 fun GenTableAssociationsView.mysqlTableStringify(): String =
-    MysqlTableContext().apply {
+    MysqlTableStringifyContext().apply {
         line(dropTable(name))
         separate()
         lines(createTable(this@mysqlTableStringify))
@@ -31,7 +31,7 @@ fun GenTableAssociationsView.mysqlTableStringify(): String =
         lines(associationsStringify())
     }.build()
 
-class MysqlTableContext : TableContext() {
+class MysqlTableStringifyContext : TableStringifyContext() {
     override fun String.escape(): String =
         "`${removePrefix("`").removeSuffix("`")}`"
 

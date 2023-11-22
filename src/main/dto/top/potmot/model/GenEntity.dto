@@ -40,7 +40,12 @@ GenEntityPropertiesView {
     properties {
         #allScalars
         id(entity)
-        id(column)
+
+        column {
+            id
+            name
+        }
+
         typeTable {
             id
 

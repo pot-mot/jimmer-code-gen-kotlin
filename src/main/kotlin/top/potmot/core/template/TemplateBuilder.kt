@@ -1,5 +1,8 @@
 package top.potmot.core.template
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 /**
  * 模版创建者
  */
@@ -29,6 +32,12 @@ open class TemplateBuilder {
             stringBuilder.append(" ")
         }
     }
+
+    fun LocalDateTime.format(formatPattern: String = "yyyy-MM-dd HH:mm:ss"): String =
+        format(DateTimeFormatter.ofPattern(formatPattern))
+
+    fun now(formatPattern: String = "yyyy-MM-dd HH:mm:ss"): String =
+        LocalDateTime.now().format(formatPattern)
 
     fun indent(): String =
         " ".repeat(indentation)

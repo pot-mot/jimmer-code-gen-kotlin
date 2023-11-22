@@ -20,9 +20,9 @@ import top.potmot.core.generate.generateTableDefines
 import top.potmot.enumeration.DataSourceType
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.model.extension.valueToData
-import top.potmot.model.GenAssociation
 import top.potmot.model.GenModel
 import top.potmot.model.GenTable
+import top.potmot.model.copy
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenModelInput
 import top.potmot.model.dto.GenModelView
@@ -67,27 +67,25 @@ class ModelService(
     fun save(
         @RequestBody input: GenModelInput
     ): Long {
-        val modelId = if (input.id == null) {
-            sqlClient.insert(input).modifiedEntity.id
+        val model = if (input.id == null) {
+            sqlClient.insert(input).modifiedEntity
         } else {
-            sqlClient.update(input).modifiedEntity.id
+            sqlClient.update(input).modifiedEntity
         }
 
         if (!input.value.isNullOrBlank()) {
-            getValueData(modelId)?.apply {
-                // 差量更新 table
-                first.forEach { sqlClient.save(it) }
-
-                // 全量更新 association
-                sqlClient.createDelete(GenAssociation::class) {
-                    where(table.modelId eq modelId)
-                }.execute()
-
-                second.forEach { sqlClient.insert(it)}
+            valueToData(model.id, input.value).apply {
+                model
+                    .copy {
+                        tables = first.map { it.toEntity() }
+                        associations = second.map { it.toEntity() }
+                    }.apply {
+                        sqlClient.save(this)
+                    }
             }
         }
 
-        return modelId
+        return model.id
     }
 
     @DeleteMapping("/{ids}")

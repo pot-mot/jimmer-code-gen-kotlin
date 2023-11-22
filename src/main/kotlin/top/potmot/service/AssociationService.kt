@@ -8,6 +8,7 @@ import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.ilike
 import org.babyfish.jimmer.sql.kt.ast.expression.or
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -22,7 +23,6 @@ import top.potmot.core.match.AssociationMatch
 import top.potmot.core.match.simplePkColumnMatch
 import top.potmot.enumeration.AssociationMatchType
 import top.potmot.enumeration.SelectType
-import top.potmot.model.extension.newGenAssociationMatchView
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenColumn
 import top.potmot.model.comment
@@ -32,6 +32,7 @@ import top.potmot.model.dto.GenAssociationInput
 import top.potmot.model.dto.GenAssociationMatchView
 import top.potmot.model.dto.GenAssociationView
 import top.potmot.model.dto.GenColumnMatchView
+import top.potmot.model.extension.newGenAssociationMatchView
 import top.potmot.model.id
 import top.potmot.model.query.AssociationQuery
 import top.potmot.model.sourceColumn
@@ -44,8 +45,10 @@ import kotlin.reflect.KClass
 @RestController
 @RequestMapping("/association")
 class AssociationService(
-    @Autowired val sqlClient: KSqlClient
+    @Autowired val sqlClient: KSqlClient,
 ) {
+    private val logger = LoggerFactory.getLogger(AssociationService::class.java)
+
     @GetMapping("/query")
     fun query(query: AssociationQuery): List<GenAssociationView> {
         return query(query, GenAssociationView::class)
@@ -134,6 +137,9 @@ class AssociationService(
         columns.forEach { source ->
             columns.forEach { target ->
                 val type = match(source, target)
+
+                logger.debug("{}.{} -> {}.{}: {}", source.table.name, source.name, target.table.name, target.name, type)
+
                 if (source.id != target.id && type != null) {
                     result += newGenAssociationMatchView(type, source, target)
                 }

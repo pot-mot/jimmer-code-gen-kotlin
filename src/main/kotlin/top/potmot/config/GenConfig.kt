@@ -36,6 +36,12 @@ object GenConfig {
     /** 逻辑删除默认配置 */
     var logicalDeletedAnnotation: String = "@LogicalDeleted(\"true\")"
 
+    /** 是否生成 Table 注释 */
+    var tableAnnotation: Boolean = true
+
+    /** 是否生成 Column 注释 */
+    var columnAnnotation: Boolean = false
+
     /** 是否生成 JoinTable 注释 */
     var joinTableAnnotation: Boolean = true
 
@@ -192,6 +198,14 @@ object GenConfig {
 
         newConfig.idViewProperty?.let {
             idViewProperty = it
+        }
+
+        newConfig.tableAnnotation?.let {
+            tableAnnotation = it
+        }
+
+        newConfig.columnAnnotation?.let {
+            columnAnnotation = it
         }
 
         newConfig.joinTableAnnotation?.let {

@@ -28,6 +28,12 @@ data class GenConfigProperties(
     /** 逻辑删除默认配置 */
     val logicalDeletedAnnotation: String? = null,
 
+    /** 是否生成 Table 注释 */
+    val tableAnnotation: Boolean? = null,
+
+    /** 是否生成 Column 注释 */
+    val columnAnnotation: Boolean? = null,
+
     /** 是否生成 JoinTable 注释 */
     var joinTableAnnotation: Boolean? = null,
 
