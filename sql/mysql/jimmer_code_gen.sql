@@ -56,6 +56,7 @@ CREATE TABLE `gen_enum_item`
     `name`          varchar(500) NOT NULL COMMENT '元素名',
     `value`         varchar(500) NOT NULL COMMENT '元素值',
     `comment`       varchar(500) NOT NULL DEFAULT '' COMMENT '元素注释',
+    `order_key`     bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
@@ -164,7 +165,6 @@ CREATE TABLE `gen_column`
 (
     `id`                 bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `table_id`           bigint       NOT NULL COMMENT '归属表',
-    `order_key`          bigint       NOT NULL COMMENT '列在表中顺序',
     `name`               varchar(500) NOT NULL COMMENT '列名称',
     `type_code`          int(0)       NOT NULL COMMENT '列对应 JDBCType 码值',
     `type`               varchar(500) NOT NULL COMMENT '列类型',
@@ -180,6 +180,7 @@ CREATE TABLE `gen_column`
     `business_key`       tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否为业务键',
     `logical_delete`     tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否为逻辑删除',
     `enum_id`            bigint       NULL     DEFAULT NULL COMMENT '对应枚举 ID',
+    `order_key`          bigint       NOT NULL COMMENT '列在表中顺序',
     `created_time`       datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
     `modified_time`      datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
     `remark`             varchar(500) NOT NULL DEFAULT '' COMMENT '备注',

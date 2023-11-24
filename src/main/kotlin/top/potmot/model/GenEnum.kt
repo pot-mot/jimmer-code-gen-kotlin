@@ -11,6 +11,7 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import top.potmot.enumeration.EnumType
 import top.potmot.model.base.BaseEntity
@@ -34,7 +35,7 @@ interface GenEnum : BaseEntity {
     /**
      * 生成枚举元素
      */
-    @OneToMany(mappedBy = "enum")
+    @OneToMany(mappedBy = "enum", orderedProps = [OrderedProp("orderKey")])
     val items: List<GenEnumItem>
 
     /**

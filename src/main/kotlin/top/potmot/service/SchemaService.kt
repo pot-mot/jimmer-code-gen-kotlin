@@ -44,9 +44,11 @@ class SchemaService(
         if (dataSource != null) {
             val schemas =
                 dataSource
-                    .getCatalog(withoutTable = true)
+                    .getCatalog(withTable = false)
                     .let {catalog ->
-                        catalog.schemas.map{ it.toGenSchema(catalog, dataSourceId, withTable = false)}
+                        catalog.schemas.mapNotNull{
+                            it.toGenSchema(catalog, dataSourceId, withTable = false)
+                        }
                     }
                     .map { it }
             dataSource.close()

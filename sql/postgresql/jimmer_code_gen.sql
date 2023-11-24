@@ -96,6 +96,7 @@ CREATE TABLE "gen_enum_item"
     "name"          text        NOT NULL,
     "value"         text        NOT NULL,
     "comment"       text        NOT NULL DEFAULT '',
+    "order_key"     bigint      NOT NULL DEFAULT 0,
     "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "remark"        text        NOT NULL DEFAULT ''
@@ -109,6 +110,7 @@ COMMENT ON COLUMN "gen_enum_item"."enum_id" IS '对应枚举 ID';
 COMMENT ON COLUMN "gen_enum_item"."name" IS '元素名';
 COMMENT ON COLUMN "gen_enum_item"."value" IS '元素值';
 COMMENT ON COLUMN "gen_enum_item"."comment" IS '元素注释';
+COMMENT ON COLUMN "gen_enum_item"."order_key" IS '自定排序';
 COMMENT ON COLUMN "gen_enum_item"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_enum_item"."modified_time" IS '修改时间';
 COMMENT ON COLUMN "gen_enum_item"."remark" IS '备注';
@@ -261,7 +263,6 @@ CREATE TABLE "gen_column"
 (
     "id"                 BIGSERIAL PRIMARY KEY,
     "table_id"           bigint      NOT NULL REFERENCES "gen_table" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
-    "order_key"          bigint      NOT NULL,
     "name"               text        NOT NULL,
     "type_code"          int         NOT NULL,
     "type"               text        NOT NULL,
@@ -277,6 +278,7 @@ CREATE TABLE "gen_column"
     "business_key"       boolean     NOT NULL DEFAULT FALSE,
     "logical_delete"     boolean     NOT NULL DEFAULT FALSE,
     "enum_id"            bigint      NULL     DEFAULT NULL REFERENCES "gen_enum" ("id") ON DELETE SET NULL ON UPDATE RESTRICT,
+    "order_key"          bigint      NOT NULL,
     "created_time"       timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time"      timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "remark"             text        NOT NULL DEFAULT ''
@@ -288,7 +290,6 @@ CREATE INDEX "fk_column_enum" ON "gen_column" ("enum_id");
 COMMENT ON TABLE "gen_column" IS '生成列';
 COMMENT ON COLUMN "gen_column"."id" IS 'ID';
 COMMENT ON COLUMN "gen_column"."table_id" IS '归属表';
-COMMENT ON COLUMN "gen_column"."order_key" IS '列在表中顺序';
 COMMENT ON COLUMN "gen_column"."name" IS '列名称';
 COMMENT ON COLUMN "gen_column"."type_code" IS '列对应 JDBCType 码值';
 COMMENT ON COLUMN "gen_column"."type" IS '列类型';
@@ -304,6 +305,7 @@ COMMENT ON COLUMN "gen_column"."type_not_null" IS '是否非空';
 COMMENT ON COLUMN "gen_column"."business_key" IS '是否为业务键';
 COMMENT ON COLUMN "gen_column"."logical_delete" IS '是否为逻辑删除';
 COMMENT ON COLUMN "gen_column"."enum_id" IS '枚举';
+COMMENT ON COLUMN "gen_column"."order_key" IS '列在表中顺序';
 COMMENT ON COLUMN "gen_column"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_column"."modified_time" IS '修改时间';
 COMMENT ON COLUMN "gen_column"."remark" IS '备注';

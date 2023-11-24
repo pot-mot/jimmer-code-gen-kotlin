@@ -55,4 +55,9 @@ interface GenEnumItem : BaseEntity {
      * 元素注释
      */
     val comment: String
+
+    /**
+     * 自定排序
+     */
+    val orderKey: Long
 }

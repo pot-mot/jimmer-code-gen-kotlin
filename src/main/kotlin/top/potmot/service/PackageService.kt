@@ -1,6 +1,5 @@
 package top.potmot.service
 
-import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.isNull
@@ -13,16 +12,15 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.model.GenEntity
 import top.potmot.model.GenPackage
-import top.potmot.model.by
 import top.potmot.model.dto.GenPackageInput
 import top.potmot.model.dto.GenPackageTreeView
 import top.potmot.model.id
 import top.potmot.model.packageId
 import top.potmot.model.parentId
+import top.potmot.model.unsafeInput.GenPackagePathInput
 
 @RestController
 @RequestMapping("/package")
@@ -40,28 +38,11 @@ class PackageService(
 
     @PostMapping
     fun create(
-        @RequestParam path: String,
-        @RequestParam(required = false) parentId: Long?
+        @RequestBody pathInput: GenPackagePathInput
     ): Long? {
-        val names = path.split(".")
-        if (path.isBlank() || names.isEmpty()) return null
-
-        var currentPackage: GenPackage = new(GenPackage::class).by {
-            name = names[0]
-            this.parentId = parentId
+        return pathInput.toEntity()?.let {
+            sqlClient.insert(it).modifiedEntity.id
         }
-
-        for (i in 1 until names.size) {
-            if (names[i].isBlank()) continue
-            val temp = new(GenPackage::class).by {
-                name = names[i]
-            }
-            currentPackage = new(GenPackage::class).by(temp) {
-                parent = currentPackage
-            }
-        }
-
-        return sqlClient.insert(currentPackage).modifiedEntity.id
     }
 
     @PutMapping

@@ -24,9 +24,14 @@ private val postgreDefaultDataSource = GenDataSourceTemplateView(
     remark = "PostgreSQL DataSource",
 )
 
+fun defaultDataSourceMap(): Map<DataSourceType, GenDataSourceTemplateView> =
+    mapOf(
+        MySQL to mysqlDefaultDataSource,
+        PostgreSQL to postgreDefaultDataSource,
+    )
 
-fun DataSourceType.default(): GenDataSourceTemplateView =
-    when(this) {
+fun defaultDataSource(type: DataSourceType): GenDataSourceTemplateView =
+    when (type) {
         MySQL -> mysqlDefaultDataSource
         PostgreSQL -> postgreDefaultDataSource
     }

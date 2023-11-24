@@ -27,7 +27,7 @@ class TypeMappingService(
 
     @GetMapping("default")
     fun getDefault(): GenTypeMappingInput {
-        return defaultTypeMapping
+        return defaultTypeMapping()
     }
 
     @GetMapping
