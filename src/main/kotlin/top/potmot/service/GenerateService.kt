@@ -23,6 +23,7 @@ import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTypeMappingView
 import top.potmot.model.id
 import top.potmot.model.modelId
+import top.potmot.model.orderKey
 
 @RestController
 @RequestMapping("/generate")
@@ -43,6 +44,7 @@ class GenerateService(
             }.execute()
 
             val typeMappings = sqlClient.createQuery(GenTypeMapping::class) {
+                orderBy(table.orderKey)
                 select(table.fetch(GenTypeMappingView::class))
             }.execute()
 

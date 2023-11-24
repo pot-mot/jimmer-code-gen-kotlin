@@ -8,5 +8,6 @@ val defaultTypeMapping = GenTypeMappingInput(
     language = GenConfig.language,
     typeExpression = "",
     propertyType = "java.lang.String",
+    orderKey = 0,
     remark = "",
 )

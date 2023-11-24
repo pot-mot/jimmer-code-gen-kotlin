@@ -33,6 +33,7 @@ interface GenAssociation : BaseEntity {
      * 生成模型
      */
     @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
     val model: GenModel?
 
     /**

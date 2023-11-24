@@ -3,9 +3,7 @@ GenTypeMappingView {
 }
 
 input GenTypeMappingInput {
-    dataSourceType
-    typeExpression
-    language
-    propertyType
-    remark?
+    #allScalars
+    -createdTime
+    -modifiedTime
 }
