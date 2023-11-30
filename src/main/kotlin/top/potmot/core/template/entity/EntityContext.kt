@@ -19,6 +19,7 @@ import top.potmot.core.template.TemplateBuilder
 import top.potmot.enumeration.EnumType
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.fullType
+import top.potmot.model.extension.packagePath
 import kotlin.reflect.KClass
 
 open class EntityContext : TemplateBuilder() {
@@ -75,18 +76,6 @@ open class EntityContext : TemplateBuilder() {
 
     open fun classListToLines(classList: List<KClass<*>>): List<String> =
         classList.mapNotNull { it.qualifiedName }
-
-    /**
-     * 过滤不必要和不合理的 import
-     */
-    open fun importLinesFilter(importLines: List<String>): List<String> =
-        importLines.filter { importItem ->
-            !(importItem.startsWith("kotlin.") && importItem.split(".").size == 2)
-                    &&
-                    !(importItem.startsWith("java.lang.") && importItem.split(".").size == 3)
-                    &&
-                    (importItem.split(".").filter { it.isNotBlank() }.size >= 2)
-        }
 
     open fun getImportClasses(property: GenEntityPropertiesView.TargetOf_properties): List<KClass<*>> {
         val result = mutableListOf<KClass<*>>()
@@ -165,15 +154,29 @@ open class EntityContext : TemplateBuilder() {
     fun GenEntityPropertiesView.TargetOf_properties.importLines(): List<String> =
         getImportLines(this)
 
-    open fun getImportLines(entity: GenEntityPropertiesView): List<String> =
-        importLinesFilter(
-            (
-                    classListToLines(entity.importClassList()) +
-                            entity.properties.flatMap {
-                                it.importLines()
-                            }
-                    ).distinct()
-        ).sorted()
+    /**
+     * 过滤不必要和不合理的 import
+     */
+    open fun importLinesFilter(entity: GenEntityPropertiesView, importLines: List<String>): List<String> =
+        importLines.filter { importItem ->
+            // 非 kotlin 和 java.lang 包下的 import
+            !(importItem.startsWith("kotlin.") && importItem.split(".").size == 2)
+                    &&
+                    !(importItem.startsWith("java.lang.") && importItem.split(".").size == 3)
+                    &&
+                    // 非当前包下的 import
+                    (importItem.substringBeforeLast(".") != entity.packagePath())
+                    &&
+                    // 至少有 2 级包
+                    (importItem.split(".").filter { it.isNotBlank() }.size >= 2)
+        }
+
+    open fun getImportLines(entity: GenEntityPropertiesView): List<String> {
+        val importLines = mutableListOf<String>()
+        importLines.addAll(classListToLines(entity.importClassList()))
+        entity.properties.flatMapTo(importLines) { it.importLines() }
+        return importLines.sorted().distinct().let {importLinesFilter(entity, it)}
+    }
 
     fun GenEntityPropertiesView.importLines(): List<String> =
         getImportLines(this)

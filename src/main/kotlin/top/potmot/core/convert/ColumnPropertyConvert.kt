@@ -145,6 +145,7 @@ fun columnToProperties(
             when(inAssociation.associationType) {
                 ONE_TO_ONE, MANY_TO_ONE, MANY_TO_MANY -> {
                     keyProperty = false
+
                     setAssociation(
                         inAssociation.associationType.reverse(),
                         mappedBy,
@@ -247,6 +248,9 @@ private fun GenPropertyDraft.setAssociation(
     this.associationAnnotation = "@" + associationType.toAnnotation().simpleName
     mappedBy?.takeIf { it.isNotBlank() }?.let {
         this.associationAnnotation += "(mappedBy = \"${it}\")"
+        if (associationType == ONE_TO_ONE) {
+            this.typeNotNull = false
+        }
     }
     joinColumn?.takeIf { GenConfig.joinColumnAnnotation }?.let {
         this.associationAnnotation += "\n${it.toAnnotation()}"
@@ -284,12 +288,14 @@ fun createIdViewProperty(
         if (associationProperty.listType) {
             this.name = associationProperty.name.toSingular() + "Ids"
             this.listType = true
-            this.typeNotNull = true
         } else {
             this.name = associationProperty.name + "Id"
         }
+        this.typeNotNull = associationProperty.typeNotNull
 
-        this.comment = associationProperty.comment + " ID 视图"
+        associationProperty.comment.takeIf { it.isNotBlank() }?.let {
+            this.comment = "$it ID 视图"
+        }
         this.associationType = associationProperty.associationType
         this.idView = true
         this.idViewAnnotation = "@IdView(\"${associationProperty.name}\")"
