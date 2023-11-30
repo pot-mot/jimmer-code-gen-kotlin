@@ -142,6 +142,7 @@ interface GenColumn : BaseEntity {
      * 生成枚举
      */
     @ManyToOne
+    @OnDissociate(DissociateAction.SET_NULL)
     val enum: GenEnum?
 
     /**

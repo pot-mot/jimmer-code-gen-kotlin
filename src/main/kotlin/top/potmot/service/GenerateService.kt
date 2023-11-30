@@ -12,10 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.convert.toGenEntity
-import top.potmot.core.generate.generateCode
+import top.potmot.core.generate.packageGenerateTreeFetcher
+import top.potmot.core.generate.TreeItem
+import top.potmot.core.generate.generateEntityCode
+import top.potmot.core.generate.generatePackage
 import top.potmot.core.generate.toZipByteArray
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenEntity
+import top.potmot.model.GenPackage
 import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.dto.GenEntityPropertiesView
@@ -60,20 +64,15 @@ class GenerateService(
     fun preview(
         @RequestParam entityIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
-    ): Map<String, String> {
-        val result = mutableMapOf<String, String>()
-
+    ): Map<String, String> =
         sqlClient.createQuery(GenEntity::class) {
             where(table.id valueIn entityIds)
             select(table.fetch(GenEntityPropertiesView::class))
-        }.forEach {
-            val codeMap =
-                if (language != null) generateCode(it, language) else generateCode(it)
-            result += codeMap
-        }
-
-        return result
-    }
+        }.execute().flatMap {
+            generateEntityCode(it, language).entries.map {(key, value) ->
+                Pair(key, value)
+            }
+        }.toMap()
 
     @PostMapping("/preview/table")
     fun previewByTable(
@@ -96,38 +95,47 @@ class GenerateService(
         return previewByTable(tableIds, language)
     }
 
+//    @GetMapping("/preview/package")
+    fun previewByPackage(
+        @RequestParam packageIds: List<Long>,
+        @RequestParam(required = false) language: GenLanguage?
+    ): List<TreeItem<String>> =
+        sqlClient.createQuery(GenPackage::class) {
+            where(table.id valueIn packageIds)
+            select(table.fetch(packageGenerateTreeFetcher))
+        }.execute().map {
+            generatePackage(it, language)
+        }
+
     @PostMapping("/entity")
     fun generate(
         @RequestBody entityIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
-    ): ByteArray {
-        return preview(entityIds, language)
+    ): ByteArray =
+        preview(entityIds, language)
             .toZipByteArray()
-    }
-
-    @PostMapping("/model")
-    fun generateByModel(
-        @RequestBody modelId: Long,
-        @RequestParam(required = false) language: GenLanguage?
-    ): ByteArray {
-        return previewByModel(modelId, language)
-            .toZipByteArray()
-    }
-
-    @PostMapping("/package")
-    fun generateByPackage(
-        @RequestBody packageId: Long,
-        @RequestParam(required = false) language: GenLanguage?
-    ): ByteArray {
-        TODO()
-    }
 
     @PostMapping("/table")
     fun generateByTable(
         @RequestBody tableIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
-    ): ByteArray {
-        return previewByTable(tableIds, language)
+    ): ByteArray =
+        previewByTable(tableIds, language)
             .toZipByteArray()
-    }
+
+    @PostMapping("/model")
+    fun generateByModel(
+        @RequestBody modelId: Long,
+        @RequestParam(required = false) language: GenLanguage?
+    ): ByteArray =
+        previewByModel(modelId, language)
+            .toZipByteArray()
+
+    @PostMapping("/package")
+    fun generateByPackage(
+        @RequestBody packageIds: List<Long>,
+        @RequestParam(required = false) language: GenLanguage?
+    ): ByteArray =
+        previewByPackage(packageIds = packageIds, language)
+            .toZipByteArray()
 }

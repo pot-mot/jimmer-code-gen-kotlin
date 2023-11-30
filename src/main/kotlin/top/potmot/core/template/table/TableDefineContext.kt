@@ -10,7 +10,7 @@ import top.potmot.enumeration.AssociationType.*
 import top.potmot.model.extension.outColumns
 import top.potmot.model.dto.GenTableAssociationsView
 
-abstract class TableStringifyContext : TemplateBuilder() {
+abstract class TableDefineContext : TemplateBuilder() {
     abstract fun String.escape(): String
 
     abstract fun GenTableAssociationsView.TargetOf_columns.columnStringify(): String

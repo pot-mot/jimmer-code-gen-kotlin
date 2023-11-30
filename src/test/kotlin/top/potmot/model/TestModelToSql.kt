@@ -30,8 +30,6 @@ class TestModelToSql (
 
         val sql = modelService.previewSql(models[0].id, dataSources[0].type)
 
-        assert(sql != null)
-
         println(sql)
     }
 }

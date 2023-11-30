@@ -5,12 +5,19 @@ import top.potmot.model.extension.packagePath
 import top.potmot.model.extension.shortType
 import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as TargetOfEnum
 
+class KotlinEntityBuilder: EntityBuilder() {
+    override fun stringify(entity: GenEntityPropertiesView): String =
+        entity.kotlinClassStringify()
+
+    override fun stringify(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): String =
+        enum.kotlinEnumStringify()
+}
+
 /**
  * java 语言下的实体生成
  */
-
-fun GenEntityPropertiesView.kotlinClassStringify(): String =
-    EntityStringifyContext().apply {
+private fun GenEntityPropertiesView.kotlinClassStringify(): String =
+    EntityContext().apply {
         line("package ${packagePath()}")
 
         separate()
@@ -30,19 +37,14 @@ fun GenEntityPropertiesView.kotlinClassStringify(): String =
     }.build()
 
 private fun GenEntityPropertiesView.TargetOf_properties.kotlinPropertyStringify(): String =
-    EntityStringifyContext().apply {
+    EntityContext().apply {
         lines(blockComment())
         lines(annotationLines())
         line("val $name: ${shortType()}${if (typeNotNull) "" else "?"}")
     }.build()
 
-fun GenEntityPropertiesView.kotlinEnumsStringify(): List<Pair<String, String>> =
-    properties.filter { it.enum != null }
-        .map { it.enum!! }
-        .map { Pair(name, it.kotlinEnumStringify()) }
-
 private fun TargetOfEnum.kotlinEnumStringify(): String =
-    EntityStringifyContext().apply {
+    EntityContext().apply {
         line("package ${packagePath()}")
 
         separate()

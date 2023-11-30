@@ -6,12 +6,19 @@ import top.potmot.model.extension.packagePath
 import top.potmot.model.extension.shortType
 import kotlin.reflect.KClass
 
+class JavaEntityBuilder : EntityBuilder() {
+    override fun stringify(entity: GenEntityPropertiesView): String =
+        entity.javaClassStringify()
+
+    override fun stringify(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): String =
+        enum.javaEnumStringify()
+}
+
 /**
  * java 语言下的实体生成
  */
-
-fun GenEntityPropertiesView.javaClassStringify(): String =
-    JavaEntityStringifyContext().apply {
+private fun GenEntityPropertiesView.javaClassStringify(): String =
+    JavaEntityContext().apply {
         line("package ${packagePath()};")
 
         separate()
@@ -31,22 +38,14 @@ fun GenEntityPropertiesView.javaClassStringify(): String =
 
 
 private fun GenEntityPropertiesView.TargetOf_properties.javaPropertyStringify(): String =
-    JavaEntityStringifyContext().apply {
+    JavaEntityContext().apply {
         lines(blockComment())
         lines(annotationLines())
         line("${shortType()} $name;")
     }.build()
 
-/**
- * java 语言下的枚举生成
- */
-fun GenEntityPropertiesView.javaEnumsStringify(): List<Pair<String, String>> =
-    properties.filter { it.enum != null }
-        .map { it.enum!! }
-        .map { Pair(name, it.javaEnumStringify()) }
-
 private fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.javaEnumStringify(): String =
-    JavaEntityStringifyContext().apply {
+    JavaEntityContext().apply {
         line("package ${packagePath()};")
 
         separate()
@@ -64,7 +63,7 @@ private fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.javaEnum
         line("}")
     }.build()
 
-class JavaEntityStringifyContext : EntityStringifyContext() {
+private class JavaEntityContext : EntityContext() {
     override fun getImportClasses(property: GenEntityPropertiesView.TargetOf_properties): List<KClass<*>> {
         return super.getImportClasses(property).let {
             if (!property.typeNotNull) {

@@ -3,8 +3,16 @@ package top.potmot.core.template.table
 import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 
-fun Collection<GenTableAssociationsView>.postgreTablesStringify(): String =
-    PostgreTableStringifyContext().apply {
+class PostgreTableDefineBuilder : TableDefineBuilder {
+    override fun stringify(table: GenTableAssociationsView): String =
+        table.postgreTableStringify()
+
+    override fun stringify(tables: Collection<GenTableAssociationsView>): String =
+        tables.postgreTablesStringify()
+}
+
+private fun Collection<GenTableAssociationsView>.postgreTablesStringify(): String =
+    PostgreTableDefineContext().apply {
         forEach {
             line(dropTable(it.name))
         }
@@ -24,8 +32,8 @@ fun Collection<GenTableAssociationsView>.postgreTablesStringify(): String =
         }
     }.build()
 
-fun GenTableAssociationsView.postgreTableStringify(): String =
-    PostgreTableStringifyContext().apply {
+private fun GenTableAssociationsView.postgreTableStringify(): String =
+    PostgreTableDefineContext().apply {
         line(dropTable(name))
         separate()
         lines(createTable(this@postgreTableStringify))
@@ -36,7 +44,7 @@ fun GenTableAssociationsView.postgreTableStringify(): String =
     }.build()
 
 
-class PostgreTableStringifyContext : TableStringifyContext() {
+private class PostgreTableDefineContext : TableDefineContext() {
     override fun String.escape(): String =
         "\"${removePrefix("\"").removeSuffix("\"")}\""
 

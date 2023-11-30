@@ -3,8 +3,25 @@ package top.potmot.core.template.table
 import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 
-fun Collection<GenTableAssociationsView>.mysqlTablesStringify(): String =
-    MysqlTableStringifyContext().apply {
+class MysqlTableDefineBuilder: TableDefineBuilder {
+    override fun stringify(table: GenTableAssociationsView): String =
+        table.mysqlTableStringify()
+
+    override fun stringify(tables: Collection<GenTableAssociationsView>): String =
+        tables.mysqlTablesStringify()
+}
+
+private fun GenTableAssociationsView.mysqlTableStringify(): String =
+    MysqlTableDefineContext().apply {
+        line(dropTable(name))
+        separate()
+        lines(createTable(this@mysqlTableStringify))
+        separate()
+        lines(associationsStringify())
+    }.build()
+
+private fun Collection<GenTableAssociationsView>.mysqlTablesStringify(): String =
+    MysqlTableDefineContext().apply {
         forEach {
             line(dropTable(it.name))
         }
@@ -22,16 +39,7 @@ fun Collection<GenTableAssociationsView>.mysqlTablesStringify(): String =
         }
     }.build()
 
-fun GenTableAssociationsView.mysqlTableStringify(): String =
-    MysqlTableStringifyContext().apply {
-        line(dropTable(name))
-        separate()
-        lines(createTable(this@mysqlTableStringify))
-        separate()
-        lines(associationsStringify())
-    }.build()
-
-class MysqlTableStringifyContext : TableStringifyContext() {
+private class MysqlTableDefineContext : TableDefineContext() {
     override fun String.escape(): String =
         "`${removePrefix("`").removeSuffix("`")}`"
 
@@ -40,8 +48,7 @@ class MysqlTableStringifyContext : TableStringifyContext() {
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = '${comment}'
-  ROW_FORMAT = Dynamic  
-"""
+  ROW_FORMAT = Dynamic"""
 
     override fun createTable(
         table: GenTableAssociationsView,

@@ -1,12 +1,24 @@
 package top.potmot.core.generate
 
 import top.potmot.config.GenConfig
-import top.potmot.core.template.table.mysqlTableStringify
-import top.potmot.core.template.table.mysqlTablesStringify
-import top.potmot.core.template.table.postgreTableStringify
-import top.potmot.core.template.table.postgreTablesStringify
+import top.potmot.core.template.table.MysqlTableDefineBuilder
+import top.potmot.core.template.table.PostgreTableDefineBuilder
+import top.potmot.core.template.table.TableDefineBuilder
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenTableAssociationsView
+
+fun DataSourceType?.getTableDefineBuilder(): TableDefineBuilder =
+    when (this ?: GenConfig.dataSourceType) {
+        DataSourceType.MySQL -> MysqlTableDefineBuilder()
+        DataSourceType.PostgreSQL -> PostgreTableDefineBuilder()
+    }
+
+fun Set<DataSourceType>.getTableDefineBuilder(): Map<DataSourceType, TableDefineBuilder> =
+    if (this.isEmpty()) {
+        mapOf(GenConfig.dataSourceType to GenConfig.dataSourceType.getTableDefineBuilder())
+    } else {
+        associate { Pair(it, it.getTableDefineBuilder()) }
+    }
 
 fun generateTableDefine(
     table: GenTableAssociationsView,
@@ -14,17 +26,8 @@ fun generateTableDefine(
 ): Map<String, String> {
     val map = mutableMapOf<String, String>()
 
-    val types = if (dataSourceTypes.isNotEmpty()) {
-        dataSourceTypes
-    } else {
-        listOf(GenConfig.dataSourceType)
-    }
-
-    types.forEach {
-        map["[${it.name.lowercase()}] ${table.name}.sql"] = when (it) {
-            DataSourceType.MySQL -> table.mysqlTableStringify()
-            DataSourceType.PostgreSQL -> table.postgreTableStringify()
-        }
+    dataSourceTypes.toSet().getTableDefineBuilder().forEach {(type, builder) ->
+        map["[${type.name.lowercase()}] ${table.name}.sql"] = builder.stringify(table)
     }
 
     return map
@@ -36,17 +39,8 @@ fun generateTableDefines(
 ): Map<String, String> {
     val map = mutableMapOf<String, String>()
 
-    val types = if (dataSourceTypes.isNotEmpty()) {
-        dataSourceTypes
-    } else {
-        listOf(GenConfig.dataSourceType)
-    }
-
-    types.forEach {
-        map["[${it.name.lowercase()}] all_in_one.sql"] = when (it) {
-            DataSourceType.MySQL -> tables.mysqlTablesStringify()
-            DataSourceType.PostgreSQL -> tables.postgreTablesStringify()
-        }
+    dataSourceTypes.toSet().getTableDefineBuilder().forEach {(type, builder) ->
+        map["[${type.name.lowercase()}] tables.sql"] = builder.stringify(tables)
     }
 
     return map

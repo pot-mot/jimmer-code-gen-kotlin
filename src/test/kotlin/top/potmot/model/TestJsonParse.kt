@@ -5,8 +5,12 @@ import org.babyfish.jimmer.jackson.ImmutableModule
 import org.junit.jupiter.api.Test
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import top.potmot.model.dto.GenTableColumnsInput
 
+@SpringBootTest
+@ActiveProfiles("test-kotlin", "mysql")
 class TestJsonParse {
     private val mapper = jacksonObjectMapper()
         .registerModule(ImmutableModule())

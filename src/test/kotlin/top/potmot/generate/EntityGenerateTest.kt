@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.core.template.entity.javaClassStringify
-import top.potmot.core.template.entity.kotlinClassStringify
+import top.potmot.core.template.entity.JavaEntityBuilder
+import top.potmot.core.template.entity.KotlinEntityBuilder
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.dto.GenEntityPropertiesView
 import java.time.LocalDateTime
@@ -145,7 +145,7 @@ interface Entity {
 
         assertEquals(
             kotlinExpected,
-            baseEntity.kotlinClassStringify()
+            KotlinEntityBuilder().stringify(baseEntity)
                 .replace(Regex("\n \\*\\s*@since\\s+\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}"), "")
         )
 
@@ -196,7 +196,7 @@ interface Entity {
 
         assertEquals(
             javaExpected,
-            baseEntity.javaClassStringify()
+            JavaEntityBuilder().stringify(baseEntity)
                 .replace(Regex("\n \\*\\s*@since\\s+\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}"), "")
         )
     }

@@ -21,7 +21,7 @@ import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.fullType
 import kotlin.reflect.KClass
 
-open class EntityStringifyContext : TemplateBuilder() {
+open class EntityContext : TemplateBuilder() {
     open fun GenEntityPropertiesView.tableAnnotation(): String =
         "@Table(name = \"${table.schema?.name?.let { "$it." } ?: ""}${table.name}\")"
 
