@@ -7,6 +7,8 @@ import top.potmot.model.extension.shortType
 import kotlin.reflect.KClass
 
 class JavaEntityBuilder : EntityBuilder() {
+    override fun formatFileName(name: String): String = "$name.java"
+
     override fun stringify(entity: GenEntityPropertiesView): String =
         entity.javaClassStringify()
 

@@ -4,6 +4,8 @@ import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as PropertyEnum
 
 abstract class EntityBuilder {
+    abstract fun formatFileName(name: String): String
+
     abstract fun stringify(entity: GenEntityPropertiesView): String
 
     abstract fun stringify(enum: PropertyEnum): String
@@ -17,10 +19,10 @@ abstract class EntityBuilder {
     fun generate(entity: GenEntityPropertiesView): Map<String, String> {
         val map = mutableMapOf<String, String>()
 
-        map["${entity.name}.java"] = stringify(entity)
+        map[formatFileName(entity.name)] = stringify(entity)
 
         entity.enumsStringify().forEach {
-            map["${it.key}.kt"] = it.value
+            map[formatFileName(entity.name)] = it.value
         }
 
         return map
