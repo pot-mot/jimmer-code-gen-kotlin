@@ -19,21 +19,23 @@ import top.potmot.core.template.TemplateBuilder
 import top.potmot.enumeration.EnumType
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.fullType
+import top.potmot.model.extension.now
 import top.potmot.model.extension.packagePath
 import kotlin.reflect.KClass
 
-open class EntityContext : TemplateBuilder() {
+open class EntityCodeBuilder: TemplateBuilder() {
     open fun GenEntityPropertiesView.tableAnnotation(): String =
         "@Table(name = \"${table.schema?.name?.let { "$it." } ?: ""}${table.name}\")"
 
     open fun GenEntityPropertiesView.TargetOf_properties.columnAnnotation(): String? =
         column?.let { "@Column(name = \"${it.name}\")" }
 
-    open fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3.enumItemAnnotation(enumType: EnumType?): String? =
-        enumType?.let {
+    open fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3.annotation(enumType: EnumType?): String =
+        enumType.let {
             when (it) {
                 EnumType.NAME -> "@EnumItem(name = \"$value\")\n"
                 EnumType.ORDINAL -> "@EnumItem(ordinal = $value)\n"
+                null -> ""
             }
         }
 
@@ -72,6 +74,9 @@ open class EntityContext : TemplateBuilder() {
         createBlockComment(comment, remark)
 
     fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.blockComment(): String? =
+        createBlockComment(comment, remark)
+
+    fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3.blockComment(): String? =
         createBlockComment(comment, remark)
 
     open fun classListToLines(classList: List<KClass<*>>): List<String> =
@@ -188,7 +193,9 @@ open class EntityContext : TemplateBuilder() {
             if (enumType != null) {
                 result += org.babyfish.jimmer.sql.EnumType::class
             }
-            result += EnumItem::class
+            if (items.isNotEmpty() && enumType != null) {
+                result += EnumItem::class
+            }
         }
 
         return result

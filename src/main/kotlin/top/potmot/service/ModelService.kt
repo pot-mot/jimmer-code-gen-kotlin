@@ -99,9 +99,7 @@ class ModelService(
     fun previewSql(
         @RequestParam id: Long,
         @RequestParam(required = false) type: DataSourceType?
-    ): Map<String, String> {
-        val map = mutableMapOf<String, String>()
-
+    ): List<Pair<String, String>> {
         val tables = sqlClient.createQuery(GenTable::class) {
             where(table.modelId eq id)
             select(table.fetch(GenTableAssociationsView::class))
@@ -109,13 +107,9 @@ class ModelService(
 
         val types = listOfNotNull(type)
 
-        map += generateTableDefines(tables, types)
-
-        tables.forEach {
-            map += generateTableDefine(it, types)
+        return generateTableDefines(tables, types) + tables.flatMap {
+            generateTableDefine(it, types)
         }
-
-        return map
     }
 
 //    @PostMapping("/sql")

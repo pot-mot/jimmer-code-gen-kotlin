@@ -1,8 +1,5 @@
 package top.potmot.core.template
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 /**
  * 模版创建者
  */
@@ -32,12 +29,6 @@ open class TemplateBuilder {
             stringBuilder.append(" ")
         }
     }
-
-    fun LocalDateTime.format(formatPattern: String = "yyyy-MM-dd HH:mm:ss"): String =
-        format(DateTimeFormatter.ofPattern(formatPattern))
-
-    fun now(formatPattern: String = "yyyy-MM-dd HH:mm:ss"): String =
-        LocalDateTime.now().format(formatPattern)
 
     fun indent(): String =
         " ".repeat(indentation)
@@ -69,6 +60,13 @@ open class TemplateBuilder {
         stringBuilder.appendLine(string)
     }
 
+    fun lineNoWrap(string: String?) {
+        if (string.isNullOrBlank()) return
+
+        appendIndentation()
+        stringBuilder.append(string)
+    }
+
     fun lines(stringList: List<String>, format: (String) -> String = { it }) {
         stringList.forEach {
             line(format(it))
@@ -81,17 +79,55 @@ open class TemplateBuilder {
         }
     }
 
-    fun joinParts(stringList: List<String>?, separate: String? = null, format: (String) -> String = { it }) {
-        stringList?.forEachIndexed { index, it ->
-            lines(format(it))
+    fun <T> List<T>.joinPartsProduce(
+        separate: String? = null,
+        produce: (T) -> Unit,
+    ) {
+        forEachIndexed { index, it ->
+            produce(it)
 
-            if (index < stringList.size - 1) {
+            if (index < this.size - 1) {
                 if (!separate.isNullOrBlank()) {
-                    line(separate)
+                    append(separate)
                 } else {
                     separate()
                 }
             }
+        }
+    }
+
+    fun <T> List<T>.joinPartsLines(
+        separate: String? = null,
+        produce: (T) -> String,
+    ) {
+        this.joinPartsProduce(separate) {
+            lines(produce(it))
+        }
+    }
+
+    fun <T> List<T>.joinPartsProduceIndexed(
+        separate: String? = null,
+        produce: (T, Int) -> Unit,
+    ) {
+        forEachIndexed { index, it ->
+            produce(it, index)
+
+            if (index < this.size - 1) {
+                if (!separate.isNullOrBlank()) {
+                    append(separate)
+                } else {
+                    separate()
+                }
+            }
+        }
+    }
+
+    fun <T> List<T>.joinPartsLinesIndexed(
+        separate: String? = null,
+        produce: (T, Int) -> String,
+    ) {
+        this.joinPartsProduceIndexed(separate) { it, index ->
+            lines(produce(it, index))
         }
     }
 

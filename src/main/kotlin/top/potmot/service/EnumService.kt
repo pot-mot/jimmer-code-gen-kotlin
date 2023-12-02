@@ -30,10 +30,10 @@ class EnumService(
     @Autowired val sqlClient: KSqlClient,
 ) {
     @PostMapping
-    fun create(
+    fun save(
         @RequestBody input: GenEnumItemsInput
     ): Long {
-        return sqlClient.insert(input).modifiedEntity.id
+        return sqlClient.save(input).modifiedEntity.id
     }
 
     @GetMapping("/{id}")

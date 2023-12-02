@@ -3,7 +3,10 @@ package top.potmot.core.template.table
 import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 
-class MysqlTableDefineBuilder: TableDefineBuilder {
+class MysqlTableDefineGenerator: TableDefineGenerator() {
+    override fun formatFileName(name: String): String =
+        "[mysql]$name.sql"
+
     override fun stringify(table: GenTableAssociationsView): String =
         table.mysqlTableStringify()
 
@@ -12,7 +15,7 @@ class MysqlTableDefineBuilder: TableDefineBuilder {
 }
 
 private fun GenTableAssociationsView.mysqlTableStringify(): String =
-    MysqlTableDefineContext().apply {
+    MysqlTableDefineBuilder().apply {
         line(dropTable(name))
         separate()
         lines(createTable(this@mysqlTableStringify))
@@ -21,7 +24,7 @@ private fun GenTableAssociationsView.mysqlTableStringify(): String =
     }.build()
 
 private fun Collection<GenTableAssociationsView>.mysqlTablesStringify(): String =
-    MysqlTableDefineContext().apply {
+    MysqlTableDefineBuilder().apply {
         forEach {
             line(dropTable(it.name))
         }
@@ -39,7 +42,7 @@ private fun Collection<GenTableAssociationsView>.mysqlTablesStringify(): String 
         }
     }.build()
 
-private class MysqlTableDefineContext : TableDefineContext() {
+private class MysqlTableDefineBuilder : TableDefineBuilder() {
     override fun String.escape(): String =
         "`${removePrefix("`").removeSuffix("`")}`"
 

@@ -2,7 +2,13 @@ package top.potmot.model.extension
 
 import top.potmot.model.GenPackage
 
-fun GenPackage.toPath(): String {
+fun GenPackage.toFilePath(): String =
+    toPathList().joinToString("/")
+
+fun GenPackage.toPackagePath(): String =
+    toPathList().joinToString(".")
+
+fun GenPackage.toPathList(): List<String> {
     val tempPath = mutableListOf<String>()
 
     tempPath += name
@@ -12,5 +18,6 @@ fun GenPackage.toPath(): String {
         tempParentPackage = tempParentPackage.parent
     }
 
-    return tempPath.reversed().joinToString(".")
+    return tempPath.reversed()
 }
+

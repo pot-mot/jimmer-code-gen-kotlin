@@ -3,7 +3,10 @@ package top.potmot.core.template.table
 import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 
-class PostgreTableDefineBuilder : TableDefineBuilder {
+class PostgreTableDefineGenerator : TableDefineGenerator() {
+    override fun formatFileName(name: String): String =
+        "[pg]$name.sql"
+
     override fun stringify(table: GenTableAssociationsView): String =
         table.postgreTableStringify()
 
@@ -12,7 +15,7 @@ class PostgreTableDefineBuilder : TableDefineBuilder {
 }
 
 private fun Collection<GenTableAssociationsView>.postgreTablesStringify(): String =
-    PostgreTableDefineContext().apply {
+    PostgreTableDefineBuilder().apply {
         forEach {
             line(dropTable(it.name))
         }
@@ -33,7 +36,7 @@ private fun Collection<GenTableAssociationsView>.postgreTablesStringify(): Strin
     }.build()
 
 private fun GenTableAssociationsView.postgreTableStringify(): String =
-    PostgreTableDefineContext().apply {
+    PostgreTableDefineBuilder().apply {
         line(dropTable(name))
         separate()
         lines(createTable(this@postgreTableStringify))
@@ -44,7 +47,7 @@ private fun GenTableAssociationsView.postgreTableStringify(): String =
     }.build()
 
 
-private class PostgreTableDefineContext : TableDefineContext() {
+private class PostgreTableDefineBuilder : TableDefineBuilder() {
     override fun String.escape(): String =
         "\"${removePrefix("\"").removeSuffix("\"")}\""
 

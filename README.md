@@ -102,7 +102,7 @@ typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatch
 - [ColumnPropertyConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fconvert%2FColumnPropertyConvert.kt) 列到属性转换
 
 
-### Template and Generate 模版与生成
+### Template & Generate 模版与生成
 
 将实体对象转换为对应语言实体类代码的模版，并最终转变为 Map 或直接生成文件
 
@@ -114,23 +114,17 @@ typealias AssociationMatch = (source: GenColumnMatchView, target: GenColumnMatch
 
 [TemplateBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2FTemplateBuilder.kt)
 
-#### 业务实体
+#### EntityCode 业务实体代码
 >（基于超级聚合根类型 [GenEntityPropertiesView](src%2Fmain%2Fdto%2Ftop%2Fpotmot%2Fmodel%2FGenEntity.dto)）
+> 可连带枚举进行生成
 
-调用处:
-- [CodeGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fgenerate%2FCodeGenerate.kt)
+- [JavaEntityCodeGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Fentity%2FJavaEntityCodeGenerator.kt)
+- [KotlinEntityCodeGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Fentity%2FKotlinEntityCodeGenerator.kt)
 
-具体模版:
-- [JavaEntityStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Fentity%2FJavaEntityStringify.kt)
-- [KotlinEntityStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Fentity%2FKotlinEntityStringify.kt)
+#### Table Define 表定义
 
-#### DDL 表定义
-调用处:
-- [DataBaseGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fgenerate%2FDataBaseGenerate.kt)
-
-具体模版:
-- [MysqlTableDefineStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Ftable%2FMysqlTableDefineStringify.kt)
-- [PostgreTableDefineStringify.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Ftable%2FPostgreTableDefineStringify.kt)
+- [MysqlTableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Ftable%2FMysqlTableDefineGenerator.kt)
+- [PostgreTableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Ftemplate%2Ftable%2FPostgreTableDefineGenerator.kt)
 
 ## TODO 计划实现的功能（按时间）
 

@@ -2,6 +2,6 @@ package top.potmot.core.generate
 
 data class TreeItem<T> (
     var key: String,
-    var value: Map<String, T> = emptyMap(),
+    var value: List<Pair<String, T>> = emptyList(),
     var children: List<TreeItem<T>> = emptyList()
 )

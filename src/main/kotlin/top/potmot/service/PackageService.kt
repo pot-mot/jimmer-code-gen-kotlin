@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.model.GenEntity
+import top.potmot.model.GenEnum
 import top.potmot.model.GenPackage
 import top.potmot.model.dto.GenPackageInput
 import top.potmot.model.dto.GenPackageTreeView
@@ -79,7 +80,7 @@ class PackageService(
         @PathVariable id: Long,
         @PathVariable packageId: Long
     ): Int {
-        return sqlClient.createUpdate(GenEntity::class) {
+        return sqlClient.createUpdate(GenEnum::class) {
             where(table.id eq id)
             set(table.packageId, packageId)
         }.execute()

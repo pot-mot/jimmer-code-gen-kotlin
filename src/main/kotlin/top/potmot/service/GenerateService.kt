@@ -64,21 +64,19 @@ class GenerateService(
     fun preview(
         @RequestParam entityIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
-    ): Map<String, String> =
+    ): List<Pair<String, String>> =
         sqlClient.createQuery(GenEntity::class) {
             where(table.id valueIn entityIds)
             select(table.fetch(GenEntityPropertiesView::class))
         }.execute().flatMap {
-            generateEntityCode(it, language).entries.map {(key, value) ->
-                Pair(key, value)
-            }
-        }.toMap()
+            generateEntityCode(it, language)
+        }
 
     @PostMapping("/preview/table")
     fun previewByTable(
         @RequestParam tableIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
-    ): Map<String, String> {
+    ): List<Pair<String, String>> {
         val entityIds = convert(tableIds)
         return preview(entityIds.toList(), language)
     }
@@ -87,7 +85,7 @@ class GenerateService(
     fun previewByModel(
         @RequestParam modelId: Long,
         @RequestParam(required = false) language: GenLanguage?
-    ): Map<String, String> {
+    ): List<Pair<String, String>> {
         val tableIds = sqlClient.createQuery(GenTable::class) {
             where(table.modelId eq modelId)
             select(table.id)

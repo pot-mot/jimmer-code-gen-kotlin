@@ -13,12 +13,14 @@ GenEnumItemsView {
 }
 
 input GenEnumItemsInput {
+    #allScalars
     id(genPackage)
-    name
-    comment
+    -createdTime
+    -modifiedTime
 
     items {
-        name
-        value
+        #allScalars
+        -createdTime
+        -modifiedTime
     }
 }

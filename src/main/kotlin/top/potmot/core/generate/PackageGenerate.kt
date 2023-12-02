@@ -3,7 +3,7 @@ package top.potmot.core.generate
 import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
-import top.potmot.core.template.entity.EntityBuilder
+import top.potmot.core.template.entity.EntityCodeGenerator
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenEntity
 import top.potmot.model.GenEnum
@@ -13,22 +13,23 @@ import top.potmot.model.GenProperty
 import top.potmot.model.by
 import top.potmot.model.copy
 import top.potmot.model.dto.GenEntityPropertiesView
+import top.potmot.model.extension.toFilePath
 import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as PropertyEnum
 
 fun generatePackage(genPackage: GenPackage, language: GenLanguage?): TreeItem<String> =
-    genPackage.toTreeItem(language.getEntityBuilder())
+    genPackage.toTreeItem(language.getEntityGenerator())
 
-private fun GenPackage.toTreeItem(entityBuilder: EntityBuilder): TreeItem<String> =
+private fun GenPackage.toTreeItem(entityCodeGenerator: EntityCodeGenerator): TreeItem<String> =
     TreeItem(
-        key = name,
-        value = getContentStringMap(entityBuilder),
-        children = children.map { it.toTreeItem(entityBuilder) }
+        key = toFilePath(),
+        value = getContents(entityCodeGenerator),
+        children = children.map { it.toTreeItem(entityCodeGenerator) }
     )
 
-private fun GenPackage.getContentStringMap(
-    entityBuilder: EntityBuilder
-): Map<String, String> {
-    val result = mutableMapOf<String, String>()
+private fun GenPackage.getContents(
+    entityCodeGenerator: EntityCodeGenerator
+): List<Pair<String, String>> {
+    val result = mutableListOf<Pair<String, String>>()
 
     val complexPackage = this
 
@@ -42,7 +43,7 @@ private fun GenPackage.getContentStringMap(
 
     if (ImmutableObjects.isLoaded(complexPackage, GenPackageProps.ENTITIES)) {
         entities.forEach {
-            result += entityBuilder.generate(GenEntityPropertiesView(it.copy {
+            result += entityCodeGenerator.generate(GenEntityPropertiesView(it.copy {
                 genPackage = parentPathPackage
             }))
         }
@@ -50,7 +51,7 @@ private fun GenPackage.getContentStringMap(
 
     if (ImmutableObjects.isLoaded(complexPackage, GenPackageProps.ENUMS)) {
         enums.forEach {
-            result += entityBuilder.generate(PropertyEnum(it.copy {
+            result += entityCodeGenerator.generate(PropertyEnum(it.copy {
                 genPackage = parentPathPackage
             }))
         }
