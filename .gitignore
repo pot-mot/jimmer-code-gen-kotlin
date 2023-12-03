@@ -5,6 +5,8 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+**/java_pid10416.hprof
+
 ### STS ###
 .apt_generated
 .classpath
