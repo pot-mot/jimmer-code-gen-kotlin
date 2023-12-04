@@ -63,7 +63,6 @@ interface GenEntity : BaseEntity {
     /**
      * 类名称
      */
-    @Key
     val name: String
 
     /**
