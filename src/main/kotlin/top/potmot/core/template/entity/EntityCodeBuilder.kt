@@ -31,12 +31,10 @@ open class EntityCodeBuilder: TemplateBuilder() {
         column?.let { "@Column(name = \"${it.name}\")" }
 
     open fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3.annotation(enumType: EnumType?): String =
-        enumType.let {
-            when (it) {
-                EnumType.NAME -> "@EnumItem(name = \"$value\")\n"
-                EnumType.ORDINAL -> "@EnumItem(ordinal = $value)\n"
-                null -> ""
-            }
+        when (enumType) {
+            EnumType.NAME -> "@EnumItem(name = \"$value\")\n"
+            EnumType.ORDINAL -> "@EnumItem(ordinal = $value)\n"
+            null -> ""
         }
 
     private fun createBlockComment(

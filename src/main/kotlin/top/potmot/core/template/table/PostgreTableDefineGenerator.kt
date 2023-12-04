@@ -59,17 +59,11 @@ private class PostgreTableDefineBuilder : TableDefineBuilder() {
 
         sb.append(typeStringify())
 
-        if (partOfPk) {
-            sb.append(" PRIMARY KEY")
+        if (typeNotNull) {
+            sb.append(" NOT NULL")
+        }
 
-            if (!defaultValue.isNullOrBlank()) {
-                sb.append(" DEFAULT ").append(defaultValue)
-            }
-        } else {
-            if (typeNotNull) {
-                sb.append(" NOT NULL")
-            }
-
+        if (!partOfPk) {
             if (!defaultValue.isNullOrBlank()) {
                 sb.append(" DEFAULT ").append(defaultValue)
             } else if (!typeNotNull) {

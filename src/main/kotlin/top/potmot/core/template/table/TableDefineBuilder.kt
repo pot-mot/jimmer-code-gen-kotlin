@@ -9,6 +9,7 @@ import top.potmot.core.template.TemplateBuilder
 import top.potmot.enumeration.AssociationType.*
 import top.potmot.model.extension.outColumns
 import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.model.extension.pkColumns
 
 abstract class TableDefineBuilder : TemplateBuilder() {
     abstract fun String.escape(): String
@@ -58,18 +59,25 @@ abstract class TableDefineBuilder : TemplateBuilder() {
     ): String =
         "ALTER TABLE ${name.escape()} "
 
+    open fun createPkLine(
+        table: GenTableAssociationsView,
+    ): String =
+        pkDefine(table.pkColumns().map { it.name })
+
     open fun createTable(
         table: GenTableAssociationsView,
-        content: List<String> = emptyList(),
+        otherLines: List<String> = emptyList(),
         append: String = "",
     ): String {
-        val list = mutableListOf<String>()
+        val lines = mutableListOf<String>()
 
-        list.addAll(table.columns.map { it.columnStringify() })
+        lines.addAll(table.columns.map { it.columnStringify() })
 
-        list.addAll(content)
+        lines.add(createPkLine(table))
 
-        return createTable(table.name, list, append) +
+        lines.addAll(otherLines)
+
+        return createTable(table.name, lines, append) +
                 "\n\n" +
                 table.columns
                     .mapNotNull { column ->
@@ -81,11 +89,57 @@ abstract class TableDefineBuilder : TemplateBuilder() {
                     }
                     .joinToString { "\n\n$it" }
     }
-    open fun createPkConstraint(
+
+    open fun addConstraint(
+        tableName: String,
+        constraintName: String
+    ): String =
+        "${alterTable(tableName)}ADD CONSTRAINT ${constraintName.escape()} "
+
+    open fun pkDefine(
+        columnNames: List<String>
+    ): String =
+        "PRIMARY KEY (${columnNames.joinToString(",")})"
+
+    open fun fkDefine(
+        sourceTableName: String,
+        sourceColumnName: String,
+
+        targetTableName: String,
+        targetColumnName: String,
+
+        dissociateAction: DissociateAction?
+    ): String =
+        buildString {
+            append("FOREIGN KEY (${sourceColumnName.escape()}) REFERENCES ${targetTableName.escape()} (${targetColumnName.escape()})")
+            append(" ${dissociateAction?.toOnDeleteAction() ?: ""} ON UPDATE RESTRICT")
+        }
+
+
+    open fun createPkName(
         tableName: String,
         columnNames: List<String>
     ): String =
-        "${alterTable(tableName)}ADD CONSTRAINT ${"pk_${tableName}".escape()} PRIMARY KEY (${columnNames.joinToString(",")});"
+        "pk_${tableName}"
+
+    open fun createPkConstraint(
+        tableName: String,
+        columnNames: List<String>,
+
+        constraintName: String =
+            createPkName(tableName, columnNames)
+    ): String =
+        "${addConstraint(tableName, constraintName)}${pkDefine(columnNames)};"
+
+    open fun createFkName(
+        sourceTableName: String,
+        sourceColumnName: String,
+
+        targetTableName: String,
+        targetColumnName: String,
+    ): String =
+        "fk_${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}" +
+                "_${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}"
 
     open fun createFkConstraint(
         sourceTableName: String,
@@ -94,20 +148,29 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         targetTableName: String,
         targetColumnName: String,
 
-        associationName: String = "fk_${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}" +
-                "_${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}",
+        constraintName: String = createFkName(
+            sourceTableName,
+            sourceColumnName,
+            targetTableName,
+            targetColumnName
+        ),
 
         dissociateAction: DissociateAction?
     ): String =
-        buildString {
-            if (GenConfig.tableDefineWithFk) {
-                appendLine(alterTable(sourceTableName.escape()))
-                appendLine("ADD CONSTRAINT ${associationName.escape()}")
-                appendLine(" FOREIGN KEY (${sourceColumnName.escape()}) REFERENCES ${targetTableName.escape()} (${targetColumnName.escape()})")
-                append(" ${dissociateAction?.toOnDeleteAction() ?: ""} ON UPDATE RESTRICT;")
-            } else {
-                append("-- fake association $associationName")
-            }
+        if (GenConfig.tableDefineWithFk) {
+            "${addConstraint(sourceTableName, constraintName)}\n${
+                fkDefine(
+                    sourceTableName,
+                    sourceColumnName,
+
+                    targetTableName,
+                    targetColumnName,
+                    
+                    dissociateAction
+                )
+            };"
+        } else {
+            "-- fk placeholder for $constraintName"
         }
 
     open fun createMappingTable(
@@ -148,7 +211,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             sourceColumnName = mappingSourceColumnName,
             targetTableName = sourceTableName,
             targetColumnName = sourceColumnName,
-            associationName = "fk_MAP_SOURCE_${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}",
+            constraintName = "fk_MAP_SOURCE_${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}",
             dissociateAction = DissociateAction.DELETE,
         )
 
@@ -157,7 +220,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             sourceColumnName = mappingTargetColumnName,
             targetTableName = targetTableName,
             targetColumnName = targetColumnName,
-            associationName = "fk_MAP_TARGET_${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}",
+            constraintName = "fk_MAP_TARGET_${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}",
             dissociateAction = DissociateAction.DELETE,
         )
 

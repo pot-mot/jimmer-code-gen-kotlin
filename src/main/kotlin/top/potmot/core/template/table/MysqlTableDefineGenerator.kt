@@ -55,12 +55,12 @@ private class MysqlTableDefineBuilder : TableDefineBuilder() {
 
     override fun createTable(
         table: GenTableAssociationsView,
-        content: List<String>,
+        lines: List<String>,
         append: String
     ): String =
         super.createTable(
             table,
-            content,
+            lines,
             append = append + defaultParams(table.comment)
         )
 
@@ -124,18 +124,15 @@ private class MysqlTableDefineBuilder : TableDefineBuilder() {
             .append(typeStringify())
 
         if (partOfPk) {
-            sb.append(" PRIMARY KEY")
-
             if (autoIncrement) {
                 sb.append(" AUTO_INCREMENT")
-            } else if (!defaultValue.isNullOrBlank()) {
-                sb.append(" DEFAULT ").append(defaultValue)
             }
-        } else {
-            if (typeNotNull) {
-                sb.append(" NOT NULL")
-            }
+        }
+        if (typeNotNull) {
+            sb.append(" NOT NULL")
+        }
 
+        if (!partOfPk) {
             if (!defaultValue.isNullOrBlank()) {
                 sb.append(" DEFAULT ").append(defaultValue)
             } else if (!typeNotNull) {
