@@ -23,6 +23,7 @@ import top.potmot.model.extension.valueToData
 import top.potmot.model.GenModel
 import top.potmot.model.GenTable
 import top.potmot.model.copy
+import top.potmot.model.createdTime
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenModelInput
 import top.potmot.model.dto.GenModelView
@@ -51,7 +52,7 @@ class ModelService(
     @GetMapping
     fun list(): List<GenModelView> {
         return sqlClient.createQuery(GenModel::class) {
-            orderBy(table.modifiedTime.desc())
+            orderBy(table.createdTime)
             select(table.fetch(GenModelView::class))
         }.execute()
     }

@@ -94,7 +94,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         targetTableName: String,
         targetColumnName: String,
 
-        associationName: String = "fk__${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}_" +
+        associationName: String = "fk_${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}" +
                 "_${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}",
 
         dissociateAction: DissociateAction?
@@ -148,6 +148,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             sourceColumnName = mappingSourceColumnName,
             targetTableName = sourceTableName,
             targetColumnName = sourceColumnName,
+            associationName = "fk_MAP_SOURCE_${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}",
             dissociateAction = DissociateAction.DELETE,
         )
 
@@ -156,6 +157,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             sourceColumnName = mappingTargetColumnName,
             targetTableName = targetTableName,
             targetColumnName = targetColumnName,
+            associationName = "fk_MAP_TARGET_${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}",
             dissociateAction = DissociateAction.DELETE,
         )
 
