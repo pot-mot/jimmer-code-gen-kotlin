@@ -17,4 +17,4 @@ fun generateEntityCode(
     entity: GenEntityPropertiesView,
     language: GenLanguage?
 ): List<Pair<String, String>> =
-    language.getEntityGenerator().generate(entity)
+    language.getEntityGenerator().generateWithEnums(entity)

@@ -25,7 +25,7 @@ class JavaEntityCodeGenerator : EntityCodeGenerator() {
 
             lines(blockComment())
             lines(annotationLines())
-            line("interface $name {")
+            line("public interface $name {")
 
             increaseIndentation()
             properties.joinPartsProduce {

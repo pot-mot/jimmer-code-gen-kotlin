@@ -21,15 +21,13 @@ abstract class EntityCodeGenerator {
 
     fun generate(
         entity: GenEntityPropertiesView,
-        withEnums: Boolean = true
+    ): Pair<String, String> =
+        Pair(formatFileName(entity.name), stringify(entity))
+
+    fun generateWithEnums(
+        entity: GenEntityPropertiesView,
     ): List<Pair<String, String>> =
         listOf(
             Pair(formatFileName(entity.name), stringify(entity))
-        ).let {list ->
-            if (withEnums) {
-                list + entity.enumsStringify().map {Pair(formatFileName(it.first), it.second) }
-            } else {
-                list
-            }
-        }
+        ) + entity.enumsStringify().map {Pair(formatFileName(it.first), it.second) }
 }

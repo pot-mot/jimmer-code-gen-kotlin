@@ -30,8 +30,8 @@ class TestTreeItemZip {
 
     // 创建一个示例树结构
     private fun createSampleTree(): TreeItem<String> {
-        val child1 = TreeItem("child1", mapOf("key1" to "value1"))
-        val child2 = TreeItem("child2", mapOf("key2" to "value2"))
+        val child1 = TreeItem("child1", listOf("key1" to "value1"))
+        val child2 = TreeItem("child2", listOf("key2" to "value2"))
         val child3 = TreeItem<String>("child3")
 
         val subChild1 = TreeItem<String>("subChild1")

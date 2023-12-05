@@ -145,7 +145,7 @@ interface Entity {
 
         assertEquals(
             kotlinExpected,
-            KotlinEntityCodeGenerator().stringify(baseEntity)
+            KotlinEntityCodeGenerator().generate(baseEntity).second
                 .replace(Regex("\n \\*\\s*@since\\s+\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}"), "")
         )
 
@@ -172,7 +172,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @Entity
 @Table(name = "schema.table")
-interface Entity {
+public interface Entity {
     /**
      * ID
      */
@@ -196,7 +196,7 @@ interface Entity {
 
         assertEquals(
             javaExpected,
-            JavaEntityCodeGenerator().stringify(baseEntity)
+            JavaEntityCodeGenerator().generate(baseEntity).second
                 .replace(Regex("\n \\*\\s*@since\\s+\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}"), "")
         )
     }
