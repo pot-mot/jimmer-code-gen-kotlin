@@ -42,6 +42,7 @@ class ColumnService(
                     )
                 }
             }
+
             query.tableIds?.takeIf { it.isNotEmpty() }?.let {
                 where(table.tableId valueIn it)
             }

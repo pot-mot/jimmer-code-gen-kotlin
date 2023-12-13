@@ -108,9 +108,7 @@ class ModelService(
 
         val types = listOfNotNull(type)
 
-        return generateTableDefines(tables, types) + tables.flatMap {
-            generateTableDefine(it, types)
-        }
+        return generateTableDefines(tables, types)
     }
 
 //    @PostMapping("/sql")

@@ -99,7 +99,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
     open fun pkDefine(
         columnNames: List<String>
     ): String =
-        "PRIMARY KEY (${columnNames.joinToString(",")})"
+        "PRIMARY KEY (${columnNames.joinToString(",") { it.escape() }})"
 
     open fun fkDefine(
         sourceTableName: String,
@@ -206,12 +206,14 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             listOf(mappingSourceColumnName, mappingTargetColumnName)
         )
 
+        val commonFkName = createFkName(sourceTableName, sourceColumnName, targetTableName, targetColumnName);
+
         val sourceFk = createFkConstraint(
             sourceTableName = mappingTableName,
             sourceColumnName = mappingSourceColumnName,
             targetTableName = sourceTableName,
             targetColumnName = sourceColumnName,
-            constraintName = "fk_MAP_SOURCE_${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}",
+            constraintName = "${commonFkName}_SOURCE",
             dissociateAction = DissociateAction.DELETE,
         )
 
@@ -220,7 +222,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             sourceColumnName = mappingTargetColumnName,
             targetTableName = targetTableName,
             targetColumnName = targetColumnName,
-            constraintName = "fk_MAP_TARGET_${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}",
+            constraintName = "${commonFkName}_TARGET",
             dissociateAction = DissociateAction.DELETE,
         )
 
