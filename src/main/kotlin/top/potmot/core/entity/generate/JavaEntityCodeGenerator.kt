@@ -30,7 +30,7 @@ class JavaEntityCodeGenerator : EntityCodeGenerator() {
             properties.joinPartsProduce {
                 lines(it.blockComment())
                 lines(it.annotationLines())
-                line("${it.shortType()} ${it.name};")
+                line("${it.shortType()} ${it.name}();")
             }
             decreaseIndentation()
 

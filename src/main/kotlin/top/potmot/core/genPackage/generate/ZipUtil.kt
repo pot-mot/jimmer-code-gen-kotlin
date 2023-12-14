@@ -39,6 +39,9 @@ private fun listToZipByteArray(
         }
     }
 
+    zipStream.close()
+    byteArrayStream.close()
+
     return byteArrayStream.toByteArray()
 }
 

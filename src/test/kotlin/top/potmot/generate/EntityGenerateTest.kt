@@ -178,7 +178,7 @@ public interface Entity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    Long id;
+    Long id();
     
     /**
      * comment
@@ -190,7 +190,7 @@ public interface Entity {
     @Key
     @ManyToOne
     @Nullable
-    Entity manyToOneProperty;
+    Entity manyToOneProperty();
 }
 """
 
