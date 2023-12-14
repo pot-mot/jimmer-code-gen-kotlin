@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.core.liquibase.createSql
+import top.potmot.utils.liquibase.createSql
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.TableType
 import top.potmot.model.dto.GenDataSourceInput

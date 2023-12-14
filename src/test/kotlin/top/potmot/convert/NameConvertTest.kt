@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.core.convert.columnNameToPropertyName
-import top.potmot.core.convert.tableNameToClassName
-import top.potmot.core.convert.tableNameToPropertyName
+import top.potmot.core.entity.convert.columnNameToPropertyName
+import top.potmot.core.entity.convert.tableNameToClassName
+import top.potmot.core.entity.convert.tableNameToPropertyName
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin", "mysql")

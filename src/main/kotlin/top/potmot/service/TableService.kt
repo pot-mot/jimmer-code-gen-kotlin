@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.generate.generateTableDefine
+import top.potmot.core.database.generate.generateTableDefine
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.GenTable
 import top.potmot.model.columns

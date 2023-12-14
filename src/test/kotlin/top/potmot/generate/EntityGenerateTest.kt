@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.core.template.entity.JavaEntityCodeGenerator
-import top.potmot.core.template.entity.KotlinEntityCodeGenerator
+import top.potmot.core.entity.generate.JavaEntityCodeGenerator
+import top.potmot.core.entity.generate.KotlinEntityCodeGenerator
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.dto.GenEntityPropertiesView
 import java.time.LocalDateTime

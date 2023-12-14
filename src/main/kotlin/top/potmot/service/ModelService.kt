@@ -3,7 +3,6 @@ package top.potmot.service
 import org.babyfish.jimmer.client.ThrowsAll
 import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
-import org.babyfish.jimmer.sql.kt.ast.expression.desc
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
@@ -15,8 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.generate.generateTableDefine
-import top.potmot.core.generate.generateTableDefines
+import top.potmot.core.database.generate.generateTableDefines
 import top.potmot.enumeration.DataSourceType
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.model.extension.valueToData
@@ -30,7 +28,6 @@ import top.potmot.model.dto.GenModelView
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTableColumnsInput
 import top.potmot.model.modelId
-import top.potmot.model.modifiedTime
 import java.sql.JDBCType
 
 @RestController

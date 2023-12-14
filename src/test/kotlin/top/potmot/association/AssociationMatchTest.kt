@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import top.potmot.config.GenConfig
-import top.potmot.core.match.includeTableNamePkColumnMatch
-import top.potmot.core.match.pkSuffixColumnMatch
-import top.potmot.core.match.simplePkColumnMatch
-import top.potmot.core.match.suffixMatch
+import top.potmot.core.database.match.includeTableNamePkColumnMatch
+import top.potmot.core.database.match.pkSuffixColumnMatch
+import top.potmot.core.database.match.simplePkColumnMatch
+import top.potmot.core.database.match.suffixMatch
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.TableType

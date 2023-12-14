@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.match.AssociationMatch
-import top.potmot.core.match.simplePkColumnMatch
+import top.potmot.core.database.match.AssociationMatch
+import top.potmot.core.database.match.simplePkColumnMatch
 import top.potmot.enumeration.AssociationMatchType
 import top.potmot.enumeration.SelectType
 import top.potmot.model.GenAssociation

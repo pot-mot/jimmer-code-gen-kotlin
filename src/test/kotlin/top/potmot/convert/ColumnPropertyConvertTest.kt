@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.core.convert.columnToProperties
+import top.potmot.core.entity.convert.columnToProperties
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.GenColumn
 import top.potmot.model.dto.GenTableAssociationsView

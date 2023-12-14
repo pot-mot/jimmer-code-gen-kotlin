@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.load.getCatalog
-import top.potmot.core.load.getFkAssociation
-import top.potmot.core.load.toGenSchema
-import top.potmot.core.load.toGenTable
+import top.potmot.core.database.load.getCatalog
+import top.potmot.core.database.load.getFkAssociation
+import top.potmot.core.database.load.toGenSchema
+import top.potmot.core.database.load.toGenTable
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.model.extension.toSource
 import top.potmot.model.GenDataSource

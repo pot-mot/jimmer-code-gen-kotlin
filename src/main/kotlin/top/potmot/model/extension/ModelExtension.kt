@@ -6,7 +6,7 @@ import org.babyfish.jimmer.jackson.ImmutableModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import top.potmot.core.liquibase.createSql
+import top.potmot.utils.liquibase.createSql
 import top.potmot.model.GenDataSource
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenModelView

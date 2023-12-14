@@ -3,8 +3,8 @@ package top.potmot.zip
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.core.generate.TreeItem
-import top.potmot.core.generate.toZipByteArray
+import top.potmot.core.genPackage.generate.TreeItem
+import top.potmot.core.genPackage.generate.toZipByteArray
 import java.io.ByteArrayInputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
