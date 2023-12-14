@@ -3,7 +3,6 @@ package top.potmot.core.entity.convert
 import top.potmot.config.GenConfig
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
-import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTypeMappingView
 import java.math.BigDecimal
 import java.sql.Types
@@ -88,7 +87,30 @@ private fun mappingPropertyType(
     return null
 }
 
-fun GenTableAssociationsView.TargetOf_columns.getPropertyType (
+fun getPropertyType(
+    typeCode: Int,
+    typeNotNull: Boolean,
+    language: GenLanguage = GenConfig.language,
+): String? =
+    when(language) {
+        GenLanguage.JAVA -> jdbcTypeToJavaType(typeCode, typeNotNull)?.name
+        GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeCode)?.qualifiedName
+    }
+
+data class ColumnTypeData(
+    var type: String,
+    var typeCode: Int,
+    var displaySize: Long,
+    var numericPrecision: Long,
+    var typeNotNull: Boolean,
+)
+
+fun getPropertyType (
+    type: String,
+    typeCode: Int,
+    displaySize: Long,
+    numericPrecision: Long,
+    typeNotNull: Boolean,
     dataSourceType: DataSourceType = GenConfig.dataSourceType,
     language: GenLanguage = GenConfig.language,
     typeMappings: List<GenTypeMappingView> = emptyList(),
@@ -98,7 +120,20 @@ fun GenTableAssociationsView.TargetOf_columns.getPropertyType (
         typeMappings,
         dataSourceType,
         language,
-    ) ?: when(language) {
-        GenLanguage.JAVA -> jdbcTypeToJavaType(typeCode, typeNotNull)?.name ?: type
-        GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeCode)?.qualifiedName ?: type
-    }
+    ) ?: getPropertyType(typeCode, typeNotNull, language) ?: type
+
+fun ColumnTypeData.getPropertyType (
+    dataSourceType: DataSourceType = GenConfig.dataSourceType,
+    language: GenLanguage = GenConfig.language,
+    typeMappings: List<GenTypeMappingView> = emptyList(),
+): String =
+    getPropertyType(
+        type,
+        typeCode,
+        displaySize,
+        numericPrecision,
+        typeNotNull,
+        dataSourceType,
+        language,
+        typeMappings,
+    )

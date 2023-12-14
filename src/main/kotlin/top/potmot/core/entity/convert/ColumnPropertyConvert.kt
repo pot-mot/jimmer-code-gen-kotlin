@@ -20,7 +20,7 @@ import top.potmot.model.dto.GenTableAssociationsView
  */
 fun columnToProperties(
     column: GenTableAssociationsView.TargetOf_columns,
-    typeMapping: (column: GenTableAssociationsView.TargetOf_columns) -> String = {it.getPropertyType()},
+    typeMapping: (column: ColumnTypeData) -> String = {it.getPropertyType()},
 ): List<GenProperty> {
     val properties = mutableListOf<GenProperty>()
 
@@ -45,6 +45,12 @@ fun columnToProperties(
         }
 
     var includeDefaultProperty = true
+
+    val idViewTypeMapping = { typeNotNull: Boolean ->
+        column.getTypeData().apply { this.typeNotNull = typeNotNull }.let {
+            typeMapping(it)
+        }
+    }
 
     column.outAssociations.forEach { outAssociation ->
         if (outAssociation.associationType == MANY_TO_ONE || outAssociation.associationType == ONE_TO_ONE) {
@@ -112,7 +118,7 @@ fun columnToProperties(
         properties += associationProperty
 
         if (GenConfig.idViewProperty) {
-            properties += createIdViewProperty(baseProperty, associationProperty)
+            properties += createIdViewProperty(baseProperty, associationProperty, idViewTypeMapping)
         }
     }
 
@@ -171,7 +177,7 @@ fun columnToProperties(
         properties += associationProperty
 
         if(GenConfig.idViewProperty) {
-            properties += createIdViewProperty(baseProperty, associationProperty)
+            properties += createIdViewProperty(baseProperty, associationProperty, idViewTypeMapping)
         }
     }
 
@@ -182,11 +188,14 @@ fun columnToProperties(
     return properties
 }
 
+fun GenTableAssociationsView.TargetOf_columns.getTypeData() =
+    ColumnTypeData(type, typeCode, displaySize, numericPrecision, typeNotNull)
+
 /**
  * 转换为基础属性
  */
 fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
-    typeMapping: (column: GenTableAssociationsView.TargetOf_columns) -> String,
+    typeMapping: (column: ColumnTypeData) -> String,
 ): GenProperty {
     val column = this
 
@@ -194,7 +203,7 @@ fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
         this.columnId = column.id
         this.name = columnNameToPropertyName(column.name)
         this.comment = column.comment.clearColumnComment()
-        this.type = typeMapping(column)
+        this.type = typeMapping(column.getTypeData())
         this.typeTableId = null
         this.listType = false
         this.typeNotNull = column.typeNotNull
@@ -279,10 +288,12 @@ private fun GenPropertyDraft.toPlural() {
  *
  * @param baseProperty 基础属性
  * @param associationProperty 关联属性
+ * @param typeMapping 处理因为 typeNotNull 不同而生成的不同基本类型
  */
 fun createIdViewProperty(
     baseProperty: GenProperty,
     associationProperty: GenProperty,
+    typeMapping: (typeNotNull: Boolean) -> String
 ): GenProperty {
     return new(GenProperty::class).by {
         copyProperties(baseProperty, this)
@@ -293,7 +304,11 @@ fun createIdViewProperty(
         } else {
             this.name = associationProperty.name + "Id"
         }
-        this.typeNotNull = associationProperty.typeNotNull
+
+        if (associationProperty.typeNotNull != baseProperty.typeNotNull) {
+            this.typeNotNull = associationProperty.typeNotNull
+            this.type = typeMapping(this.typeNotNull)
+        }
 
         associationProperty.comment.takeIf { it.isNotBlank() }?.let {
             this.comment = "$it ID 视图"
