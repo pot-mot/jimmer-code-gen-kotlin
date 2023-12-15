@@ -298,15 +298,21 @@ fun createIdViewProperty(
     return new(GenProperty::class).by {
         copyProperties(baseProperty, this)
 
+        if (associationProperty.typeNotNull != baseProperty.typeNotNull) {
+            this.typeNotNull = associationProperty.typeNotNull
+        }
+
         if (associationProperty.listType) {
             this.name = associationProperty.name.toSingular() + "Ids"
             this.listType = true
+            this.typeNotNull = true
         } else {
             this.name = associationProperty.name + "Id"
         }
 
-        if (associationProperty.typeNotNull != baseProperty.typeNotNull) {
-            this.typeNotNull = associationProperty.typeNotNull
+        if (this.listType) {
+            this.type = typeMapping(false)
+        } else {
             this.type = typeMapping(this.typeNotNull)
         }
 
