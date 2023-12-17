@@ -15,6 +15,7 @@ import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Table
 import top.potmot.config.GenConfig
+import top.potmot.constant.judgeImportPathInDefaultPackage
 import top.potmot.utils.template.TemplateBuilder
 import top.potmot.enumeration.EnumType
 import top.potmot.model.dto.GenEntityPropertiesView
@@ -77,11 +78,11 @@ open class EntityCodeBuilder: TemplateBuilder() {
     fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3.blockComment(): String? =
         createBlockComment(comment, remark)
 
-    open fun classListToLines(classList: List<KClass<*>>): List<String> =
-        classList.mapNotNull { it.qualifiedName }
+    open fun classesToLines(classes: Set<KClass<*>>): Set<String> =
+        classes.mapNotNull { it.qualifiedName }.toSet()
 
-    open fun getImportClasses(property: GenEntityPropertiesView.TargetOf_properties): List<KClass<*>> {
-        val result = mutableListOf<KClass<*>>()
+    open fun getImportClasses(property: GenEntityPropertiesView.TargetOf_properties): Set<KClass<*>> {
+        val result = mutableSetOf<KClass<*>>()
 
         property.apply {
             if (GenConfig.columnAnnotation && column != null) {
@@ -131,11 +132,8 @@ open class EntityCodeBuilder: TemplateBuilder() {
         return result
     }
 
-    fun GenEntityPropertiesView.TargetOf_properties.importClassList(): List<KClass<*>> =
-        getImportClasses(this)
-
-    open fun getImportClasses(entity: GenEntityPropertiesView): List<KClass<*>> {
-        val result = mutableListOf<KClass<*>>()
+    open fun getImportClasses(entity: GenEntityPropertiesView): Set<KClass<*>> {
+        val result = mutableSetOf<KClass<*>>()
 
         entity.apply {
             if (GenConfig.tableAnnotation) {
@@ -147,25 +145,16 @@ open class EntityCodeBuilder: TemplateBuilder() {
         return result
     }
 
-    fun GenEntityPropertiesView.importClassList(): List<KClass<*>> =
-        getImportClasses(this)
-
-    open fun getImportLines(property: GenEntityPropertiesView.TargetOf_properties): List<String> =
-        classListToLines(getImportClasses(property)) +
-                property.fullType()
-
-    fun GenEntityPropertiesView.TargetOf_properties.importLines(): List<String> =
-        getImportLines(this)
+    open fun getImportLines(property: GenEntityPropertiesView.TargetOf_properties): Set<String> =
+        classesToLines(getImportClasses(property)) + property.fullType()
 
     /**
      * 过滤不必要和不合理的 import
      */
     open fun importLinesFilter(entity: GenEntityPropertiesView, importLines: List<String>): List<String> =
         importLines.filter { importItem ->
-            // 非 kotlin 和 java.lang 包下的 import
-            !(importItem.startsWith("kotlin.") && importItem.split(".").size == 2)
-                    &&
-                    !(importItem.startsWith("java.lang.") && importItem.split(".").size == 3)
+            // 非默认导入包下的 import
+            !judgeImportPathInDefaultPackage(importItem)
                     &&
                     // 非当前包下的 import
                     (importItem.substringBeforeLast(".") != entity.packagePath())
@@ -176,16 +165,16 @@ open class EntityCodeBuilder: TemplateBuilder() {
 
     open fun getImportLines(entity: GenEntityPropertiesView): List<String> {
         val importLines = mutableListOf<String>()
-        importLines.addAll(classListToLines(entity.importClassList()))
-        entity.properties.flatMapTo(importLines) { it.importLines() }
+        importLines.addAll(classesToLines(getImportClasses(entity)))
+        entity.properties.flatMapTo(importLines) { getImportLines(it) }
         return importLines.sorted().distinct().let {importLinesFilter(entity, it)}
     }
 
     fun GenEntityPropertiesView.importLines(): List<String> =
         getImportLines(this)
 
-    open fun getImportClasses(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): List<KClass<*>> {
-        val result = mutableListOf<KClass<*>>()
+    open fun getImportClasses(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): Set<KClass<*>> {
+        val result = mutableSetOf<KClass<*>>()
 
         enum.apply {
             if (enumType != null) {
@@ -199,16 +188,11 @@ open class EntityCodeBuilder: TemplateBuilder() {
         return result
     }
 
+    open fun getImportLines(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): Set<String> =
+        classesToLines(getImportClasses(enum))
 
-    fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.importClassList(): List<KClass<*>> =
-        getImportClasses(this)
-
-    open fun getImportLines(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): List<String> =
-        classListToLines(getImportClasses(enum))
-
-    fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.importLines(): List<String> =
+    fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.importLines(): Set<String> =
         getImportLines(this)
-
 
     open fun getAnnotationLines(entity: GenEntityPropertiesView): List<String> {
         val list = mutableListOf<String>()

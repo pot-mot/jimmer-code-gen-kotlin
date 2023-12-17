@@ -67,8 +67,8 @@ open class TemplateBuilder {
         stringBuilder.append(string)
     }
 
-    fun lines(stringList: List<String>, format: (String) -> String = { it }) {
-        stringList.forEach {
+    fun lines(strings: Collection<String>, format: (String) -> String = { it }) {
+        strings.forEach {
             line(format(it))
         }
     }
@@ -79,7 +79,7 @@ open class TemplateBuilder {
         }
     }
 
-    fun <T> List<T>.joinPartsProduce(
+    fun <T> Collection<T>.joinPartsProduce(
         separate: String? = null,
         produce: (T) -> Unit,
     ) {
@@ -96,7 +96,7 @@ open class TemplateBuilder {
         }
     }
 
-    fun <T> List<T>.joinPartsLines(
+    fun <T> Collection<T>.joinPartsLines(
         separate: String? = null,
         produce: (T) -> String,
     ) {
@@ -105,7 +105,7 @@ open class TemplateBuilder {
         }
     }
 
-    fun <T> List<T>.joinPartsProduceIndexed(
+    fun <T> Collection<T>.joinPartsProduceIndexed(
         separate: String? = null,
         produce: (T, Int) -> Unit,
     ) {
@@ -122,7 +122,7 @@ open class TemplateBuilder {
         }
     }
 
-    fun <T> List<T>.joinPartsLinesIndexed(
+    fun <T> Collection<T>.joinPartsLinesIndexed(
         separate: String? = null,
         produce: (T, Int) -> String,
     ) {

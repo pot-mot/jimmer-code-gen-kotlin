@@ -11,6 +11,8 @@ import top.potmot.model.GenPropertyDraft
 import top.potmot.model.by
 import top.potmot.enumeration.AssociationType.*
 import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.utils.string.toPlural
+import top.potmot.utils.string.toSingular
 
 /**
  * 列到属性转换

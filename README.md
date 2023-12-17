@@ -6,7 +6,7 @@
 >   - [x] 将 table 与 datasource 解除强关联，允许 table 单独存在
 >   - [x] 补充 table 与 association 和 model 可空的关联，实现 table 与 model 的关联
 >   - [x] model 到 table 和 association 的生成
-> - [ ] 拜托不规范的直接字符串拼接，实现生成过程中元数据的规范化
+> - [ ] 将目前项目中不规范的直接字符串拼接迁移至基于元数据生成
 >   - [ ] TableDefine 的元数据
 >   - [ ] Entity 的元数据
 

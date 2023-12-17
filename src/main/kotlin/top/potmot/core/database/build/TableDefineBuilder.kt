@@ -155,9 +155,10 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             targetColumnName
         ),
 
+        fake: Boolean = false,
         dissociateAction: DissociateAction?
     ): String =
-        if (GenConfig.tableDefineWithFk) {
+        if (GenConfig.tableDefineWithFk && !fake) {
             "${addConstraint(sourceTableName, constraintName)}\n${
                 fkDefine(
                     sourceTableName,
@@ -267,6 +268,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
                             sourceTableName = name,
                             targetColumnName = association.targetColumn.name,
                             targetTableName = association.targetColumn.table.name,
+                            fake = association.fake
                         ).let {
                             list += it
                         }
@@ -279,6 +281,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
                             targetTableName = name,
                             targetColumnName = column.name,
                             dissociateAction = association.dissociateAction,
+                            fake = association.fake
                         ).let {
                             list += it
                         }
