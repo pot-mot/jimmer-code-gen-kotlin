@@ -32,6 +32,7 @@ GenAssociationView {
 
 GenAssociationMatchView {
     associationType
+    fake
     sourceColumn {
         id
         table {

@@ -45,8 +45,8 @@ class AssociationMatchTest(
         val column3 = GenColumnMatchView(3, "id", "", 0, "", true, false, false, true, table2)
         val column4 = GenColumnMatchView(4, "table1_id", "", 0, "", false, false, false, true, table2)
 
-        assert(simplePkColumnMatch(column4, column1) == AssociationType.MANY_TO_ONE)
-        assert(simplePkColumnMatch(column2, column3) == AssociationType.MANY_TO_ONE)
+        assert(simplePkColumnMatch(column4, column1)!!.associationType == AssociationType.MANY_TO_ONE)
+        assert(simplePkColumnMatch(column2, column3)!!.associationType == AssociationType.MANY_TO_ONE)
 
         val columns = listOf(column1, column2, column3, column4)
 
@@ -68,8 +68,8 @@ class AssociationMatchTest(
         val column3 = GenColumnMatchView(3, "table2_id", "", 0, "", true, false, false, true, table2)
         val column4 = GenColumnMatchView(4, "table1_id", "", 0, "", false, false, false, true, table2)
 
-        assert(includeTableNamePkColumnMatch(column4, column1) == AssociationType.MANY_TO_ONE)
-        assert(includeTableNamePkColumnMatch(column2, column3) == AssociationType.MANY_TO_ONE)
+        assert(includeTableNamePkColumnMatch(column4, column1)!!.associationType == AssociationType.MANY_TO_ONE)
+        assert(includeTableNamePkColumnMatch(column2, column3)!!.associationType == AssociationType.MANY_TO_ONE)
 
         val columns = listOf(column1, column2, column3, column4)
 
@@ -98,7 +98,7 @@ class AssociationMatchTest(
         val column4 = GenColumnMatchView(4, "id", "", 0, "", true, false, false, true, table2)
         val column5 = GenColumnMatchView(5, "name", "", 0, "", false, false, false, true, table2)
 
-        assert(pkSuffixColumnMatch(column2, column4) == AssociationType.MANY_TO_ONE)
+        assert(pkSuffixColumnMatch(column2, column4)!!.associationType == AssociationType.MANY_TO_ONE)
 
         val columns = listOf(column1, column2, column3, column4, column5)
 

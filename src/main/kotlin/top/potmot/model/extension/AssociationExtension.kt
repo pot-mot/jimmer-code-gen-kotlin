@@ -6,11 +6,13 @@ import top.potmot.model.dto.GenColumnMatchView
 
 fun newGenAssociationMatchView(
     associationType: AssociationType,
+    fake: Boolean,
     source: GenColumnMatchView,
     target: GenColumnMatchView
 ): GenAssociationMatchView {
     return GenAssociationMatchView(
         associationType,
+        fake,
         GenAssociationMatchView.TargetOf_sourceColumn(
             source.id,
             GenAssociationMatchView.TargetOf_sourceColumn.TargetOf_table_2(source.table.id)

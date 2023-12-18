@@ -3,7 +3,9 @@ package top.potmot.core.database.match
 import top.potmot.config.GenConfig
 import top.potmot.core.entity.convert.clearTableName
 import top.potmot.enumeration.AssociationType
+import top.potmot.model.dto.GenAssociationMatchView
 import top.potmot.model.dto.GenColumnMatchView
+import top.potmot.model.extension.newGenAssociationMatchView
 
 /**
  * 两个库表之间关联判断的匹配函数
@@ -14,7 +16,7 @@ import top.potmot.model.dto.GenColumnMatchView
 typealias AssociationMatch = (
     source: GenColumnMatchView,
     target: GenColumnMatchView
-) -> AssociationType?
+) -> GenAssociationMatchView?
 
 /**
  * 简单主键列关联匹配
@@ -26,7 +28,7 @@ val simplePkColumnMatch: AssociationMatch = { source, target ->
     if (target.partOfPk && target.table.id != source.table.id) {
         val targetTableName = target.table.name.clearTableName()
         if ("${targetTableName}${GenConfig.separator}${target.name}" == source.name) {
-            AssociationType.MANY_TO_ONE
+            newGenAssociationMatchView(AssociationType.MANY_TO_ONE, false, source, target)
         } else {
             null
         }
@@ -46,9 +48,9 @@ val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
         val targetTableName = target.table.name.clearTableName()
         if (target.name.contains(targetTableName) && target.name == source.name) {
             if (source.partOfUniqueIdx) {
-                AssociationType.ONE_TO_ONE
+                newGenAssociationMatchView(AssociationType.ONE_TO_ONE, false, source, target)
             } else {
-                AssociationType.MANY_TO_ONE
+                newGenAssociationMatchView(AssociationType.MANY_TO_ONE, false, source, target)
             }
         } else {
             null
@@ -80,7 +82,7 @@ val pkSuffixColumnMatch: AssociationMatch = { source, target ->
                     source.name.split(separator).takeLast(2)
 
         if (sourceMatchList == targetMatchList) {
-            AssociationType.MANY_TO_ONE
+            newGenAssociationMatchView(AssociationType.MANY_TO_ONE, false, source, target)
         } else {
             null
         }
