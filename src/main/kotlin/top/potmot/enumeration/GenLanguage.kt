@@ -3,14 +3,7 @@ package top.potmot.enumeration
 /**
  * 生成语言
  */
-enum class GenLanguage(val value: String) {
-    /**
-     * 生成语言 kotlin
-     */
-    KOTLIN("kotlin"),
-
-    /**
-     * 生成语言 java
-     */
-    JAVA("java")
+enum class GenLanguage {
+    KOTLIN,
+    JAVA
 }

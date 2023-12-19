@@ -1,3 +1,8 @@
+GenModelSimpleView {
+    #allScalars
+    -value
+}
+
 GenModelView {
     #allScalars
 }
@@ -6,5 +11,7 @@ input GenModelInput {
     id
     name
     remark
+    language
+    dataSourceType
     value?
 }

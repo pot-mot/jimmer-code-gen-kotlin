@@ -74,12 +74,14 @@ CREATE TABLE `gen_enum_item`
 DROP TABLE IF EXISTS `gen_model`;
 CREATE TABLE `gen_model`
 (
-    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `name`          varchar(500) NOT NULL COMMENT '名称',
-    `value`         longtext     NOT NULL COMMENT '模型 JSON 数据',
-    `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-    `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-    `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
+    `id`               bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `name`             varchar(500) NOT NULL COMMENT '名称',
+    `value`            longtext     NOT NULL COMMENT '模型 JSON 数据',
+    `language`         varchar(500) NOT NULL COMMENT '语言',
+    `data_source_type` varchar(500) NOT NULL COMMENT '数据源类型',
+    `created_time`     datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time`    datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`           varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4

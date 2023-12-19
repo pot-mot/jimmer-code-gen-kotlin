@@ -137,12 +137,12 @@ object GenConfig {
     }
 
     fun setLanguage(language: String) {
-        when (language.lowercase()) {
-            GenLanguage.JAVA.value -> {
+        when (language.uppercase()) {
+            GenLanguage.JAVA.name -> {
                 this.language = GenLanguage.JAVA
             }
 
-            GenLanguage.KOTLIN.value -> {
+            GenLanguage.KOTLIN.name -> {
                 this.language = GenLanguage.KOTLIN
             }
 

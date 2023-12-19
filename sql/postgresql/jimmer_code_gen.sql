@@ -126,18 +126,23 @@ EXECUTE FUNCTION update_modified_time();
 -- ----------------------------
 CREATE TABLE "gen_model"
 (
-    "id"            BIGSERIAL PRIMARY KEY,
-    "name"          text        NOT NULL,
-    "value"         text        NOT NULL,
-    "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"        text        NOT NULL
+    "id"               BIGSERIAL PRIMARY KEY,
+    "name"             text        NOT NULL,
+    "value"            text        NOT NULL,
+    "language"         text        NOT NULL,
+    "data_source_type" text        NOT NULL,
+    "order_key"        bigint      NOT NULL DEFAULT 0,
+    "created_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"    timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark"           text        NOT NULL
 );
 
 COMMENT ON TABLE "gen_model" IS '生成模型';
 COMMENT ON COLUMN "gen_model"."id" IS 'ID';
 COMMENT ON COLUMN "gen_model"."name" IS '名称';
 COMMENT ON COLUMN "gen_model"."value" IS '模型 JSON 数据';
+COMMENT ON COLUMN "gen_model"."language" IS '语言';
+COMMENT ON COLUMN "gen_model"."data_source_type" IS '数据源类型';
 COMMENT ON COLUMN "gen_model"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_model"."modified_time" IS '修改时间';
 COMMENT ON COLUMN "gen_model"."remark" IS '备注';
@@ -471,15 +476,15 @@ EXECUTE FUNCTION update_modified_time();
 -- ----------------------------
 CREATE TABLE "gen_type_mapping"
 (
-    "id"              BIGSERIAL PRIMARY KEY,
-    "data_source_type" text NOT NULL,
-    "type_expression" text        NOT NULL,
-    "language"        text        NOT NULL,
-    "property_type"   text        NOT NULL,
-    "order_key"       bigint      NOT NULL DEFAULT 0,
-    "created_time"    timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"   timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"          text        NOT NULL DEFAULT ''
+    "id"               BIGSERIAL PRIMARY KEY,
+    "data_source_type" text        NOT NULL,
+    "type_expression"  text        NOT NULL,
+    "language"         text        NOT NULL,
+    "property_type"    text        NOT NULL,
+    "order_key"        bigint      NOT NULL DEFAULT 0,
+    "created_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"    timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark"           text        NOT NULL DEFAULT ''
 );
 
 COMMENT ON TABLE "gen_type_mapping" IS '列到属性类型映射';

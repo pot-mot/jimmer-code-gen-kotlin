@@ -7,6 +7,8 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.OneToMany
+import top.potmot.enumeration.DataSourceType
+import top.potmot.enumeration.GenLanguage
 import top.potmot.model.base.BaseEntity
 
 /**
@@ -34,6 +36,16 @@ interface GenModel : BaseEntity {
      * 模型JSON数据
      */
     val value: String
+
+    /**
+     * 语言
+     */
+    val language: GenLanguage
+
+    /**
+     * 数据源类型
+     */
+    val dataSourceType: DataSourceType
 
     /**
      * 生成

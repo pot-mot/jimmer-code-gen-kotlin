@@ -24,6 +24,7 @@ import top.potmot.model.copy
 import top.potmot.model.createdTime
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenModelInput
+import top.potmot.model.dto.GenModelSimpleView
 import top.potmot.model.dto.GenModelView
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTableColumnsInput
@@ -47,10 +48,10 @@ class ModelService(
 
 
     @GetMapping
-    fun list(): List<GenModelView> {
+    fun list(): List<GenModelSimpleView> {
         return sqlClient.createQuery(GenModel::class) {
             orderBy(table.createdTime)
-            select(table.fetch(GenModelView::class))
+            select(table.fetch(GenModelSimpleView::class))
         }.execute()
     }
 
