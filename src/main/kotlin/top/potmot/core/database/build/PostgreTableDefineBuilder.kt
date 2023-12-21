@@ -1,5 +1,6 @@
 package top.potmot.core.database.build
 
+import top.potmot.model.GenColumn
 import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 
@@ -13,7 +14,7 @@ class PostgreTableDefineBuilder : TableDefineBuilder() {
         sb.append(name.escape())
             .append(' ')
 
-        sb.append(typeStringify())
+        sb.append(getDatabaseTypeString(this.toEntity()))
 
         if (typeNotNull) {
             sb.append(" NOT NULL")
@@ -30,20 +31,12 @@ class PostgreTableDefineBuilder : TableDefineBuilder() {
         return sb.toString()
     }
 
-    override fun typeStringify(
-        type: String,
-        typeCode: Int,
-        displaySize: Long,
-        numericPrecision: Long,
-        fullType: String,
-        partOfPk: Boolean,
-        partOfUniqueIdx: Boolean,
-        partOfFk: Boolean,
-        autoIncrement: Boolean,
-        mappingTable: Boolean
+    override fun getDatabaseTypeString(
+        column: GenColumn,
+        mappingTable: Boolean,
     ): String =
-        if (autoIncrement && partOfPk && !mappingTable) {
-            when (typeCode) {
+        if (column.autoIncrement && column.partOfPk && !mappingTable) {
+            when (column.typeCode) {
                 Types.TINYINT -> "SMALLSERIAL"
                 Types.SMALLINT -> "SMALLSERIAL"
                 Types.INTEGER -> "SERIAL"
@@ -51,7 +44,7 @@ class PostgreTableDefineBuilder : TableDefineBuilder() {
                 else -> "SERIAL"
             }
         } else {
-            type
+            column.type
         }
 
     private fun createTableComment(name: String, comment: String): String? =

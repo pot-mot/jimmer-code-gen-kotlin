@@ -47,11 +47,7 @@ val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
     if (target.partOfPk && target.table.id != source.table.id) {
         val targetTableName = target.table.name.clearTableName()
         if (target.name.contains(targetTableName) && target.name == source.name) {
-            if (source.partOfUniqueIdx) {
-                newGenAssociationMatchView(AssociationType.ONE_TO_ONE, false, source, target)
-            } else {
-                newGenAssociationMatchView(AssociationType.MANY_TO_ONE, false, source, target)
-            }
+            newGenAssociationMatchView(AssociationType.MANY_TO_ONE, false, source, target)
         } else {
             null
         }

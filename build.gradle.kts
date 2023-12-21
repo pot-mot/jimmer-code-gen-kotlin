@@ -79,8 +79,10 @@ dependencies {
 // Without this configuration, gradle command can still run.
 // However, Intellij cannot find the generated source.
 kotlin {
-    sourceSets.main {
-        kotlin.srcDir("build/generated/ksp/main/kotlin")
+    sourceSets{
+        main {
+            kotlin.srcDir("build/generated/ksp/main/kotlin")
+        }
     }
 }
 

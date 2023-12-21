@@ -38,67 +38,13 @@ GenTableColumnsView {
         id(table)
         id(enum)
     }
-}
 
-GenTableAssociationsView {
-    #allScalars
-    id(entity)
-
-    schema {
+    indexes {
         id
+        id(table)
         name
-
-        dataSource {
-            id
-            name
-            type
-        }
-    }
-
-    columns {
-        #allScalars
-        fullType
-
-        table {
-            id
-            name
-            comment
-        }
-
-        id(enum)
-
-        inAssociations {
-            id
-            associationType
-            dissociateAction
-            fake
-            sourceColumn {
-                id
-                name
-                comment
-                table {
-                    id
-                    name
-                    comment
-                }
-            }
-        }
-        outAssociations {
-            id
-            associationType
-            dissociateAction
-            fake
-            targetColumn {
-                id
-                name
-                comment
-                table {
-                    id
-                    name
-                    comment
-                }
-            }
-        }
+        uniqueIndex
+        columnIds
     }
 }
 
@@ -117,5 +63,91 @@ input GenTableColumnsInput {
         id(enum)
         -createdTime
         -modifiedTime
+    }
+
+    indexes {
+        name
+        uniqueIndex
+
+        columns {
+            name
+        }
+    }
+}
+
+
+
+/**
+ * base on GenTableColumnsView and single part of GenAssociationView
+ */
+GenTableAssociationsView {
+    #allScalars
+    id(entity)
+
+    schema {
+        id
+        name
+
+        dataSource {
+            id
+            name
+            type
+        }
+    }
+
+    columns {
+        #allScalars
+        id(table)
+        id(enum)
+    }
+
+    indexes {
+        id
+        id(table)
+        name
+        uniqueIndex
+        columnIds
+    }
+
+    inAssociations {
+        #allScalars
+
+        sourceTable {
+            id
+            name
+            comment
+        }
+
+        columnReferences {
+            sourceColumn {
+                id
+                name
+                comment
+                type
+            }
+
+            id(targetColumn)
+        }
+    }
+
+    outAssociations {
+        #allScalars
+
+        targetTable {
+            id
+            name
+            comment
+        }
+
+        columnReferences {
+            targetColumn {
+                id
+                name
+                comment
+                type
+            }
+
+            id(sourceColumn)
+        }
     }
 }

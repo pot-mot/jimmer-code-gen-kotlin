@@ -19,8 +19,8 @@ data class GenConfigProperties(
     /** 默认包路径  */
     val defaultPackagePath: String? = null,
 
-    /** 生成 tableDefine 时携带外键 */
-    val tableDefineWithFk: Boolean? = null,
+    /** 默认真实外键 */
+    val realFk: Boolean? = null,
 
     /** 是否生成 IdView 注释 */
     var idViewProperty: Boolean? = null,

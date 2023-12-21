@@ -103,5 +103,41 @@ interface GenTable : BaseEntity {
      */
     @OneToMany(mappedBy = "table", orderedProps = [OrderedProp(value = "orderKey")])
     val columns: List<GenColumn>
+
+    /**
+     * 唯一索引
+     */
+    @OneToMany(mappedBy = "table")
+    val indexes: List<GenTableIndex>
+
+    /**
+     * 唯一索引 ID 视图
+     */
+    @IdView("indexes")
+    val indexIds: List<Long>
+
+    /**
+     * 入关联
+     */
+    @OneToMany(mappedBy = "targetTable")
+    val inAssociations: List<GenAssociation>
+
+    /**
+     * 入关联 ID 视图
+     */
+    @IdView("inAssociations")
+    val inAssociationIds: List<Long>
+
+    /**
+     * 出关联
+     */
+    @OneToMany(mappedBy = "sourceTable")
+    val outAssociations: List<GenAssociation>
+
+    /**
+     * 出关联 ID 视图
+     */
+    @IdView("outAssociations")
+    val outAssociationIds: List<Long>
 }
 

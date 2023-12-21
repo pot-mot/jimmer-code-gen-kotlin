@@ -21,8 +21,8 @@ object GenConfig {
     /** 语言，java/kotlin */
     var language: GenLanguage = GenLanguage.KOTLIN
 
-    /** 生成 tableDefine 时携带外键 */
-    var tableDefineWithFk: Boolean = true
+    /** 默认真实外键 */
+    var realFk: Boolean = true
 
     /** 作者  */
     var author: String = ""
@@ -180,8 +180,8 @@ object GenConfig {
             language = it
         }
 
-        newConfig.tableDefineWithFk?.let {
-            tableDefineWithFk = it
+        newConfig.realFk?.let {
+            realFk = it
         }
 
         newConfig.author?.let {

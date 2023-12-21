@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.load.getCatalog
-import top.potmot.core.database.load.getFkAssociation
+import top.potmot.core.database.load.getFkAssociations
+import top.potmot.core.database.load.getGenIndexes
 import top.potmot.core.database.load.toGenSchema
 import top.potmot.core.database.load.toGenTable
 import top.potmot.error.DataSourceErrorCode
@@ -91,20 +92,33 @@ class SchemaService(
                 val genTableNameMap = mutableMapOf<String, GenTable>()
 
                 // 获取 table 的外键以生成关联
-                tables.forEach { table ->
+                val tableGenTablePairs = tables.map { table ->
                     val genTable = table.toGenTable(
                         schemaId = newSchemaId
                     )
 
-                    genTableNameMap[genTable.name] = sqlClient.save(genTable) {
+                    if (genTableNameMap.containsKey(genTable.name)) {
+                        throw RuntimeException("DataSource load fail: \ntable [${genTable.name}] more than one")
+                    }
+
+                    val savedGenTable = sqlClient.save(genTable) {
                         this.setKeyProps(GenTable::schema, GenTable::name)
                     }.modifiedEntity
+
+                    genTableNameMap[genTable.name] = savedGenTable
+
+                    Pair(table, savedGenTable)
                 }
 
-                tables.forEach { table ->
-                    table.getFkAssociation(genTableNameMap)
+                tableGenTablePairs.forEach { (table, genTable) ->
+                    table.getFkAssociations(genTableNameMap)
                         .forEach { association ->
                             sqlClient.save(association)
+                        }
+
+                    table.getGenIndexes(genTable)
+                        .forEach {index ->
+                            sqlClient.save(index)
                         }
                 }
 

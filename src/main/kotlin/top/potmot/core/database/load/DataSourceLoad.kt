@@ -1,11 +1,13 @@
 package top.potmot.core.database.load
 
+import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.DissociateAction
 import schemacrawler.schema.Catalog
 import schemacrawler.schema.Column
-import schemacrawler.schema.ColumnReference
+import schemacrawler.schema.ForeignKey
 import schemacrawler.schema.ForeignKeyUpdateRule
+import schemacrawler.schema.Index
 import schemacrawler.schema.Schema
 import schemacrawler.schema.Table
 import schemacrawler.schemacrawler.LimitOptionsBuilder
@@ -13,15 +15,21 @@ import schemacrawler.schemacrawler.LoadOptionsBuilder
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder
 import schemacrawler.schemacrawler.SchemaInfoLevelBuilder
 import schemacrawler.tools.utility.SchemaCrawlerUtility
+import top.potmot.core.meta.getMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
 import top.potmot.model.GenAssociation
+import top.potmot.model.GenAssociationProps
 import top.potmot.model.GenColumn
+import top.potmot.model.GenColumnReference
 import top.potmot.model.GenSchema
 import top.potmot.model.GenTable
+import top.potmot.model.GenTableIndex
 import top.potmot.model.by
+import top.potmot.model.copy
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import java.util.regex.Pattern
+import kotlin.RuntimeException
 
 /**
  * 获取数据库目录（Catalog）
@@ -147,71 +155,56 @@ fun Column.toGenColumn(
         this.defaultValue = column.defaultValue
         this.comment = column.remarks
         this.partOfPk = column.isPartOfPrimaryKey
-        this.partOfFk = column.isPartOfForeignKey
-        this.partOfUniqueIdx = column.isPartOfUniqueIndex
         this.autoIncrement = column.isAutoIncremented
         this.typeNotNull = !column.isNullable
     }
 }
 
-private fun getColumnPairFromFkColumnRef(
-    columnRef: ColumnReference, tableNameMap: Map<String, GenTable>
-): Pair<GenColumn, GenColumn>? {
-    val sourceNameList = columnRef.foreignKeyColumn.fullName.split(".").reversed()
-    val sourceTableName = sourceNameList[1]
-    val sourceColumnName = sourceNameList[0]
-
-    val sourceColumn = tableNameMap[sourceTableName]?.columns
-        ?.find { column -> column.name == sourceColumnName }
-
-    sourceColumn?.let {
-        val targetNameList = columnRef.primaryKeyColumn.fullName.split(".").reversed()
-        val targetTableName = targetNameList[1]
-        val targetColumnName = targetNameList[0]
-
-        val targetColumn = tableNameMap[targetTableName]?.columns
-            ?.find { column -> column.name == targetColumnName }
-
-        targetColumn?.takeIf { sourceColumn.typeCode == targetColumn.typeCode }?.let {
-            return Pair(sourceColumn, targetColumn)
-        }
-    }
-
-    return null
-}
-
 /**
- * 根据 Table 生成 Fk Association 关联，
+ * 根据 Table 中的外键转换 Association
  * 要求 GenTable 已经 save，具有 columns，columns 具有 id 与 name
  */
-fun Table.getFkAssociation(tableNameMap: Map<String, GenTable>): List<GenAssociation> {
-    val result = mutableListOf<GenAssociation>()
+fun Table.getFkAssociations(tableNameMap: Map<String, GenTable>): List<GenAssociation> =
+    foreignKeys.map { it.toGenAssociation(tableNameMap) }
 
-    this.foreignKeys.forEach {
-        it.columnReferences.forEach { columnRef ->
-            getColumnPairFromFkColumnRef(columnRef, tableNameMap)?.let {
-                (sourceColumn, targetColumn) ->
-                val type =
-                    if (columnRef.foreignKeyColumn.isPartOfUniqueIndex)
-                        AssociationType.ONE_TO_ONE
-                    else
-                        AssociationType.MANY_TO_ONE
+private fun ForeignKey.toGenAssociation(
+    tableNameMap: Map<String, GenTable>
+): GenAssociation {
+    var association = new(GenAssociation::class).by {
+        this.name = this@toGenAssociation.name
+        this.associationType = AssociationType.MANY_TO_ONE
+        this.dissociateAction = deleteRule.toDissociateAction()
+        this.fake = false
+    }
 
+    val columnReferences = mutableListOf<GenColumnReference>()
 
-                result +=
-                    new(GenAssociation::class).by {
-                        this.sourceColumnId = sourceColumn.id
-                        this.targetColumnId = targetColumn.id
-                        this.associationType = type
-                        this.dissociateAction = it.deleteRule.toDissociateAction()
-                        this.fake = false
-                        this.remark = columnRef.toString()
-                    }
+    this.columnReferences.forEach { columnRef ->
+        columnRef.getMeta(tableNameMap)?.let {
+            columnReferences +=
+                new(GenColumnReference::class).by {
+                    this.sourceColumnId = it.source.column.id
+                    this.targetColumnId = it.target.column.id
+                    this.remark = columnRef.toString()
+                }
+
+            association = association.copy {
+                if (!ImmutableObjects.isLoaded(this, GenAssociationProps.SOURCE_TABLE)) {
+                    this.sourceTable = it.source.table
+                } else if (this.sourceTable.id != it.source.table.id) {
+                    throw RuntimeException("Convert foreign key [${association.name}] to association fail: \nsource table not match: \n${this.sourceTable} not equals ${it.source.table}")
+                }
+
+                if (!ImmutableObjects.isLoaded(this, GenAssociationProps.TARGET_TABLE)) {
+                    this.targetTable = it.target.table
+                } else if (this.targetTable.id != it.target.table.id) {
+                    throw RuntimeException("Convert foreign key [${association.name}] to association fail: \ntarget table not match: \n${this.targetTable} not equals ${it.target.table}")
+                }
             }
         }
     }
 
-    return result
+    return association.copy { this.columnReferences = columnReferences }
 }
 
 private fun ForeignKeyUpdateRule.toDissociateAction(): DissociateAction =
@@ -224,3 +217,19 @@ private fun ForeignKeyUpdateRule.toDissociateAction(): DissociateAction =
         ForeignKeyUpdateRule.restrict -> DissociateAction.NONE
     }
 
+fun Table.getGenIndexes(table: GenTable): List<GenTableIndex> =
+    indexes.map { it.toGenTableIndex(table) }
+
+private fun Index.toGenTableIndex(table: GenTable): GenTableIndex =
+    new(GenTableIndex::class).by {
+        this.name = shortName
+        this.uniqueIndex = isUnique
+        this.tableId = table.id
+        this.columnIds = getColumns().map {
+            val nameMatchColumns = table.columns.filter { column -> column.name == it.name }
+            if (nameMatchColumns.size != 1) {
+                throw RuntimeException("Load index [$name] fail: \nmatch name ${it.name} column more than one")
+            }
+            nameMatchColumns[0].id
+        }
+    }

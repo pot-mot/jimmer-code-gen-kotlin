@@ -5,8 +5,6 @@ GenColumnMatchView {
     typeCode
     type
     partOfPk
-    partOfFk
-    partOfUniqueIdx
     typeNotNull
 
     table {

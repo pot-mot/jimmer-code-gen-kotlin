@@ -1,6 +1,7 @@
 package top.potmot.service
 
 import org.babyfish.jimmer.client.ThrowsAll
+import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
@@ -15,11 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.generate.generateTableDefines
+import top.potmot.core.database.load.toInput
+import top.potmot.core.database.load.toInputPair
 import top.potmot.enumeration.DataSourceType
 import top.potmot.error.DataSourceErrorCode
-import top.potmot.model.extension.valueToData
+import top.potmot.core.database.load.valueToData
 import top.potmot.model.GenModel
 import top.potmot.model.GenTable
+import top.potmot.model.by
 import top.potmot.model.copy
 import top.potmot.model.createdTime
 import top.potmot.model.dto.GenAssociationModelInput
@@ -66,21 +70,52 @@ class ModelService(
     fun save(
         @RequestBody input: GenModelInput
     ): Long {
+        /**
+         * 1. 创建或更新 model
+         */
         val model = if (input.id == null) {
             sqlClient.insert(input).modifiedEntity
         } else {
             sqlClient.update(input).modifiedEntity
         }
 
+        /**
+         * 2. 保存关联数据
+         */
         if (!input.value.isNullOrBlank()) {
-            valueToData(model.id, input.value).apply {
-                model
-                    .copy {
-                        tables = first.map { it.toEntity() }
-                        associations = second.map { it.toEntity() }
-                    }.apply {
-                        sqlClient.save(this)
-                    }
+            valueToData(model.id, input.value).let { (tables, associations) ->
+                /**
+                 * 2.1 保存舍弃 indexes 的 table
+                 */
+                val tableInputPairs = tables.map { it.toInputPair() }.toMutableList()
+                val modelWithTables = new(GenModel::class).by {
+                    this.id = model.id
+                    this.tables = tableInputPairs.map { it.first }
+                }
+                val savedModelWithTables = sqlClient.update(modelWithTables).modifiedEntity
+
+                /**
+                 * 2.2 将 indexes 更新至 table
+                 */
+                val savedTables = savedModelWithTables.tables
+                tableInputPairs.forEach { (table, indexes) ->
+                    val savedTable = savedTables.filter { it.name == table.name }.firstOrNull()
+                        ?: throw RuntimeException("Load model [${model.name}] fail: \nTable [${table.name}] not found")
+
+                    sqlClient.update(savedTable.copy {
+                        this.indexes = indexes.map { it.toInput(savedTable) }
+                    })
+                }
+
+                /**
+                 * 2.3 保存 association
+                 */
+                val associationInputs = associations.map { it.toInput(savedTables) }
+                val modelWithAssociations = new(GenModel::class).by {
+                    this.id = model.id
+                    this.associations = associationInputs.map { it.toEntity() }
+                }
+                sqlClient.update(modelWithAssociations).modifiedEntity
             }
         }
 
@@ -122,7 +157,7 @@ class ModelService(
 //            model?.createSql(it)
 //        }
 //    }
-
+//
 //    @PostMapping("/sql/execute")
 //    @ThrowsAll(DataSourceErrorCode::class)
 //    @Transactional

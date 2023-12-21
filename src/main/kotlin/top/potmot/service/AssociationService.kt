@@ -24,7 +24,7 @@ import top.potmot.enumeration.AssociationMatchType
 import top.potmot.enumeration.SelectType
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenColumn
-import top.potmot.model.comment
+import top.potmot.model.columnReferences
 import top.potmot.model.createdTime
 import top.potmot.model.dto.GenAssociationIdView
 import top.potmot.model.dto.GenAssociationInput
@@ -32,12 +32,13 @@ import top.potmot.model.dto.GenAssociationMatchView
 import top.potmot.model.dto.GenAssociationView
 import top.potmot.model.dto.GenColumnMatchView
 import top.potmot.model.id
+import top.potmot.model.name
 import top.potmot.model.query.AssociationQuery
-import top.potmot.model.sourceColumn
 import top.potmot.model.sourceColumnId
+import top.potmot.model.sourceTableId
 import top.potmot.model.tableId
-import top.potmot.model.targetColumn
 import top.potmot.model.targetColumnId
+import top.potmot.model.targetTableId
 import kotlin.reflect.KClass
 
 @RestController
@@ -132,7 +133,7 @@ class AssociationService(
 
         columns.forEach { source ->
             columns.forEach { target ->
-                match(source, target)?.let {associationMatchView ->
+                match(source, target)?.let { associationMatchView ->
                     result += associationMatchView
                 }
             }
@@ -145,22 +146,30 @@ class AssociationService(
         return sqlClient.createQuery(GenAssociation::class) {
             query.keywords?.takeIf { it.isNotEmpty() }?.let {
                 query.keywords.forEach {
-                    where(table.comment ilike it)
+                    where(table.name ilike it)
                 }
             }
 
-            query.sourceColumnId?.let {
-                where(table.sourceColumnId eq it)
-            }
             query.sourceTableId?.let {
-                where(table.sourceColumn.tableId eq it)
-            }
-
-            query.targetColumnId?.let {
-                where(table.targetColumnId eq it)
+                where(table.sourceTableId eq it)
             }
             query.targetTableId?.let {
-                where(table.targetColumn.tableId eq it)
+                where(table.targetTableId eq it)
+            }
+
+            query.sourceColumnId?.let {
+                where(
+                    table.columnReferences {
+                        sourceColumnId eq it
+                    }
+                )
+            }
+            query.targetColumnId?.let {
+                where(
+                    table.columnReferences {
+                        targetColumnId eq it
+                    }
+                )
             }
 
             query.ids?.takeIf { it.isNotEmpty() }?.let {
@@ -187,16 +196,16 @@ class AssociationService(
                 when (selectType) {
                     SelectType.AND -> {
                         where(
-                            table.sourceColumn.tableId valueIn it,
-                            table.targetColumn.tableId valueIn it
+                            table.sourceTableId valueIn it,
+                            table.targetTableId valueIn it
                         )
                     }
 
                     SelectType.OR -> {
                         where(
                             or(
-                                table.sourceColumn.tableId valueIn it,
-                                table.targetColumn.tableId valueIn it
+                                table.sourceTableId valueIn it,
+                                table.targetTableId valueIn it
                             )
                         )
                     }
@@ -217,16 +226,24 @@ class AssociationService(
                 when (selectType) {
                     SelectType.AND -> {
                         where(
-                            table.sourceColumn.id valueIn sourceColumnIds,
-                            table.targetColumn.id valueIn targetColumnIds
+                            table.columnReferences {
+                                targetColumnId valueIn targetColumnIds
+                            },
+                            table.columnReferences {
+                                sourceColumnId valueIn sourceColumnIds
+                            }
                         )
                     }
 
                     SelectType.OR -> {
                         where(
                             or(
-                                table.sourceColumn.id valueIn sourceColumnIds,
-                                table.targetColumn.id valueIn targetColumnIds
+                                table.columnReferences {
+                                    targetColumnId valueIn targetColumnIds
+                                },
+                                table.columnReferences {
+                                    sourceColumnId valueIn sourceColumnIds
+                                }
                             )
                         )
                     }

@@ -1,6 +1,7 @@
 package top.potmot.core.entity.convert
 
 import top.potmot.config.GenConfig
+import top.potmot.core.meta.ColumnTypeMeta
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.dto.GenTypeMappingView
@@ -97,14 +98,6 @@ fun getPropertyType(
         GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeCode)?.qualifiedName
     }
 
-data class ColumnTypeData(
-    var type: String,
-    var typeCode: Int,
-    var displaySize: Long,
-    var numericPrecision: Long,
-    var typeNotNull: Boolean,
-)
-
 fun getPropertyType (
     type: String,
     typeCode: Int,
@@ -121,19 +114,3 @@ fun getPropertyType (
         dataSourceType,
         language,
     ) ?: getPropertyType(typeCode, typeNotNull, language) ?: type
-
-fun ColumnTypeData.getPropertyType (
-    dataSourceType: DataSourceType = GenConfig.dataSourceType,
-    language: GenLanguage = GenConfig.language,
-    typeMappings: List<GenTypeMappingView> = emptyList(),
-): String =
-    getPropertyType(
-        type,
-        typeCode,
-        displaySize,
-        numericPrecision,
-        typeNotNull,
-        dataSourceType,
-        language,
-        typeMappings,
-    )

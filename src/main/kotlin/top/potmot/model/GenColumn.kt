@@ -8,11 +8,14 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.Key
+import org.babyfish.jimmer.sql.ManyToMany
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.Table
-import top.potmot.model.extension.getFullType
+import top.potmot.core.meta.ColumnTypeMeta
+import top.potmot.core.meta.fullType
+import top.potmot.core.meta.getTypeMeta
 import top.potmot.model.base.BaseEntity
 
 /**
@@ -32,22 +35,16 @@ interface GenColumn : BaseEntity {
     override val id: Long
 
     /**
-     * 对应属性 ID
-     */
-    @IdView("properties")
-    val propertyIds: List<Long>
-
-    /**
      * 对应属性
      */
     @OneToMany(mappedBy = "column")
     val properties: List<GenProperty>
 
     /**
-     * 归属表编号
+     * 对应属性 ID 视图
      */
-    @IdView
-    val tableId: Long
+    @IdView("properties")
+    val propertyIds: List<Long>
 
     /**
      * 归属表
@@ -56,6 +53,12 @@ interface GenColumn : BaseEntity {
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val table: GenTable
+
+    /**
+     * 归属表 ID 视图
+     */
+    @IdView
+    val tableId: Long
 
     /**
      * 列在表中顺序
@@ -89,9 +92,13 @@ interface GenColumn : BaseEntity {
     val numericPrecision: Long
 
 
-    @Formula(dependencies = ["typeCode", "type", "displaySize", "numericPrecision"])
+    @Formula(dependencies = ["typeCode", "type", "displaySize", "numericPrecision", "typeNotNull"])
+    val typeMeta: ColumnTypeMeta
+        get() = getTypeMeta()
+
+    @Formula(dependencies = ["typeCode", "type", "displaySize", "numericPrecision", "typeNotNull"])
     val fullType: String
-        get() = getFullType(typeCode, type, displaySize, numericPrecision)
+        get() = typeMeta.fullType()
 
     /**
      * 列默认值
@@ -112,16 +119,6 @@ interface GenColumn : BaseEntity {
      * 是否自增
      */
     val autoIncrement: Boolean
-
-    /**
-     * 是否外键
-     */
-    val partOfFk: Boolean
-
-    /**
-     * 是否唯一索引
-     */
-    val partOfUniqueIdx: Boolean
 
     /**
      * 是否非空
@@ -152,15 +149,21 @@ interface GenColumn : BaseEntity {
     val enumId: Long?
 
     /**
+     * 唯一索引
+     */
+    @ManyToMany(mappedBy = "columns")
+    val indexes: List<GenTableIndex>
+
+    /**
      * 入关联
      */
     @OneToMany(mappedBy = "targetColumn")
-    val inAssociations: List<GenAssociation>
+    val inColumnReferences: List<GenColumnReference>
 
     /**
      * 出关联
      */
     @OneToMany(mappedBy = "sourceColumn")
-    val outAssociations: List<GenAssociation>
+    val outColumnReferences: List<GenColumnReference>
 }
 

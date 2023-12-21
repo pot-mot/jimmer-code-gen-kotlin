@@ -1,13 +1,16 @@
 package top.potmot.core.database.build
 
 import org.babyfish.jimmer.sql.DissociateAction
-import top.potmot.config.GenConfig
 import top.potmot.core.entity.convert.clearColumnName
 import top.potmot.core.entity.convert.clearTableComment
 import top.potmot.core.entity.convert.clearTableName
+import top.potmot.core.meta.getAssociationMeta
+import top.potmot.core.meta.getFkName
+import top.potmot.core.meta.getMappingTableName
+import top.potmot.core.meta.getMeta
 import top.potmot.utils.template.TemplateBuilder
 import top.potmot.enumeration.AssociationType.*
-import top.potmot.model.extension.outColumns
+import top.potmot.model.GenColumn
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.extension.pkColumns
 
@@ -16,26 +19,10 @@ abstract class TableDefineBuilder : TemplateBuilder() {
 
     abstract fun GenTableAssociationsView.TargetOf_columns.columnStringify(): String
 
-    abstract fun typeStringify(
-        type: String,
-        typeCode: Int,
-        displaySize: Long,
-        numericPrecision: Long,
-        fullType: String,
-        partOfPk: Boolean,
-        partOfUniqueIdx: Boolean,
-        partOfFk: Boolean,
-        autoIncrement: Boolean,
+    abstract fun getDatabaseTypeString(
+        column: GenColumn,
         mappingTable: Boolean = false,
     ): String
-
-    open fun GenTableAssociationsView.TargetOf_columns.typeStringify(
-        mappingTable: Boolean = false,
-    ): String =
-        typeStringify(
-            type, typeCode, displaySize, numericPrecision, fullType, partOfPk, partOfFk, partOfUniqueIdx, autoIncrement,
-            mappingTable
-        )
 
     open fun createTable(
         name: String,
@@ -54,7 +41,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
     ): String =
         "DROP TABLE IF EXISTS ${name.escape()}${if (append.isBlank()) "" else " $append"};"
 
-    open fun alterTable(
+    fun alterTable(
         name: String
     ): String =
         "ALTER TABLE ${name.escape()} "
@@ -68,6 +55,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         table: GenTableAssociationsView,
         otherLines: List<String> = emptyList(),
         append: String = "",
+        withIndex: Boolean = true,
     ): String {
         val lines = mutableListOf<String>()
 
@@ -77,17 +65,24 @@ abstract class TableDefineBuilder : TemplateBuilder() {
 
         lines.addAll(otherLines)
 
-        return createTable(table.name, lines, append) +
-                "\n\n" +
-                table.columns
-                    .mapNotNull { column ->
-                        if (column.partOfUniqueIdx || column.partOfFk) {
-                            createIndex(table.name, column.name, column.partOfPk, column.partOfUniqueIdx)
-                        } else {
-                            null
-                        }
-                    }
-                    .joinToString { "\n\n$it" }
+        val tableDefine = createTable(table.name, lines, append)
+
+        val indexes = table.indexes.map {index ->
+            val columnNames = table.columns.filter { it.id in index.columnIds }.map { it.name }
+
+            if (columnNames.size != index.columnIds.size) {
+                throw RuntimeException("Unique index column count not match: \n table: ${table.name}, unique index: ${index.name}")
+            }
+
+            createIndex(
+                table.name,
+                columnNames,
+                index.uniqueIndex,
+                index.name,
+            )
+        }
+
+        return tableDefine + "\n" + indexes
     }
 
     open fun addConstraint(
@@ -103,15 +98,15 @@ abstract class TableDefineBuilder : TemplateBuilder() {
 
     open fun fkDefine(
         sourceTableName: String,
-        sourceColumnName: String,
+        sourceColumnNames: List<String>,
 
         targetTableName: String,
-        targetColumnName: String,
+        targetColumnNames: List<String>,
 
         dissociateAction: DissociateAction?
     ): String =
         buildString {
-            append("FOREIGN KEY (${sourceColumnName.escape()}) REFERENCES ${targetTableName.escape()} (${targetColumnName.escape()})")
+            append("FOREIGN KEY (${sourceColumnNames.joinToString(", ") { it.escape() }}) REFERENCES ${targetTableName.escape()} (${targetColumnNames.joinToString(", ") { it.escape() }})")
             append(" ${dissociateAction?.toOnDeleteAction() ?: ""} ON UPDATE RESTRICT")
         }
 
@@ -133,39 +128,38 @@ abstract class TableDefineBuilder : TemplateBuilder() {
 
     open fun createFkName(
         sourceTableName: String,
-        sourceColumnName: String,
+        sourceColumnNames: List<String>,
 
         targetTableName: String,
-        targetColumnName: String,
+        targetColumnNames: List<String>,
     ): String =
-        "fk_${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}" +
-                "_${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}"
+        getFkName(sourceTableName, sourceColumnNames, targetTableName, targetColumnNames)
 
     open fun createFkConstraint(
         sourceTableName: String,
-        sourceColumnName: String,
+        sourceColumnNames: List<String>,
 
         targetTableName: String,
-        targetColumnName: String,
+        targetColumnNames: List<String>,
 
         constraintName: String = createFkName(
             sourceTableName,
-            sourceColumnName,
+            sourceColumnNames,
             targetTableName,
-            targetColumnName
+            targetColumnNames
         ),
 
         fake: Boolean = false,
         dissociateAction: DissociateAction?
     ): String =
-        if (GenConfig.tableDefineWithFk && !fake) {
+        if (!fake) {
             "${addConstraint(sourceTableName, constraintName)}\n${
                 fkDefine(
                     sourceTableName,
-                    sourceColumnName,
+                    sourceColumnNames,
 
                     targetTableName,
-                    targetColumnName,
+                    targetColumnNames,
                     
                     dissociateAction
                 )
@@ -173,6 +167,34 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         } else {
             "-- fk placeholder for $constraintName"
         }
+
+    open fun createMappingTableName(
+        sourceTableName: String,
+        targetTableName: String,
+        sourceColumnName: String,
+        targetColumnName: String,
+    ): String =
+        getMappingTableName(sourceTableName, targetTableName, sourceColumnName, targetColumnName)
+
+    open fun createMappingTableComment(
+        sourceTableComment: String,
+        targetTableComment: String,
+    ): String =
+        "${sourceTableComment.clearTableComment()}与${targetTableComment.clearTableComment()}的映射关系表"
+
+    open fun createMappingSourceColumnName(
+        sourceTableName: String,
+        sourceTableComment: String,
+        sourceColumnName: String,
+    ): String =
+        "${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}"
+
+    open fun createMappingTargetColumnName(
+        targetTableName: String,
+        targetTableComment: String,
+        targetColumnName: String,
+    ): String =
+        "${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}"
 
     open fun createMappingTable(
         sourceTableName: String,
@@ -188,10 +210,10 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         lines: List<String> = emptyList(),
         append: String = "",
 
-        mappingTableName: String = "${sourceTableName.clearTableName()}_${targetTableName.clearTableName()}_mapping",
-        mappingTableComment: String = "${sourceTableComment.clearTableComment()}与${targetTableComment.clearTableComment()}的映射关系表",
-        mappingSourceColumnName: String = "${sourceTableName.clearTableName()}_${sourceColumnName.clearColumnName()}",
-        mappingTargetColumnName: String = "${targetTableName.clearTableName()}_${targetColumnName.clearColumnName()}"
+        mappingTableName: String = createMappingTableName(sourceTableName, targetTableName, sourceColumnName, targetColumnName),
+        mappingTableComment: String = createMappingTableComment(sourceTableComment, targetTableComment),
+        mappingSourceColumnName: String = createMappingSourceColumnName(sourceTableName, sourceTableComment, sourceColumnName),
+        mappingTargetColumnName: String = createMappingTargetColumnName(targetTableName, targetTableComment, targetColumnName)
     ): String {
         val mappingTable = createTable(
             mappingTableName,
@@ -207,22 +229,27 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             listOf(mappingSourceColumnName, mappingTargetColumnName)
         )
 
-        val commonFkName = createFkName(sourceTableName, sourceColumnName, targetTableName, targetColumnName);
+        val commonFkName = createFkName(
+            sourceTableName,
+            listOf(sourceColumnName),
+            targetTableName,
+            listOf(targetColumnName)
+        )
 
         val sourceFk = createFkConstraint(
             sourceTableName = mappingTableName,
-            sourceColumnName = mappingSourceColumnName,
+            sourceColumnNames = listOf(mappingSourceColumnName),
             targetTableName = sourceTableName,
-            targetColumnName = sourceColumnName,
+            targetColumnNames = listOf(sourceColumnName),
             constraintName = "${commonFkName}_SOURCE",
             dissociateAction = DissociateAction.DELETE,
         )
 
         val targetFk = createFkConstraint(
             sourceTableName = mappingTableName,
-            sourceColumnName = mappingTargetColumnName,
+            sourceColumnNames = listOf(mappingTargetColumnName),
             targetTableName = targetTableName,
-            targetColumnName = targetColumnName,
+            targetColumnNames = listOf(targetColumnName),
             constraintName = "${commonFkName}_TARGET",
             dissociateAction = DissociateAction.DELETE,
         )
@@ -238,18 +265,13 @@ abstract class TableDefineBuilder : TemplateBuilder() {
 
     open fun createIndex(
         tableName: String,
-        columnName: String,
-        partOfPk: Boolean = false,
-        partOfUniqueIdx: Boolean = false,
+        columnNames: List<String>,
+        unique: Boolean = false,
+        name: String = "${if (unique) "u" else ""}idx_${tableName.clearTableName()}_${columnNames.joinToString("_") { it.clearColumnName() }}"
     ): String? {
-        if (partOfPk) return null
-
-        val indexName =
-            "${if (partOfUniqueIdx) "u" else ""}idx_${tableName.clearTableName()}_${columnName.clearColumnName()}"
-
-        return "CREATE ${if (partOfUniqueIdx) "UNIQUE " else ""}INDEX ${indexName.escape()} ON ${
+        return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${name.escape()} ON ${
             tableName.escape()
-        } (${columnName.escape()});"
+        } (${columnNames.joinToString(", ") { it.escape() }});"
     }
 
     /**
@@ -258,51 +280,65 @@ abstract class TableDefineBuilder : TemplateBuilder() {
     open fun GenTableAssociationsView.associationsStringify(): List<String> {
         val list = mutableListOf<String>()
 
-        for (column in outColumns()) {
-            column.outAssociations.forEach { association ->
-                when (association.associationType) {
-                    ONE_TO_ONE, MANY_TO_ONE -> {
-                        createFkConstraint(
-                            dissociateAction = association.dissociateAction,
-                            sourceColumnName = column.name,
-                            sourceTableName = name,
-                            targetColumnName = association.targetColumn.name,
-                            targetTableName = association.targetColumn.table.name,
-                            fake = association.fake
-                        ).let {
-                            list += it
-                        }
-                    }
+        val (outAssociations) = getAssociationMeta()
 
-                    ONE_TO_MANY -> {
-                        createFkConstraint(
-                            sourceTableName = association.targetColumn.table.name,
-                            sourceColumnName = association.targetColumn.name,
-                            targetTableName = name,
-                            targetColumnName = column.name,
-                            dissociateAction = association.dissociateAction,
-                            fake = association.fake
-                        ).let {
-                            list += it
-                        }
-                    }
+        outAssociations.forEach { association ->
+            val (
+                name,
+                sourceTable,
+                sourceColumns,
+                targetTable,
+                targetColumns
+            ) = association.getMeta()
 
-                    MANY_TO_MANY -> {
-                        createMappingTable(
-                            sourceColumnName = column.name,
-                            sourceTableName = name,
-                            sourceTableComment = comment,
-                            targetColumnName = association.targetColumn.name,
-                            targetTableName = association.targetColumn.table.name,
-                            targetTableComment = association.targetColumn.table.comment,
-                            columnType = column.typeStringify(mappingTable = true),
-                        ).let {
-                            list += it
-                        }
+            when (association.associationType) {
+                ONE_TO_ONE, MANY_TO_ONE -> {
+                    createFkConstraint(
+                        constraintName = name,
+                        sourceTableName = sourceTable.name,
+                        sourceColumnNames = sourceColumns.map { it.name },
+                        targetTableName = targetTable.name,
+                        targetColumnNames = targetColumns.map { it.name },
+                        fake = association.fake,
+                        dissociateAction = association.dissociateAction,
+                    ).let {
+                        list += it
+                    }
+                }
+
+                ONE_TO_MANY -> {
+                    createFkConstraint(
+                        constraintName = name,
+                        sourceTableName = targetTable.name,
+                        sourceColumnNames = targetColumns.map { it.name },
+                        targetTableName = sourceTable.name,
+                        targetColumnNames = sourceColumns.map { it.name },
+                        dissociateAction = association.dissociateAction,
+                        fake = association.fake
+                    ).let {
+                        list += it
+                    }
+                }
+
+                MANY_TO_MANY -> {
+                    if (association.columnReferences.size > 1) {
+                        throw RuntimeException("Create mapping table fail: \nMANY_TO_MANY does not support more than one ColumnReference")                    }
+
+                    createMappingTable(
+                        sourceTableName = sourceTable.name,
+                        sourceColumnName = sourceColumns[0].name,
+                        sourceTableComment = sourceTable.comment,
+                        targetColumnName = targetTable.name,
+                        targetTableName = targetColumns[0].name,
+                        targetTableComment = targetTable.comment,
+                        columnType = getDatabaseTypeString(sourceColumns[0], mappingTable = true),
+                    ).let {
+                        list += it
                     }
                 }
             }
         }
+
         return list
     }
 }

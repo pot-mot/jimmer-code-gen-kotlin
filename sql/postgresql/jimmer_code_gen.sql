@@ -277,8 +277,6 @@ CREATE TABLE "gen_column"
     "comment"            text        NOT NULL,
     "part_of_pk"         boolean     NOT NULL DEFAULT FALSE,
     "auto_increment"     boolean     NOT NULL DEFAULT FALSE,
-    "part_of_fk"         boolean     NOT NULL DEFAULT FALSE,
-    "part_of_unique_idx" boolean     NOT NULL DEFAULT FALSE,
     "type_not_null"      boolean     NOT NULL DEFAULT FALSE,
     "business_key"       boolean     NOT NULL DEFAULT FALSE,
     "logical_delete"     boolean     NOT NULL DEFAULT FALSE,
@@ -304,8 +302,6 @@ COMMENT ON COLUMN "gen_column"."default_value" IS '列默认值';
 COMMENT ON COLUMN "gen_column"."comment" IS '列注释';
 COMMENT ON COLUMN "gen_column"."part_of_pk" IS '是否主键';
 COMMENT ON COLUMN "gen_column"."auto_increment" IS '是否自增';
-COMMENT ON COLUMN "gen_column"."part_of_fk" IS '是否外键';
-COMMENT ON COLUMN "gen_column"."part_of_unique_idx" IS '是否唯一索引';
 COMMENT ON COLUMN "gen_column"."type_not_null" IS '是否非空';
 COMMENT ON COLUMN "gen_column"."business_key" IS '是否为业务键';
 COMMENT ON COLUMN "gen_column"."logical_delete" IS '是否为逻辑删除';

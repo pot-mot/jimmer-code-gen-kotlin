@@ -39,11 +39,11 @@ class AssociationMatchTest(
         val table1 = GenColumnMatchView.TargetOf_table(1, "table1", "", TableType.TABLE)
         val table2 = GenColumnMatchView.TargetOf_table(2, "table2", "", TableType.TABLE)
 
-        val column1 = GenColumnMatchView(1, "id", "", 0, "", true, false, false, true, table1)
-        val column2 = GenColumnMatchView(2, "table2_id", "", 0, "", false, false, false, true, table1)
+        val column1 = GenColumnMatchView(1, "id", "", 0, "", true, false, table1)
+        val column2 = GenColumnMatchView(2, "table2_id", "", 0, "", false, false, table1)
 
-        val column3 = GenColumnMatchView(3, "id", "", 0, "", true, false, false, true, table2)
-        val column4 = GenColumnMatchView(4, "table1_id", "", 0, "", false, false, false, true, table2)
+        val column3 = GenColumnMatchView(3, "id", "", 0, "", true, false, table2)
+        val column4 = GenColumnMatchView(4, "table1_id", "", 0, "", false, false, table2)
 
         assert(simplePkColumnMatch(column4, column1)!!.associationType == AssociationType.MANY_TO_ONE)
         assert(simplePkColumnMatch(column2, column3)!!.associationType == AssociationType.MANY_TO_ONE)
@@ -62,11 +62,11 @@ class AssociationMatchTest(
         val table1 = GenColumnMatchView.TargetOf_table(1, "table1", "", TableType.TABLE)
         val table2 = GenColumnMatchView.TargetOf_table(2, "table2", "", TableType.TABLE)
 
-        val column1 = GenColumnMatchView(1, "table1_id", "", 0, "", true, false, false, true, table1)
-        val column2 = GenColumnMatchView(2, "table2_id", "", 0, "", false, false, false, true, table1)
+        val column1 = GenColumnMatchView(1, "table1_id", "", 0, "", true, false, table1)
+        val column2 = GenColumnMatchView(2, "table2_id", "", 0, "", false, false, table1)
 
-        val column3 = GenColumnMatchView(3, "table2_id", "", 0, "", true, false, false, true, table2)
-        val column4 = GenColumnMatchView(4, "table1_id", "", 0, "", false, false, false, true, table2)
+        val column3 = GenColumnMatchView(3, "table2_id", "", 0, "", true, false, table2)
+        val column4 = GenColumnMatchView(4, "table1_id", "", 0, "", false, false, table2)
 
         assert(includeTableNamePkColumnMatch(column4, column1)!!.associationType == AssociationType.MANY_TO_ONE)
         assert(includeTableNamePkColumnMatch(column2, column3)!!.associationType == AssociationType.MANY_TO_ONE)
@@ -91,12 +91,12 @@ class AssociationMatchTest(
         val table1 = GenColumnMatchView.TargetOf_table(1, "item", "", TableType.TABLE)
         val table2 = GenColumnMatchView.TargetOf_table(2, "item_group", "", TableType.TABLE)
 
-        val column1 = GenColumnMatchView(1, "id", "", 0, "", true, false, false, true, table1)
-        val column2 = GenColumnMatchView(2, "group_id", "", 0, "", false, false, false, true, table1)
-        val column3 = GenColumnMatchView(3, "group_name", "", 0, "", false, false, false, true, table1)
+        val column1 = GenColumnMatchView(1, "id", "", 0, "", true, false, table1)
+        val column2 = GenColumnMatchView(2, "group_id", "", 0, "", false, false, table1)
+        val column3 = GenColumnMatchView(3, "group_name", "", 0, "", false, false, table1)
 
-        val column4 = GenColumnMatchView(4, "id", "", 0, "", true, false, false, true, table2)
-        val column5 = GenColumnMatchView(5, "name", "", 0, "", false, false, false, true, table2)
+        val column4 = GenColumnMatchView(4, "id", "", 0, "", true, false, table2)
+        val column5 = GenColumnMatchView(5, "name", "", 0, "", false, false, table2)
 
         assert(pkSuffixColumnMatch(column2, column4)!!.associationType == AssociationType.MANY_TO_ONE)
 

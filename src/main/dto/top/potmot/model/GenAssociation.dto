@@ -4,46 +4,45 @@ GenAssociationIdView {
 
 GenAssociationView {
     #allScalars
-    sourceColumn {
+
+    sourceTable {
         id
         name
         comment
-        type
-
-        table {
-            id
-            name
-            comment
-        }
     }
-    targetColumn {
+    targetTable {
         id
         name
         comment
-        type
+    }
 
-        table {
+    columnReferences {
+        sourceColumn {
             id
             name
             comment
+            type
+        }
+
+        targetColumn {
+            id
+            name
+            comment
+            type
         }
     }
 }
 
 GenAssociationMatchView {
+    name
     associationType
     fake
-    sourceColumn {
-        id
-        table {
-            id
-        }
-    }
-    targetColumn {
-       id
-       table {
-           id
-       }
+    id(sourceTable)
+    id(targetTable)
+
+    columnReferences {
+        id(sourceColumn)
+        id(targetColumn)
     }
 }
 
@@ -52,39 +51,46 @@ input GenAssociationInput {
     -id
     -createdTime
     -modifiedTime
-    id(sourceColumn)
-    id(targetColumn)
+
+    id(sourceTable)
+    id(targetTable)
+
+    columnReferences {
+        id(sourceColumn)
+        id(targetColumn)
+    }
 }
 
 input GenAssociationModelInput {
     id(model)
+    name
     associationType
     dissociateAction
     fake
-    comment
 
-    sourceColumn {
+    sourceTable {
+        id(model)
         name
         comment
-        type
-        typeCode
-
-        table {
-            id(model)
-            name
-            comment
-        }
     }
-    targetColumn {
+    targetTable {
+        id(model)
         name
         comment
-        type
-        typeCode
+    }
 
-        table {
-            id(model)
+    columnReferences {
+        sourceColumn {
             name
             comment
+            type
+            typeCode
+        }
+        targetColumn {
+            name
+            comment
+            type
+            typeCode
         }
     }
 }

@@ -165,27 +165,25 @@ CREATE TABLE `gen_table`
 DROP TABLE IF EXISTS `gen_column`;
 CREATE TABLE `gen_column`
 (
-    `id`                 bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `table_id`           bigint       NOT NULL COMMENT '归属表',
-    `name`               varchar(500) NOT NULL COMMENT '列名称',
-    `type_code`          int(0)       NOT NULL COMMENT '列对应 JDBCType 码值',
-    `type`               varchar(500) NOT NULL COMMENT '列类型',
-    `display_size`       bigint       NOT NULL DEFAULT 0 COMMENT '列展示长度',
-    `numeric_precision`  bigint       NOT NULL DEFAULT 0 COMMENT '列精度',
-    `default_value`      varchar(500) NULL     DEFAULT NULL COMMENT '列默认值',
-    `comment`            varchar(500) NOT NULL COMMENT '列注释',
-    `part_of_pk`         tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否主键',
-    `auto_increment`     tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否自增',
-    `part_of_fk`         tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否外键',
-    `part_of_unique_idx` tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否唯一索引',
-    `type_not_null`      tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否非空',
-    `business_key`       tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否为业务键',
-    `logical_delete`     tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否为逻辑删除',
-    `enum_id`            bigint       NULL     DEFAULT NULL COMMENT '对应枚举 ID',
-    `order_key`          bigint       NOT NULL COMMENT '列在表中顺序',
-    `created_time`       datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-    `modified_time`      datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
-    `remark`             varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
+    `id`                bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `table_id`          bigint       NOT NULL COMMENT '归属表',
+    `name`              varchar(500) NOT NULL COMMENT '列名称',
+    `type_code`         int(0)       NOT NULL COMMENT '列对应 JDBCType 码值',
+    `type`              varchar(500) NOT NULL COMMENT '列类型',
+    `display_size`      bigint       NOT NULL DEFAULT 0 COMMENT '列展示长度',
+    `numeric_precision` bigint       NOT NULL DEFAULT 0 COMMENT '列精度',
+    `default_value`     varchar(500) NULL     DEFAULT NULL COMMENT '列默认值',
+    `comment`           varchar(500) NOT NULL COMMENT '列注释',
+    `part_of_pk`        tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否主键',
+    `auto_increment`    tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否自增',
+    `type_not_null`     tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否非空',
+    `business_key`      tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否为业务键',
+    `logical_delete`    tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否为逻辑删除',
+    `enum_id`           bigint       NULL     DEFAULT NULL COMMENT '对应枚举 ID',
+    `order_key`         bigint       NOT NULL COMMENT '列在表中顺序',
+    `created_time`      datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time`     datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`            varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_column_table` (`table_id`) USING BTREE,
     INDEX `idx_column_enum` (`enum_id`) USING BTREE,
@@ -204,9 +202,9 @@ CREATE TABLE `gen_association`
 (
     `id`                bigint                                                         NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `model_id`          bigint                                                         NULL COMMENT '模型',
-    `comment`           varchar(500)                                                   NOT NULL DEFAULT '' COMMENT '关联注释',
-    `source_column_id`  bigint                                                         NOT NULL COMMENT '主列',
-    `target_column_id`  bigint                                                         NOT NULL COMMENT '从列',
+    `name`              varchar(500)                                                   NOT NULL COMMENT '名称',
+    `source_table_id`   bigint                                                         NOT NULL COMMENT '主表',
+    `target_table_id`   bigint                                                         NOT NULL COMMENT '从表',
     `association_type`  enum ('ONE_TO_ONE','ONE_TO_MANY','MANY_TO_ONE','MANY_TO_MANY') NOT NULL COMMENT '关联类型',
     `dissociate_action` enum ('NONE','SET_NULL','DELETE')                              NULL     DEFAULT NULL COMMENT '脱钩行为',
     `fake`              tinyint(1)                                                     NOT NULL DEFAULT 1 COMMENT '是否伪外键',
@@ -216,14 +214,77 @@ CREATE TABLE `gen_association`
     `remark`            varchar(500)                                                   NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_association_model` (`model_id`) USING BTREE,
-    INDEX `idx_association_source_column` (`source_column_id`) USING BTREE,
-    INDEX `idx_association_target_column` (`target_column_id`) USING BTREE,
+    INDEX `idx_association_source_column` (`source_table_id`) USING BTREE,
+    INDEX `idx_association_target_column` (`target_table_id`) USING BTREE,
     CONSTRAINT `fk_association_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_association_source_column` FOREIGN KEY (`source_column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_association_target_column` FOREIGN KEY (`target_column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_association_source_column` FOREIGN KEY (`source_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `fk_association_target_column` FOREIGN KEY (`target_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成关联'
+  ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for gen_column_reference
+-- ----------------------------
+DROP TABLE IF EXISTS `gen_column_reference`;
+CREATE TABLE `gen_column_reference`
+(
+    `id`               bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `association_id`   bigint       NOT NULL COMMENT '关联 ID',
+    `source_column_id` bigint       NOT NULL COMMENT '主列',
+    `target_column_id` bigint       NOT NULL COMMENT '从列',
+    `order_key`        bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `created_time`     datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time`    datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`           varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `idx_column_reference_association` (`association_id`) USING BTREE,
+    INDEX `idx_column_reference_source_column` (`source_column_id`) USING BTREE,
+    INDEX `idx_column_reference_target_column` (`target_column_id`) USING BTREE,
+    CONSTRAINT `fk_column_reference_association` FOREIGN KEY (`association_id`) REFERENCES `gen_association` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `fk_column_reference_source_column` FOREIGN KEY (`source_column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `fk_column_reference_target_column` FOREIGN KEY (`target_column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '列引用'
+  ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for gen_table_index
+-- ----------------------------
+DROP TABLE IF EXISTS `gen_table_index`;
+CREATE TABLE `gen_table_index`
+(
+    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `table_id`      bigint       NOT NULL COMMENT '归属表',
+    `name`          varchar(500) NOT NULL COMMENT '名称',
+    `unique_index`  tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否唯一索引',
+    `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `idx_index_table` (`table_id`) USING BTREE,
+    CONSTRAINT `fk_index_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '表索引'
+  ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for gen_index_column_mapping
+-- ----------------------------
+DROP TABLE IF EXISTS `gen_index_column_mapping`;
+CREATE TABLE `gen_index_column_mapping`
+(
+    `index_id` bigint NOT NULL COMMENT '唯一索引 ID',
+    `column_id`       bigint NOT NULL COMMENT '列 ID',
+    PRIMARY KEY (`index_id`, `column_id`) USING BTREE,
+    CONSTRAINT `fk_columns_mapping_index` FOREIGN KEY (`index_id`) REFERENCES `gen_table_index` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `fk_index_mapping_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '唯一索引与列关联表'
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------

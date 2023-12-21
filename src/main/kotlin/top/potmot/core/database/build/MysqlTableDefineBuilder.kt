@@ -1,5 +1,6 @@
 package top.potmot.core.database.build
 
+import top.potmot.model.GenColumn
 import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 
@@ -17,12 +18,14 @@ class MysqlTableDefineBuilder : TableDefineBuilder() {
     override fun createTable(
         table: GenTableAssociationsView,
         otherLines: List<String>,
-        append: String
+        append: String,
+        withIndex: Boolean
     ): String =
         super.createTable(
             table,
             otherLines,
-            append = append + defaultParams(table.comment)
+            append = append + defaultParams(table.comment),
+            withIndex
         )
 
     override fun createMappingTable(
@@ -57,24 +60,16 @@ class MysqlTableDefineBuilder : TableDefineBuilder() {
         )
     }
 
-    override fun typeStringify(
-        type: String,
-        typeCode: Int,
-        displaySize: Long,
-        numericPrecision: Long,
-        fullType: String,
-        partOfPk: Boolean,
-        partOfUniqueIdx: Boolean,
-        partOfFk: Boolean,
-        autoIncrement: Boolean,
+    override fun getDatabaseTypeString(
+        column: GenColumn,
         mappingTable: Boolean,
     ): String =
-        if (typeCode == Types.LONGVARCHAR || typeCode == Types.LONGNVARCHAR) {
+        if (column.typeCode == Types.LONGVARCHAR || column.typeCode == Types.LONGNVARCHAR) {
             "LONGTEXT"
-        } else if (type.uppercase().startsWith("ENUM")) {
+        } else if (column.type.uppercase().startsWith("ENUM")) {
             "VARCHAR(50)"
         } else {
-            fullType
+            column.fullType
         }
 
     override fun GenTableAssociationsView.TargetOf_columns.columnStringify(): String {
@@ -82,7 +77,7 @@ class MysqlTableDefineBuilder : TableDefineBuilder() {
 
         sb.append(name.escape())
             .append(' ')
-            .append(typeStringify())
+            .append(getDatabaseTypeString(this.toEntity()))
 
         if (partOfPk) {
             if (autoIncrement) {

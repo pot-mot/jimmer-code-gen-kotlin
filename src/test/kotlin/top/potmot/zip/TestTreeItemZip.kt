@@ -1,5 +1,6 @@
 package top.potmot.zip
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -20,12 +21,17 @@ class TestTreeItemZip {
 
         val zipInputStream = ZipInputStream(ByteArrayInputStream(zipByteArray))
 
+        val result = mutableListOf<String>()
+
         // 遍历 ZipInputStream 中的条目
         var entry: ZipEntry? = zipInputStream.nextEntry
+
         while (entry != null) {
-            println("Entry: ${entry.name}")
+            result += entry.name
             entry = zipInputStream.nextEntry
         }
+
+        assertEquals("child1/key1,child2/key2", result.joinToString(","))
     }
 
     // 创建一个示例树结构
