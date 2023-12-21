@@ -1,0 +1,9 @@
+GenDataSourceColumnTypeView {
+    #allScalars
+}
+
+input GenDataSourceColumnTypeInput {
+    #allScalars
+    -createdTime
+    -modifiedTime
+}

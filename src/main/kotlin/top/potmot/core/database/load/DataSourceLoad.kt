@@ -218,18 +218,26 @@ private fun ForeignKeyUpdateRule.toDissociateAction(): DissociateAction =
     }
 
 fun Table.getGenIndexes(table: GenTable): List<GenTableIndex> =
-    indexes.map { it.toGenTableIndex(table) }
+    indexes.mapNotNull { it.toGenTableIndex(table) }
 
-private fun Index.toGenTableIndex(table: GenTable): GenTableIndex =
-    new(GenTableIndex::class).by {
-        this.name = shortName
-        this.uniqueIndex = isUnique
-        this.tableId = table.id
-        this.columnIds = getColumns().map {
-            val nameMatchColumns = table.columns.filter { column -> column.name == it.name }
-            if (nameMatchColumns.size != 1) {
-                throw RuntimeException("Load index [$name] fail: \nmatch name ${it.name} column more than one")
-            }
-            nameMatchColumns[0].id
+private fun Index.toGenTableIndex(table: GenTable): GenTableIndex? {
+    val columnIds = columns.map {
+        val nameMatchColumns = table.columns.filter { column -> column.name == it.name }
+        if (nameMatchColumns.size != 1) {
+            throw RuntimeException("Load index [$name] fail: \nmatch name ${it.name} column more than one")
         }
+        nameMatchColumns[0].id
     }
+
+    // 当索引唯一且所有列均为主键列时，排除
+    if (this.isUnique && columnIds.toSortedSet() == table.columns.filter { it.partOfPk }.map { it.id }.toSortedSet()) {
+        return null
+    }
+
+    return new(GenTableIndex::class).by {
+        this.name = this@toGenTableIndex.name
+        this.uniqueIndex = this@toGenTableIndex.isUnique
+        this.tableId = table.id
+        this.columnIds = columnIds
+    }
+}

@@ -11,7 +11,6 @@ import top.potmot.model.GenProperty
 import top.potmot.model.by
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTypeMappingView
-import top.potmot.utils.immutable.copyProperties
 
 typealias TypeMapping = (column: ColumnTypeMeta) -> String
 
@@ -23,8 +22,10 @@ fun createProperties(
 ): List<GenProperty> {
     val typeMapping: TypeMapping = { column -> column.getPropertyType(dataSourceType, language, typeMappings) }
 
-    val baseColumnPropertyPairs = table.columns.map {
-        it to columnToProperty(it, typeMapping)
+    val baseColumnPropertyPairs = table.columns.map {column ->
+        column to column.toBaseProperty(typeMapping).let {property ->
+            if (column.partOfPk) property.toIdProperty(column) else property
+        }
     }
 
     return producePropertyWithAssociationAndUniqueIndexes(
@@ -32,23 +33,6 @@ fun createProperties(
         baseColumnPropertyPairs,
         typeMapping
     )
-}
-
-/**
- * 列到属性转换
- * warning: 为保证保存时关联成立，请保证对应 column 具有 id
- */
-fun columnToProperty(
-    column: GenTableAssociationsView.TargetOf_columns,
-    typeMapping: TypeMapping = {it.getPropertyType()},
-): GenProperty {
-    val baseProperty = column.toBaseProperty(typeMapping)
-
-    return new(GenProperty::class).by {
-            copyProperties(baseProperty, this)
-
-            if (column.partOfPk) toIdProperty(column)
-        }
 }
 
 /**

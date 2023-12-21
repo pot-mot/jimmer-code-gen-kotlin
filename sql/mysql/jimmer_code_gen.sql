@@ -277,8 +277,8 @@ CREATE TABLE `gen_table_index`
 DROP TABLE IF EXISTS `gen_index_column_mapping`;
 CREATE TABLE `gen_index_column_mapping`
 (
-    `index_id` bigint NOT NULL COMMENT '唯一索引 ID',
-    `column_id`       bigint NOT NULL COMMENT '列 ID',
+    `index_id`  bigint NOT NULL COMMENT '唯一索引 ID',
+    `column_id` bigint NOT NULL COMMENT '列 ID',
     PRIMARY KEY (`index_id`, `column_id`) USING BTREE,
     CONSTRAINT `fk_columns_mapping_index` FOREIGN KEY (`index_id`) REFERENCES `gen_table_index` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_index_mapping_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
@@ -377,6 +377,29 @@ CREATE TABLE `gen_type_mapping`
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT = '列到属性类型映射'
+  ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for gen_type_mapping
+-- ----------------------------
+DROP TABLE IF EXISTS `gen_data_source_column_type`;
+CREATE TABLE `gen_data_source_column_type`
+(
+    `id`                bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `data_source_type`  varchar(500) NOT NULL COMMENT '数据源类型',
+    `type_code`         int(0)       NOT NULL COMMENT 'JDBCType 码值',
+    `type`              varchar(500) NOT NULL COMMENT '数据库类型表达式',
+    `display_size`      bigint       NOT NULL DEFAULT 0 COMMENT '列展示长度',
+    `numeric_precision` bigint       NOT NULL DEFAULT 0 COMMENT '列精度',
+    `default_value`     varchar(500) NULL     DEFAULT NULL COMMENT '默认值',
+    `order_key`         bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
+    `created_time`      datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
+    `modified_time`     datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '修改时间',
+    `remark`            varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '数据源列类型'
   ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -98,10 +98,12 @@ class ModelService(
                  * 2.2 将 indexes 更新至 table
                  */
                 val savedTables = savedModelWithTables.tables
+                val savedTableMap = savedTables.associateBy { it.name }
                 tableInputPairs.forEach { (table, indexes) ->
-                    val savedTable = savedTables.filter { it.name == table.name }.firstOrNull()
-                        ?: throw RuntimeException("Load model [${model.name}] fail: \nTable [${table.name}] not found")
-
+                    if (!savedTableMap.containsKey(table.name)) {
+                        throw RuntimeException("Load model [${model.name}] fail: \nTable [${table.name}] not found")
+                    }
+                    val savedTable = savedTableMap[table.name]!!
                     sqlClient.update(savedTable.copy {
                         this.indexes = indexes.map { it.toInput(savedTable) }
                     })

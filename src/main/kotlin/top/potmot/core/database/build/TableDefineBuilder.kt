@@ -82,7 +82,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             )
         }
 
-        return tableDefine + "\n" + indexes
+        return tableDefine + (if (withIndex) "\n${indexes.joinToString("\n")}" else "")
     }
 
     open fun addConstraint(
@@ -268,7 +268,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         columnNames: List<String>,
         unique: Boolean = false,
         name: String = "${if (unique) "u" else ""}idx_${tableName.clearTableName()}_${columnNames.joinToString("_") { it.clearColumnName() }}"
-    ): String? {
+    ): String {
         return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${name.escape()} ON ${
             tableName.escape()
         } (${columnNames.joinToString(", ") { it.escape() }});"

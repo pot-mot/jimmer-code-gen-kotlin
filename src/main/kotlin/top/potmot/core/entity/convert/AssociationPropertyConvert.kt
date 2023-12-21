@@ -79,6 +79,8 @@ fun producePropertyWithAssociationAndUniqueIndexes(
             comment = targetTable.comment.clearTableComment()
             type = tableNameToClassName(targetTable.name)
             typeTableId = targetTable.id
+            idProperty = false
+            idGenerationType = null
 
             when (outAssociation.associationType) {
                 ONE_TO_ONE, MANY_TO_ONE -> {
@@ -192,6 +194,8 @@ fun producePropertyWithAssociationAndUniqueIndexes(
             comment = sourceTable.comment.clearTableComment()
             type = tableNameToClassName(sourceTable.name)
             typeTableId = sourceTable.id
+            idProperty = false
+            idGenerationType = null
 
             val mappedBy = tableNameToPropertyName(targetTable.name).let {
                 if (targetPlural) it.toPlural() else it
@@ -346,6 +350,8 @@ fun createIdViewProperty(
 ): GenProperty {
     return new(GenProperty::class).by {
         copyProperties(baseProperty, this)
+        idProperty = false
+        idGenerationType = null
 
         if (associationProperty.typeNotNull != baseProperty.typeNotNull) {
             this.typeNotNull = associationProperty.typeNotNull
