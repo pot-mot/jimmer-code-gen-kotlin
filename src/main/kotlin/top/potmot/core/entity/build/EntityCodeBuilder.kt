@@ -103,8 +103,8 @@ open class EntityCodeBuilder: TemplateBuilder() {
                 result += LogicalDeleted::class
             }
 
-            if (associationType != null) {
-                if (associationAnnotation != null) {
+            associationType?.let {associationType ->
+                associationAnnotation?.let {associationAnnotation ->
                     result += associationType.toAnnotation()
 
                     if (associationAnnotation.contains("@JoinTable")) {
@@ -119,7 +119,9 @@ open class EntityCodeBuilder: TemplateBuilder() {
                         result += OnDissociate::class
                         result += DissociateAction::class
                     }
-                } else if (idView) {
+                }
+
+                if (associationAnnotation == null && idView) {
                     result += IdView::class
                 }
             }
@@ -228,24 +230,23 @@ open class EntityCodeBuilder: TemplateBuilder() {
                 list += GenConfig.logicalDeletedAnnotation
             }
 
-            if (associationType != null) {
-                if (associationAnnotation != null) {
+            associationType?.let {
+                associationAnnotation?.let {associationAnnotation ->
                     list += associationAnnotation.split("\n")
-                    if (dissociateAnnotation != null) {
-                        list += dissociateAnnotation
-                    }
-                } else if (idView && idViewAnnotation != null) {
-                    list += idViewAnnotation
+
+                    dissociateAnnotation?.let { list += it }
                 }
-            } else if (GenConfig.columnAnnotation) {
-                columnAnnotation()?.let {
-                    list += it
+
+                if (associationAnnotation == null && idView) {
+                    idViewAnnotation?.let { list += it }
                 }
             }
 
-            if (!otherAnnotation.isNullOrBlank()) {
-                list += otherAnnotation.split("\n")
+            if (GenConfig.columnAnnotation) {
+                columnAnnotation()?.let { list += it }
             }
+
+            otherAnnotation.takeIf { !otherAnnotation.isNullOrBlank() }?.let { list += it }
         }
 
         return list

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.babyfish.jimmer.kt.unload
+import top.potmot.constant.ModelShape
 import top.potmot.model.GenTable
 import top.potmot.model.GenTableIndex
 import top.potmot.model.copy
@@ -28,11 +29,11 @@ fun valueToData(modelId: Long, value: String): Pair<List<GenTableColumnsInput>, 
     val cells = jsonNode.path("json").path("cells").toList()
 
     cells.forEach { cell ->
-        if (cell.path("shape").textValue() == "edge") {
+        if (cell.path("shape").textValue() == ModelShape.ASSOCIATION_EDGE.name) {
             cell.path("data").path("association").takeIf { it.isMissingNode.not() }?.let {
                 associations += it.toAssociation(modelId)
             }
-        } else if (cell.path("shape").textValue() == "model") {
+        } else if (cell.path("shape").textValue() == ModelShape.TABLE_NODE.name) {
             cell.path("data").path("table").takeIf { it.isMissingNode.not() }?.let {
                 tables += it.toTable(modelId)
             }
@@ -99,11 +100,11 @@ fun GenAssociationModelInput.toInput(
 ): GenAssociationInput {
     val tableMap = tables.associate { it.name to Pair(it.id, it) }
     val sourceTablePair = tableMap[sourceTable.name]
-        ?: throw RuntimeException("Model association [${name}] fail: \nsourceTable [${sourceTable.name}] not found")
+        ?: throw RuntimeException("Model association [${name}] parse fail: \nsourceTable [${sourceTable.name}] not found")
     val sourceTableColumnsMap = sourceTablePair.second.columns.associate { it.name to it.id }
 
     val targetTablePair = tableMap[targetTable.name]
-        ?: throw RuntimeException("Model association [${name}] fail: \ntargetTable [${targetTable.name}] not found")
+        ?: throw RuntimeException("Model association [${name}] parse fail: \ntargetTable [${targetTable.name}] not found")
     val targetTableColumnsMap = targetTablePair.second.columns.associate { it.name to it.id }
 
     val columnReferenceInputs = columnReferences.map {

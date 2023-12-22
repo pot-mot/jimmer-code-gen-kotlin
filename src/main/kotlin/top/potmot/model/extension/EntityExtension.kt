@@ -37,14 +37,10 @@ fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.packagePath(): S
  *  3. 使用映射后的 type
  */
 fun GenEntityPropertiesView.TargetOf_properties.shortType(): String {
-    if (enum != null) {
-        return enum.name
-    }
+    enum?.let { return it.name }
 
     val baseType =
-        if (typeTable?.entity != null) {
-            typeTable.entity.name
-        } else {
+        typeTable?.entity?.name ?: let {
             type.split(".").last()
         }
 
@@ -56,24 +52,25 @@ fun GenEntityPropertiesView.TargetOf_properties.shortType(): String {
 }
 
 fun GenEntityPropertiesView.TargetOf_properties.fullType(): String {
-    if (enum != null) {
-        val packagePath = enum.packagePath()
+    enum?.let {
+        val packagePath = it.packagePath()
 
         return if (packagePath.isNotBlank()) {
-            packagePath + "." + enum.name
+            packagePath + "." + it.name
         } else {
-            enum.name
+            it.name
         }
     }
 
+    typeTable?.let {table ->
+        table.entity?.let {entity ->
+            val packagePath = table.packagePath()
 
-    if (typeTable?.entity != null) {
-        val packagePath = typeTable.packagePath()
-
-        return if (packagePath.isNotBlank()) {
-            packagePath + "." + typeTable.entity.name
-        } else {
-            typeTable.entity.name
+            return if (packagePath.isNotBlank()) {
+                packagePath + "." + entity.name
+            } else {
+                entity.name
+            }
         }
     }
 

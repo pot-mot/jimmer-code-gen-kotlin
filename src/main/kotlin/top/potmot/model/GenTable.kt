@@ -93,16 +93,16 @@ interface GenTable : BaseEntity {
     val orderKey: Long
 
     /**
-     * 列 ID
-     */
-    @IdView("columns")
-    val columnIds: List<Long>
-
-    /**
      * 列
      */
     @OneToMany(mappedBy = "table", orderedProps = [OrderedProp(value = "orderKey")])
     val columns: List<GenColumn>
+
+    /**
+     * 列 ID
+     */
+    @IdView("columns")
+    val columnIds: List<Long>
 
     /**
      * 唯一索引

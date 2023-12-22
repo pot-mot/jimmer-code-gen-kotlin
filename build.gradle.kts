@@ -86,6 +86,10 @@ kotlin {
     }
 }
 
+ksp {
+    arg("jimmer.dto.mutable", "true")
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
