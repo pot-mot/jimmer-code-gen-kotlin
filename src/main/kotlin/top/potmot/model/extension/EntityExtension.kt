@@ -1,20 +1,20 @@
 package top.potmot.model.extension
 
-import org.babyfish.jimmer.ImmutableObjects
+import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import top.potmot.config.GenConfig
 import top.potmot.model.GenEntity
 import top.potmot.model.GenProperty
 import top.potmot.model.dto.GenEntityPropertiesView
 
 fun GenEntity.getProperty(id: Long): GenProperty? {
-    if (!ImmutableObjects.isLoaded(this, "properties")) {
+    if (!isLoaded(this, "properties")) {
         return null
     }
     return this.properties.find { it.id == id }
 }
 
 fun GenEntity.getProperty(name: String): GenProperty? {
-    if (!ImmutableObjects.isLoaded(this, "properties")) {
+    if (!isLoaded(this, "properties")) {
         return null
     }
     return this.properties.find { it.name == name }

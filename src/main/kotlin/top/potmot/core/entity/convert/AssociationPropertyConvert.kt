@@ -1,7 +1,7 @@
 package top.potmot.core.entity.convert
 
-import org.babyfish.jimmer.ImmutableObjects
-import org.babyfish.jimmer.kt.new
+import org.babyfish.jimmer.ImmutableObjects.deepClone
+import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.config.GenConfig
 import top.potmot.core.meta.getAssociationMeta
@@ -12,9 +12,8 @@ import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.AssociationType.*
 import top.potmot.model.GenProperty
 import top.potmot.model.GenPropertyDraft
-import top.potmot.model.by
+import top.potmot.model.copy
 import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.utils.immutable.copyProperties
 import top.potmot.utils.string.toPlural
 import top.potmot.utils.string.toSingular
 
@@ -72,9 +71,7 @@ fun producePropertyWithAssociationAndUniqueIndexes(
         val targetPlural =
             outAssociation.associationType == ONE_TO_MANY || outAssociation.associationType == MANY_TO_MANY
 
-        val associationProperty = new(GenProperty::class).by {
-            copyProperties(baseProperty, this)
-
+        val associationProperty = deepClone(baseProperty).copy {
             name = tableNameToPropertyName(targetTable.name)
             comment = targetTable.comment.clearTableComment()
             type = tableNameToClassName(targetTable.name)
@@ -187,9 +184,7 @@ fun producePropertyWithAssociationAndUniqueIndexes(
         /**
          * 这个属性为向内关联的 source 在 target 类中的映射
          */
-        val associationProperty = new(GenProperty::class).by {
-            copyProperties(baseProperty, this)
-
+        val associationProperty = deepClone(baseProperty).copy {
             name = tableNameToPropertyName(sourceTable.name)
             comment = sourceTable.comment.clearTableComment()
             type = tableNameToClassName(sourceTable.name)
@@ -326,7 +321,7 @@ private fun GenPropertyDraft.setAssociation(
 }
 
 private fun GenPropertyDraft.toPlural() {
-    if (ImmutableObjects.isLoaded(this, "name")) {
+    if (isLoaded(this, "name")) {
         this.name = this.name.toPlural()
     }
     this.listType = true
@@ -348,8 +343,7 @@ fun createIdViewProperty(
     associationProperty: GenProperty,
     typeMapping: IdViewTypeMapping
 ): GenProperty {
-    return new(GenProperty::class).by {
-        copyProperties(baseProperty, this)
+    return deepClone(baseProperty).copy {
         idProperty = false
         idGenerationType = null
 

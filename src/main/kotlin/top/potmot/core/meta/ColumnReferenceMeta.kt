@@ -1,6 +1,6 @@
 package top.potmot.core.meta
 
-import org.babyfish.jimmer.ImmutableObjects
+import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import schemacrawler.schema.ColumnReference
 import top.potmot.model.GenColumn
 import top.potmot.model.GenSchema
@@ -58,9 +58,9 @@ private fun ColumnReferenceNamePart.toMetaPart(
 ): ColumnReferenceMetaPart? {
     val table = tableNameMap[tableName] ?: return null
     val column = table.columns.find { column -> column.name == columnName } ?: return null
-    val schema = if (ImmutableObjects.isLoaded(table, GenTableProps.SCHEMA)) table.schema else null
+    val schema = if (isLoaded(table, GenTableProps.SCHEMA)) table.schema else null
 
-    if (schema != null && ImmutableObjects.isLoaded(schema, GenSchemaProps.NAME) && schema.name != schemaName) return null
+    if (schema != null && isLoaded(schema, GenSchemaProps.NAME) && schema.name != schemaName) return null
 
     return ColumnReferenceMetaPart(schema, table, column)
 }

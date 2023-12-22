@@ -1,6 +1,6 @@
 package top.potmot.core.genPackage.generate
 
-import org.babyfish.jimmer.ImmutableObjects
+import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
 import top.potmot.core.entity.generate.EntityCodeGenerator
@@ -37,12 +37,12 @@ private fun GenPackage.getContents(
     val parentPathPackage = new(GenPackage::class).by {
         id = complexPackage.id
         name = complexPackage.name
-        if (ImmutableObjects.isLoaded(complexPackage, GenPackageProps.PARENT)) {
+        if (isLoaded(complexPackage, GenPackageProps.PARENT)) {
             this.parent = complexPackage.parent
         }
     }
 
-    if (ImmutableObjects.isLoaded(complexPackage, GenPackageProps.ENTITIES)) {
+    if (isLoaded(complexPackage, GenPackageProps.ENTITIES)) {
         entities.forEach {
             result += entityCodeGenerator.generate(GenEntityPropertiesView(it.copy {
                 genPackage = parentPathPackage
@@ -50,7 +50,7 @@ private fun GenPackage.getContents(
         }
     }
 
-    if (ImmutableObjects.isLoaded(complexPackage, GenPackageProps.ENUMS)) {
+    if (isLoaded(complexPackage, GenPackageProps.ENUMS)) {
         enums.forEach {
             result += entityCodeGenerator.generate(PropertyEnum(it.copy {
                 genPackage = parentPathPackage

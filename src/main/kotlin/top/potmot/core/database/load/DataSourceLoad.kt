@@ -1,6 +1,7 @@
 package top.potmot.core.database.load
 
 import org.babyfish.jimmer.ImmutableObjects
+import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.DissociateAction
 import schemacrawler.schema.Catalog
@@ -189,13 +190,13 @@ private fun ForeignKey.toGenAssociation(
                 }
 
             association = association.copy {
-                if (!ImmutableObjects.isLoaded(this, GenAssociationProps.SOURCE_TABLE)) {
+                if (!isLoaded(this, GenAssociationProps.SOURCE_TABLE)) {
                     this.sourceTable = it.source.table
                 } else if (this.sourceTable.id != it.source.table.id) {
                     throw RuntimeException("Convert foreign key [${association.name}] to association fail: \nsource table not match: \n${this.sourceTable} not equals ${it.source.table}")
                 }
 
-                if (!ImmutableObjects.isLoaded(this, GenAssociationProps.TARGET_TABLE)) {
+                if (!isLoaded(this, GenAssociationProps.TARGET_TABLE)) {
                     this.targetTable = it.target.table
                 } else if (this.targetTable.id != it.target.table.id) {
                     throw RuntimeException("Convert foreign key [${association.name}] to association fail: \ntarget table not match: \n${this.targetTable} not equals ${it.target.table}")
