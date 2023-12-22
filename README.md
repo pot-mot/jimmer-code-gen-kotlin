@@ -14,9 +14,15 @@
 
 目前支持根据数据库元数据生成 jimmer 实体类与简单关联属性。
 
-## 前端项目地址
+## Git 仓库地址
 
-[乱跑-了 / table-graph](https://gitee.com/run-around---whats-wrong/table-graph.git)
+### 前端
+- [Github 前端](https://github.com/pot-mot/jimmer-code-gen-vue3)
+- [Gitee 前端](https://gitee.com/run-around---whats-wrong/jimmer-code-gen-vue3)
+
+### 后端
+- [Github 后端](https://github.com/pot-mot/jimmer-code-gen-kotlin)
+- [Gitee 后端](https://gitee.com/run-around---whats-wrong/jimmer-code-gen-kotlin)
 
 ## 启动项目
 
