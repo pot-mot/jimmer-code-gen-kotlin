@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.match.AssociationMatch
 import top.potmot.core.database.match.simplePkColumnMatch
 import top.potmot.enumeration.AssociationMatchType
+import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.SelectType
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenColumn
+import top.potmot.model.associationType
 import top.potmot.model.columnReferences
 import top.potmot.model.createdTime
 import top.potmot.model.dto.GenAssociationIdView
@@ -148,6 +150,10 @@ class AssociationService(
                 query.keywords.forEach {
                     where(table.name ilike it)
                 }
+            }
+
+            query.associationType?.let {
+                where(table.associationType.eq(it))
             }
 
             query.sourceTableId?.let {

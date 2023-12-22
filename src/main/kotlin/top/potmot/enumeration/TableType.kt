@@ -1,22 +1,22 @@
 package top.potmot.enumeration
 
-enum class TableType(val value: String) {
-    TABLE("TABLE"),
-    VIEW("VIEW"),
-    SYSTEM_TABLE("SYSTEM TABLE"),
-    GLOBAL_TEMPORARY("GLOBAL TEMPORARY"),
-    LOCAL_TEMPORARY("LOCAL TEMPORARY"),
-    ALIAS("ALIAS"),
-    UNKNOWN("UNKNOWN");
+enum class TableType {
+    TABLE,
+    VIEW,
+    SYSTEM_TABLE,
+    GLOBAL_TEMPORARY,
+    LOCAL_TEMPORARY,
+    ALIAS,
+    UNKNOWN;
 
     companion object {
-        fun fromValue(value: String?): TableType {
-            if (value == null) return UNKNOWN
-            return try {
-                valueOf(value.uppercase())
-            } catch (e: Exception) {
-                UNKNOWN
-            }
-        }
+        fun fromValue(value: String?): TableType =
+            value?.let {
+                try {
+                    valueOf(value.uppercase().replace(" ", "_"))
+                } catch (e: Exception) {
+                    UNKNOWN
+                }
+            } ?: UNKNOWN
     }
 }

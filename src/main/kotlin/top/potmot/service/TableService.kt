@@ -3,6 +3,7 @@ package top.potmot.service
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.between
+import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.ilike
 import org.babyfish.jimmer.sql.kt.ast.expression.isNull
 import org.babyfish.jimmer.sql.kt.ast.expression.or
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.generate.generateTableDefine
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.GenTable
-import top.potmot.model.columns
 import top.potmot.model.comment
 import top.potmot.model.createdTime
 import top.potmot.model.dto.GenTableAssociationsView
@@ -26,9 +26,11 @@ import top.potmot.model.dto.GenTableColumnsView
 import top.potmot.model.dto.GenTableCommonView
 import top.potmot.model.dto.GenTableIdView
 import top.potmot.model.id
+import top.potmot.model.modelId
 import top.potmot.model.name
 import top.potmot.model.query.TableQuery
 import top.potmot.model.schemaId
+import top.potmot.model.type
 import kotlin.reflect.KClass
 
 @RestController
@@ -88,14 +90,23 @@ class TableService(
                     )
                 }
             }
+
+            query.nonModel?.let {
+                where(table.modelId.isNull())
+            }
+            query.modelIds?.takeIf { it.isNotEmpty() }?.let {
+                where(table.modelId valueIn it)
+            }
+
             query.nonSchema?.let {
                 where(table.schemaId.isNull())
             }
             query.schemaIds?.takeIf { it.isNotEmpty() }?.let {
                 where(table.schemaId valueIn it)
             }
-            query.name?.let {
-                where(table.asTableEx().columns.name ilike it)
+
+            query.type?.let {tableType ->
+                where(table.type eq tableType)
             }
 
             query.ids?.takeIf { it.isNotEmpty() }?.let {

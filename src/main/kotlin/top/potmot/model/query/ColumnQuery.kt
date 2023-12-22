@@ -8,4 +8,7 @@ class ColumnQuery(
     val modifiedTime: TimeRangeQueryParam? = null,
     val keywords: List<String>? = null,
     val tableIds: List<Long>? = null,
+    val type: String? = null,
+    val typeCode: Int? = null,
+    val partOfPk: Boolean? = null,
 )

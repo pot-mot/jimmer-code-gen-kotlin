@@ -3,6 +3,7 @@ package top.potmot.service
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.between
+import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.ilike
 import org.babyfish.jimmer.sql.kt.ast.expression.or
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
@@ -16,8 +17,11 @@ import top.potmot.model.createdTime
 import top.potmot.model.dto.GenColumnCommonView
 import top.potmot.model.id
 import top.potmot.model.name
+import top.potmot.model.partOfPk
 import top.potmot.model.query.ColumnQuery
 import top.potmot.model.tableId
+import top.potmot.model.type
+import top.potmot.model.typeCode
 import kotlin.reflect.KClass
 
 @RestController
@@ -45,6 +49,16 @@ class ColumnService(
 
             query.tableIds?.takeIf { it.isNotEmpty() }?.let {
                 where(table.tableId valueIn it)
+            }
+
+            query.type?.let {
+                where(table.type eq it)
+            }
+            query.typeCode?.let {
+                where(table.typeCode eq it)
+            }
+            query.partOfPk?.let {
+                where(table.partOfPk eq it)
             }
 
             query.ids?.takeIf { it.isNotEmpty() }?.let {

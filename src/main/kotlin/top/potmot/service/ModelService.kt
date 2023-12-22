@@ -83,7 +83,7 @@ class ModelService(
          * 2. 保存关联数据
          */
         if (!input.value.isNullOrBlank()) {
-            valueToData(model.id, input.value).let { (tables, associations) ->
+            valueToData(model.id, input.value!!).let { (tables, associations) ->
                 /**
                  * 2.1 保存舍弃 indexes 的 table
                  */
