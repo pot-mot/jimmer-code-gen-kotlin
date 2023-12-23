@@ -127,9 +127,6 @@ GenTableAssociationsView {
             }
             targetColumn {
                 id
-                name
-                comment
-                type
             }
         }
     }
@@ -146,9 +143,6 @@ GenTableAssociationsView {
         columnReferences {
             sourceColumn {
                 id
-                name
-                comment
-                type
             }
             targetColumn {
                 id
