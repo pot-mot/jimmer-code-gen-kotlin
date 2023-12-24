@@ -382,8 +382,8 @@ CREATE TABLE `gen_type_mapping`
 -- ----------------------------
 -- Table structure for gen_type_mapping
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_data_source_column_type`;
-CREATE TABLE `gen_data_source_column_type`
+DROP TABLE IF EXISTS `gen_column_default`;
+CREATE TABLE `gen_column_default`
 (
     `id`                bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `data_source_type`  varchar(500) NOT NULL COMMENT '数据源类型',
@@ -399,7 +399,7 @@ CREATE TABLE `gen_data_source_column_type`
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '数据源列类型'
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '列默认值'
   ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

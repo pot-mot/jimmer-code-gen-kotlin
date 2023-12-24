@@ -51,6 +51,5 @@ interface GenTypeMapping : BaseEntity {
      * 自定排序
      */
     val orderKey: Long
-
 }
 

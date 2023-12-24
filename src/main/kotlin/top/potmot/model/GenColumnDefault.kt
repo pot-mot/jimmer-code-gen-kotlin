@@ -4,6 +4,7 @@ import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.Table
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.base.BaseEntity
@@ -15,8 +16,8 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-12-21 17:56:03
  */
 @Entity
-@Table(name = "gen_data_source_column_type")
-interface GenDataSourceColumnType : BaseEntity {
+@Table(name = "gen_column_default")
+interface GenColumnDefault : BaseEntity {
     /**
      * ID
      */
@@ -27,11 +28,13 @@ interface GenDataSourceColumnType : BaseEntity {
     /**
      * 数据源类型
      */
+    @Key
     val dataSourceType: DataSourceType
 
     /**
      * JDBCType 码值
      */
+    @Key
     val typeCode: Int
 
     /**

@@ -33,7 +33,6 @@ import top.potmot.model.dto.GenModelView
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTableColumnsInput
 import top.potmot.model.modelId
-import java.sql.JDBCType
 
 @RestController
 @RequestMapping("/model")
@@ -58,12 +57,6 @@ class ModelService(
             select(table.fetch(GenModelSimpleView::class))
         }.execute()
     }
-
-    @GetMapping("/type")
-    fun listDatabaseType(): Map<String, Int> =
-        JDBCType.values().associate {
-            Pair(it.name, it.vendorTypeNumber)
-        }
 
     @PostMapping
     @Transactional

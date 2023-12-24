@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.model.GenTypeMapping
-import top.potmot.model.defaultValue.defaultTypeMapping
 import top.potmot.model.dto.GenTypeMappingInput
 import top.potmot.model.dto.GenTypeMappingView
 import top.potmot.model.orderKey
@@ -23,11 +22,6 @@ class TypeMappingService(
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenTypeMappingView? {
         return sqlClient.findById(GenTypeMappingView::class, id)
-    }
-
-    @GetMapping("default")
-    fun getDefault(): GenTypeMappingInput {
-        return defaultTypeMapping()
     }
 
     @GetMapping

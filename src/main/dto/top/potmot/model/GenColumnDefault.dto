@@ -1,8 +1,8 @@
-GenDataSourceColumnTypeView {
+GenColumnDefaultView {
     #allScalars
 }
 
-input GenDataSourceColumnTypeInput {
+input GenColumnDefaultInput {
     #allScalars
     -createdTime
     -modifiedTime
