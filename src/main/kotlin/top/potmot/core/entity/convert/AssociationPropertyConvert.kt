@@ -4,12 +4,15 @@ import org.babyfish.jimmer.ImmutableObjects.deepClone
 import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.config.GenConfig
-import top.potmot.core.meta.getAssociationMeta
-import top.potmot.core.meta.getMappingTableName
+import top.potmot.core.meta.createMappingTableName
+import top.potmot.core.meta.getAssociations
 import top.potmot.core.meta.getPropertyType
 import top.potmot.core.meta.getTypeMeta
 import top.potmot.enumeration.AssociationType
-import top.potmot.enumeration.AssociationType.*
+import top.potmot.enumeration.AssociationType.MANY_TO_MANY
+import top.potmot.enumeration.AssociationType.MANY_TO_ONE
+import top.potmot.enumeration.AssociationType.ONE_TO_MANY
+import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.model.GenProperty
 import top.potmot.model.GenPropertyDraft
 import top.potmot.model.copy
@@ -30,7 +33,7 @@ fun producePropertyWithAssociationAndUniqueIndexes(
     val (
         outAssociations,
         inAssociations,
-    ) = table.getAssociationMeta()
+    ) = table.getAssociations()
 
     val propertiesMap =
         columnPropertyPairs.associate { (column, property) ->
@@ -116,7 +119,7 @@ fun producePropertyWithAssociationAndUniqueIndexes(
                     setAssociation(
                         outAssociation.associationType,
                         joinTable = JoinTableProps(
-                            joinTableName = getMappingTableName(sourceTableName, targetTableName),
+                            joinTableName = createMappingTableName(sourceTableName, targetTableName),
                             joinColumnName = "${sourceTableName}_${sourceColumnName}",
                             inverseJoinColumnName = "${targetTableName}_${targetColumnName}",
                         )

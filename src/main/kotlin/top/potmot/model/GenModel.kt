@@ -1,12 +1,12 @@
 package top.potmot.model
 
 import org.babyfish.jimmer.sql.Entity
-import org.babyfish.jimmer.sql.Table
-import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.Table
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.base.BaseEntity
@@ -33,9 +33,9 @@ interface GenModel : BaseEntity {
     val name: String
 
     /**
-     * 模型JSON数据
+     * Graph 数据
      */
-    val value: String
+    val graphData: String
 
     /**
      * 语言

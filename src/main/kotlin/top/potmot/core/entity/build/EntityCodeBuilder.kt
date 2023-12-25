@@ -16,12 +16,12 @@ import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Table
 import top.potmot.config.GenConfig
 import top.potmot.constant.judgeImportPathInDefaultPackage
-import top.potmot.utils.template.TemplateBuilder
 import top.potmot.enumeration.EnumType
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.fullType
 import top.potmot.model.extension.now
 import top.potmot.model.extension.packagePath
+import top.potmot.utils.template.TemplateBuilder
 import kotlin.reflect.KClass
 
 open class EntityCodeBuilder: TemplateBuilder() {

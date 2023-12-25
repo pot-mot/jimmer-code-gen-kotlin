@@ -17,7 +17,6 @@ import top.potmot.model.createdTime
 import top.potmot.model.dto.GenEnumItemsInput
 import top.potmot.model.dto.GenEnumItemsView
 import top.potmot.model.dto.GenEnumView
-import top.potmot.model.genPackage
 import top.potmot.model.id
 import top.potmot.model.name
 import top.potmot.model.packageId

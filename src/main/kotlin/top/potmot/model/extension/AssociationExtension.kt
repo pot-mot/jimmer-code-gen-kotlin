@@ -1,6 +1,6 @@
 package top.potmot.model.extension
 
-import top.potmot.core.meta.getFkName
+import top.potmot.core.meta.createFkName
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.dto.GenAssociationMatchView
 import top.potmot.model.dto.GenColumnMatchView
@@ -12,7 +12,7 @@ fun newGenAssociationMatchView(
     target: GenColumnMatchView
 ): GenAssociationMatchView =
     GenAssociationMatchView(
-        getFkName(source.table.name, listOf(source.name), target.table.name, listOf(target.name)),
+        createFkName(source.table.name, listOf(source.name), target.table.name, listOf(target.name)),
         associationType,
         fake,
         source.table.id,

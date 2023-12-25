@@ -1,10 +1,26 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS `gen_package`;
+DROP TABLE IF EXISTS `gen_enum`;
+DROP TABLE IF EXISTS `gen_enum_item`;
+DROP TABLE IF EXISTS `gen_model`;
+DROP TABLE IF EXISTS `gen_data_source`;
+DROP TABLE IF EXISTS `gen_schema`;
+DROP TABLE IF EXISTS `gen_table`;
+DROP TABLE IF EXISTS `gen_column`;
+DROP TABLE IF EXISTS `gen_association`;
+DROP TABLE IF EXISTS `gen_column_reference`;
+DROP TABLE IF EXISTS `gen_table_index`;
+DROP TABLE IF EXISTS `gen_entity`;
+DROP TABLE IF EXISTS `gen_property`;
+DROP TABLE IF EXISTS `gen_index_column_mapping`;
+DROP TABLE IF EXISTS `gen_type_mapping`;
+DROP TABLE IF EXISTS `gen_column_default`;
+
 -- ----------------------------
 -- Table structure for gen_package
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_package`;
 CREATE TABLE `gen_package`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -25,7 +41,6 @@ CREATE TABLE `gen_package`
 -- ----------------------------
 -- Table structure for gen_enum
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_enum`;
 CREATE TABLE `gen_enum`
 (
     `id`            bigint                   NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -48,7 +63,6 @@ CREATE TABLE `gen_enum`
 -- ----------------------------
 -- Table structure for gen_enum_item
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_enum_item`;
 CREATE TABLE `gen_enum_item`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -71,12 +85,11 @@ CREATE TABLE `gen_enum_item`
 -- ----------------------------
 -- Table structure for gen_model
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_model`;
 CREATE TABLE `gen_model`
 (
     `id`               bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `name`             varchar(500) NOT NULL COMMENT '名称',
-    `value`            longtext     NOT NULL COMMENT '模型 JSON 数据',
+    `graph_data`            longtext     NOT NULL COMMENT 'Graph 数据',
     `language`         varchar(500) NOT NULL COMMENT '语言',
     `data_source_type` varchar(500) NOT NULL COMMENT '数据源类型',
     `created_time`     datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
@@ -91,7 +104,6 @@ CREATE TABLE `gen_model`
 -- ----------------------------
 -- Table structure for gen_data_source
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_data_source`;
 CREATE TABLE `gen_data_source`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -115,7 +127,6 @@ CREATE TABLE `gen_data_source`
 -- ----------------------------
 -- Table structure for gen_schema
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_schema`;
 CREATE TABLE `gen_schema`
 (
     `id`             bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -136,7 +147,6 @@ CREATE TABLE `gen_schema`
 -- ----------------------------
 -- Table structure for gen_table
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_table`;
 CREATE TABLE `gen_table`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -162,7 +172,6 @@ CREATE TABLE `gen_table`
 -- ----------------------------
 -- Table structure for gen_column
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_column`;
 CREATE TABLE `gen_column`
 (
     `id`                bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -197,7 +206,6 @@ CREATE TABLE `gen_column`
 -- ----------------------------
 -- Table structure for gen_association
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_association`;
 CREATE TABLE `gen_association`
 (
     `id`                bigint                                                         NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -227,7 +235,6 @@ CREATE TABLE `gen_association`
 -- ----------------------------
 -- Table structure for gen_column_reference
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_column_reference`;
 CREATE TABLE `gen_column_reference`
 (
     `id`               bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -253,11 +260,10 @@ CREATE TABLE `gen_column_reference`
 -- ----------------------------
 -- Table structure for gen_table_index
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_table_index`;
 CREATE TABLE `gen_table_index`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `table_id`      bigint       NOT NULL COMMENT '归属表',
+    `table_id`      bigint       NOT NULL COMMENT '归属表 ID',
     `name`          varchar(500) NOT NULL COMMENT '名称',
     `unique_index`  tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否唯一索引',
     `created_time`  datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
@@ -274,7 +280,6 @@ CREATE TABLE `gen_table_index`
 -- ----------------------------
 -- Table structure for gen_index_column_mapping
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_index_column_mapping`;
 CREATE TABLE `gen_index_column_mapping`
 (
     `index_id`  bigint NOT NULL COMMENT '唯一索引 ID',
@@ -290,7 +295,6 @@ CREATE TABLE `gen_index_column_mapping`
 -- ----------------------------
 -- Table structure for gen_entity
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_entity`;
 CREATE TABLE `gen_entity`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -317,7 +321,6 @@ CREATE TABLE `gen_entity`
 -- ----------------------------
 -- Table structure for gen_property
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_property`;
 CREATE TABLE `gen_property`
 (
     `id`                     bigint                                                         NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -361,7 +364,6 @@ CREATE TABLE `gen_property`
 -- ----------------------------
 -- Table structure for gen_type_mapping
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_type_mapping`;
 CREATE TABLE `gen_type_mapping`
 (
     `id`               bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -382,13 +384,12 @@ CREATE TABLE `gen_type_mapping`
 -- ----------------------------
 -- Table structure for gen_type_mapping
 -- ----------------------------
-DROP TABLE IF EXISTS `gen_column_default`;
 CREATE TABLE `gen_column_default`
 (
     `id`                bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `data_source_type`  varchar(500) NOT NULL COMMENT '数据源类型',
     `type_code`         int(0)       NOT NULL COMMENT 'JDBCType 码值',
-    `type`              varchar(500) NOT NULL COMMENT '数据库类型表达式',
+    `type`              varchar(500) NOT NULL COMMENT '字面类型',
     `display_size`      bigint       NOT NULL DEFAULT 0 COMMENT '列展示长度',
     `numeric_precision` bigint       NOT NULL DEFAULT 0 COMMENT '列精度',
     `default_value`     varchar(500) NULL     DEFAULT NULL COMMENT '默认值',
@@ -399,7 +400,7 @@ CREATE TABLE `gen_column_default`
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT = '列默认值'
+  COLLATE = utf8mb4_0900_ai_ci COMMENT = '列默认'
   ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

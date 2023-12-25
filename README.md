@@ -1,18 +1,20 @@
-# Jimmer Code Gen 代码生成器 模型重构分支
+# Jimmer Code Gen 代码生成器
 
-> ## 重构内容
+> ## TODO
 > 
 > - [x] 实现从 0 开始设计实体模型进行保存
 >   - [x] 将 table 与 datasource 解除强关联，允许 table 单独存在
 >   - [x] 补充 table 与 association 和 model 可空的关联，实现 table 与 model 的关联
 >   - [x] model 到 table 和 association 的生成
-> - [ ] 将目前项目中不规范的直接字符串拼接迁移至基于元数据生成
+> - [ ] 定义元数据
 >   - [ ] TableDefine 的元数据
 >   - [ ] Entity 的元数据
+> - [ ] 补充模版
+>   - [ ] 业务类模版
+>   - [ ] react 和 vue 的 UI 基础模版
+>   - [ ] DTO 设计与业务流程设计
 
 项目基于 Kotlin + Gradle 编写。
-
-目前支持根据数据库元数据生成 jimmer 实体类与简单关联属性。
 
 ## Git 仓库地址
 
@@ -36,17 +38,19 @@
 
 ### 运行 SQL 脚本
 
-- [MySQL](sql%2Fmysql%2Fjimmer_code_gen.sql)  
-创建 schema **jimmer_code_gen** 运行脚本创建数据库表。
+- [MySQL](src%2Fmain%2Fresources%2Fsql%2Fmysql%2Fjimmer_code_gen.sql)  
+创建 schema **jimmer_code_gen** 之后运行脚本。
 
-- [PostgreSQL](sql%2Fpostgresql%2Fjimmer_code_gen.sql)  
-在默认 database **postgres** 中创建 schema **jimmer_code_gen** 运行脚本创建数据库表。
+- [PostgreSQL](src%2Fmain%2Fresources%2Fsql%2Fpostgresql%2Fjimmer_code_gen.sql)  
+在默认 database **postgres** 中创建 schema **jimmer_code_gen** 之后运行脚本。
+
+- [H2](src%2Fmain%2Fresources%2Fsql%2Fh2%2Fjimmer_code_gen.sql)  
+基于 [H2Initializer.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fconfig%2FH2Initializer.kt) 随项目启动直接于内存中创建。
 
 ### 修改项目配置
 
-修改对应 [application.yml](src%2Fmain%2Fresources%2Fapplication.yml) 中的 `spring.profiles.active` 一项为对应数据库。
-
-并在特定环境中配置对应的数据源连接
+修改对应 [application.yml](src%2Fmain%2Fresources%2Fapplication.yml) 中的 `spring.profiles.active` 一项为目标 profile，并在特定环境中配置对应的数据源连接
+- [application-h2.yml](src%2Fmain%2Fresources%2Fapplication-h2.yml)
 - [application-mysql.yml](src%2Fmain%2Fresources%2Fapplication-mysql.yml)
 - [application-postgresql.yml](src%2Fmain%2Fresources%2Fapplication-postgresql.yml)
 
@@ -65,19 +69,13 @@
 
 首先需要完成的就是数据库基本信息的导入，目前项目有以下两种途径完成：
 
-#### [DataSource Load](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fload%2FDataSourceLoad.kt) 数据源导入
+#### [DataSource load](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fload%2FDataSourceLoad.kt) 数据源导入
 
 基于 [SchemaCrawler](https://github.com/schemacrawler/SchemaCrawler) 获取数据库元数据，导入 [schema](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fmodel%2FGenSchema.kt)、[table](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fmodel%2FGenTable.kt)、[column](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fmodel%2FGenColumn.kt) 三级数据，并根据外键生成关联。
 
-#### [Model Design](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fmodel%2Fextension%2FModelExtension.kt) 模型设计
+#### [Model load](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fload%2FModelLoad.kt) 模型设计后导入
 
 基于 [AntV X6](https://x6.antv.antgroup.com/) 生产 JSON，具体参照前端项目。最终产物同样为 table 和 association。
-
-#### [Association Match](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fmatch%2FAssociationMatch.kt) 关联匹配
-
-自动关联匹配，快速扫描列建立关联。
-
-> 注意，需要补充 [AssociationMatchType.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fenumeration%2FAssociationMatchType.kt) 枚举才可在前端显示**
 
 ### Table Entity Convert 转换
 
@@ -92,13 +90,11 @@
 
 ### Code Generate 代码生成
 
-根据 table 和 entity 转换出对应语言实体类的代码字符串。
-
-#### 业务类
-
 [GenerateService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FGenerateService.kt)
 
-主要提供 convert（table 转换 entity）、preview（预览生成代码）、generate（生成代码 zip） 三个行为的入口。
+- convert（table 转换 entity）
+- preview（预览生成代码）
+- generate（生成代码 zip）
 
 #### 模版工具类
 
@@ -108,34 +104,27 @@
 
 #### Table Define 表定义
 
-[DataBaseGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FDataBaseGenerate.kt)
+[TableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerator.kt)
 
 #### EntityCode 业务实体代码
->（基于超级聚合根类型 [GenEntityPropertiesView](src%2Fmain%2Fdto%2Ftop%2Fpotmot%2Fmodel%2FGenEntity.dto)）  
-> 默认连带枚举进行生成
 
-[EntityCodeGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fgenerate%2FEntityCodeGenerate.kt)
-
-## TODO 计划实现的功能（按时间）
-
-- 业务类模版
-
-- UI 基础模版
-
-- DTO 设计与业务流程设计
+[EntityCodeGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fgenerate%2FEntityCodeGenerator.kt)
 
 ## 其他
 
 ### 关于超级聚合根类型与大量 output/view dto
-  > 此处的"超级聚合根类型"是指从聚合根出发，关联极深的类型（table 和 entity 就是作为 数据库 和 业务代码两个领域的聚合根）
+  > 此处的"超级聚合根类型"是指从聚合根出发，关联层级极深的类型  
+  > （table 和 entity 就是作为 数据库 和 业务代码两个领域的聚合根）
 
   在生成器这种相对特殊的业务场景下，模型关联密集，后端对于类型操作较多。
   为了确保类型安全，规避动态类型带来的属性 Unload 风险，
-  本项目广泛 view dto 作为核心代码的基础，并且“生成代码”功能相关的代码完全依赖于超级聚合根类型。  
+  本项目使用 view dto 作为核心代码的基础。  
   **在普通业务场景仅供前端使用的情况下建议使用 fetchBy 而不是 view dto。**
 
 ### [Liquibase](https://www.liquibase.org/)
-目前项目中关于 TableDefine 有另一种生成方式，[LiquibaseUtil.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fliquibase%2FLiquibaseUtil.kt)，但在类型映射方面没有较好的解决方案，所以目前依然使用手动拼接方案。
+关于 TableDefine 有另一种更完善的 diff 生成方式，[LiquibaseUtil.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Fliquibase%2FLiquibaseUtil.kt)，
+但关于在不同数据源种类间进行类型映射没有较好的解决方案，且必须真正连接数据源才可进行生成，所以目前依然使用手动拼接方案。  
+未来计划通过 jdbc type -> liquibase type 的映射来实现通用类型映射。
 
 ### 目前方向与拓展建议
 个人目前无力支持完整的脚手架/低代码，本项目目前仅作为构建与设计模型的入口。  

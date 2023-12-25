@@ -17,12 +17,12 @@ import top.potmot.core.database.load.getGenIndexes
 import top.potmot.core.database.load.toGenSchema
 import top.potmot.core.database.load.toGenTable
 import top.potmot.error.DataSourceErrorCode
-import top.potmot.model.extension.toSource
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenSchema
 import top.potmot.model.GenTable
 import top.potmot.model.dataSourceId
 import top.potmot.model.dto.GenSchemaView
+import top.potmot.model.extension.toSource
 import top.potmot.model.id
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 

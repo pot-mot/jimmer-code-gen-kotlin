@@ -1,7 +1,6 @@
 package top.potmot.core.entity.convert
 
 import top.potmot.config.GenConfig
-import top.potmot.core.meta.ColumnTypeMeta
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.dto.GenTypeMappingView

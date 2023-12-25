@@ -14,6 +14,15 @@ data class AssociationMeta(
     val targetColumns: List<GenColumn>
 )
 
+data class ForeignKeyMeta(
+    val sourceTableName: String,
+    val sourceColumnNames: List<String>,
+    val targetTableName: String,
+    val targetColumnNames: List<String>,
+    val name: String = createFkName(sourceTableName, sourceColumnNames, targetTableName, targetColumnNames),
+)
+
+
 fun GenAssociation.getMeta(): AssociationMeta =
     AssociationMeta(
         name = this.name,
@@ -23,8 +32,19 @@ fun GenAssociation.getMeta(): AssociationMeta =
         targetColumns = this.columnReferences.map{it.targetColumn},
     )
 
+fun AssociationMeta.toFkMeta(): ForeignKeyMeta =
+    ForeignKeyMeta(
+        name = this.name,
+        sourceTableName = this.sourceTable.name,
+        sourceColumnNames = this.sourceColumns.map{it.name},
+        targetTableName = this.targetTable.name,
+        targetColumnNames = this.targetColumns.map{it.name}
+    )
 
-fun getFkName(
+fun GenAssociation.toFkMeta(): ForeignKeyMeta =
+    this.getMeta().toFkMeta()
+
+fun createFkName(
     sourceTableName: String,
     sourceColumnNames: List<String>,
     targetTableName: String,
@@ -32,12 +52,3 @@ fun getFkName(
 ): String =
     "fk_${sourceTableName.clearTableName()}_${sourceColumnNames.joinToString("_") { it.clearColumnName() }}" +
             "_${targetTableName.clearTableName()}_${targetColumnNames.joinToString("_") { it.clearColumnName() }}"
-
-
-fun getMappingTableName(
-    sourceTableName: String,
-    targetTableName: String,
-    sourceColumnName: String = "",
-    targetColumnName: String = "",
-): String =
-    "${sourceTableName.clearTableName()}_${targetTableName.clearTableName()}_mapping"

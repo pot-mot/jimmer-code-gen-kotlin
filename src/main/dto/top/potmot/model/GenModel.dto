@@ -1,6 +1,6 @@
 GenModelSimpleView {
     #allScalars
-    -value
+    -graphData
 }
 
 GenModelView {
@@ -13,5 +13,5 @@ input GenModelInput {
     remark
     language
     dataSourceType
-    value?
+    graphData?
 }

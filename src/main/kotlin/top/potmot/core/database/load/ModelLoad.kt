@@ -2,10 +2,10 @@ package top.potmot.core.database.load
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import org.babyfish.jimmer.jackson.ImmutableModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.babyfish.jimmer.jackson.ImmutableModule
 import org.babyfish.jimmer.kt.unload
 import top.potmot.constant.ModelShape
 import top.potmot.model.GenTable
@@ -20,11 +20,11 @@ private val mapper = jacksonObjectMapper()
     .registerModule(ImmutableModule())
     .registerModule(JavaTimeModule())
 
-fun valueToData(modelId: Long, value: String): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> {
+fun parseGraphData(modelId: Long, graphData: String): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> {
     val tables = mutableListOf<GenTableColumnsInput>()
     val associations = mutableListOf<GenAssociationModelInput>()
 
-    val jsonNode = mapper.readTree(value)
+    val jsonNode = mapper.readTree(graphData)
 
     val cells = jsonNode.path("json").path("cells").toList()
 
@@ -43,8 +43,8 @@ fun valueToData(modelId: Long, value: String): Pair<List<GenTableColumnsInput>, 
     return Pair(tables, associations)
 }
 
-fun GenModelView.valueToData(): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> =
-    valueToData(this.id, this.value)
+fun GenModelView.getGraphEntities(): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> =
+    parseGraphData(this.id, this.graphData)
 
 private fun JsonNode.toTable(modelId: Long): GenTableColumnsInput {
     if (this.isObject) {

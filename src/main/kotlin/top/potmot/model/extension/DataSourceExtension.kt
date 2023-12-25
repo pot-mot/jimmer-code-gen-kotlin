@@ -3,6 +3,8 @@ package top.potmot.model.extension
 import top.potmot.enumeration.DataSourceType
 import top.potmot.error.DataSourceException
 import top.potmot.model.GenDataSource
+import top.potmot.utils.sql.SQLExecuteResult
+import top.potmot.utils.sql.execute
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import us.fatehi.utility.datasource.DatabaseConnectionSources
 import us.fatehi.utility.datasource.MultiUseUserCredentials
@@ -22,7 +24,7 @@ fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
     }
 }
 
-fun GenDataSource.execute(schemaName: String, multiSql: String): IntArray {
+fun GenDataSource.execute(schemaName: String, sql: String): List<SQLExecuteResult> {
     val connection =
         when (this.type) {
             DataSourceType.MySQL -> {
@@ -34,19 +36,7 @@ fun GenDataSource.execute(schemaName: String, multiSql: String): IntArray {
         }
 
     try {
-        connection.autoCommit = false
-
-        val statement = connection.createStatement()
-
-        multiSql.split(";").filter { it.isNotBlank() }.forEach {
-            statement.addBatch(it.trim())
-        }
-
-        val result = statement.executeBatch()
-
-        connection.commit()
-
-        return result
+        return connection.execute(sql)
     } catch (e: Exception) {
         connection.rollback()
 

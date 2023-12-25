@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.entity.convert.toGenEntity
-import top.potmot.core.genPackage.generate.packageGenerateTreeFetcher
-import top.potmot.core.genPackage.generate.TreeItem
 import top.potmot.core.entity.generate.generateEntityCode
+import top.potmot.core.genPackage.generate.TreeItem
 import top.potmot.core.genPackage.generate.generatePackage
+import top.potmot.core.genPackage.generate.packageGenerateTreeFetcher
 import top.potmot.core.genPackage.generate.toZipByteArray
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenEntity

@@ -12,36 +12,36 @@ class PostgreTableDefineGenerator : TableDefineGenerator() {
 
     override fun stringify(tables: Collection<GenTableAssociationsView>): String =
         tables.postgreTablesStringify()
+
+    private fun GenTableAssociationsView.postgreTableStringify(): String =
+        PostgreTableDefineBuilder().apply {
+            line(dropTable(name))
+            separate()
+            lines(createTable(this@postgreTableStringify))
+            separate()
+            lines(commentsStringify())
+            separate()
+            lines(associationsStringify())
+        }.build()
+
+    private fun Collection<GenTableAssociationsView>.postgreTablesStringify(): String =
+        PostgreTableDefineBuilder().apply {
+            forEach {
+                line(dropTable(it.name))
+            }
+
+            separate()
+
+            forEach {
+                lines(createTable(it))
+                separate()
+                lines(it.commentsStringify())
+                separate()
+            }
+
+            forEach {
+                lines(it.associationsStringify())
+                separate()
+            }
+        }.build()
 }
-
-private fun Collection<GenTableAssociationsView>.postgreTablesStringify(): String =
-    PostgreTableDefineBuilder().apply {
-        forEach {
-            line(dropTable(it.name))
-        }
-
-        separate()
-
-        forEach {
-            lines(createTable(it))
-            separate()
-            lines(it.commentsStringify())
-            separate()
-        }
-
-        forEach {
-            lines(it.associationsStringify())
-            separate()
-        }
-    }.build()
-
-private fun GenTableAssociationsView.postgreTableStringify(): String =
-    PostgreTableDefineBuilder().apply {
-        line(dropTable(name))
-        separate()
-        lines(createTable(this@postgreTableStringify))
-        separate()
-        lines(commentsStringify())
-        separate()
-        lines(associationsStringify())
-    }.build()

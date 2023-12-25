@@ -16,11 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.generate.generateTableDefines
+import top.potmot.core.database.load.getGraphEntities
+import top.potmot.core.database.load.parseGraphData
 import top.potmot.core.database.load.toInput
 import top.potmot.core.database.load.toInputPair
 import top.potmot.enumeration.DataSourceType
 import top.potmot.error.DataSourceErrorCode
-import top.potmot.core.database.load.valueToData
 import top.potmot.model.GenModel
 import top.potmot.model.GenTable
 import top.potmot.model.by
@@ -46,7 +47,7 @@ class ModelService(
 
     @GetMapping("/valueData/{id}")
     fun getValueData(@PathVariable id: Long): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>>? {
-        return sqlClient.findById(GenModelView::class, id)?.valueToData()
+        return sqlClient.findById(GenModelView::class, id)?.getGraphEntities()
     }
 
 
@@ -75,8 +76,8 @@ class ModelService(
         /**
          * 2. 保存关联数据
          */
-        if (!input.value.isNullOrBlank()) {
-            valueToData(model.id, input.value!!).let { (tables, associations) ->
+        if (!input.graphData.isNullOrBlank()) {
+            parseGraphData(model.id, input.graphData!!).let { (tables, associations) ->
                 /**
                  * 2.1 保存舍弃 indexes 的 table
                  */

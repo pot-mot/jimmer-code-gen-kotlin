@@ -26,6 +26,7 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 val jimmerVersion = "0.8.56"
 val mysqlVersion = "8.0.30"
 val postgreVersion = "42.6.0"
+val h2Version = "2.1.214"
 val caffeineVersion = "2.9.1"
 val schemacrawlerVersion = "16.20.4"
 val liquibaseVersion = "4.22.0"
@@ -54,6 +55,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
     implementation("org.postgresql:postgresql:${postgreVersion}")
+
+    runtimeOnly("com.h2database:h2:${h2Version}")
 
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler
     implementation("us.fatehi:schemacrawler-api:${schemacrawlerVersion}") {

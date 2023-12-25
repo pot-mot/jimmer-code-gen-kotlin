@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.match.AssociationMatch
 import top.potmot.core.database.match.simplePkColumnMatch
 import top.potmot.enumeration.AssociationMatchType
-import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.SelectType
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenColumn

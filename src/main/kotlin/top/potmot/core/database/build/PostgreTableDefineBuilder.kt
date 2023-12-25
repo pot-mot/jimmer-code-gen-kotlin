@@ -1,5 +1,6 @@
 package top.potmot.core.database.build
 
+import top.potmot.core.meta.MappingTableMeta
 import top.potmot.model.GenColumn
 import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
@@ -77,34 +78,14 @@ class PostgreTableDefineBuilder : TableDefineBuilder() {
         "DROP TABLE IF EXISTS ${name.escape()} CASCADE;"
 
     override fun createMappingTable(
-        sourceTableName: String,
-        sourceTableComment: String,
-        sourceColumnName: String,
-        targetTableName: String,
-        targetTableComment: String,
-        targetColumnName: String,
-        columnType: String,
-        lines: List<String>,
+        meta: MappingTableMeta,
+        otherLines: List<String>,
         append: String,
-        mappingTableName: String,
-        mappingTableComment: String,
-        mappingSourceColumnName: String,
-        mappingTargetColumnName: String
     ): String {
         return super.createMappingTable(
-            sourceTableName,
-            sourceTableComment,
-            sourceColumnName,
-            targetTableName,
-            targetTableComment,
-            targetColumnName,
-            columnType,
-            lines,
+            meta,
+            otherLines,
             append,
-            mappingTableName,
-            mappingTableComment,
-            mappingSourceColumnName,
-            mappingTargetColumnName
-        ) + "\n\n${createTableComment(mappingTableName, mappingTableComment)}"
+        ) + "\n\n${createTableComment(meta.name, meta.comment)}"
     }
 }

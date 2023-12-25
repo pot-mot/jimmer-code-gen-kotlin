@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:jimmer_code_gen
+    username: root
+    password: root
+
+    sql-path: sql/h2/jimmer_code_gen.sql
+
+  h2:
+    console:
+      enabled: true
+      #通过 host:port/h2 访问 h2 web console，通过上面 datasource.url username password 进行连接
+      path: /h2
+      settings:
+        web-allow-others: true

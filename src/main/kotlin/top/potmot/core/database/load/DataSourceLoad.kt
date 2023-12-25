@@ -1,6 +1,5 @@
 package top.potmot.core.database.load
 
-import org.babyfish.jimmer.ImmutableObjects
 import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.DissociateAction
@@ -30,7 +29,6 @@ import top.potmot.model.by
 import top.potmot.model.copy
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import java.util.regex.Pattern
-import kotlin.RuntimeException
 
 /**
  * 获取数据库目录（Catalog）

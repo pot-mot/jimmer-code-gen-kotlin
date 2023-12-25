@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.enumeration.DataSourceType
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.error.DataSourceException
-import top.potmot.model.extension.test
 import top.potmot.model.GenDataSource
 import top.potmot.model.copy
 import top.potmot.model.defaultValue.defaultDataSource
@@ -25,6 +24,7 @@ import top.potmot.model.defaultValue.defaultDataSourceMap
 import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.model.dto.GenDataSourceTemplateView
 import top.potmot.model.dto.GenDataSourceView
+import top.potmot.model.extension.test
 
 @RestController
 @RequestMapping("/dataSource")
