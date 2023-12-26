@@ -7,10 +7,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TABLE IF EXISTS "gen_package" CASCADE;
+DROP TABLE IF EXISTS "gen_model" CASCADE;
 DROP TABLE IF EXISTS "gen_enum" CASCADE;
 DROP TABLE IF EXISTS "gen_enum_item" CASCADE;
-DROP TABLE IF EXISTS "gen_model" CASCADE;
 DROP TABLE IF EXISTS "gen_data_source" CASCADE;
 DROP TABLE IF EXISTS "gen_schema" CASCADE;
 DROP TABLE IF EXISTS "gen_table" CASCADE;
@@ -21,45 +20,12 @@ DROP TABLE IF EXISTS "gen_property" CASCADE;
 DROP TABLE IF EXISTS "gen_type_mapping" CASCADE;
 
 -- ----------------------------
--- Table structure for gen_package
--- ----------------------------
-CREATE TABLE "gen_package"
-(
-    "id"            BIGSERIAL   NOT NULL,
-    "parent_id"     bigint      NULL     DEFAULT NULL,
-    "name"          text        NOT NULL,
-    "order_key"     bigint      NOT NULL DEFAULT 0,
-    "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"        text        NOT NULL DEFAULT '',
-    PRIMARY KEY ("id"),
-    CONSTRAINT "fk_package_parent" FOREIGN KEY ("parent_id") REFERENCES "gen_package" ("id") ON DELETE CASCADE ON UPDATE RESTRICT
-);
-
-CREATE INDEX "idx_package_parent" ON "gen_package" ("parent_id");
-
-COMMENT ON TABLE "gen_package" IS '生成包';
-COMMENT ON COLUMN "gen_package"."id" IS 'ID';
-COMMENT ON COLUMN "gen_package"."parent_id" IS '父包';
-COMMENT ON COLUMN "gen_package"."name" IS '包名称';
-COMMENT ON COLUMN "gen_package"."order_key" IS '自定排序';
-COMMENT ON COLUMN "gen_package"."created_time" IS '创建时间';
-COMMENT ON COLUMN "gen_package"."modified_time" IS '修改时间';
-COMMENT ON COLUMN "gen_package"."remark" IS '备注';
-
-CREATE TRIGGER "trg_update_gen_package_modified_time"
-    BEFORE UPDATE
-    ON "gen_package"
-    FOR EACH ROW
-EXECUTE FUNCTION update_modified_time();
-
--- ----------------------------
 -- Table structure for gen_enum
 -- ----------------------------
 CREATE TABLE "gen_enum"
 (
     "id"            BIGSERIAL   NOT NULL,
-    "package_id"    bigint      NULL     DEFAULT NULL,
+    "package_path"  text        NOT NULL,
     "name"          text        NOT NULL,
     "comment"       text        NOT NULL,
     "enum_type"     text        NULL,
@@ -67,15 +33,12 @@ CREATE TABLE "gen_enum"
     "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "remark"        text        NOT NULL DEFAULT '',
-    PRIMARY KEY ("id"),
-    CONSTRAINT "fk_enum_package" FOREIGN KEY ("package_id") REFERENCES "gen_package" ("id") ON DELETE SET NULL ON UPDATE RESTRICT
+    PRIMARY KEY ("id")
 );
-
-CREATE INDEX "idx_enum_package" ON "gen_enum" ("package_id");
 
 COMMENT ON TABLE "gen_enum" IS '生成枚举';
 COMMENT ON COLUMN "gen_enum"."id" IS 'ID';
-COMMENT ON COLUMN "gen_enum"."package_id" IS '所属包';
+COMMENT ON COLUMN "gen_enum"."package_path" IS '包路径';
 COMMENT ON COLUMN "gen_enum"."name" IS '枚举名';
 COMMENT ON COLUMN "gen_enum"."comment" IS '枚举注释';
 COMMENT ON COLUMN "gen_enum"."enum_type" IS '枚举类型';
@@ -132,15 +95,17 @@ EXECUTE FUNCTION update_modified_time();
 -- ----------------------------
 CREATE TABLE "gen_model"
 (
-    "id"               BIGSERIAL   NOT NULL,
-    "name"             text        NOT NULL,
-    "graph_data"       text        NOT NULL,
-    "language"         text        NOT NULL,
-    "data_source_type" text        NOT NULL,
-    "order_key"        bigint      NOT NULL DEFAULT 0,
-    "created_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"    timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"           text        NOT NULL DEFAULT '',
+    "id"                  BIGSERIAL   NOT NULL,
+    "name"                text        NOT NULL,
+    "graph_data"          text        NOT NULL,
+    "language"            text        NOT NULL,
+    "data_source_type"    text        NOT NULL,
+    "package_path"        text        NOT NULL,
+    "sync_convert_entity" boolean     NOT NULL DEFAULT TRUE,
+    "order_key"           bigint      NOT NULL DEFAULT 0,
+    "created_time"        timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"       timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark"              text        NOT NULL DEFAULT '',
     PRIMARY KEY ("id")
 );
 
@@ -150,6 +115,8 @@ COMMENT ON COLUMN "gen_model"."name" IS '名称';
 COMMENT ON COLUMN "gen_model"."graph_data" IS 'Graph 数据';
 COMMENT ON COLUMN "gen_model"."language" IS '语言';
 COMMENT ON COLUMN "gen_model"."data_source_type" IS '数据源类型';
+COMMENT ON COLUMN "gen_model"."sync_convert_entity" IS '数据源类型';
+COMMENT ON COLUMN "gen_model"."package_path" IS '包路径';
 COMMENT ON COLUMN "gen_model"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_model"."modified_time" IS '修改时间';
 COMMENT ON COLUMN "gen_model"."remark" IS '备注';
@@ -474,7 +441,7 @@ COMMENT ON COLUMN "gen_index_column_mapping"."column_id" IS '列 ID';
 CREATE TABLE "gen_entity"
 (
     "id"            bigserial   NOT NULL,
-    "package_id"    bigint      NULL     DEFAULT NULL,
+    "package_path"  text        NOT NULL,
     "table_id"      bigint      NOT NULL,
     "name"          text        NOT NULL,
     "comment"       text        NOT NULL,
@@ -484,17 +451,15 @@ CREATE TABLE "gen_entity"
     "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "remark"        text        NOT NULL DEFAULT '',
     PRIMARY KEY ("id"),
-    CONSTRAINT "fk_entity_package" FOREIGN KEY ("package_id") REFERENCES "gen_package" ("id") ON DELETE SET NULL ON UPDATE RESTRICT,
     CONSTRAINT "fk_entity_table" FOREIGN KEY ("table_id") REFERENCES "gen_table" ("id") ON DELETE CASCADE ON UPDATE RESTRICT
 );
 
 CREATE UNIQUE INDEX "uidx_entity_table" ON "gen_entity" ("table_id");
-CREATE INDEX "idx_entity_package" ON "gen_entity" ("package_id");
 CREATE INDEX "idx_entity_table" ON "gen_entity" ("table_id");
 
 COMMENT ON TABLE "gen_entity" IS '生成实体';
 COMMENT ON COLUMN "gen_entity"."id" IS 'ID';
-COMMENT ON COLUMN "gen_entity"."package_id" IS '所属包';
+COMMENT ON COLUMN "gen_entity"."package_path" IS '包路径';
 COMMENT ON COLUMN "gen_entity"."table_id" IS '对应表';
 COMMENT ON COLUMN "gen_entity"."name" IS '类名称';
 COMMENT ON COLUMN "gen_entity"."comment" IS '类注释';

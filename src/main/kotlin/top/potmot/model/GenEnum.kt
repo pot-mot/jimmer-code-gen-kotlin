@@ -1,15 +1,11 @@
 package top.potmot.model
 
-import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
-import org.babyfish.jimmer.sql.ManyToOne
-import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
@@ -45,19 +41,9 @@ interface GenEnum : BaseEntity {
     val itemIds: List<Long>
 
     /**
-     * 生成包
+     * 包路径
      */
-    @Key
-    @ManyToOne
-    @JoinColumn(name = "package_id")
-    @OnDissociate(DissociateAction.SET_NULL)
-    val genPackage: GenPackage?
-
-    /**
-     * 生成包 ID 视图
-     */
-    @IdView("genPackage")
-    val packageId: Long?
+    val packagePath: String
 
     /**
      * 枚举名

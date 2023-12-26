@@ -1,4 +1,4 @@
-package top.potmot.core.genPackage.generate
+package top.potmot.utils.zip
 
 import java.io.ByteArrayOutputStream
 import java.util.zip.ZipEntry

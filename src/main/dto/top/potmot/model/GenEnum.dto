@@ -1,11 +1,9 @@
 GenEnumView {
     #allScalars
-    id(genPackage)
 }
 
 GenEnumItemsView {
     #allScalars
-    id(genPackage)
 
     items {
         #allScalars
@@ -14,7 +12,6 @@ GenEnumItemsView {
 
 input GenEnumItemsInput {
     #allScalars
-    id(genPackage)
     -createdTime
     -modifiedTime
 

@@ -20,7 +20,6 @@ import top.potmot.enumeration.EnumType
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.fullType
 import top.potmot.model.extension.now
-import top.potmot.model.extension.packagePath
 import top.potmot.utils.template.TemplateBuilder
 import kotlin.reflect.KClass
 
@@ -159,7 +158,7 @@ open class EntityCodeBuilder: TemplateBuilder() {
             !judgeImportPathInDefaultPackage(importItem)
                     &&
                     // 非当前包下的 import
-                    (importItem.substringBeforeLast(".") != entity.packagePath())
+                    (importItem.substringBeforeLast(".") != entity.packagePath)
                     &&
                     // 至少有 2 级包
                     (importItem.split(".").filter { it.isNotBlank() }.size >= 2)

@@ -7,6 +7,4 @@ class EnumQuery (
     val createdTime: TimeRangeQueryParam? = null,
     val modifiedTime: TimeRangeQueryParam? = null,
     val names: List<String>? = null,
-    val packageIds: List<Long>? = null,
-    val nonPackage: Boolean? = null,
 )

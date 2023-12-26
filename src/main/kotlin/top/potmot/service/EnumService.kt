@@ -3,7 +3,6 @@ package top.potmot.service
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.between
-import org.babyfish.jimmer.sql.kt.ast.expression.isNull
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,7 +18,6 @@ import top.potmot.model.dto.GenEnumItemsView
 import top.potmot.model.dto.GenEnumView
 import top.potmot.model.id
 import top.potmot.model.name
-import top.potmot.model.packageId
 import top.potmot.model.query.EnumQuery
 import kotlin.reflect.KClass
 
@@ -49,14 +47,6 @@ class EnumService(
         return sqlClient.createQuery(GenEnum::class) {
             query.names?.takeIf { it.isNotEmpty() }?.let {
                 where(table.name valueIn it)
-            }
-
-            query.packageIds?.takeIf { it.isNotEmpty() }?.let {
-                where(table.packageId valueIn it)
-            }
-
-            query.nonPackage?.takeIf { it }?.let {
-                where(table.packageId.isNull())
             }
 
             query.ids?.takeIf { it.isNotEmpty() }?.let {

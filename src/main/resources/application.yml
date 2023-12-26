@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: postgresql
+    active: h2
 
   liquibase:
     enabled: false

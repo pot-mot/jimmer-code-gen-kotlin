@@ -6,9 +6,7 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
-import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
@@ -33,18 +31,9 @@ interface GenEntity : BaseEntity {
     override val id: Long
 
     /**
-     * 所属包 ID
+     * 包路径
      */
-    @IdView("genPackage")
-    val packageId: Long?
-
-    /**
-     * 所属包
-     */
-    @ManyToOne
-    @JoinColumn(name = "package_id")
-    @OnDissociate(DissociateAction.SET_NULL)
-    val genPackage: GenPackage?
+    val packagePath: String
 
     /**
      * 对应表 ID

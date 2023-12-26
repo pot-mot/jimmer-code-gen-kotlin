@@ -2,7 +2,6 @@ package top.potmot.core.entity.generate
 
 import top.potmot.core.entity.build.EntityCodeBuilder
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.extension.packagePath
 import top.potmot.model.extension.shortType
 import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as TargetOfEnum
 
@@ -17,7 +16,7 @@ class KotlinEntityCodeGenerator: EntityCodeGenerator() {
 
     private fun GenEntityPropertiesView.kotlinClassStringify(): String =
         EntityCodeBuilder().apply {
-            line("package ${packagePath()}")
+            line("package $packagePath")
 
             separate()
             lines(importLines()) { "import $it" }
@@ -41,7 +40,7 @@ class KotlinEntityCodeGenerator: EntityCodeGenerator() {
 
     private fun TargetOfEnum.kotlinEnumStringify(): String =
         EntityCodeBuilder().apply {
-            line("package ${packagePath()}")
+            line("package $packagePath")
 
             separate()
             lines(importLines()) { "import $it" }

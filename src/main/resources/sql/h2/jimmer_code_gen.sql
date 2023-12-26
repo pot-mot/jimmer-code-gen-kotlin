@@ -2,10 +2,9 @@ CREATE SCHEMA `jimmer_code_gen`;
 
 USE `jimmer_code_gen`;
 
-DROP TABLE IF EXISTS `gen_package`;
+DROP TABLE IF EXISTS `gen_model`;
 DROP TABLE IF EXISTS `gen_enum`;
 DROP TABLE IF EXISTS `gen_enum_item`;
-DROP TABLE IF EXISTS `gen_model`;
 DROP TABLE IF EXISTS `gen_data_source`;
 DROP TABLE IF EXISTS `gen_schema`;
 DROP TABLE IF EXISTS `gen_table`;
@@ -20,31 +19,34 @@ DROP TABLE IF EXISTS `gen_type_mapping`;
 DROP TABLE IF EXISTS `gen_column_default`;
 
 -- ----------------------------
--- Table structure for gen_package
+-- Table structure for gen_model
 -- ----------------------------
-CREATE TABLE `gen_package`
+CREATE TABLE `gen_model`
 (
-    `id`            bigint       NOT NULL AUTO_INCREMENT,
-    `parent_id`     bigint       NULL     DEFAULT NULL,
-    `name`          varchar(500) NOT NULL,
-    `order_key`     bigint       NOT NULL DEFAULT 0,
-    `created_time`  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `modified_time` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `remark`        varchar(500) NOT NULL DEFAULT '',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_package_parent` FOREIGN KEY (`parent_id`) REFERENCES `gen_package` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    `id`                  bigint       NOT NULL AUTO_INCREMENT,
+    `name`                varchar(500) NOT NULL,
+    `graph_data`          longtext     NOT NULL,
+    `language`            varchar(500) NOT NULL,
+    `data_source_type`    varchar(500) NOT NULL,
+    `package_path`        varchar(500) NOT NULL,
+    `sync_convert_entity` boolean      NOT NULL DEFAULT TRUE,
+    `created_time`        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified_time`       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `remark`              varchar(500) NOT NULL DEFAULT '',
+    PRIMARY KEY (`id`)
 );
 
-CREATE INDEX `idx_package_parent` ON `gen_package` (`parent_id`);
-
-COMMENT ON TABLE `gen_package` IS '生成包';
-COMMENT ON COLUMN `gen_package`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_package`.`parent_id` IS '父包';
-COMMENT ON COLUMN `gen_package`.`name` IS '包名称';
-COMMENT ON COLUMN `gen_package`.`order_key` IS '自定排序';
-COMMENT ON COLUMN `gen_package`.`created_time` IS '创建时间';
-COMMENT ON COLUMN `gen_package`.`modified_time` IS '修改时间';
-COMMENT ON COLUMN `gen_package`.`remark` IS '备注';
+COMMENT ON TABLE `gen_model` IS '生成模型';
+COMMENT ON COLUMN `gen_model`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_model`.`name` IS '名称';
+COMMENT ON COLUMN `gen_model`.`graph_data` IS 'Graph 数据';
+COMMENT ON COLUMN `gen_model`.`language` IS '语言';
+COMMENT ON COLUMN `gen_model`.`data_source_type` IS '数据源类型';
+COMMENT ON COLUMN `gen_model`.`package_path` IS '包路径';
+COMMENT ON COLUMN `gen_model`.`sync_convert_entity` IS '同步转换实体';
+COMMENT ON COLUMN `gen_model`.`created_time` IS '创建时间';
+COMMENT ON COLUMN `gen_model`.`modified_time` IS '修改时间';
+COMMENT ON COLUMN `gen_model`.`remark` IS '备注';
 
 -- ----------------------------
 -- Table structure for gen_enum
@@ -52,7 +54,7 @@ COMMENT ON COLUMN `gen_package`.`remark` IS '备注';
 CREATE TABLE `gen_enum`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT,
-    `package_id`    bigint       NULL     DEFAULT NULL,
+    `package_path`  varchar(500) NOT NULL,
     `name`          varchar(500) NOT NULL,
     `comment`       varchar(500) NOT NULL,
     `enum_type`     varchar(500) NULL     DEFAULT NULL,
@@ -60,15 +62,12 @@ CREATE TABLE `gen_enum`
     `created_time`  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `modified_time` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `remark`        varchar(500) NOT NULL DEFAULT '',
-    PRIMARY KEY (`id`),
-    CONSTRAINT `fk_enum_package` FOREIGN KEY (`package_id`) REFERENCES `gen_package` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
+    PRIMARY KEY (`id`)
 );
-
-CREATE INDEX `idx_enum_package` ON `gen_enum` (`package_id`);
 
 COMMENT ON TABLE `gen_enum` IS '生成枚举';
 COMMENT ON COLUMN `gen_enum`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_enum`.`package_id` IS '所属包';
+COMMENT ON COLUMN `gen_enum`.`package_path` IS '包路径';
 COMMENT ON COLUMN `gen_enum`.`name` IS '枚举名';
 COMMENT ON COLUMN `gen_enum`.`comment` IS '枚举注释';
 COMMENT ON COLUMN `gen_enum`.`enum_type` IS '枚举类型';
@@ -107,32 +106,6 @@ COMMENT ON COLUMN `gen_enum_item`.`order_key` IS '自定排序';
 COMMENT ON COLUMN `gen_enum_item`.`created_time` IS '创建时间';
 COMMENT ON COLUMN `gen_enum_item`.`modified_time` IS '修改时间';
 COMMENT ON COLUMN `gen_enum_item`.`remark` IS '备注';
-
--- ----------------------------
--- Table structure for gen_model
--- ----------------------------
-CREATE TABLE `gen_model`
-(
-    `id`               bigint       NOT NULL AUTO_INCREMENT,
-    `name`             varchar(500) NOT NULL,
-    `graph_data`            longtext     NOT NULL,
-    `language`         varchar(500) NOT NULL,
-    `data_source_type` varchar(500) NOT NULL,
-    `created_time`     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `modified_time`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `remark`           varchar(500) NOT NULL DEFAULT '',
-    PRIMARY KEY (`id`)
-);
-
-COMMENT ON TABLE `gen_model` IS '生成模型';
-COMMENT ON COLUMN `gen_model`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_model`.`name` IS '名称';
-COMMENT ON COLUMN `gen_model`.`graph_data` IS 'Graph 数据';
-COMMENT ON COLUMN `gen_model`.`language` IS '语言';
-COMMENT ON COLUMN `gen_model`.`data_source_type` IS '数据源类型';
-COMMENT ON COLUMN `gen_model`.`created_time` IS '创建时间';
-COMMENT ON COLUMN `gen_model`.`modified_time` IS '修改时间';
-COMMENT ON COLUMN `gen_model`.`remark` IS '备注';
 
 -- ----------------------------
 -- Table structure for gen_data_source
@@ -344,8 +317,8 @@ CREATE TABLE `gen_column_reference`
 );
 
 CREATE INDEX `idx_column_reference_association` ON `gen_column_reference` (`association_id`);
-CREATE INDEX  `idx_column_reference_source_column` ON `gen_column_reference` (`source_column_id`);
-CREATE INDEX  `idx_column_reference_target_column` ON `gen_column_reference` (`target_column_id`);
+CREATE INDEX `idx_column_reference_source_column` ON `gen_column_reference` (`source_column_id`);
+CREATE INDEX `idx_column_reference_target_column` ON `gen_column_reference` (`target_column_id`);
 
 COMMENT ON TABLE `gen_column_reference` IS '列引用';
 COMMENT ON COLUMN `gen_column_reference`.`id` IS 'ID';
@@ -406,7 +379,7 @@ COMMENT ON COLUMN `gen_index_column_mapping`.`column_id` IS '列 ID';
 CREATE TABLE `gen_entity`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT,
-    `package_id`    bigint       NULL     DEFAULT NULL,
+    `package_path`  varchar(500) NOT NULL,
     `table_id`      bigint       NOT NULL,
     `name`          varchar(500) NOT NULL,
     `comment`       varchar(500) NOT NULL,
@@ -416,17 +389,15 @@ CREATE TABLE `gen_entity`
     `modified_time` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `remark`        varchar(500) NOT NULL DEFAULT '',
     PRIMARY KEY (`id`),
-    CONSTRAINT `fk_entity_package` FOREIGN KEY (`package_id`) REFERENCES `gen_package` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
     CONSTRAINT `fk_entity_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 );
 
 CREATE UNIQUE INDEX `uidx_entity_table` ON `gen_entity` (`table_id`);
-CREATE INDEX `idx_entity_package` ON `gen_entity` (`package_id`);
 CREATE INDEX `idx_entity_table` ON `gen_entity` (`table_id`);
 
 COMMENT ON TABLE `gen_entity` IS '生成实体';
 COMMENT ON COLUMN `gen_entity`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_entity`.`package_id` IS '所属包';
+COMMENT ON COLUMN `gen_entity`.`package_path` IS '包路径';
 COMMENT ON COLUMN `gen_entity`.`table_id` IS '对应表';
 COMMENT ON COLUMN `gen_entity`.`name` IS '类名称';
 COMMENT ON COLUMN `gen_entity`.`comment` IS '类注释';

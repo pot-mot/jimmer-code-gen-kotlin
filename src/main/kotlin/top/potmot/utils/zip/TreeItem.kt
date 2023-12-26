@@ -1,4 +1,4 @@
-package top.potmot.core.genPackage.generate
+package top.potmot.utils.zip
 
 data class TreeItem<T> (
     var key: String,

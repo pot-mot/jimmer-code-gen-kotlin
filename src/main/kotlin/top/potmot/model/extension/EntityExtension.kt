@@ -1,7 +1,6 @@
 package top.potmot.model.extension
 
 import org.babyfish.jimmer.ImmutableObjects.isLoaded
-import top.potmot.config.GenConfig
 import top.potmot.model.GenEntity
 import top.potmot.model.GenProperty
 import top.potmot.model.dto.GenEntityPropertiesView
@@ -19,15 +18,6 @@ fun GenEntity.getProperty(name: String): GenProperty? {
     }
     return this.properties.find { it.name == name }
 }
-
-fun GenEntityPropertiesView.packagePath(): String =
-    genPackage?.toEntity()?.toPackagePath() ?: GenConfig.defaultPackagePath
-
-fun GenEntityPropertiesView.TargetOf_properties.TargetOf_typeTable_2.packagePath(): String =
-    entity?.genPackage?.toEntity()?.toPackagePath() ?: GenConfig.defaultPackagePath
-
-fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.packagePath(): String =
-    genPackage?.toEntity()?.toPackagePath() ?: GenConfig.defaultPackagePath
 
 /**
  * 获取属性的简单类型名
@@ -53,23 +43,19 @@ fun GenEntityPropertiesView.TargetOf_properties.shortType(): String {
 
 fun GenEntityPropertiesView.TargetOf_properties.fullType(): String {
     enum?.let {
-        val packagePath = it.packagePath()
-
-        return if (packagePath.isNotBlank()) {
-            packagePath + "." + it.name
+        return if (it.packagePath.isNotBlank()) {
+            it.packagePath + "." + it.name
         } else {
             it.name
         }
     }
 
     typeTable?.let {table ->
-        table.entity?.let {entity ->
-            val packagePath = table.packagePath()
-
-            return if (packagePath.isNotBlank()) {
-                packagePath + "." + entity.name
+        table.entity?.let {
+            return if (it.packagePath.isNotBlank()) {
+                it.packagePath + "." + it.name
             } else {
-                entity.name
+                it.name
             }
         }
     }

@@ -9,6 +9,7 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
+import org.babyfish.jimmer.sql.Table
 import top.potmot.model.base.BaseEntity
 
 /**
@@ -18,6 +19,7 @@ import top.potmot.model.base.BaseEntity
  * @since 2023-09-30T19:31:11.935
  */
 @Entity
+@Table(name = "jimmer_code_gen.gen_enum_item")
 interface GenEnumItem : BaseEntity {
     /**
      * ID

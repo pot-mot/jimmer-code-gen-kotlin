@@ -13,5 +13,7 @@ input GenModelInput {
     remark
     language
     dataSourceType
+    packagePath
+    syncConvertEntity
     graphData?
 }

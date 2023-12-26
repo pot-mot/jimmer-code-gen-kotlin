@@ -11,27 +11,30 @@ import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTypeMappingView
 
 fun GenTable.toGenEntity(
-    typeMappings: List<GenTypeMappingView> = emptyList(),
-    language: GenLanguage? = GenConfig.language,
+    packagePath: String,
+    typeMappings: List<GenTypeMappingView>,
+    language: GenLanguage,
 ): GenEntity =
-    convertTableToEntity(GenTableAssociationsView(this), language, typeMappings)
+    convertTableToEntity(GenTableAssociationsView(this), packagePath, language, typeMappings)
 
 fun GenTableAssociationsView.toGenEntity(
-    typeMappings: List<GenTypeMappingView> = emptyList(),
-    language: GenLanguage? = GenConfig.language,
+    packagePath: String,
+    typeMappings: List<GenTypeMappingView>,
+    language: GenLanguage,
 ): GenEntity =
-    convertTableToEntity(this, language, typeMappings)
+    convertTableToEntity(this, packagePath, language, typeMappings)
 
 private fun convertTableToEntity(
     table: GenTableAssociationsView,
-    language: GenLanguage?,
+    packagePath: String,
+    language: GenLanguage,
     typeMappings: List<GenTypeMappingView> = emptyList(),
 ): GenEntity {
-    val baseEntity = tableToEntity(table)
+    val baseEntity = tableToEntity(table, packagePath)
 
     val properties = createProperties(
         table,
-        language ?: GenConfig.language,
+        language,
         table.schema?.dataSource?.type ?: GenConfig.dataSourceType,
         typeMappings
     )
@@ -50,6 +53,7 @@ private fun convertTableToEntity(
  */
 private fun tableToEntity(
     genTable: GenTableAssociationsView,
+    packagePath: String
 ): GenEntity {
     return new(GenEntity::class).by {
         table().id = genTable.id
@@ -57,5 +61,6 @@ private fun tableToEntity(
         name = tableNameToClassName(genTable.name)
         comment = genTable.comment.clearTableComment()
         remark = genTable.remark
+        this.packagePath = packagePath
     }
 }

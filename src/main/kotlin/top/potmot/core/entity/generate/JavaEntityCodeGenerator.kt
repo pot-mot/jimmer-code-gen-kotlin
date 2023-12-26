@@ -2,7 +2,6 @@ package top.potmot.core.entity.generate
 
 import top.potmot.core.entity.build.JavaEntityCodeBuilder
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.extension.packagePath
 import top.potmot.model.extension.shortType
 
 class JavaEntityCodeGenerator : EntityCodeGenerator() {
@@ -16,7 +15,7 @@ class JavaEntityCodeGenerator : EntityCodeGenerator() {
 
     private fun GenEntityPropertiesView.javaClassStringify(): String =
         JavaEntityCodeBuilder().apply {
-            line("package ${packagePath()};")
+            line("package $packagePath;")
 
             separate()
             lines(importLines()) { "import $it;" }
@@ -39,7 +38,7 @@ class JavaEntityCodeGenerator : EntityCodeGenerator() {
 
     private fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.javaEnumStringify(): String =
         JavaEntityCodeBuilder().apply {
-            line("package ${packagePath()};")
+            line("package $packagePath;")
 
             separate()
             lines(importLines()) { "import $it;" }

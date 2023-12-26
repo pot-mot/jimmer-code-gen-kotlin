@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.core.genPackage.generate.TreeItem
-import top.potmot.core.genPackage.generate.toZipByteArray
+import top.potmot.utils.zip.TreeItem
+import top.potmot.utils.zip.toZipByteArray
 import java.io.ByteArrayInputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream

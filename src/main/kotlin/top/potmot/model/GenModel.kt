@@ -48,6 +48,16 @@ interface GenModel : BaseEntity {
     val dataSourceType: DataSourceType
 
     /**
+     * 包路径
+     */
+    val packagePath: String
+
+    /**
+     * 同步转换实体
+     */
+    val syncConvertEntity: Boolean
+
+    /**
      * 生成
      */
     @OneToMany(mappedBy = "model")

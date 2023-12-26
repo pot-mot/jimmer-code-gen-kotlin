@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.core.database.load.valueToData
+import top.potmot.core.database.load.parseGraphData
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin", "mysql")
@@ -16,15 +16,15 @@ class TestModelToData {
     @Test
     @Order(1)
     fun testEmptyData() {
-        val valueData = valueToData(1, emptyValue)
-        assert(valueData.first.isEmpty())
-        assert(valueData.second.isEmpty())
+        val data = parseGraphData(1, emptyValue)
+        assert(data.first.isEmpty())
+        assert(data.second.isEmpty())
     }
 
     @Test
     @Order(2)
     fun testValueData() {
-        val valueData = valueToData(1, modelValue)
+        val valueData = parseGraphData(1, modelValue)
         assertEquals(15, valueData.first.size)
         assertEquals(23, valueData.second.size)
     }

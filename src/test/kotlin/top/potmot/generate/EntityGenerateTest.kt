@@ -21,19 +21,6 @@ class EntityGenerateTest {
     @Test
     @Order(1)
     fun testEntityGenerate() {
-        val basePackage = GenEntityPropertiesView.TargetOf_genPackage(
-            id = 1,
-            name = "test",
-            parent = GenEntityPropertiesView.TargetOf_genPackage.TargetOf_parent_2(
-                id = 1,
-                name = "example",
-                parent = GenEntityPropertiesView.TargetOf_genPackage.TargetOf_parent_2(
-                    id = 1,
-                    name = "com"
-                )
-            )
-        )
-
         val pkProperty = GenEntityPropertiesView.TargetOf_properties(
             entityId = 1,
             id = 1,
@@ -94,7 +81,7 @@ class EntityGenerateTest {
             author = "Potmot",
             orderKey = 1,
             table = baseTable,
-            genPackage = basePackage,
+            packagePath = "com.example.test",
             properties = listOf(
                 pkProperty,
                 manyToOneProperty

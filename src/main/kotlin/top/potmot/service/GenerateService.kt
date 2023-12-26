@@ -3,65 +3,55 @@ package top.potmot.service
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
+import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.entity.convert.toGenEntity
 import top.potmot.core.entity.generate.generateEntityCode
-import top.potmot.core.genPackage.generate.TreeItem
-import top.potmot.core.genPackage.generate.generatePackage
-import top.potmot.core.genPackage.generate.packageGenerateTreeFetcher
-import top.potmot.core.genPackage.generate.toZipByteArray
+import top.potmot.utils.zip.toZipByteArray
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenEntity
-import top.potmot.model.GenPackage
+import top.potmot.model.GenModel
 import top.potmot.model.GenTable
-import top.potmot.model.GenTypeMapping
+import top.potmot.model.by
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.dto.GenTypeMappingView
 import top.potmot.model.id
 import top.potmot.model.modelId
-import top.potmot.model.orderKey
+import top.potmot.model.packagePath
+import top.potmot.model.syncConvertEntity
+import top.potmot.model.tableId
 
 @RestController
 @RequestMapping("/generate")
 class GenerateService(
     @Autowired val sqlClient: KSqlClient,
-    @Autowired val transactionTemplate: TransactionTemplate
+    @Autowired val convertService: ConvertService
 ) {
-    @PostMapping("/convert")
-    fun convert(@RequestBody tableIds: List<Long>): List<Long> {
-        val result = mutableListOf<Long>()
+    fun getTableIdsByModelId(modelId: Long): List<Long> =
+        sqlClient.createQuery(GenTable::class) {
+            where(
+                table.modelId eq modelId
+            )
+            select(table.id)
+        }.execute()
 
-        transactionTemplate.execute {
-            val tables = sqlClient.createQuery(GenTable::class) {
-                where(
-                    table.id valueIn tableIds
-                )
-                select(table.fetch(GenTableAssociationsView::class))
-            }.execute()
-
-            val typeMappings = sqlClient.createQuery(GenTypeMapping::class) {
-                orderBy(table.orderKey)
-                select(table.fetch(GenTypeMappingView::class))
-            }.execute()
-
-            tables.map { it.toGenEntity(typeMappings) }.forEach {
-                result += sqlClient.save(it).modifiedEntity.id
-            }
-        }
-
-        return result
-    }
+    fun getEntityIdsByModelId(modelId: Long): List<Long> =
+        sqlClient.createQuery(GenEntity::class) {
+            where(
+                table.tableId valueIn subQuery(GenTable::class){
+                    where(table.modelId eq modelId)
+                    select(table.id)
+                }
+            )
+            select(table.id)
+        }.execute()
 
     @GetMapping("/preview")
-    fun preview(
+    fun previewByEntity(
         @RequestParam entityIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
     ): List<Pair<String, String>> =
@@ -75,10 +65,16 @@ class GenerateService(
     @PostMapping("/preview/table")
     fun previewByTable(
         @RequestParam tableIds: List<Long>,
+        @RequestParam(required = false) packagePath: String?,
         @RequestParam(required = false) language: GenLanguage?
     ): List<Pair<String, String>> {
-        val entityIds = convert(tableIds)
-        return preview(entityIds.toList(), language)
+        val entityIds = convertService.convert(tableIds, packagePath, language)
+        return previewByEntity(entityIds.toList(), language)
+    }
+
+    val previewModelFetcher = newFetcher(GenModel::class).by {
+        syncConvertEntity()
+        packagePath()
     }
 
     @GetMapping("/preview/model")
@@ -86,39 +82,36 @@ class GenerateService(
         @RequestParam modelId: Long,
         @RequestParam(required = false) language: GenLanguage?
     ): List<Pair<String, String>> {
-        val tableIds = sqlClient.createQuery(GenTable::class) {
-            where(table.modelId eq modelId)
-            select(table.id)
-        }.execute()
-        return previewByTable(tableIds, language)
-    }
+        val model = sqlClient.createQuery(GenModel::class) {
+            where(table.id eq modelId)
+            select(table.fetch(previewModelFetcher))
+        }.execute().firstOrNull()
+            ?: return emptyList()
 
-//    @GetMapping("/preview/package")
-    fun previewByPackage(
-        @RequestParam packageIds: List<Long>,
-        @RequestParam(required = false) language: GenLanguage?
-    ): List<TreeItem<String>> =
-        sqlClient.createQuery(GenPackage::class) {
-            where(table.id valueIn packageIds)
-            select(table.fetch(packageGenerateTreeFetcher))
-        }.execute().map {
-            generatePackage(it, language)
+        return if (model.syncConvertEntity) {
+            val tableIds = getTableIdsByModelId(modelId)
+            previewByTable(tableIds, model.packagePath , language)
+        } else {
+            val entityIds = getEntityIdsByModelId(modelId)
+            previewByEntity(entityIds, language)
         }
+    }
 
     @PostMapping("/entity")
     fun generate(
         @RequestBody entityIds: List<Long>,
         @RequestParam(required = false) language: GenLanguage?
     ): ByteArray =
-        preview(entityIds, language)
+        previewByEntity(entityIds, language)
             .toZipByteArray()
 
     @PostMapping("/table")
     fun generateByTable(
         @RequestBody tableIds: List<Long>,
+        @RequestParam(required = false) packagePath: String?,
         @RequestParam(required = false) language: GenLanguage?
     ): ByteArray =
-        previewByTable(tableIds, language)
+        previewByTable(tableIds, packagePath, language)
             .toZipByteArray()
 
     @PostMapping("/model")
@@ -127,13 +120,5 @@ class GenerateService(
         @RequestParam(required = false) language: GenLanguage?
     ): ByteArray =
         previewByModel(modelId, language)
-            .toZipByteArray()
-
-    @PostMapping("/package")
-    fun generateByPackage(
-        @RequestBody packageIds: List<Long>,
-        @RequestParam(required = false) language: GenLanguage?
-    ): ByteArray =
-        previewByPackage(packageIds = packageIds, language)
             .toZipByteArray()
 }

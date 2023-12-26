@@ -1,30 +1,10 @@
 GenEntityCommonView {
     #allScalars
     id(table)
-
-    genPackage {
-        id
-        name
-
-        parent {
-            id
-            name
-        }*
-    }
 }
 
 GenEntityPropertiesView {
     #allScalars
-
-    genPackage {
-        id
-        name
-
-        parent {
-            id
-            name
-        }*
-    }
 
     table {
         id
@@ -53,21 +33,13 @@ GenEntityPropertiesView {
                 id
                 name
                 comment
-
-                genPackage {
-                    id
-                    name
-
-                    parent {
-                        id
-                        name
-                    }*
-                }
+                packagePath
             }
         }
 
         enum {
             id
+            packagePath
             name
             comment
             remark
@@ -81,15 +53,6 @@ GenEntityPropertiesView {
                 remark
             }
 
-            genPackage {
-                id
-                name
-
-                parent {
-                    id
-                    name
-                }*
-            }
         }
     }
 }

@@ -38,7 +38,8 @@ import top.potmot.model.modelId
 @RestController
 @RequestMapping("/model")
 class ModelService(
-    @Autowired val sqlClient: KSqlClient
+    @Autowired val sqlClient: KSqlClient,
+    @Autowired val convertService: ConvertService
 ) {
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenModelView? {
@@ -112,6 +113,10 @@ class ModelService(
                     this.associations = associationInputs.map { it.toEntity() }
                 }
                 sqlClient.update(modelWithAssociations).modifiedEntity
+
+                if (!model.syncConvertEntity) {
+                    convertService.convert(savedTables.map { it.id }, model.packagePath, model.language)
+                }
             }
         }
 
