@@ -49,9 +49,9 @@ interface GenEnumItem : BaseEntity {
     val name: String
 
     /**
-     * 元素值
+     * 映射值
      */
-    val value: String
+    val mappedValue: String
 
     /**
      * 元素注释

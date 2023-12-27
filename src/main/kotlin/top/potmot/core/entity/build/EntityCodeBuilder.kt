@@ -32,8 +32,8 @@ open class EntityCodeBuilder: TemplateBuilder() {
 
     open fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3.annotation(enumType: EnumType?): String =
         when (enumType) {
-            EnumType.NAME -> "@EnumItem(name = \"$value\")\n"
-            EnumType.ORDINAL -> "@EnumItem(ordinal = $value)\n"
+            EnumType.NAME -> "@EnumItem(name = \"$mappedValue\")\n"
+            EnumType.ORDINAL -> "@EnumItem(ordinal = $mappedValue)\n"
             null -> ""
         }
 

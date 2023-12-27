@@ -15,9 +15,13 @@ DROP TABLE IF EXISTS "gen_schema" CASCADE;
 DROP TABLE IF EXISTS "gen_table" CASCADE;
 DROP TABLE IF EXISTS "gen_column" CASCADE;
 DROP TABLE IF EXISTS "gen_association" CASCADE;
+DROP TABLE IF EXISTS "gen_column_reference" CASCADE;
+DROP TABLE IF EXISTS "gen_table_index" CASCADE;
 DROP TABLE IF EXISTS "gen_entity" CASCADE;
 DROP TABLE IF EXISTS "gen_property" CASCADE;
+DROP TABLE IF EXISTS "gen_index_column_mapping" CASCADE;
 DROP TABLE IF EXISTS "gen_type_mapping" CASCADE;
+DROP TABLE IF EXISTS "gen_column_default" CASCADE;
 
 -- ----------------------------
 -- Table structure for gen_enum
@@ -61,7 +65,7 @@ CREATE TABLE "gen_enum_item"
     "id"            BIGSERIAL   NOT NULL,
     "enum_id"       bigint      NOT NULL,
     "name"          text        NOT NULL,
-    "value"         text        NOT NULL,
+    "mapped_value"  text        NOT NULL,
     "comment"       text        NOT NULL DEFAULT '',
     "order_key"     bigint      NOT NULL DEFAULT 0,
     "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -77,7 +81,7 @@ COMMENT ON TABLE "gen_enum_item" IS '生成枚举元素';
 COMMENT ON COLUMN "gen_enum_item"."id" IS 'ID';
 COMMENT ON COLUMN "gen_enum_item"."enum_id" IS '对应枚举 ID';
 COMMENT ON COLUMN "gen_enum_item"."name" IS '元素名';
-COMMENT ON COLUMN "gen_enum_item"."value" IS '元素值';
+COMMENT ON COLUMN "gen_enum_item"."mapped_value" IS '映射值';
 COMMENT ON COLUMN "gen_enum_item"."comment" IS '元素注释';
 COMMENT ON COLUMN "gen_enum_item"."order_key" IS '自定排序';
 COMMENT ON COLUMN "gen_enum_item"."created_time" IS '创建时间';

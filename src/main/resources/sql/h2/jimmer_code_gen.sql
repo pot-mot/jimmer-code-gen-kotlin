@@ -84,7 +84,7 @@ CREATE TABLE `gen_enum_item`
     `id`            bigint       NOT NULL AUTO_INCREMENT,
     `enum_id`       bigint       NOT NULL,
     `name`          varchar(500) NOT NULL,
-    `value`         varchar(500) NOT NULL,
+    `mapped_value`  varchar(500) NOT NULL,
     `comment`       varchar(500) NOT NULL DEFAULT '',
     `order_key`     bigint       NOT NULL DEFAULT 0,
     `created_time`  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -100,7 +100,7 @@ COMMENT ON TABLE `gen_enum_item` IS '生成枚举元素';
 COMMENT ON COLUMN `gen_enum_item`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_enum_item`.`enum_id` IS '对应枚举 ID';
 COMMENT ON COLUMN `gen_enum_item`.`name` IS '元素名';
-COMMENT ON COLUMN `gen_enum_item`.`value` IS '元素值';
+COMMENT ON COLUMN `gen_enum_item`.`mapped_value` IS '映射值';
 COMMENT ON COLUMN `gen_enum_item`.`comment` IS '元素注释';
 COMMENT ON COLUMN `gen_enum_item`.`order_key` IS '自定排序';
 COMMENT ON COLUMN `gen_enum_item`.`created_time` IS '创建时间';

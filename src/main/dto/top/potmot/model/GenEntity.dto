@@ -48,11 +48,10 @@ GenEntityPropertiesView {
             items {
                 id
                 name
-                value
+                mappedValue
                 comment
                 remark
             }
-
         }
     }
 }

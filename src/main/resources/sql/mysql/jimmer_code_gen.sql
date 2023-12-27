@@ -66,7 +66,7 @@ CREATE TABLE `gen_enum_item`
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `enum_id`       bigint       NOT NULL COMMENT '对应枚举 ID',
     `name`          varchar(500) NOT NULL COMMENT '元素名',
-    `value`         varchar(500) NOT NULL COMMENT '元素值',
+    `mapped_value`  varchar(500) NOT NULL COMMENT '映射值',
     `comment`       varchar(500) NOT NULL DEFAULT '' COMMENT '元素注释',
     `order_key`     bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`  datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
