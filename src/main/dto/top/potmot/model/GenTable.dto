@@ -75,6 +75,33 @@ input GenTableColumnsInput {
     }
 }
 
+input GenTableModelInput {
+    #allScalars
+    id(model)
+    -id
+    -createdTime
+    -modifiedTime
+
+    columns {
+        #allScalars
+        enum {
+            name
+        }
+        -id
+        -createdTime
+        -modifiedTime
+    }
+
+    indexes {
+        name
+        uniqueIndex
+
+        columns {
+            name
+        }
+    }
+}
+
 
 
 /**

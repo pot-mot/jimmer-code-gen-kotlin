@@ -21,3 +21,17 @@ input GenEnumItemsInput {
         -modifiedTime
     }
 }
+
+input GenEnumModelInput {
+    #allScalars
+    -id
+    -createdTime
+    -modifiedTime
+
+    items {
+        #allScalars
+        -id
+        -createdTime
+        -modifiedTime
+    }
+}

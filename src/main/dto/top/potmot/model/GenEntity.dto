@@ -67,3 +67,29 @@ input GenEntityConfigInput {
         -modifiedTime
     }
 }
+
+input GenEntityModelInput {
+    #allScalars
+    table {
+        name
+    }
+    -id
+    -createdTime
+    -modifiedTime
+
+    properties {
+        #allScalars
+        column {
+            name
+        }
+        typeTable {
+            name
+        }
+        enum {
+            name
+        }
+        -id
+        -createdTime
+        -modifiedTime
+    }
+}

@@ -2,13 +2,10 @@
 
 > ## TODO
 > 
-> - [x] 实现从 0 开始设计实体模型进行保存
+> - [ ] 实现模型设计
 >   - [x] 将 table 与 datasource 解除强关联，允许 table 单独存在
->   - [x] 补充 table 与 association 和 model 可空的关联，实现 table 与 model 的关联
->   - [x] model 到 table 和 association 的生成
-> - [ ] 定义元数据
->   - [ ] TableDefine 的元数据
->   - [ ] Entity 的元数据
+>   - [x] 补充 table、association 和 model 的关联
+>   - [ ] 补充 entity、enum 和 model 的关联，彻底将所有建模层面的实体迁移至 model 
 > - [ ] 补充模版
 >   - [ ] 业务类模版
 >   - [ ] react 和 vue 的 UI 基础模版
