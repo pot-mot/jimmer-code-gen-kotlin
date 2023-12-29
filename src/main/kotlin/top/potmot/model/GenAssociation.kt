@@ -31,14 +31,14 @@ interface GenAssociation : BaseEntity {
     override val id: Long
 
     /**
-     * 生成模型
+     * 模型
      */
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val model: GenModel?
 
     /**
-     * 生成模型 ID 视图
+     * 模型 ID 视图
      */
     @IdView("model")
     val modelId: Long?

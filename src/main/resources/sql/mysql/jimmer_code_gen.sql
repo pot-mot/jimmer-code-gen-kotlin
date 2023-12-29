@@ -44,6 +44,7 @@ CREATE TABLE `gen_model`
 CREATE TABLE `gen_enum`
 (
     `id`            bigint                   NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `model_id`      bigint                   NULL COMMENT '模型',
     `package_path`  varchar(500)             NOT NULL COMMENT '包路径',
     `name`          varchar(500)             NOT NULL COMMENT '枚举名',
     `comment`       varchar(500)             NOT NULL COMMENT '枚举注释',
@@ -52,7 +53,9 @@ CREATE TABLE `gen_enum`
     `created_time`  datetime                 NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `modified_time` datetime                 NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     `remark`        varchar(500)             NOT NULL DEFAULT '' COMMENT '备注',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `idx_enum_model` (`model_id`) USING BTREE,
+    CONSTRAINT `fk_enum_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT = '生成枚举'
@@ -64,7 +67,7 @@ CREATE TABLE `gen_enum`
 CREATE TABLE `gen_enum_item`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `enum_id`       bigint       NOT NULL COMMENT '对应枚举 ID',
+    `enum_id`       bigint       NOT NULL COMMENT '对应枚举',
     `name`          varchar(500) NOT NULL COMMENT '元素名',
     `mapped_value`  varchar(500) NOT NULL COMMENT '映射值',
     `comment`       varchar(500) NOT NULL DEFAULT '' COMMENT '元素注释',
@@ -109,7 +112,7 @@ CREATE TABLE `gen_data_source`
 CREATE TABLE `gen_schema`
 (
     `id`             bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `data_source_id` bigint       NOT NULL COMMENT '数据源 ID',
+    `data_source_id` bigint       NOT NULL COMMENT '数据源',
     `name`           varchar(500) NOT NULL COMMENT '名称',
     `order_key`      bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`   datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -168,7 +171,7 @@ CREATE TABLE `gen_column`
     `type_not_null`     boolean      NOT NULL DEFAULT FALSE COMMENT '是否非空',
     `business_key`      boolean      NOT NULL DEFAULT FALSE COMMENT '是否为业务键',
     `logical_delete`    boolean      NOT NULL DEFAULT FALSE COMMENT '是否为逻辑删除',
-    `enum_id`           bigint       NULL     DEFAULT NULL COMMENT '对应枚举 ID',
+    `enum_id`           bigint       NULL     DEFAULT NULL COMMENT '对应枚举',
     `order_key`         bigint       NOT NULL COMMENT '列在表中顺序',
     `created_time`      datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `modified_time`     datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
@@ -218,7 +221,7 @@ CREATE TABLE `gen_association`
 CREATE TABLE `gen_column_reference`
 (
     `id`               bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `association_id`   bigint       NOT NULL COMMENT '关联 ID',
+    `association_id`   bigint       NOT NULL COMMENT '关联',
     `source_column_id` bigint       NOT NULL COMMENT '主列',
     `target_column_id` bigint       NOT NULL COMMENT '从列',
     `order_key`        bigint       NOT NULL DEFAULT 0 COMMENT '自定排序',
@@ -243,7 +246,7 @@ CREATE TABLE `gen_column_reference`
 CREATE TABLE `gen_table_index`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `table_id`      bigint       NOT NULL COMMENT '归属表 ID',
+    `table_id`      bigint       NOT NULL COMMENT '归属表',
     `name`          varchar(500) NOT NULL COMMENT '名称',
     `unique_index`  boolean      NOT NULL DEFAULT FALSE COMMENT '是否唯一索引',
     `created_time`  datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -262,8 +265,8 @@ CREATE TABLE `gen_table_index`
 -- ----------------------------
 CREATE TABLE `gen_index_column_mapping`
 (
-    `index_id`  bigint NOT NULL COMMENT '唯一索引 ID',
-    `column_id` bigint NOT NULL COMMENT '列 ID',
+    `index_id`  bigint NOT NULL COMMENT '唯一索引',
+    `column_id` bigint NOT NULL COMMENT '列',
     PRIMARY KEY (`index_id`, `column_id`) USING BTREE,
     CONSTRAINT `fk_columns_mapping_index` FOREIGN KEY (`index_id`) REFERENCES `gen_table_index` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_index_mapping_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
@@ -278,6 +281,7 @@ CREATE TABLE `gen_index_column_mapping`
 CREATE TABLE `gen_entity`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `model_id`      bigint       NULL COMMENT '模型',
     `package_path`  varchar(500) NOT NULL COMMENT '包路径',
     `table_id`      bigint       NOT NULL COMMENT '对应表',
     `name`          varchar(500) NOT NULL COMMENT '类名称',
@@ -289,7 +293,9 @@ CREATE TABLE `gen_entity`
     `remark`        varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE,
     UNIQUE INDEX `u_entity_table` (`table_id`) USING BTREE,
+    INDEX `idx_entity_model` (`model_id`) USING BTREE,
     INDEX `idx_entity_table` (`table_id`) USING BTREE,
+    CONSTRAINT `fk_entity_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_entity_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -314,13 +320,13 @@ CREATE TABLE `gen_property`
     `id_generation_type`     enum ('AUTO','USER','IDENTITY','SEQUENCE')                     NULL     DEFAULT NULL COMMENT 'Id 生成类型',
     `key_property`           boolean                                                        NOT NULL DEFAULT FALSE COMMENT '是否为业务键属性',
     `logical_delete`         boolean                                                        NOT NULL DEFAULT FALSE COMMENT '是否为逻辑删除属性',
-    `id_view`                boolean                                                        NOT NULL DEFAULT FALSE COMMENT '是否为 ID 视图属性',
+    `id_view`                boolean                                                        NOT NULL DEFAULT FALSE COMMENT '是否为 视图属性',
     `id_view_annotation`     varchar(500)                                                   NULL     DEFAULT NULL COMMENT 'ID 视图注释',
     `association_type`       enum ('ONE_TO_ONE','ONE_TO_MANY','MANY_TO_ONE','MANY_TO_MANY') NULL     DEFAULT NULL COMMENT '关联类型',
     `association_annotation` varchar(500)                                                   NULL     DEFAULT NULL COMMENT '关联注释',
     `dissociate_annotation`  varchar(500)                                                   NULL     DEFAULT NULL COMMENT '脱钩注释',
     `other_annotation`       varchar(500)                                                   NULL     DEFAULT NULL COMMENT '其他注释',
-    `enum_id`                bigint                                                         NULL     DEFAULT NULL COMMENT '对应枚举 ID',
+    `enum_id`                bigint                                                         NULL     DEFAULT NULL COMMENT '对应枚举',
     `order_key`              bigint                                                         NOT NULL DEFAULT 0 COMMENT '自定排序',
     `created_time`           datetime                                                       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `modified_time`          datetime                                                       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',

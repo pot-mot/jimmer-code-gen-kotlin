@@ -54,6 +54,7 @@ COMMENT ON COLUMN `gen_model`.`remark` IS '备注';
 CREATE TABLE `gen_enum`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT,
+    `model_id`      bigint       NULL,
     `package_path`  varchar(500) NOT NULL,
     `name`          varchar(500) NOT NULL,
     `comment`       varchar(500) NOT NULL,
@@ -62,11 +63,13 @@ CREATE TABLE `gen_enum`
     `created_time`  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `modified_time` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `remark`        varchar(500) NOT NULL DEFAULT '',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    CONSTRAINT `fk_enum_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 );
 
 COMMENT ON TABLE `gen_enum` IS '生成枚举';
 COMMENT ON COLUMN `gen_enum`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_enum`.`model_id` IS '模型';
 COMMENT ON COLUMN `gen_enum`.`package_path` IS '包路径';
 COMMENT ON COLUMN `gen_enum`.`name` IS '枚举名';
 COMMENT ON COLUMN `gen_enum`.`comment` IS '枚举注释';
@@ -98,7 +101,7 @@ CREATE INDEX `idx_enum_item_enum` ON `gen_enum_item` (`enum_id`);
 
 COMMENT ON TABLE `gen_enum_item` IS '生成枚举元素';
 COMMENT ON COLUMN `gen_enum_item`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_enum_item`.`enum_id` IS '对应枚举 ID';
+COMMENT ON COLUMN `gen_enum_item`.`enum_id` IS '对应枚举';
 COMMENT ON COLUMN `gen_enum_item`.`name` IS '元素名';
 COMMENT ON COLUMN `gen_enum_item`.`mapped_value` IS '映射值';
 COMMENT ON COLUMN `gen_enum_item`.`comment` IS '元素注释';
@@ -161,7 +164,7 @@ CREATE INDEX `idx_schema_data_source` ON `gen_schema` (`data_source_id`);
 
 COMMENT ON TABLE `gen_schema` IS '生成数据架构';
 COMMENT ON COLUMN `gen_schema`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_schema`.`data_source_id` IS '数据源 ID';
+COMMENT ON COLUMN `gen_schema`.`data_source_id` IS '数据源';
 COMMENT ON COLUMN `gen_schema`.`name` IS '名称';
 COMMENT ON COLUMN `gen_schema`.`order_key` IS '自定排序';
 COMMENT ON COLUMN `gen_schema`.`created_time` IS '创建时间';
@@ -324,7 +327,7 @@ CREATE INDEX `idx_column_reference_target_column` ON `gen_column_reference` (`ta
 
 COMMENT ON TABLE `gen_column_reference` IS '列引用';
 COMMENT ON COLUMN `gen_column_reference`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_column_reference`.`association_id` IS '关联 ID';
+COMMENT ON COLUMN `gen_column_reference`.`association_id` IS '关联';
 COMMENT ON COLUMN `gen_column_reference`.`source_column_id` IS '主列';
 COMMENT ON COLUMN `gen_column_reference`.`target_column_id` IS '从列';
 COMMENT ON COLUMN `gen_column_reference`.`order_key` IS '自定排序';
@@ -352,7 +355,7 @@ CREATE INDEX `idx_index_table` ON `gen_table_index` (`table_id`);
 
 COMMENT ON TABLE `gen_table_index` IS '列引用';
 COMMENT ON COLUMN `gen_table_index`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_table_index`.`table_id` IS '归属表 ID';
+COMMENT ON COLUMN `gen_table_index`.`table_id` IS '归属表';
 COMMENT ON COLUMN `gen_table_index`.`name` IS '名称';
 COMMENT ON COLUMN `gen_table_index`.`unique_index` IS '是否唯一索引';
 COMMENT ON COLUMN `gen_table_index`.`created_time` IS '创建时间';
@@ -372,8 +375,8 @@ CREATE TABLE `gen_index_column_mapping`
 );
 
 COMMENT ON TABLE `gen_index_column_mapping` IS '唯一索引与列关联表';
-COMMENT ON COLUMN `gen_index_column_mapping`.`index_id` IS '唯一索引 ID';
-COMMENT ON COLUMN `gen_index_column_mapping`.`column_id` IS '列 ID';
+COMMENT ON COLUMN `gen_index_column_mapping`.`index_id` IS '唯一索引';
+COMMENT ON COLUMN `gen_index_column_mapping`.`column_id` IS '列';
 
 -- ----------------------------
 -- Table structure for gen_entity
@@ -381,6 +384,7 @@ COMMENT ON COLUMN `gen_index_column_mapping`.`column_id` IS '列 ID';
 CREATE TABLE `gen_entity`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT,
+    `model_id`      bigint       NULL,
     `package_path`  varchar(500) NOT NULL,
     `table_id`      bigint       NOT NULL,
     `name`          varchar(500) NOT NULL,
@@ -391,6 +395,7 @@ CREATE TABLE `gen_entity`
     `modified_time` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `remark`        varchar(500) NOT NULL DEFAULT '',
     PRIMARY KEY (`id`),
+    CONSTRAINT `fk_entity_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_entity_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 );
 
@@ -399,6 +404,7 @@ CREATE INDEX `idx_entity_table` ON `gen_entity` (`table_id`);
 
 COMMENT ON TABLE `gen_entity` IS '生成实体';
 COMMENT ON COLUMN `gen_entity`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_entity`.`model_id` IS '模型';
 COMMENT ON COLUMN `gen_entity`.`package_path` IS '包路径';
 COMMENT ON COLUMN `gen_entity`.`table_id` IS '对应表';
 COMMENT ON COLUMN `gen_entity`.`name` IS '类名称';
@@ -464,13 +470,13 @@ COMMENT ON COLUMN `gen_property`.`id_property` IS '是否Id';
 COMMENT ON COLUMN `gen_property`.`id_generation_type` IS 'Id 生成类型';
 COMMENT ON COLUMN `gen_property`.`key_property` IS '是否为业务键属性';
 COMMENT ON COLUMN `gen_property`.`logical_delete` IS '是否为逻辑删除属性';
-COMMENT ON COLUMN `gen_property`.`id_view` IS '是否为 ID 视图属性';
+COMMENT ON COLUMN `gen_property`.`id_view` IS '是否为 视图属性';
 COMMENT ON COLUMN `gen_property`.`id_view_annotation` IS 'ID 视图注释';
 COMMENT ON COLUMN `gen_property`.`association_type` IS '关联类型';
 COMMENT ON COLUMN `gen_property`.`association_annotation` IS '关联注释';
 COMMENT ON COLUMN `gen_property`.`dissociate_annotation` IS '脱钩注释';
 COMMENT ON COLUMN `gen_property`.`other_annotation` IS '其他注释';
-COMMENT ON COLUMN `gen_property`.`enum_id` IS '对应枚举 ID';
+COMMENT ON COLUMN `gen_property`.`enum_id` IS '对应枚举';
 COMMENT ON COLUMN `gen_property`.`order_key` IS '自定排序';
 COMMENT ON COLUMN `gen_property`.`created_time` IS '创建时间';
 COMMENT ON COLUMN `gen_property`.`modified_time` IS '修改时间';

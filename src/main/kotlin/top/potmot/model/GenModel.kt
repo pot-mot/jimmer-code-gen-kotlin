@@ -58,26 +58,50 @@ interface GenModel : BaseEntity {
     val syncConvertEntity: Boolean
 
     /**
-     * 生成
+     * 表
      */
     @OneToMany(mappedBy = "model")
     val tables: List<GenTable>
 
     /**
-     * 生成 ID 视图
+     * 表 ID 视图
      */
     @IdView("tables")
     val tableIds: List<Long>
 
     /**
-     * 生成关联
+     * 关联
      */
     @OneToMany(mappedBy = "model")
     val associations: List<GenAssociation>
 
     /**
-     * 生成关联 ID 视图
+     * 关联 ID 视图
      */
     @IdView("associations")
     val associationIds: List<Long>
+
+    /**
+     * 实体
+     */
+    @OneToMany(mappedBy = "model")
+    val entities: List<GenEntity>
+
+    /**
+     * 实体 ID 视图
+     */
+    @IdView("entities")
+    val entityIds: List<Long>
+
+    /**
+     * 实体
+     */
+    @OneToMany(mappedBy = "model")
+    val enums: List<GenEnum>
+
+    /**
+     * 实体 ID 视图
+     */
+    @IdView("enums")
+    val enumIds: List<Long>
 }

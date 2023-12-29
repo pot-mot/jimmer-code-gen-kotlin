@@ -7,6 +7,7 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.Key
+import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
@@ -29,6 +30,19 @@ interface GenEntity : BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     override val id: Long
+
+    /**
+     * 模型
+     */
+    @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
+    val model: GenModel?
+
+    /**
+     * 模型 ID 视图
+     */
+    @IdView("model")
+    val modelId: Long?
 
     /**
      * 包路径

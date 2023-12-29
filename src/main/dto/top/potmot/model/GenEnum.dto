@@ -1,9 +1,11 @@
 GenEnumView {
     #allScalars
+    id(model)
 }
 
 GenEnumItemsView {
     #allScalars
+    id(model)
 
     items {
         #allScalars
@@ -12,6 +14,7 @@ GenEnumItemsView {
 
 input GenEnumItemsInput {
     #allScalars
+    id(model)
     -createdTime
     -modifiedTime
 
@@ -24,6 +27,7 @@ input GenEnumItemsInput {
 
 input GenEnumModelInput {
     #allScalars
+    id(model)
     -id
     -createdTime
     -modifiedTime

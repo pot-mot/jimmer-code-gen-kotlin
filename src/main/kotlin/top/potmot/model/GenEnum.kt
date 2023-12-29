@@ -1,11 +1,14 @@
 package top.potmot.model
 
+import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.Key
+import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
@@ -29,16 +32,18 @@ interface GenEnum : BaseEntity {
     override val id: Long
 
     /**
-     * 生成枚举元素
+     * 模型
      */
-    @OneToMany(mappedBy = "enum", orderedProps = [OrderedProp("orderKey")])
-    val items: List<GenEnumItem>
+    @Key
+    @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
+    val model: GenModel?
 
     /**
-     * 生成枚举元素 ID 视图
+     * 模型 ID 视图
      */
-    @IdView("items")
-    val itemIds: List<Long>
+    @IdView("model")
+    val modelId: Long?
 
     /**
      * 包路径
@@ -65,4 +70,16 @@ interface GenEnum : BaseEntity {
      * 自定排序
      */
     val orderKey: Long
+
+    /**
+     * 生成枚举元素
+     */
+    @OneToMany(mappedBy = "enum", orderedProps = [OrderedProp("orderKey")])
+    val items: List<GenEnumItem>
+
+    /**
+     * 生成枚举元素 ID 视图
+     */
+    @IdView("items")
+    val itemIds: List<Long>
 }
