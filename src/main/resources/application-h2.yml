@@ -14,3 +14,6 @@ spring:
       path: /h2
       settings:
         web-allow-others: true
+
+jimmer:
+  dialect: org.babyfish.jimmer.sql.dialect.H2Dialect

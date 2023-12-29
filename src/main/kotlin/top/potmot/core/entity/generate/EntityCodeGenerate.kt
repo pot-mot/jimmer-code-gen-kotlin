@@ -4,10 +4,14 @@ import top.potmot.config.GenConfig
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.dto.GenEntityPropertiesView
 
+private val KOTLIN_GENERATOR = KotlinEntityCodeGenerator()
+
+private val JAVA_GENERATOR = JavaEntityCodeGenerator()
+
 fun GenLanguage?.getEntityGenerator(): EntityCodeGenerator =
     when (this ?: GenConfig.language) {
-        GenLanguage.KOTLIN -> KotlinEntityCodeGenerator()
-        GenLanguage.JAVA -> JavaEntityCodeGenerator()
+        GenLanguage.KOTLIN -> KOTLIN_GENERATOR
+        GenLanguage.JAVA -> JAVA_GENERATOR
     }
 
 fun generateEntityCode(

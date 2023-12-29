@@ -5,6 +5,9 @@ import top.potmot.core.entity.convert.clearColumnName
 import top.potmot.core.entity.convert.clearTableName
 import top.potmot.core.meta.ForeignKeyMeta
 import top.potmot.core.meta.MappingTableMeta
+import top.potmot.core.meta.columnType.ColumnTypeDefiner
+import top.potmot.core.meta.columnType.ColumnTypeMeta
+import top.potmot.core.meta.columnType.getTypeMeta
 import top.potmot.core.meta.getAssociations
 import top.potmot.core.meta.toFkMeta
 import top.potmot.core.meta.toMappingTableMeta
@@ -12,7 +15,6 @@ import top.potmot.enumeration.AssociationType.MANY_TO_MANY
 import top.potmot.enumeration.AssociationType.MANY_TO_ONE
 import top.potmot.enumeration.AssociationType.ONE_TO_MANY
 import top.potmot.enumeration.AssociationType.ONE_TO_ONE
-import top.potmot.model.GenColumn
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.extension.pkColumns
 import top.potmot.utils.template.TemplateBuilder
@@ -20,12 +22,10 @@ import top.potmot.utils.template.TemplateBuilder
 abstract class TableDefineBuilder : TemplateBuilder() {
     abstract fun String.escape(): String
 
-    abstract fun GenTableAssociationsView.TargetOf_columns.columnStringify(): String
+    abstract fun getColumnTypeDefiner(): ColumnTypeDefiner
 
-    abstract fun getDatabaseTypeString(
-        column: GenColumn,
-        mappingTable: Boolean = false,
-    ): String
+    open fun getColumnTypeDefine(typeMeta: ColumnTypeMeta): String =
+        getColumnTypeDefiner().getTypeDefine(typeMeta.typeCode, typeMeta.type, typeMeta.displaySize, typeMeta.numericPrecision)
 
     open fun createTable(
         name: String,
@@ -54,6 +54,25 @@ abstract class TableDefineBuilder : TemplateBuilder() {
     ): String =
         pkDefine(table.pkColumns().map { it.name })
 
+    open fun columnStringify(column: GenTableAssociationsView.TargetOf_columns): String =
+        buildString {
+            append(column.name.escape())
+            append(' ')
+            append(getColumnTypeDefine(column.getTypeMeta()))
+
+            if (column.typeNotNull) {
+                append(" NOT NULL")
+            }
+
+            if (!column.partOfPk) {
+                if (!column.defaultValue.isNullOrBlank()) {
+                    append(" DEFAULT ").append(column.defaultValue)
+                } else if (!column.typeNotNull) {
+                    append(" DEFAULT NULL")
+                }
+            }
+        }
+
     open fun createTable(
         table: GenTableAssociationsView,
         otherLines: List<String> = emptyList(),
@@ -62,7 +81,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
     ): String {
         val lines = mutableListOf<String>()
 
-        lines.addAll(table.columns.map { it.columnStringify() })
+        lines.addAll(table.columns.map { columnStringify(it) })
 
         lines.add(createPkLine(table))
 

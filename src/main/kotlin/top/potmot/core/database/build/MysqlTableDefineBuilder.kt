@@ -1,11 +1,16 @@
 package top.potmot.core.database.build
 
 import top.potmot.core.meta.MappingTableMeta
-import top.potmot.model.GenColumn
+import top.potmot.core.meta.columnType.ColumnTypeDefiner
+import top.potmot.core.meta.columnType.ColumnTypeMeta
+import top.potmot.core.meta.columnType.getColumnTypeDefiner
+import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenTableAssociationsView
 import java.sql.Types
 
 class MysqlTableDefineBuilder : TableDefineBuilder() {
+    override fun getColumnTypeDefiner(): ColumnTypeDefiner = DataSourceType.MySQL.getColumnTypeDefiner()
+
     override fun String.escape(): String =
         "`${removePrefix("`").removeSuffix("`")}`"
 
@@ -41,46 +46,44 @@ class MysqlTableDefineBuilder : TableDefineBuilder() {
         )
     }
 
-    override fun getDatabaseTypeString(
-        column: GenColumn,
-        mappingTable: Boolean,
-    ): String =
-        if (column.typeCode == Types.LONGVARCHAR || column.typeCode == Types.LONGNVARCHAR) {
-            "LONGTEXT"
-        } else if (column.type.uppercase().startsWith("ENUM")) {
-            "VARCHAR(50)"
+    override fun getColumnTypeDefine(typeMeta: ColumnTypeMeta): String =
+        if (typeMeta.type.uppercase().startsWith("ENUM")) {
+            "VARCHAR(255)"
         } else {
-            column.fullType
-        }
+            when (typeMeta.typeCode) {
+                Types.CHAR, Types.NCHAR -> {
+                    if (typeMeta.displaySize >= 65535) {
+                        typeMeta.type = "LONGTEXT"
+                        typeMeta.displaySize = 0
+                        typeMeta.numericPrecision = 0
+                    } else {
+                        typeMeta.type = "CHAR"
+                    }
+                }
 
-    override fun GenTableAssociationsView.TargetOf_columns.columnStringify(): String {
-        val sb = StringBuilder()
+                Types.VARCHAR, Types.LONGVARCHAR,
+                Types.NVARCHAR, Types.LONGNVARCHAR -> {
+                    if (typeMeta.displaySize >= 65535) {
+                        typeMeta.type = "LONGTEXT"
+                        typeMeta.displaySize = 0
+                        typeMeta.numericPrecision = 0
+                    } else {
+                        typeMeta.type = "VARCHAR"
+                    }
+                }
 
-        sb.append(name.escape())
-            .append(' ')
-            .append(getDatabaseTypeString(this.toEntity()))
+                Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP_WITH_TIMEZONE -> {
+                    typeMeta.type = "TIMESTAMP"
+                }
 
-        if (partOfPk) {
-            if (autoIncrement) {
-                sb.append(" AUTO_INCREMENT")
+                Types.TIME, Types.TIMESTAMP -> {
+                    typeMeta.type = "DATETIME"
+                }
             }
-        }
-        if (typeNotNull) {
-            sb.append(" NOT NULL")
+
+            super.getColumnTypeDefine(typeMeta)
         }
 
-        if (!partOfPk) {
-            if (!defaultValue.isNullOrBlank()) {
-                sb.append(" DEFAULT ").append(defaultValue)
-            } else if (!typeNotNull) {
-                sb.append(" DEFAULT NULL")
-            }
-        }
-
-        if (comment.isNotEmpty()) {
-            sb.append(" COMMENT '${comment}'")
-        }
-
-        return sb.toString()
-    }
+    override fun columnStringify(column: GenTableAssociationsView.TargetOf_columns): String =
+        super.columnStringify(column) + if (column.autoIncrement) " AUTO_INCREMENT" else ""
 }

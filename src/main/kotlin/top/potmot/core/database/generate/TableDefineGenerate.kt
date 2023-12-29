@@ -4,22 +4,22 @@ import top.potmot.config.GenConfig
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenTableAssociationsView
 
+private val MYSQL_GENERATOR = MysqlTableDefineGenerator()
+
+private val POSTGRE_GENERATOR = PostgreTableDefineGenerator()
+
 fun DataSourceType?.getTableDefineGenerator(): TableDefineGenerator =
     when (this ?: GenConfig.dataSourceType) {
-        DataSourceType.MySQL -> MysqlTableDefineGenerator()
-        DataSourceType.PostgreSQL -> PostgreTableDefineGenerator()
+        DataSourceType.MySQL -> MYSQL_GENERATOR
+        DataSourceType.PostgreSQL -> POSTGRE_GENERATOR
     }
 
 fun Set<DataSourceType>.getTableDefineBuilder(): Map<DataSourceType, TableDefineGenerator> =
-    if (this.isEmpty()) {
-        mapOf(GenConfig.dataSourceType to GenConfig.dataSourceType.getTableDefineGenerator())
-    } else {
-        associate { Pair(it, it.getTableDefineGenerator()) }
-    }
+    associate { Pair(it, it.getTableDefineGenerator()) }
 
 fun generateTableDefine(
     table: GenTableAssociationsView,
-    dataSourceTypes: List<DataSourceType>
+    dataSourceTypes: Collection<DataSourceType>
 ): List<Pair<String, String>> =
     dataSourceTypes.toSet().getTableDefineBuilder().map {
         it.value.generate(table)
@@ -27,7 +27,7 @@ fun generateTableDefine(
 
 fun generateTableDefines(
     tables: Collection<GenTableAssociationsView>,
-    dataSourceTypes: List<DataSourceType>
+    dataSourceTypes: Collection<DataSourceType>
 ): List<Pair<String, String>> =
     dataSourceTypes.toSet().getTableDefineBuilder().flatMap {
         it.value.generate(tables)

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import top.potmot.config.GenConfig
 import top.potmot.core.database.generate.generateTableDefine
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.GenTable
@@ -65,8 +66,12 @@ class TableService(
     ): Map<String, String> {
         val map = mutableMapOf<String, String>()
 
-        queryAssociationsView(TableQuery(ids = listOf(id))).firstOrNull()?.let {
-            map += generateTableDefine(it, listOfNotNull(type))
+        queryAssociationsView(TableQuery(ids = listOf(id))).firstOrNull()?.let {table ->
+            val types = listOfNotNull(type).let {
+                it.ifEmpty { listOf(GenConfig.dataSourceType) }
+            }
+
+            map += generateTableDefine(table, types)
         }
 
         return map

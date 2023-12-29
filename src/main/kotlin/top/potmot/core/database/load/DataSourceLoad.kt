@@ -69,6 +69,9 @@ fun DatabaseConnectionSource.getCatalog(
         schemaInfoBuilder.setRetrieveTables(true)
         if (withColumn) {
             schemaInfoBuilder.setRetrieveTableColumns(true)
+            schemaInfoBuilder.setRetrieveColumnDataTypes(true)
+            schemaInfoBuilder.setRetrieveAdditionalColumnAttributes(true)
+            schemaInfoBuilder.setRetrieveAdditionalColumnMetadata(true)
         }
         if (withPrimaryKey) {
             schemaInfoBuilder.setRetrievePrimaryKeys(true)

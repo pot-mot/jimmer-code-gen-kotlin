@@ -18,10 +18,11 @@ import liquibase.resource.OpenOptions
 import liquibase.resource.Resource
 import liquibase.serializer.core.xml.XMLChangeLogSerializer
 import top.potmot.config.GenConfig
+import top.potmot.core.meta.columnType.getColumnTypeDefiner
 import top.potmot.core.meta.createFkName
-import top.potmot.core.meta.getFullType
 import top.potmot.core.meta.toMappingTableMeta
 import top.potmot.enumeration.AssociationType
+import top.potmot.enumeration.DataSourceType
 import top.potmot.model.GenDataSource
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenTableColumnsInput
@@ -39,13 +40,13 @@ import java.util.*
 /**
  * 转换 GenColumn 为 ColumnConfig
  */
-private fun GenTableColumnsInput.TargetOf_columns.toColumnConfig(): ColumnConfig {
+private fun GenTableColumnsInput.TargetOf_columns.toColumnConfig(dataSourceType: DataSourceType): ColumnConfig {
     val columnConfig = ColumnConfig()
 
     // 基本信息
     columnConfig.name = name
     columnConfig.remarks = comment
-    columnConfig.type = getFullType(typeCode, type, displaySize, numericPrecision)
+    columnConfig.type = dataSourceType.getColumnTypeDefiner().getTypeDefine(typeCode, type, displaySize, numericPrecision)
     columnConfig.isAutoIncrement = autoIncrement
 
     defaultValue.let {
@@ -93,7 +94,7 @@ private fun GenTableColumnsInput.TargetOf_columns.toColumnConfig(): ColumnConfig
 /**
  * 转换 GenTableColumnsInput 为 CreateTableChange
  */
-private fun GenTableColumnsInput.toCreateTableChange(): CreateTableChange {
+private fun GenTableColumnsInput.toCreateTableChange(dataSourceType: DataSourceType): CreateTableChange {
     val createTableChange = CreateTableChange()
 
     // 基本信息
@@ -104,7 +105,7 @@ private fun GenTableColumnsInput.toCreateTableChange(): CreateTableChange {
         createTableChange.schemaName = it.name
     }
 
-    createTableChange.columns = columns.map { it.toColumnConfig() }
+    createTableChange.columns = columns.map { it.toColumnConfig(dataSourceType) }
 
     return createTableChange
 }
@@ -113,12 +114,12 @@ private fun GenTableColumnsInput.toCreateTableChange(): CreateTableChange {
  * 从 GenTableColumnsInput 中获取 AddUniqueConstraintChange
  */
 private fun GenTableColumnsInput.getAddUniqueConstraintChange(): List<AddUniqueConstraintChange> =
-    indexes.filter { it.uniqueIndex }.map {
+    indexes.filter { it.uniqueIndex }.map {index ->
         val addUniqueConstraintChange = AddUniqueConstraintChange()
 
-        addUniqueConstraintChange.constraintName = it.name
+        addUniqueConstraintChange.constraintName = index.name
         addUniqueConstraintChange.tableName = name
-        addUniqueConstraintChange.columnNames = it.columns.map { it.name }.joinToString(",")
+        addUniqueConstraintChange.columnNames = index.columns.joinToString(",") { it.name }
 
         addUniqueConstraintChange
     }
@@ -139,10 +140,10 @@ private fun GenAssociationModelInput.toFkChange(): AddForeignKeyConstraintChange
     )
 
     fkChange.baseTableName = sourceTable.name
-    fkChange.baseColumnNames = sourceColumns.map { it.name }.joinToString(",")
+    fkChange.baseColumnNames = sourceColumns.joinToString(",") { it.name }
 
     fkChange.referencedTableName = targetTable.name
-    fkChange.referencedColumnNames = targetColumns.map { it.name }.joinToString(",")
+    fkChange.referencedColumnNames = targetColumns.joinToString(",") { it.name }
 
     return fkChange
 }
@@ -203,6 +204,7 @@ private fun GenAssociationModelInput.toManyToManyChanges(): List<Change> {
 
 
 fun createDatabaseChangeLog(
+    dataSource: GenDataSource,
     tables: List<GenTableColumnsInput>,
     associations: List<GenAssociationModelInput>
 ): DatabaseChangeLog {
@@ -210,18 +212,18 @@ fun createDatabaseChangeLog(
     val changeSet = ChangeSet("1", GenConfig.author, false, false, null, null, null, null)
     changeLog.addChangeSet(changeSet)
 
-    tables.forEach {
-        it.toCreateTableChange()
+    tables.forEach {column ->
+        column.toCreateTableChange(dataSourceType = dataSource.type)
             .apply { changeSet.addChange(this) }
-        it.getAddUniqueConstraintChange().forEach { changeSet.addChange(it) }
+        column.getAddUniqueConstraintChange().forEach { changeSet.addChange(it) }
     }
 
-    associations.forEach {
-        if (it.associationType == AssociationType.MANY_TO_MANY) {
-            it.toManyToManyChanges()
+    associations.forEach {association ->
+        if (association.associationType == AssociationType.MANY_TO_MANY) {
+            association.toManyToManyChanges()
                 .forEach { changeSet.addChange(it) }
         } else {
-            it.toFkChange()
+            association.toFkChange()
                 .apply { changeSet.addChange(this) }
         }
     }
@@ -341,7 +343,7 @@ fun GenDataSource.createSql(
     tables: List<GenTableColumnsInput>,
     associations: List<GenAssociationModelInput>
 ): String {
-    val databaseChangeLog = createDatabaseChangeLog(tables, associations)
+    val databaseChangeLog = createDatabaseChangeLog(this, tables, associations)
 
     val database = DatabaseFactory.getInstance()
         .findCorrectDatabaseImplementation(JdbcConnection(this.toSource().get()))

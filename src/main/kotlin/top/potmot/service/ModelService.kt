@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import top.potmot.config.GenConfig
 import top.potmot.core.database.generate.generateTableDefines
 import top.potmot.core.database.load.getGraphEntities
 import top.potmot.core.database.load.parseGraphData
@@ -140,7 +141,9 @@ class ModelService(
             select(table.fetch(GenTableAssociationsView::class))
         }.execute()
 
-        val types = listOfNotNull(type)
+        val types = listOfNotNull(type).let {
+            it.ifEmpty { listOf(GenConfig.dataSourceType) }
+        }
 
         return generateTableDefines(tables, types)
     }

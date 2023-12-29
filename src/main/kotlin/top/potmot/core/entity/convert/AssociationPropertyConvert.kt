@@ -6,8 +6,8 @@ import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.config.GenConfig
 import top.potmot.core.meta.createMappingTableName
 import top.potmot.core.meta.getAssociations
-import top.potmot.core.meta.getPropertyType
-import top.potmot.core.meta.getTypeMeta
+import top.potmot.core.meta.columnType.getPropertyType
+import top.potmot.core.meta.columnType.getTypeMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.AssociationType.MANY_TO_MANY
 import top.potmot.enumeration.AssociationType.MANY_TO_ONE
