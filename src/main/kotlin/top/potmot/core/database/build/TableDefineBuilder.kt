@@ -25,7 +25,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
     abstract fun getColumnTypeDefiner(): ColumnTypeDefiner
 
     open fun getColumnTypeDefine(typeMeta: ColumnTypeMeta): String =
-        getColumnTypeDefiner().getTypeDefine(typeMeta.typeCode, typeMeta.type, typeMeta.displaySize, typeMeta.numericPrecision)
+        getColumnTypeDefiner().getTypeDefine(typeMeta)
 
     open fun createTable(
         name: String,

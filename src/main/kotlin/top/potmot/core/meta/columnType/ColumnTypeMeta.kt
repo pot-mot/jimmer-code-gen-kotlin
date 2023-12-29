@@ -1,10 +1,13 @@
 package top.potmot.core.meta.columnType
 
+import org.postgresql.util.Gettable
 import top.potmot.config.GenConfig
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenColumn
 import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.model.dto.GenTableColumnsInput
+import top.potmot.model.dto.GenTableColumnsView
 import top.potmot.model.dto.GenTypeMappingView
 
 data class ColumnTypeMeta (
@@ -33,6 +36,12 @@ fun ColumnTypeMeta.getPropertyType (
     )
 
 fun GenColumn.getTypeMeta() =
+    ColumnTypeMeta(typeCode, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
+
+fun GenTableColumnsInput.TargetOf_columns.getTypeMeta() =
+    ColumnTypeMeta(typeCode, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
+
+fun GenTableColumnsView.TargetOf_columns.getTypeMeta() =
     ColumnTypeMeta(typeCode, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
 
 fun GenTableAssociationsView.TargetOf_columns.getTypeMeta() =

@@ -4,6 +4,7 @@ package top.potmot.core.meta.columnType
  * 列类型定义者，基于 java.sql.Types 中的类型定义生产列定义
  * need 表示列类型可以添加该参数
  * required 表示列类型必须添加该参数
+ * getType 即基于数据源类型规范化 type，同时修正 typeMeta 中的其他数据
  */
 interface ColumnTypeDefiner {
     fun needDisplaySize(typeCode: Int): Boolean
@@ -18,17 +19,20 @@ interface ColumnTypeDefiner {
 
     fun defaultNumericPrecision(typeCode: Int): Long?
 
-    fun getTypeDefine(typeCode: Int, type: String, displaySize: Long? = null, numericPrecision: Long? = null): String =
-        buildString {
-            append(type)
+    fun getTypeDefine(typeMeta: ColumnTypeMeta): String =
+        getTypeName(typeMeta) + getTypeDisplaySizeAndNumericPrecision(typeMeta.typeCode, typeMeta.displaySize, typeMeta.numericPrecision)
 
+    fun getTypeName(typeMeta: ColumnTypeMeta): String
+
+    fun getTypeDisplaySizeAndNumericPrecision(typeCode: Int, displaySize: Long? = null, numericPrecision: Long? = null): String =
+        buildString {
             var tempDisplaySize: Long? = null
 
             if (needDisplaySize(typeCode)) {
                 tempDisplaySize = displaySize ?: defaultDisplaySize(typeCode)
 
                 if (requiredDisplaySize(typeCode) && tempDisplaySize == null) {
-                    throw RuntimeException("$type displaySize is required")
+                    throw RuntimeException("displaySize is required")
                 }
             }
 
@@ -38,7 +42,7 @@ interface ColumnTypeDefiner {
                 tempNumericPrecision = numericPrecision ?: defaultNumericPrecision(typeCode)
 
                 if (requiredNumericPrecision(typeCode) && tempNumericPrecision == null) {
-                    throw RuntimeException("$type numericPrecision is required")
+                    throw RuntimeException("numericPrecision is required")
                 }
             }
 

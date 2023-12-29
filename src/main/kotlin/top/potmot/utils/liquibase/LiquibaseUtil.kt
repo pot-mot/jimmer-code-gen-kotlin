@@ -19,6 +19,7 @@ import liquibase.resource.Resource
 import liquibase.serializer.core.xml.XMLChangeLogSerializer
 import top.potmot.config.GenConfig
 import top.potmot.core.meta.columnType.getColumnTypeDefiner
+import top.potmot.core.meta.columnType.getTypeMeta
 import top.potmot.core.meta.createFkName
 import top.potmot.core.meta.toMappingTableMeta
 import top.potmot.enumeration.AssociationType
@@ -46,12 +47,11 @@ private fun GenTableColumnsInput.TargetOf_columns.toColumnConfig(dataSourceType:
     // 基本信息
     columnConfig.name = name
     columnConfig.remarks = comment
-    columnConfig.type = dataSourceType.getColumnTypeDefiner().getTypeDefine(typeCode, type, displaySize, numericPrecision)
+    columnConfig.type = dataSourceType.getColumnTypeDefiner().getTypeDefine(getTypeMeta())
     columnConfig.isAutoIncrement = autoIncrement
 
     defaultValue.let {
         try {
-            // TODO 默认值转换存在极大兼容问题
             when (typeCode) {
                 Types.NULL -> columnConfig.defaultOnNull = true
 
