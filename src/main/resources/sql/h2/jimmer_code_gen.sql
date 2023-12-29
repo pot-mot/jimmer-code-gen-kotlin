@@ -212,16 +212,17 @@ CREATE TABLE `gen_column`
     `table_id`          bigint       NOT NULL,
     `name`              varchar(500) NOT NULL,
     `type_code`         int          NOT NULL,
+    `overwrite_by_type` boolean      NOT NULL DEFAULT FALSE,
     `type`              varchar(500) NOT NULL,
     `display_size`      bigint       NOT NULL DEFAULT 0,
     `numeric_precision` bigint       NOT NULL DEFAULT 0,
     `default_value`     varchar(500) NULL     DEFAULT NULL,
     `comment`           varchar(500) NOT NULL,
-    `part_of_pk`        BOOLEAN      NOT NULL DEFAULT false,
-    `auto_increment`    BOOLEAN      NOT NULL DEFAULT false,
-    `type_not_null`     BOOLEAN      NOT NULL DEFAULT false,
-    `business_key`      BOOLEAN      NOT NULL DEFAULT false,
-    `logical_delete`    BOOLEAN      NOT NULL DEFAULT false,
+    `part_of_pk`        boolean      NOT NULL DEFAULT FALSE,
+    `auto_increment`    boolean      NOT NULL DEFAULT FALSE,
+    `type_not_null`     boolean      NOT NULL DEFAULT FALSE,
+    `business_key`      boolean      NOT NULL DEFAULT FALSE,
+    `logical_delete`    boolean      NOT NULL DEFAULT FALSE,
     `enum_id`           bigint       NULL     DEFAULT NULL,
     `order_key`         bigint       NOT NULL,
     `created_time`      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -239,8 +240,9 @@ COMMENT ON TABLE `gen_column` IS '生成列';
 COMMENT ON COLUMN `gen_column`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_column`.`table_id` IS '归属表';
 COMMENT ON COLUMN `gen_column`.`name` IS '列名称';
-COMMENT ON COLUMN `gen_column`.`type_code` IS '列对应 JDBCType 码值';
-COMMENT ON COLUMN `gen_column`.`type` IS '列类型';
+COMMENT ON COLUMN `gen_column`.`type_code` IS '列 JDBCType 码值';
+COMMENT ON COLUMN `gen_column`.`overwrite_by_type` IS '覆盖为字面类型';
+COMMENT ON COLUMN `gen_column`.`type` IS '列字面类型';
 COMMENT ON COLUMN `gen_column`.`display_size` IS '列展示长度';
 COMMENT ON COLUMN `gen_column`.`numeric_precision` IS '列精度';
 COMMENT ON COLUMN `gen_column`.`default_value` IS '列默认值';
@@ -268,7 +270,7 @@ CREATE TABLE `gen_association`
     `target_table_id`   bigint       NOT NULL,
     `association_type`  varchar(500) NOT NULL,
     `dissociate_action` varchar(500) NULL     DEFAULT NULL,
-    `fake`              BOOLEAN      NOT NULL DEFAULT true,
+    `fake`              boolean      NOT NULL DEFAULT TRUE,
     `order_key`         bigint       NOT NULL DEFAULT 0,
     `created_time`      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `modified_time`     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -338,7 +340,7 @@ CREATE TABLE `gen_table_index`
     `id`            bigint       NOT NULL AUTO_INCREMENT,
     `table_id`      bigint       NOT NULL,
     `name`          varchar(500) NOT NULL,
-    `unique_index`  BOOLEAN      NOT NULL DEFAULT false,
+    `unique_index`  boolean      NOT NULL DEFAULT FALSE,
     `created_time`  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `modified_time` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `remark`        varchar(500) NOT NULL DEFAULT '',
@@ -419,13 +421,13 @@ CREATE TABLE `gen_property`
     `comment`                varchar(500) NOT NULL,
     `type`                   varchar(500) NOT NULL,
     `type_table_id`          bigint       NULL     DEFAULT NULL,
-    `list_type`              BOOLEAN      NOT NULL DEFAULT false,
-    `type_not_null`          BOOLEAN      NOT NULL DEFAULT false,
-    `id_property`            BOOLEAN      NOT NULL DEFAULT false,
+    `list_type`              boolean      NOT NULL DEFAULT FALSE,
+    `type_not_null`          boolean      NOT NULL DEFAULT FALSE,
+    `id_property`            boolean      NOT NULL DEFAULT FALSE,
     `id_generation_type`     varchar(500) NULL     DEFAULT NULL,
-    `key_property`           BOOLEAN      NOT NULL DEFAULT false,
-    `logical_delete`         BOOLEAN      NOT NULL DEFAULT false,
-    `id_view`                BOOLEAN      NOT NULL DEFAULT false,
+    `key_property`           boolean      NOT NULL DEFAULT FALSE,
+    `logical_delete`         boolean      NOT NULL DEFAULT FALSE,
+    `id_view`                boolean      NOT NULL DEFAULT FALSE,
     `id_view_annotation`     varchar(500) NULL     DEFAULT NULL,
     `association_type`       varchar(500) NULL     DEFAULT NULL,
     `association_annotation` varchar(500) NULL     DEFAULT NULL,

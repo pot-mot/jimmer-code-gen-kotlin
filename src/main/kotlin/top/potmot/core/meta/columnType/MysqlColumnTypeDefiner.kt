@@ -40,75 +40,85 @@ class MysqlColumnTypeDefiner : ColumnTypeDefiner {
 
     override fun defaultNumericPrecision(typeCode: Int): Long? = null
     override fun getTypeName(typeMeta: ColumnTypeMeta): String {
+        if (typeMeta.overwriteByType) return typeMeta.type
 
-        if (!typeMeta.type.uppercase().startsWith("ENUM") || !typeMeta.type.uppercase().startsWith("SET")) {
-            when (typeMeta.typeCode) {
-                Types.CHAR, Types.NCHAR -> {
-                    typeMeta.type = "CHAR"
-                }
+        if (typeMeta.type.uppercase().startsWith("ENUM") ||
+            typeMeta.type.uppercase().startsWith("SET")
+        ) {
+            typeMeta.displaySize = 0
+            typeMeta.numericPrecision = 0
 
-                Types.VARCHAR, Types.NVARCHAR -> {
-                    typeMeta.type = "VARCHAR"
-                }
+            return typeMeta.type
+        }
 
-                Types.LONGVARCHAR, Types.LONGNVARCHAR -> {
-                    typeMeta.type = "LONGTEXT"
-                    typeMeta.displaySize = 0
-                }
+        when (typeMeta.typeCode) {
+            Types.CHAR, Types.NCHAR -> {
+                typeMeta.type = "CHAR"
+            }
 
-                Types.BINARY -> {
-                    typeMeta.type = "BINARY"
-                }
+            Types.VARCHAR, Types.NVARCHAR -> {
+                typeMeta.type = "VARCHAR"
+            }
 
-                Types.VARBINARY, Types.LONGVARBINARY -> {
-                    typeMeta.type = "VARBINARY"
-                }
+            Types.LONGVARCHAR, Types.LONGNVARCHAR -> {
+                typeMeta.type = "LONGTEXT"
+                typeMeta.displaySize = 0
+            }
 
-                Types.BIT -> {
-                    typeMeta.type = "BIT"
-                }
+            Types.BINARY -> {
+                typeMeta.type = "BINARY"
+            }
 
-                Types.TINYINT -> {
-                    typeMeta.type = "TINYINT"
-                }
+            Types.VARBINARY, Types.LONGVARBINARY -> {
+                typeMeta.type = "VARBINARY"
+            }
 
-                Types.SMALLINT -> {
-                    typeMeta.type = "SMALLINT"
-                }
+            Types.BIT -> {
+                typeMeta.type = "BIT"
+            }
 
-                Types.INTEGER -> {
-                    typeMeta.type = "INT"
-                }
+            Types.TINYINT -> {
+                typeMeta.type = "TINYINT"
+            }
 
-                Types.BIGINT -> {
-                    typeMeta.type = "BIGINT"
-                }
+            Types.SMALLINT -> {
+                typeMeta.type = "SMALLINT"
+            }
 
-                Types.REAL, Types.FLOAT -> {
-                    typeMeta.type = "FLOAT"
-                }
+            Types.INTEGER -> {
+                typeMeta.type = "INT"
+            }
 
-                Types.DOUBLE -> {
-                    typeMeta.type = "DOUBLE"
-                }
+            Types.BIGINT -> {
+                typeMeta.type = "BIGINT"
+            }
 
-                Types.NUMERIC, Types.DECIMAL -> {
-                    typeMeta.type = "DECIMAL"
-                }
+            Types.REAL, Types.FLOAT -> {
+                typeMeta.type = "FLOAT"
+            }
 
-                Types.BOOLEAN -> {
-                    typeMeta.type = "BOOLEAN"
-                }
+            Types.DOUBLE -> {
+                typeMeta.type = "DOUBLE"
+            }
 
-                Types.DATE -> {
-                    typeMeta.type = "DATE"
-                }
-                Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP_WITH_TIMEZONE -> {
-                    typeMeta.type = "TIMESTAMP"
-                }
-                Types.TIME, Types.TIMESTAMP -> {
-                    typeMeta.type = "DATETIME"
-                }
+            Types.NUMERIC, Types.DECIMAL -> {
+                typeMeta.type = "DECIMAL"
+            }
+
+            Types.BOOLEAN -> {
+                typeMeta.type = "BOOLEAN"
+            }
+
+            Types.DATE -> {
+                typeMeta.type = "DATE"
+            }
+
+            Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP_WITH_TIMEZONE -> {
+                typeMeta.type = "TIMESTAMP"
+            }
+
+            Types.TIME, Types.TIMESTAMP -> {
+                typeMeta.type = "DATETIME"
             }
         }
 

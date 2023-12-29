@@ -18,4 +18,5 @@ GenColumnMatchView {
 GenColumnCommonView {
     #allScalars
     id(table)
+    id(enum)
 }

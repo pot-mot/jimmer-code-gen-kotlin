@@ -51,6 +51,8 @@ class PostgreColumnTypeDefiner : ColumnTypeDefiner {
         }
 
     override fun getTypeName(typeMeta: ColumnTypeMeta): String {
+        if (typeMeta.overwriteByType) return typeMeta.type
+
         when (typeMeta.typeCode) {
             Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR,
             Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR,

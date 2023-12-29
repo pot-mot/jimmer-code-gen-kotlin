@@ -15,14 +15,14 @@ import javax.sql.DataSource
 @Component
 class H2Initializer(
     private val dataSource: DataSource,
-    @Value("\${spring.profiles.active:null}") private val dataSourceType: String?,
+    @Value("\${spring.datasource.url:null}") private val url: String?,
     @Value("\${spring.datasource.sql-path:null}") private val sqlPath: String?,
 ) : KInitializer {
 
     var logger = LoggerFactory.getLogger(H2Initializer::class.java)
 
     override fun initialize(dsl: KSqlClient) {
-        if (dataSourceType == "h2") {
+        if (url != null && url.startsWith("jdbc:h2")) {
             initH2()
         }
     }

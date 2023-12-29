@@ -1,6 +1,5 @@
 package top.potmot.core.meta.columnType
 
-import org.postgresql.util.Gettable
 import top.potmot.config.GenConfig
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
@@ -12,6 +11,7 @@ import top.potmot.model.dto.GenTypeMappingView
 
 data class ColumnTypeMeta (
     var typeCode: Int,
+    var overwriteByType: Boolean,
     var type: String,
     var displaySize: Long,
     var numericPrecision: Long,
@@ -25,8 +25,8 @@ fun ColumnTypeMeta.getPropertyType (
     typeMappings: List<GenTypeMappingView> = emptyList(),
 ): String =
     top.potmot.core.entity.convert.getPropertyType(
-        type,
         typeCode,
+        type,
         displaySize,
         numericPrecision,
         typeNotNull,
@@ -36,13 +36,13 @@ fun ColumnTypeMeta.getPropertyType (
     )
 
 fun GenColumn.getTypeMeta() =
-    ColumnTypeMeta(typeCode, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
+    ColumnTypeMeta(typeCode, overwriteByType, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
 
 fun GenTableColumnsInput.TargetOf_columns.getTypeMeta() =
-    ColumnTypeMeta(typeCode, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
+    ColumnTypeMeta(typeCode, overwriteByType, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
 
 fun GenTableColumnsView.TargetOf_columns.getTypeMeta() =
-    ColumnTypeMeta(typeCode, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
+    ColumnTypeMeta(typeCode, overwriteByType, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
 
 fun GenTableAssociationsView.TargetOf_columns.getTypeMeta() =
-    ColumnTypeMeta(typeCode, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
+    ColumnTypeMeta(typeCode, overwriteByType, type, displaySize, numericPrecision, typeNotNull, autoIncrement)

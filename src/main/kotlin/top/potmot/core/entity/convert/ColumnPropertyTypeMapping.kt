@@ -98,8 +98,8 @@ fun getPropertyType(
     }
 
 fun getPropertyType (
-    type: String,
     typeCode: Int,
+    type: String,
     displaySize: Long,
     numericPrecision: Long,
     typeNotNull: Boolean,

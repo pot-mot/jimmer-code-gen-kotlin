@@ -150,8 +150,9 @@ fun Column.toGenColumn(
     return new(GenColumn::class).by {
         this.orderKey = index
         this.name = column.name
-        this.type = column.type.name
         this.typeCode = column.type.javaSqlType.vendorTypeNumber
+        this.overwriteByType = false
+        this.type = column.type.name
         this.displaySize = column.size.toLong()
         this.numericPrecision = column.decimalDigits.toLong()
         this.defaultValue = column.defaultValue

@@ -24,6 +24,43 @@ DROP TABLE IF EXISTS "gen_type_mapping" CASCADE;
 DROP TABLE IF EXISTS "gen_column_default" CASCADE;
 
 -- ----------------------------
+-- Table structure for gen_model
+-- ----------------------------
+CREATE TABLE "gen_model"
+(
+    "id"                  BIGSERIAL   NOT NULL,
+    "name"                text        NOT NULL,
+    "graph_data"          text        NOT NULL,
+    "language"            text        NOT NULL,
+    "data_source_type"    text        NOT NULL,
+    "package_path"        text        NOT NULL,
+    "sync_convert_entity" boolean     NOT NULL DEFAULT TRUE,
+    "order_key"           bigint      NOT NULL DEFAULT 0,
+    "created_time"        timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"       timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark"              text        NOT NULL DEFAULT '',
+    PRIMARY KEY ("id")
+);
+
+COMMENT ON TABLE "gen_model" IS '生成模型';
+COMMENT ON COLUMN "gen_model"."id" IS 'ID';
+COMMENT ON COLUMN "gen_model"."name" IS '名称';
+COMMENT ON COLUMN "gen_model"."graph_data" IS 'Graph 数据';
+COMMENT ON COLUMN "gen_model"."language" IS '语言';
+COMMENT ON COLUMN "gen_model"."data_source_type" IS '数据源类型';
+COMMENT ON COLUMN "gen_model"."sync_convert_entity" IS '数据源类型';
+COMMENT ON COLUMN "gen_model"."package_path" IS '包路径';
+COMMENT ON COLUMN "gen_model"."created_time" IS '创建时间';
+COMMENT ON COLUMN "gen_model"."modified_time" IS '修改时间';
+COMMENT ON COLUMN "gen_model"."remark" IS '备注';
+
+CREATE TRIGGER "trg_update_gen_model_modified_time"
+    BEFORE UPDATE
+    ON "gen_model"
+    FOR EACH ROW
+EXECUTE FUNCTION update_modified_time();
+
+-- ----------------------------
 -- Table structure for gen_enum
 -- ----------------------------
 CREATE TABLE "gen_enum"
@@ -91,43 +128,6 @@ COMMENT ON COLUMN "gen_enum_item"."remark" IS '备注';
 CREATE TRIGGER "trg_update_gen_enum_item_modified_time"
     BEFORE UPDATE
     ON "gen_enum_item"
-    FOR EACH ROW
-EXECUTE FUNCTION update_modified_time();
-
--- ----------------------------
--- Table structure for gen_model
--- ----------------------------
-CREATE TABLE "gen_model"
-(
-    "id"                  BIGSERIAL   NOT NULL,
-    "name"                text        NOT NULL,
-    "graph_data"          text        NOT NULL,
-    "language"            text        NOT NULL,
-    "data_source_type"    text        NOT NULL,
-    "package_path"        text        NOT NULL,
-    "sync_convert_entity" boolean     NOT NULL DEFAULT TRUE,
-    "order_key"           bigint      NOT NULL DEFAULT 0,
-    "created_time"        timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"       timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"              text        NOT NULL DEFAULT '',
-    PRIMARY KEY ("id")
-);
-
-COMMENT ON TABLE "gen_model" IS '生成模型';
-COMMENT ON COLUMN "gen_model"."id" IS 'ID';
-COMMENT ON COLUMN "gen_model"."name" IS '名称';
-COMMENT ON COLUMN "gen_model"."graph_data" IS 'Graph 数据';
-COMMENT ON COLUMN "gen_model"."language" IS '语言';
-COMMENT ON COLUMN "gen_model"."data_source_type" IS '数据源类型';
-COMMENT ON COLUMN "gen_model"."sync_convert_entity" IS '数据源类型';
-COMMENT ON COLUMN "gen_model"."package_path" IS '包路径';
-COMMENT ON COLUMN "gen_model"."created_time" IS '创建时间';
-COMMENT ON COLUMN "gen_model"."modified_time" IS '修改时间';
-COMMENT ON COLUMN "gen_model"."remark" IS '备注';
-
-CREATE TRIGGER "trg_update_gen_model_modified_time"
-    BEFORE UPDATE
-    ON "gen_model"
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_time();
 
@@ -254,6 +254,7 @@ CREATE TABLE "gen_column"
     "table_id"          bigint      NOT NULL,
     "name"              text        NOT NULL,
     "type_code"         int         NOT NULL,
+    "overwrite_by_type" boolean      NOT NULL DEFAULT FALSE,
     "type"              text        NOT NULL,
     "display_size"      bigint      NOT NULL DEFAULT 0,
     "numeric_precision" bigint      NOT NULL DEFAULT 0,
@@ -281,8 +282,9 @@ COMMENT ON TABLE "gen_column" IS '生成列';
 COMMENT ON COLUMN "gen_column"."id" IS 'ID';
 COMMENT ON COLUMN "gen_column"."table_id" IS '归属表';
 COMMENT ON COLUMN "gen_column"."name" IS '列名称';
-COMMENT ON COLUMN "gen_column"."type_code" IS '列对应 JDBCType 码值';
-COMMENT ON COLUMN "gen_column"."type" IS '列类型';
+COMMENT ON COLUMN "gen_column"."type_code" IS '列 JDBCType 码值';
+COMMENT ON COLUMN "gen_column"."overwrite_by_type" IS '覆盖为字面类型';
+COMMENT ON COLUMN "gen_column"."type" IS '列字面类型';
 COMMENT ON COLUMN "gen_column"."display_size" IS '列展示长度';
 COMMENT ON COLUMN "gen_column"."numeric_precision" IS '列精度';
 COMMENT ON COLUMN "gen_column"."default_value" IS '列默认值';

@@ -68,12 +68,17 @@ interface GenColumn : BaseEntity {
     val name: String
 
     /**
-     * 列对应 JDBCType 码值
+     * 列 JDBCType 码值
      */
     val typeCode: Int
 
     /**
-     * 列类型
+     * 覆盖为字面类型
+     */
+    val overwriteByType: Boolean
+
+    /**
+     * 列字面类型
      */
     val type: String
 
