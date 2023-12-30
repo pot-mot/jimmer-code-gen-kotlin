@@ -83,10 +83,10 @@ class ModelService(
                 /**
                  * 2.1 保存舍弃 indexes 的 table
                  */
-                val tableInputPairs = tables.map { it.toInputPair() }.toMutableList()
+                val tableIndexesPairs = tables.map { it.toInputPair() }.toMutableList()
                 val modelWithTables = new(GenModel::class).by {
                     this.id = model.id
-                    this.tables = tableInputPairs.map { it.first }
+                    this.tables = tableIndexesPairs.map { it.first }
                 }
                 val savedModelWithTables = sqlClient.update(modelWithTables).modifiedEntity
 
@@ -95,7 +95,7 @@ class ModelService(
                  */
                 val savedTables = savedModelWithTables.tables
                 val savedTableMap = savedTables.associateBy { it.name }
-                tableInputPairs.forEach { (table, indexes) ->
+                tableIndexesPairs.forEach { (table, indexes) ->
                     if (!savedTableMap.containsKey(table.name)) {
                         throw RuntimeException("Load model [${model.name}] fail: \nTable [${table.name}] not found")
                     }

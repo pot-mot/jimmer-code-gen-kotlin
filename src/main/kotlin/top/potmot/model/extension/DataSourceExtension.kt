@@ -24,7 +24,7 @@ fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
     }
 }
 
-fun GenDataSource.execute(schemaName: String, sql: String): List<SQLExecuteResult> {
+fun GenDataSource.execute(schemaName: String, sql: String, log: Boolean = false, ignoreExecuteFail: Boolean = false): List<SQLExecuteResult> {
     val connection =
         when (this.type) {
             DataSourceType.MySQL -> {
@@ -36,7 +36,7 @@ fun GenDataSource.execute(schemaName: String, sql: String): List<SQLExecuteResul
         }
 
     try {
-        return connection.execute(sql)
+        return connection.execute(sql, log, ignoreExecuteFail)
     } catch (e: Exception) {
         connection.rollback()
 

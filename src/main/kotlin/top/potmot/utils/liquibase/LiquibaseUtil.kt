@@ -38,6 +38,8 @@ import java.net.URI
 import java.sql.Types
 import java.util.*
 
+// https://blog.csdn.net/qq_42629988/article/details/122883976
+
 /**
  * 转换 GenColumn 为 ColumnConfig
  */
@@ -203,6 +205,9 @@ private fun GenAssociationModelInput.toManyToManyChanges(): List<Change> {
 }
 
 
+/**
+ * 创建数据源变更记录
+ */
 fun createDatabaseChangeLog(
     dataSource: GenDataSource,
     tables: List<GenTableColumnsInput>,
@@ -232,17 +237,10 @@ fun createDatabaseChangeLog(
 }
 
 /**
- * 将 changeLog 文件转成 创建用 SQL
+ * 此处给出了一个虚假的 createTable.xml 并通过实现 AbstractResourceAccessor 将真正的源覆盖到了 ByteArray 中
  */
-private fun changeLogToCreateSql(
-    changeLog: DatabaseChangeLog,
-    database: Database
-): String {
-    val serializer = XMLChangeLogSerializer()
-    val changeSetBytes = ByteArrayOutputStream()
-    serializer.write(changeLog.changeSets, changeSetBytes)
-
-    val liquibase = Liquibase(
+private fun createLiquibase(database: Database, byteArray: ByteArray): Liquibase =
+    Liquibase(
         "classpath:db/createTable.xml",
         object : AbstractResourceAccessor() {
             override fun close() {}
@@ -259,7 +257,7 @@ private fun changeLogToCreateSql(
 
                     @Throws(IOException::class)
                     override fun openInputStream(): InputStream {
-                        return ByteArrayInputStream(changeSetBytes.toByteArray())
+                        return ByteArrayInputStream(byteArray)
                     }
 
                     override fun isWritable(): Boolean {
@@ -295,6 +293,19 @@ private fun changeLogToCreateSql(
         },
         database
     )
+
+/**
+ * 将 changeLog 文件转成创建用 SQL
+ */
+private fun changeLogToCreateSql(
+    database: Database,
+    changeLog: DatabaseChangeLog,
+): String {
+    val serializer = XMLChangeLogSerializer()
+    val changeSetBytes = ByteArrayOutputStream()
+    serializer.write(changeLog.changeSets, changeSetBytes)
+
+    val liquibase = createLiquibase(database, changeSetBytes.toByteArray())
 
     val output = StringWriter()
     liquibase.update(Contexts(), output)
@@ -345,11 +356,17 @@ fun GenDataSource.createSql(
 ): String {
     val databaseChangeLog = createDatabaseChangeLog(this, tables, associations)
 
+    val connection = this.toSource().get()
+
     val database = DatabaseFactory.getInstance()
-        .findCorrectDatabaseImplementation(JdbcConnection(this.toSource().get()))
+        .findCorrectDatabaseImplementation(JdbcConnection(connection))
 
     database.outputDefaultCatalog = false
     database.outputDefaultSchema = false
 
-    return changeLogToCreateSql(databaseChangeLog, database)
+    val sql = changeLogToCreateSql(database, databaseChangeLog)
+
+    connection.close()
+
+    return sql
 }
