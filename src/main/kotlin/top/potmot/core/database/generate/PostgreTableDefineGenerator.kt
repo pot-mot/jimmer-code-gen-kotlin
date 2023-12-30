@@ -4,9 +4,6 @@ import top.potmot.core.database.build.PostgreTableDefineBuilder
 import top.potmot.model.dto.GenTableAssociationsView
 
 class PostgreTableDefineGenerator : TableDefineGenerator() {
-    override fun formatFileName(name: String): String =
-        "[pg]$name.sql"
-
     override fun stringify(table: GenTableAssociationsView): String =
         table.postgreTableStringify()
 

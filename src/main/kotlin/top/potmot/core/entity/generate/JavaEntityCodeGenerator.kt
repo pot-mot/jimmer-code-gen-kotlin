@@ -5,7 +5,7 @@ import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.shortType
 
 class JavaEntityCodeGenerator : EntityCodeGenerator() {
-    override fun formatFileName(name: String): String = "$name.java"
+    override fun getFileSuffix(): String = ".java"
 
     override fun stringify(entity: GenEntityPropertiesView): String =
         entity.javaClassStringify()

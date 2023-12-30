@@ -87,12 +87,9 @@
 
 ### Code Generate 代码生成
 
-[GenerateService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FGenerateService.kt)
-
-- convert（table 转换 entity）
-- preview（预览生成代码）
-- generate（生成代码 zip）
-
+- [PreviewService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FPreviewService.kt) 预览生成代码
+- [GenerateService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FGenerateService.kt) 生成 zip  
+  [ZipUtil.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Fzip%2FZipUtil.kt) zip 工具
 #### 模版工具类
 
 [TemplateBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Ftemplate%2FTemplateBuilder.kt)

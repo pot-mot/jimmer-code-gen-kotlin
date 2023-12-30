@@ -4,9 +4,6 @@ import top.potmot.core.database.build.MysqlTableDefineBuilder
 import top.potmot.model.dto.GenTableAssociationsView
 
 class MysqlTableDefineGenerator: TableDefineGenerator() {
-    override fun formatFileName(name: String): String =
-        "[mysql]$name.sql"
-
     override fun stringify(table: GenTableAssociationsView): String =
         table.mysqlTableStringify()
 

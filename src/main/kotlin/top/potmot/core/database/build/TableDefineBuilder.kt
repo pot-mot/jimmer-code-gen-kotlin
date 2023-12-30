@@ -1,6 +1,5 @@
 package top.potmot.core.database.build
 
-import org.babyfish.jimmer.sql.DissociateAction
 import top.potmot.core.entity.convert.clearColumnName
 import top.potmot.core.entity.convert.clearTableName
 import top.potmot.core.meta.ForeignKeyMeta
@@ -9,6 +8,7 @@ import top.potmot.core.meta.columnType.ColumnTypeDefiner
 import top.potmot.core.meta.columnType.ColumnTypeMeta
 import top.potmot.core.meta.columnType.getTypeMeta
 import top.potmot.core.meta.getAssociations
+import top.potmot.core.meta.reversed
 import top.potmot.core.meta.toFkMeta
 import top.potmot.core.meta.toMappingTableMeta
 import top.potmot.enumeration.AssociationType.MANY_TO_MANY
@@ -119,23 +119,14 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         "PRIMARY KEY (${columnNames.joinToString(",") { it.escape() }})"
 
     open fun fkDefine(
-        sourceTableName: String,
-        sourceColumnNames: List<String>,
-
-        targetTableName: String,
-        targetColumnNames: List<String>,
-
-        dissociateAction: DissociateAction?
+        meta: ForeignKeyMeta
     ): String =
         buildString {
             append(
-                "FOREIGN KEY (${sourceColumnNames.joinToString(", ") { it.escape() }}) REFERENCES ${targetTableName.escape()} (${
-                    targetColumnNames.joinToString(
-                        ", "
-                    ) { it.escape() }
-                })"
+                "FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { it.escape() }}) " +
+                        "REFERENCES ${meta.targetTableName.escape()} (${meta.targetColumnNames.joinToString(", ") { it.escape() }})"
             )
-            append(" ${dissociateAction?.toOnDeleteAction() ?: ""} ON UPDATE RESTRICT")
+            append(" ${meta.onDelete} ${meta.onUpdate}")
         }
 
 
@@ -157,18 +148,9 @@ abstract class TableDefineBuilder : TemplateBuilder() {
     open fun createFkConstraint(
         meta: ForeignKeyMeta,
         fake: Boolean = false,
-        dissociateAction: DissociateAction?
     ): String =
         if (!fake) {
-            "${addConstraint(meta.sourceTableName, meta.name)}\n${
-                fkDefine(
-                    meta.sourceTableName,
-                    meta.sourceColumnNames,
-                    meta.targetTableName,
-                    meta.targetColumnNames,
-                    dissociateAction
-                )
-            };"
+            "${addConstraint(meta.sourceTableName, meta.name)}\n${fkDefine(meta)};"
         } else {
             "-- fake association ${meta.name}"
         }
@@ -191,12 +173,10 @@ abstract class TableDefineBuilder : TemplateBuilder() {
 
         val sourceFk = createFkConstraint(
             meta.sourceFk,
-            dissociateAction = DissociateAction.DELETE,
         )
 
         val targetFk = createFkConstraint(
             meta.targetFk,
-            dissociateAction = DissociateAction.DELETE,
         )
 
         return listOf(
@@ -233,7 +213,6 @@ abstract class TableDefineBuilder : TemplateBuilder() {
                     createFkConstraint(
                         association.toFkMeta(),
                         fake = association.fake,
-                        dissociateAction = association.dissociateAction,
                     ).let {
                         list += it
                     }
@@ -241,8 +220,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
 
                 ONE_TO_MANY -> {
                     createFkConstraint(
-                        association.toFkMeta(),
-                        dissociateAction = association.dissociateAction,
+                        association.toFkMeta().reversed(),
                         fake = association.fake
                     ).let {
                         list += it
@@ -266,12 +244,3 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         return list
     }
 }
-
-private fun DissociateAction.toOnDeleteAction(): String =
-    when (this) {
-        DissociateAction.NONE -> ""
-        DissociateAction.SET_NULL -> "ON DELETE SET NULL"
-        DissociateAction.DELETE -> "ON DELETE CASCADE"
-        DissociateAction.LAX -> ""
-        DissociateAction.CHECK -> ""
-    }

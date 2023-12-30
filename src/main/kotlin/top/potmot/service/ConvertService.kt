@@ -25,6 +25,21 @@ class ConvertService(
     @Autowired val sqlClient: KSqlClient,
     @Autowired val transactionTemplate: TransactionTemplate
 ) {
+    fun getTableByModel(tableIds: List<Long>): List<GenTableAssociationsView> =
+        sqlClient.createQuery(GenTable::class) {
+            where(
+                table.id valueIn tableIds
+            )
+            select(table.fetch(GenTableAssociationsView::class))
+        }.execute()
+
+    fun getTypeMappings(): List<GenTypeMappingView> =
+        sqlClient.createQuery(GenTypeMapping::class) {
+            orderBy(table.orderKey)
+            select(table.fetch(GenTypeMappingView::class))
+        }.execute()
+
+
     @PostMapping
     fun convert(
         @RequestBody tableIds: List<Long>,
@@ -34,17 +49,9 @@ class ConvertService(
         val result = mutableListOf<Long>()
 
         transactionTemplate.execute {
-            val tables = sqlClient.createQuery(GenTable::class) {
-                where(
-                    table.id valueIn tableIds
-                )
-                select(table.fetch(GenTableAssociationsView::class))
-            }.execute()
+            val tables = getTableByModel(tableIds)
 
-            val typeMappings = sqlClient.createQuery(GenTypeMapping::class) {
-                orderBy(table.orderKey)
-                select(table.fetch(GenTypeMappingView::class))
-            }.execute()
+            val typeMappings = getTypeMappings()
 
             tables
                 .map { it.toGenEntity(packagePath ?: GenConfig.defaultPackagePath, typeMappings, language ?: GenConfig.language) }

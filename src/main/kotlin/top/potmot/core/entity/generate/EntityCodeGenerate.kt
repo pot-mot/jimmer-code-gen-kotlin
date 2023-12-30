@@ -16,6 +16,7 @@ fun GenLanguage?.getEntityGenerator(): EntityCodeGenerator =
 
 fun generateEntityCode(
     entity: GenEntityPropertiesView,
-    language: GenLanguage?
+    language: GenLanguage?,
+    withPath: Boolean?
 ): List<Pair<String, String>> =
-    language.getEntityGenerator().generateWithEnums(entity)
+    language.getEntityGenerator().generateWithEnums(entity, withPath ?: false)

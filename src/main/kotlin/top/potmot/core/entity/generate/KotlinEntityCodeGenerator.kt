@@ -6,7 +6,7 @@ import top.potmot.model.extension.shortType
 import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as TargetOfEnum
 
 class KotlinEntityCodeGenerator: EntityCodeGenerator() {
-    override fun formatFileName(name: String): String = "$name.kt"
+    override fun getFileSuffix(): String = ".kt"
 
     override fun stringify(entity: GenEntityPropertiesView): String =
         entity.kotlinClassStringify()
