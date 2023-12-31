@@ -21,16 +21,16 @@ fun generateTableDefine(
     table: GenTableAssociationsView,
     dataSourceTypes: Collection<DataSourceType>
 ): List<Pair<String, String>> =
-    dataSourceTypes.toSet().getTableDefineBuilder().map {
-        it.value.generate(table)
-    }
+    dataSourceTypes.toSet().getTableDefineBuilder()
+        .map { it.value.generate(table) }
+        .distinct()
 
 fun generateTableDefines(
     tables: Collection<GenTableAssociationsView>,
     dataSourceTypes: Collection<DataSourceType>
 ): List<Pair<String, String>> =
-    dataSourceTypes.toSet().getTableDefineBuilder().flatMap {
-        it.value.generate(tables)
-    }
+    dataSourceTypes.toSet().getTableDefineBuilder()
+        .flatMap { it.value.generate(tables) }
+        .distinct()
 
 

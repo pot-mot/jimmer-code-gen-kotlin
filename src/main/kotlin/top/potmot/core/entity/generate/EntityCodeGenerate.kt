@@ -19,4 +19,6 @@ fun generateEntityCode(
     language: GenLanguage?,
     withPath: Boolean?
 ): List<Pair<String, String>> =
-    language.getEntityGenerator().generateWithEnums(entity, withPath ?: false)
+    language.getEntityGenerator()
+        .generateWithEnums(entity, withPath ?: false)
+        .distinct()

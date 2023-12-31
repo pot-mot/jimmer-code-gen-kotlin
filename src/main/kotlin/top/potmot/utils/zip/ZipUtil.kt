@@ -17,7 +17,6 @@ private fun listToZipByteArray(
     list: List<Pair<String, ByteArray>>,
     formatCount: (key: String, count: Long) -> String = {key, count ->
         val lastIndex = key.lastIndexOf(".")
-
         "${key.substring(0, lastIndex)}($count)${key.substring(lastIndex)}"
     }
 ): ByteArray {
@@ -45,8 +44,9 @@ private fun listToZipByteArray(
     return byteArrayStream.toByteArray()
 }
 
-fun List<Pair<String, String>>.toZipByteArray(): ByteArray =
-    listToZipByteArray(this.map { Pair(it.first, it.second.toByteArray()) })
+
+fun List<Pair<String, String>>.toZipByteArray(distinct: Boolean = true): ByteArray =
+    listToZipByteArray(this.map { Pair(it.first, it.second.toByteArray()) }.let { if (distinct) it.distinct() else it })
 
 private fun TreeItem<String>.flatValue(parentPath: String? = null): List<Pair<String, String>> {
     val currentPath = "${parentPath ?: ""}$key/"

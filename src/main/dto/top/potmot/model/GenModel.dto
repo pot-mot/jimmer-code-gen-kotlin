@@ -5,6 +5,22 @@ GenModelSimpleView {
 
 GenModelView {
     #allScalars
+
+    // same with GenEnumModelInput
+    enums {
+        #allScalars
+        id(model)
+        -id
+        -createdTime
+        -modifiedTime
+
+        items {
+          #allScalars
+          -id
+          -createdTime
+          -modifiedTime
+        }
+    }
 }
 
 input GenModelInput {
@@ -16,4 +32,20 @@ input GenModelInput {
     packagePath
     syncConvertEntity
     graphData?
+
+    // same with GenEnumModelInput
+    enums {
+        #allScalars
+        id(model)
+        -id
+        -createdTime
+        -modifiedTime
+
+        items {
+          #allScalars
+          -id
+          -createdTime
+          -modifiedTime
+        }
+    }
 }

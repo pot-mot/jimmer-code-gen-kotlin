@@ -22,6 +22,7 @@ import top.potmot.model.GenModel
 import top.potmot.model.GenTable
 import top.potmot.model.by
 import top.potmot.model.dto.GenEntityPropertiesView
+import top.potmot.model.dto.GenModelView
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.id
 import top.potmot.model.modelId
@@ -85,10 +86,6 @@ class PreviewService(
         language()
     }
 
-    private final val graphDataFetcher = newFetcher(GenModel::class).by(previewFetcher) {
-        graphData()
-    }
-
     fun getPreviewModel(id: Long, fetcher: Fetcher<GenModel> = previewFetcher): GenModel? {
         return sqlClient.createQuery(GenModel::class) {
             where(table.id eq id)
@@ -131,7 +128,7 @@ class PreviewService(
     fun previewModel(
         @RequestParam id: Long,
     ): List<Pair<String, String>> {
-        val model = getPreviewModel(id, graphDataFetcher) ?: return emptyList()
+        val model = getPreviewModel(id, GenModelView.METADATA.fetcher) ?: return emptyList()
 
         val modelJson = model.toString()
 

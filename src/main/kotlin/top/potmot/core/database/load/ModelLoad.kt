@@ -74,24 +74,27 @@ private fun JsonNode.toAssociation(modelId: Long): GenAssociationModelInput {
     return mapper.readValue<GenAssociationModelInput>(this.toString())
 }
 
-fun GenTableModelInput.toInputPair(): Pair<GenTable, List<GenTableIndex>> {
+fun GenTableModelInput.toInputPart(enumNameIdMap: Map<String, Long>): Pair<GenTable, List<GenTableIndex>> {
+    val columns = this.columns.map {input ->
+        input.toEntity().copy {
+            enumId = enumNameIdMap[input.enum?.name]
+        }
+    }
+
     val indexes = this.indexes.map { it.toEntity() }
 
     val entity = this.toEntity().copy {
+        this.columns = columns
         unload(this, GenTable::indexes)
     }
 
     return Pair(entity, indexes)
 }
 
-fun GenTableIndex.toInput(table: GenTable): GenTableIndex =
+fun GenTableIndex.toInput(columnNameIdMap: Map<String, Long>): GenTableIndex =
     this.copy {
-        this.columnIds = columns.map {
-            val nameMatchColumns = table.columns.filter { column -> column.name == it.name }
-            if (nameMatchColumns.size != 1) {
-                throw RuntimeException("Load index [$name] fail: \nmatch name ${it.name} column more than one")
-            }
-            nameMatchColumns[0].id
+        this.columnIds = columns.mapNotNull {
+            columnNameIdMap[it.name]
         }
     }
 

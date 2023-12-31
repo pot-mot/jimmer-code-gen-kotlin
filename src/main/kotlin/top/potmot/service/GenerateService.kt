@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.utils.zip.toZipByteArray
 
@@ -27,10 +28,12 @@ class GenerateService(
     @PostMapping("/entity/byTable")
     fun generateEntityByTable(
         @RequestBody tableIds: List<Long>,
+        @RequestParam(required = false) modelId: Long?,
+        @RequestParam(required = false) dataSourceType: DataSourceType?,
+        @RequestParam(required = false) language: GenLanguage?,
         @RequestParam(required = false) packagePath: String?,
-        @RequestParam(required = false) language: GenLanguage?
     ): ByteArray =
-        previewService.previewEntityByTable(tableIds, packagePath, language, true)
+        previewService.previewEntityByTable(tableIds, modelId, dataSourceType, language, packagePath, true)
             .toZipByteArray()
 
     @PostMapping("/model/sql")

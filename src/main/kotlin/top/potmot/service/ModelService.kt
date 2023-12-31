@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.load.getGraphEntities
 import top.potmot.core.database.load.parseGraphData
 import top.potmot.core.database.load.toInput
-import top.potmot.core.database.load.toInputPair
+import top.potmot.core.database.load.toInputPart
 import top.potmot.model.GenModel
 import top.potmot.model.by
 import top.potmot.model.copy
@@ -59,11 +59,7 @@ class ModelService(
         /**
          * 1. 创建或更新 model
          */
-        val model = if (input.id == null) {
-            sqlClient.insert(input).modifiedEntity
-        } else {
-            sqlClient.update(input).modifiedEntity
-        }
+        val model = sqlClient.save(input).modifiedEntity
 
         /**
          * 2. 保存关联数据
@@ -71,9 +67,22 @@ class ModelService(
         if (!input.graphData.isNullOrBlank()) {
             parseGraphData(model.id, input.graphData!!).let { (tables, associations) ->
                 /**
-                 * 2.1 保存舍弃 indexes 的 table
+                 * 2.1
+                 * 创建 enum name -> id map，用于映射 table.columns.enum
                  */
-                val tableIndexesPairs = tables.map { it.toInputPair() }.toMutableList()
+                val enumNameIdMap = model.enums.associate { it.name to it.id }
+
+                /**
+                 * 2.2
+                 * 保存 tables
+                 */
+                val tableIndexesPairs = tables.map { it.toInputPart(enumNameIdMap) }.toMutableList()
+
+
+                /**
+                 * 2.2.1
+                 * 保存 table，忽视 indexes
+                 */
                 val modelWithTables = new(GenModel::class).by {
                     this.id = model.id
                     this.tables = tableIndexesPairs.map { it.first }
@@ -81,7 +90,8 @@ class ModelService(
                 val savedModelWithTables = sqlClient.update(modelWithTables).modifiedEntity
 
                 /**
-                 * 2.2 将 indexes 更新至 table
+                 * 2.2.2
+                 * 保存余下的 indexes
                  */
                 val savedTables = savedModelWithTables.tables
                 val savedTableMap = savedTables.associateBy { it.name }
@@ -91,7 +101,7 @@ class ModelService(
                     }
                     val savedTable = savedTableMap[table.name]!!
                     sqlClient.update(savedTable.copy {
-                        this.indexes = indexes.map { it.toInput(savedTable) }
+                        this.indexes = indexes.map { it.toInput(savedTable.columns.associate { it.name to it.id }) }
                     })
                 }
 
@@ -106,7 +116,13 @@ class ModelService(
                 sqlClient.update(modelWithAssociations).modifiedEntity
 
                 if (!model.syncConvertEntity) {
-                    convertService.convert(savedTables.map { it.id }, model.id, model.dataSourceType, model.language, model.packagePath)
+                    convertService.convert(
+                        savedTables.map { it.id },
+                        model.id,
+                        model.dataSourceType,
+                        model.language,
+                        model.packagePath
+                    )
                 }
             }
         }
