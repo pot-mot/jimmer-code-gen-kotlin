@@ -24,7 +24,7 @@ import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenModelInput
 import top.potmot.model.dto.GenModelSimpleView
 import top.potmot.model.dto.GenModelView
-import top.potmot.model.dto.GenTableColumnsInput
+import top.potmot.model.dto.GenTableModelInput
 
 @RestController
 @RequestMapping("/model")
@@ -38,7 +38,7 @@ class ModelService(
     }
 
     @GetMapping("/valueData/{id}")
-    fun getValueData(@PathVariable id: Long): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>>? {
+    fun getValueData(@PathVariable id: Long): Pair<List<GenTableModelInput>, List<GenAssociationModelInput>>? {
         return sqlClient.findById(GenModelView::class, id)?.getGraphEntities()
     }
 
@@ -106,7 +106,7 @@ class ModelService(
                 sqlClient.update(modelWithAssociations).modifiedEntity
 
                 if (!model.syncConvertEntity) {
-                    convertService.convert(savedTables.map { it.id }, model.packagePath, model.language)
+                    convertService.convert(savedTables.map { it.id }, model.id, model.dataSourceType, model.language, model.packagePath)
                 }
             }
         }

@@ -26,7 +26,7 @@ import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.GenDataSource
 import top.potmot.model.dto.GenAssociationModelInput
-import top.potmot.model.dto.GenTableColumnsInput
+import top.potmot.model.dto.GenTableModelInput
 import top.potmot.model.extension.toSource
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -43,7 +43,7 @@ import java.util.*
 /**
  * 转换 GenColumn 为 ColumnConfig
  */
-private fun GenTableColumnsInput.TargetOf_columns.toColumnConfig(dataSourceType: DataSourceType): ColumnConfig {
+private fun GenTableModelInput.TargetOf_columns.toColumnConfig(dataSourceType: DataSourceType): ColumnConfig {
     val columnConfig = ColumnConfig()
 
     // 基本信息
@@ -94,9 +94,9 @@ private fun GenTableColumnsInput.TargetOf_columns.toColumnConfig(dataSourceType:
 }
 
 /**
- * 转换 GenTableColumnsInput 为 CreateTableChange
+ * 转换 GenTableModelInput 为 CreateTableChange
  */
-private fun GenTableColumnsInput.toCreateTableChange(dataSourceType: DataSourceType): CreateTableChange {
+private fun GenTableModelInput.toCreateTableChange(dataSourceType: DataSourceType): CreateTableChange {
     val createTableChange = CreateTableChange()
 
     // 基本信息
@@ -113,9 +113,9 @@ private fun GenTableColumnsInput.toCreateTableChange(dataSourceType: DataSourceT
 }
 
 /**
- * 从 GenTableColumnsInput 中获取 AddUniqueConstraintChange
+ * 从 GenTableModelInput 中获取 AddUniqueConstraintChange
  */
-private fun GenTableColumnsInput.getAddUniqueConstraintChange(): List<AddUniqueConstraintChange> =
+private fun GenTableModelInput.getAddUniqueConstraintChange(): List<AddUniqueConstraintChange> =
     indexes.filter { it.uniqueIndex }.map {index ->
         val addUniqueConstraintChange = AddUniqueConstraintChange()
 
@@ -210,7 +210,7 @@ private fun GenAssociationModelInput.toManyToManyChanges(): List<Change> {
  */
 fun createDatabaseChangeLog(
     dataSource: GenDataSource,
-    tables: List<GenTableColumnsInput>,
+    tables: List<GenTableModelInput>,
     associations: List<GenAssociationModelInput>
 ): DatabaseChangeLog {
     val changeLog = DatabaseChangeLog()
@@ -351,7 +351,7 @@ private fun changeLogToCreateSql(
 }
 
 fun GenDataSource.createSql(
-    tables: List<GenTableColumnsInput>,
+    tables: List<GenTableModelInput>,
     associations: List<GenAssociationModelInput>
 ): String {
     val databaseChangeLog = createDatabaseChangeLog(this, tables, associations)

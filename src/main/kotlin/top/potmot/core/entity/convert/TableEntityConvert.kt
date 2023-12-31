@@ -2,40 +2,37 @@ package top.potmot.core.entity.convert
 
 import org.babyfish.jimmer.kt.new
 import top.potmot.config.GenConfig
+import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenEntity
-import top.potmot.model.GenTable
 import top.potmot.model.by
 import top.potmot.model.copy
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTypeMappingView
 
-fun GenTable.toGenEntity(
-    packagePath: String,
-    typeMappings: List<GenTypeMappingView>,
-    language: GenLanguage,
-): GenEntity =
-    convertTableToEntity(GenTableAssociationsView(this), packagePath, language, typeMappings)
-
 fun GenTableAssociationsView.toGenEntity(
+    modelId: Long?,
+    dataSourceType: DataSourceType,
+    language: GenLanguage,
     packagePath: String,
     typeMappings: List<GenTypeMappingView>,
-    language: GenLanguage,
 ): GenEntity =
-    convertTableToEntity(this, packagePath, language, typeMappings)
+    convertTableToEntity(this, modelId, dataSourceType, language, packagePath, typeMappings)
 
 private fun convertTableToEntity(
     table: GenTableAssociationsView,
-    packagePath: String,
+    modelId: Long?,
+    dataSourceType: DataSourceType,
     language: GenLanguage,
+    packagePath: String,
     typeMappings: List<GenTypeMappingView> = emptyList(),
 ): GenEntity {
-    val baseEntity = tableToEntity(table, packagePath)
+    val baseEntity = tableToEntity(table, modelId, packagePath)
 
     val properties = createProperties(
         table,
         language,
-        table.schema?.dataSource?.type ?: GenConfig.dataSourceType,
+        dataSourceType,
         typeMappings
     )
 
@@ -53,14 +50,16 @@ private fun convertTableToEntity(
  */
 private fun tableToEntity(
     genTable: GenTableAssociationsView,
-    packagePath: String
+    modelId: Long?,
+    packagePath: String,
 ): GenEntity {
     return new(GenEntity::class).by {
-        table().id = genTable.id
-        author = GenConfig.author
-        name = tableNameToClassName(genTable.name)
-        comment = genTable.comment.clearTableComment()
-        remark = genTable.remark
+        this.table().id = genTable.id
+        this.modelId = modelId
+        this.author = GenConfig.author
+        this.name = tableNameToClassName(genTable.name)
+        this.comment = genTable.comment.clearTableComment()
+        this.remark = genTable.remark
         this.packagePath = packagePath
     }
 }

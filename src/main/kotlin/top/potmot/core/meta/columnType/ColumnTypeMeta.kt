@@ -5,7 +5,7 @@ import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenColumn
 import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.dto.GenTableColumnsInput
+import top.potmot.model.dto.GenTableModelInput
 import top.potmot.model.dto.GenTableColumnsView
 import top.potmot.model.dto.GenTypeMappingView
 
@@ -38,7 +38,7 @@ fun ColumnTypeMeta.getPropertyType (
 fun GenColumn.getTypeMeta() =
     ColumnTypeMeta(typeCode, overwriteByType, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
 
-fun GenTableColumnsInput.TargetOf_columns.getTypeMeta() =
+fun GenTableModelInput.TargetOf_columns.getTypeMeta() =
     ColumnTypeMeta(typeCode, overwriteByType, type, displaySize, numericPrecision, typeNotNull, autoIncrement)
 
 fun GenTableColumnsView.TargetOf_columns.getTypeMeta() =

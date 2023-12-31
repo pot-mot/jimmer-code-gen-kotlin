@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.config.GenConfig
 import top.potmot.core.entity.convert.toGenEntity
+import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
@@ -43,8 +44,10 @@ class ConvertService(
     @PostMapping
     fun convert(
         @RequestBody tableIds: List<Long>,
-        @RequestParam(required = false) packagePath: String?,
+        @RequestParam(required = false) modelId: Long?,
+        @RequestParam(required = false) dataSourceType: DataSourceType?,
         @RequestParam(required = false) language: GenLanguage?,
+        @RequestParam(required = false) packagePath: String?,
     ): List<Long> {
         val result = mutableListOf<Long>()
 
@@ -54,8 +57,17 @@ class ConvertService(
             val typeMappings = getTypeMappings()
 
             tables
-                .map { it.toGenEntity(packagePath ?: GenConfig.defaultPackagePath, typeMappings, language ?: GenConfig.language) }
-                .forEach { result += sqlClient.save(it).modifiedEntity.id }
+                .map {
+                    it.toGenEntity(
+                        modelId,
+                        dataSourceType ?: GenConfig.dataSourceType,
+                        language ?: GenConfig.language,
+                        packagePath ?: GenConfig.defaultPackagePath, typeMappings,
+                    )
+                }
+                .forEach {
+                    result += sqlClient.save(it).modifiedEntity.id
+                }
         }
 
         return result

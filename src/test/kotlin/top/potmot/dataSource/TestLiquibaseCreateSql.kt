@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.TableType
 import top.potmot.model.dto.GenDataSourceInput
-import top.potmot.model.dto.GenTableColumnsInput
+import top.potmot.model.dto.GenTableModelInput
 import top.potmot.model.extension.execute
 import top.potmot.utils.liquibase.createSql
 import java.sql.Types
@@ -19,8 +19,7 @@ import java.sql.Types
 @ActiveProfiles("test-kotlin", "mysql")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TestLiquibaseCreateSql {
-    private val column1 = GenTableColumnsInput.TargetOf_columns(
-        id = 1,
+    private val column1 = GenTableModelInput.TargetOf_columns(
         remark = "remark",
         orderKey = 2,
         name = "Name",
@@ -38,8 +37,7 @@ class TestLiquibaseCreateSql {
         logicalDelete = false,
     )
 
-    private val column2 = GenTableColumnsInput.TargetOf_columns(
-        id = 2,
+    private val column2 = GenTableModelInput.TargetOf_columns(
         remark = "Another remark",
         orderKey = 3,
         name = "Another Name",
@@ -57,15 +55,13 @@ class TestLiquibaseCreateSql {
         logicalDelete = false,
     )
 
-    private val table = GenTableColumnsInput(
-        id = 1,
+    private val table = GenTableModelInput(
         remark = "",
         name = "table",
         comment = "comment",
         orderKey = 1,
         type = TableType.TABLE,
-        schema = GenTableColumnsInput.TargetOf_schema(
-            id = 1,
+        schema = GenTableModelInput.TargetOf_schema(
             name = "jimmer_code_gen",
         ),
         columns = listOf(

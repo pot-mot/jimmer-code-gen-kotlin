@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.generate.generateTableDefines
 import top.potmot.core.entity.generate.generateEntityCode
+import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.error.DataSourceErrorCode
 import top.potmot.model.GenEntity
@@ -67,11 +68,13 @@ class PreviewService(
     @GetMapping("/entity/byTable")
     fun previewEntityByTable(
         @RequestParam tableIds: List<Long>,
-        @RequestParam(required = false) packagePath: String?,
+        @RequestParam(required = false) modelId: Long?,
+        @RequestParam(required = false) dataSourceType: DataSourceType?,
         @RequestParam(required = false) language: GenLanguage?,
+        @RequestParam(required = false) packagePath: String?,
         @RequestParam(required = false) withPath: Boolean?
     ): List<Pair<String, String>> {
-        val entityIds = convertService.convert(tableIds, packagePath, language)
+        val entityIds = convertService.convert(tableIds, modelId, dataSourceType, language, packagePath)
         return previewEntity(entityIds.toList(), language, withPath)
     }
 
@@ -117,7 +120,7 @@ class PreviewService(
 
         return if (model.syncConvertEntity) {
             val tableIds = getTableIdsByModelId(id)
-            previewEntityByTable(tableIds, model.packagePath, model.language, withPath)
+            previewEntityByTable(tableIds, model.id, model.dataSourceType, model.language, model.packagePath, withPath)
         } else {
             val entityIds = getEntityIdsByModelId(id)
             previewEntity(entityIds, model.language, withPath)
@@ -145,7 +148,7 @@ class PreviewService(
 
         entityCodes +=
             if (model.syncConvertEntity) {
-                previewEntityByTable(tables.map { it.id }, model.packagePath, model.language, true)
+                previewEntityByTable(tables.map { it.id }, model.id, model.dataSourceType, model.language, model.packagePath, true)
             } else {
                 val entityIds = getEntityIdsByModelId(id)
                 previewEntity(entityIds, model.language, true)

@@ -36,7 +36,10 @@ GenTableColumnsView {
     columns {
         #allScalars
         id(table)
-        id(enum)
+        enum {
+            id
+            name
+        }
     }
 
     indexes {
@@ -48,39 +51,16 @@ GenTableColumnsView {
     }
 }
 
-input GenTableColumnsInput {
-    #allScalars
-    id(model)
-    schema {
-        id
-        name
-    }
-    -createdTime
-    -modifiedTime
-
-    columns {
-        #allScalars
-        id(enum)
-        -createdTime
-        -modifiedTime
-    }
-
-    indexes {
-        name
-        uniqueIndex
-
-        columns {
-            name
-        }
-    }
-}
-
 input GenTableModelInput {
     #allScalars
     id(model)
     -id
     -createdTime
     -modifiedTime
+
+    schema {
+        name
+    }
 
     columns {
         #allScalars

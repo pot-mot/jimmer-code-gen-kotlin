@@ -14,14 +14,14 @@ import top.potmot.model.copy
 import top.potmot.model.dto.GenAssociationInput
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenModelView
-import top.potmot.model.dto.GenTableColumnsInput
+import top.potmot.model.dto.GenTableModelInput
 
 private val mapper = jacksonObjectMapper()
     .registerModule(ImmutableModule())
     .registerModule(JavaTimeModule())
 
-fun parseGraphData(modelId: Long, graphData: String): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> {
-    val tables = mutableListOf<GenTableColumnsInput>()
+fun parseGraphData(modelId: Long, graphData: String): Pair<List<GenTableModelInput>, List<GenAssociationModelInput>> {
+    val tables = mutableListOf<GenTableModelInput>()
     val associations = mutableListOf<GenAssociationModelInput>()
 
     val jsonNode = mapper.readTree(graphData)
@@ -43,15 +43,15 @@ fun parseGraphData(modelId: Long, graphData: String): Pair<List<GenTableColumnsI
     return Pair(tables, associations)
 }
 
-fun GenModelView.getGraphEntities(): Pair<List<GenTableColumnsInput>, List<GenAssociationModelInput>> =
+fun GenModelView.getGraphEntities(): Pair<List<GenTableModelInput>, List<GenAssociationModelInput>> =
     parseGraphData(this.id, this.graphData)
 
-private fun JsonNode.toTable(modelId: Long): GenTableColumnsInput {
+private fun JsonNode.toTable(modelId: Long): GenTableModelInput {
     if (this.isObject) {
         val node = this as ObjectNode
         node.put("modelId", modelId)
     }
-    return mapper.readValue<GenTableColumnsInput>(this.toString())
+    return mapper.readValue<GenTableModelInput>(this.toString())
 }
 
 private fun JsonNode.toAssociation(modelId: Long): GenAssociationModelInput {
@@ -74,7 +74,7 @@ private fun JsonNode.toAssociation(modelId: Long): GenAssociationModelInput {
     return mapper.readValue<GenAssociationModelInput>(this.toString())
 }
 
-fun GenTableColumnsInput.toInputPair(): Pair<GenTable, List<GenTableIndex>> {
+fun GenTableModelInput.toInputPair(): Pair<GenTable, List<GenTableIndex>> {
     val indexes = this.indexes.map { it.toEntity() }
 
     val entity = this.toEntity().copy {
