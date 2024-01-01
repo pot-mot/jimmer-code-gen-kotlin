@@ -15,6 +15,7 @@ import top.potmot.enumeration.AssociationType.MANY_TO_MANY
 import top.potmot.enumeration.AssociationType.MANY_TO_ONE
 import top.potmot.enumeration.AssociationType.ONE_TO_MANY
 import top.potmot.enumeration.AssociationType.ONE_TO_ONE
+import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.extension.pkColumns
 import top.potmot.utils.template.TemplateBuilder
@@ -83,7 +84,9 @@ abstract class TableDefineBuilder : TemplateBuilder() {
 
         lines.addAll(table.columns.map { columnStringify(it) })
 
-        lines.add(createPkLine(table))
+        if (table.pkColumns().size > 1) {
+            lines.add(createPkLine(table))
+        }
 
         lines.addAll(otherLines)
 
@@ -93,7 +96,12 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             val columnNames = table.columns.filter { it.id in index.columnIds }.map { it.name }
 
             if (columnNames.size != index.columnIds.size) {
-                throw RuntimeException("Unique index column count not match: \n table: ${table.name}, unique index: ${index.name}")
+                throw GenerateTableDefineException.index(
+                    "Index [${index.name}] column not match: " +
+                        " table: ${table.name} " +
+                        " current columns: ${table.columns.map { it.id to it.name }} " +
+                        " need column ids: ${index.columnIds}"
+                )
             }
 
             createIndex(
@@ -228,10 +236,6 @@ abstract class TableDefineBuilder : TemplateBuilder() {
                 }
 
                 MANY_TO_MANY -> {
-                    if (association.columnReferences.size > 1) {
-                        throw RuntimeException("Create mapping table fail: \nMANY_TO_MANY does not support more than one ColumnReference")
-                    }
-
                     createMappingTable(
                         association.toMappingTableMeta()
                     ).let {

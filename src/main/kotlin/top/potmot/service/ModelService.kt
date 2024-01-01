@@ -16,6 +16,7 @@ import top.potmot.core.database.load.getGraphEntities
 import top.potmot.core.database.load.parseGraphData
 import top.potmot.core.database.load.toInput
 import top.potmot.core.database.load.toInputPart
+import top.potmot.error.ModelLoadException
 import top.potmot.model.GenModel
 import top.potmot.model.by
 import top.potmot.model.copy
@@ -97,11 +98,11 @@ class ModelService(
                 val savedTableMap = savedTables.associateBy { it.name }
                 tableIndexesPairs.forEach { (table, indexes) ->
                     if (!savedTableMap.containsKey(table.name)) {
-                        throw RuntimeException("Load model [${model.name}] fail: \nTable [${table.name}] not found")
+                        throw ModelLoadException.index("Indexes [${indexes.joinToString(",") { it.name }}] recreate fail: \nTable [${table.name}] not found")
                     }
                     val savedTable = savedTableMap[table.name]!!
                     sqlClient.update(savedTable.copy {
-                        this.indexes = indexes.map { it.toInput(savedTable.columns.associate { it.name to it.id }) }
+                        this.indexes = indexes.map { index -> index.toInput(savedTable.columns.associate { it.name to it.id }) }
                     })
                 }
 

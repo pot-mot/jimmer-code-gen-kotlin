@@ -13,6 +13,8 @@ import top.potmot.enumeration.AssociationType.MANY_TO_MANY
 import top.potmot.enumeration.AssociationType.MANY_TO_ONE
 import top.potmot.enumeration.AssociationType.ONE_TO_MANY
 import top.potmot.enumeration.AssociationType.ONE_TO_ONE
+import top.potmot.error.GenerateEntityException
+import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.GenProperty
 import top.potmot.model.GenPropertyDraft
 import top.potmot.model.copy
@@ -42,7 +44,7 @@ fun producePropertyWithAssociationAndUniqueIndexes(
 
     outAssociations.forEach { outAssociation ->
         if (outAssociation.columnReferences.isEmpty()) {
-            throw RuntimeException("out association [${outAssociation.name}] generate property fail: \ncolumnReferences is empty")
+            throw GenerateEntityException.association("out association [${outAssociation.name}] generate property fail: \ncolumnReferences is empty")
         }
 
         val sourceTable = table.toEntity()
@@ -55,14 +57,14 @@ fun producePropertyWithAssociationAndUniqueIndexes(
 
         sourceColumns.forEach {
             if (!propertiesMap.containsKey(it.id)) {
-                throw RuntimeException("out association [${outAssociation.name}] generate property fail: \nsourceColumn [${it.name}] not found in table [${table.name}]")
+                throw GenerateEntityException.association("out association [${outAssociation.name}] generate property fail: \nsourceColumn [${it.name}] not found in table [${table.name}]")
             }
         }
 
         val currentColumnPropertiesList = propertiesMap[sourceColumn.id]!!
 
         if (currentColumnPropertiesList.isEmpty()) {
-            throw RuntimeException("out association [${outAssociation.name}] generate property fail: \nsourceColumn [${sourceColumn.name}]'s property not found")
+            throw GenerateEntityException.association("out association [${outAssociation.name}] generate property fail: \nsourceColumn [${sourceColumn.name}]'s property not found")
         }
         val baseProperty = currentColumnPropertiesList[0]
 
@@ -155,7 +157,7 @@ fun producePropertyWithAssociationAndUniqueIndexes(
 
     inAssociations.forEach { inAssociation ->
         if (inAssociation.columnReferences.isEmpty()) {
-            throw RuntimeException("out association [${inAssociation.name}] generate property fail: \ncolumnReferences is empty")
+            throw GenerateEntityException.association("out association [${inAssociation.name}] generate property fail: \ncolumnReferences is empty")
         }
 
         val sourceTable = inAssociation.sourceTable
@@ -167,12 +169,12 @@ fun producePropertyWithAssociationAndUniqueIndexes(
         val targetColumn = targetColumns[0]
 
         if (!propertiesMap.containsKey(targetColumn.id)) {
-            throw RuntimeException("in association [${inAssociation.name}] generate property fail: \ntargetColumn [${targetColumn.name}] not found in table [${table.name}]")
+            throw GenerateEntityException.association("in association [${inAssociation.name}] generate property fail: \ntargetColumn [${targetColumn.name}] not found in table [${table.name}]")
         }
         val currentColumnPropertiesList = propertiesMap[targetColumn.id]!!
 
         if (currentColumnPropertiesList.isEmpty()) {
-            throw RuntimeException("in association [${inAssociation.name}] generate property fail: \ntargetColumn [${targetColumn.name}]'s property not found")
+            throw GenerateEntityException.association("in association [${inAssociation.name}] generate property fail: \ntargetColumn [${targetColumn.name}]'s property not found")
         }
         val baseProperty = currentColumnPropertiesList[0]
 

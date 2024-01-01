@@ -1,5 +1,7 @@
 package top.potmot.core.meta.columnType
 
+import top.potmot.error.ColumnTypeException
+
 /**
  * 列类型定义者，基于 java.sql.Types 中的类型定义生产列定义
  * need 表示列类型可以添加该参数
@@ -28,28 +30,34 @@ interface ColumnTypeDefiner {
         buildString {
             var tempDisplaySize: Long? = null
 
-            if (needDisplaySize(typeCode)) {
+            val isNeedDisplaySize = needDisplaySize(typeCode)
+            val isRequiredDisplaySize = requiredDisplaySize(typeCode)
+
+            if (isNeedDisplaySize || isRequiredDisplaySize) {
                 tempDisplaySize = displaySize ?: defaultDisplaySize(typeCode)
 
-                if (requiredDisplaySize(typeCode) && tempDisplaySize == null) {
-                    throw RuntimeException("displaySize is required")
+                if (isRequiredDisplaySize && tempDisplaySize == null) {
+                    throw ColumnTypeException.missRequiredParam("displaySize is required for type [${typeCode}]")
                 }
             }
 
             var tempNumericPrecision: Long? = null
 
-            if (needNumericPrecision(typeCode)) {
+            val isNeedNumericPrecision = needNumericPrecision(typeCode)
+            val isRequiredNumericPrecision = requiredNumericPrecision(typeCode)
+
+            if (isNeedNumericPrecision || isRequiredNumericPrecision) {
                 tempNumericPrecision = numericPrecision ?: defaultNumericPrecision(typeCode)
 
-                if (requiredNumericPrecision(typeCode) && tempNumericPrecision == null) {
-                    throw RuntimeException("numericPrecision is required")
+                if (isRequiredNumericPrecision && tempNumericPrecision == null) {
+                    throw ColumnTypeException.missRequiredParam("numericPrecision is required for type [${typeCode}]")
                 }
             }
 
 
-            val appendDisplaySize = tempDisplaySize != null && tempDisplaySize != 0L
+            val appendDisplaySize = isRequiredDisplaySize || (tempDisplaySize != null)
 
-            val appendNumericPrecision = tempNumericPrecision != null && tempNumericPrecision != 0L
+            val appendNumericPrecision = isRequiredNumericPrecision || (tempNumericPrecision != null)
 
             if (appendDisplaySize || appendNumericPrecision) {
                 append("(")

@@ -1,6 +1,7 @@
 package top.potmot.core.meta
 
 import org.babyfish.jimmer.ImmutableObjects
+import top.potmot.error.ConvertEntityException
 import top.potmot.model.GenAssociation
 import top.potmot.model.copy
 import top.potmot.model.dto.GenTableAssociationsView
@@ -19,9 +20,13 @@ fun GenTableAssociationsView.getAssociations(): TableAssociations {
             this.columnReferences = outAssociation.columnReferences.map { columnReference ->
                 columnReference.toEntity().copy {
                     if (!columnMap.containsKey(columnReference.sourceColumn.id)) {
-                        throw RuntimeException("out association [${outAssociation.name}] restore fail: \nsourceColumn [${columnReference.sourceColumn.id}] not found in table [${this@getAssociations.name}]")
+                        throw ConvertEntityException.association(
+                            "out association [${outAssociation.name}] recreate fail: " +
+                                    " sourceColumn [${columnReference.sourceColumn.id}] not found in table [${this@getAssociations.name}]"
+                        )
                     }
-                    this.sourceColumn = ImmutableObjects.toLonely(columnMap[columnReference.sourceColumn.id]!!.toEntity())
+                    this.sourceColumn =
+                        ImmutableObjects.toLonely(columnMap[columnReference.sourceColumn.id]!!.toEntity())
                 }
             }
         }
@@ -33,9 +38,13 @@ fun GenTableAssociationsView.getAssociations(): TableAssociations {
             this.columnReferences = inAssociation.columnReferences.map { columnReference ->
                 columnReference.toEntity().copy {
                     if (!columnMap.containsKey(columnReference.targetColumn.id)) {
-                        throw RuntimeException("in association [${inAssociation.name}] restore fail: \ntargetColumn [${columnReference.targetColumn.id}] not found in table [${this@getAssociations.name}]")
+                        throw ConvertEntityException.association(
+                            "in association [${inAssociation.name}] recreate fail: " +
+                                    " targetColumn [${columnReference.targetColumn.id}] not found in table [${this@getAssociations.name}]"
+                        )
                     }
-                    this.targetColumn = ImmutableObjects.toLonely(columnMap[columnReference.targetColumn.id]!!.toEntity())
+                    this.targetColumn =
+                        ImmutableObjects.toLonely(columnMap[columnReference.targetColumn.id]!!.toEntity())
                 }
             }
         }

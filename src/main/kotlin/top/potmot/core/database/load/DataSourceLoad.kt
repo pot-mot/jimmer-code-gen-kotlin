@@ -18,6 +18,7 @@ import schemacrawler.tools.utility.SchemaCrawlerUtility
 import top.potmot.core.meta.getMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
+import top.potmot.error.DataSourceLoadException
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenAssociationProps
 import top.potmot.model.GenColumn
@@ -195,13 +196,13 @@ private fun ForeignKey.toGenAssociation(
                 if (!isLoaded(this, GenAssociationProps.SOURCE_TABLE)) {
                     this.sourceTable = it.source.table
                 } else if (this.sourceTable.id != it.source.table.id) {
-                    throw RuntimeException("Convert foreign key [${association.name}] to association fail: \nsource table not match: \n${this.sourceTable} not equals ${it.source.table}")
+                    throw DataSourceLoadException.association("Convert foreign key [${association.name}] to association fail: \nsource table not match: \n${this.sourceTable} not equals ${it.source.table}")
                 }
 
                 if (!isLoaded(this, GenAssociationProps.TARGET_TABLE)) {
                     this.targetTable = it.target.table
                 } else if (this.targetTable.id != it.target.table.id) {
-                    throw RuntimeException("Convert foreign key [${association.name}] to association fail: \ntarget table not match: \n${this.targetTable} not equals ${it.target.table}")
+                    throw DataSourceLoadException.association("Convert foreign key [${association.name}] to association fail: \ntarget table not match: \n${this.targetTable} not equals ${it.target.table}")
                 }
             }
         }
@@ -227,7 +228,7 @@ private fun Index.toGenTableIndex(table: GenTable): GenTableIndex? {
     val columnIds = columns.map {
         val nameMatchColumns = table.columns.filter { column -> column.name == it.name }
         if (nameMatchColumns.size != 1) {
-            throw RuntimeException("Load index [$name] fail: \nmatch name ${it.name} column more than one")
+            throw DataSourceLoadException.index("Load index [$name] fail: \nmatch name ${it.name} column more than one in table [${table.name}]")
         }
         nameMatchColumns[0].id
     }

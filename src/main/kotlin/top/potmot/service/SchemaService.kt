@@ -1,6 +1,5 @@
 package top.potmot.service
 
-import org.babyfish.jimmer.client.ThrowsAll
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
@@ -16,7 +15,7 @@ import top.potmot.core.database.load.getFkAssociations
 import top.potmot.core.database.load.getGenIndexes
 import top.potmot.core.database.load.toGenSchema
 import top.potmot.core.database.load.toGenTable
-import top.potmot.error.DataSourceErrorCode
+import top.potmot.error.DataSourceException
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenSchema
 import top.potmot.model.GenTable
@@ -37,7 +36,6 @@ class SchemaService(
      * 预览数据源中全部的 schema
      */
     @GetMapping("/dataSource/{dataSourceId}/schema/preview")
-    @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
     fun preview(@PathVariable dataSourceId: Long): List<GenSchema> {
         val dataSource = getDataSource(dataSourceId)
@@ -63,7 +61,6 @@ class SchemaService(
      * 导入 schema
      */
     @PostMapping("/dataSource/{dataSourceId}/schema/{name}")
-    @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
     fun load(
         @PathVariable dataSourceId: Long,
@@ -98,7 +95,7 @@ class SchemaService(
                     )
 
                     if (genTableNameMap.containsKey(genTable.name)) {
-                        throw RuntimeException("DataSource load fail: \ntable [${genTable.name}] more than one")
+                        throw DataSourceException.loadFail("DataSource load fail: \nmore than one table has then same name: [${genTable.name}] ")
                     }
 
                     val savedGenTable = sqlClient.save(genTable) {

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.babyfish.jimmer.jackson.ImmutableModule
 import org.babyfish.jimmer.kt.unload
 import top.potmot.constant.ModelShape
+import top.potmot.error.ModelLoadException
 import top.potmot.model.GenTable
 import top.potmot.model.GenTableIndex
 import top.potmot.model.copy
@@ -103,19 +104,19 @@ fun GenAssociationModelInput.toInput(
 ): GenAssociationInput {
     val tableMap = tables.associate { it.name to Pair(it.id, it) }
     val sourceTablePair = tableMap[sourceTable.name]
-        ?: throw RuntimeException("Model association [${name}] parse fail: \nsourceTable [${sourceTable.name}] not found")
+        ?: throw ModelLoadException.association("association [${name}] recreate fail: \nsourceTable [${sourceTable.name}] not found")
     val sourceTableColumnsMap = sourceTablePair.second.columns.associate { it.name to it.id }
 
     val targetTablePair = tableMap[targetTable.name]
-        ?: throw RuntimeException("Model association [${name}] parse fail: \ntargetTable [${targetTable.name}] not found")
+        ?: throw ModelLoadException.association("association [${name}] recreate fail: \ntargetTable [${targetTable.name}] not found")
     val targetTableColumnsMap = targetTablePair.second.columns.associate { it.name to it.id }
 
     val columnReferenceInputs = columnReferences.map {
         val sourceColumnId = sourceTableColumnsMap[it.sourceColumn.name]
-            ?: throw RuntimeException("Model association [${name}] fail: \nsourceColumn [${it.sourceColumn.name}] not found")
+            ?: throw ModelLoadException.association("association [${name}] recreate fail: \nsourceColumn [${it.sourceColumn.name}] not found")
 
         val targetColumnId = targetTableColumnsMap[it.targetColumn.name]
-            ?: throw RuntimeException("Model association [${name}] fail: \ntargetColumn [${it.targetColumn.name}] not found")
+            ?: throw ModelLoadException.association("association [${name}] recreate fail: \ntargetColumn [${it.targetColumn.name}] not found")
 
         GenAssociationInput.TargetOf_columnReferences(
             sourceColumnId, targetColumnId

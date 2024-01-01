@@ -5,6 +5,7 @@ import org.babyfish.jimmer.sql.kt.cfg.KInitializer
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import top.potmot.error.DataSourceException
 import top.potmot.utils.sql.execute
 import java.io.InputStreamReader
 import javax.sql.DataSource
@@ -35,7 +36,7 @@ class H2Initializer(
                 H2Initializer::class.java
                     .classLoader
                     .getResourceAsStream(it)
-            } ?: throw RuntimeException("no h2 sql find")
+            } ?: throw DataSourceException.h2InitFail("no h2 sql find in path: $sqlPath")
 
             val sqls = InputStreamReader(inputStream).use { reader ->
                 reader.readText()

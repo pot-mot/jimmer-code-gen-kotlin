@@ -1,6 +1,5 @@
 package top.potmot.service
 
-import org.babyfish.jimmer.client.ThrowsAll
 import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.enumeration.DataSourceType
-import top.potmot.error.DataSourceErrorCode
 import top.potmot.error.DataSourceException
 import top.potmot.model.GenDataSource
 import top.potmot.model.copy
@@ -69,7 +67,6 @@ class DataSourceService(
      * 创建数据源
      */
     @PostMapping
-    @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
     fun create(@RequestBody dataSource: GenDataSourceInput): Long {
         dataSource.toEntity().test()
@@ -80,7 +77,6 @@ class DataSourceService(
      * 编辑数据源
      */
     @PutMapping("/{id}")
-    @ThrowsAll(DataSourceErrorCode::class)
     @Transactional
     fun edit(@PathVariable id: Long, @RequestBody dataSource: GenDataSourceInput): Long {
         dataSource.toEntity().test()
