@@ -84,7 +84,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
 
         lines.addAll(table.columns.map { columnStringify(it) })
 
-        if (table.pkColumns().size > 1) {
+        if (table.pkColumns().isNotEmpty()) {
             lines.add(createPkLine(table))
         }
 
