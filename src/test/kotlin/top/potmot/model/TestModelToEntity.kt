@@ -95,7 +95,7 @@ public interface MNTarget {
      * ID
      */
     @IdView("mNSources")
-    List<long> mNSourcIds();
+    List<long> mNSourceIds();
 }
 ), (top/potmot/model/OOTarget.java, package top.potmot.model;
 
@@ -213,7 +213,7 @@ public interface MOTarget {
     List<MOSource> mOSources();
     
     @IdView("mOSources")
-    List<long> mOSourcIds();
+    List<long> mOSourceIds();
 }
 ), (top/potmot/model/TreeNode.java, package top.potmot.model;
 
@@ -243,7 +243,7 @@ public interface TreeNode {
     List<TreeNode> treeNodes();
     
     @IdView("treeNodes")
-    List<long> treeNodIds();
+    List<long> treeNodeIds();
     
     @ManyToOne
     @JoinColumn(
@@ -393,7 +393,7 @@ interface MNTarget {
      * ID
      */
     @IdView("mNSources")
-    val mNSourcIds: List<Long>
+    val mNSourceIds: List<Long>
 }
 ), (top/potmot/model/OOTarget.kt, package top.potmot.model
 
@@ -502,7 +502,7 @@ interface MOTarget {
     val mOSources: List<MOSource>
     
     @IdView("mOSources")
-    val mOSourcIds: List<Long>
+    val mOSourceIds: List<Long>
 }
 ), (top/potmot/model/TreeNode.kt, package top.potmot.model
 
@@ -530,7 +530,7 @@ interface TreeNode {
     val treeNodes: List<TreeNode>
     
     @IdView("treeNodes")
-    val treeNodIds: List<Long>
+    val treeNodeIds: List<Long>
     
     @ManyToOne
     @JoinColumn(

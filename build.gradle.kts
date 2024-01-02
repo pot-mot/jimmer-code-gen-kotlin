@@ -24,12 +24,15 @@ version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 val jimmerVersion = "0.8.68"
+
 val mysqlVersion = "8.0.30"
 val postgreVersion = "42.6.0"
 val h2Version = "2.1.214"
-val caffeineVersion = "2.9.1"
+
 val schemacrawlerVersion = "16.20.4"
 val liquibaseVersion = "4.22.0"
+
+val caffeineVersion = "2.9.1"
 
 repositories {
     mavenCentral()

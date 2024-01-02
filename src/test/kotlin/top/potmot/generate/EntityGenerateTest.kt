@@ -24,75 +24,92 @@ import java.time.LocalDateTime
 class EntityGenerateTest {
     @Test
     @Order(1)
-    fun testEntityGenerate() {
-        val pkProperty = GenEntityPropertiesView.TargetOf_properties(
-            entityId = 1,
+    fun testJavaEntityGenerate() {
+        assertEquals(
+            javaExpected,
+            JavaEntityCodeGenerator().generate(baseEntity).second
+                .replaceSinceTimeComment()
+        )
+    }
+
+    @Test
+    @Order(2)
+    fun testKotlinEntityGenerate() {
+        assertEquals(
+            kotlinExpected,
+            KotlinEntityCodeGenerator().generate(baseEntity).second
+                .replaceSinceTimeComment()
+        )
+    }
+
+    private final val pkProperty = GenEntityPropertiesView.TargetOf_properties(
+        entityId = 1,
+        id = 1,
+        createdTime = LocalDateTime.now(),
+        modifiedTime = LocalDateTime.now(),
+        remark = "",
+        name = "id",
+        comment = "ID",
+        type = "kotlin.Long",
+        listType = false,
+        typeNotNull = true,
+        idProperty = true,
+        idGenerationType = GenerationType.SEQUENCE,
+        keyProperty = false,
+        logicalDelete = false,
+        idView = false,
+        orderKey = 1,
+    )
+
+    private final val manyToOneProperty = GenEntityPropertiesView.TargetOf_properties(
+        id = 2,
+        createdTime = LocalDateTime.now(),
+        modifiedTime = LocalDateTime.now(),
+        remark = "remark p1.\n${"remark p2 ".repeat(10)}\n",
+        name = "manyToOneProperty",
+        comment = "comment",
+        type = "Entity",
+        listType = false,
+        typeNotNull = false,
+        idProperty = false,
+        keyProperty = true,
+        logicalDelete = false,
+        idView = false,
+        associationType = AssociationType.MANY_TO_ONE,
+        associationAnnotation = "@ManyToOne",
+        entityId = 1,
+        orderKey = 2,
+    )
+
+
+    private final val baseTable = GenEntityPropertiesView.TargetOf_table(
+        id = 1,
+        name = "table",
+        comment = "comment",
+        schema = GenEntityPropertiesView.TargetOf_table.TargetOf_schema_2(
             id = 1,
-            createdTime = LocalDateTime.now(),
-            modifiedTime = LocalDateTime.now(),
-            remark = "",
-            name = "id",
-            comment = "ID",
-            type = "kotlin.Long",
-            listType = false,
-            typeNotNull = true,
-            idProperty = true,
-            idGenerationType = GenerationType.SEQUENCE,
-            keyProperty = false,
-            logicalDelete = false,
-            idView = false,
-            orderKey = 1,
+            name = "schema",
         )
+    )
 
-        val manyToOneProperty = GenEntityPropertiesView.TargetOf_properties(
-            id = 2,
-            createdTime = LocalDateTime.now(),
-            modifiedTime = LocalDateTime.now(),
-            remark = "remark p1.\n${"remark p2 ".repeat(10)}\n",
-            name = "manyToOneProperty",
-            comment = "comment",
-            type = "Entity",
-            listType = false,
-            typeNotNull = false,
-            idProperty = false,
-            keyProperty = true,
-            logicalDelete = false,
-            idView = false,
-            associationType = AssociationType.MANY_TO_ONE,
-            associationAnnotation = "@ManyToOne",
-            entityId = 1,
-            orderKey = 2,
+    private final val baseEntity = GenEntityPropertiesView(
+        id = 1,
+        createdTime = LocalDateTime.now(),
+        modifiedTime = LocalDateTime.now(),
+        remark = "remark p1.\n${"remark p2 ".repeat(10)}\n",
+        name = "Entity",
+        comment = "comment",
+        author = "Potmot",
+        orderKey = 1,
+        table = baseTable,
+        packagePath = "com.example.test",
+        properties = listOf(
+            pkProperty,
+            manyToOneProperty
         )
+    )
 
-
-        val baseTable = GenEntityPropertiesView.TargetOf_table(
-            id = 1,
-            name = "table",
-            comment = "comment",
-            schema = GenEntityPropertiesView.TargetOf_table.TargetOf_schema_2(
-                id = 1,
-                name = "schema",
-            )
-        )
-
-        val baseEntity = GenEntityPropertiesView(
-            id = 1,
-            createdTime = LocalDateTime.now(),
-            modifiedTime = LocalDateTime.now(),
-            remark = "remark p1.\n${"remark p2 ".repeat(10)}\n",
-            name = "Entity",
-            comment = "comment",
-            author = "Potmot",
-            orderKey = 1,
-            table = baseTable,
-            packagePath = "com.example.test",
-            properties = listOf(
-                pkProperty,
-                manyToOneProperty
-            )
-        )
-
-        val kotlinExpected = """package com.example.test
+    private final val kotlinExpected = """package com.example.test
 
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -112,7 +129,7 @@ import org.babyfish.jimmer.sql.Table
  * @author Potmot
  */
 @Entity
-@Table(name = "schema.table")
+@Table(name = "SCHEMA.TABLE")
 interface Entity {
     /**
      * ID
@@ -134,14 +151,7 @@ interface Entity {
 }
 """
 
-        assertEquals(
-            kotlinExpected,
-            KotlinEntityCodeGenerator().generate(baseEntity).second
-                .replaceSinceTimeComment()
-        )
-
-
-        val javaExpected = """package com.example.test;
+    private final val javaExpected = """package com.example.test;
 
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.GeneratedValue;
@@ -162,7 +172,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Potmot
  */
 @Entity
-@Table(name = "schema.table")
+@Table(name = "SCHEMA.TABLE")
 public interface Entity {
     /**
      * ID
@@ -184,11 +194,4 @@ public interface Entity {
     Entity manyToOneProperty();
 }
 """
-
-        assertEquals(
-            javaExpected,
-            JavaEntityCodeGenerator().generate(baseEntity).second
-                .replaceSinceTimeComment()
-        )
-    }
 }
