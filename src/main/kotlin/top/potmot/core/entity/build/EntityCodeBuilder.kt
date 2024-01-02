@@ -25,10 +25,10 @@ import kotlin.reflect.KClass
 
 open class EntityCodeBuilder: TemplateBuilder() {
     open fun GenEntityPropertiesView.tableAnnotation(): String =
-        "@Table(name = \"${table.schema?.name?.let { "$it." } ?: ""}${table.name}\")"
+        "@Table(name = \"${table.schema?.name?.let { "${it.changeCase()}." } ?: ""}${table.name.changeCase()}\")"
 
     open fun GenEntityPropertiesView.TargetOf_properties.columnAnnotation(): String? =
-        column?.let { "@Column(name = \"${it.name}\")" }
+        column?.let { "@Column(name = \"${it.name.changeCase()}\")" }
 
     open fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3.annotation(enumType: EnumType?): String =
         when (enumType) {
@@ -266,4 +266,7 @@ open class EntityCodeBuilder: TemplateBuilder() {
 
     fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.annotationLines(): List<String> =
         getAnnotationLines(this)
+
+    private fun String.changeCase(): String =
+        this.let { if (GenConfig.lowerCaseName) lowercase() else uppercase() }
 }

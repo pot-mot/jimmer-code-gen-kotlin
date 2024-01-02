@@ -12,17 +12,19 @@ import top.potmot.enumeration.GenLanguage
 import top.potmot.service.ConfigService
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "mysql")
+@ActiveProfiles("test-kotlin", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class AssociationMatchTest(
     @Autowired val configService: ConfigService
 ) {
+    /**
+     * 验证默认情况下项目的配置是否与预期一致
+     */
     @Test
     @Order(1)
     fun testConfig() {
         val config = configService.getConfig()
 
-        Assertions.assertEquals("_", config.separator)
         Assertions.assertEquals(GenLanguage.KOTLIN, config.language)
 
         val testAuthor = "AUTHOR"
@@ -35,8 +37,6 @@ class AssociationMatchTest(
         val testColumnPrefix = "C_"
         configService.setConfig(GenConfigProperties(columnPrefix = testColumnPrefix))
         Assertions.assertEquals(testColumnPrefix, GenConfig.columnPrefix)
-
-        Assertions.assertEquals("_", GenConfig.separator)
 
         Assertions.assertEquals(GenConfig, config)
     }

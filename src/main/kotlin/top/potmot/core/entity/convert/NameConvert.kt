@@ -16,7 +16,7 @@ fun tableNameToClassName(name: String): String {
 
     // 将 newName 按照 SEPARATOR 进行分割成一个字符串数组并且去掉数组中的空字符串
     for (camel in name.clearTableName()
-        .split(GenConfig.separator)
+        .split("_")
         .dropLastWhile { it.isEmpty() }
         .toTypedArray()) {
         if (camel.isNotEmpty()) {
@@ -57,7 +57,7 @@ fun columnNameToPropertyName(name: String): String {
     for (c in name.clearColumnName().lowercase()
         .split("").dropLastWhile { it.isEmpty() }) {
         // 如果当前字符是分隔符，则标记下一个字符需要转换为大写
-        if (c == GenConfig.separator) {
+        if (c == "_") {
             upperCase = true
         }
         // 如果标记为需要转换为大写，则将当前字符转换为大写字符，并且添加到结果字符串中

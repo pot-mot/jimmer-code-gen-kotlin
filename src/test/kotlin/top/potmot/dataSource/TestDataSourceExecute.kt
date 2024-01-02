@@ -1,5 +1,6 @@
 package top.potmot.dataSource
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -10,9 +11,12 @@ import top.potmot.enumeration.DataSourceType
 import top.potmot.model.extension.execute
 import top.potmot.model.dto.GenDataSourceInput
 
-
+/**
+ * 校验两种数据源下 sql execute 是否存在问题
+ * 其中数据源的基本数据基于默认连接配置，所以如果需要在自己的环境中进行测试，请修改对于 dataSource
+ */
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "mysql")
+@ActiveProfiles("test-kotlin", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TestDataSourceExecute {
     @Test
@@ -30,7 +34,8 @@ class TestDataSourceExecute {
             remark = "test"
         ).toEntity()
 
-        dataSource.execute("jimmer_code_gen", """
+        val sqlExecuteResults = dataSource.execute(
+            "jimmer_code_gen", """
             -- remove existed table
             DROP TABLE IF EXISTS `test`;
             
@@ -49,7 +54,18 @@ class TestDataSourceExecute {
             
             -- remove existed table
             DROP TABLE `test`;
-        """)
+        """
+        )
+
+        assertEquals(
+            6,
+            sqlExecuteResults.size,
+        )
+
+        assertEquals(
+            0,
+            sqlExecuteResults.filter { !it.success }.size,
+        )
     }
 
     @Test
@@ -67,7 +83,7 @@ class TestDataSourceExecute {
             remark = "test"
         ).toEntity()
 
-        dataSource.execute("jimmer_code_gen", """
+        val sqlExecuteResults = dataSource.execute("jimmer_code_gen", """
             -- remove existed table
             DROP TABLE IF EXISTS "test";
             
@@ -86,5 +102,15 @@ class TestDataSourceExecute {
             -- remove existed table
             DROP TABLE "test";
         """)
+
+        assertEquals(
+            6,
+            sqlExecuteResults.size,
+        )
+
+        assertEquals(
+            0,
+            sqlExecuteResults.filter { !it.success }.size,
+        )
     }
 }

@@ -46,7 +46,7 @@ fun String.endsWithAny(suffixes: Collection<String>): String? {
  */
 fun String.removePrefixes(
     prefixes: List<String>,
-    separator: String = GenConfig.separator
+    separator: String = "_"
 ): String {
     var result = this
 
@@ -71,7 +71,7 @@ fun String.removePrefixes(
  */
 fun String.removeSuffixes(
     suffixes: List<String>,
-    separator: String = GenConfig.separator
+    separator: String = "_"
 ): String {
     var result = this
 

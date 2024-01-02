@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles
 import top.potmot.core.database.load.parseGraphData
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "mysql")
+@ActiveProfiles("test-kotlin", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TestModelToData {
     @Test

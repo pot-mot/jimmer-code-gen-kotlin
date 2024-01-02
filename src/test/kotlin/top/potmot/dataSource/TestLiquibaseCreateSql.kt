@@ -16,7 +16,7 @@ import top.potmot.utils.liquibase.createSql
 import java.sql.Types
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "mysql")
+@ActiveProfiles("test-kotlin", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TestLiquibaseCreateSql {
     private val column1 = GenTableModelInput.TargetOf_columns(

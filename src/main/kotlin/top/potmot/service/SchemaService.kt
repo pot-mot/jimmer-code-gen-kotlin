@@ -15,7 +15,7 @@ import top.potmot.core.database.load.getFkAssociations
 import top.potmot.core.database.load.getGenIndexes
 import top.potmot.core.database.load.toGenSchema
 import top.potmot.core.database.load.toGenTable
-import top.potmot.error.DataSourceException
+import top.potmot.error.DataSourceLoadException
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenSchema
 import top.potmot.model.GenTable
@@ -95,7 +95,7 @@ class SchemaService(
                     )
 
                     if (genTableNameMap.containsKey(genTable.name)) {
-                        throw DataSourceException.loadFail("DataSource load fail: \nmore than one table has then same name: [${genTable.name}] ")
+                        throw DataSourceLoadException.Table("DataSource load fail: \nmore than one table has then same name: [${genTable.name}] ")
                     }
 
                     val savedGenTable = sqlClient.save(genTable) {

@@ -15,14 +15,14 @@ object GenConfig {
     /** 数据源类型 */
     var dataSourceType: DataSourceType = DataSourceType.MySQL
 
-    /** 分隔符 */
-    var separator: String = "_"
-
     /** 语言，java/kotlin */
     var language: GenLanguage = GenLanguage.KOTLIN
 
     /** 默认真实外键 */
     var realFk: Boolean = true
+
+    /** 默认启用小写命名 */
+    var lowerCaseName: Boolean = false
 
     /** 作者  */
     var author: String = ""
@@ -172,9 +172,6 @@ object GenConfig {
         newConfig.dataSourceType?.let {
             dataSourceType = it
         }
-        newConfig.separator?.let {
-            separator = it
-        }
 
         newConfig.language?.let {
             language = it
@@ -182,6 +179,10 @@ object GenConfig {
 
         newConfig.realFk?.let {
             realFk = it
+        }
+
+        newConfig.lowerCaseName?.let {
+            lowerCaseName = it
         }
 
         newConfig.author?.let {

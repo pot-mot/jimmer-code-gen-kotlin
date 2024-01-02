@@ -20,7 +20,7 @@ import top.potmot.model.dto.GenColumnMatchView
 import top.potmot.service.AssociationService
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "mysql")
+@ActiveProfiles("test-kotlin", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class AssociationMatchTest(
     @Autowired val associationService: AssociationService,
@@ -28,7 +28,6 @@ class AssociationMatchTest(
     @Test
     @Order(1)
     fun showConfig() {
-        assertEquals("_", GenConfig.separator)
         assertEquals(GenLanguage.KOTLIN, GenConfig.language)
     }
 

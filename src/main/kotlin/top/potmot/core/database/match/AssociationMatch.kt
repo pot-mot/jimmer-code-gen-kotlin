@@ -1,6 +1,5 @@
 package top.potmot.core.database.match
 
-import top.potmot.config.GenConfig
 import top.potmot.core.entity.convert.clearTableName
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.dto.GenAssociationMatchView
@@ -27,7 +26,7 @@ typealias AssociationMatch = (
 val simplePkColumnMatch: AssociationMatch = { source, target ->
     if (target.partOfPk && target.table.id != source.table.id) {
         val targetTableName = target.table.name.clearTableName()
-        if ("${targetTableName}${GenConfig.separator}${target.name}" == source.name) {
+        if ("${targetTableName}_${target.name}" == source.name) {
             newGenAssociationMatchView(AssociationType.MANY_TO_ONE, false, source, target)
         } else {
             null
@@ -67,7 +66,7 @@ val includeTableNamePkColumnMatch: AssociationMatch = { source, target ->
 val pkSuffixColumnMatch: AssociationMatch = { source, target ->
     if (target.partOfPk && target.table.id != source.table.id) {
 
-        val separator = GenConfig.separator
+        val separator = "_"
 
         val targetMatchList =
             target.table.name.clearTableName().split(separator).takeLast(2) +

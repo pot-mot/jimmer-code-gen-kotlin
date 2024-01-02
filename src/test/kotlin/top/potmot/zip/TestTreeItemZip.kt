@@ -11,7 +11,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "mysql")
+@ActiveProfiles("test-kotlin", "h2")
 class TestTreeItemZip {
     @Test
     fun testToZipByteArray() {

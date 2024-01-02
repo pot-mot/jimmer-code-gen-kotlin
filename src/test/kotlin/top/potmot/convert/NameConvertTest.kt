@@ -11,8 +11,11 @@ import top.potmot.core.entity.convert.columnNameToPropertyName
 import top.potmot.core.entity.convert.tableNameToClassName
 import top.potmot.core.entity.convert.tableNameToPropertyName
 
+/**
+ * 校验名称转换是否符合预期
+ */
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "mysql")
+@ActiveProfiles("test-kotlin", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class NameConvertTest {
     @Test

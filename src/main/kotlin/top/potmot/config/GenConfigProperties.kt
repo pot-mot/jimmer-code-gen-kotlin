@@ -7,9 +7,6 @@ data class GenConfigProperties(
     /** 数据源类型 */
     var dataSourceType: DataSourceType? = null,
 
-    /** 分隔符 */
-    val separator: String? = null,
-
     /** 语言，java/kotlin */
     val language: GenLanguage? = null,
 
@@ -18,6 +15,9 @@ data class GenConfigProperties(
 
     /** 默认包路径  */
     val defaultPackagePath: String? = null,
+
+    /** 默认启用小写命名 */
+    var lowerCaseName: Boolean? = null,
 
     /** 默认真实外键 */
     val realFk: Boolean? = null,

@@ -14,7 +14,6 @@ import top.potmot.enumeration.AssociationType.MANY_TO_ONE
 import top.potmot.enumeration.AssociationType.ONE_TO_MANY
 import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.error.GenerateEntityException
-import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.GenProperty
 import top.potmot.model.GenPropertyDraft
 import top.potmot.model.copy
@@ -262,26 +261,24 @@ private data class JoinColumnProps(
     val referencedColumnName: String? = null,
     val foreignKeyType: ForeignKeyType? = null
 ) {
-    fun toAnnotation() = buildString {
-        val onlyName = referencedColumnName == null && foreignKeyType == null
+    fun toAnnotation() =
+        buildString {
+            val onlyName = referencedColumnName == null && foreignKeyType == null
 
-        append("@JoinColumn(")
-
-        "name = \"$joinColumnName\"".apply {
-            if (onlyName) append(this) else append("\n    $this")
+            if (onlyName) {
+                append("@JoinColumn(name = \"${joinColumnName.changeCase()}\")")
+            } else {
+                appendLine("@JoinColumn(")
+                appendLine("    name = \"${joinColumnName.changeCase()}\",")
+                if (referencedColumnName != null) {
+                    appendLine("    referencedColumnName = \"${referencedColumnName.changeCase()}\"")
+                }
+                if (foreignKeyType != null) {
+                    appendLine("    foreignKeyType = ForeignKeyType.${foreignKeyType.name}")
+                }
+                appendLine(")")
+            }
         }
-
-        if (referencedColumnName != null) {
-            append(",\n    referencedColumnName = \"$referencedColumnName\"")
-        }
-        if (foreignKeyType != null) {
-            append(",\n    foreignKeyType = ForeignKeyType.${foreignKeyType.name}")
-        }
-
-        ")".apply {
-            if (onlyName) append(this) else append("\n$this")
-        }
-    }
 }
 
 private data class JoinTableProps(
@@ -289,11 +286,14 @@ private data class JoinTableProps(
     val joinColumnName: String,
     val inverseJoinColumnName: String,
 ) {
-    fun toAnnotation() = """@JoinTable(
-    name = "$joinTableName",
-    joinColumnName = "$joinColumnName",
-    inverseJoinColumnName = "$inverseJoinColumnName"
-)"""
+    fun toAnnotation() =
+        buildString {
+            appendLine("@JoinTable(")
+            appendLine("    name = \"${joinTableName.changeCase()}\",")
+            appendLine("    joinColumnName = \"${joinColumnName.changeCase()}\",")
+            appendLine("    inverseJoinColumnName = \"${inverseJoinColumnName.changeCase()}\"")
+            appendLine(")")
+        }
 }
 
 private fun GenPropertyDraft.setAssociation(
@@ -375,3 +375,6 @@ fun createIdViewProperty(
         this.keyProperty = false
     }
 }
+
+private fun String.changeCase(): String =
+    this.let { if (GenConfig.lowerCaseName) lowercase() else uppercase() }

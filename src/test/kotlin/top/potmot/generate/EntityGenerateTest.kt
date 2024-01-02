@@ -12,10 +12,14 @@ import top.potmot.core.entity.generate.JavaEntityCodeGenerator
 import top.potmot.core.entity.generate.KotlinEntityCodeGenerator
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.dto.GenEntityPropertiesView
+import top.potmot.util.replaceSinceTimeComment
 import java.time.LocalDateTime
 
+/**
+ * 验证 EntityGenerate 的基本功能
+ */
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "mysql")
+@ActiveProfiles("test-kotlin", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class EntityGenerateTest {
     @Test
@@ -133,7 +137,7 @@ interface Entity {
         assertEquals(
             kotlinExpected,
             KotlinEntityCodeGenerator().generate(baseEntity).second
-                .replace(Regex("\n \\*\\s*@since\\s+\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}"), "")
+                .replaceSinceTimeComment()
         )
 
 
@@ -184,7 +188,7 @@ public interface Entity {
         assertEquals(
             javaExpected,
             JavaEntityCodeGenerator().generate(baseEntity).second
-                .replace(Regex("\n \\*\\s*@since\\s+\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}"), "")
+                .replaceSinceTimeComment()
         )
     }
 }
