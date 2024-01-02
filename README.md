@@ -115,8 +115,30 @@
 
 ### [Liquibase](https://www.liquibase.org/)
 关于 TableDefine 有另一种更完善的 diff 生成方式，[LiquibaseUtil.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Fliquibase%2FLiquibaseUtil.kt)，
-但关于在不同数据源种类间进行类型映射没有较好的解决方案，且必须真正连接数据源才可进行生成，所以目前依然使用手动拼接方案。  
-未来计划通过 jdbc type -> liquibase type 的映射来实现通用类型映射。
+但关于在不同数据源种类间进行类型映射没有较好的解决方案，且必须真正连接数据源才可进行生成，所以目前依然使用手动拼接方案。
+
+### 添加数据源支持
+
+首先自然需要补充 [DataSourceType.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fenumeration%2FDataSourceType.kt) 枚举值，并**重新生成前端项目的 api**。
+
+#### 元数据获取
+
+目前项目的元数据是基于 SchemaCrawler 实现的，所以只要是这个库可以支持的数据源就可以被本项目支持。
+
+只需要在 [build.gradle.kts](build.gradle.kts) 补充对应的 us.fatehi:schemacrawler-[ ] 依赖就可以了。
+
+若对应数据源中有部分元数据目前的映射存在问题，请前往 [DataSourceLoad.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fload%2FDataSourceLoad.kt) 进行调整。
+
+#### 生成 TableDefine
+
+- [TableDefineBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fbuild%2FTableDefineBuilder.kt) TableDefine 搭建器
+- [TableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerator.kt) TableDefine 生成器
+- [ColumnTypeDefiner.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fmeta%2FcolumnType%2FColumnTypeDefiner.kt) 列类型定义器
+
+在这两个类同级目录下就是对应数据源的实现，只需要再针对需要的数据源实现一下这三个类，并且在入口文件 [ColumnTypeDefine.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fmeta%2FcolumnType%2FColumnTypeDefine.kt) 和 [TableDefineGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerate.kt)
+补充对应的枚举值映射方法即可。
+
+> 对于目前项目里的 build 和 generate 下的分层，个人仍然在考虑是否应该取消，希望能找我来聊聊关于这点的意见
 
 ### 目前方向与拓展建议
 个人目前无力支持完整的脚手架/低代码，本项目目前仅作为构建与设计模型的入口。  
