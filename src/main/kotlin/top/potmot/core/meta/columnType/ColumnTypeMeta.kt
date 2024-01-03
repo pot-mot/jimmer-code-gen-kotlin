@@ -5,8 +5,8 @@ import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenColumn
 import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.dto.GenTableModelInput
 import top.potmot.model.dto.GenTableColumnsView
+import top.potmot.model.dto.GenTableModelInput
 import top.potmot.model.dto.GenTypeMappingView
 
 data class ColumnTypeMeta (

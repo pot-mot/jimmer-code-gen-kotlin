@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.generate.generateTableDefines
 import top.potmot.core.entity.generate.generateEntitiesCode
 import top.potmot.core.entity.generate.generateEnumsCode
-import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as PropertyEnum
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenEntity
@@ -23,11 +22,11 @@ import top.potmot.model.GenModel
 import top.potmot.model.GenTable
 import top.potmot.model.by
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenModelView
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.id
 import top.potmot.model.modelId
 import top.potmot.model.tableId
+import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as PropertyEnum
 
 @RestController
 @RequestMapping("/preview")
@@ -143,45 +142,5 @@ class PreviewService(
 
 
         return (entityCodes + enumCodes).distinct()
-    }
-
-    @GetMapping("/model")
-    fun previewModel(
-        @RequestParam id: Long,
-    ): List<Pair<String, String>> {
-        val model = getModel(id, GenModelView.METADATA.fetcher) ?: return emptyList()
-
-        val modelJson = model.toString()
-
-        val tableCodes = mutableListOf<Pair<String, String>>()
-
-        val tables = sqlClient.createQuery(GenTable::class) {
-            where(table.modelId eq id)
-            select(table.fetch(GenTableAssociationsView::class))
-        }.execute()
-
-        tableCodes += generateTableDefines(tables, listOf(model.dataSourceType))
-
-        val entityAndEnumCodes =
-            if (model.syncConvertEntity) {
-                previewEntityByTable(
-                    tables.map { it.id },
-                    model.id,
-                    model.dataSourceType,
-                    model.language,
-                    model.packagePath,
-                    true
-                ) +
-                        previewEnums(model.enumIds, model.language, true)
-            } else {
-                previewModelEntity(id, true)
-            }
-
-        val modelFile = Pair("model.json", modelJson)
-
-        return (listOf(modelFile) +
-                tableCodes.map { Pair(model.dataSourceType.name.lowercase() + "/" + it.first, it.second) } +
-                entityAndEnumCodes.map { Pair(model.language.name.lowercase() + "/" + it.first, it.second) }
-                ).distinct()
     }
 }
