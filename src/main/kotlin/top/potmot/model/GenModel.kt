@@ -94,13 +94,13 @@ interface GenModel : BaseEntity {
     val entityIds: List<Long>
 
     /**
-     * 实体
+     * 枚举
      */
     @OneToMany(mappedBy = "model")
     val enums: List<GenEnum>
 
     /**
-     * 实体 ID 视图
+     * 枚举 ID 视图
      */
     @IdView("enums")
     val enumIds: List<Long>

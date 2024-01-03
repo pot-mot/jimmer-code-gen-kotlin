@@ -1,6 +1,8 @@
-package top.potmot.core.meta.columnType
+package top.potmot.core.database.generate
 
 import top.potmot.config.GenConfig
+import top.potmot.core.database.generate.mysql.MysqlColumnTypeDefiner
+import top.potmot.core.database.generate.postgres.PostgreColumnTypeDefiner
 import top.potmot.enumeration.DataSourceType
 
 private val MYSQL_COLUMN_TYPE_DEFINER = MysqlColumnTypeDefiner()

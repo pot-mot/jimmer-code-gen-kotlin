@@ -1,5 +1,7 @@
-package top.potmot.core.meta.columnType
+package top.potmot.core.database.generate.mysql
 
+import top.potmot.core.database.generate.ColumnTypeDefiner
+import top.potmot.core.database.meta.ColumnTypeMeta
 import java.sql.Types
 
 // https://www.mysqlzh.com/doc/106.html

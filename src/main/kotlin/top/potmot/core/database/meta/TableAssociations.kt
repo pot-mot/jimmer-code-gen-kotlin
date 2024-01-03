@@ -1,4 +1,4 @@
-package top.potmot.core.meta
+package top.potmot.core.database.meta
 
 import org.babyfish.jimmer.ImmutableObjects
 import top.potmot.error.ConvertEntityException

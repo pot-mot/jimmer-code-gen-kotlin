@@ -2,10 +2,10 @@
 
 > ## TODO
 > 
-> - [ ] 实现模型设计
+> - [x] 实现模型设计
 >   - [x] 将 table 与 datasource 解除强关联，允许 table 单独存在
 >   - [x] 补充 table、association 和 model 的关联
->   - [ ] 补充 entity、enum 和 model 的关联，彻底将所有建模层面的实体迁移至 model 
+>   - [x] 补充 entity、enum 和 model 的关联，彻底将所有建模层面的实体迁移至 model 
 > - [ ] 补充模版
 >   - [ ] 业务类模版
 >   - [ ] react 和 vue 的 UI 基础模版
@@ -27,7 +27,7 @@
 
 // 目前 PostgreSQL 库表还没有调整，如需使用请务必对着 MySQL 进行修改
 
-**！！ 目前经验证的数据库脚本仅支持 MySQL 8 和 PostgreSQL 16**
+**！！ 目前经验证的数据库脚本仅支持 H2、MySQL 8、PostgreSQL 16**
 
 **！！本项目通过外部导入数据源进行生成，所以基础数据源类型无需和目标数据源一致**
 
@@ -70,7 +70,7 @@
 
 基于 [SchemaCrawler](https://github.com/schemacrawler/SchemaCrawler) 获取数据库元数据，导入 [schema](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fmodel%2FGenSchema.kt)、[table](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fmodel%2FGenTable.kt)、[column](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fmodel%2FGenColumn.kt) 三级数据，并根据外键生成关联。
 
-#### [Model load](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fload%2FModelLoad.kt) 模型设计后导入
+#### [Model load](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fload%2FModelLoad.kt) 模型设计导入
 
 基于 [AntV X6](https://x6.antv.antgroup.com/) 生产 JSON，具体参照前端项目。最终产物同样为 table 和 association。
 
@@ -83,62 +83,60 @@
 - [TableEntityConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fconvert%2FTableEntityConvert.kt) 表到实体转换
 - [ColumnPropertyConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fconvert%2FColumnPropertyConvert.kt) 列到属性转换
 
->（基于超级聚合根类型 [GenTableAssociationsView](src%2Fmain%2Fdto%2Ftop%2Fpotmot%2Fmodel%2FGenTable.dto)）
-
 ### Code Generate 代码生成
 
 - [PreviewService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FPreviewService.kt) 预览生成代码
+
 #### 模版工具类
 
-[TemplateBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Ftemplate%2FTemplateBuilder.kt)
+- [TemplateBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Ftemplate%2FTemplateBuilder.kt)  
+  通用模版，简化字符串行级拼接
 
-简化字符串的行级拼接
+- [TableDefineBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineBuilder.kt)  
+  表定义通用构建器
 
-#### Table Define 表定义
-
-[TableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerator.kt)
-
-#### EntityCode 业务实体代码
-
-[EntityCodeGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fgenerate%2FEntityCodeGenerator.kt)
+- [EntityCodeBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fgenerate%2FEntityCodeBuilder.kt)  
+  实体通用构建器器
 
 ## 其他
 
-### 关于超级聚合根类型与大量 output/view dto
-  > 此处的"超级聚合根类型"是指从聚合根出发，关联层级极深的类型  
-  > （table 和 entity 就是作为 数据库 和 业务代码两个领域的聚合根）
-
-  在生成器这种相对特殊的业务场景下，模型关联密集，后端对于类型操作较多。
-  为了确保类型安全，规避动态类型带来的属性 Unload 风险，
-  本项目使用 view dto 作为核心代码的基础。  
-  **在普通业务场景仅供前端使用的情况下建议使用 fetchBy 而不是 view dto。**
-
-### [Liquibase](https://www.liquibase.org/)
-关于 TableDefine 有另一种更完善的 diff 生成方式，[LiquibaseUtil.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Fliquibase%2FLiquibaseUtil.kt)，
-但关于在不同数据源种类间进行类型映射没有较好的解决方案，且必须真正连接数据源才可进行生成，所以目前依然使用手动拼接方案。
-
 ### 添加数据源支持
 
-首先自然需要补充 [DataSourceType.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fenumeration%2FDataSourceType.kt) 枚举值，并**重新生成前端项目的 api**。
+补充 [DataSourceType.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fenumeration%2FDataSourceType.kt) 枚举值，并**重新生成前端项目的 api**。
 
 #### 元数据获取
 
 目前项目的元数据是基于 SchemaCrawler 实现的，所以只要是这个库可以支持的数据源就可以被本项目支持。
 
-只需要在 [build.gradle.kts](build.gradle.kts) 补充对应的 us.fatehi:schemacrawler-[ ] 依赖就可以了。
+项目内已经实现元数据的转换导入 [DataSourceLoad.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fload%2FDataSourceLoad.kt)，
+只需要在 [build.gradle.kts](build.gradle.kts) 补充对应的 us.fatehi:schemacrawler-[ ] 依赖即可。
 
-若对应数据源中有部分元数据目前的映射存在问题，请前往 [DataSourceLoad.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fload%2FDataSourceLoad.kt) 进行调整。
 
 #### 生成 TableDefine
 
-- [TableDefineBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fbuild%2FTableDefineBuilder.kt) TableDefine 搭建器
-- [TableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerator.kt) TableDefine 生成器
-- [ColumnTypeDefiner.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fmeta%2FcolumnType%2FColumnTypeDefiner.kt) 列类型定义器
+针对目标数据源实现以下两个类，并补充对应入口文件：
 
-在这两个类同级目录下就是对应数据源的实现，只需要再针对需要的数据源实现一下这三个类，并且在入口文件 [ColumnTypeDefine.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fmeta%2FcolumnType%2FColumnTypeDefine.kt) 和 [TableDefineGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerate.kt)
-补充对应的枚举值映射方法即可。
+- [ColumnTypeDefiner.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FColumnTypeDefiner.kt)
+  - [ColumnTypeDefine.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FColumnTypeDefine.kt) 入口文件
+- [TableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerator.kt)
+  - [TableDefineGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerate.kt) 入口文件
 
-> 对于目前项目里的 build 和 generate 下的分层，个人仍然在考虑是否应该取消，希望能找我来聊聊关于这点的意见
+> 项目内已提供基础构建器类 [TableDefineBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineBuilder.kt)
+
+#### [Liquibase](https://www.liquibase.org/)
+关于 TableDefine 有另一种更完善的 diff 生成方式，[LiquibaseUtil.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Fliquibase%2FLiquibaseUtil.kt)，
+但关于在不同数据源种类间进行类型映射没有较好的解决方案，且**必须真正连接数据源才可进行生成**，考虑到目前项目无法对生成 sql 的效果做出保证，所以目前依然使用手动拼接方案。
+
+如要尝试，请自行在 [PreviewService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FPreviewService.kt) 使用 LiquibaseUtil 中的 createSql 覆盖 previewModelSql。
+
+### 关于超级聚合根类型与大量 output/view dto
+> 此处的"超级聚合根类型"是指从聚合根出发，关联层级极深的类型  
+> （table 和 entity 就是作为 数据库 和 业务代码两个领域的聚合根）
+
+在生成器这种相对特殊的业务场景下，模型关联密集，后端对于类型操作较多。
+为了确保类型安全，规避动态类型带来的属性 Unload 风险，
+本项目使用 view dto 作为核心代码的基础。  
+**在普通业务场景仅供前端使用的情况下建议使用 fetchBy 而不是 view dto。**
 
 ### 目前方向与拓展建议
 个人目前无力支持完整的脚手架/低代码，本项目目前仅作为构建与设计模型的入口。  

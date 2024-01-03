@@ -18,10 +18,10 @@ import liquibase.resource.OpenOptions
 import liquibase.resource.Resource
 import liquibase.serializer.core.xml.XMLChangeLogSerializer
 import top.potmot.config.GenConfig
-import top.potmot.core.meta.columnType.getColumnTypeDefiner
-import top.potmot.core.meta.columnType.getTypeMeta
-import top.potmot.core.meta.createFkName
-import top.potmot.core.meta.toMappingTableMeta
+import top.potmot.core.database.generate.getColumnTypeDefiner
+import top.potmot.core.database.meta.getTypeMeta
+import top.potmot.core.database.meta.createFkName
+import top.potmot.core.database.meta.toMappingTableMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.GenDataSource

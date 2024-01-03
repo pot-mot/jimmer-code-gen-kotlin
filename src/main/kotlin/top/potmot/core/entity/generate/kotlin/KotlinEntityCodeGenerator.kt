@@ -1,52 +1,55 @@
-package top.potmot.core.entity.generate
+package top.potmot.core.entity.generate.kotlin
 
-import top.potmot.core.entity.build.JavaEntityCodeBuilder
+import top.potmot.core.entity.generate.EntityCodeBuilder
+import top.potmot.core.entity.generate.EntityCodeGenerator
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.shortType
+import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as TargetOfEnum
 
-class JavaEntityCodeGenerator : EntityCodeGenerator() {
-    override fun getFileSuffix(): String = ".java"
+class KotlinEntityCodeGenerator: EntityCodeGenerator() {
+    override fun getFileSuffix(): String = ".kt"
 
     override fun stringify(entity: GenEntityPropertiesView): String =
-        entity.javaClassStringify()
+        entity.kotlinClassStringify()
 
     override fun stringify(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): String =
-        enum.javaEnumStringify()
+        enum.kotlinEnumStringify()
 
-    private fun GenEntityPropertiesView.javaClassStringify(): String =
-        JavaEntityCodeBuilder().apply {
-            line("package $packagePath;")
+    private fun GenEntityPropertiesView.kotlinClassStringify(): String =
+        EntityCodeBuilder().apply {
+            line("package $packagePath")
 
             separate()
-            lines(importLines()) { "import $it;" }
+            lines(importLines()) { "import $it" }
             separate()
 
             lines(blockComment())
             lines(annotationLines())
-            line("public interface $name {")
+            line("interface $name {")
 
             increaseIndentation()
             properties.joinPartsProduce {
                 lines(it.blockComment())
                 lines(it.annotationLines())
-                line("${it.shortType()} ${it.name}();")
+                line("val ${it.name}: ${it.shortType()}${if (it.typeNotNull) "" else "?"}")
             }
             decreaseIndentation()
 
             line("}")
+
         }.build()
 
-    private fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.javaEnumStringify(): String =
-        JavaEntityCodeBuilder().apply {
-            line("package $packagePath;")
+    private fun TargetOfEnum.kotlinEnumStringify(): String =
+        EntityCodeBuilder().apply {
+            line("package $packagePath")
 
             separate()
-            lines(importLines()) { "import $it;" }
+            lines(importLines()) { "import $it" }
             separate()
 
             lines(blockComment())
             lines(annotationLines())
-            line("public enum $name {")
+            line("enum class $name {")
 
             increaseIndentation()
             items.joinPartsProduce(",\n\n") {

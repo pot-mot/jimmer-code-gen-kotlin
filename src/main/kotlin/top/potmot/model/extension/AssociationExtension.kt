@@ -1,6 +1,6 @@
 package top.potmot.model.extension
 
-import top.potmot.core.meta.createFkName
+import top.potmot.core.database.meta.createFkName
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.dto.GenAssociationMatchView
 import top.potmot.model.dto.GenColumnMatchView

@@ -1,6 +1,8 @@
 package top.potmot.core.entity.generate
 
 import top.potmot.config.GenConfig
+import top.potmot.core.entity.generate.java.JavaEntityCodeGenerator
+import top.potmot.core.entity.generate.kotlin.KotlinEntityCodeGenerator
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as PropertyEnum

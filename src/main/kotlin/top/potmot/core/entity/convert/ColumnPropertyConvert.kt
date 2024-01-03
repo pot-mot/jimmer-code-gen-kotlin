@@ -2,9 +2,9 @@ package top.potmot.core.entity.convert
 
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.GenerationType
-import top.potmot.core.meta.columnType.ColumnTypeMeta
-import top.potmot.core.meta.columnType.getPropertyType
-import top.potmot.core.meta.columnType.getTypeMeta
+import top.potmot.core.database.meta.ColumnTypeMeta
+import top.potmot.core.database.meta.getPropertyType
+import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenProperty

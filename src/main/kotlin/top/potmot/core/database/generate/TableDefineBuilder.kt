@@ -1,16 +1,15 @@
-package top.potmot.core.database.build
+package top.potmot.core.database.generate
 
 import top.potmot.core.entity.convert.clearColumnName
 import top.potmot.core.entity.convert.clearTableName
-import top.potmot.core.meta.ForeignKeyMeta
-import top.potmot.core.meta.MappingTableMeta
-import top.potmot.core.meta.columnType.ColumnTypeDefiner
-import top.potmot.core.meta.columnType.ColumnTypeMeta
-import top.potmot.core.meta.columnType.getTypeMeta
-import top.potmot.core.meta.getAssociations
-import top.potmot.core.meta.reversed
-import top.potmot.core.meta.toFkMeta
-import top.potmot.core.meta.toMappingTableMeta
+import top.potmot.core.database.meta.ForeignKeyMeta
+import top.potmot.core.database.meta.MappingTableMeta
+import top.potmot.core.database.meta.ColumnTypeMeta
+import top.potmot.core.database.meta.getTypeMeta
+import top.potmot.core.database.meta.getAssociations
+import top.potmot.core.database.meta.reversed
+import top.potmot.core.database.meta.toFkMeta
+import top.potmot.core.database.meta.toMappingTableMeta
 import top.potmot.enumeration.AssociationType.MANY_TO_MANY
 import top.potmot.enumeration.AssociationType.MANY_TO_ONE
 import top.potmot.enumeration.AssociationType.ONE_TO_MANY

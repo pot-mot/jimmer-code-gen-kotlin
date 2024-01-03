@@ -1,4 +1,4 @@
-package top.potmot.core.entity.build
+package top.potmot.core.entity.generate
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction

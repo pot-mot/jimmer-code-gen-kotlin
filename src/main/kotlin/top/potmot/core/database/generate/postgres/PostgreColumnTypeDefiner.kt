@@ -1,5 +1,7 @@
-package top.potmot.core.meta.columnType
+package top.potmot.core.database.generate.postgres
 
+import top.potmot.core.database.generate.ColumnTypeDefiner
+import top.potmot.core.database.meta.ColumnTypeMeta
 import java.sql.Types
 
 // https://www.postgresql.org/docs/current/datatype.html

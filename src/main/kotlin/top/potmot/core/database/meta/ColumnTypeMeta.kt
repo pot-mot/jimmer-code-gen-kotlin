@@ -1,4 +1,4 @@
-package top.potmot.core.meta.columnType
+package top.potmot.core.database.meta
 
 import top.potmot.config.GenConfig
 import top.potmot.enumeration.DataSourceType

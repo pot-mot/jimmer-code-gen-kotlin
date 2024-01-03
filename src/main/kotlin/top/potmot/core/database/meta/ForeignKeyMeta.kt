@@ -1,4 +1,4 @@
-package top.potmot.core.meta
+package top.potmot.core.database.meta
 
 import org.babyfish.jimmer.sql.DissociateAction
 import top.potmot.core.entity.convert.clearColumnName

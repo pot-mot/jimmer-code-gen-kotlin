@@ -1,4 +1,4 @@
-package top.potmot.core.meta
+package top.potmot.core.database.meta
 
 import top.potmot.core.entity.convert.clearColumnName
 import top.potmot.core.entity.convert.clearTableComment

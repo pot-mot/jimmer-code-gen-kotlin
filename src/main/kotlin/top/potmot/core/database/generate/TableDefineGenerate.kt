@@ -1,6 +1,8 @@
 package top.potmot.core.database.generate
 
 import top.potmot.config.GenConfig
+import top.potmot.core.database.generate.mysql.MysqlTableDefineGenerator
+import top.potmot.core.database.generate.postgres.PostgreTableDefineGenerator
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenTableAssociationsView
 

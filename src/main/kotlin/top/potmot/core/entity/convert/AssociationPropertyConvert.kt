@@ -4,10 +4,10 @@ import org.babyfish.jimmer.ImmutableObjects.deepClone
 import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.config.GenConfig
-import top.potmot.core.meta.columnType.getPropertyType
-import top.potmot.core.meta.columnType.getTypeMeta
-import top.potmot.core.meta.createMappingTableName
-import top.potmot.core.meta.getAssociations
+import top.potmot.core.database.meta.getPropertyType
+import top.potmot.core.database.meta.getTypeMeta
+import top.potmot.core.database.meta.createMappingTableName
+import top.potmot.core.database.meta.getAssociations
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.AssociationType.MANY_TO_MANY
 import top.potmot.enumeration.AssociationType.MANY_TO_ONE

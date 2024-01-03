@@ -1,5 +1,6 @@
-package top.potmot.core.meta.columnType
+package top.potmot.core.database.generate
 
+import top.potmot.core.database.meta.ColumnTypeMeta
 import top.potmot.error.ColumnTypeException
 
 /**
