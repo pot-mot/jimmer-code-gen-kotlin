@@ -32,7 +32,7 @@ class TestModelToEntity (
         val entityCodes = previewService.previewModelEntity(id, true)
 
         assertEquals(
-            javaResult.trim().replaceSinceTimeComment(),
+            javaResult.trim(),
             entityCodes.toString().trim().replaceSinceTimeComment()
         )
     }
@@ -47,7 +47,7 @@ class TestModelToEntity (
         val entityCodes = previewService.previewModelEntity(id, true)
 
         assertEquals(
-            kotlinResult.trim().replaceSinceTimeComment(),
+            kotlinResult.trim(),
             entityCodes.toString().trim().replaceSinceTimeComment()
         )
     }
@@ -76,7 +76,6 @@ import org.babyfish.jimmer.sql.Table;
 
 /**
  * @author 
- * @since 2024-01-03 02:43:27
  */
 @Entity
 @Table(name = "M_N_TARGET")
@@ -110,7 +109,6 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * @author 
- * @since 2024-01-03 02:43:27
  */
 @Entity
 @Table(name = "O_O_TARGET")
@@ -140,7 +138,6 @@ import org.babyfish.jimmer.sql.Table;
 
 /**
  * @author 
- * @since 2024-01-03 02:43:27
  */
 @Entity
 @Table(name = "O_O_SOURCE")
@@ -172,7 +169,6 @@ import org.babyfish.jimmer.sql.Table;
 
 /**
  * @author 
- * @since 2024-01-03 02:43:27
  */
 @Entity
 @Table(name = "O_M_SOURCE")
@@ -181,7 +177,7 @@ public interface OMSource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id();
     
-    @OneToMany(mappedBy = "sourceId")
+    @OneToMany(mappedBy = "oMSource")
     List<OMTarget> oMTargets();
     
     @IdView("oMTargets")
@@ -200,7 +196,6 @@ import org.babyfish.jimmer.sql.Table;
 
 /**
  * @author 
- * @since 2024-01-03 02:43:27
  */
 @Entity
 @Table(name = "M_O_TARGET")
@@ -230,7 +225,6 @@ import org.babyfish.jimmer.sql.Table;
 
 /**
  * @author 
- * @since 2024-01-03 02:43:27
  */
 @Entity
 @Table(name = "TREE_NODE")
@@ -268,7 +262,6 @@ import org.babyfish.jimmer.sql.Table;
 
 /**
  * @author 
- * @since 2024-01-03 02:43:27
  */
 @Entity
 @Table(name = "M_O_SOURCE")
@@ -301,7 +294,6 @@ import org.babyfish.jimmer.sql.Table;
 
 /**
  * @author 
- * @since 2024-01-03 02:43:27
  */
 @Entity
 @Table(name = "M_N_SOURCE")
@@ -340,7 +332,6 @@ import org.babyfish.jimmer.sql.Table;
 
 /**
  * @author 
- * @since 2024-01-03 02:43:27
  */
 @Entity
 @Table(name = "O_M_TARGET")
@@ -362,7 +353,7 @@ public interface OMTarget {
 )]
     """
 
-    val kotlinResult = """
+    private val kotlinResult = """
 [(top/potmot/model/MNTarget.kt, package top.potmot.model
 
 import org.babyfish.jimmer.sql.Entity
@@ -472,7 +463,7 @@ interface OMSource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long
     
-    @OneToMany(mappedBy = "sourceId")
+    @OneToMany(mappedBy = "oMSource")
     val oMTargets: List<OMTarget>
     
     @IdView("oMTargets")
@@ -642,6 +633,6 @@ interface OMTarget {
     @IdView("oMSource")
     val oMSourceId: Long
 }
-)]   
+)]
     """
 }

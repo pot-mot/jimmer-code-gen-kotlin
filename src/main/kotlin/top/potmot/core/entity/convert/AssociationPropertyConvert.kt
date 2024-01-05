@@ -128,10 +128,12 @@ fun producePropertyWithAssociationAndUniqueIndexes(
                 }
 
                 ONE_TO_MANY -> {
+                    val mappedBy = tableNameToPropertyName(sourceTable.name)
+
                     keyProperty = false
                     setAssociation(
                         outAssociation.associationType,
-                        mappedBy = tableNameToPropertyName(targetColumn.name)
+                        mappedBy = mappedBy
                     )
                 }
             }
