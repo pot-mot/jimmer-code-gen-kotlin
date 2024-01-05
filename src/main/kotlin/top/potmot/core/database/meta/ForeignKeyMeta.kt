@@ -35,6 +35,7 @@ fun ForeignKeyMeta.reversed(): ForeignKeyMeta =
         targetColumnNames,
         sourceTableName,
         sourceColumnNames,
+        name
     )
 
 fun GenAssociation.getMeta(): AssociationMeta =

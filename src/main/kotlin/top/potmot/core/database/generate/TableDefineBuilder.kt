@@ -129,11 +129,9 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         meta: ForeignKeyMeta
     ): String =
         buildString {
-            append(
-                "FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { it.escape() }}) " +
-                        "REFERENCES ${meta.targetTableName.escape()} (${meta.targetColumnNames.joinToString(", ") { it.escape() }})"
-            )
-            append(" ${meta.onDelete} ${meta.onUpdate}")
+            appendLine("    FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { it.escape() }})")
+            appendLine("  REFERENCES ${meta.targetTableName.escape()} (${meta.targetColumnNames.joinToString(", ") { it.escape() }})")
+            append("  ${meta.onDelete} ${meta.onUpdate}")
         }
 
 

@@ -160,17 +160,25 @@ CREATE TABLE `o_m_target` (
 
 
 ALTER TABLE `o_o_source` ADD CONSTRAINT `fk_o_o_source_target_id_o_o_target_id` 
-FOREIGN KEY (`target_id`) REFERENCES `o_o_target` (`id`)  ON UPDATE RESTRICT;
+    FOREIGN KEY (`target_id`)
+  REFERENCES `o_o_target` (`id`)
+   ON UPDATE RESTRICT;
 
-ALTER TABLE `o_m_target` ADD CONSTRAINT `fk_o_m_target_source_id_o_m_source_id` 
-FOREIGN KEY (`source_id`) REFERENCES `o_m_source` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE `o_m_target` ADD CONSTRAINT `fk_o_m_source_id_o_m_target_source_id` 
+    FOREIGN KEY (`source_id`)
+  REFERENCES `o_m_source` (`id`)
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 
 
 ALTER TABLE `tree_node` ADD CONSTRAINT `fk_tree_node_parent_id_tree_node_id` 
-FOREIGN KEY (`parent_id`) REFERENCES `tree_node` (`id`)  ON UPDATE RESTRICT;
+    FOREIGN KEY (`parent_id`)
+  REFERENCES `tree_node` (`id`)
+   ON UPDATE RESTRICT;
 
 ALTER TABLE `m_o_source` ADD CONSTRAINT `fk_m_o_source_source_id_m_o_target_id` 
-FOREIGN KEY (`source_id`) REFERENCES `m_o_target` (`id`)  ON UPDATE RESTRICT;
+    FOREIGN KEY (`source_id`)
+  REFERENCES `m_o_target` (`id`)
+   ON UPDATE RESTRICT;
 
 DROP TABLE IF EXISTS `m_n_source_m_n_target_mapping`;
 
@@ -186,10 +194,14 @@ CREATE TABLE `m_n_source_m_n_target_mapping` (
 ALTER TABLE `m_n_source_m_n_target_mapping` ADD CONSTRAINT `pk_m_n_source_m_n_target_mapping` PRIMARY KEY (`m_n_source_id`,`m_n_target_id`);
 
 ALTER TABLE `m_n_source_m_n_target_mapping` ADD CONSTRAINT `fk_m_n_source_id_m_n_target_id_SOURCE` 
-FOREIGN KEY (`m_n_source_id`) REFERENCES `m_n_source` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+    FOREIGN KEY (`m_n_source_id`)
+  REFERENCES `m_n_source` (`id`)
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 
 ALTER TABLE `m_n_source_m_n_target_mapping` ADD CONSTRAINT `fk_m_n_source_id_m_n_target_id_TARGET` 
-FOREIGN KEY (`m_n_target_id`) REFERENCES `m_n_target` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+    FOREIGN KEY (`m_n_target_id`)
+  REFERENCES `m_n_target` (`id`)
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 
 
 ), (m_n_target.sql, DROP TABLE IF EXISTS `m_n_target`;
@@ -227,7 +239,9 @@ CREATE TABLE `o_o_source` (
   ROW_FORMAT = Dynamic;
 
 ALTER TABLE `o_o_source` ADD CONSTRAINT `fk_o_o_source_target_id_o_o_target_id` 
-FOREIGN KEY (`target_id`) REFERENCES `o_o_target` (`id`)  ON UPDATE RESTRICT;
+    FOREIGN KEY (`target_id`)
+  REFERENCES `o_o_target` (`id`)
+   ON UPDATE RESTRICT;
 ), (o_m_source.sql, DROP TABLE IF EXISTS `o_m_source`;
 
 CREATE TABLE `o_m_source` (
@@ -239,8 +253,10 @@ CREATE TABLE `o_m_source` (
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-ALTER TABLE `o_m_target` ADD CONSTRAINT `fk_o_m_target_source_id_o_m_source_id` 
-FOREIGN KEY (`source_id`) REFERENCES `o_m_source` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE `o_m_target` ADD CONSTRAINT `fk_o_m_source_id_o_m_target_source_id` 
+    FOREIGN KEY (`source_id`)
+  REFERENCES `o_m_source` (`id`)
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 ), (m_o_target.sql, DROP TABLE IF EXISTS `m_o_target`;
 
 CREATE TABLE `m_o_target` (
@@ -265,7 +281,9 @@ CREATE TABLE `tree_node` (
   ROW_FORMAT = Dynamic;
 
 ALTER TABLE `tree_node` ADD CONSTRAINT `fk_tree_node_parent_id_tree_node_id` 
-FOREIGN KEY (`parent_id`) REFERENCES `tree_node` (`id`)  ON UPDATE RESTRICT;
+    FOREIGN KEY (`parent_id`)
+  REFERENCES `tree_node` (`id`)
+   ON UPDATE RESTRICT;
 ), (m_o_source.sql, DROP TABLE IF EXISTS `m_o_source`;
 
 CREATE TABLE `m_o_source` (
@@ -279,7 +297,9 @@ CREATE TABLE `m_o_source` (
   ROW_FORMAT = Dynamic;
 
 ALTER TABLE `m_o_source` ADD CONSTRAINT `fk_m_o_source_source_id_m_o_target_id` 
-FOREIGN KEY (`source_id`) REFERENCES `m_o_target` (`id`)  ON UPDATE RESTRICT;
+    FOREIGN KEY (`source_id`)
+  REFERENCES `m_o_target` (`id`)
+   ON UPDATE RESTRICT;
 ), (m_n_source.sql, DROP TABLE IF EXISTS `m_n_source`;
 
 CREATE TABLE `m_n_source` (
@@ -305,10 +325,14 @@ CREATE TABLE `m_n_source_m_n_target_mapping` (
 ALTER TABLE `m_n_source_m_n_target_mapping` ADD CONSTRAINT `pk_m_n_source_m_n_target_mapping` PRIMARY KEY (`m_n_source_id`,`m_n_target_id`);
 
 ALTER TABLE `m_n_source_m_n_target_mapping` ADD CONSTRAINT `fk_m_n_source_id_m_n_target_id_SOURCE` 
-FOREIGN KEY (`m_n_source_id`) REFERENCES `m_n_source` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+    FOREIGN KEY (`m_n_source_id`)
+  REFERENCES `m_n_source` (`id`)
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 
 ALTER TABLE `m_n_source_m_n_target_mapping` ADD CONSTRAINT `fk_m_n_source_id_m_n_target_id_TARGET` 
-FOREIGN KEY (`m_n_target_id`) REFERENCES `m_n_target` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+    FOREIGN KEY (`m_n_target_id`)
+  REFERENCES `m_n_target` (`id`)
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 ), (o_m_target.sql, DROP TABLE IF EXISTS `o_m_target`;
 
 CREATE TABLE `o_m_target` (
@@ -321,8 +345,8 @@ CREATE TABLE `o_m_target` (
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-)]
-        """
+)] 
+    """
 
     private val postgresResult = """
 [(all-tables.sql, DROP TABLE IF EXISTS "m_n_target" CASCADE;
@@ -398,17 +422,25 @@ CREATE TABLE "o_m_target" (
 
 
 ALTER TABLE "o_o_source" ADD CONSTRAINT "fk_o_o_source_target_id_o_o_target_id" 
-FOREIGN KEY ("target_id") REFERENCES "o_o_target" ("id")  ON UPDATE RESTRICT;
+    FOREIGN KEY ("target_id")
+  REFERENCES "o_o_target" ("id")
+   ON UPDATE RESTRICT;
 
-ALTER TABLE "o_m_target" ADD CONSTRAINT "fk_o_m_target_source_id_o_m_source_id" 
-FOREIGN KEY ("source_id") REFERENCES "o_m_source" ("id") ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE "o_m_target" ADD CONSTRAINT "fk_o_m_source_id_o_m_target_source_id" 
+    FOREIGN KEY ("source_id")
+  REFERENCES "o_m_source" ("id")
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 
 
 ALTER TABLE "tree_node" ADD CONSTRAINT "fk_tree_node_parent_id_tree_node_id" 
-FOREIGN KEY ("parent_id") REFERENCES "tree_node" ("id")  ON UPDATE RESTRICT;
+    FOREIGN KEY ("parent_id")
+  REFERENCES "tree_node" ("id")
+   ON UPDATE RESTRICT;
 
 ALTER TABLE "m_o_source" ADD CONSTRAINT "fk_m_o_source_source_id_m_o_target_id" 
-FOREIGN KEY ("source_id") REFERENCES "m_o_target" ("id")  ON UPDATE RESTRICT;
+    FOREIGN KEY ("source_id")
+  REFERENCES "m_o_target" ("id")
+   ON UPDATE RESTRICT;
 
 DROP TABLE IF EXISTS "m_n_source_m_n_target_mapping" CASCADE;
 
@@ -420,10 +452,14 @@ CREATE TABLE "m_n_source_m_n_target_mapping" (
 ALTER TABLE "m_n_source_m_n_target_mapping" ADD CONSTRAINT "pk_m_n_source_m_n_target_mapping" PRIMARY KEY ("m_n_source_id","m_n_target_id");
 
 ALTER TABLE "m_n_source_m_n_target_mapping" ADD CONSTRAINT "fk_m_n_source_id_m_n_target_id_SOURCE" 
-FOREIGN KEY ("m_n_source_id") REFERENCES "m_n_source" ("id") ON DELETE CASCADE ON UPDATE RESTRICT;
+    FOREIGN KEY ("m_n_source_id")
+  REFERENCES "m_n_source" ("id")
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 
 ALTER TABLE "m_n_source_m_n_target_mapping" ADD CONSTRAINT "fk_m_n_source_id_m_n_target_id_TARGET" 
-FOREIGN KEY ("m_n_target_id") REFERENCES "m_n_target" ("id") ON DELETE CASCADE ON UPDATE RESTRICT;
+    FOREIGN KEY ("m_n_target_id")
+  REFERENCES "m_n_target" ("id")
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 
 COMMENT ON TABLE "m_n_source_m_n_target_mapping" IS '与的映射关系表';
 
@@ -455,7 +491,9 @@ CREATE TABLE "o_o_source" (
 
 
 ALTER TABLE "o_o_source" ADD CONSTRAINT "fk_o_o_source_target_id_o_o_target_id" 
-FOREIGN KEY ("target_id") REFERENCES "o_o_target" ("id")  ON UPDATE RESTRICT;
+    FOREIGN KEY ("target_id")
+  REFERENCES "o_o_target" ("id")
+   ON UPDATE RESTRICT;
 ), (o_m_source.sql, DROP TABLE IF EXISTS "o_m_source" CASCADE;
 
 CREATE TABLE "o_m_source" (
@@ -464,8 +502,10 @@ CREATE TABLE "o_m_source" (
 );
 
 
-ALTER TABLE "o_m_target" ADD CONSTRAINT "fk_o_m_target_source_id_o_m_source_id" 
-FOREIGN KEY ("source_id") REFERENCES "o_m_source" ("id") ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE "o_m_target" ADD CONSTRAINT "fk_o_m_source_id_o_m_target_source_id" 
+    FOREIGN KEY ("source_id")
+  REFERENCES "o_m_source" ("id")
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 ), (m_o_target.sql, DROP TABLE IF EXISTS "m_o_target" CASCADE;
 
 CREATE TABLE "m_o_target" (
@@ -484,7 +524,9 @@ CREATE TABLE "tree_node" (
 
 
 ALTER TABLE "tree_node" ADD CONSTRAINT "fk_tree_node_parent_id_tree_node_id" 
-FOREIGN KEY ("parent_id") REFERENCES "tree_node" ("id")  ON UPDATE RESTRICT;
+    FOREIGN KEY ("parent_id")
+  REFERENCES "tree_node" ("id")
+   ON UPDATE RESTRICT;
 ), (m_o_source.sql, DROP TABLE IF EXISTS "m_o_source" CASCADE;
 
 CREATE TABLE "m_o_source" (
@@ -495,7 +537,9 @@ CREATE TABLE "m_o_source" (
 
 
 ALTER TABLE "m_o_source" ADD CONSTRAINT "fk_m_o_source_source_id_m_o_target_id" 
-FOREIGN KEY ("source_id") REFERENCES "m_o_target" ("id")  ON UPDATE RESTRICT;
+    FOREIGN KEY ("source_id")
+  REFERENCES "m_o_target" ("id")
+   ON UPDATE RESTRICT;
 ), (m_n_source.sql, DROP TABLE IF EXISTS "m_n_source" CASCADE;
 
 CREATE TABLE "m_n_source" (
@@ -515,10 +559,14 @@ CREATE TABLE "m_n_source_m_n_target_mapping" (
 ALTER TABLE "m_n_source_m_n_target_mapping" ADD CONSTRAINT "pk_m_n_source_m_n_target_mapping" PRIMARY KEY ("m_n_source_id","m_n_target_id");
 
 ALTER TABLE "m_n_source_m_n_target_mapping" ADD CONSTRAINT "fk_m_n_source_id_m_n_target_id_SOURCE" 
-FOREIGN KEY ("m_n_source_id") REFERENCES "m_n_source" ("id") ON DELETE CASCADE ON UPDATE RESTRICT;
+    FOREIGN KEY ("m_n_source_id")
+  REFERENCES "m_n_source" ("id")
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 
 ALTER TABLE "m_n_source_m_n_target_mapping" ADD CONSTRAINT "fk_m_n_source_id_m_n_target_id_TARGET" 
-FOREIGN KEY ("m_n_target_id") REFERENCES "m_n_target" ("id") ON DELETE CASCADE ON UPDATE RESTRICT;
+    FOREIGN KEY ("m_n_target_id")
+  REFERENCES "m_n_target" ("id")
+  ON DELETE CASCADE ON UPDATE RESTRICT;
 
 COMMENT ON TABLE "m_n_source_m_n_target_mapping" IS '与的映射关系表';
 ), (o_m_target.sql, DROP TABLE IF EXISTS "o_m_target" CASCADE;
@@ -530,6 +578,6 @@ CREATE TABLE "o_m_target" (
 );
 
 
-)]
+)] 
     """
 }
