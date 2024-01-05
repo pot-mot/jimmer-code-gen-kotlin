@@ -1,6 +1,8 @@
 package top.potmot.core.entity.convert
 
 import top.potmot.config.GenConfig
+import top.potmot.core.database.generate.getColumnTypeDefiner
+import top.potmot.core.database.meta.ColumnTypeMeta
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.dto.GenTypeMappingView
@@ -77,7 +79,14 @@ private fun mappingPropertyType(
             continue
         }
 
-        val matchResult = Regex(typeMapping.typeExpression).matches(databaseTypeString)
+        var matchResult: Boolean
+
+        try {
+            val regex = Regex(typeMapping.typeExpression)
+            matchResult = regex.matches(databaseTypeString)
+        } catch (e: java.util.regex.PatternSyntaxException) {
+            return null
+        }
 
         if (matchResult) {
             return typeMapping.propertyType
@@ -98,18 +107,14 @@ fun getPropertyType(
     }
 
 fun getPropertyType (
-    typeCode: Int,
-    type: String,
-    displaySize: Long,
-    numericPrecision: Long,
-    typeNotNull: Boolean,
+    typeMeta: ColumnTypeMeta,
     dataSourceType: DataSourceType = GenConfig.dataSourceType,
     language: GenLanguage = GenConfig.language,
     typeMappings: List<GenTypeMappingView> = emptyList(),
 ): String =
     mappingPropertyType(
-        "${type}(${displaySize},${numericPrecision})",
+        dataSourceType.getColumnTypeDefiner().getTypeDefine(typeMeta),
         typeMappings,
         dataSourceType,
         language,
-    ) ?: getPropertyType(typeCode, typeNotNull, language) ?: type
+    ) ?: getPropertyType(typeMeta.typeCode, typeMeta.typeNotNull, language) ?: typeMeta.type

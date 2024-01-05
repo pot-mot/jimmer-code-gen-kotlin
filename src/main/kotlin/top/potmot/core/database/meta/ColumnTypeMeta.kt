@@ -25,11 +25,7 @@ fun ColumnTypeMeta.getPropertyType (
     typeMappings: List<GenTypeMappingView> = emptyList(),
 ): String =
     top.potmot.core.entity.convert.getPropertyType(
-        typeCode,
-        type,
-        displaySize,
-        numericPrecision,
-        typeNotNull,
+        this,
         dataSourceType,
         language,
         typeMappings,
