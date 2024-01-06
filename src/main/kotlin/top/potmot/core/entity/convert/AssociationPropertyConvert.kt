@@ -18,6 +18,7 @@ import top.potmot.model.GenPropertyDraft
 import top.potmot.model.copy
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.utils.identifier.IdentifierFilter
+import top.potmot.utils.string.changeCase
 import top.potmot.utils.string.toPlural
 import top.potmot.utils.string.toSingular
 
@@ -381,6 +382,3 @@ fun createIdViewProperty(
         this.keyProperty = false
     }
 }
-
-private fun String.changeCase(): String =
-    this.let { if (GenConfig.lowerCaseName) lowercase() else uppercase() }

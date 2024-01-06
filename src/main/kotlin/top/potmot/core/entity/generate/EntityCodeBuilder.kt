@@ -31,7 +31,7 @@ open class EntityCodeBuilder(
         "@Table(name = \"${table.schema?.name?.let { "${identifierFilter.filterIdentifier(it).changeCase()}." } ?: ""}${identifierFilter.filterIdentifier(table.name).changeCase()}\")"
 
     open fun GenEntityPropertiesView.TargetOf_properties.columnAnnotation(): String? =
-        column?.takeUnless { idView || !associationAnnotation.isNullOrBlank() }?.let { "@Column(name = \"${it.name.changeCase()}\")" }
+        column?.takeUnless { idView || !associationAnnotation.isNullOrBlank() }?.let { "@Column(name = \"${identifierFilter.filterIdentifier(it.name).changeCase()}\")" }
 
     open fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3.annotation(enumType: EnumType?): String =
         when (enumType) {

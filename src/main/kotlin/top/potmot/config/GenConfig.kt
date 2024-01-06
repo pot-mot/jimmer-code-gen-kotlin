@@ -40,7 +40,7 @@ object GenConfig {
     var tableAnnotation: Boolean = true
 
     /** 是否生成 Column 注释 */
-    var columnAnnotation: Boolean = false
+    var columnAnnotation: Boolean = true
 
     /** 是否生成 JoinTable 注释 */
     var joinTableAnnotation: Boolean = true

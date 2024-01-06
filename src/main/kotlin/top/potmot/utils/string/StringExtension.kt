@@ -1,5 +1,7 @@
 package top.potmot.utils.string
 
+import top.potmot.config.GenConfig
+
 fun String.startsWithAny(prefixes: Collection<String>): String? {
     for (prefix in prefixes) {
         if (startsWith(prefix)) {
@@ -80,3 +82,9 @@ fun String.toPlural(): String =
  */
 fun String.toSingular(): String =
     EnglishWordUtil.singularize(this)
+
+/**
+ * 根据全局配置的大小写进行切换
+ */
+fun String.changeCase(): String =
+    this.let { if (GenConfig.lowerCaseName) lowercase() else uppercase() }

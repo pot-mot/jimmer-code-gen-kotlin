@@ -18,6 +18,7 @@ import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.extension.pkColumns
 import top.potmot.utils.identifier.IdentifierFilter
+import top.potmot.utils.string.changeCase
 import top.potmot.utils.template.TemplateBuilder
 
 abstract class TableDefineBuilder(
@@ -30,13 +31,16 @@ abstract class TableDefineBuilder(
     open fun getColumnTypeDefine(typeMeta: ColumnTypeMeta): String =
         getColumnTypeDefiner().getTypeDefine(typeMeta)
 
+    fun produceIdentifer(identifer: String): String =
+        identifierFilter.filterIdentifier(identifer).changeCase().escape()
+
     open fun createTable(
         name: String,
         lines: List<String>,
         append: String = ""
     ): String =
         buildString {
-            append("CREATE TABLE ${identifierFilter.filterIdentifier(name).escape()} (\n")
+            append("CREATE TABLE ${produceIdentifer(name)} (\n")
             append("    ${lines.joinToString(",\n    ")}\n")
             append(")${append}")
         }
@@ -45,23 +49,21 @@ abstract class TableDefineBuilder(
         name: String,
         append: String = ""
     ): String =
-        "DROP TABLE IF EXISTS ${
-            identifierFilter.filterIdentifier(name).escape()
-        }${if (append.isBlank()) "" else " $append"}"
+        "DROP TABLE IF EXISTS ${produceIdentifer(name)}${if (append.isBlank()) "" else " $append"}"
 
     fun alterTable(
         name: String
     ): String =
-        "ALTER TABLE ${identifierFilter.filterIdentifier(name).escape()} "
+        "ALTER TABLE ${produceIdentifer(name)} "
 
     open fun createPkLine(
         table: GenTableAssociationsView,
     ): String =
-        pkDefine(table.pkColumns().map { it.name })
+        pkDefine(table.pkColumns().map { it.name.changeCase() })
 
     open fun columnStringify(column: GenTableAssociationsView.TargetOf_columns): String =
         buildString {
-            append(column.name.escape())
+            append(produceIdentifer(column.name))
             append(' ')
             append(getColumnTypeDefine(column.getTypeMeta()))
 
@@ -125,19 +127,19 @@ abstract class TableDefineBuilder(
         tableName: String,
         constraintName: String
     ): String =
-        "${alterTable(tableName)}ADD CONSTRAINT ${identifierFilter.filterIdentifier(constraintName).escape()} "
+        "${alterTable(tableName)}ADD CONSTRAINT ${produceIdentifer(constraintName)} "
 
     open fun pkDefine(
         columnNames: List<String>
     ): String =
-        "PRIMARY KEY (${columnNames.joinToString(",") { it.escape() }})"
+        "PRIMARY KEY (${columnNames.joinToString(",") { produceIdentifer(it) }})"
 
     open fun fkDefine(
         meta: ForeignKeyMeta
     ): String =
         buildString {
-            appendLine("    FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { it.escape() }})")
-            appendLine("  REFERENCES ${meta.targetTableName.escape()} (${meta.targetColumnNames.joinToString(", ") { it.escape() }})")
+            appendLine("    FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { produceIdentifer(it) }})")
+            appendLine("  REFERENCES ${produceIdentifer(meta.targetTableName)} (${meta.targetColumnNames.joinToString(", ") { produceIdentifer(it) }})")
             append("  ${meta.onDelete} ${meta.onUpdate}")
         }
 
@@ -206,9 +208,9 @@ abstract class TableDefineBuilder(
         unique: Boolean = false,
         name: String = "${if (unique) "u" else ""}idx_${tableName.clearTableName()}_${columnNames.joinToString("_") { it.clearColumnName() }}"
     ): String {
-        return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${identifierFilter.filterIdentifier(name).escape()} ON ${
-            tableName.escape()
-        } (${columnNames.joinToString(", ") { it.escape() }})"
+        return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${produceIdentifer(name)} ON ${
+            produceIdentifer(tableName)
+        } (${columnNames.joinToString(", ") { produceIdentifer(it) }})"
     }
 
     /**

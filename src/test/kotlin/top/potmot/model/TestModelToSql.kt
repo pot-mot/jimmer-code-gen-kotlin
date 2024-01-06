@@ -62,95 +62,95 @@ class TestModelToSql (
     )
 
     private val mysqlResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS `m_n_target`;
-DROP TABLE IF EXISTS `o_o_target`;
-DROP TABLE IF EXISTS `o_o_source`;
-DROP TABLE IF EXISTS `o_m_source`;
-DROP TABLE IF EXISTS `m_o_target`;
-DROP TABLE IF EXISTS `tree_node`;
-DROP TABLE IF EXISTS `m_o_source`;
-DROP TABLE IF EXISTS `m_n_source`;
-DROP TABLE IF EXISTS `o_m_target`;
+[(all-tables.sql, DROP TABLE IF EXISTS `M_N_TARGET`;
+DROP TABLE IF EXISTS `O_O_TARGET`;
+DROP TABLE IF EXISTS `O_O_SOURCE`;
+DROP TABLE IF EXISTS `O_M_SOURCE`;
+DROP TABLE IF EXISTS `M_O_TARGET`;
+DROP TABLE IF EXISTS `TREE_NODE`;
+DROP TABLE IF EXISTS `M_O_SOURCE`;
+DROP TABLE IF EXISTS `M_N_SOURCE`;
+DROP TABLE IF EXISTS `O_M_TARGET`;
 
-CREATE TABLE `m_n_target` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (`id`)
+CREATE TABLE `M_N_TARGET` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-CREATE TABLE `o_o_target` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (`id`)
+CREATE TABLE `O_O_TARGET` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-CREATE TABLE `o_o_source` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    `target_id` BIGINT(0) NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE `O_O_SOURCE` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    `TARGET_ID` BIGINT(0) NOT NULL,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-CREATE TABLE `o_m_source` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (`id`)
+CREATE TABLE `O_M_SOURCE` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-CREATE TABLE `m_o_target` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (`id`)
+CREATE TABLE `M_O_TARGET` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-CREATE TABLE `tree_node` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    `parent_id` BIGINT(0) NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE `TREE_NODE` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    `PARENT_ID` BIGINT(0) NOT NULL,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-CREATE TABLE `m_o_source` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    `source_id` BIGINT(0) NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE `M_O_SOURCE` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    `SOURCE_ID` BIGINT(0) NOT NULL,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-CREATE TABLE `m_n_source` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (`id`)
+CREATE TABLE `M_N_SOURCE` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-CREATE TABLE `o_m_target` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    `source_id` BIGINT(0) NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE `O_M_TARGET` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    `SOURCE_ID` BIGINT(0) NOT NULL,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -159,29 +159,29 @@ CREATE TABLE `o_m_target` (
 
 
 
-ALTER TABLE `o_o_source` ADD CONSTRAINT `fk_o_o_source_target_id_o_o_target_id` 
-    FOREIGN KEY (`target_id`)
-  REFERENCES `o_o_target` (`id`)
+ALTER TABLE `O_O_SOURCE` ADD CONSTRAINT `FK_O_O_SOURCE_TARGET_ID_O_O_TARGET_ID` 
+    FOREIGN KEY (`TARGET_ID`)
+  REFERENCES `O_O_TARGET` (`ID`)
    ON UPDATE RESTRICT;
 
-ALTER TABLE `o_m_target` ADD CONSTRAINT `fk_o_m_source_id_o_m_target_source_id` 
-    FOREIGN KEY (`source_id`)
-  REFERENCES `o_m_source` (`id`)
+ALTER TABLE `O_M_TARGET` ADD CONSTRAINT `FK_O_M_SOURCE_ID_O_M_TARGET_SOURCE_ID` 
+    FOREIGN KEY (`SOURCE_ID`)
+  REFERENCES `O_M_SOURCE` (`ID`)
   ON DELETE CASCADE ON UPDATE RESTRICT;
 
 
-ALTER TABLE `tree_node` ADD CONSTRAINT `fk_tree_node_parent_id_tree_node_id` 
-    FOREIGN KEY (`parent_id`)
-  REFERENCES `tree_node` (`id`)
+ALTER TABLE `TREE_NODE` ADD CONSTRAINT `FK_TREE_NODE_PARENT_ID_TREE_NODE_ID` 
+    FOREIGN KEY (`PARENT_ID`)
+  REFERENCES `TREE_NODE` (`ID`)
    ON UPDATE RESTRICT;
 
-ALTER TABLE `m_o_source` ADD CONSTRAINT `fk_m_o_source_source_id_m_o_target_id` 
-    FOREIGN KEY (`source_id`)
-  REFERENCES `m_o_target` (`id`)
+ALTER TABLE `M_O_SOURCE` ADD CONSTRAINT `FK_M_O_SOURCE_SOURCE_ID_M_O_TARGET_ID` 
+    FOREIGN KEY (`SOURCE_ID`)
+  REFERENCES `M_O_TARGET` (`ID`)
    ON UPDATE RESTRICT;
 
-DROP TABLE IF EXISTS `many_to_many_source__to__many_to_many_target__mapping__319b0383`;
-CREATE TABLE `many_to_many_source__to__many_to_many_target__mapping__319b0383` (
+DROP TABLE IF EXISTS `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383`;
+CREATE TABLE `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383` (
     m_n_source_id BIGINT NOT NULL,
     m_n_target_id BIGINT NOT NULL
 )
@@ -189,79 +189,22 @@ CREATE TABLE `many_to_many_source__to__many_to_many_target__mapping__319b0383` (
   CHARACTER SET = utf8mb4
   COMMENT = '与的映射关系表'
   ROW_FORMAT = Dynamic;
-ALTER TABLE `many_to_many_source__to__many_to_many_target__mapping__319b0383` ADD CONSTRAINT `pk_many_to_many_source__to__many_to_many_target__mappi_79b690fb` PRIMARY KEY (`m_n_source_id`,`m_n_target_id`);
-ALTER TABLE `many_to_many_source__to__many_to_many_target__mapping__319b0383` ADD CONSTRAINT `many_to_many_source__to__many_to_many_target__mapping__7f4f12c7` 
-    FOREIGN KEY (`m_n_source_id`)
-  REFERENCES `m_n_source` (`id`)
+ALTER TABLE `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383` ADD CONSTRAINT `PK_MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPI_79B690FB` PRIMARY KEY (`M_N_SOURCE_ID`,`M_N_TARGET_ID`);
+ALTER TABLE `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383` ADD CONSTRAINT `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__7F4F12C7` 
+    FOREIGN KEY (`M_N_SOURCE_ID`)
+  REFERENCES `M_N_SOURCE` (`ID`)
   ON DELETE CASCADE ON UPDATE RESTRICT;
-ALTER TABLE `many_to_many_source__to__many_to_many_target__mapping__319b0383` ADD CONSTRAINT `many_to_many_source__to__many_to_many_target__mapping__2beea1bb` 
-    FOREIGN KEY (`m_n_target_id`)
-  REFERENCES `m_n_target` (`id`)
-  ON DELETE CASCADE ON UPDATE RESTRICT;
-
-
-), (m_n_target.sql, DROP TABLE IF EXISTS `m_n_target`;
-
-CREATE TABLE `m_n_target` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (`id`)
-)
-  ENGINE = InnoDB
-  CHARACTER SET = utf8mb4
-  COMMENT = ''
-  ROW_FORMAT = Dynamic;
-
-
-), (o_o_target.sql, DROP TABLE IF EXISTS `o_o_target`;
-
-CREATE TABLE `o_o_target` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (`id`)
-)
-  ENGINE = InnoDB
-  CHARACTER SET = utf8mb4
-  COMMENT = ''
-  ROW_FORMAT = Dynamic;
-
-
-), (o_o_source.sql, DROP TABLE IF EXISTS `o_o_source`;
-
-CREATE TABLE `o_o_source` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    `target_id` BIGINT(0) NOT NULL,
-    PRIMARY KEY (`id`)
-)
-  ENGINE = InnoDB
-  CHARACTER SET = utf8mb4
-  COMMENT = ''
-  ROW_FORMAT = Dynamic;
-
-ALTER TABLE `o_o_source` ADD CONSTRAINT `fk_o_o_source_target_id_o_o_target_id` 
-    FOREIGN KEY (`target_id`)
-  REFERENCES `o_o_target` (`id`)
-   ON UPDATE RESTRICT;
-
-), (o_m_source.sql, DROP TABLE IF EXISTS `o_m_source`;
-
-CREATE TABLE `o_m_source` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (`id`)
-)
-  ENGINE = InnoDB
-  CHARACTER SET = utf8mb4
-  COMMENT = ''
-  ROW_FORMAT = Dynamic;
-
-ALTER TABLE `o_m_target` ADD CONSTRAINT `fk_o_m_source_id_o_m_target_source_id` 
-    FOREIGN KEY (`source_id`)
-  REFERENCES `o_m_source` (`id`)
+ALTER TABLE `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383` ADD CONSTRAINT `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__2BEEA1BB` 
+    FOREIGN KEY (`M_N_TARGET_ID`)
+  REFERENCES `M_N_TARGET` (`ID`)
   ON DELETE CASCADE ON UPDATE RESTRICT;
 
-), (m_o_target.sql, DROP TABLE IF EXISTS `m_o_target`;
 
-CREATE TABLE `m_o_target` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (`id`)
+), (m_n_target.sql, DROP TABLE IF EXISTS `M_N_TARGET`;
+
+CREATE TABLE `M_N_TARGET` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -269,53 +212,110 @@ CREATE TABLE `m_o_target` (
   ROW_FORMAT = Dynamic;
 
 
-), (tree_node.sql, DROP TABLE IF EXISTS `tree_node`;
+), (o_o_target.sql, DROP TABLE IF EXISTS `O_O_TARGET`;
 
-CREATE TABLE `tree_node` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    `parent_id` BIGINT(0) NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE `O_O_TARGET` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-ALTER TABLE `tree_node` ADD CONSTRAINT `fk_tree_node_parent_id_tree_node_id` 
-    FOREIGN KEY (`parent_id`)
-  REFERENCES `tree_node` (`id`)
+
+), (o_o_source.sql, DROP TABLE IF EXISTS `O_O_SOURCE`;
+
+CREATE TABLE `O_O_SOURCE` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    `TARGET_ID` BIGINT(0) NOT NULL,
+    PRIMARY KEY (`ID`)
+)
+  ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COMMENT = ''
+  ROW_FORMAT = Dynamic;
+
+ALTER TABLE `O_O_SOURCE` ADD CONSTRAINT `FK_O_O_SOURCE_TARGET_ID_O_O_TARGET_ID` 
+    FOREIGN KEY (`TARGET_ID`)
+  REFERENCES `O_O_TARGET` (`ID`)
    ON UPDATE RESTRICT;
 
-), (m_o_source.sql, DROP TABLE IF EXISTS `m_o_source`;
+), (o_m_source.sql, DROP TABLE IF EXISTS `O_M_SOURCE`;
 
-CREATE TABLE `m_o_source` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    `source_id` BIGINT(0) NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE `O_M_SOURCE` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-ALTER TABLE `m_o_source` ADD CONSTRAINT `fk_m_o_source_source_id_m_o_target_id` 
-    FOREIGN KEY (`source_id`)
-  REFERENCES `m_o_target` (`id`)
+ALTER TABLE `O_M_TARGET` ADD CONSTRAINT `FK_O_M_SOURCE_ID_O_M_TARGET_SOURCE_ID` 
+    FOREIGN KEY (`SOURCE_ID`)
+  REFERENCES `O_M_SOURCE` (`ID`)
+  ON DELETE CASCADE ON UPDATE RESTRICT;
+
+), (m_o_target.sql, DROP TABLE IF EXISTS `M_O_TARGET`;
+
+CREATE TABLE `M_O_TARGET` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`ID`)
+)
+  ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COMMENT = ''
+  ROW_FORMAT = Dynamic;
+
+
+), (tree_node.sql, DROP TABLE IF EXISTS `TREE_NODE`;
+
+CREATE TABLE `TREE_NODE` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    `PARENT_ID` BIGINT(0) NOT NULL,
+    PRIMARY KEY (`ID`)
+)
+  ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COMMENT = ''
+  ROW_FORMAT = Dynamic;
+
+ALTER TABLE `TREE_NODE` ADD CONSTRAINT `FK_TREE_NODE_PARENT_ID_TREE_NODE_ID` 
+    FOREIGN KEY (`PARENT_ID`)
+  REFERENCES `TREE_NODE` (`ID`)
    ON UPDATE RESTRICT;
 
-), (m_n_source.sql, DROP TABLE IF EXISTS `m_n_source`;
+), (m_o_source.sql, DROP TABLE IF EXISTS `M_O_SOURCE`;
 
-CREATE TABLE `m_n_source` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY (`id`)
+CREATE TABLE `M_O_SOURCE` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    `SOURCE_ID` BIGINT(0) NOT NULL,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-DROP TABLE IF EXISTS `many_to_many_source__to__many_to_many_target__mapping__319b0383`;
-CREATE TABLE `many_to_many_source__to__many_to_many_target__mapping__319b0383` (
+ALTER TABLE `M_O_SOURCE` ADD CONSTRAINT `FK_M_O_SOURCE_SOURCE_ID_M_O_TARGET_ID` 
+    FOREIGN KEY (`SOURCE_ID`)
+  REFERENCES `M_O_TARGET` (`ID`)
+   ON UPDATE RESTRICT;
+
+), (m_n_source.sql, DROP TABLE IF EXISTS `M_N_SOURCE`;
+
+CREATE TABLE `M_N_SOURCE` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`ID`)
+)
+  ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COMMENT = ''
+  ROW_FORMAT = Dynamic;
+
+DROP TABLE IF EXISTS `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383`;
+CREATE TABLE `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383` (
     m_n_source_id BIGINT NOT NULL,
     m_n_target_id BIGINT NOT NULL
 )
@@ -323,22 +323,22 @@ CREATE TABLE `many_to_many_source__to__many_to_many_target__mapping__319b0383` (
   CHARACTER SET = utf8mb4
   COMMENT = '与的映射关系表'
   ROW_FORMAT = Dynamic;
-ALTER TABLE `many_to_many_source__to__many_to_many_target__mapping__319b0383` ADD CONSTRAINT `pk_many_to_many_source__to__many_to_many_target__mappi_79b690fb` PRIMARY KEY (`m_n_source_id`,`m_n_target_id`);
-ALTER TABLE `many_to_many_source__to__many_to_many_target__mapping__319b0383` ADD CONSTRAINT `many_to_many_source__to__many_to_many_target__mapping__7f4f12c7` 
-    FOREIGN KEY (`m_n_source_id`)
-  REFERENCES `m_n_source` (`id`)
+ALTER TABLE `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383` ADD CONSTRAINT `PK_MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPI_79B690FB` PRIMARY KEY (`M_N_SOURCE_ID`,`M_N_TARGET_ID`);
+ALTER TABLE `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383` ADD CONSTRAINT `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__7F4F12C7` 
+    FOREIGN KEY (`M_N_SOURCE_ID`)
+  REFERENCES `M_N_SOURCE` (`ID`)
   ON DELETE CASCADE ON UPDATE RESTRICT;
-ALTER TABLE `many_to_many_source__to__many_to_many_target__mapping__319b0383` ADD CONSTRAINT `many_to_many_source__to__many_to_many_target__mapping__2beea1bb` 
-    FOREIGN KEY (`m_n_target_id`)
-  REFERENCES `m_n_target` (`id`)
+ALTER TABLE `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383` ADD CONSTRAINT `MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__2BEEA1BB` 
+    FOREIGN KEY (`M_N_TARGET_ID`)
+  REFERENCES `M_N_TARGET` (`ID`)
   ON DELETE CASCADE ON UPDATE RESTRICT;
 
-), (o_m_target.sql, DROP TABLE IF EXISTS `o_m_target`;
+), (o_m_target.sql, DROP TABLE IF EXISTS `O_M_TARGET`;
 
-CREATE TABLE `o_m_target` (
-    `id` BIGINT(0) NOT NULL AUTO_INCREMENT,
-    `source_id` BIGINT(0) NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE `O_M_TARGET` (
+    `ID` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    `SOURCE_ID` BIGINT(0) NOT NULL,
+    PRIMARY KEY (`ID`)
 )
   ENGINE = InnoDB
   CHARACTER SET = utf8mb4
@@ -350,213 +350,213 @@ CREATE TABLE `o_m_target` (
     """
 
     private val postgresResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS "m_n_target" CASCADE;
-DROP TABLE IF EXISTS "o_o_target" CASCADE;
-DROP TABLE IF EXISTS "o_o_source" CASCADE;
-DROP TABLE IF EXISTS "o_m_source" CASCADE;
-DROP TABLE IF EXISTS "m_o_target" CASCADE;
-DROP TABLE IF EXISTS "tree_node" CASCADE;
-DROP TABLE IF EXISTS "m_o_source" CASCADE;
-DROP TABLE IF EXISTS "m_n_source" CASCADE;
-DROP TABLE IF EXISTS "o_m_target" CASCADE;
+[(all-tables.sql, DROP TABLE IF EXISTS "M_N_TARGET" CASCADE;
+DROP TABLE IF EXISTS "O_O_TARGET" CASCADE;
+DROP TABLE IF EXISTS "O_O_SOURCE" CASCADE;
+DROP TABLE IF EXISTS "O_M_SOURCE" CASCADE;
+DROP TABLE IF EXISTS "M_O_TARGET" CASCADE;
+DROP TABLE IF EXISTS "TREE_NODE" CASCADE;
+DROP TABLE IF EXISTS "M_O_SOURCE" CASCADE;
+DROP TABLE IF EXISTS "M_N_SOURCE" CASCADE;
+DROP TABLE IF EXISTS "O_M_TARGET" CASCADE;
 
-CREATE TABLE "m_n_target" (
-    "id" BIGSERIAL NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "M_N_TARGET" (
+    "ID" BIGSERIAL NOT NULL,
+    PRIMARY KEY ("ID")
 );
 COMMENT ON COLUMN "m_n_target"."id" IS 'ID';
 
-CREATE TABLE "o_o_target" (
-    "id" BIGSERIAL NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "O_O_TARGET" (
+    "ID" BIGSERIAL NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
-CREATE TABLE "o_o_source" (
-    "id" BIGSERIAL NOT NULL,
-    "target_id" BIGINT NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "O_O_SOURCE" (
+    "ID" BIGSERIAL NOT NULL,
+    "TARGET_ID" BIGINT NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
-CREATE TABLE "o_m_source" (
-    "id" BIGSERIAL NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "O_M_SOURCE" (
+    "ID" BIGSERIAL NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
-CREATE TABLE "m_o_target" (
-    "id" BIGSERIAL NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "M_O_TARGET" (
+    "ID" BIGSERIAL NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
-CREATE TABLE "tree_node" (
-    "id" BIGSERIAL NOT NULL,
-    "parent_id" BIGINT NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "TREE_NODE" (
+    "ID" BIGSERIAL NOT NULL,
+    "PARENT_ID" BIGINT NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
-CREATE TABLE "m_o_source" (
-    "id" BIGSERIAL NOT NULL,
-    "source_id" BIGINT NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "M_O_SOURCE" (
+    "ID" BIGSERIAL NOT NULL,
+    "SOURCE_ID" BIGINT NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
-CREATE TABLE "m_n_source" (
-    "id" BIGSERIAL NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "M_N_SOURCE" (
+    "ID" BIGSERIAL NOT NULL,
+    PRIMARY KEY ("ID")
 );
 COMMENT ON COLUMN "m_n_source"."id" IS 'ID';
 
-CREATE TABLE "o_m_target" (
-    "id" BIGSERIAL NOT NULL,
-    "source_id" BIGINT NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "O_M_TARGET" (
+    "ID" BIGSERIAL NOT NULL,
+    "SOURCE_ID" BIGINT NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
 
 
-ALTER TABLE "o_o_source" ADD CONSTRAINT "fk_o_o_source_target_id_o_o_target_id" 
-    FOREIGN KEY ("target_id")
-  REFERENCES "o_o_target" ("id")
+ALTER TABLE "O_O_SOURCE" ADD CONSTRAINT "FK_O_O_SOURCE_TARGET_ID_O_O_TARGET_ID" 
+    FOREIGN KEY ("TARGET_ID")
+  REFERENCES "O_O_TARGET" ("ID")
    ON UPDATE RESTRICT;
 
-ALTER TABLE "o_m_target" ADD CONSTRAINT "fk_o_m_source_id_o_m_target_source_id" 
-    FOREIGN KEY ("source_id")
-  REFERENCES "o_m_source" ("id")
+ALTER TABLE "O_M_TARGET" ADD CONSTRAINT "FK_O_M_SOURCE_ID_O_M_TARGET_SOURCE_ID" 
+    FOREIGN KEY ("SOURCE_ID")
+  REFERENCES "O_M_SOURCE" ("ID")
   ON DELETE CASCADE ON UPDATE RESTRICT;
 
 
-ALTER TABLE "tree_node" ADD CONSTRAINT "fk_tree_node_parent_id_tree_node_id" 
-    FOREIGN KEY ("parent_id")
-  REFERENCES "tree_node" ("id")
+ALTER TABLE "TREE_NODE" ADD CONSTRAINT "FK_TREE_NODE_PARENT_ID_TREE_NODE_ID" 
+    FOREIGN KEY ("PARENT_ID")
+  REFERENCES "TREE_NODE" ("ID")
    ON UPDATE RESTRICT;
 
-ALTER TABLE "m_o_source" ADD CONSTRAINT "fk_m_o_source_source_id_m_o_target_id" 
-    FOREIGN KEY ("source_id")
-  REFERENCES "m_o_target" ("id")
+ALTER TABLE "M_O_SOURCE" ADD CONSTRAINT "FK_M_O_SOURCE_SOURCE_ID_M_O_TARGET_ID" 
+    FOREIGN KEY ("SOURCE_ID")
+  REFERENCES "M_O_TARGET" ("ID")
    ON UPDATE RESTRICT;
 
-DROP TABLE IF EXISTS "many_to_many_source__to__many_to_many_target__mapping__319b0383" CASCADE;
-CREATE TABLE "many_to_many_source__to__many_to_many_target__mapping__319b0383" (
+DROP TABLE IF EXISTS "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383" CASCADE;
+CREATE TABLE "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383" (
     m_n_source_id BIGINT NOT NULL,
     m_n_target_id BIGINT NOT NULL
 );
-ALTER TABLE "many_to_many_source__to__many_to_many_target__mapping__319b0383" ADD CONSTRAINT "pk_many_to_many_source__to__many_to_many_target__mappi_79b690fb" PRIMARY KEY ("m_n_source_id","m_n_target_id");
-ALTER TABLE "many_to_many_source__to__many_to_many_target__mapping__319b0383" ADD CONSTRAINT "many_to_many_source__to__many_to_many_target__mapping__7f4f12c7" 
-    FOREIGN KEY ("m_n_source_id")
-  REFERENCES "m_n_source" ("id")
+ALTER TABLE "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383" ADD CONSTRAINT "PK_MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPI_79B690FB" PRIMARY KEY ("M_N_SOURCE_ID","M_N_TARGET_ID");
+ALTER TABLE "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383" ADD CONSTRAINT "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__7F4F12C7" 
+    FOREIGN KEY ("M_N_SOURCE_ID")
+  REFERENCES "M_N_SOURCE" ("ID")
   ON DELETE CASCADE ON UPDATE RESTRICT;
-ALTER TABLE "many_to_many_source__to__many_to_many_target__mapping__319b0383" ADD CONSTRAINT "many_to_many_source__to__many_to_many_target__mapping__2beea1bb" 
-    FOREIGN KEY ("m_n_target_id")
-  REFERENCES "m_n_target" ("id")
+ALTER TABLE "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383" ADD CONSTRAINT "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__2BEEA1BB" 
+    FOREIGN KEY ("M_N_TARGET_ID")
+  REFERENCES "M_N_TARGET" ("ID")
   ON DELETE CASCADE ON UPDATE RESTRICT;
 COMMENT ON TABLE "many_to_many_source__to__many_to_many_target__mapping_table__for_long_table_name_test" IS '与的映射关系表';
 
 
-), (m_n_target.sql, DROP TABLE IF EXISTS "m_n_target" CASCADE;
+), (m_n_target.sql, DROP TABLE IF EXISTS "M_N_TARGET" CASCADE;
 
-CREATE TABLE "m_n_target" (
-    "id" BIGSERIAL NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "M_N_TARGET" (
+    "ID" BIGSERIAL NOT NULL,
+    PRIMARY KEY ("ID")
 );
 COMMENT ON COLUMN "m_n_target"."id" IS 'ID';
 
 
-), (o_o_target.sql, DROP TABLE IF EXISTS "o_o_target" CASCADE;
+), (o_o_target.sql, DROP TABLE IF EXISTS "O_O_TARGET" CASCADE;
 
-CREATE TABLE "o_o_target" (
-    "id" BIGSERIAL NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "O_O_TARGET" (
+    "ID" BIGSERIAL NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
 
-), (o_o_source.sql, DROP TABLE IF EXISTS "o_o_source" CASCADE;
+), (o_o_source.sql, DROP TABLE IF EXISTS "O_O_SOURCE" CASCADE;
 
-CREATE TABLE "o_o_source" (
-    "id" BIGSERIAL NOT NULL,
-    "target_id" BIGINT NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "O_O_SOURCE" (
+    "ID" BIGSERIAL NOT NULL,
+    "TARGET_ID" BIGINT NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
-ALTER TABLE "o_o_source" ADD CONSTRAINT "fk_o_o_source_target_id_o_o_target_id" 
-    FOREIGN KEY ("target_id")
-  REFERENCES "o_o_target" ("id")
+ALTER TABLE "O_O_SOURCE" ADD CONSTRAINT "FK_O_O_SOURCE_TARGET_ID_O_O_TARGET_ID" 
+    FOREIGN KEY ("TARGET_ID")
+  REFERENCES "O_O_TARGET" ("ID")
    ON UPDATE RESTRICT;
 
-), (o_m_source.sql, DROP TABLE IF EXISTS "o_m_source" CASCADE;
+), (o_m_source.sql, DROP TABLE IF EXISTS "O_M_SOURCE" CASCADE;
 
-CREATE TABLE "o_m_source" (
-    "id" BIGSERIAL NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "O_M_SOURCE" (
+    "ID" BIGSERIAL NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
-ALTER TABLE "o_m_target" ADD CONSTRAINT "fk_o_m_source_id_o_m_target_source_id" 
-    FOREIGN KEY ("source_id")
-  REFERENCES "o_m_source" ("id")
+ALTER TABLE "O_M_TARGET" ADD CONSTRAINT "FK_O_M_SOURCE_ID_O_M_TARGET_SOURCE_ID" 
+    FOREIGN KEY ("SOURCE_ID")
+  REFERENCES "O_M_SOURCE" ("ID")
   ON DELETE CASCADE ON UPDATE RESTRICT;
 
-), (m_o_target.sql, DROP TABLE IF EXISTS "m_o_target" CASCADE;
+), (m_o_target.sql, DROP TABLE IF EXISTS "M_O_TARGET" CASCADE;
 
-CREATE TABLE "m_o_target" (
-    "id" BIGSERIAL NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "M_O_TARGET" (
+    "ID" BIGSERIAL NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
 
-), (tree_node.sql, DROP TABLE IF EXISTS "tree_node" CASCADE;
+), (tree_node.sql, DROP TABLE IF EXISTS "TREE_NODE" CASCADE;
 
-CREATE TABLE "tree_node" (
-    "id" BIGSERIAL NOT NULL,
-    "parent_id" BIGINT NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "TREE_NODE" (
+    "ID" BIGSERIAL NOT NULL,
+    "PARENT_ID" BIGINT NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
-ALTER TABLE "tree_node" ADD CONSTRAINT "fk_tree_node_parent_id_tree_node_id" 
-    FOREIGN KEY ("parent_id")
-  REFERENCES "tree_node" ("id")
+ALTER TABLE "TREE_NODE" ADD CONSTRAINT "FK_TREE_NODE_PARENT_ID_TREE_NODE_ID" 
+    FOREIGN KEY ("PARENT_ID")
+  REFERENCES "TREE_NODE" ("ID")
    ON UPDATE RESTRICT;
 
-), (m_o_source.sql, DROP TABLE IF EXISTS "m_o_source" CASCADE;
+), (m_o_source.sql, DROP TABLE IF EXISTS "M_O_SOURCE" CASCADE;
 
-CREATE TABLE "m_o_source" (
-    "id" BIGSERIAL NOT NULL,
-    "source_id" BIGINT NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "M_O_SOURCE" (
+    "ID" BIGSERIAL NOT NULL,
+    "SOURCE_ID" BIGINT NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
-ALTER TABLE "m_o_source" ADD CONSTRAINT "fk_m_o_source_source_id_m_o_target_id" 
-    FOREIGN KEY ("source_id")
-  REFERENCES "m_o_target" ("id")
+ALTER TABLE "M_O_SOURCE" ADD CONSTRAINT "FK_M_O_SOURCE_SOURCE_ID_M_O_TARGET_ID" 
+    FOREIGN KEY ("SOURCE_ID")
+  REFERENCES "M_O_TARGET" ("ID")
    ON UPDATE RESTRICT;
 
-), (m_n_source.sql, DROP TABLE IF EXISTS "m_n_source" CASCADE;
+), (m_n_source.sql, DROP TABLE IF EXISTS "M_N_SOURCE" CASCADE;
 
-CREATE TABLE "m_n_source" (
-    "id" BIGSERIAL NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "M_N_SOURCE" (
+    "ID" BIGSERIAL NOT NULL,
+    PRIMARY KEY ("ID")
 );
 COMMENT ON COLUMN "m_n_source"."id" IS 'ID';
 
-DROP TABLE IF EXISTS "many_to_many_source__to__many_to_many_target__mapping__319b0383" CASCADE;
-CREATE TABLE "many_to_many_source__to__many_to_many_target__mapping__319b0383" (
+DROP TABLE IF EXISTS "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383" CASCADE;
+CREATE TABLE "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383" (
     m_n_source_id BIGINT NOT NULL,
     m_n_target_id BIGINT NOT NULL
 );
-ALTER TABLE "many_to_many_source__to__many_to_many_target__mapping__319b0383" ADD CONSTRAINT "pk_many_to_many_source__to__many_to_many_target__mappi_79b690fb" PRIMARY KEY ("m_n_source_id","m_n_target_id");
-ALTER TABLE "many_to_many_source__to__many_to_many_target__mapping__319b0383" ADD CONSTRAINT "many_to_many_source__to__many_to_many_target__mapping__7f4f12c7" 
-    FOREIGN KEY ("m_n_source_id")
-  REFERENCES "m_n_source" ("id")
+ALTER TABLE "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383" ADD CONSTRAINT "PK_MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPI_79B690FB" PRIMARY KEY ("M_N_SOURCE_ID","M_N_TARGET_ID");
+ALTER TABLE "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383" ADD CONSTRAINT "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__7F4F12C7" 
+    FOREIGN KEY ("M_N_SOURCE_ID")
+  REFERENCES "M_N_SOURCE" ("ID")
   ON DELETE CASCADE ON UPDATE RESTRICT;
-ALTER TABLE "many_to_many_source__to__many_to_many_target__mapping__319b0383" ADD CONSTRAINT "many_to_many_source__to__many_to_many_target__mapping__2beea1bb" 
-    FOREIGN KEY ("m_n_target_id")
-  REFERENCES "m_n_target" ("id")
+ALTER TABLE "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__319B0383" ADD CONSTRAINT "MANY_TO_MANY_SOURCE__TO__MANY_TO_MANY_TARGET__MAPPING__2BEEA1BB" 
+    FOREIGN KEY ("M_N_TARGET_ID")
+  REFERENCES "M_N_TARGET" ("ID")
   ON DELETE CASCADE ON UPDATE RESTRICT;
 COMMENT ON TABLE "many_to_many_source__to__many_to_many_target__mapping_table__for_long_table_name_test" IS '与的映射关系表';
 
-), (o_m_target.sql, DROP TABLE IF EXISTS "o_m_target" CASCADE;
+), (o_m_target.sql, DROP TABLE IF EXISTS "O_M_TARGET" CASCADE;
 
-CREATE TABLE "o_m_target" (
-    "id" BIGSERIAL NOT NULL,
-    "source_id" BIGINT NOT NULL,
-    PRIMARY KEY ("id")
+CREATE TABLE "O_M_TARGET" (
+    "ID" BIGSERIAL NOT NULL,
+    "SOURCE_ID" BIGINT NOT NULL,
+    PRIMARY KEY ("ID")
 );
 
 
