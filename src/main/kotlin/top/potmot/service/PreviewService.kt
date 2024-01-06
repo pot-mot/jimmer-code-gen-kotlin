@@ -37,6 +37,7 @@ class PreviewService(
     @GetMapping("/entity")
     fun previewEntity(
         @RequestParam entityIds: List<Long>,
+        @RequestParam(required = false) dataSourceType: DataSourceType?,
         @RequestParam(required = false) language: GenLanguage?,
         @RequestParam(required = false) withPath: Boolean?
     ): List<Pair<String, String>> =
@@ -44,12 +45,13 @@ class PreviewService(
             where(table.id valueIn entityIds)
             select(table.fetch(GenEntityPropertiesView::class))
         }.execute().let {
-            generateEntitiesCode(it, language, withPath)
+            generateEntitiesCode(it, dataSourceType, language, withPath)
         }
 
     @GetMapping("/enum")
     fun previewEnums(
         @RequestParam enumIds: List<Long>,
+        @RequestParam(required = false) dataSourceType: DataSourceType?,
         @RequestParam(required = false) language: GenLanguage?,
         @RequestParam(required = false) withPath: Boolean?
     ): List<Pair<String, String>> =
@@ -57,7 +59,7 @@ class PreviewService(
             where(table.id valueIn enumIds)
             select(table.fetch(PropertyEnum::class))
         }.execute().let {
-            generateEnumsCode(it, language, withPath)
+            generateEnumsCode(it, dataSourceType, language, withPath)
         }
 
     @GetMapping("/entity/byTable")
@@ -70,7 +72,7 @@ class PreviewService(
         @RequestParam(required = false) withPath: Boolean?
     ): List<Pair<String, String>> {
         val entityIds = convertService.convert(tableIds, modelId, dataSourceType, language, packagePath)
-        return previewEntity(entityIds.toList(), language, withPath)
+        return previewEntity(entityIds.toList(), dataSourceType, language, withPath)
     }
 
 
@@ -135,10 +137,10 @@ class PreviewService(
             previewEntityByTable(tableIds, model.id, model.dataSourceType, model.language, model.packagePath, withPath)
         } else {
             val entities = getEntityByModelId(id)
-            generateEntitiesCode(entities, model.language, withPath)
+            generateEntitiesCode(entities, model.dataSourceType, model.language, withPath)
         }
 
-        val enumCodes = previewEnums(model.enumIds, model.language, withPath)
+        val enumCodes = previewEnums(model.enumIds, model.dataSourceType, model.language, withPath)
 
 
         return (entityCodes + enumCodes).distinct()

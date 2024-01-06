@@ -66,6 +66,7 @@ class TestModelToEntity (
 [(top/potmot/model/MNTarget.java, package top.potmot.model;
 
 import java.util.List;
+import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
@@ -85,6 +86,7 @@ public interface MNTarget {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     long id();
     
     @ManyToMany(mappedBy = "mNTargets")
@@ -98,6 +100,7 @@ public interface MNTarget {
 }
 ), (top/potmot/model/OOTarget.java, package top.potmot.model;
 
+import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
@@ -115,6 +118,7 @@ import org.jetbrains.annotations.Nullable;
 public interface OOTarget {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     long id();
     
     @OneToOne(mappedBy = "oOTarget")
@@ -127,6 +131,7 @@ public interface OOTarget {
 }
 ), (top/potmot/model/OOSource.java, package top.potmot.model;
 
+import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
@@ -144,6 +149,7 @@ import org.babyfish.jimmer.sql.Table;
 public interface OOSource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     long id();
     
     @OneToOne
@@ -159,6 +165,7 @@ public interface OOSource {
 ), (top/potmot/model/OMSource.java, package top.potmot.model;
 
 import java.util.List;
+import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
@@ -175,6 +182,7 @@ import org.babyfish.jimmer.sql.Table;
 public interface OMSource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     long id();
     
     @OneToMany(mappedBy = "oMSource")
@@ -186,6 +194,7 @@ public interface OMSource {
 ), (top/potmot/model/MOTarget.java, package top.potmot.model;
 
 import java.util.List;
+import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
@@ -202,6 +211,7 @@ import org.babyfish.jimmer.sql.Table;
 public interface MOTarget {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     long id();
     
     @OneToMany(mappedBy = "mOTarget")
@@ -213,6 +223,7 @@ public interface MOTarget {
 ), (top/potmot/model/TreeNode.java, package top.potmot.model;
 
 import java.util.List;
+import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
@@ -231,6 +242,7 @@ import org.babyfish.jimmer.sql.Table;
 public interface TreeNode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     long id();
     
     @OneToMany(mappedBy = "treeNode")
@@ -251,6 +263,7 @@ public interface TreeNode {
 }
 ), (top/potmot/model/MOSource.java, package top.potmot.model;
 
+import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
@@ -268,6 +281,7 @@ import org.babyfish.jimmer.sql.Table;
 public interface MOSource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     long id();
     
     @ManyToOne
@@ -283,6 +297,7 @@ public interface MOSource {
 ), (top/potmot/model/MNSource.java, package top.potmot.model;
 
 import java.util.List;
+import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
@@ -303,6 +318,7 @@ public interface MNSource {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     long id();
     
     @ManyToMany
@@ -321,6 +337,7 @@ public interface MNSource {
 }
 ), (top/potmot/model/OMTarget.java, package top.potmot.model;
 
+import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
@@ -338,6 +355,7 @@ import org.babyfish.jimmer.sql.Table;
 public interface OMTarget {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     long id();
     
     @ManyToOne
@@ -353,9 +371,10 @@ public interface OMTarget {
 )]
     """
 
-    private val kotlinResult = """
+    private val kotlinResult ="""
 [(top/potmot/model/MNTarget.kt, package top.potmot.model
 
+import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -375,6 +394,7 @@ interface MNTarget {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     val id: Long
     
     @ManyToMany(mappedBy = "mNTargets")
@@ -388,6 +408,7 @@ interface MNTarget {
 }
 ), (top/potmot/model/OOTarget.kt, package top.potmot.model
 
+import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -404,6 +425,7 @@ import org.babyfish.jimmer.sql.Table
 interface OOTarget {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     val id: Long
     
     @OneToOne(mappedBy = "oOTarget")
@@ -414,6 +436,7 @@ interface OOTarget {
 }
 ), (top/potmot/model/OOSource.kt, package top.potmot.model
 
+import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -431,6 +454,7 @@ import org.babyfish.jimmer.sql.Table
 interface OOSource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     val id: Long
     
     @OneToOne
@@ -445,6 +469,7 @@ interface OOSource {
 }
 ), (top/potmot/model/OMSource.kt, package top.potmot.model
 
+import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -461,6 +486,7 @@ import org.babyfish.jimmer.sql.Table
 interface OMSource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     val id: Long
     
     @OneToMany(mappedBy = "oMSource")
@@ -471,6 +497,7 @@ interface OMSource {
 }
 ), (top/potmot/model/MOTarget.kt, package top.potmot.model
 
+import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -487,6 +514,7 @@ import org.babyfish.jimmer.sql.Table
 interface MOTarget {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     val id: Long
     
     @OneToMany(mappedBy = "mOTarget")
@@ -497,6 +525,7 @@ interface MOTarget {
 }
 ), (top/potmot/model/TreeNode.kt, package top.potmot.model
 
+import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -515,6 +544,7 @@ import org.babyfish.jimmer.sql.Table
 interface TreeNode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     val id: Long
     
     @OneToMany(mappedBy = "treeNode")
@@ -535,6 +565,7 @@ interface TreeNode {
 }
 ), (top/potmot/model/MOSource.kt, package top.potmot.model
 
+import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -552,6 +583,7 @@ import org.babyfish.jimmer.sql.Table
 interface MOSource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     val id: Long
     
     @ManyToOne
@@ -566,6 +598,7 @@ interface MOSource {
 }
 ), (top/potmot/model/MNSource.kt, package top.potmot.model
 
+import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -586,6 +619,7 @@ interface MNSource {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     val id: Long
     
     @ManyToMany
@@ -604,6 +638,7 @@ interface MNSource {
 }
 ), (top/potmot/model/OMTarget.kt, package top.potmot.model
 
+import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -621,6 +656,7 @@ import org.babyfish.jimmer.sql.Table
 interface OMTarget {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     val id: Long
     
     @ManyToOne

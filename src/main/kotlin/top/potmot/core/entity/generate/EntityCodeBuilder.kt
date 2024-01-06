@@ -20,15 +20,18 @@ import top.potmot.enumeration.EnumType
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.fullType
 import top.potmot.model.extension.now
+import top.potmot.utils.identifier.IdentifierFilter
 import top.potmot.utils.template.TemplateBuilder
 import kotlin.reflect.KClass
 
-open class EntityCodeBuilder: TemplateBuilder() {
+open class EntityCodeBuilder(
+    val identifierFilter: IdentifierFilter
+): TemplateBuilder() {
     open fun GenEntityPropertiesView.tableAnnotation(): String =
-        "@Table(name = \"${table.schema?.name?.let { "${it.changeCase()}." } ?: ""}${table.name.changeCase()}\")"
+        "@Table(name = \"${table.schema?.name?.let { "${identifierFilter.filterIdentifier(it).changeCase()}." } ?: ""}${identifierFilter.filterIdentifier(table.name).changeCase()}\")"
 
     open fun GenEntityPropertiesView.TargetOf_properties.columnAnnotation(): String? =
-        column?.let { "@Column(name = \"${it.name.changeCase()}\")" }
+        column?.takeUnless { idView || !associationAnnotation.isNullOrBlank() }?.let { "@Column(name = \"${it.name.changeCase()}\")" }
 
     open fun GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3.annotation(enumType: EnumType?): String =
         when (enumType) {

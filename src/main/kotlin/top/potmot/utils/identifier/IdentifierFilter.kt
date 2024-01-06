@@ -8,7 +8,7 @@ import java.security.MessageDigest
  */
 class IdentifierFilter(
     private val maxLength: Int = 63,
-    private val truncateLength: Int = 8
+    private val truncateLength: Int = maxLength / 8 + 1
 ) {
     private val hashMap: HashMap<String, String> = HashMap()
 

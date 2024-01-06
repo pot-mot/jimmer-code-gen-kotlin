@@ -4,3 +4,7 @@ logging:
 
 gen:
   language: kotlin
+  lower-case-name: false
+  column-annotation: true
+  join-column-annotation: true
+  join-table-annotation: true
