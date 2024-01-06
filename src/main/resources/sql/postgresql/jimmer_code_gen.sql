@@ -463,6 +463,7 @@ CREATE TABLE "gen_entity"
     "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "remark"        text        NOT NULL DEFAULT '',
     PRIMARY KEY ("id"),
+    CONSTRAINT "fk_entity_model" FOREIGN KEY ("model_id") REFERENCES "gen_model" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT "fk_entity_table" FOREIGN KEY ("table_id") REFERENCES "gen_table" ("id") ON DELETE CASCADE ON UPDATE RESTRICT
 );
 

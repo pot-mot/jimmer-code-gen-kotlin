@@ -5,6 +5,10 @@ spring:
   liquibase:
     enabled: false
 
+  web:
+    resources:
+      static-locations: classpath:/dist
+
 logging:
   level:
     top.potmot: info
