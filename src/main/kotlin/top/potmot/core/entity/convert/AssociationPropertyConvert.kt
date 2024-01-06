@@ -6,7 +6,6 @@ import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.config.GenConfig
 import top.potmot.core.database.meta.getPropertyType
 import top.potmot.core.database.meta.getTypeMeta
-import top.potmot.core.database.meta.createMappingTableName
 import top.potmot.core.database.meta.getAssociations
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.AssociationType.MANY_TO_MANY
@@ -18,18 +17,18 @@ import top.potmot.model.GenProperty
 import top.potmot.model.GenPropertyDraft
 import top.potmot.model.copy
 import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.utils.identifier.IdentifierFilter
 import top.potmot.utils.string.toPlural
 import top.potmot.utils.string.toSingular
 
 /**
- * 根据基础属性、表关联处理出关联属性
- *
- * TODO 映射复合属性与多列外键
+ * 根据基础属性和表关联处理出关联属性
  */
-fun producePropertyWithAssociationAndUniqueIndexes(
+fun produceAssociationProperty(
     table: GenTableAssociationsView,
     columnPropertyPairs: List<Pair<GenTableAssociationsView.TargetOf_columns, GenProperty>>,
     typeMapping: TypeMapping = { it.getPropertyType() },
+    identifierFilter: IdentifierFilter,
 ): List<GenProperty> {
     val (
         outAssociations,
@@ -89,6 +88,7 @@ fun producePropertyWithAssociationAndUniqueIndexes(
                         outAssociation.associationType,
                         joinColumns = outAssociation.columnReferences.map {
                             JoinColumnProps(
+                                identifierFilter,
                                 joinColumnName = it.sourceColumn.name,
                                 referencedColumnName = it.targetColumn.name,
                                 foreignKeyType =
@@ -120,7 +120,8 @@ fun producePropertyWithAssociationAndUniqueIndexes(
                     setAssociation(
                         outAssociation.associationType,
                         joinTable = JoinTableProps(
-                            joinTableName = createMappingTableName(sourceTableName, targetTableName),
+                            identifierFilter,
+                            joinTableName = outAssociation.name,
                             joinColumnName = "${sourceTableName}_${sourceColumnName}",
                             inverseJoinColumnName = "${targetTableName}_${targetColumnName}",
                         )
@@ -217,6 +218,7 @@ fun producePropertyWithAssociationAndUniqueIndexes(
                         MANY_TO_ONE,
                         joinColumns = inAssociation.columnReferences.map {
                             JoinColumnProps(
+                                identifierFilter,
                                 joinColumnName = it.sourceColumn.name,
                                 referencedColumnName = it.targetColumn.name,
                                 foreignKeyType =
@@ -259,19 +261,20 @@ fun producePropertyWithAssociationAndUniqueIndexes(
 }
 
 private data class JoinColumnProps(
+    val identifierFilter: IdentifierFilter,
     val joinColumnName: String,
     val referencedColumnName: String? = null,
-    val foreignKeyType: ForeignKeyType? = null
+    val foreignKeyType: ForeignKeyType? = null,
 ) {
     fun toAnnotation() =
         buildString {
             val onlyName = referencedColumnName == null && foreignKeyType == null
 
             if (onlyName) {
-                append("@JoinColumn(name = \"${joinColumnName.changeCase()}\")")
+                append("@JoinColumn(name = \"${identifierFilter.filterIdentifier(joinColumnName).changeCase()}\")")
             } else {
                 appendLine("@JoinColumn(")
-                appendLine("    name = \"${joinColumnName.changeCase()}\",")
+                appendLine("    name = \"${identifierFilter.filterIdentifier(joinColumnName).changeCase()}\",")
                 if (referencedColumnName != null) {
                     appendLine("    referencedColumnName = \"${referencedColumnName.changeCase()}\"")
                 }
@@ -284,6 +287,7 @@ private data class JoinColumnProps(
 }
 
 private data class JoinTableProps(
+    val identifierFilter: IdentifierFilter,
     val joinTableName: String,
     val joinColumnName: String,
     val inverseJoinColumnName: String,
@@ -291,9 +295,9 @@ private data class JoinTableProps(
     fun toAnnotation() =
         buildString {
             appendLine("@JoinTable(")
-            appendLine("    name = \"${joinTableName.changeCase()}\",")
-            appendLine("    joinColumnName = \"${joinColumnName.changeCase()}\",")
-            appendLine("    inverseJoinColumnName = \"${inverseJoinColumnName.changeCase()}\"")
+            appendLine("    name = \"${identifierFilter.filterIdentifier(joinTableName).changeCase()}\",")
+            appendLine("    joinColumnName = \"${identifierFilter.filterIdentifier(joinColumnName).changeCase()}\",")
+            appendLine("    inverseJoinColumnName = \"${identifierFilter.filterIdentifier(inverseJoinColumnName).changeCase()}\"")
             appendLine(")")
         }
 }

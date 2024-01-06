@@ -2,6 +2,7 @@ package top.potmot.core.entity.convert
 
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.GenerationType
+import top.potmot.core.database.generate.getIdentifierFilter
 import top.potmot.core.database.meta.ColumnTypeMeta
 import top.potmot.core.database.meta.getPropertyType
 import top.potmot.core.database.meta.getTypeMeta
@@ -28,10 +29,11 @@ fun createProperties(
         }
     }
 
-    return producePropertyWithAssociationAndUniqueIndexes(
+    return produceAssociationProperty(
         table,
         baseColumnPropertyPairs,
-        typeMapping
+        typeMapping,
+        dataSourceType.getIdentifierFilter()
     )
 }
 

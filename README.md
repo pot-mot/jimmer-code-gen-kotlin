@@ -31,6 +31,14 @@
 
 **！！生成数据源涉及的认证信息均无加密，建议仅在内网环境使用**
 
+### 直接使用 jar
+
+考虑到部分开发环境需要补充安装 gradle，所以项目也直接提供的包含前端的 jar，且默认以 h2 启动。
+
+此时直接前往 [jar](jar) 目录下使用 `java -jar` 直接启动 jar 包并从浏览器访问 `localhost:8080` 即可。
+
+如果计划二次开发，请继续往下。
+
 ### 运行 SQL 脚本
 
 - [MySQL](src%2Fmain%2Fresources%2Fsql%2Fmysql%2Fjimmer_code_gen.sql)  
@@ -97,12 +105,6 @@
   实体通用构建器器
 
 ## 其他
-
-### 直接使用 jar
-
-考虑到部分开发环境需要补充安装 gradle，所以项目也直接提供的包含前端的 jar，且默认以 h2 启动。
-
-此时直接前往 [jar](jar) 目录下使用 `java -jar jimmer-code-gen-2024-1-6.jar` 直接启动 jar 包并从浏览器访问 `localhost:8080` 即可。
 
 ### 添加数据源支持
 

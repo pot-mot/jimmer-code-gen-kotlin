@@ -20,7 +20,6 @@ import liquibase.serializer.core.xml.XMLChangeLogSerializer
 import top.potmot.config.GenConfig
 import top.potmot.core.database.generate.getColumnTypeDefiner
 import top.potmot.core.database.meta.getTypeMeta
-import top.potmot.core.database.meta.createFkName
 import top.potmot.core.database.meta.toMappingTableMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.DataSourceType
@@ -136,10 +135,7 @@ private fun GenAssociationModelInput.toFkChange(): AddForeignKeyConstraintChange
     val sourceColumns = columnReferences.map { it.sourceColumn }
     val targetColumns = columnReferences.map { it.targetColumn }
 
-    fkChange.constraintName = createFkName(
-        sourceTable.name, sourceColumns.map { it.name },
-        targetTable.name, targetColumns.map { it.name }
-    )
+    fkChange.constraintName = name
 
     fkChange.baseTableName = sourceTable.name
     fkChange.baseColumnNames = sourceColumns.joinToString(",") { it.name }

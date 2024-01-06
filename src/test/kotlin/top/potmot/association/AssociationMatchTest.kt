@@ -50,7 +50,6 @@ class AssociationMatchTest(
         val columns = listOf(column1, column2, column3, column4)
 
         val matchAssociations = associationService.matchColumns(columns, simplePkColumnMatch)
-        matchAssociations.forEach { println(it) }
         assertEquals(2, matchAssociations.size)
     }
 
@@ -73,7 +72,6 @@ class AssociationMatchTest(
         val columns = listOf(column1, column2, column3, column4)
 
         val matchAssociations = associationService.matchColumns(columns, includeTableNamePkColumnMatch)
-        matchAssociations.forEach { println(it) }
         assertEquals(2, matchAssociations.size)
     }
 
@@ -102,7 +100,6 @@ class AssociationMatchTest(
         val columns = listOf(column1, column2, column3, column4, column5)
 
         val matchAssociations = associationService.matchColumns(columns, pkSuffixColumnMatch)
-        matchAssociations.forEach { println(it) }
         assertEquals(1, matchAssociations.size)
     }
 }

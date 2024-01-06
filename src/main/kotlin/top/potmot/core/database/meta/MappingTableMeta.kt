@@ -6,6 +6,8 @@ import top.potmot.core.entity.convert.clearTableName
 import top.potmot.model.GenAssociation
 
 data class MappingTableMeta(
+    var name: String,
+
     var sourceTableName: String,
     var sourceTableComment: String,
     var sourceColumnNames: List<String>,
@@ -15,8 +17,6 @@ data class MappingTableMeta(
     var targetColumnNames: List<String>,
 
     var columnTypes: List<String>,
-
-    var name: String = createMappingTableName(sourceTableName, targetTableName, sourceColumnNames, targetColumnNames)
 ) {
     val comment
         get() = createMappingTableComment(sourceTableComment, targetTableComment)
@@ -40,40 +40,24 @@ data class MappingTableMeta(
             return sourceColumnLines + targetColumnLines
         }
 
-    val commonFkName: String
-        get() = createFkName(
-            sourceTableName,
-            sourceColumnNames,
-            targetTableName,
-            targetColumnNames
-        )
-
     val sourceFk: ForeignKeyMeta
         get() = ForeignKeyMeta(
+            name = "${name}_S",
             sourceTableName = name,
             sourceColumnNames = mappingSourceColumnNames,
             targetTableName = sourceTableName,
             targetColumnNames = sourceColumnNames,
-            name = "${commonFkName}_SOURCE",
         )
 
     val targetFk: ForeignKeyMeta
         get() = ForeignKeyMeta(
+            name = "${name}_T",
             sourceTableName = name,
             sourceColumnNames = mappingTargetColumnNames,
             targetTableName = targetTableName,
             targetColumnNames = targetColumnNames,
-            name = "${commonFkName}_TARGET",
         )
 }
-
-fun createMappingTableName(
-    sourceTableName: String,
-    targetTableName: String,
-    sourceColumnNames: List<String> = emptyList(),
-    targetColumnNames: List<String> = emptyList(),
-): String =
-    "${sourceTableName.clearTableName()}_${targetTableName.clearTableName()}_mapping"
 
 fun createMappingTableComment(
     sourceTableComment: String,
@@ -89,6 +73,7 @@ fun createMappingColumnNames(
 
 fun GenAssociation.toMappingTableMeta(): MappingTableMeta =
     MappingTableMeta(
+        name = this.name,
         sourceTableName = sourceTable.name,
         targetTableName = targetTable.name,
         sourceTableComment = sourceTable.comment,

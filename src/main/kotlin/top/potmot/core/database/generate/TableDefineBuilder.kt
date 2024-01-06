@@ -17,9 +17,12 @@ import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.extension.pkColumns
+import top.potmot.utils.identifier.IdentifierFilter
 import top.potmot.utils.template.TemplateBuilder
 
-abstract class TableDefineBuilder : TemplateBuilder() {
+abstract class TableDefineBuilder(
+    val identifierFilter: IdentifierFilter
+) : TemplateBuilder() {
     abstract fun String.escape(): String
 
     abstract fun getColumnTypeDefiner(): ColumnTypeDefiner
@@ -33,21 +36,23 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         append: String = ""
     ): String =
         buildString {
-            append("CREATE TABLE ${name.escape()} (\n")
+            append("CREATE TABLE ${identifierFilter.filterIdentifier(name).escape()} (\n")
             append("    ${lines.joinToString(",\n    ")}\n")
-            append(")${append};")
+            append(")${append}")
         }
 
     open fun dropTable(
         name: String,
         append: String = ""
     ): String =
-        "DROP TABLE IF EXISTS ${name.escape()}${if (append.isBlank()) "" else " $append"};"
+        "DROP TABLE IF EXISTS ${
+            identifierFilter.filterIdentifier(name).escape()
+        }${if (append.isBlank()) "" else " $append"}"
 
     fun alterTable(
         name: String
     ): String =
-        "ALTER TABLE ${name.escape()} "
+        "ALTER TABLE ${identifierFilter.filterIdentifier(name).escape()} "
 
     open fun createPkLine(
         table: GenTableAssociationsView,
@@ -75,9 +80,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
 
     open fun createTable(
         table: GenTableAssociationsView,
-        otherLines: List<String> = emptyList(),
-        append: String = "",
-        withIndex: Boolean = true,
+        otherLines: List<String> = emptyList()
     ): String {
         val lines = mutableListOf<String>()
 
@@ -89,17 +92,24 @@ abstract class TableDefineBuilder : TemplateBuilder() {
 
         lines.addAll(otherLines)
 
-        val tableDefine = createTable(table.name, lines, append)
+        return createTable(
+            table.name,
+            lines,
+        )
+    }
 
-        val indexes = table.indexes.map { index ->
+    open fun createIndexes(
+        table: GenTableAssociationsView,
+    ) =
+        table.indexes.map { index ->
             val columnNames = table.columns.filter { it.id in index.columnIds }.map { it.name }
 
             if (columnNames.size != index.columnIds.size) {
                 throw GenerateTableDefineException.index(
                     "Index [${index.name}] column not match: " +
-                        " table: ${table.name} " +
-                        " current columns: ${table.columns.map { it.id to it.name }} " +
-                        " need column ids: ${index.columnIds}"
+                            " table: ${table.name} " +
+                            " current columns: ${table.columns.map { it.id to it.name }} " +
+                            " need column ids: ${index.columnIds}"
                 )
             }
 
@@ -111,14 +121,11 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             )
         }
 
-        return tableDefine + (if (withIndex) "\n${indexes.joinToString("\n")}" else "")
-    }
-
     open fun addConstraint(
         tableName: String,
         constraintName: String
     ): String =
-        "${alterTable(tableName)}ADD CONSTRAINT ${constraintName.escape()} "
+        "${alterTable(tableName)}ADD CONSTRAINT ${identifierFilter.filterIdentifier(constraintName).escape()} "
 
     open fun pkDefine(
         columnNames: List<String>
@@ -148,14 +155,14 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         constraintName: String =
             createPkName(tableName, columnNames)
     ): String =
-        "${addConstraint(tableName, constraintName)}${pkDefine(columnNames)};"
+        "${addConstraint(tableName, constraintName)}${pkDefine(columnNames)}"
 
     open fun createFkConstraint(
         meta: ForeignKeyMeta,
         fake: Boolean = false,
     ): String =
         if (!fake) {
-            "${addConstraint(meta.sourceTableName, meta.name)}\n${fkDefine(meta)};"
+            "${addConstraint(meta.sourceTableName, meta.name)}\n${fkDefine(meta)}"
         } else {
             "-- fake association ${meta.name}"
         }
@@ -164,7 +171,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         meta: MappingTableMeta,
         otherLines: List<String> = emptyList(),
         append: String = "",
-    ): String {
+    ): List<String> {
         val mappingTable = createTable(
             meta.name,
             meta.columnLines + otherLines,
@@ -190,7 +197,7 @@ abstract class TableDefineBuilder : TemplateBuilder() {
             mappingTablePk,
             sourceFk,
             targetFk
-        ).joinToString("\n\n")
+        )
     }
 
     open fun createIndex(
@@ -199,9 +206,9 @@ abstract class TableDefineBuilder : TemplateBuilder() {
         unique: Boolean = false,
         name: String = "${if (unique) "u" else ""}idx_${tableName.clearTableName()}_${columnNames.joinToString("_") { it.clearColumnName() }}"
     ): String {
-        return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${name.escape()} ON ${
+        return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${identifierFilter.filterIdentifier(name).escape()} ON ${
             tableName.escape()
-        } (${columnNames.joinToString(", ") { it.escape() }});"
+        } (${columnNames.joinToString(", ") { it.escape() }})"
     }
 
     /**

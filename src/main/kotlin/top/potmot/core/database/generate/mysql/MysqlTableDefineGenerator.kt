@@ -5,45 +5,35 @@ import top.potmot.core.database.generate.TableDefineGenerator
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.core.database.generate.ColumnTypeDefiner
 import top.potmot.core.database.generate.getColumnTypeDefiner
+import top.potmot.core.database.generate.getIdentifierFilter
 import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenTableAssociationsView
 
 class MysqlTableDefineGenerator: TableDefineGenerator() {
-    override fun stringify(table: GenTableAssociationsView): String =
-        table.mysqlTableStringify()
-
     override fun stringify(tables: Collection<GenTableAssociationsView>): String =
         tables.mysqlTablesStringify()
-
-    private fun GenTableAssociationsView.mysqlTableStringify(): String =
-        MysqlTableDefineBuilder().apply {
-            line(dropTable(name))
-            separate()
-            lines(createTable(this@mysqlTableStringify))
-            separate()
-            lines(associationsStringify())
-        }.build()
 
     private fun Collection<GenTableAssociationsView>.mysqlTablesStringify(): String =
         MysqlTableDefineBuilder().apply {
             forEach {
-                line(dropTable(it.name))
+                line(dropTable(it.name) + ";")
             }
 
             separate()
 
             forEach {
-                lines(createTable(it))
+                lines(createTable(it) + ";")
+                lines(createIndexes(it)) { "$it;"}
                 separate()
             }
 
             forEach {
-                lines(it.associationsStringify())
+                lines(it.associationsStringify()) { "$it;"}
                 separate()
             }
         }.build()
 
-    class MysqlTableDefineBuilder : TableDefineBuilder() {
+    class MysqlTableDefineBuilder : TableDefineBuilder(DataSourceType.MySQL.getIdentifierFilter()) {
         override fun getColumnTypeDefiner(): ColumnTypeDefiner = DataSourceType.MySQL.getColumnTypeDefiner()
 
         override fun String.escape(): String =
@@ -58,22 +48,18 @@ class MysqlTableDefineGenerator: TableDefineGenerator() {
 
         override fun createTable(
             table: GenTableAssociationsView,
-            otherLines: List<String>,
-            append: String,
-            withIndex: Boolean
+            otherLines: List<String>
         ): String =
             super.createTable(
                 table,
-                otherLines,
-                append = append + defaultParams(table.comment),
-                withIndex
-            )
+                otherLines
+            ) + defaultParams(table.comment)
 
         override fun createMappingTable(
             meta: MappingTableMeta,
             otherLines: List<String>,
             append: String,
-        ): String {
+        ): List<String> {
             return super.createMappingTable(
                 meta,
                 otherLines,

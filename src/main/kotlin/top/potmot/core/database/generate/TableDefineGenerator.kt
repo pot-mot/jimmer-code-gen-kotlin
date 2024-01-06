@@ -6,9 +6,10 @@ abstract class TableDefineGenerator {
     protected open fun formatFileName(name: String): String =
         "$name.sql"
 
-    protected abstract fun stringify(table: GenTableAssociationsView): String
-
     protected abstract fun stringify(tables: Collection<GenTableAssociationsView>): String
+
+    protected fun stringify(table: GenTableAssociationsView): String =
+        stringify(listOf(table))
 
     fun generate(
         table: GenTableAssociationsView

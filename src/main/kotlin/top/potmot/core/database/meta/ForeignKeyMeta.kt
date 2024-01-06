@@ -1,8 +1,6 @@
 package top.potmot.core.database.meta
 
 import org.babyfish.jimmer.sql.DissociateAction
-import top.potmot.core.entity.convert.clearColumnName
-import top.potmot.core.entity.convert.clearTableName
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.GenAssociation
 import top.potmot.model.GenColumn
@@ -19,11 +17,11 @@ data class AssociationMeta(
 )
 
 data class ForeignKeyMeta(
+    val name: String,
     val sourceTableName: String,
     val sourceColumnNames: List<String>,
     val targetTableName: String,
     val targetColumnNames: List<String>,
-    val name: String = createFkName(sourceTableName, sourceColumnNames, targetTableName, targetColumnNames),
     val onUpdate: String = "ON UPDATE RESTRICT",
     val onDelete: String = "ON DELETE CASCADE",
 )
@@ -31,11 +29,11 @@ data class ForeignKeyMeta(
 
 fun ForeignKeyMeta.reversed(): ForeignKeyMeta =
     ForeignKeyMeta(
+        name,
         targetTableName,
         targetColumnNames,
         sourceTableName,
         sourceColumnNames,
-        name
     )
 
 fun GenAssociation.getMeta(): AssociationMeta =
@@ -61,15 +59,6 @@ fun AssociationMeta.toFkMeta(): ForeignKeyMeta =
 
 fun GenAssociation.toFkMeta(): ForeignKeyMeta =
     this.getMeta().toFkMeta()
-
-fun createFkName(
-    sourceTableName: String,
-    sourceColumnNames: List<String>,
-    targetTableName: String,
-    targetColumnNames: List<String>,
-): String =
-    "fk_${sourceTableName.clearTableName()}_${sourceColumnNames.joinToString("_") { it.clearColumnName() }}" +
-            "_${targetTableName.clearTableName()}_${targetColumnNames.joinToString("_") { it.clearColumnName() }}"
 
 private fun DissociateAction?.toOnDeleteAction(): String =
     when (this) {
