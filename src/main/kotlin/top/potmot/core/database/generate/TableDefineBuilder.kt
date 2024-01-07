@@ -32,7 +32,7 @@ abstract class TableDefineBuilder(
         getColumnTypeDefiner().getTypeDefine(typeMeta)
 
     fun produceIdentifer(identifer: String): String =
-        identifierFilter.filterIdentifier(identifer).changeCase().escape()
+        identifierFilter.getIdentifier(identifer).changeCase().escape()
 
     open fun createTable(
         name: String,

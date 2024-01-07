@@ -272,10 +272,10 @@ private data class JoinColumnProps(
             val onlyName = referencedColumnName == null && foreignKeyType == null
 
             if (onlyName) {
-                append("@JoinColumn(name = \"${identifierFilter.filterIdentifier(joinColumnName).changeCase()}\")")
+                append("@JoinColumn(name = \"${identifierFilter.getIdentifier(joinColumnName).changeCase()}\")")
             } else {
                 appendLine("@JoinColumn(")
-                appendLine("    name = \"${identifierFilter.filterIdentifier(joinColumnName).changeCase()}\",")
+                appendLine("    name = \"${identifierFilter.getIdentifier(joinColumnName).changeCase()}\",")
                 if (referencedColumnName != null) {
                     appendLine("    referencedColumnName = \"${referencedColumnName.changeCase()}\"")
                 }
@@ -296,9 +296,9 @@ private data class JoinTableProps(
     fun toAnnotation() =
         buildString {
             appendLine("@JoinTable(")
-            appendLine("    name = \"${identifierFilter.filterIdentifier(joinTableName).changeCase()}\",")
-            appendLine("    joinColumnName = \"${identifierFilter.filterIdentifier(joinColumnName).changeCase()}\",")
-            appendLine("    inverseJoinColumnName = \"${identifierFilter.filterIdentifier(inverseJoinColumnName).changeCase()}\"")
+            appendLine("    name = \"${identifierFilter.getIdentifier(joinTableName).changeCase()}\",")
+            appendLine("    joinColumnName = \"${identifierFilter.getIdentifier(joinColumnName).changeCase()}\",")
+            appendLine("    inverseJoinColumnName = \"${identifierFilter.getIdentifier(inverseJoinColumnName).changeCase()}\"")
             appendLine(")")
         }
 }

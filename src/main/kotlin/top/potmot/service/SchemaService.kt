@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.load.getCatalog
 import top.potmot.core.database.load.getFkAssociations
@@ -128,10 +129,10 @@ class SchemaService(
         return result
     }
 
-    @GetMapping("/dataSource/{dataSourceId}/schema/{schemaIds}", "/dataSource/{dataSourceId}/schema/")
+    @GetMapping("/dataSource/{dataSourceId}/schema/")
     fun list(
         @PathVariable dataSourceId: Long,
-        @PathVariable(required = false) schemaIds: List<Long>?
+        @RequestParam(required = false) schemaIds: List<Long>?
     ): List<GenSchemaView> {
         return sqlClient
             .createQuery(GenSchema::class) {

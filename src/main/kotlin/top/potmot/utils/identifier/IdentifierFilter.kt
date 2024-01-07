@@ -12,19 +12,17 @@ class IdentifierFilter(
 ) {
     private val hashMap: HashMap<String, String> = HashMap()
 
-    fun filterIdentifier(identifier: String): String =
-        if (!hashMap.containsKey(identifier)) {
-            if (identifier.length <= maxLength) {
-                hashMap[identifier] = identifier
-                identifier
-            } else {
-                val truncatedIdentifier = truncateIdentifier(identifier)
-                hashMap[identifier] = truncatedIdentifier
-                truncatedIdentifier
-            }
-        } else {
-            hashMap[identifier]!!
+    fun getIdentifier(identifier: String): String {
+        val truncatedIdentifier = hashMap.getOrDefault(identifier, identifier)
+
+        if (truncatedIdentifier.length > maxLength) {
+            val result = truncateIdentifier(truncatedIdentifier)
+            hashMap[identifier] = result
+            return result
         }
+
+        return truncatedIdentifier
+    }
 
     private fun truncateIdentifier(identifier: String): String {
         val index = maxLength - truncateLength - 1
