@@ -15,13 +15,13 @@ class IdentifierFilter(
     fun getIdentifier(identifier: String): String {
         val truncatedIdentifier = hashMap.getOrDefault(identifier, identifier)
 
-        if (truncatedIdentifier.length > maxLength) {
+        return if (truncatedIdentifier.length > maxLength) {
             val result = truncateIdentifier(truncatedIdentifier)
             hashMap[identifier] = result
-            return result
+            result
+        } else {
+            truncatedIdentifier
         }
-
-        return truncatedIdentifier
     }
 
     private fun truncateIdentifier(identifier: String): String {

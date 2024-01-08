@@ -42,14 +42,14 @@ class PostgreTableDefineGenerator : TableDefineGenerator() {
 
         private fun createTableComment(name: String, comment: String): String? =
             if (comment.isNotEmpty()) {
-                "COMMENT ON TABLE ${name.escape()} IS '${comment}'"
+                "COMMENT ON TABLE ${produceIdentifier(name)} IS '${comment}'"
             } else {
                 null
             }
 
         private fun createColumnComment(tableName: String, columnName: String, comment: String): String? =
             if (comment.isNotEmpty()) {
-                "COMMENT ON COLUMN ${tableName.escape()}.${columnName.escape()} IS '${comment}'"
+                "COMMENT ON COLUMN ${produceIdentifier(tableName)}.${produceIdentifier(columnName)} IS '${comment}'"
             } else {
                 null
             }

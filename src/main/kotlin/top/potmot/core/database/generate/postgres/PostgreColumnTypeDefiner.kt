@@ -10,9 +10,6 @@ class PostgreColumnTypeDefiner : ColumnTypeDefiner {
         when (typeCode) {
             Types.BIT -> true
 
-            Types.CHAR, Types.VARCHAR,
-            Types.NCHAR, Types.NVARCHAR -> true
-
             Types.DECIMAL, Types.NUMERIC -> true
 
             else -> false
@@ -60,15 +57,11 @@ class PostgreColumnTypeDefiner : ColumnTypeDefiner {
             Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR,
             Types.CLOB, Types.NCLOB -> {
                 typeMeta.type = "TEXT"
-                typeMeta.displaySize = 0
-                typeMeta.numericPrecision = 0
             }
 
             Types.BLOB,
             Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> {
                 typeMeta.type = "BYTEA"
-                typeMeta.displaySize = 0
-                typeMeta.numericPrecision = 0
             }
 
             Types.BIT -> {
@@ -76,20 +69,16 @@ class PostgreColumnTypeDefiner : ColumnTypeDefiner {
             }
             Types.TINYINT, Types.SMALLINT -> {
                 typeMeta.type = "SMALLINT"
-                typeMeta.displaySize = 0
             }
             Types.INTEGER -> {
                 typeMeta.type = "INT"
-                typeMeta.displaySize = 0
             }
             Types.BIGINT -> {
                 typeMeta.type = "BIGINT"
-                typeMeta.displaySize = 0
             }
 
             Types.REAL, Types.FLOAT -> {
                 typeMeta.type = "REAL"
-                typeMeta.displaySize = 0
 
             }
             Types.DOUBLE -> {
@@ -127,18 +116,12 @@ class PostgreColumnTypeDefiner : ColumnTypeDefiner {
             when (typeMeta.typeCode) {
                 Types.TINYINT, Types.SMALLINT -> {
                     typeMeta.type = "SMALLSERIAL"
-                    typeMeta.displaySize = 0
-                    typeMeta.numericPrecision = 0
                 }
                 Types.INTEGER -> {
                     typeMeta.type = "SERIAL"
-                    typeMeta.displaySize = 0
-                    typeMeta.numericPrecision = 0
                 }
                 Types.BIGINT -> {
                     typeMeta.type = "BIGSERIAL"
-                    typeMeta.displaySize = 0
-                    typeMeta.numericPrecision = 0
                 }
             }
         }

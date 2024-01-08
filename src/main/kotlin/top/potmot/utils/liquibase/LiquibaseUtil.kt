@@ -18,11 +18,11 @@ import liquibase.resource.OpenOptions
 import liquibase.resource.Resource
 import liquibase.serializer.core.xml.XMLChangeLogSerializer
 import top.potmot.config.GenConfig
+import top.potmot.core.database.generate.ColumnTypeDefiner
 import top.potmot.core.database.generate.getColumnTypeDefiner
 import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.core.database.meta.toMappingTableMeta
 import top.potmot.enumeration.AssociationType
-import top.potmot.enumeration.DataSourceType
 import top.potmot.model.GenDataSource
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenTableModelInput
@@ -42,13 +42,13 @@ import java.util.*
 /**
  * 转换 GenColumn 为 ColumnConfig
  */
-private fun GenTableModelInput.TargetOf_columns.toColumnConfig(dataSourceType: DataSourceType): ColumnConfig {
+private fun GenTableModelInput.TargetOf_columns.toColumnConfig(typeDefiner: ColumnTypeDefiner): ColumnConfig {
     val columnConfig = ColumnConfig()
 
     // 基本信息
     columnConfig.name = name
     columnConfig.remarks = comment
-    columnConfig.type = dataSourceType.getColumnTypeDefiner().getTypeDefine(getTypeMeta())
+    columnConfig.type = typeDefiner.getTypeDefine(getTypeMeta())
     columnConfig.isAutoIncrement = autoIncrement
 
     defaultValue.let {
@@ -95,7 +95,7 @@ private fun GenTableModelInput.TargetOf_columns.toColumnConfig(dataSourceType: D
 /**
  * 转换 GenTableModelInput 为 CreateTableChange
  */
-private fun GenTableModelInput.toCreateTableChange(dataSourceType: DataSourceType): CreateTableChange {
+private fun GenTableModelInput.toCreateTableChange(typeDefiner: ColumnTypeDefiner): CreateTableChange {
     val createTableChange = CreateTableChange()
 
     // 基本信息
@@ -106,7 +106,7 @@ private fun GenTableModelInput.toCreateTableChange(dataSourceType: DataSourceTyp
         createTableChange.schemaName = it.name
     }
 
-    createTableChange.columns = columns.map { it.toColumnConfig(dataSourceType) }
+    createTableChange.columns = columns.map { it.toColumnConfig(typeDefiner) }
 
     return createTableChange
 }
@@ -150,7 +150,7 @@ private fun GenAssociationModelInput.toFkChange(): AddForeignKeyConstraintChange
  * 从 GenAssociation 转化为 多对多变更记录
  * 即生成中间表与两个关联外键
  */
-private fun GenAssociationModelInput.toManyToManyChanges(): List<Change> {
+private fun GenAssociationModelInput.toManyToManyChanges(typeDefiner: ColumnTypeDefiner): List<Change> {
     val mappingTable = CreateTableChange()
 
     val meta = toEntity().toMappingTableMeta()
@@ -163,7 +163,7 @@ private fun GenAssociationModelInput.toManyToManyChanges(): List<Change> {
         val mappingSourceColumn = ColumnConfig()
 
         mappingSourceColumn.setName(it)
-        mappingSourceColumn.setType(meta.columnTypes[index])
+        mappingSourceColumn.setType(typeDefiner.getTypeDefine(meta.columnTypes[index]))
         mappingSourceColumn.setConstraints(ConstraintsConfig().setPrimaryKey(true))
         mappingTable.addColumn(mappingSourceColumn)
     }
@@ -173,7 +173,7 @@ private fun GenAssociationModelInput.toManyToManyChanges(): List<Change> {
         val mappingSourceColumn = ColumnConfig()
 
         mappingSourceColumn.setName(it)
-        mappingSourceColumn.setType(meta.columnTypes[index])
+        mappingSourceColumn.setType(typeDefiner.getTypeDefine(meta.columnTypes[index]))
         mappingSourceColumn.setConstraints(ConstraintsConfig().setPrimaryKey(true))
         mappingTable.addColumn(mappingSourceColumn)
     }
@@ -213,15 +213,17 @@ fun createDatabaseChangeLog(
     val changeSet = ChangeSet("1", GenConfig.author, false, false, null, null, null, null)
     changeLog.addChangeSet(changeSet)
 
+    val typeDefiner = dataSource.type.getColumnTypeDefiner()
+
     tables.forEach {column ->
-        column.toCreateTableChange(dataSourceType = dataSource.type)
+        column.toCreateTableChange(typeDefiner)
             .apply { changeSet.addChange(this) }
         column.getAddUniqueConstraintChange().forEach { changeSet.addChange(it) }
     }
 
     associations.forEach {association ->
         if (association.associationType == AssociationType.MANY_TO_MANY) {
-            association.toManyToManyChanges()
+            association.toManyToManyChanges(typeDefiner)
                 .forEach { changeSet.addChange(it) }
         } else {
             association.toFkChange()

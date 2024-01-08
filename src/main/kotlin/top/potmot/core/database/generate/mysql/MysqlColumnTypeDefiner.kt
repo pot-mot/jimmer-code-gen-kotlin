@@ -64,7 +64,6 @@ class MysqlColumnTypeDefiner : ColumnTypeDefiner {
 
             Types.LONGVARCHAR, Types.LONGNVARCHAR -> {
                 typeMeta.type = "LONGTEXT"
-                typeMeta.displaySize = 0
             }
 
             Types.BINARY -> {
