@@ -35,7 +35,7 @@
 
 考虑到部分开发环境需要补充安装 gradle，所以项目也直接提供的包含前端的 jar，且默认以 h2 启动。
 
-此时直接前往 [jar](jar) 目录下使用 `java -jar` 直接启动 jar 包并从浏览器访问 `localhost:8080` 即可。
+前往 [发行版](https://github.com/pot-mot/jimmer-code-gen-kotlin/releases) 获取 jar 包，使用 `java -jar` 直接启动 jar 包并从浏览器访问 `localhost:8080` 即可。
 
 如果计划二次开发，请继续往下。
 
