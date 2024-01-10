@@ -63,6 +63,7 @@ class SchemaService(
      */
     @PostMapping("/dataSource/{dataSourceId}/schema/{name}")
     @Transactional
+    @Throws(DataSourceLoadException::class)
     fun load(
         @PathVariable dataSourceId: Long,
         @PathVariable name: String

@@ -28,6 +28,7 @@ class H2Initializer(
         }
     }
 
+    @Throws(DataSourceException.H2InitFail::class)
     private fun initH2() {
         dataSource.connection.use { connection ->
 

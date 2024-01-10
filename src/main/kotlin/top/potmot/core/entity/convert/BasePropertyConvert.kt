@@ -2,40 +2,32 @@ package top.potmot.core.entity.convert
 
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.GenerationType
-import top.potmot.core.database.generate.getIdentifierFilter
 import top.potmot.core.database.meta.ColumnTypeMeta
-import top.potmot.core.database.meta.getPropertyType
 import top.potmot.core.database.meta.getTypeMeta
-import top.potmot.enumeration.DataSourceType
-import top.potmot.enumeration.GenLanguage
+import top.potmot.error.ColumnTypeException
+import top.potmot.error.ConvertEntityException
 import top.potmot.model.GenProperty
 import top.potmot.model.by
 import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.dto.GenTypeMappingView
 
 typealias TypeMapping = (column: ColumnTypeMeta) -> String
 
-fun createProperties(
+/**
+ * 转换基本属性
+ * 返回 Map<columnId, property>
+ */
+@Throws(ConvertEntityException::class, ColumnTypeException::class)
+fun convertBaseProperties(
     table: GenTableAssociationsView,
-    language: GenLanguage,
-    dataSourceType: DataSourceType,
-    typeMappings: List<GenTypeMappingView>
-): List<GenProperty> {
-    val typeMapping: TypeMapping = { column -> column.getPropertyType(dataSourceType, language, typeMappings) }
-
-    val baseColumnPropertyPairs = table.columns.map {column ->
-        column to column.toBaseProperty(typeMapping).let {property ->
-            if (column.partOfPk) property.toIdProperty(column) else property
-        }
+    typeMapping: TypeMapping,
+) =
+    table.columns.associate { column ->
+        column.id to column
+            .toBaseProperty(typeMapping)
+            .let { property ->
+                if (column.partOfPk) property.toIdProperty(column) else property
+            }
     }
-
-    return produceAssociationProperty(
-        table,
-        baseColumnPropertyPairs,
-        typeMapping,
-        dataSourceType.getIdentifierFilter()
-    )
-}
 
 /**
  * 转换为基础属性
@@ -54,7 +46,7 @@ fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
         this.listType = false
         this.typeNotNull = column.typeNotNull
         this.idProperty = false
-        this.idGenerationType  = null
+        this.idGenerationType = null
         this.keyProperty = column.businessKey
         this.logicalDelete = column.logicalDelete
         this.enumId = column.enumId

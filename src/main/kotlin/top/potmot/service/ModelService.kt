@@ -54,6 +54,7 @@ class ModelService(
 
     @PostMapping
     @Transactional
+    @Throws(ModelLoadException::class)
     fun save(
         @RequestBody input: GenModelInput
     ): Long {
@@ -78,7 +79,6 @@ class ModelService(
                  * 保存 tables
                  */
                 val tableIndexesPairs = tables.map { it.toInputPart(enumNameIdMap) }.toMutableList()
-
 
                 /**
                  * 2.2.1

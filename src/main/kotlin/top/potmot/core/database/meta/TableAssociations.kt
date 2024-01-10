@@ -11,6 +11,7 @@ data class TableAssociations(
     val inAssociations: List<GenAssociation>,
 )
 
+@Throws(ConvertEntityException::class)
 fun GenTableAssociationsView.getAssociations(): TableAssociations {
     val columnMap = columns.associateBy { it.id }
 

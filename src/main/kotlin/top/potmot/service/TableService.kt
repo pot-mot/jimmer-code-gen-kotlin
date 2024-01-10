@@ -14,11 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.config.GenConfig
-import top.potmot.core.database.generate.generateTableDefine
-import top.potmot.enumeration.DataSourceType
 import top.potmot.model.GenTable
 import top.potmot.model.comment
 import top.potmot.model.createdTime
@@ -57,24 +53,6 @@ class TableService(
     @GetMapping("/query")
     fun queryAssociationsView(query: TableQuery): List<GenTableAssociationsView> {
         return query(query, GenTableAssociationsView::class)
-    }
-
-    @GetMapping("/define/{id}")
-    fun getTableDefine(
-        @PathVariable id: Long,
-        @RequestParam(required = false) type: DataSourceType?
-    ): Map<String, String> {
-        val map = mutableMapOf<String, String>()
-
-        queryAssociationsView(TableQuery(ids = listOf(id))).firstOrNull()?.let {table ->
-            val types = listOfNotNull(type).let {
-                it.ifEmpty { listOf(GenConfig.dataSourceType) }
-            }
-
-            map += generateTableDefine(table, types)
-        }
-
-        return map
     }
 
     @DeleteMapping("/{ids}")

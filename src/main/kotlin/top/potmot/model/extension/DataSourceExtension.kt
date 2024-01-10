@@ -15,6 +15,7 @@ import us.fatehi.utility.datasource.MultiUseUserCredentials
  * @return 返回测试后的数据库连接源（DatabaseConnectionSource）对象。
  * @throws DataSourceException 如果连接失败，则抛出DataSourceException异常。
  */
+@Throws(DataSourceException.ConnectFail::class)
 fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
     try {
         this.get().close()
@@ -24,6 +25,7 @@ fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
     }
 }
 
+@Throws(DataSourceException.SqlExecuteFail::class)
 fun GenDataSource.execute(schemaName: String, sql: String, log: Boolean = false, ignoreExecuteFail: Boolean = false): List<SQLExecuteResult> {
     val connection =
         when (this.type) {
@@ -47,11 +49,9 @@ fun GenDataSource.execute(schemaName: String, sql: String, log: Boolean = false,
 }
 
 /**
- * 从 GenDataSource 转换为 DatabaseConnectionSource
- *
- * @return 返回测试后的数据库连接源（DatabaseConnectionSource）对象。
- * @throws DataSourceException 如果转换失败，则抛出DataSourceException异常。
+ * 从 GenDataSource 转换为 schema crawler 的 DatabaseConnectionSource
  */
+@Throws(DataSourceException.ConnectFail::class)
 fun GenDataSource.toSource(urlSuffix: String): DatabaseConnectionSource {
     return DatabaseConnectionSources.newDatabaseConnectionSource(
         this.url + urlSuffix,
@@ -59,10 +59,12 @@ fun GenDataSource.toSource(urlSuffix: String): DatabaseConnectionSource {
     ).test()
 }
 
+@Throws(DataSourceException.ConnectFail::class)
 fun GenDataSource.toSource(): DatabaseConnectionSource {
     return this.toSource("")
 }
 
+@Throws(DataSourceException.ConnectFail::class)
 fun GenDataSource.test() {
     this.toSource().close()
 }

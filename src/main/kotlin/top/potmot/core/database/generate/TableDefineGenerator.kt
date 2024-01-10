@@ -1,5 +1,7 @@
 package top.potmot.core.database.generate
 
+import top.potmot.error.ColumnTypeException
+import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.dto.GenTableAssociationsView
 
 abstract class TableDefineGenerator {
@@ -11,11 +13,13 @@ abstract class TableDefineGenerator {
     protected fun stringify(table: GenTableAssociationsView): String =
         stringify(listOf(table))
 
+    @Throws(ColumnTypeException::class, GenerateTableDefineException::class)
     fun generate(
         table: GenTableAssociationsView
     ): Pair<String, String> =
         Pair(formatFileName(table.name), stringify(table))
 
+    @Throws(ColumnTypeException::class, GenerateTableDefineException::class)
     fun generate(
         tables: Collection<GenTableAssociationsView>,
         withSingleTable: Boolean = true
@@ -28,6 +32,5 @@ abstract class TableDefineGenerator {
             } else {
                 list
             }
-        }
-
+        }.distinct()
 }

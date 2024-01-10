@@ -22,11 +22,13 @@ interface ColumnTypeDefiner {
 
     fun defaultNumericPrecision(typeCode: Int): Long?
 
+    @Throws(ColumnTypeException::class)
     fun getTypeDefine(typeMeta: ColumnTypeMeta): String =
         getTypeName(typeMeta) + getTypeDisplaySizeAndNumericPrecision(typeMeta.typeCode, typeMeta.displaySize, typeMeta.numericPrecision)
 
     fun getTypeName(typeMeta: ColumnTypeMeta): String
 
+    @Throws(ColumnTypeException::class)
     fun getTypeDisplaySizeAndNumericPrecision(typeCode: Int, displaySize: Long? = null, numericPrecision: Long? = null): String =
         buildString {
             var tempDisplaySize: Long? = null

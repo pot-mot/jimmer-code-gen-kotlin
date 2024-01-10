@@ -75,7 +75,7 @@ private fun ColumnReference.getTargetMeta(
 ): ColumnReferenceMetaPart? =
     getTargetNames().toMetaPart(tableNameMap)
 
-fun ColumnReference.getMeta(
+fun ColumnReference.toColumnReferenceMeta(
     tableNameMap: Map<String, GenTable>
 ): ColumnReferenceMeta? =
     getSourceMeta(tableNameMap)?.let { sourceMeta ->

@@ -13,6 +13,8 @@ import top.potmot.config.GenConfig
 import top.potmot.core.entity.convert.toGenEntity
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
+import top.potmot.error.ColumnTypeException
+import top.potmot.error.ConvertEntityException
 import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.dto.GenTableAssociationsView
@@ -42,6 +44,7 @@ class ConvertService(
 
 
     @PostMapping
+    @Throws(ConvertEntityException::class, ColumnTypeException::class)
     fun convert(
         @RequestBody tableIds: List<Long>,
         @RequestParam(required = false) modelId: Long?,

@@ -68,6 +68,7 @@ class DataSourceService(
      */
     @PostMapping
     @Transactional
+    @Throws(DataSourceException.ConnectFail::class)
     fun create(@RequestBody dataSource: GenDataSourceInput): Long {
         dataSource.toEntity().test()
         return sqlClient.insert(dataSource).modifiedEntity.id
@@ -78,6 +79,7 @@ class DataSourceService(
      */
     @PutMapping("/{id}")
     @Transactional
+    @Throws(DataSourceException.ConnectFail::class)
     fun edit(@PathVariable id: Long, @RequestBody dataSource: GenDataSourceInput): Long {
         dataSource.toEntity().test()
         return sqlClient.update(dataSource.toEntity().copy {
@@ -90,6 +92,7 @@ class DataSourceService(
      */
     @PostMapping("/test")
     @Transactional
+    @Throws(DataSourceException.ConnectFail::class)
     fun test(@RequestBody dataSource: GenDataSourceInput): Boolean {
         return try {
             dataSource.toEntity().test()

@@ -1,6 +1,7 @@
 package top.potmot.core.entity.generate
 
 import top.potmot.enumeration.DataSourceType
+import top.potmot.error.GenerateEntityException
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as PropertyEnum
 
@@ -26,6 +27,7 @@ abstract class EntityCodeGenerator {
 
     protected abstract fun stringify(enum: PropertyEnum, dataSourceType: DataSourceType): String
 
+    @Throws(GenerateEntityException::class)
     fun generate(
         entity: GenEntityPropertiesView,
         dataSourceType: DataSourceType,
@@ -40,6 +42,7 @@ abstract class EntityCodeGenerator {
     ): Pair<String, String> =
         Pair(formatFileName(enum, withPath), stringify(enum, dataSourceType))
 
+    @Throws(GenerateEntityException::class)
     fun generateWithEnums(
         entity: GenEntityPropertiesView,
         dataSourceType: DataSourceType,

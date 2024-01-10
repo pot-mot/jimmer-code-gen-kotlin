@@ -67,11 +67,17 @@ fun createMappingTableComment(
 ): String =
     "${sourceTableComment.clearTableComment()}与${targetTableComment.clearTableComment()}的映射关系表"
 
+fun createMappingColumnName(
+    tableName: String,
+    columnName: String,
+): String =
+   "${tableName.clearTableName()}_${columnName.clearColumnName()}"
+
 fun createMappingColumnNames(
     tableName: String,
     columnNames: List<String>,
 ): List<String> =
-    columnNames.map { "${tableName.clearTableName()}_${it.clearColumnName()}" }
+    columnNames.map { createMappingColumnName(tableName, it) }
 
 fun GenAssociation.toMappingTableMeta(): MappingTableMeta =
     MappingTableMeta(

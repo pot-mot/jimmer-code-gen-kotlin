@@ -5,6 +5,7 @@ import top.potmot.core.database.generate.getColumnTypeDefiner
 import top.potmot.core.database.meta.ColumnTypeMeta
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
+import top.potmot.error.ColumnTypeException
 import top.potmot.model.dto.GenTypeMappingView
 import java.math.BigDecimal
 import java.sql.Types
@@ -96,7 +97,7 @@ private fun mappingPropertyType(
     return null
 }
 
-fun getPropertyType(
+private fun getPropertyType(
     typeCode: Int,
     typeNotNull: Boolean,
     language: GenLanguage = GenConfig.language,
@@ -106,6 +107,10 @@ fun getPropertyType(
         GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeCode)?.qualifiedName
     }
 
+/**
+ * 基于 ColumnTypeMeta 映射 property type，需要通过 dataSourceType 和 language 参数获取映射方式
+ */
+@Throws(ColumnTypeException::class)
 fun getPropertyType (
     typeMeta: ColumnTypeMeta,
     dataSourceType: DataSourceType = GenConfig.dataSourceType,
@@ -117,4 +122,6 @@ fun getPropertyType (
         typeMappings,
         dataSourceType,
         language,
-    ) ?: getPropertyType(typeMeta.typeCode, typeMeta.typeNotNull, language) ?: typeMeta.type
+    )
+        ?: getPropertyType(typeMeta.typeCode, typeMeta.typeNotNull, language)
+        ?: typeMeta.type

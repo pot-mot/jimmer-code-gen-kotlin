@@ -1,3 +1,3 @@
 package top.potmot.error
 
-class ConfigException(message: String) : RuntimeException("Config parse fail: $message")
+class ConfigException(message: String) : Exception("Config parse fail: $message")

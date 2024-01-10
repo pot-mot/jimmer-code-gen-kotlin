@@ -15,7 +15,7 @@ import schemacrawler.schemacrawler.LoadOptionsBuilder
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder
 import schemacrawler.schemacrawler.SchemaInfoLevelBuilder
 import schemacrawler.tools.utility.SchemaCrawlerUtility
-import top.potmot.core.database.meta.getMeta
+import top.potmot.core.database.meta.toColumnReferenceMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
 import top.potmot.error.DataSourceLoadException
@@ -168,9 +168,11 @@ fun Column.toGenColumn(
  * 根据 Table 中的外键转换 Association
  * 要求 GenTable 已经 save，具有 columns，columns 具有 id 与 name
  */
+@Throws(DataSourceLoadException::class)
 fun Table.getFkAssociations(tableNameMap: Map<String, GenTable>): List<GenAssociation> =
     foreignKeys.map { it.toGenAssociation(tableNameMap) }
 
+@Throws(DataSourceLoadException::class)
 private fun ForeignKey.toGenAssociation(
     tableNameMap: Map<String, GenTable>
 ): GenAssociation {
@@ -184,25 +186,32 @@ private fun ForeignKey.toGenAssociation(
     val columnReferences = mutableListOf<GenColumnReference>()
 
     this.columnReferences.forEach { columnRef ->
-        columnRef.getMeta(tableNameMap)?.let {
+        columnRef.toColumnReferenceMeta(tableNameMap)?.let {meta ->
             columnReferences +=
                 new(GenColumnReference::class).by {
-                    this.sourceColumnId = it.source.column.id
-                    this.targetColumnId = it.target.column.id
-                    this.remark = columnRef.toString()
+                    sourceColumnId = meta.source.column.id
+                    targetColumnId = meta.target.column.id
+                    remark = columnRef.toString()
                 }
 
             association = association.copy {
                 if (!isLoaded(this, GenAssociationProps.SOURCE_TABLE)) {
-                    this.sourceTable = it.source.table
-                } else if (this.sourceTable.id != it.source.table.id) {
-                    throw DataSourceLoadException.association("Convert foreign key [${association.name}] to association fail: \nsource table not match: \n${this.sourceTable} not equals ${it.source.table}")
+                    sourceTable = meta.source.table
+                } else if (sourceTable.id != meta.source.table.id) {
+                    throw DataSourceLoadException.association(
+                        "Convert foreign key [${association.name}] to association fail: \n" +
+                                "source table not match: \n" +
+                                "association table [${sourceTable}] not equals meta table [${meta.source.table}]"
+                    )
                 }
 
                 if (!isLoaded(this, GenAssociationProps.TARGET_TABLE)) {
-                    this.targetTable = it.target.table
-                } else if (this.targetTable.id != it.target.table.id) {
-                    throw DataSourceLoadException.association("Convert foreign key [${association.name}] to association fail: \ntarget table not match: \n${this.targetTable} not equals ${it.target.table}")
+                    targetTable = meta.target.table
+                } else if (targetTable.id != meta.target.table.id) {
+                    throw DataSourceLoadException.association(
+                        "Convert foreign key [${association.name}] to association fail: \n" +
+                                "target table not match: \n" +
+                                "association table [${targetTable}] not equals meta table [${meta.target.table}]")
                 }
             }
         }
@@ -221,9 +230,11 @@ private fun ForeignKeyUpdateRule.toDissociateAction(): DissociateAction =
         ForeignKeyUpdateRule.restrict -> DissociateAction.NONE
     }
 
+@Throws(DataSourceLoadException::class)
 fun Table.getGenIndexes(table: GenTable): List<GenTableIndex> =
     indexes.mapNotNull { it.toGenTableIndex(table) }
 
+@Throws(DataSourceLoadException::class)
 private fun Index.toGenTableIndex(table: GenTable): GenTableIndex? {
     val columnIds = columns.map {
         val nameMatchColumns = table.columns.filter { column -> column.name == it.name }

@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.database.generate.generateTableDefines
-import top.potmot.core.entity.generate.generateEntitiesCode
-import top.potmot.core.entity.generate.generateEnumsCode
+import top.potmot.config.GenConfig
+import top.potmot.core.database.generate.getTableDefineGenerator
+import top.potmot.core.entity.generate.getEntityGenerator
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
+import top.potmot.error.ColumnTypeException
+import top.potmot.error.ConvertEntityException
+import top.potmot.error.GenerateEntityException
+import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.GenEntity
 import top.potmot.model.GenEnum
 import top.potmot.model.GenModel
@@ -34,7 +38,21 @@ class PreviewService(
     @Autowired val sqlClient: KSqlClient,
     @Autowired val convertService: ConvertService
 ) {
+    @GetMapping("/tableDefine")
+    @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
+    fun previewTableDefine(
+        @RequestParam tableIds: List<Long>,
+        @RequestParam(required = false) dataSourceType: DataSourceType?,
+    ): List<Pair<String, String>> =
+        sqlClient.createQuery(GenTable::class) {
+            where(table.id valueIn tableIds)
+            select(table.fetch(GenTableAssociationsView::class))
+        }.execute().let {
+            generateTableDefines(it, dataSourceType)
+        }
+
     @GetMapping("/entity")
+    @Throws(GenerateEntityException::class)
     fun previewEntity(
         @RequestParam entityIds: List<Long>,
         @RequestParam(required = false) dataSourceType: DataSourceType?,
@@ -63,6 +81,7 @@ class PreviewService(
         }
 
     @GetMapping("/entity/byTable")
+    @Throws(ConvertEntityException::class, ColumnTypeException::class, GenerateEntityException::class)
     fun previewEntityByTable(
         @RequestParam tableIds: List<Long>,
         @RequestParam(required = false) modelId: Long?,
@@ -75,6 +94,87 @@ class PreviewService(
         return previewEntity(entityIds.toList(), dataSourceType, language, withPath)
     }
 
+    @PostMapping("/model/sql")
+    @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
+    fun previewModelSql(
+        @RequestParam id: Long,
+    ): List<Pair<String, String>> {
+        val model = getModel(id, baseInfoFetcher) ?: return emptyList()
+
+        val tables = sqlClient.createQuery(GenTable::class) {
+            where(table.modelId eq id)
+            select(table.fetch(GenTableAssociationsView::class))
+        }.execute()
+
+        return generateTableDefines(tables, model.dataSourceType)
+    }
+
+    @GetMapping("/model/entity")
+    @Throws(ConvertEntityException::class, ColumnTypeException::class, GenerateEntityException::class)
+    fun previewModelEntity(
+        @RequestParam id: Long,
+        @RequestParam(required = false) withPath: Boolean?
+    ): List<Pair<String, String>> {
+        val model = getModel(id, enumsFetcher) ?: return emptyList()
+
+        val entityCodes = if (model.syncConvertEntity) {
+            val tableIds = getTableIdsByModelId(id)
+            previewEntityByTable(tableIds, model.id, model.dataSourceType, model.language, model.packagePath, withPath)
+        } else {
+            val entities = getEntityByModelId(id)
+            generateEntitiesCode(entities, model.dataSourceType, model.language, withPath)
+        }
+
+        val enumCodes = previewEnums(model.enumIds, model.dataSourceType, model.language, withPath)
+
+
+        return (entityCodes + enumCodes).distinct()
+    }
+
+
+    /**
+     * 批量生成用基本函数
+     */
+
+    @Throws(GenerateEntityException::class)
+    fun generateEntitiesCode(
+        entities: Collection<GenEntityPropertiesView>,
+        dataSourceType: DataSourceType?,
+        language: GenLanguage?,
+        withPath: Boolean?
+    ): List<Pair<String, String>> =
+        language.getEntityGenerator().let {
+            entities.flatMap { entity ->
+                it.generateWithEnums(entity, dataSourceType ?: GenConfig.dataSourceType, withPath ?: false)
+            }.distinct()
+        }
+
+    fun generateEnumsCode(
+        enums: Collection<PropertyEnum>,
+        dataSourceType: DataSourceType?,
+        language: GenLanguage?,
+        withPath: Boolean?
+    ): List<Pair<String, String>> =
+        language.getEntityGenerator().let {
+            enums.map {enum ->
+                it.generate(enum, dataSourceType ?: GenConfig.dataSourceType, withPath ?: false)
+            }.distinct()
+        }
+
+
+    @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
+    fun generateTableDefines(
+        tables: Collection<GenTableAssociationsView>,
+        dataSourceType: DataSourceType?
+    ): List<Pair<String, String>> =
+        dataSourceType.getTableDefineGenerator()
+            .generate(tables)
+            .distinct()
+
+
+    /**
+     * 基本查询
+     */
 
     fun getTableIdsByModelId(modelId: Long): List<Long> =
         sqlClient.createQuery(GenTable::class) {
@@ -104,45 +204,10 @@ class PreviewService(
         enumIds()
     }
 
-    fun getModel(id: Long, fetcher: Fetcher<GenModel> = baseInfoFetcher): GenModel? {
+    fun getModel(id: Long, fetcher: Fetcher<GenModel>): GenModel? {
         return sqlClient.createQuery(GenModel::class) {
             where(table.id eq id)
             select(table.fetch(fetcher))
         }.execute().firstOrNull()
-    }
-
-    @PostMapping("/model/sql")
-    fun previewModelSql(
-        @RequestParam id: Long,
-    ): List<Pair<String, String>> {
-        val model = getModel(id) ?: return emptyList()
-
-        val tables = sqlClient.createQuery(GenTable::class) {
-            where(table.modelId eq id)
-            select(table.fetch(GenTableAssociationsView::class))
-        }.execute()
-
-        return generateTableDefines(tables, listOf(model.dataSourceType))
-    }
-
-    @GetMapping("/model/entity")
-    fun previewModelEntity(
-        @RequestParam id: Long,
-        @RequestParam(required = false) withPath: Boolean?
-    ): List<Pair<String, String>> {
-        val model = getModel(id, enumsFetcher) ?: return emptyList()
-
-        val entityCodes = if (model.syncConvertEntity) {
-            val tableIds = getTableIdsByModelId(id)
-            previewEntityByTable(tableIds, model.id, model.dataSourceType, model.language, model.packagePath, withPath)
-        } else {
-            val entities = getEntityByModelId(id)
-            generateEntitiesCode(entities, model.dataSourceType, model.language, withPath)
-        }
-
-        val enumCodes = previewEnums(model.enumIds, model.dataSourceType, model.language, withPath)
-
-
-        return (entityCodes + enumCodes).distinct()
     }
 }

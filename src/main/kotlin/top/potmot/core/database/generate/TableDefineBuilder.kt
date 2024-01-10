@@ -1,7 +1,5 @@
 package top.potmot.core.database.generate
 
-import top.potmot.core.entity.convert.clearColumnName
-import top.potmot.core.entity.convert.clearTableName
 import top.potmot.core.database.meta.ForeignKeyMeta
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.core.database.meta.ColumnTypeMeta
@@ -14,6 +12,8 @@ import top.potmot.enumeration.AssociationType.MANY_TO_MANY
 import top.potmot.enumeration.AssociationType.MANY_TO_ONE
 import top.potmot.enumeration.AssociationType.ONE_TO_MANY
 import top.potmot.enumeration.AssociationType.ONE_TO_ONE
+import top.potmot.error.ColumnTypeException
+import top.potmot.error.ConvertEntityException
 import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.extension.pkColumns
@@ -28,6 +28,7 @@ abstract class TableDefineBuilder(
 
     abstract fun getColumnTypeDefiner(): ColumnTypeDefiner
 
+    @Throws(ColumnTypeException::class)
     open fun getColumnTypeDefine(typeMeta: ColumnTypeMeta): String =
         getColumnTypeDefiner().getTypeDefine(typeMeta)
 
@@ -61,6 +62,7 @@ abstract class TableDefineBuilder(
     ): String =
         pkDefine(table.pkColumns().map { it.name })
 
+    @Throws(ColumnTypeException::class)
     open fun columnStringify(column: GenTableAssociationsView.TargetOf_columns): String =
         buildString {
             append(produceIdentifier(column.name))
@@ -80,6 +82,7 @@ abstract class TableDefineBuilder(
             }
         }
 
+    @Throws(ColumnTypeException::class)
     open fun createTable(
         table: GenTableAssociationsView,
         otherLines: List<String> = emptyList()
@@ -100,6 +103,7 @@ abstract class TableDefineBuilder(
         )
     }
 
+    @Throws(GenerateTableDefineException::class)
     open fun createIndexes(
         table: GenTableAssociationsView,
     ) =
@@ -108,10 +112,8 @@ abstract class TableDefineBuilder(
 
             if (columnNames.size != index.columnIds.size) {
                 throw GenerateTableDefineException.index(
-                    "Index [${index.name}] column not match: " +
-                            " table: ${table.name} " +
-                            " current columns: ${table.columns.map { it.id to it.name }} " +
-                            " need column ids: ${index.columnIds}"
+                    "Index [${index.name}] generate fail: " +
+                            " table ${table.name} columns [${table.columns.map { it.name }} not match index column ids [${index.columnIds}]"
                 )
             }
 
@@ -206,7 +208,7 @@ abstract class TableDefineBuilder(
         tableName: String,
         columnNames: List<String>,
         unique: Boolean = false,
-        name: String = "${if (unique) "u" else ""}idx_${tableName.clearTableName()}_${columnNames.joinToString("_") { it.clearColumnName() }}"
+        name: String = "${if (unique) "u" else ""}idx_${tableName}_${columnNames.joinToString("_") { it }}"
     ): String {
         return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${produceIdentifier(name)} ON ${
             produceIdentifier(tableName)
@@ -216,6 +218,7 @@ abstract class TableDefineBuilder(
     /**
      * 根据 out association 生成外键约束、唯一性约束和关联表
      */
+    @Throws(ConvertEntityException::class)
     open fun GenTableAssociationsView.associationsStringify(): List<String> {
         val list = mutableListOf<String>()
 
