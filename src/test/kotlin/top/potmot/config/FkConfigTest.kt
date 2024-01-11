@@ -9,10 +9,9 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import top.potmot.context.GenConfigProperties
 import top.potmot.core.entity.convert.toGenEntity
 import top.potmot.enumeration.AssociationType
-import top.potmot.enumeration.DataSourceType
-import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.TableType
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.service.ConfigService
@@ -29,13 +28,10 @@ class FkConfigTest(
     @Order(1)
     fun testRealAssociationRealFkConfig() {
         configService.setConfig(GenConfigProperties(realFk = true, idViewProperty = false))
-        assertEquals(true, GenConfig.realFk)
+        assertEquals(true, GlobalGenConfig.realFk)
 
         val entity = table.toGenEntity(
             null,
-            DataSourceType.MySQL,
-            GenLanguage.KOTLIN,
-            "",
             emptyList()
         )
 
@@ -50,13 +46,10 @@ class FkConfigTest(
     @Order(2)
     fun testRealAssociationFakeFkConfig() {
         configService.setConfig(GenConfigProperties(realFk = false, idViewProperty = false))
-        assertEquals(false, GenConfig.realFk)
+        assertEquals(false, GlobalGenConfig.realFk)
 
         val entity = table.toGenEntity(
             null,
-            DataSourceType.MySQL,
-            GenLanguage.KOTLIN,
-            "",
             emptyList()
         )
 
@@ -73,13 +66,10 @@ class FkConfigTest(
         table.outAssociations[0].fake = true
 
         configService.setConfig(GenConfigProperties(realFk = true, idViewProperty = false))
-        assertEquals(true, GenConfig.realFk)
+        assertEquals(true, GlobalGenConfig.realFk)
 
         val entity = table.toGenEntity(
             null,
-            DataSourceType.MySQL,
-            GenLanguage.KOTLIN,
-            "",
             emptyList()
         )
 
@@ -96,13 +86,10 @@ class FkConfigTest(
         table.outAssociations[0].fake = true
 
         configService.setConfig(GenConfigProperties(realFk = false, idViewProperty = false))
-        assertEquals(false, GenConfig.realFk)
+        assertEquals(false, GlobalGenConfig.realFk)
 
         val entity = table.toGenEntity(
             null,
-            DataSourceType.MySQL,
-            GenLanguage.KOTLIN,
-            "",
             emptyList()
         )
 

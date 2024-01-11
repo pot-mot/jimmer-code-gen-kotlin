@@ -1,7 +1,7 @@
 package top.potmot.core.entity.meta
 
 import org.babyfish.jimmer.sql.ForeignKeyType
-import top.potmot.config.GenConfig
+import top.potmot.config.GlobalGenConfig
 import top.potmot.model.GenAssociation
 import top.potmot.utils.identifier.IdentifierFilter
 import top.potmot.utils.string.changeCase
@@ -26,13 +26,13 @@ data class JoinColumnMeta(
                 }
                 if (foreignKeyType != null) {
                     if (
-                        (GenConfig.realFk && foreignKeyType == ForeignKeyType.FAKE) ||
-                        (!GenConfig.realFk && foreignKeyType == ForeignKeyType.REAL)
+                        (GlobalGenConfig.realFk && foreignKeyType == ForeignKeyType.FAKE) ||
+                        (!GlobalGenConfig.realFk && foreignKeyType == ForeignKeyType.REAL)
                     ) {
                         appendLine("    foreignKeyType = ForeignKeyType.${foreignKeyType.name}")
                     }
                 }
-                appendLine(")")
+                append(")")
             }
         }
 }

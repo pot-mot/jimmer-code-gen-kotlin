@@ -1,6 +1,6 @@
 package top.potmot.core.entity.convert
 
-import top.potmot.config.GenConfig
+import top.potmot.context.getContextGenConfig
 import top.potmot.core.database.generate.getColumnTypeDefiner
 import top.potmot.core.database.meta.ColumnTypeMeta
 import top.potmot.enumeration.DataSourceType
@@ -100,7 +100,7 @@ private fun mappingPropertyType(
 private fun getPropertyType(
     typeCode: Int,
     typeNotNull: Boolean,
-    language: GenLanguage = GenConfig.language,
+    language: GenLanguage = getContextGenConfig().language,
 ): String? =
     when(language) {
         GenLanguage.JAVA -> jdbcTypeToJavaType(typeCode, typeNotNull)?.name
@@ -113,9 +113,9 @@ private fun getPropertyType(
 @Throws(ColumnTypeException::class)
 fun getPropertyType (
     typeMeta: ColumnTypeMeta,
-    dataSourceType: DataSourceType = GenConfig.dataSourceType,
-    language: GenLanguage = GenConfig.language,
     typeMappings: List<GenTypeMappingView> = emptyList(),
+    dataSourceType: DataSourceType = getContextGenConfig().dataSourceType,
+    language: GenLanguage = getContextGenConfig().language,
 ): String =
     mappingPropertyType(
         dataSourceType.getColumnTypeDefiner().getTypeDefine(typeMeta),

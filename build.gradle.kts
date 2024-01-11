@@ -32,8 +32,6 @@ val h2Version = "2.1.214"
 val schemacrawlerVersion = "16.20.4"
 val liquibaseVersion = "4.22.0"
 
-val caffeineVersion = "2.9.1"
-
 repositories {
     mavenCentral()
 }
@@ -49,8 +47,6 @@ dependencies {
     implementation("org.babyfish.jimmer:jimmer-spring-boot-starter:${jimmerVersion}")
 
     ksp("org.babyfish.jimmer:jimmer-ksp:${jimmerVersion}")
-
-    runtimeOnly("com.github.ben-manes.caffeine:caffeine:${caffeineVersion}")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 

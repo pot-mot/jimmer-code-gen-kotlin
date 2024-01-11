@@ -1,5 +1,6 @@
-package top.potmot.core.database.generate
+package top.potmot.core.database.generate.builder
 
+import top.potmot.core.database.generate.ColumnTypeDefiner
 import top.potmot.core.database.meta.ForeignKeyMeta
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.core.database.meta.ColumnTypeMeta
@@ -19,18 +20,16 @@ import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.extension.pkColumns
 import top.potmot.utils.identifier.IdentifierFilter
 import top.potmot.utils.string.changeCase
-import top.potmot.utils.template.TemplateBuilder
 
 abstract class TableDefineBuilder(
-    private val identifierFilter: IdentifierFilter
-) : TemplateBuilder() {
+    private val identifierFilter: IdentifierFilter,
+    private val columnTypeDefiner: ColumnTypeDefiner
+) {
     abstract fun String.escape(): String
-
-    abstract fun getColumnTypeDefiner(): ColumnTypeDefiner
 
     @Throws(ColumnTypeException::class)
     open fun getColumnTypeDefine(typeMeta: ColumnTypeMeta): String =
-        getColumnTypeDefiner().getTypeDefine(typeMeta)
+        columnTypeDefiner.getTypeDefine(typeMeta)
 
     fun produceIdentifier(identifier: String): String =
         identifierFilter.getIdentifier(identifier).changeCase().escape()
@@ -104,7 +103,7 @@ abstract class TableDefineBuilder(
     }
 
     @Throws(GenerateTableDefineException::class)
-    open fun createIndexes(
+    open fun indexLines(
         table: GenTableAssociationsView,
     ) =
         table.indexes.map { index ->
@@ -219,10 +218,12 @@ abstract class TableDefineBuilder(
      * 根据 out association 生成外键约束、唯一性约束和关联表
      */
     @Throws(ConvertEntityException::class)
-    open fun GenTableAssociationsView.associationsStringify(): List<String> {
+    open fun associationsStringify(
+        table: GenTableAssociationsView
+    ): List<String> {
         val list = mutableListOf<String>()
 
-        val (outAssociations) = getAssociations()
+        val (outAssociations) = table.getAssociations()
 
         outAssociations.forEach { association ->
             when (association.associationType) {

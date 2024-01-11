@@ -5,21 +5,24 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.config.GenConfig
-import top.potmot.config.GenConfigProperties
+import top.potmot.config.GlobalGenConfig
+import top.potmot.context.GenConfig
+import top.potmot.context.GenConfigProperties
+import top.potmot.context.createGenConfig
+import top.potmot.context.merge
 
 @RestController
 @RequestMapping("/config")
 class ConfigService {
     @GetMapping
     fun getConfig(): GenConfig {
-        return GenConfig
+        return createGenConfig()
     }
 
     @PutMapping
     fun setConfig(
         @RequestBody newConfig: GenConfigProperties
     ) {
-        GenConfig.merge(newConfig)
+        GlobalGenConfig.merge(newConfig)
     }
 }

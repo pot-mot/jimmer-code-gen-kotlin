@@ -2,7 +2,9 @@ package top.potmot.core.entity.convert
 
 import org.babyfish.jimmer.ImmutableObjects.deepClone
 import org.babyfish.jimmer.ImmutableObjects.isLoaded
-import top.potmot.config.GenConfig
+import top.potmot.config.GlobalGenConfig
+import top.potmot.context.getContextGenConfig
+import top.potmot.core.database.generate.getIdentifierFilter
 import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.core.database.meta.getAssociations
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
@@ -20,7 +22,6 @@ import top.potmot.model.GenProperty
 import top.potmot.model.GenPropertyDraft
 import top.potmot.model.copy
 import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.utils.identifier.IdentifierFilter
 import top.potmot.utils.string.toPlural
 import top.potmot.utils.string.toSingular
 
@@ -41,8 +42,9 @@ fun convertAssociationProperties(
     table: GenTableAssociationsView,
     basePropertyMap: Map<Long, GenProperty>,
     typeMapping: TypeMapping,
-    identifierFilter: IdentifierFilter,
 ): Map<Long, List<GenProperty>> {
+    val identifierFilter = getContextGenConfig().dataSourceType.getIdentifierFilter()
+
     val (
         outAssociations,
         inAssociations,
@@ -142,7 +144,7 @@ fun convertAssociationProperties(
 
         currentColumnProperties += associationProperty
 
-        if (GenConfig.idViewProperty) {
+        if (GlobalGenConfig.idViewProperty) {
             currentColumnProperties += createIdViewProperty(baseProperty, baseColumn, associationProperty, typeMapping)
         }
 
@@ -225,7 +227,7 @@ fun convertAssociationProperties(
 
         currentColumnProperties += associationProperty
 
-        if (GenConfig.idViewProperty) {
+        if (GlobalGenConfig.idViewProperty) {
             currentColumnProperties += createIdViewProperty(baseProperty, baseColumn, associationProperty, typeMapping)
         }
 

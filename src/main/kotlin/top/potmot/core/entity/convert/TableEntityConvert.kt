@@ -1,10 +1,8 @@
 package top.potmot.core.entity.convert
 
 import org.babyfish.jimmer.kt.new
-import top.potmot.config.GenConfig
-import top.potmot.core.database.generate.getIdentifierFilter
-import top.potmot.enumeration.DataSourceType
-import top.potmot.enumeration.GenLanguage
+import top.potmot.config.GlobalGenConfig
+import top.potmot.context.getContextGenConfig
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.model.GenEntity
@@ -28,14 +26,11 @@ import top.potmot.model.dto.GenTypeMappingView
 @Throws(ConvertEntityException::class, ColumnTypeException::class)
 fun GenTableAssociationsView.toGenEntity(
     modelId: Long?,
-    dataSourceType: DataSourceType,
-    language: GenLanguage,
-    packagePath: String,
     typeMappings: List<GenTypeMappingView>,
 ): GenEntity {
-    val baseEntity = tableToEntity(this, modelId, packagePath)
+    val baseEntity = tableToEntity(this, modelId)
 
-    val typeMapping: TypeMapping = { typeMeta -> getPropertyType(typeMeta, dataSourceType, language, typeMappings) }
+    val typeMapping: TypeMapping = { typeMeta -> getPropertyType(typeMeta, typeMappings) }
 
     val basePropertyMap = convertBaseProperties(
         this,
@@ -45,8 +40,7 @@ fun GenTableAssociationsView.toGenEntity(
     val associationPropertyMap = convertAssociationProperties(
         this,
         basePropertyMap,
-        typeMapping,
-        dataSourceType.getIdentifierFilter()
+        typeMapping
     )
 
     val associationProperties = associationPropertyMap.flatMap { it.value }
@@ -67,15 +61,14 @@ fun GenTableAssociationsView.toGenEntity(
 private fun tableToEntity(
     genTable: GenTableAssociationsView,
     modelId: Long?,
-    packagePath: String,
 ): GenEntity {
     return new(GenEntity::class).by {
         this.table().id = genTable.id
         this.modelId = modelId
-        this.author = GenConfig.author
+        this.author = GlobalGenConfig.author
         this.name = tableNameToClassName(genTable.name)
         this.comment = genTable.comment.clearTableComment()
         this.remark = genTable.remark
-        this.packagePath = packagePath
+        this.packagePath = getContextGenConfig().packagePath
     }
 }

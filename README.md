@@ -57,7 +57,7 @@
 - [application-mysql.yml](src%2Fmain%2Fresources%2Fapplication-mysql.yml)
 - [application-postgresql.yml](src%2Fmain%2Fresources%2Fapplication-postgresql.yml)
 
-`.gen` 路径下为全局配置，具体请参照 [GenConfig.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fconfig%2FGenConfig.kt) 
+`.gen` 路径下为全局配置，具体请参照 [GlobalGenConfig.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fconfig%2FGenConfig.kt) 
 
 ### 启动
 
@@ -101,7 +101,7 @@
 - [TableDefineBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineBuilder.kt)  
   表定义通用构建器
 
-- [EntityCodeBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fgenerate%2FEntityCodeBuilder.kt)  
+- [EntityBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fgenerate%2FEntityCodeBuilder.kt)  
   实体通用构建器器
 
 ## 其他

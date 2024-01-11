@@ -1,6 +1,6 @@
 package top.potmot.core.entity.meta
 
-import top.potmot.config.GenConfig
+import top.potmot.config.GlobalGenConfig
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.GenPropertyDraft
 
@@ -14,13 +14,13 @@ data class AssociationAnnotationMeta(
         buildString {
             append("@" + associationType.toAnnotation().simpleName)
             if (mappedBy.isNullOrBlank()) {
-                if (GenConfig.joinColumnAnnotation) {
+                if (GlobalGenConfig.joinColumnAnnotation) {
                     joinColumns.forEach {
                         append("\n${it.toAnnotation()}")
                     }
                 }
 
-                if (GenConfig.joinTableAnnotation) {
+                if (GlobalGenConfig.joinTableAnnotation) {
                     joinTable?.let {
                         append("\n${it.toAnnotation()}")
                     }

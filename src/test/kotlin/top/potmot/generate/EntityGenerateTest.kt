@@ -11,7 +11,6 @@ import org.springframework.test.context.ActiveProfiles
 import top.potmot.core.entity.generate.java.JavaEntityCodeGenerator
 import top.potmot.core.entity.generate.kotlin.KotlinEntityCodeGenerator
 import top.potmot.enumeration.AssociationType
-import top.potmot.enumeration.DataSourceType
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.util.replaceSinceTimeComment
 import java.time.LocalDateTime
@@ -28,7 +27,7 @@ class EntityGenerateTest {
     fun testJavaEntityGenerate() {
         assertEquals(
             javaExpected,
-            JavaEntityCodeGenerator().generate(baseEntity, DataSourceType.PostgreSQL).second
+            JavaEntityCodeGenerator().generate(baseEntity).second
                 .replaceSinceTimeComment()
         )
     }
@@ -38,7 +37,7 @@ class EntityGenerateTest {
     fun testKotlinEntityGenerate() {
         assertEquals(
             kotlinExpected,
-            KotlinEntityCodeGenerator().generate(baseEntity, DataSourceType.PostgreSQL).second
+            KotlinEntityCodeGenerator().generate(baseEntity).second
                 .replaceSinceTimeComment()
         )
     }

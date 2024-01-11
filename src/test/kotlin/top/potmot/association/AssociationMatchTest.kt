@@ -8,7 +8,7 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.config.GenConfig
+import top.potmot.config.GlobalGenConfig
 import top.potmot.core.database.match.includeTableNamePkColumnMatch
 import top.potmot.core.database.match.pkSuffixColumnMatch
 import top.potmot.core.database.match.simplePkColumnMatch
@@ -28,7 +28,7 @@ class AssociationMatchTest(
     @Test
     @Order(1)
     fun showConfig() {
-        assertEquals(GenLanguage.KOTLIN, GenConfig.language)
+        assertEquals(GenLanguage.KOTLIN, GlobalGenConfig.language)
     }
 
     @Test

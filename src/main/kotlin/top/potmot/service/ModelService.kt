@@ -78,7 +78,9 @@ class ModelService(
                  * 2.2
                  * 保存 tables
                  */
-                val tableIndexesPairs = tables.map { it.toInputPart(enumNameIdMap) }.toMutableList()
+                val tableIndexesPairs = tables.map {
+                    it.toInputPart(enumNameIdMap)
+                }.toMutableList()
 
                 /**
                  * 2.2.1
@@ -102,7 +104,8 @@ class ModelService(
                     }
                     val savedTable = savedTableMap[table.name]!!
                     sqlClient.update(savedTable.copy {
-                        this.indexes = indexes.map { index -> index.toInput(savedTable.columns.associate { it.name to it.id }) }
+                        this.indexes =
+                            indexes.map { index -> index.toInput(savedTable.columns.associate { it.name to it.id }) }
                     })
                 }
 

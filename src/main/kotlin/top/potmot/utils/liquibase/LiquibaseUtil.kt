@@ -17,7 +17,7 @@ import liquibase.resource.AbstractResourceAccessor
 import liquibase.resource.OpenOptions
 import liquibase.resource.Resource
 import liquibase.serializer.core.xml.XMLChangeLogSerializer
-import top.potmot.config.GenConfig
+import top.potmot.config.GlobalGenConfig
 import top.potmot.core.database.generate.ColumnTypeDefiner
 import top.potmot.core.database.generate.getColumnTypeDefiner
 import top.potmot.core.database.meta.getTypeMeta
@@ -210,7 +210,7 @@ fun createDatabaseChangeLog(
     associations: List<GenAssociationModelInput>
 ): DatabaseChangeLog {
     val changeLog = DatabaseChangeLog()
-    val changeSet = ChangeSet("1", GenConfig.author, false, false, null, null, null, null)
+    val changeSet = ChangeSet("1", GlobalGenConfig.author, false, false, null, null, null, null)
     changeLog.addChangeSet(changeSet)
 
     val typeDefiner = dataSource.type.getColumnTypeDefiner()

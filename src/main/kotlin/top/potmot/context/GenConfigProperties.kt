@@ -1,4 +1,4 @@
-package top.potmot.config
+package top.potmot.context
 
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
@@ -8,31 +8,31 @@ data class GenConfigProperties(
     var dataSourceType: DataSourceType? = null,
 
     /** 语言，java/kotlin */
-    val language: GenLanguage? = null,
+    var language: GenLanguage? = null,
 
     /** 作者  */
-    val author: String? = null,
+    var author: String? = null,
 
     /** 默认包路径  */
-    val defaultPackagePath: String? = null,
+    var packagePath: String? = null,
 
     /** 默认启用小写命名 */
     var lowerCaseName: Boolean? = null,
 
     /** 默认真实外键 */
-    val realFk: Boolean? = null,
+    var realFk: Boolean? = null,
 
     /** 是否生成 IdView 注释 */
     var idViewProperty: Boolean? = null,
 
     /** 逻辑删除默认配置 */
-    val logicalDeletedAnnotation: String? = null,
+    var logicalDeletedAnnotation: String? = null,
 
     /** 是否生成 Table 注释 */
-    val tableAnnotation: Boolean? = null,
+    var tableAnnotation: Boolean? = null,
 
     /** 是否生成 Column 注释 */
-    val columnAnnotation: Boolean? = null,
+    var columnAnnotation: Boolean? = null,
 
     /** 是否生成 JoinTable 注释 */
     var joinTableAnnotation: Boolean? = null,
@@ -45,54 +45,54 @@ data class GenConfigProperties(
      * 关联匹配与实体名生成时生效
      * 配置文件中由 ',' 进行分割
      */
-    val tablePrefix: String? = null,
+    var tablePrefix: String? = null,
 
     /**
      * 表名后缀
      * 关联匹配与实体名生成时生效
      * 配置文件中由 ',' 进行分割
      */
-    val tableSuffix: String? = null,
+    var tableSuffix: String? = null,
 
     /**
      * 表注释前缀
      * 实体注释生成时生效
      * 配置文件中由 ',' 进行分割
      */
-    val tableCommentPrefix: String? = null,
+    var tableCommentPrefix: String? = null,
 
     /**
      * 表注释后缀
      * 实体注释生成时生效
      * 配置文件中由 ',' 进行分割
      */
-    val tableCommentSuffix: String? = null,
+    var tableCommentSuffix: String? = null,
 
     /**
      * 列名前缀
      * 属性名生成时生效
      * 配置文件中由 ',' 进行分割
      */
-    val columnPrefix: String? = null,
+    var columnPrefix: String? = null,
 
     /**
      * 列名后缀
      * 属性名生成时生效
      * 配置文件中由 ',' 进行分割
      */
-    val columnSuffix: String? = null,
+    var columnSuffix: String? = null,
 
     /**
      * 列注释前缀
      * 属性名生成时生效
      * 配置文件中由 ',' 进行分割
      */
-    val columnCommentPrefix: String? = null,
+    var columnCommentPrefix: String? = null,
 
     /**
      * 列注释后缀
      * 属性注释生成时生效
      * 配置文件中由 ',' 进行分割
      */
-    val columnCommentSuffix: String? = null,
+    var columnCommentSuffix: String? = null,
 )

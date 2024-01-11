@@ -32,7 +32,7 @@ data class JoinTableMeta(
                 appendLine("    }")
             }
 
-            appendLine(")")
+            append(")")
         }
 }
 

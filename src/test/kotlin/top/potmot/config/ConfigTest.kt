@@ -1,6 +1,6 @@
 package top.potmot.config
 
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -8,6 +8,12 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import top.potmot.context.GenConfigProperties
+import top.potmot.context.cleanContextGenConfig
+import top.potmot.context.equals
+import top.potmot.context.getContextGenConfig
+import top.potmot.context.merge
+import top.potmot.context.toProperties
 import top.potmot.enumeration.GenLanguage
 import top.potmot.service.ConfigService
 
@@ -17,27 +23,77 @@ import top.potmot.service.ConfigService
 class AssociationMatchTest(
     @Autowired val configService: ConfigService
 ) {
+    val global = GlobalGenConfig
+
     /**
-     * 验证默认情况下项目的配置是否与预期一致
+     * 测试配置编辑功能是否符合预期
      */
     @Test
     @Order(1)
-    fun testConfig() {
-        val config = configService.getConfig()
+    fun testEquals() {
+        val context = getContextGenConfig()
 
-        Assertions.assertEquals(GenLanguage.KOTLIN, config.language)
+        assert(global equals context)
+        assert(context equals global)
+
+        cleanContextGenConfig()
+    }
+
+    /**
+     * 测试配置编辑功能是否符合预期
+     */
+    @Test
+    @Order(2)
+    fun testConfig() {
+        val context = getContextGenConfig()
+
+        assertEquals(GenLanguage.KOTLIN, global.language)
 
         val testAuthor = "AUTHOR"
         configService.setConfig(GenConfigProperties(author = testAuthor))
-        Assertions.assertEquals(testAuthor, GenConfig.author)
+        assertEquals(testAuthor, global.author)
 
         configService.setConfig(GenConfigProperties(language = GenLanguage.JAVA))
-        Assertions.assertEquals(GenLanguage.JAVA, GenConfig.language)
+        assertEquals(GenLanguage.JAVA, global.language)
 
         val testColumnPrefix = "C_"
         configService.setConfig(GenConfigProperties(columnPrefix = testColumnPrefix))
-        Assertions.assertEquals(testColumnPrefix, GenConfig.columnPrefix)
+        assertEquals(testColumnPrefix, global.columnPrefix)
 
-        Assertions.assertEquals(GenConfig, config)
+        assertEquals("", context.columnPrefix)
+        assertEquals("C_", global.columnPrefix)
+
+        cleanContextGenConfig()
+    }
+
+    /**
+     * 测试 global 和 context 的 toProperties 和 merge
+     */
+    @Test
+    @Order(3)
+    fun testToPropertiesMerge() {
+        val context = getContextGenConfig()
+
+        context.merge(GenConfigProperties(author = "abc"))
+
+        assert(!(global equals context))
+        assert(!(context equals global))
+
+        context.merge(global.toProperties())
+
+        assert(global equals context)
+        assert(context equals global)
+
+        global.merge(GenConfigProperties(author = "c"))
+
+        assert(!(global equals context))
+        assert(!(context equals global))
+
+        global.merge(context.toProperties())
+
+        assert(global equals context)
+        assert(context equals global)
+
+        cleanContextGenConfig()
     }
 }

@@ -1,13 +1,13 @@
 package top.potmot.core.entity.convert
 
-import top.potmot.config.GenConfig
+import top.potmot.config.GlobalGenConfig
 import top.potmot.utils.string.removePrefixes
 import top.potmot.utils.string.removeSuffixes
 
 /**
  * 转换表名为类名
  * 根据分割符将一个字符串转成首字母大写其余小写的形式
- * 将根据 GenConfig 判断移除表前缀或后缀
+ * 将根据 GlobalGenConfig 判断移除表前缀或后缀
  * eq:
  *      HELLO_WORLD -> HelloWorld
  */
@@ -44,7 +44,7 @@ fun tableNameToPropertyName(name: String): String =
 /**
  * 转换列名为属性名
  * 根据分割符将一个字符串转成自第二部分开始首字母大写其余小写的形式
- * 将根据 GenConfig 判断移除属性前缀或后缀
+ * 将根据 GlobalGenConfig 判断移除属性前缀或后缀
  * eq:
  *      user_name -> userName
  */
@@ -75,20 +75,20 @@ fun columnNameToPropertyName(name: String): String {
  * 根据配置清理表名的前缀和后缀
  */
 fun String.clearTableName(): String =
-    this.removePrefixes(GenConfig.tablePrefixes())
-        .removeSuffixes(GenConfig.tableSuffixes())
+    this.removePrefixes(GlobalGenConfig.tablePrefixes)
+        .removeSuffixes(GlobalGenConfig.tableSuffixes)
 
 fun String.clearTableComment(): String =
-    this.removePrefixes(GenConfig.tableCommentPrefixes())
-        .removeSuffixes(GenConfig.tableCommentSuffixes())
+    this.removePrefixes(GlobalGenConfig.tableCommentPrefixes)
+        .removeSuffixes(GlobalGenConfig.tableCommentSuffixes)
 
 /**
  * 根据配置清理列名的前缀和后缀
  */
 fun String.clearColumnName(): String =
-    this.removePrefixes(GenConfig.columnPrefixes())
-        .removeSuffixes(GenConfig.columnSuffixes())
+    this.removePrefixes(GlobalGenConfig.columnPrefixes)
+        .removeSuffixes(GlobalGenConfig.columnSuffixes)
 
 fun String.clearColumnComment(): String =
-    this.removePrefixes(GenConfig.columnCommentPrefixes())
-        .removeSuffixes(GenConfig.columnCommentSuffixes())
+    this.removePrefixes(GlobalGenConfig.columnCommentPrefixes)
+        .removeSuffixes(GlobalGenConfig.columnCommentSuffixes)
