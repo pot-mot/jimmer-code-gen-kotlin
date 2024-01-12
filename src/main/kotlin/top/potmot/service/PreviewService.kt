@@ -193,7 +193,7 @@ class PreviewService(
         language.getEntityGenerator().let {
             entities.flatMap { entity ->
                 it.generateWithEnums(entity, withPath ?: false)
-            }.distinct()
+            }.distinct().sortedBy { it.first }
         }
 
     fun generateEnumsCode(
@@ -204,7 +204,7 @@ class PreviewService(
         language.getEntityGenerator().let {
             enums.map {enum ->
                 it.generate(enum, withPath ?: false)
-            }.distinct()
+            }.distinct().sortedBy { it.first }
         }
 
 
@@ -215,7 +215,7 @@ class PreviewService(
     ): List<Pair<String, String>> =
         dataSourceType.getTableDefineGenerator()
             .generate(tables)
-            .distinct()
+            .distinct().sortedBy { it.first }
 
 
     /**

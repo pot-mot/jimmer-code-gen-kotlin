@@ -102,28 +102,4 @@ object GlobalGenConfig {
      * 配置文件中由 ',' 进行分割
      */
     var columnCommentSuffix: String = ""
-
-    val tablePrefixes: List<String>
-        get() = tablePrefix.split(",").map { it.trim() }
-
-    val tableSuffixes: List<String>
-        get() = tableSuffix.split(",").map { it.trim() }
-
-    val tableCommentPrefixes: List<String>
-        get() = tableCommentPrefix.split(",").map { it.trim() }
-
-    val tableCommentSuffixes: List<String>
-        get() = tableCommentSuffix.split(",").map { it.trim() }
-
-    val columnPrefixes: List<String>
-        get() = columnPrefix.split(",").map { it.trim() }
-
-    val columnSuffixes: List<String>
-        get() = columnSuffix.split(",").map { it.trim() }
-
-    val columnCommentPrefixes: List<String>
-        get() = columnCommentPrefix.split(",").map { it.trim() }
-
-    val columnCommentSuffixes: List<String>
-        get() = columnCommentSuffix.split(",").map { it.trim() }
 }

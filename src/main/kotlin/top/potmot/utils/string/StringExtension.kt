@@ -69,6 +69,9 @@ fun String.removeSuffixes(
     return result
 }
 
+fun String.splitTrim(): List<String> =
+    split(",").map { it.trim() }
+
 /**
  * 将名词转换为复数形式。
  * @return 转换后的复数形式

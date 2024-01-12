@@ -5,8 +5,8 @@ import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import top.potmot.config.GlobalGenConfig
 import top.potmot.context.getContextGenConfig
 import top.potmot.core.database.generate.getIdentifierFilter
-import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.core.database.meta.getAssociations
+import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.meta.setAssociation
 import top.potmot.core.entity.meta.toJoinColumns

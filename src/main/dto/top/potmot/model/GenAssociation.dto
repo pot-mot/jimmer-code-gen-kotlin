@@ -35,19 +35,6 @@ GenAssociationView {
     }
 }
 
-GenAssociationMatchView {
-    name
-    associationType
-    fake
-    id(sourceTable)
-    id(targetTable)
-
-    columnReferences {
-        id(sourceColumn)
-        id(targetColumn)
-    }
-}
-
 input GenAssociationInput {
     #allScalars
     -id

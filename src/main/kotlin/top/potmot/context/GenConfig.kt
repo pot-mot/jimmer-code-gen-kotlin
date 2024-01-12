@@ -1,6 +1,5 @@
 package top.potmot.context
 
-import top.potmot.config.GlobalGenConfig
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 
@@ -64,28 +63,4 @@ data class GenConfig(
 
     /** 列注释后缀 */
     var columnCommentSuffix: String,
-) {
-    val tablePrefixes: List<String>
-        get() = GlobalGenConfig.tablePrefix.split(",").map { it.trim() }
-
-    val tableSuffixes: List<String>
-        get() = GlobalGenConfig.tableSuffix.split(",").map { it.trim() }
-
-    val tableCommentPrefixes: List<String>
-        get() = GlobalGenConfig.tableCommentPrefix.split(",").map { it.trim() }
-
-    val tableCommentSuffixes: List<String>
-        get() = GlobalGenConfig.tableCommentSuffix.split(",").map { it.trim() }
-
-    val columnPrefixes: List<String>
-        get() = GlobalGenConfig.columnPrefix.split(",").map { it.trim() }
-
-    val columnSuffixes: List<String>
-        get() = GlobalGenConfig.columnSuffix.split(",").map { it.trim() }
-
-    val columnCommentPrefixes: List<String>
-        get() = GlobalGenConfig.columnCommentPrefix.split(",").map { it.trim() }
-
-    val columnCommentSuffixes: List<String>
-        get() = GlobalGenConfig.columnCommentSuffix.split(",").map { it.trim() }
-}
+)

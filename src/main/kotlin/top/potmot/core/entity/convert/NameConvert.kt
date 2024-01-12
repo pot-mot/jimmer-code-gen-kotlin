@@ -3,6 +3,7 @@ package top.potmot.core.entity.convert
 import top.potmot.config.GlobalGenConfig
 import top.potmot.utils.string.removePrefixes
 import top.potmot.utils.string.removeSuffixes
+import top.potmot.utils.string.splitTrim
 
 /**
  * 转换表名为类名
@@ -75,20 +76,20 @@ fun columnNameToPropertyName(name: String): String {
  * 根据配置清理表名的前缀和后缀
  */
 fun String.clearTableName(): String =
-    this.removePrefixes(GlobalGenConfig.tablePrefixes)
-        .removeSuffixes(GlobalGenConfig.tableSuffixes)
+    this.removePrefixes(GlobalGenConfig.tablePrefix.splitTrim())
+        .removeSuffixes(GlobalGenConfig.tableSuffix.splitTrim())
 
 fun String.clearTableComment(): String =
-    this.removePrefixes(GlobalGenConfig.tableCommentPrefixes)
-        .removeSuffixes(GlobalGenConfig.tableCommentSuffixes)
+    this.removePrefixes(GlobalGenConfig.tableCommentPrefix.splitTrim())
+        .removeSuffixes(GlobalGenConfig.tableCommentSuffix.splitTrim())
 
 /**
  * 根据配置清理列名的前缀和后缀
  */
 fun String.clearColumnName(): String =
-    this.removePrefixes(GlobalGenConfig.columnPrefixes)
-        .removeSuffixes(GlobalGenConfig.columnSuffixes)
+    this.removePrefixes(GlobalGenConfig.columnPrefix.splitTrim())
+        .removeSuffixes(GlobalGenConfig.columnSuffix.splitTrim())
 
 fun String.clearColumnComment(): String =
-    this.removePrefixes(GlobalGenConfig.columnCommentPrefixes)
-        .removeSuffixes(GlobalGenConfig.columnCommentSuffixes)
+    this.removePrefixes(GlobalGenConfig.columnCommentPrefix.splitTrim())
+        .removeSuffixes(GlobalGenConfig.columnCommentSuffix.splitTrim())
