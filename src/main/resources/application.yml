@@ -9,6 +9,11 @@ spring:
     resources:
       static-locations: classpath:/dist
 
+server:
+  error:
+    whitelabel:
+      enabled: false
+
 logging:
   level:
     top.potmot: info
