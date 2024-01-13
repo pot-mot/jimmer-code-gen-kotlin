@@ -140,8 +140,14 @@ abstract class TableDefineBuilder(
     ): String =
         buildString {
             appendLine("    FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { produceIdentifier(it) }})")
-            appendLine("  REFERENCES ${produceIdentifier(meta.targetTableName)} (${meta.targetColumnNames.joinToString(", ") { produceIdentifier(it) }})")
-            append("  ${meta.onDelete} ${meta.onUpdate}")
+            append("  REFERENCES ${produceIdentifier(meta.targetTableName)} (${meta.targetColumnNames.joinToString(", ") { produceIdentifier(it) }})")
+
+            meta.onDelete.takeIf { it.isNotBlank() }?.let {
+                append("\n  $it")
+            }
+            meta.onUpdate.takeIf { it.isNotBlank() }?.let {
+                append("\n  $it")
+            }
         }
 
 

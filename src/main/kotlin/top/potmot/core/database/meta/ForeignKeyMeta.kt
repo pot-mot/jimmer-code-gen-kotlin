@@ -22,8 +22,8 @@ data class ForeignKeyMeta(
     val sourceColumnNames: List<String>,
     val targetTableName: String,
     val targetColumnNames: List<String>,
-    val onUpdate: String = "ON UPDATE RESTRICT",
-    val onDelete: String = "ON DELETE CASCADE",
+    val onUpdate: String = "",
+    val onDelete: String = "",
 )
 
 
@@ -54,18 +54,7 @@ fun AssociationMeta.toFkMeta(): ForeignKeyMeta =
         sourceColumnNames = this.sourceColumns.map { it.name },
         targetTableName = this.targetTable.name,
         targetColumnNames = this.targetColumns.map { it.name },
-        onDelete = this.dissociateAction.toOnDeleteAction(),
     )
 
 fun GenAssociation.toFkMeta(): ForeignKeyMeta =
     this.getMeta().toFkMeta()
-
-private fun DissociateAction?.toOnDeleteAction(): String =
-    when (this) {
-        DissociateAction.NONE -> ""
-        DissociateAction.SET_NULL -> "ON DELETE SET NULL"
-        DissociateAction.DELETE -> "ON DELETE CASCADE"
-        DissociateAction.LAX -> ""
-        DissociateAction.CHECK -> ""
-        null -> ""
-    }
