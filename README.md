@@ -57,7 +57,7 @@
 - [application-mysql.yml](src%2Fmain%2Fresources%2Fapplication-mysql.yml)
 - [application-postgresql.yml](src%2Fmain%2Fresources%2Fapplication-postgresql.yml)
 
-`.gen` 路径下为全局配置，具体请参照 [GlobalGenConfig.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fconfig%2FGenConfig.kt) 
+`.gen` 路径下为全局配置，具体请参照 [GlobalGenConfig.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fconfig%2FGlobalGenConfig.kt)
 
 ### 启动
 
@@ -87,22 +87,21 @@
 具体实现参考以下：
 
 - [TableEntityConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fconvert%2FTableEntityConvert.kt) 表到实体转换
-- [ColumnPropertyConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fconvert%2FColumnPropertyConvert.kt) 列到属性转换
+- [BasePropertyConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fconvert%2FBasePropertyConvert.kt) 基础属性转换
+- [AssociationPropertyConvert.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fconvert%2FAssociationPropertyConvert.kt) 关联属性转换
 
 ### Code Generate 代码生成
 
 - [PreviewService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FPreviewService.kt) 预览生成代码
 
-#### 模版工具类
+#### 生成工具类
 
-- [TemplateBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Ftemplate%2FTemplateBuilder.kt)  
-  通用模版，简化字符串行级拼接
+- [TableDefineBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2Fbuilder%2FTableDefineBuilder.kt) 表定义构建器
 
-- [TableDefineBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineBuilder.kt)  
-  表定义通用构建器
+- [CodeBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fgenerate%2Fbuilder%2FCodeBuilder.kt) 通用构建器器
 
-- [EntityBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fgenerate%2FEntityCodeBuilder.kt)  
-  实体通用构建器器
+- [EntityBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fgenerate%2Fbuilder%2FEntityBuilder.kt) 实体构建器
+- [EnumBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fentity%2Fgenerate%2Fbuilder%2FEnumBuilder.kt) 枚举构建器
 
 ## 其他
 
@@ -126,8 +125,6 @@
   - [ColumnTypeDefine.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FColumnTypeDefine.kt) 入口文件
 - [TableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerator.kt)
   - [TableDefineGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerate.kt) 入口文件
-
-> 项目内已提供基础构建器类 [TableDefineBuilder.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineBuilder.kt)
 
 #### [Liquibase](https://www.liquibase.org/)
 关于 TableDefine 有另一种更完善的 diff 生成方式，[LiquibaseUtil.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Fliquibase%2FLiquibaseUtil.kt)，
