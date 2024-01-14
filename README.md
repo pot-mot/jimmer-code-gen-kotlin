@@ -6,12 +6,18 @@
 >   - [x] 将 table 与 datasource 解除强关联，允许 table 单独存在
 >   - [x] 补充 table、association 和 model 的关联
 >   - [x] 补充 entity、enum 和 model 的关联，彻底将所有建模层面的实体迁移至 model 
-> - [ ] 补充模版
->   - [ ] 业务类模版
->   - [ ] react 和 vue 的 UI 基础模版
->   - [ ] DTO 设计与业务流程设计
+> - [ ] 实现模版与继承
+>   - [ ] 将 GenConfig 迁移到 Model 中
+>   - [ ] 将 ColumnDefault 补充至 TableTemplate 和 ColumnTemplate
+>   - [ ] Table 与 Entity 的继承
+> - [ ] 补充生成
+>  - [ ] DTO
+>  - [ ] 业务类
+>  - [ ] react 和 vue 的 UI 基础模版
 
 项目基于 Kotlin + Gradle 编写。
+
+[项目文档](https://pot-mot.github.io/jimmer-code-gen-doc/)
 
 ## Git 仓库地址
 
