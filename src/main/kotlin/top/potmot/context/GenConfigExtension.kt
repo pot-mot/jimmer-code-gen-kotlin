@@ -1,6 +1,8 @@
 package top.potmot.context
 
 import top.potmot.config.GlobalGenConfig
+import top.potmot.model.dto.GenConfig
+import top.potmot.model.dto.GenConfigProperties
 import top.potmot.utils.bean.copyProperties
 import top.potmot.utils.bean.createDataClassFromObject
 import kotlin.reflect.full.declaredMemberProperties
@@ -16,7 +18,7 @@ fun GenConfig.merge(properties: GenConfigProperties): GenConfig {
 }
 
 fun createGenConfig() =
-    createDataClassFromObject(GlobalGenConfig, GenConfig::class)!!
+    createDataClassFromObject(GlobalGenConfig, GenConfig::class)
 
 private fun configEquals(global: GlobalGenConfig, context: GenConfig): Boolean {
     val globalProperties = GlobalGenConfig::class.declaredMemberProperties

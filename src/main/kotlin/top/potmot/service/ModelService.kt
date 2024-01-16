@@ -22,6 +22,7 @@ import top.potmot.model.by
 import top.potmot.model.copy
 import top.potmot.model.createdTime
 import top.potmot.model.dto.GenAssociationModelInput
+import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenModelInput
 import top.potmot.model.dto.GenModelSimpleView
 import top.potmot.model.dto.GenModelView
@@ -123,9 +124,7 @@ class ModelService(
                     convertService.convert(
                         savedTables.map { it.id },
                         model.id,
-                        model.dataSourceType,
-                        model.language,
-                        model.packagePath
+                        GenConfigProperties(model)
                     )
                 }
             }

@@ -7,9 +7,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.core.entity.convert.columnNameToPropertyName
 import top.potmot.core.entity.convert.tableNameToClassName
-import top.potmot.core.entity.convert.tableNameToPropertyName
 
 /**
  * 校验名称转换是否符合预期
@@ -26,25 +24,9 @@ class NameConvertTest {
         assertEquals("HelloWorld", tableNameToClassName("hELLO_wORLD"))
         assertEquals("HelloWorld", tableNameToClassName("Hello_World"))
         assertEquals("Helloworld", tableNameToClassName("HelloWorld"))
-    }
-
-    @Test
-    @Order(2)
-    fun testTableNameToPropertyName() {
-        assertEquals("helloWorld", tableNameToPropertyName("HELLO_WORLD"))
-        assertEquals("helloWorld", tableNameToPropertyName("hello_world"))
-        assertEquals("helloWorld", tableNameToPropertyName("hELLO_wORLD"))
-        assertEquals("helloWorld", tableNameToPropertyName("Hello_World"))
-        assertEquals("helloworld", tableNameToPropertyName("HelloWorld"))
-    }
-
-    @Test
-    @Order(3)
-    fun testColumnNameToPropertyName() {
-        assertEquals("helloWorld", columnNameToPropertyName("HELLO_WORLD"))
-        assertEquals("helloWorld", columnNameToPropertyName("hello_world"))
-        assertEquals("helloWorld", columnNameToPropertyName("hELLO_wORLD"))
-        assertEquals("helloWorld", columnNameToPropertyName("Hello_World"))
-        assertEquals("helloworld", columnNameToPropertyName("HelloWorld"))
+        assertEquals("HelloWorld", tableNameToClassName("`hello_world`"))
+        assertEquals("HelloWorld", tableNameToClassName("  `hello_world`  "))
+        assertEquals("HelloWorld", tableNameToClassName("\"hello_world\""))
+        assertEquals("HelloWorld1", tableNameToClassName("(hello_world1)"))
     }
 }

@@ -68,7 +68,7 @@ interface GenColumn : BaseEntity {
     val name: String
 
     /**
-     * 列 JDBCType 码值
+     * 列 JdbcType 码值
      */
     val typeCode: Int
 

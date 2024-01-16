@@ -8,13 +8,13 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.context.GenConfigProperties
 import top.potmot.context.cleanContextGenConfig
 import top.potmot.context.equals
 import top.potmot.context.getContextGenConfig
 import top.potmot.context.merge
 import top.potmot.context.toProperties
 import top.potmot.enumeration.GenLanguage
+import top.potmot.model.dto.GenConfigProperties
 import top.potmot.service.ConfigService
 
 @SpringBootTest
@@ -57,11 +57,11 @@ class AssociationMatchTest(
         assertEquals(GenLanguage.JAVA, global.language)
 
         val testColumnPrefix = "C_"
-        configService.setConfig(GenConfigProperties(columnPrefix = testColumnPrefix))
-        assertEquals(testColumnPrefix, global.columnPrefix)
+        configService.setConfig(GenConfigProperties(columnNamePrefixes = testColumnPrefix))
+        assertEquals(testColumnPrefix, global.columnNamePrefixes)
 
-        assertEquals("", context.columnPrefix)
-        assertEquals("C_", global.columnPrefix)
+        assertEquals("", context.columnNamePrefixes)
+        assertEquals("C_", global.columnNamePrefixes)
 
         cleanContextGenConfig()
     }

@@ -6,7 +6,6 @@ GenDataSourceView {
 
 GenDataSourceTemplateView {
     name
-    type
     host
     port
     urlSuffix

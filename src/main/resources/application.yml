@@ -37,11 +37,11 @@ jimmer:
 # 代码生成
 gen:
   language: kotlin
-  table-prefix: t_,gen_
-  table-suffix:
-  table-comment-prefix:
-  table-comment-suffix: 表
-  column-prefix:
-  column-suffix:
-  column-comment-prefix:
-  column-comment-suffix:
+  table-name-prefixes: t_,gen_
+  table-name-suffixes:
+  table-comment-prefixes:
+  table-comment-suffixes: 表
+  column-name-prefixes:
+  column-name-suffixes:
+  column-comment-prefixes:
+  column-comment-suffixes:

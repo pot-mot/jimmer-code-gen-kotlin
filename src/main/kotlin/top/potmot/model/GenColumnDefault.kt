@@ -32,7 +32,7 @@ interface GenColumnDefault : BaseEntity {
     val dataSourceType: DataSourceType
 
     /**
-     * JDBCType 码值
+     * JdbcType 码值
      */
     @Key
     val typeCode: Int

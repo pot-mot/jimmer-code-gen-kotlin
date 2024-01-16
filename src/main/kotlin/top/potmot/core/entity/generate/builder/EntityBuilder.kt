@@ -13,7 +13,6 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Table
-import top.potmot.config.GlobalGenConfig
 import top.potmot.context.getContextGenConfig
 import top.potmot.core.database.generate.getIdentifierFilter
 import top.potmot.model.dto.GenEntityPropertiesView
@@ -51,11 +50,29 @@ abstract class EntityBuilder: CodeBuilder() {
             appendLine("}")
         }
 
-    fun GenEntityPropertiesView.tableAnnotation(): String =
-        "@Table(name = \"${table.schema?.name?.let { "${it.changeCase()}." } ?: ""}${getContextGenConfig().dataSourceType.getIdentifierFilter().getIdentifier(table.name).changeCase()}\")"
+    open fun GenEntityPropertiesView.tableAnnotation(): String =
+        buildString {
+            append("@Table(name = \"")
+            append(table.schema?.name?.let { "${it.trim().changeCase()}." } ?: "")
+            append(getContextGenConfig().dataSourceType.getIdentifierFilter()
+                .getIdentifier(table.name.trim())
+                .replace("\"", "\\\"")
+                .changeCase())
+            append("\")")
+        }
 
-    fun GenEntityPropertiesView.TargetOf_properties.columnAnnotation(): String? =
-        column?.takeUnless { idView || !associationAnnotation.isNullOrBlank() }?.let { "@Column(name = \"${getContextGenConfig().dataSourceType.getIdentifierFilter().getIdentifier(it.name).changeCase()}\")" }
+    open fun GenEntityPropertiesView.TargetOf_properties.columnAnnotation(): String? =
+        column?.takeUnless { idView || !associationAnnotation.isNullOrBlank() }?.let {
+            buildString {
+                append("@Column(name = \"")
+                append(getContextGenConfig().dataSourceType.getIdentifierFilter()
+                    .getIdentifier(it.name.trim())
+                    .replace("\"", "\\\"")
+                    .changeCase()
+                )
+                append("\")")
+            }
+        }
 
 
     open fun blockComment(entity: GenEntityPropertiesView): String? =
@@ -63,7 +80,7 @@ abstract class EntityBuilder: CodeBuilder() {
             entity.comment,
             entity.remark,
             params = mapOf(
-                Pair("author", entity.author.ifEmpty { GlobalGenConfig.author }),
+                Pair("author", entity.author.ifEmpty { getContextGenConfig().author }),
                 Pair("since", now())
             )
         )
@@ -78,7 +95,7 @@ abstract class EntityBuilder: CodeBuilder() {
         val result = mutableSetOf<KClass<*>>()
 
         property.apply {
-            if (GlobalGenConfig.columnAnnotation && column != null) {
+            if (getContextGenConfig().columnAnnotation && column != null) {
                 result += Column::class
             }
 
@@ -131,7 +148,7 @@ abstract class EntityBuilder: CodeBuilder() {
         val result = mutableSetOf<KClass<*>>()
 
         entity.apply {
-            if (GlobalGenConfig.tableAnnotation) {
+            if (getContextGenConfig().tableAnnotation) {
                 result += Table::class
             }
             result += Entity::class
@@ -156,7 +173,7 @@ abstract class EntityBuilder: CodeBuilder() {
         entity.apply {
             list += "@Entity"
 
-            if (GlobalGenConfig.tableAnnotation) {
+            if (getContextGenConfig().tableAnnotation) {
                 list += tableAnnotation()
             }
         }
@@ -178,7 +195,7 @@ abstract class EntityBuilder: CodeBuilder() {
             }
 
             if (logicalDelete) {
-                list += GlobalGenConfig.logicalDeletedAnnotation
+                list += getContextGenConfig().logicalDeletedAnnotation
             }
 
             associationType?.let {
@@ -193,7 +210,7 @@ abstract class EntityBuilder: CodeBuilder() {
                 }
             }
 
-            if (GlobalGenConfig.columnAnnotation) {
+            if (getContextGenConfig().columnAnnotation) {
                 columnAnnotation()?.let { list += it }
             }
 

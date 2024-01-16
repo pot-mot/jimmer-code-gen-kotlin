@@ -1,5 +1,7 @@
 package top.potmot.context
 
+import top.potmot.model.dto.GenConfig
+
 private val genConfigContextMap = mutableMapOf<Long, GenConfig>()
 
 fun getContextGenConfig(id: Long = Thread.currentThread().id): GenConfig {

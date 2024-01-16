@@ -9,10 +9,10 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.context.GenConfigProperties
 import top.potmot.core.entity.convert.toGenEntity
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
+import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.service.ConfigService
 import java.sql.Types

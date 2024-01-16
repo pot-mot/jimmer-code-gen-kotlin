@@ -1,6 +1,6 @@
 package top.potmot.utils.string
 
-import top.potmot.config.GlobalGenConfig
+import top.potmot.context.getContextGenConfig
 
 fun String.startsWithAny(prefixes: Collection<String>): String? {
     for (prefix in prefixes) {
@@ -90,4 +90,23 @@ fun String.toSingular(): String =
  * 根据全局配置的大小写进行切换
  */
 fun String.changeCase(): String =
-    this.let { if (GlobalGenConfig.lowerCaseName) lowercase() else uppercase() }
+    this.let { if (getContextGenConfig().lowerCaseName) lowercase() else uppercase() }
+
+fun String.trimToLetterOrDigit(): String {
+    var startIndex = 0
+    var endIndex = length - 1
+
+    while (startIndex <= endIndex && !this[startIndex].isLetterOrDigit()) {
+        startIndex++
+    }
+
+    while (endIndex >= startIndex && !this[endIndex].isLetterOrDigit()) {
+        endIndex--
+    }
+
+    if (startIndex > endIndex) {
+        return ""
+    }
+
+    return substring(startIndex, endIndex + 1)
+}

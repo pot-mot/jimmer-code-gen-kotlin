@@ -28,17 +28,33 @@ DROP TABLE IF EXISTS "gen_column_default" CASCADE;
 -- ----------------------------
 CREATE TABLE "gen_model"
 (
-    "id"                  BIGSERIAL   NOT NULL,
-    "name"                text        NOT NULL,
-    "graph_data"          text        NOT NULL,
-    "language"            text        NOT NULL,
-    "data_source_type"    text        NOT NULL,
-    "package_path"        text        NOT NULL,
-    "sync_convert_entity" boolean     NOT NULL DEFAULT TRUE,
-    "order_key"           bigint      NOT NULL DEFAULT 0,
-    "created_time"        timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"       timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"              text        NOT NULL DEFAULT '',
+    "id"                         BIGSERIAL NOT NULL,
+    "name"                       text      NOT NULL,
+    "graph_data"                 text      NOT NULL,
+    "sync_convert_entity"        boolean   NOT NULL DEFAULT TRUE,
+    "language"                   text      NOT NULL,
+    "data_source_type"           text      NOT NULL,
+    "author"                     text      NOT NULL,
+    "package_path"               text      NOT NULL,
+    "lower_case_name"            boolean   NOT NULL DEFAULT TRUE,
+    "real_fk"                    boolean   NOT NULL DEFAULT TRUE,
+    "id_view_property"           boolean   NOT NULL DEFAULT TRUE,
+    "logical_deleted_annotation" text      NOT NULL,
+    "table_annotation"           boolean   NOT NULL DEFAULT TRUE,
+    "column_annotation"          boolean   NOT NULL DEFAULT TRUE,
+    "join_table_annotation"      boolean   NOT NULL DEFAULT TRUE,
+    "join_column_annotation"     boolean   NOT NULL DEFAULT TRUE,
+    "table_name_prefixes"          text      NOT NULL,
+    "table_name_suffixes"          text      NOT NULL,
+    "table_comment_prefixes"       text      NOT NULL,
+    "table_comment_suffixes"       text      NOT NULL,
+    "column_name_prefixes"         text      NOT NULL,
+    "column_name_suffixes"         text      NOT NULL,
+    "column_comment_prefixes"      text      NOT NULL,
+    "column_comment_suffixes"      text      NOT NULL,
+    "created_time"               TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark"                     text      NOT NULL DEFAULT '',
     PRIMARY KEY ("id")
 );
 
@@ -46,10 +62,27 @@ COMMENT ON TABLE "gen_model" IS '生成模型';
 COMMENT ON COLUMN "gen_model"."id" IS 'ID';
 COMMENT ON COLUMN "gen_model"."name" IS '名称';
 COMMENT ON COLUMN "gen_model"."graph_data" IS 'Graph 数据';
+COMMENT ON COLUMN "gen_model"."sync_convert_entity" IS '同步转换实体';
 COMMENT ON COLUMN "gen_model"."language" IS '语言';
 COMMENT ON COLUMN "gen_model"."data_source_type" IS '数据源类型';
-COMMENT ON COLUMN "gen_model"."sync_convert_entity" IS '数据源类型';
+COMMENT ON COLUMN "gen_model"."author" IS '作者';
 COMMENT ON COLUMN "gen_model"."package_path" IS '包路径';
+COMMENT ON COLUMN "gen_model"."lower_case_name" IS '启用小写命名';
+COMMENT ON COLUMN "gen_model"."real_fk" IS '启用真实外键';
+COMMENT ON COLUMN "gen_model"."id_view_property" IS '生成 IdView 属性';
+COMMENT ON COLUMN "gen_model"."logical_deleted_annotation" IS '逻辑删除注解';
+COMMENT ON COLUMN "gen_model"."table_annotation" IS '生成 Table 注解';
+COMMENT ON COLUMN "gen_model"."column_annotation" IS '生成 Column 注解';
+COMMENT ON COLUMN "gen_model"."join_table_annotation" IS '生成 JoinTable 注解';
+COMMENT ON COLUMN "gen_model"."join_column_annotation" IS '生成 JoinColumn 注解';
+COMMENT ON COLUMN "gen_model"."table_name_prefixes" IS '转换实体时移除的表名前缀';
+COMMENT ON COLUMN "gen_model"."table_name_suffixes" IS '转换实体时移除的表名后缀';
+COMMENT ON COLUMN "gen_model"."table_comment_prefixes" IS '转换实体时移除的表注释前缀';
+COMMENT ON COLUMN "gen_model"."table_comment_suffixes" IS '转换实体时移除的表注释后缀';
+COMMENT ON COLUMN "gen_model"."column_name_prefixes" IS '转换属性时移除的列名前缀';
+COMMENT ON COLUMN "gen_model"."column_name_suffixes" IS '转换属性时移除的列名后缀';
+COMMENT ON COLUMN "gen_model"."column_comment_prefixes" IS '转换属性时移除的列注释前缀';
+COMMENT ON COLUMN "gen_model"."column_comment_suffixes" IS '转换属性时移除的列注释后缀';
 COMMENT ON COLUMN "gen_model"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_model"."modified_time" IS '修改时间';
 COMMENT ON COLUMN "gen_model"."remark" IS '备注';
@@ -66,7 +99,7 @@ EXECUTE FUNCTION update_modified_time();
 CREATE TABLE "gen_enum"
 (
     "id"            BIGSERIAL   NOT NULL,
-    "model_id"      bigint       NULL,
+    "model_id"      bigint      NULL,
     "package_path"  text        NOT NULL,
     "name"          text        NOT NULL,
     "comment"       text        NOT NULL,
@@ -259,7 +292,7 @@ CREATE TABLE "gen_column"
     "table_id"          bigint      NOT NULL,
     "name"              text        NOT NULL,
     "type_code"         int         NOT NULL,
-    "overwrite_by_type" boolean      NOT NULL DEFAULT FALSE,
+    "overwrite_by_type" boolean     NOT NULL DEFAULT FALSE,
     "type"              text        NOT NULL,
     "display_size"      bigint      NOT NULL DEFAULT 0,
     "numeric_precision" bigint      NOT NULL DEFAULT 0,
@@ -287,7 +320,7 @@ COMMENT ON TABLE "gen_column" IS '生成列';
 COMMENT ON COLUMN "gen_column"."id" IS 'ID';
 COMMENT ON COLUMN "gen_column"."table_id" IS '归属表';
 COMMENT ON COLUMN "gen_column"."name" IS '列名称';
-COMMENT ON COLUMN "gen_column"."type_code" IS '列 JDBCType 码值';
+COMMENT ON COLUMN "gen_column"."type_code" IS '列 JdbcType 码值';
 COMMENT ON COLUMN "gen_column"."overwrite_by_type" IS '覆盖为字面类型';
 COMMENT ON COLUMN "gen_column"."type" IS '列字面类型';
 COMMENT ON COLUMN "gen_column"."display_size" IS '列展示长度';
@@ -363,14 +396,14 @@ EXECUTE FUNCTION update_modified_time();
 -- ----------------------------
 CREATE TABLE "gen_column_reference"
 (
-    "id"               bigserial    NOT NULL,
-    "association_id"   bigint       NOT NULL,
-    "source_column_id" bigint       NOT NULL,
-    "target_column_id" bigint       NOT NULL,
-    "order_key"        bigint       NOT NULL DEFAULT 0,
-    "created_time"     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"           varchar(500) NOT NULL DEFAULT '',
+    "id"               bigserial NOT NULL,
+    "association_id"   bigint    NOT NULL,
+    "source_column_id" bigint    NOT NULL,
+    "target_column_id" bigint    NOT NULL,
+    "order_key"        bigint    NOT NULL DEFAULT 0,
+    "created_time"     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark"           text      NOT NULL DEFAULT '',
     PRIMARY KEY ("id"),
     CONSTRAINT "fk_column_reference_association" FOREIGN KEY ("association_id") REFERENCES "gen_association" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT "fk_column_reference_source_column" FOREIGN KEY ("source_column_id") REFERENCES "gen_column" ("id") ON DELETE CASCADE ON UPDATE RESTRICT,
@@ -402,13 +435,13 @@ EXECUTE FUNCTION update_modified_time();
 -- ----------------------------
 CREATE TABLE "gen_table_index"
 (
-    "id"            bigserial    NOT NULL,
-    "table_id"      bigint       NOT NULL,
-    "name"          varchar(500) NOT NULL,
-    "unique_index"  BOOLEAN      NOT NULL DEFAULT false,
-    "created_time"  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time" TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"        varchar(500) NOT NULL DEFAULT '',
+    "id"            bigserial NOT NULL,
+    "table_id"      bigint    NOT NULL,
+    "name"          text      NOT NULL,
+    "unique_index"  BOOLEAN   NOT NULL DEFAULT false,
+    "created_time"  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark"        text      NOT NULL DEFAULT '',
     PRIMARY KEY ("id"),
     CONSTRAINT "fk_index_table" FOREIGN KEY ("table_id") REFERENCES "gen_table" ("id") ON DELETE CASCADE ON UPDATE RESTRICT
 );
@@ -452,7 +485,7 @@ COMMENT ON COLUMN "gen_index_column_mapping"."column_id" IS '列';
 CREATE TABLE "gen_entity"
 (
     "id"            bigserial   NOT NULL,
-    "model_id"      bigint       NULL,
+    "model_id"      bigint      NULL,
     "package_path"  text        NOT NULL,
     "table_id"      bigint      NOT NULL,
     "name"          text        NOT NULL,
@@ -602,24 +635,24 @@ EXECUTE FUNCTION update_modified_time();
 -- ----------------------------
 CREATE TABLE "gen_column_default"
 (
-    "id"                BIGSERIAL    NOT NULL,
-    "data_source_type"  varchar(500) NOT NULL,
-    "type_code"         int          NOT NULL,
-    "type"              varchar(500) NOT NULL,
-    "display_size"      bigint       NOT NULL DEFAULT 0,
-    "numeric_precision" bigint       NOT NULL DEFAULT 0,
-    "default_value"     varchar(500) NULL     DEFAULT NULL,
-    "order_key"         bigint       NOT NULL DEFAULT 0,
-    "created_time"      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "remark"            varchar(500) NOT NULL DEFAULT '',
+    "id"                BIGSERIAL NOT NULL,
+    "data_source_type"  text      NOT NULL,
+    "type_code"         int       NOT NULL,
+    "type"              text      NOT NULL,
+    "display_size"      bigint    NOT NULL DEFAULT 0,
+    "numeric_precision" bigint    NOT NULL DEFAULT 0,
+    "default_value"     text      NULL     DEFAULT NULL,
+    "order_key"         bigint    NOT NULL DEFAULT 0,
+    "created_time"      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "remark"            text      NOT NULL DEFAULT '',
     PRIMARY KEY ("id")
 );
 
 COMMENT ON TABLE "gen_column_default" IS '列到属性类型映射';
 COMMENT ON COLUMN "gen_column_default"."id" IS 'ID';
 COMMENT ON COLUMN "gen_column_default"."data_source_type" IS '数据源类型';
-COMMENT ON COLUMN "gen_column_default"."type_code" IS 'JDBCType 码值';
+COMMENT ON COLUMN "gen_column_default"."type_code" IS 'JdbcType 码值';
 COMMENT ON COLUMN "gen_column_default"."type" IS '字面类型';
 COMMENT ON COLUMN "gen_column_default"."display_size" IS '列展示长度';
 COMMENT ON COLUMN "gen_column_default"."numeric_precision" IS '列精度';

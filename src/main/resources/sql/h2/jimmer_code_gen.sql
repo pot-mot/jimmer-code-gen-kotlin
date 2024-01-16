@@ -23,16 +23,33 @@ DROP TABLE IF EXISTS `gen_column_default`;
 -- ----------------------------
 CREATE TABLE `gen_model`
 (
-    `id`                  bigint       NOT NULL AUTO_INCREMENT,
-    `name`                varchar(500) NOT NULL,
-    `graph_data`          longtext     NOT NULL,
-    `language`            varchar(500) NOT NULL,
-    `data_source_type`    varchar(500) NOT NULL,
-    `package_path`        varchar(500) NOT NULL,
-    `sync_convert_entity` boolean      NOT NULL DEFAULT TRUE,
-    `created_time`        TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `modified_time`       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `remark`              varchar(500) NOT NULL DEFAULT '',
+    `id`                         bigint       NOT NULL AUTO_INCREMENT,
+    `name`                       varchar(500) NOT NULL,
+    `graph_data`                 longtext     NOT NULL,
+    `sync_convert_entity`        boolean      NOT NULL DEFAULT TRUE,
+    `language`                   varchar(500) NOT NULL,
+    `data_source_type`           varchar(500) NOT NULL,
+    `author`                     varchar(500) NOT NULL,
+    `package_path`               varchar(500) NOT NULL,
+    `lower_case_name`            boolean      NOT NULL DEFAULT TRUE,
+    `real_fk`                    boolean      NOT NULL DEFAULT TRUE,
+    `id_view_property`           boolean      NOT NULL DEFAULT TRUE,
+    `logical_deleted_annotation` varchar(500) NOT NULL,
+    `table_annotation`           boolean      NOT NULL DEFAULT TRUE,
+    `column_annotation`          boolean      NOT NULL DEFAULT TRUE,
+    `join_table_annotation`      boolean      NOT NULL DEFAULT TRUE,
+    `join_column_annotation`     boolean      NOT NULL DEFAULT TRUE,
+    `table_name_prefixes`          varchar(500) NOT NULL,
+    `table_name_suffixes`          varchar(500) NOT NULL,
+    `table_comment_prefixes`       varchar(500) NOT NULL,
+    `table_comment_suffixes`       varchar(500) NOT NULL,
+    `column_name_prefixes`         varchar(500) NOT NULL,
+    `column_name_suffixes`         varchar(500) NOT NULL,
+    `column_comment_prefixes`      varchar(500) NOT NULL,
+    `column_comment_suffixes`      varchar(500) NOT NULL,
+    `created_time`               TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified_time`              TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `remark`                     varchar(500) NOT NULL DEFAULT '',
     PRIMARY KEY (`id`)
 );
 
@@ -40,10 +57,27 @@ COMMENT ON TABLE `gen_model` IS '生成模型';
 COMMENT ON COLUMN `gen_model`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_model`.`name` IS '名称';
 COMMENT ON COLUMN `gen_model`.`graph_data` IS 'Graph 数据';
+COMMENT ON COLUMN `gen_model`.`sync_convert_entity` IS '同步转换实体';
 COMMENT ON COLUMN `gen_model`.`language` IS '语言';
 COMMENT ON COLUMN `gen_model`.`data_source_type` IS '数据源类型';
+COMMENT ON COLUMN `gen_model`.`author` IS '作者';
 COMMENT ON COLUMN `gen_model`.`package_path` IS '包路径';
-COMMENT ON COLUMN `gen_model`.`sync_convert_entity` IS '同步转换实体';
+COMMENT ON COLUMN `gen_model`.`lower_case_name` IS '启用小写命名';
+COMMENT ON COLUMN `gen_model`.`real_fk` IS '启用真实外键';
+COMMENT ON COLUMN `gen_model`.`id_view_property` IS '生成 IdView 属性';
+COMMENT ON COLUMN `gen_model`.`logical_deleted_annotation` IS '逻辑删除注解';
+COMMENT ON COLUMN `gen_model`.`table_annotation` IS '生成 Table 注解';
+COMMENT ON COLUMN `gen_model`.`column_annotation` IS '生成 Column 注解';
+COMMENT ON COLUMN `gen_model`.`join_table_annotation` IS '生成 JoinTable 注解';
+COMMENT ON COLUMN `gen_model`.`join_column_annotation` IS '生成 JoinColumn 注解';
+COMMENT ON COLUMN `gen_model`.`table_name_prefixes` IS '转换实体时移除的表名前缀';
+COMMENT ON COLUMN `gen_model`.`table_name_suffixes` IS '转换实体时移除的表名后缀';
+COMMENT ON COLUMN `gen_model`.`table_comment_prefixes` IS '转换实体时移除的表注释前缀';
+COMMENT ON COLUMN `gen_model`.`table_comment_suffixes` IS '转换实体时移除的表注释后缀';
+COMMENT ON COLUMN `gen_model`.`column_name_prefixes` IS '转换属性时移除的列名前缀';
+COMMENT ON COLUMN `gen_model`.`column_name_suffixes` IS '转换属性时移除的列名后缀';
+COMMENT ON COLUMN `gen_model`.`column_comment_prefixes` IS '转换属性时移除的列注释前缀';
+COMMENT ON COLUMN `gen_model`.`column_comment_suffixes` IS '转换属性时移除的列注释后缀';
 COMMENT ON COLUMN `gen_model`.`created_time` IS '创建时间';
 COMMENT ON COLUMN `gen_model`.`modified_time` IS '修改时间';
 COMMENT ON COLUMN `gen_model`.`remark` IS '备注';
@@ -243,7 +277,7 @@ COMMENT ON TABLE `gen_column` IS '生成列';
 COMMENT ON COLUMN `gen_column`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_column`.`table_id` IS '归属表';
 COMMENT ON COLUMN `gen_column`.`name` IS '列名称';
-COMMENT ON COLUMN `gen_column`.`type_code` IS '列 JDBCType 码值';
+COMMENT ON COLUMN `gen_column`.`type_code` IS '列 JdbcType 码值';
 COMMENT ON COLUMN `gen_column`.`overwrite_by_type` IS '覆盖为字面类型';
 COMMENT ON COLUMN `gen_column`.`type` IS '列字面类型';
 COMMENT ON COLUMN `gen_column`.`display_size` IS '列展示长度';
@@ -532,7 +566,7 @@ CREATE TABLE `gen_column_default`
 COMMENT ON TABLE `gen_column_default` IS '列到属性类型映射';
 COMMENT ON COLUMN `gen_column_default`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_column_default`.`data_source_type` IS '数据源类型';
-COMMENT ON COLUMN `gen_column_default`.`type_code` IS 'JDBCType 码值';
+COMMENT ON COLUMN `gen_column_default`.`type_code` IS 'JdbcType 码值';
 COMMENT ON COLUMN `gen_column_default`.`type` IS '字面类型';
 COMMENT ON COLUMN `gen_column_default`.`display_size` IS '列展示长度';
 COMMENT ON COLUMN `gen_column_default`.`numeric_precision` IS '列精度';

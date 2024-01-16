@@ -1,5 +1,6 @@
 package top.potmot.utils.bean
 
+import top.potmot.error.ConfigException
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty1
@@ -27,27 +28,53 @@ fun <T : Any, R : Any> copyProperties(source: T, target: R): R {
     return target
 }
 
-fun <O : Any, T : Any> createDataClassFromObject(obj: O, dataClass: KClass<T>): T? {
-    val objProperties = obj::class.declaredMemberProperties
+fun <O : Any, T : Any> createDataClassFromObject(obj: O, dataClass: KClass<T>): T {
+
     val dataClassPropertyMap = dataClass.declaredMemberProperties.associateBy { it.name }
+    val objProperties = obj::class.declaredMemberProperties.associateBy { it.name }
 
-    val propertyValues = mutableMapOf<String, Any>()
+    val constructorParameterValues = mutableMapOf<String, Any>()
+    val notMatchConstructorParameters = mutableMapOf<String, Any?>()
 
-    for (objProperty in objProperties) {
-        val dataClassProperty = dataClassPropertyMap[objProperty.name] ?: continue
+    val constructors = dataClass.constructors.filter { it.parameters.size == dataClassPropertyMap.size }
 
-        if (objProperty.name == dataClassProperty.name &&
-            objProperty.returnType.classifier == dataClassProperty.returnType.classifier
+    if (constructors.size != 1) {
+        throw ConfigException("Create data class instance from a object fail\n can't find full parameter constructor")
+    }
+
+    val constructor = constructors[0]
+
+    val constructorParameterNames = constructor.parameters.map { it.name }
+
+    for (parameterName in constructorParameterNames) {
+        if (parameterName == null) continue
+
+        val constructorParameter = dataClassPropertyMap[parameterName] ?: continue
+        val objProperty = objProperties[parameterName]
+            ?: throw ConfigException("Create data class instance from a object fail\n can't find property $parameterName in obj")
+
+        if (constructorParameter.returnType.classifier == constructorParameter.returnType.classifier
         ) {
-            val value = (objProperty as KProperty1<O, *>).get(obj)
-            propertyValues[dataClassProperty.name] = value ?: continue
+            constructorParameterValues[parameterName] = (objProperty as KProperty1<O, *>).get(obj) ?: continue
+        } else {
+            notMatchConstructorParameters[parameterName] = (objProperty as KProperty1<O, *>).get(obj)
         }
     }
 
-    return if (propertyValues.size == dataClassPropertyMap.size) {
-        val constructor = dataClass.constructors.first()
-        constructor.callBy(constructor.parameters.associateWith { propertyValues[it.name] })
-    } else {
-        null
+    if (constructorParameterValues.size < constructorParameterNames.size)
+        throw ConfigException("Create data class instance from a object fail\n object properties less than data class properties")
+
+    try {
+        return constructor.callBy(
+            constructor.parameters.associateWith {
+                constructorParameterValues[it.name]
+            }
+        )
+    } catch (e: Exception) {
+        throw ConfigException(
+            "Create data class instance from a object fail\n object properties not match with data class properties\n" +
+                    " notMatchConstructorParameters: $notMatchConstructorParameters\n" +
+                    " constructorParameterValues: $constructorParameterValues"
+        )
     }
 }

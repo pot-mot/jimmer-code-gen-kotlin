@@ -11,40 +11,43 @@ import top.potmot.enumeration.GenLanguage
 @Component
 @ConfigurationProperties(prefix = "gen")
 object GlobalGenConfig {
+    /** 同步转换实体 */
+    var syncConvertEntity: Boolean = true
+
     /** 数据源类型 */
     var dataSourceType: DataSourceType = DataSourceType.MySQL
 
     /** 语言，java/kotlin */
     var language: GenLanguage = GenLanguage.KOTLIN
 
-    /** 默认真实外键 */
+    /** 真实外键 */
     var realFk: Boolean = true
 
-    /** 默认启用小写命名 */
+    /** 启用小写命名 */
     var lowerCaseName: Boolean = true
 
     /** 作者  */
     var author: String = ""
 
-    /** 默认包路径  */
+    /** 包路径  */
     var packagePath: String = "com.example"
 
-    /** 是否生成 IdView 属性 */
+    /** 生成 IdView 属性 */
     var idViewProperty: Boolean = true
 
-    /** 逻辑删除默认配置 */
+    /** 逻辑删除注解 */
     var logicalDeletedAnnotation: String = "@LogicalDeleted(\"true\")"
 
-    /** 是否生成 Table 注释 */
+    /** 生成 Table 注释 */
     var tableAnnotation: Boolean = true
 
-    /** 是否生成 Column 注释 */
+    /** 生成 Column 注释 */
     var columnAnnotation: Boolean = true
 
-    /** 是否生成 JoinTable 注释 */
+    /** 生成 JoinTable 注释 */
     var joinTableAnnotation: Boolean = true
 
-    /** 是否生成 JoinColumn 注释 */
+    /** 生成 JoinColumn 注释 */
     var joinColumnAnnotation: Boolean = true
 
     /**
@@ -52,54 +55,54 @@ object GlobalGenConfig {
      * 关联匹配 与 实体名生成 时生效
      * 配置文件中由 ',' 进行分割
      */
-    var tablePrefix: String = ""
+    var tableNamePrefixes: String = ""
 
     /**
      * 表名后缀
      * 关联匹配 与 实体名生成 时生效
      * 配置文件中由 ',' 进行分割
      */
-    var tableSuffix: String = ""
+    var tableNameSuffixes: String = ""
 
     /**
      * 表注释前缀
      * 实体注释生成 时生效
      * 配置文件中由 ',' 进行分割
      */
-    var tableCommentPrefix: String = ""
+    var tableCommentPrefixes: String = ""
 
     /**
      * 表注释后缀
      * 实体注释生成 时生效
      * 配置文件中由 ',' 进行分割
      */
-    var tableCommentSuffix: String = ""
+    var tableCommentSuffixes: String = ""
 
     /**
      * 列名前缀
      * 属性名生成 时生效
      * 配置文件中由 ',' 进行分割
      */
-    var columnPrefix: String = ""
+    var columnNamePrefixes: String = ""
 
     /**
      * 列名后缀
      * 属性名生成 时生效
      * 配置文件中由 ',' 进行分割
      */
-    var columnSuffix: String = ""
+    var columnNameSuffixes: String = ""
 
     /**
      * 列注释前缀
      * 属性名生成 时生效
      * 配置文件中由 ',' 进行分割
      */
-    var columnCommentPrefix: String = ""
+    var columnCommentPrefixes: String = ""
 
     /**
      * 列注释后缀
      * 属性注释生成 时生效
      * 配置文件中由 ',' 进行分割
      */
-    var columnCommentSuffix: String = ""
+    var columnCommentSuffixes: String = ""
 }

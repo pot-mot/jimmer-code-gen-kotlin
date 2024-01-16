@@ -7,7 +7,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.babyfish.jimmer.jackson.ImmutableModule
 import org.babyfish.jimmer.kt.unload
-import top.potmot.constant.ModelShape
 import top.potmot.error.ModelLoadException
 import top.potmot.model.GenTable
 import top.potmot.model.GenTableIndex

@@ -1,7 +1,7 @@
 package top.potmot.core.entity.meta
 
 import org.babyfish.jimmer.sql.ForeignKeyType
-import top.potmot.config.GlobalGenConfig
+import top.potmot.context.getContextGenConfig
 import top.potmot.model.GenAssociation
 import top.potmot.utils.identifier.IdentifierFilter
 import top.potmot.utils.string.changeCase
@@ -25,9 +25,11 @@ data class JoinColumnMeta(
                     appendLine("    referencedColumnName = \"${referencedColumnName.changeCase()}\"")
                 }
                 if (foreignKeyType != null) {
+                    val realFk = getContextGenConfig().realFk
+
                     if (
-                        (GlobalGenConfig.realFk && foreignKeyType == ForeignKeyType.FAKE) ||
-                        (!GlobalGenConfig.realFk && foreignKeyType == ForeignKeyType.REAL)
+                        (realFk && foreignKeyType == ForeignKeyType.FAKE) ||
+                        (!realFk && foreignKeyType == ForeignKeyType.REAL)
                     ) {
                         appendLine("    foreignKeyType = ForeignKeyType.${foreignKeyType.name}")
                     }

@@ -18,19 +18,12 @@ import top.potmot.model.dataSourceType
 import top.potmot.model.dto.GenColumnDefaultInput
 import top.potmot.model.dto.GenColumnDefaultView
 import top.potmot.model.orderKey
-import java.sql.JDBCType
 
 @RestController
 @RequestMapping("/columnDefault")
 class ColumnDefaultService(
     @Autowired val sqlClient: KSqlClient
 ) {
-    @GetMapping("/type")
-    fun listDatabaseType(): Map<String, Int> =
-        JDBCType.values().associate {
-            Pair(it.name, it.vendorTypeNumber)
-        }
-
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenColumnDefaultView? {
         return sqlClient.findById(GenColumnDefaultView::class, id)

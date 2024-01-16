@@ -7,7 +7,7 @@ import java.sql.JDBCType
 
 @RestController
 @RequestMapping("/jdbc")
-class JDBCService {
+class JdbcService {
     @GetMapping("/type")
     fun listType(): Map<String, Int> =
         JDBCType.values().associate {

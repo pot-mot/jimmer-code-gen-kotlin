@@ -1,9 +1,10 @@
 package top.potmot.core.entity.convert
 
-import top.potmot.config.GlobalGenConfig
+import top.potmot.context.getContextGenConfig
 import top.potmot.utils.string.removePrefixes
 import top.potmot.utils.string.removeSuffixes
 import top.potmot.utils.string.splitTrim
+import top.potmot.utils.string.trimToLetterOrDigit
 
 /**
  * 转换表名为类名
@@ -12,26 +13,26 @@ import top.potmot.utils.string.splitTrim
  * eq:
  *      HELLO_WORLD -> HelloWorld
  */
-fun tableNameToClassName(name: String): String {
-    val builder = StringBuilder()
+fun tableNameToClassName(name: String): String =
+    buildString {
+        // 将 newName 按照 SEPARATOR 进行分割成一个字符串数组并且去掉数组中的空字符串
+        name
+            .trimToLetterOrDigit()
+            .clearTableName()
+            .split("_")
+            .dropLastWhile { it.isEmpty() }
+            .forEach {
+                if (it.isNotEmpty()) {
+                    // 将字符串的第一个字符转换为大写字符
+                    append(it[0].uppercaseChar())
 
-    // 将 newName 按照 SEPARATOR 进行分割成一个字符串数组并且去掉数组中的空字符串
-    for (camel in name.clearTableName()
-        .split("_")
-        .dropLastWhile { it.isEmpty() }
-        .toTypedArray()) {
-        if (camel.isNotEmpty()) {
-            // 将字符串的第一个字符转换为大写字符
-            builder.append(camel[0].uppercaseChar())
-
-            // 将字符串的第二个字符到最后一个字符转换为小写字符
-            if (camel.length > 1) {
-                builder.append(camel.substring(1).lowercase())
+                    // 将字符串的第二个字符到最后一个字符转换为小写字符
+                    if (it.length > 1) {
+                        append(it.substring(1).lowercase())
+                    }
+                }
             }
-        }
     }
-    return builder.toString()
-}
 
 /**
  * 转换表名为属性名
@@ -42,54 +43,27 @@ fun tableNameToClassName(name: String): String {
 fun tableNameToPropertyName(name: String): String =
     tableNameToClassName(name).replaceFirstChar { it.lowercase() }
 
-/**
- * 转换列名为属性名
- * 根据分割符将一个字符串转成自第二部分开始首字母大写其余小写的形式
- * 将根据 GlobalGenConfig 判断移除属性前缀或后缀
- * eq:
- *      user_name -> userName
- */
-fun columnNameToPropertyName(name: String): String {
-    val builder = StringBuilder()
-    // 标记下一个字符是否需要转换为大写
-    var upperCase = false
-
-    // 遍历原始属性名中的每个字符
-    for (c in name.clearColumnName().lowercase()
-        .split("").dropLastWhile { it.isEmpty() }) {
-        // 如果当前字符是分隔符，则标记下一个字符需要转换为大写
-        if (c == "_") {
-            upperCase = true
-        }
-        // 如果标记为需要转换为大写，则将当前字符转换为大写字符，并且添加到结果字符串中
-        else if (upperCase) {
-            builder.append(c.uppercase())
-            upperCase = false
-        } else {
-            builder.append(c)
-        }
-    }
-    return builder.toString()
-}
+fun columnNameToPropertyName(name: String): String =
+    tableNameToClassName(name).replaceFirstChar { it.lowercase() }
 
 /**
  * 根据配置清理表名的前缀和后缀
  */
 fun String.clearTableName(): String =
-    this.removePrefixes(GlobalGenConfig.tablePrefix.splitTrim())
-        .removeSuffixes(GlobalGenConfig.tableSuffix.splitTrim())
+    this.removePrefixes(getContextGenConfig().tableNamePrefixes.splitTrim())
+        .removeSuffixes(getContextGenConfig().tableNameSuffixes.splitTrim())
 
 fun String.clearTableComment(): String =
-    this.removePrefixes(GlobalGenConfig.tableCommentPrefix.splitTrim())
-        .removeSuffixes(GlobalGenConfig.tableCommentSuffix.splitTrim())
+    this.removePrefixes(getContextGenConfig().tableCommentPrefixes.splitTrim())
+        .removeSuffixes(getContextGenConfig().tableCommentSuffixes.splitTrim())
 
 /**
  * 根据配置清理列名的前缀和后缀
  */
 fun String.clearColumnName(): String =
-    this.removePrefixes(GlobalGenConfig.columnPrefix.splitTrim())
-        .removeSuffixes(GlobalGenConfig.columnSuffix.splitTrim())
+    this.removePrefixes(getContextGenConfig().columnNamePrefixes.splitTrim())
+        .removeSuffixes(getContextGenConfig().columnNameSuffixes.splitTrim())
 
 fun String.clearColumnComment(): String =
-    this.removePrefixes(GlobalGenConfig.columnCommentPrefix.splitTrim())
-        .removeSuffixes(GlobalGenConfig.columnCommentSuffix.splitTrim())
+    this.removePrefixes(getContextGenConfig().columnCommentPrefixes.splitTrim())
+        .removeSuffixes(getContextGenConfig().columnCommentSuffixes.splitTrim())

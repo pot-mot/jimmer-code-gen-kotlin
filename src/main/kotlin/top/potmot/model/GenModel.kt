@@ -38,6 +38,11 @@ interface GenModel : BaseEntity {
     val graphData: String
 
     /**
+     * 同步转换实体
+     */
+    val syncConvertEntity: Boolean
+
+    /**
      * 语言
      */
     val language: GenLanguage
@@ -48,14 +53,94 @@ interface GenModel : BaseEntity {
     val dataSourceType: DataSourceType
 
     /**
+     * 作者
+     */
+    val author: String
+
+    /**
      * 包路径
      */
     val packagePath: String
 
     /**
-     * 同步转换实体
+     * 启用小写命名
      */
-    val syncConvertEntity: Boolean
+    val lowerCaseName: Boolean
+
+    /**
+     * 启用真实外键
+     */
+    val realFk: Boolean
+
+    /**
+     * 生成 IdView 属性
+     */
+    val idViewProperty: Boolean
+
+    /**
+     * 逻辑删除注解
+     */
+    val logicalDeletedAnnotation: String
+
+    /**
+     * 生成 Table 注解
+     */
+    val tableAnnotation: Boolean
+
+    /**
+     * 生成 Column 注解
+     */
+    val columnAnnotation: Boolean
+
+    /**
+     * 生成 JoinTable 注解
+     */
+    val joinTableAnnotation: Boolean
+
+    /**
+     * 生成 JoinColumn 注解
+     */
+    val joinColumnAnnotation: Boolean
+
+    /**
+     * 转换实体时移除的表名前缀
+     */
+    val tableNamePrefixes: String
+
+    /**
+     * 转换实体时移除的表名后缀
+     */
+    val tableNameSuffixes: String
+
+    /**
+     * 转换实体时移除的表注释前缀
+     */
+    val tableCommentPrefixes: String
+
+    /**
+     * 转换实体时移除的表注释后缀
+     */
+    val tableCommentSuffixes: String
+
+    /**
+     * 转换属性时移除的列名前缀
+     */
+    val columnNamePrefixes: String
+
+    /**
+     * 转换属性时移除的列名后缀
+     */
+    val columnNameSuffixes: String
+
+    /**
+     * 转换属性时移除的列注释前缀
+     */
+    val columnCommentPrefixes: String
+
+    /**
+     * 转换属性时移除的列注释后缀
+     */
+    val columnCommentSuffixes: String
 
     /**
      * 表

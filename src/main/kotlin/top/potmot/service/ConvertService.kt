@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.context.cleanContextGenConfig
 import top.potmot.context.getContextGenConfig
+import top.potmot.context.merge
 import top.potmot.core.entity.convert.toGenEntity
-import top.potmot.enumeration.DataSourceType
-import top.potmot.enumeration.GenLanguage
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
+import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTypeMappingView
 import top.potmot.model.id
@@ -49,17 +49,13 @@ class ConvertService(
     fun convert(
         @RequestBody tableIds: List<Long>,
         @RequestParam(required = false) modelId: Long?,
-        @RequestParam(required = false) dataSourceType: DataSourceType?,
-        @RequestParam(required = false) language: GenLanguage?,
-        @RequestParam(required = false) packagePath: String?,
+        @RequestParam(required = false) properties: GenConfigProperties?,
     ): List<Long> {
         val result = mutableListOf<Long>()
 
         val context = getContextGenConfig()
 
-        dataSourceType?.let { context.dataSourceType = it }
-        language?.let { context.language = it }
-        packagePath?.let { context.packagePath = it }
+        properties?.let { context.merge(it) }
 
         val tables = getTableByModel(tableIds)
 

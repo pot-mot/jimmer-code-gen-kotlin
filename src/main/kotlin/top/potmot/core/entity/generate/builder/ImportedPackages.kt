@@ -1,4 +1,4 @@
-package top.potmot.constant
+package top.potmot.core.entity.generate.builder
 
 import top.potmot.utils.string.startsWithAny
 

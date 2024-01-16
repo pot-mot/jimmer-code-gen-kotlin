@@ -24,14 +24,10 @@ GenModelView {
 }
 
 input GenModelInput {
-    id
-    name
-    remark
-    language
-    dataSourceType
-    packagePath
-    syncConvertEntity
+    #allScalars
     graphData?
+    -createdTime
+    -modifiedTime
 
     // same with GenEnumModelInput
     enums {
@@ -48,4 +44,25 @@ input GenModelInput {
           -modifiedTime
         }
     }
+}
+
+
+GenConfig {
+    #allScalars
+    -id
+    -createdTime
+    -modifiedTime
+    -name
+    -graphData
+    -remark
+}
+
+input GenConfigProperties {
+    #allScalars?
+    -id
+    -createdTime
+    -modifiedTime
+    -name
+    -graphData
+    -remark
 }

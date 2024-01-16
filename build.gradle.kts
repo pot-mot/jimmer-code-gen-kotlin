@@ -20,14 +20,14 @@ plugins {
 }
 
 group = "top.potmot"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.2" // 2024-1-16
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.8.77"
+val jimmerVersion = "0.8.78"
 
 val mysqlVersion = "8.0.30"
 val postgreVersion = "42.6.0"
-val h2Version = "2.1.214"
+val h2Version = "2.2.224"
 
 val schemacrawlerVersion = "16.20.4"
 val liquibaseVersion = "4.22.0"

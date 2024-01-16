@@ -43,5 +43,7 @@ class MysqlTableDefineBuilder : TableDefineBuilder(
     }
 
     override fun columnStringify(column: GenTableAssociationsView.TargetOf_columns): String =
-        super.columnStringify(column) + if (column.autoIncrement) " AUTO_INCREMENT" else ""
+        super.columnStringify(column) +
+                if (column.autoIncrement) " AUTO_INCREMENT" else "" +
+                        if (column.comment.isNotBlank()) " COMMENT '${column.comment}'" else ""
 }

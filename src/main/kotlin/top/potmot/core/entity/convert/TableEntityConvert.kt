@@ -1,7 +1,6 @@
 package top.potmot.core.entity.convert
 
 import org.babyfish.jimmer.kt.new
-import top.potmot.config.GlobalGenConfig
 import top.potmot.context.getContextGenConfig
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
@@ -63,12 +62,14 @@ private fun tableToEntity(
     modelId: Long?,
 ): GenEntity {
     return new(GenEntity::class).by {
+        val context = getContextGenConfig()
+
         this.table().id = genTable.id
         this.modelId = modelId
-        this.author = GlobalGenConfig.author
+        this.author = context.author
         this.name = tableNameToClassName(genTable.name)
         this.comment = genTable.comment.clearTableComment()
         this.remark = genTable.remark
-        this.packagePath = getContextGenConfig().packagePath
+        this.packagePath = context.packagePath
     }
 }
