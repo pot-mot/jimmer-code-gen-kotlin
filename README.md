@@ -17,7 +17,9 @@
 
 项目基于 Kotlin + Gradle 编写。
 
-[项目文档](https://pot-mot.github.io/jimmer-code-gen-doc/)
+## 文档
+
+[github page](https://pot-mot.github.io/jimmer-code-gen-doc/)
 
 ## Git 仓库地址
 
