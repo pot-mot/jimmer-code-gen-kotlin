@@ -129,8 +129,6 @@ class FkConfigTest(
                 rawType = "",
                 displaySize = 11,
                 numericPrecision = 0,
-                numericUnsigned = false,
-                caseSensitive = false,
                 defaultValue = "",
                 comment = "Column comment",
                 partOfPk = false,
