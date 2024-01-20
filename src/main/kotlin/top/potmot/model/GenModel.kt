@@ -63,6 +63,11 @@ interface GenModel : BaseEntity {
     val packagePath: String
 
     /**
+     * 表路径
+     */
+    val tablePath: String
+
+    /**
      * 启用小写命名
      */
     val lowerCaseName: Boolean

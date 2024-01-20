@@ -2,12 +2,12 @@ package top.potmot.core.entity.convert
 
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.GenerationType
-import top.potmot.core.database.meta.ColumnTypeMeta
 import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.model.GenProperty
 import top.potmot.model.by
+import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenTableAssociationsView
 
 typealias TypeMapping = (column: ColumnTypeMeta) -> String

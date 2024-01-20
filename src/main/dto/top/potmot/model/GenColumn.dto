@@ -1,22 +1,16 @@
-GenColumnMatchView {
-    id
-    name
-    comment
-    typeCode
-    type
-    partOfPk
-    typeNotNull
-
-    table {
-        id
-        name
-        comment
-        type
-    }
-}
-
 GenColumnCommonView {
     #allScalars
     id(table)
     id(enum)
+}
+
+
+ColumnTypeMeta {
+    typeCode
+    overwriteByRaw
+    rawType
+    typeNotNull
+    displaySize
+    numericPrecision
+    autoIncrement
 }

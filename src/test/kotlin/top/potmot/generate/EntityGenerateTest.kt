@@ -85,11 +85,6 @@ class EntityGenerateTest {
     private final val baseTable = GenEntityPropertiesView.TargetOf_table(
         id = 1,
         name = "table",
-        comment = "comment",
-        schema = GenEntityPropertiesView.TargetOf_table.TargetOf_schema_2(
-            id = 1,
-            name = "schema",
-        )
     )
 
     private final val baseEntity = GenEntityPropertiesView(
@@ -129,7 +124,7 @@ import org.babyfish.jimmer.sql.Table
  * @author Potmot
  */
 @Entity
-@Table(name = "SCHEMA.TABLE")
+@Table(name = "TABLE")
 interface Entity {
     /**
      * ID
@@ -172,7 +167,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Potmot
  */
 @Entity
-@Table(name = "SCHEMA.TABLE")
+@Table(name = "TABLE")
 public interface Entity {
     /**
      * ID

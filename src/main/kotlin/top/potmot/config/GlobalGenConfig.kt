@@ -32,6 +32,9 @@ object GlobalGenConfig {
     /** 包路径  */
     var packagePath: String = "com.example"
 
+    /** 表路径 */
+    var tablePath: String = ""
+
     /** 生成 IdView 属性 */
     var idViewProperty: Boolean = true
 

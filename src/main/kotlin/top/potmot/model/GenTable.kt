@@ -72,18 +72,18 @@ interface GenTable : BaseEntity {
     val entity: GenEntity?
 
     /**
-     * 表名称
+     * 名称
      */
     @Key
     val name: String
 
     /**
-     * 表注释
+     * 注释
      */
     val comment: String
 
     /**
-     * 表种类
+     * 种类
      */
     val type: TableType
 

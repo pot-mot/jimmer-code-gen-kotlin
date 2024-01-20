@@ -1,7 +1,7 @@
 package top.potmot.core.database.generate
 
-import top.potmot.core.database.meta.ColumnTypeMeta
 import top.potmot.error.ColumnTypeException
+import top.potmot.model.dto.ColumnTypeMeta
 
 /**
  * 列类型定义者，基于 java.sql.Types 中的类型定义生产列定义

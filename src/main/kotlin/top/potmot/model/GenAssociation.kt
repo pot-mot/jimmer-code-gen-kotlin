@@ -90,15 +90,25 @@ interface GenAssociation : BaseEntity {
     val columnReferenceIds: List<Long>
 
     /**
-     * 关联类型
+     * 类型
      */
-    val associationType: AssociationType
+    val type: AssociationType
 
 
     /**
      * 脱钩行为
      */
     val dissociateAction: DissociateAction?
+
+    /**
+     * 更新行为
+     */
+    val updateAction: String
+
+    /**
+     * 删除行为
+     */
+    val deleteAction: String
 
     /**
      * 是否伪外键

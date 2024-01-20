@@ -124,7 +124,7 @@ fun GenAssociationModelInput.toInput(
 
     return GenAssociationInput(
         name = name,
-        associationType = associationType,
+        type = type,
         dissociateAction = dissociateAction,
         sourceTableId = sourceTablePair.first,
         targetTableId = targetTablePair.first,
@@ -132,5 +132,7 @@ fun GenAssociationModelInput.toInput(
         columnReferences = columnReferenceInputs,
         remark = "",
         orderKey = 0,
+        updateAction = this.updateAction,
+        deleteAction = this.deleteAction
     )
 }

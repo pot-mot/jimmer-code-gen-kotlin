@@ -1,7 +1,7 @@
 package top.potmot.core.database.generate.postgres
 
 import top.potmot.core.database.generate.ColumnTypeDefiner
-import top.potmot.core.database.meta.ColumnTypeMeta
+import top.potmot.model.dto.ColumnTypeMeta
 import java.sql.Types
 
 // https://www.postgresql.org/docs/current/datatype.html
@@ -50,82 +50,82 @@ class PostgreColumnTypeDefiner : ColumnTypeDefiner {
         }
 
     override fun getTypeName(typeMeta: ColumnTypeMeta): String {
-        if (typeMeta.overwriteByType) return typeMeta.type
+        if (typeMeta.overwriteByRaw) return typeMeta.rawType
 
         when (typeMeta.typeCode) {
             Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR,
             Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR,
             Types.CLOB, Types.NCLOB -> {
-                typeMeta.type = "TEXT"
+                typeMeta.rawType = "TEXT"
             }
 
             Types.BLOB,
             Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> {
-                typeMeta.type = "BYTEA"
+                typeMeta.rawType = "BYTEA"
             }
 
             Types.BIT -> {
-                typeMeta.type = "BIT"
+                typeMeta.rawType = "BIT"
             }
             Types.TINYINT, Types.SMALLINT -> {
-                typeMeta.type = "SMALLINT"
+                typeMeta.rawType = "SMALLINT"
             }
             Types.INTEGER -> {
-                typeMeta.type = "INT"
+                typeMeta.rawType = "INT"
             }
             Types.BIGINT -> {
-                typeMeta.type = "BIGINT"
+                typeMeta.rawType = "BIGINT"
             }
 
             Types.REAL, Types.FLOAT -> {
-                typeMeta.type = "REAL"
+                typeMeta.rawType = "REAL"
 
             }
             Types.DOUBLE -> {
-                typeMeta.type = "DOUBLE PRECISION"
+                typeMeta.rawType = "DOUBLE PRECISION"
             }
             Types.NUMERIC, Types.DECIMAL -> {
-                typeMeta.type = "NUMERIC"
+                typeMeta.rawType = "NUMERIC"
             }
 
             Types.BOOLEAN -> {
-                typeMeta.type = "BOOLEAN"
+                typeMeta.rawType = "BOOLEAN"
             }
 
 
             Types.DATE -> {
-                typeMeta.type = "DATE"
+                typeMeta.rawType = "DATE"
             }
 
             Types.TIME_WITH_TIMEZONE -> {
-                typeMeta.type = "TIMETZ"
+                typeMeta.rawType = "TIMETZ"
             }
             Types.TIMESTAMP_WITH_TIMEZONE -> {
-                typeMeta.type = "TIMESTAMPTZ"
+                typeMeta.rawType = "TIMESTAMPTZ"
             }
 
             Types.TIME -> {
-                typeMeta.type = "TIME"
+                typeMeta.rawType = "TIME"
             }
             Types.TIMESTAMP -> {
-                typeMeta.type = "TIMESTAMP"
+                typeMeta.rawType = "TIMESTAMP"
             }
         }
 
         if (typeMeta.autoIncrement) {
             when (typeMeta.typeCode) {
                 Types.TINYINT, Types.SMALLINT -> {
-                    typeMeta.type = "SMALLSERIAL"
+                    typeMeta.rawType = "SMALLSERIAL"
                 }
                 Types.INTEGER -> {
-                    typeMeta.type = "SERIAL"
+                    typeMeta.rawType = "SERIAL"
                 }
                 Types.BIGINT -> {
-                    typeMeta.type = "BIGSERIAL"
+                    typeMeta.rawType = "BIGSERIAL"
                 }
             }
         }
 
-        return typeMeta.type
+        return typeMeta.rawType
     }
 }

@@ -5,33 +5,11 @@ GenTableIdView {
 GenTableCommonView {
     #allScalars
     id(entity)
-
-    schema {
-        id
-        name
-
-        dataSource {
-            id
-            name
-            type
-        }
-    }
 }
 
 GenTableColumnsView {
     #allScalars
     id(entity)
-
-    schema {
-        id
-        name
-
-        dataSource {
-            id
-            name
-            type
-        }
-    }
 
     columns {
         #allScalars
@@ -57,10 +35,6 @@ input GenTableModelInput {
     -id
     -createdTime
     -modifiedTime
-
-    schema {
-        name
-    }
 
     columns {
         #allScalars
@@ -91,17 +65,6 @@ GenTableAssociationsView {
     #allScalars
     id(entity)
 
-    schema {
-        id
-        name
-
-        dataSource {
-            id
-            name
-            type
-        }
-    }
-
     columns {
         #allScalars
         id(table)
@@ -130,7 +93,6 @@ GenTableAssociationsView {
                 id
                 name
                 comment
-                type
             }
             targetColumn {
                 id
@@ -155,7 +117,6 @@ GenTableAssociationsView {
                 id
                 name
                 comment
-                type
             }
         }
     }

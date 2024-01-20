@@ -30,7 +30,7 @@ class FkConfigTest(
         configService.setConfig(GenConfigProperties(realFk = true, idViewProperty = false))
         assertEquals(true, GlobalGenConfig.realFk)
 
-        val entity = table.toGenEntity(
+        val entity = createTable().toGenEntity(
             null,
             emptyList()
         )
@@ -48,7 +48,7 @@ class FkConfigTest(
         configService.setConfig(GenConfigProperties(realFk = false, idViewProperty = false))
         assertEquals(false, GlobalGenConfig.realFk)
 
-        val entity = table.toGenEntity(
+        val entity = createTable().toGenEntity(
             null,
             emptyList()
         )
@@ -56,6 +56,7 @@ class FkConfigTest(
         assert(entity.properties.size == 1)
 
         val propertyStr = entity.properties[0].toString()
+        println(propertyStr)
         assert(propertyStr.contains("foreignKeyType = ForeignKeyType.REAL"))
         assert(!propertyStr.contains("foreignKeyType = ForeignKeyType.FAKE"))
     }
@@ -63,6 +64,8 @@ class FkConfigTest(
     @Test
     @Order(3)
     fun testFakeAssociationRealFkConfig() {
+        val table = createTable()
+
         table.outAssociations[0].fake = true
 
         configService.setConfig(GenConfigProperties(realFk = true, idViewProperty = false))
@@ -83,6 +86,8 @@ class FkConfigTest(
     @Test
     @Order(4)
     fun testFakeAssociationFakeFkConfig() {
+        val table = createTable()
+
         table.outAssociations[0].fake = true
 
         configService.setConfig(GenConfigProperties(realFk = false, idViewProperty = false))
@@ -96,11 +101,12 @@ class FkConfigTest(
         assert(entity.properties.size == 1)
 
         val propertyStr = entity.properties[0].toString()
+        listOf(propertyStr)
         assert(!propertyStr.contains("foreignKeyType = ForeignKeyType.REAL"))
         assert(!propertyStr.contains("foreignKeyType = ForeignKeyType.FAKE"))
     }
 
-    val table = GenTableAssociationsView(
+    fun createTable() = GenTableAssociationsView(
         id = 1,
         createdTime = LocalDateTime.now(),
         modifiedTime = LocalDateTime.now(),
@@ -110,7 +116,6 @@ class FkConfigTest(
         type = TableType.TABLE,
         orderKey = 1,
         entityId = 123,
-        schema = null,
         columns = listOf(
             GenTableAssociationsView.TargetOf_columns(
                 id = 1,
@@ -120,10 +125,12 @@ class FkConfigTest(
                 orderKey = 1,
                 name = "column1",
                 typeCode = Types.BIGINT,
-                overwriteByType = false,
-                type = "",
+                overwriteByRaw = false,
+                rawType = "",
                 displaySize = 11,
                 numericPrecision = 0,
+                numericUnsigned = false,
+                caseSensitive = false,
                 defaultValue = "",
                 comment = "Column comment",
                 partOfPk = false,
@@ -144,8 +151,10 @@ class FkConfigTest(
                 modifiedTime = LocalDateTime.now(),
                 remark = "Some remark",
                 name = "association2",
-                associationType = AssociationType.MANY_TO_ONE,
+                type = AssociationType.MANY_TO_ONE,
                 dissociateAction = DissociateAction.SET_NULL,
+                updateAction = "",
+                deleteAction = "",
                 fake = false,
                 orderKey = 1,
                 targetTable = GenTableAssociationsView.TargetOf_outAssociations.TargetOf_targetTable_2(
@@ -162,7 +171,6 @@ class FkConfigTest(
                             id = 2,
                             name = "column2",
                             comment = "",
-                            type = "",
                         )
                     )
                 )

@@ -12,8 +12,10 @@ data class AssociationMeta(
     val sourceColumns: List<GenColumn>,
     val targetTable: GenTable,
     val targetColumns: List<GenColumn>,
-    val associationType: AssociationType,
-    val dissociateAction: DissociateAction?
+    val type: AssociationType,
+    val dissociateAction: DissociateAction?,
+    val onUpdate: String,
+    val onDelete: String,
 )
 
 data class ForeignKeyMeta(
@@ -34,6 +36,8 @@ fun ForeignKeyMeta.reversed(): ForeignKeyMeta =
         targetColumnNames,
         sourceTableName,
         sourceColumnNames,
+        onUpdate,
+        onDelete,
     )
 
 fun GenAssociation.getMeta(): AssociationMeta =
@@ -43,8 +47,10 @@ fun GenAssociation.getMeta(): AssociationMeta =
         sourceColumns = this.columnReferences.map { it.sourceColumn },
         targetTable = this.targetTable,
         targetColumns = this.columnReferences.map { it.targetColumn },
-        associationType,
+        type,
         dissociateAction,
+        this.updateAction,
+        this.deleteAction
     )
 
 fun AssociationMeta.toFkMeta(): ForeignKeyMeta =
@@ -54,6 +60,8 @@ fun AssociationMeta.toFkMeta(): ForeignKeyMeta =
         sourceColumnNames = this.sourceColumns.map { it.name },
         targetTableName = this.targetTable.name,
         targetColumnNames = this.targetColumns.map { it.name },
+        onUpdate = this.onUpdate,
+        onDelete = this.onDelete,
     )
 
 fun GenAssociation.toFkMeta(): ForeignKeyMeta =

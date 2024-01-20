@@ -13,17 +13,17 @@ repositories {
 
 plugins {
     id("org.springframework.boot") version "2.7.13"
-    id("io.spring.dependency-management") version "1.0.12.RELEASE"
-    kotlin("jvm") version "1.6.21"
-    kotlin("plugin.spring") version "1.6.21"
-    id("com.google.devtools.ksp") version "1.7.10-1.0.6"
+    id("io.spring.dependency-management") version "1.1.4"
+    kotlin("jvm") version "1.9.21"
+    kotlin("plugin.spring") version "1.9.21"
+    id("com.google.devtools.ksp") version "1.9.21-1.0.15"
 }
 
 group = "top.potmot"
-version = "0.0.2" // 2024-1-16
+version = "0.0.3" // 2024-1-20
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.8.78"
+val jimmerVersion = "0.8.80"
 
 val mysqlVersion = "8.0.30"
 val postgreVersion = "42.6.0"

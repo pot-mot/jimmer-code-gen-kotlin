@@ -4,6 +4,7 @@ import top.potmot.core.entity.convert.clearColumnName
 import top.potmot.core.entity.convert.clearTableComment
 import top.potmot.core.entity.convert.clearTableName
 import top.potmot.model.GenAssociation
+import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenTableAssociationsView
 import java.time.LocalDateTime
 
@@ -103,8 +104,8 @@ private fun createMappingTableColumn(
         orderKey = 0,
         name = name,
         typeCode = type.typeCode,
-        overwriteByType = type.overwriteByType,
-        type = type.type,
+        overwriteByRaw = type.overwriteByRaw,
+        rawType = type.rawType,
         displaySize = type.displaySize,
         numericPrecision = type.numericPrecision,
         typeNotNull = type.typeNotNull,

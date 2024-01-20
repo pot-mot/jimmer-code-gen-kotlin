@@ -1,7 +1,7 @@
 package top.potmot.core.database.generate.mysql
 
 import top.potmot.core.database.generate.ColumnTypeDefiner
-import top.potmot.core.database.meta.ColumnTypeMeta
+import top.potmot.model.dto.ColumnTypeMeta
 import java.sql.Types
 
 // https://www.mysqlzh.com/doc/106.html
@@ -42,87 +42,87 @@ class MysqlColumnTypeDefiner : ColumnTypeDefiner {
 
     override fun defaultNumericPrecision(typeCode: Int): Long? = null
     override fun getTypeName(typeMeta: ColumnTypeMeta): String {
-        if (typeMeta.overwriteByType) return typeMeta.type
+        if (typeMeta.overwriteByRaw) return typeMeta.rawType
 
-        if (typeMeta.type.uppercase().startsWith("ENUM") ||
-            typeMeta.type.uppercase().startsWith("SET")
+        if (typeMeta.rawType.uppercase().startsWith("ENUM") ||
+            typeMeta.rawType.uppercase().startsWith("SET")
         ) {
             typeMeta.displaySize = 0
             typeMeta.numericPrecision = 0
 
-            return typeMeta.type
+            return typeMeta.rawType
         }
 
         when (typeMeta.typeCode) {
             Types.CHAR, Types.NCHAR -> {
-                typeMeta.type = "CHAR"
+                typeMeta.rawType = "CHAR"
             }
 
             Types.VARCHAR, Types.NVARCHAR -> {
-                typeMeta.type = "VARCHAR"
+                typeMeta.rawType = "VARCHAR"
             }
 
             Types.LONGVARCHAR, Types.LONGNVARCHAR -> {
-                typeMeta.type = "LONGTEXT"
+                typeMeta.rawType = "LONGTEXT"
             }
 
             Types.BINARY -> {
-                typeMeta.type = "BINARY"
+                typeMeta.rawType = "BINARY"
             }
 
             Types.VARBINARY, Types.LONGVARBINARY -> {
-                typeMeta.type = "VARBINARY"
+                typeMeta.rawType = "VARBINARY"
             }
 
             Types.BIT -> {
-                typeMeta.type = "BIT"
+                typeMeta.rawType = "BIT"
             }
 
             Types.TINYINT -> {
-                typeMeta.type = "TINYINT"
+                typeMeta.rawType = "TINYINT"
             }
 
             Types.SMALLINT -> {
-                typeMeta.type = "SMALLINT"
+                typeMeta.rawType = "SMALLINT"
             }
 
             Types.INTEGER -> {
-                typeMeta.type = "INT"
+                typeMeta.rawType = "INT"
             }
 
             Types.BIGINT -> {
-                typeMeta.type = "BIGINT"
+                typeMeta.rawType = "BIGINT"
             }
 
             Types.REAL, Types.FLOAT -> {
-                typeMeta.type = "FLOAT"
+                typeMeta.rawType = "FLOAT"
             }
 
             Types.DOUBLE -> {
-                typeMeta.type = "DOUBLE"
+                typeMeta.rawType = "DOUBLE"
             }
 
             Types.NUMERIC, Types.DECIMAL -> {
-                typeMeta.type = "DECIMAL"
+                typeMeta.rawType = "DECIMAL"
             }
 
             Types.BOOLEAN -> {
-                typeMeta.type = "BOOLEAN"
+                typeMeta.rawType = "BOOLEAN"
             }
 
             Types.DATE -> {
-                typeMeta.type = "DATE"
+                typeMeta.rawType = "DATE"
             }
 
             Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP_WITH_TIMEZONE -> {
-                typeMeta.type = "TIMESTAMP"
+                typeMeta.rawType = "TIMESTAMP"
             }
 
             Types.TIME, Types.TIMESTAMP -> {
-                typeMeta.type = "DATETIME"
+                typeMeta.rawType = "DATETIME"
             }
         }
 
-        return typeMeta.type
+        return typeMeta.rawType
     }
 }

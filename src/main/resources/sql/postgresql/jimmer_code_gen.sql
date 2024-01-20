@@ -36,6 +36,7 @@ CREATE TABLE "gen_model"
     "data_source_type"           text      NOT NULL,
     "author"                     text      NOT NULL,
     "package_path"               text      NOT NULL,
+    "table_path"                 varchar(500) NOT NULL,
     "lower_case_name"            boolean   NOT NULL DEFAULT TRUE,
     "real_fk"                    boolean   NOT NULL DEFAULT TRUE,
     "id_view_property"           boolean   NOT NULL DEFAULT TRUE,
@@ -67,6 +68,7 @@ COMMENT ON COLUMN "gen_model"."language" IS '语言';
 COMMENT ON COLUMN "gen_model"."data_source_type" IS '数据源类型';
 COMMENT ON COLUMN "gen_model"."author" IS '作者';
 COMMENT ON COLUMN "gen_model"."package_path" IS '包路径';
+COMMENT ON COLUMN "gen_model"."table_path" IS '表路径';
 COMMENT ON COLUMN "gen_model"."lower_case_name" IS '启用小写命名';
 COMMENT ON COLUMN "gen_model"."real_fk" IS '启用真实外键';
 COMMENT ON COLUMN "gen_model"."id_view_property" IS '生成 IdView 属性';
@@ -292,8 +294,8 @@ CREATE TABLE "gen_column"
     "table_id"          bigint      NOT NULL,
     "name"              text        NOT NULL,
     "type_code"         int         NOT NULL,
-    "overwrite_by_type" boolean     NOT NULL DEFAULT FALSE,
-    "type"              text        NOT NULL,
+    "overwrite_by_raw"  boolean      NOT NULL DEFAULT FALSE,
+    "raw_type"          varchar(500) NOT NULL,
     "display_size"      bigint      NOT NULL DEFAULT 0,
     "numeric_precision" bigint      NOT NULL DEFAULT 0,
     "default_value"     text        NULL     DEFAULT NULL,
@@ -321,15 +323,15 @@ COMMENT ON COLUMN "gen_column"."id" IS 'ID';
 COMMENT ON COLUMN "gen_column"."table_id" IS '归属表';
 COMMENT ON COLUMN "gen_column"."name" IS '列名称';
 COMMENT ON COLUMN "gen_column"."type_code" IS '列 JdbcType 码值';
-COMMENT ON COLUMN "gen_column"."overwrite_by_type" IS '覆盖为字面类型';
-COMMENT ON COLUMN "gen_column"."type" IS '列字面类型';
+COMMENT ON COLUMN "gen_column"."overwrite_by_raw" IS '覆盖为字面类型';
+COMMENT ON COLUMN "gen_column"."raw_type" IS '字面类型';
+COMMENT ON COLUMN "gen_column"."type_not_null" IS '是否非空';
 COMMENT ON COLUMN "gen_column"."display_size" IS '列展示长度';
 COMMENT ON COLUMN "gen_column"."numeric_precision" IS '列精度';
 COMMENT ON COLUMN "gen_column"."default_value" IS '列默认值';
 COMMENT ON COLUMN "gen_column"."comment" IS '列注释';
 COMMENT ON COLUMN "gen_column"."part_of_pk" IS '是否主键';
 COMMENT ON COLUMN "gen_column"."auto_increment" IS '是否自增';
-COMMENT ON COLUMN "gen_column"."type_not_null" IS '是否非空';
 COMMENT ON COLUMN "gen_column"."business_key" IS '是否为业务键';
 COMMENT ON COLUMN "gen_column"."logical_delete" IS '是否为逻辑删除';
 COMMENT ON COLUMN "gen_column"."enum_id" IS '枚举';
@@ -354,8 +356,10 @@ CREATE TABLE "gen_association"
     "name"              text        NOT NULL,
     "source_table_id"   bigint      NOT NULL,
     "target_table_id"   bigint      NOT NULL,
-    "association_type"  text        NOT NULL,
+    "type"  text        NOT NULL,
     "dissociate_action" text        NULL     DEFAULT NULL,
+    "update_action"     varchar(500) NOT NULL,
+    "delete_action"     varchar(500) NOT NULL,
     "fake"              boolean     NOT NULL DEFAULT TRUE,
     "order_key"         bigint      NOT NULL DEFAULT 0,
     "created_time"      timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -377,8 +381,10 @@ COMMENT ON COLUMN "gen_association"."model_id" IS '模型';
 COMMENT ON COLUMN "gen_association"."name" IS '关联名称';
 COMMENT ON COLUMN "gen_association"."source_table_id" IS '主表';
 COMMENT ON COLUMN "gen_association"."target_table_id" IS '从表';
-COMMENT ON COLUMN "gen_association"."association_type" IS '关联类型';
+COMMENT ON COLUMN "gen_association"."type" IS '关联类型';
 COMMENT ON COLUMN "gen_association"."dissociate_action" IS '脱钩行为';
+COMMENT ON COLUMN "gen_association"."update_action" IS '更新行为';
+COMMENT ON COLUMN "gen_association"."delete_action" IS '删除行为';
 COMMENT ON COLUMN "gen_association"."fake" IS '是否伪外键';
 COMMENT ON COLUMN "gen_association"."order_key" IS '自定排序';
 COMMENT ON COLUMN "gen_association"."created_time" IS '创建时间';

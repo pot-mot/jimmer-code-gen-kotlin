@@ -86,13 +86,13 @@ fun convertAssociationProperties(
 
         val baseProperty = currentColumnProperties[0]
 
-        if (outAssociation.associationType == MANY_TO_ONE || outAssociation.associationType == ONE_TO_ONE) {
+        if (outAssociation.type == MANY_TO_ONE || outAssociation.type == ONE_TO_ONE) {
             currentColumnProperties.clear()
         }
 
         // 当关联类型为 ONE_TO_MANY 或 MANY_TO_MANY 时，目标属性需要为复数形式
         val targetPlural =
-            outAssociation.associationType == ONE_TO_MANY || outAssociation.associationType == MANY_TO_MANY
+            outAssociation.type == ONE_TO_MANY || outAssociation.type == MANY_TO_MANY
 
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = deepClone(baseProperty).copy {
@@ -103,11 +103,11 @@ fun convertAssociationProperties(
             idProperty = false
             idGenerationType = null
 
-            when (outAssociation.associationType) {
+            when (outAssociation.type) {
                 ONE_TO_ONE, MANY_TO_ONE -> {
                     setAssociation(
                         AssociationAnnotationMeta(
-                            outAssociation.associationType,
+                            outAssociation.type,
                             joinColumns = outAssociation.toJoinColumns(identifierFilter)
                         )
                     )
@@ -120,7 +120,7 @@ fun convertAssociationProperties(
                     keyProperty = false
                     setAssociation(
                         AssociationAnnotationMeta(
-                            outAssociation.associationType,
+                            outAssociation.type,
                             joinTable = outAssociation.toJoinTable(identifierFilter)
                         )
                     )
@@ -132,7 +132,7 @@ fun convertAssociationProperties(
                     keyProperty = false
                     setAssociation(
                         AssociationAnnotationMeta(
-                            outAssociation.associationType,
+                            outAssociation.type,
                             mappedBy = mappedBy
                         )
                     )
@@ -175,15 +175,15 @@ fun convertAssociationProperties(
 
         val baseProperty = currentColumnProperties[0]
 
-        if (inAssociation.associationType == ONE_TO_MANY) {
+        if (inAssociation.type == ONE_TO_MANY) {
             currentColumnProperties.clear()
         }
 
         // 当关联类型为 MANY_TO_ONE 或 MANY_TO_MANY 时，来源属性需要为复数形式
-        val sourcePlural = inAssociation.associationType == MANY_TO_ONE || inAssociation.associationType == MANY_TO_MANY
+        val sourcePlural = inAssociation.type == MANY_TO_ONE || inAssociation.type == MANY_TO_MANY
 
         // 当关联类型为 ONE_TO_MANY 或 MANY_TO_MANY 时，目标属性需要为复数形式
-        val targetPlural = inAssociation.associationType == ONE_TO_MANY || inAssociation.associationType == MANY_TO_MANY
+        val targetPlural = inAssociation.type == ONE_TO_MANY || inAssociation.type == MANY_TO_MANY
 
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = deepClone(baseProperty).copy {
@@ -198,13 +198,13 @@ fun convertAssociationProperties(
                 if (targetPlural) it.toPlural() else it
             }
 
-            when (inAssociation.associationType) {
+            when (inAssociation.type) {
                 ONE_TO_ONE, MANY_TO_ONE, MANY_TO_MANY -> {
                     keyProperty = false
 
                     setAssociation(
                         AssociationAnnotationMeta(
-                            inAssociation.associationType.reverse(),
+                            inAssociation.type.reverse(),
                             mappedBy,
                         )
                     )

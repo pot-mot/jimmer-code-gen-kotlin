@@ -69,7 +69,7 @@ interface GenProperty : BaseEntity {
     val comment: String
 
     /**
-     * 属性类型
+     * 字面类型
      */
     val type: String
 

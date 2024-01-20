@@ -10,7 +10,7 @@ import org.babyfish.jimmer.sql.kt.ast.table.KNonNullTable
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.SelectType
 import top.potmot.model.GenAssociation
-import top.potmot.model.associationType
+import top.potmot.model.type
 import top.potmot.model.base.BaseQuery
 import top.potmot.model.base.Query
 import top.potmot.model.columnReferences
@@ -22,7 +22,7 @@ import top.potmot.model.targetTableId
 
 class AssociationQuery : BaseQuery<GenAssociation>() {
     val keywords: List<String>? = null
-    val associationType: AssociationType? = null
+    val type: AssociationType? = null
     val sourceTableId: Long? = null
     val targetTableId: Long? = null
     val sourceColumnId: Long? = null
@@ -35,7 +35,7 @@ class AssociationQuery : BaseQuery<GenAssociation>() {
             predicates += table.name ilike it
         }
 
-        predicates += table.associationType `eq?` associationType
+        predicates += table.type `eq?` type
 
         predicates += table.sourceTableId `eq?` sourceTableId
 

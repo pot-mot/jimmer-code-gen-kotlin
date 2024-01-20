@@ -4,6 +4,9 @@ import top.potmot.model.dto.GenConfig
 
 private val genConfigContextMap = mutableMapOf<Long, GenConfig>()
 
+fun hasContextGenConfig(id: Long = Thread.currentThread().id): Boolean =
+    genConfigContextMap.containsKey(id)
+
 fun getContextGenConfig(id: Long = Thread.currentThread().id): GenConfig {
     val value = genConfigContextMap[id]
 

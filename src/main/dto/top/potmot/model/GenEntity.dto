@@ -9,12 +9,6 @@ GenEntityPropertiesView {
     table {
         id
         name
-        comment
-
-        schema {
-            id
-            name
-        }
     }
 
     properties {

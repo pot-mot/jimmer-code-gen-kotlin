@@ -11,6 +11,7 @@ import top.potmot.model.base.BaseQuery
 import top.potmot.model.comment
 import top.potmot.model.name
 import top.potmot.model.partOfPk
+import top.potmot.model.rawType
 import top.potmot.model.tableId
 import top.potmot.model.type
 import top.potmot.model.typeCode
@@ -18,8 +19,8 @@ import top.potmot.model.typeCode
 class ColumnQuery : BaseQuery<GenColumn>() {
     val keywords: List<String>? = null
     val tableIds: List<Long>? = null
-    val type: String? = null
     val typeCode: Int? = null
+    val rawType: String? = null
     val partOfPk: Boolean? = null
 
     override fun toPredicateList(table: KNonNullTable<GenColumn>): MutableList<KNonNullExpression<Boolean>?> {
@@ -36,9 +37,9 @@ class ColumnQuery : BaseQuery<GenColumn>() {
             predicates += table.tableId valueIn it
         }
 
-        predicates += table.type `eq?` type
-
         predicates += table.typeCode `eq?` typeCode
+
+        predicates += table.rawType `eq?` rawType
 
         predicates += table.partOfPk `eq?` partOfPk
 

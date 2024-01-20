@@ -1,7 +1,6 @@
 package top.potmot.core.database.generate.builder
 
 import top.potmot.core.database.generate.ColumnTypeDefiner
-import top.potmot.core.database.meta.ColumnTypeMeta
 import top.potmot.core.database.meta.ForeignKeyMeta
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.core.database.meta.getAssociations
@@ -16,6 +15,7 @@ import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.error.GenerateTableDefineException
+import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.extension.pkColumns
 import top.potmot.utils.identifier.IdentifierFilter
@@ -232,7 +232,7 @@ abstract class TableDefineBuilder(
         val (outAssociations) = table.getAssociations()
 
         outAssociations.forEach { association ->
-            when (association.associationType) {
+            when (association.type) {
                 ONE_TO_ONE, MANY_TO_ONE -> {
                     createFkConstraint(
                         association.toFkMeta(),

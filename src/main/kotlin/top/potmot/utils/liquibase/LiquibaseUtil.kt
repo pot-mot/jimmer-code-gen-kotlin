@@ -102,10 +102,6 @@ private fun GenTableModelInput.toCreateTableChange(typeDefiner: ColumnTypeDefine
     createTableChange.tableName = name
     createTableChange.remarks = comment
 
-    schema?.let {
-        createTableChange.schemaName = it.name
-    }
-
     createTableChange.columns = columns.map { it.toColumnConfig(typeDefiner) }
 
     return createTableChange
@@ -222,7 +218,7 @@ fun createDatabaseChangeLog(
     }
 
     associations.forEach {association ->
-        if (association.associationType == AssociationType.MANY_TO_MANY) {
+        if (association.type == AssociationType.MANY_TO_MANY) {
             association.toManyToManyChanges(typeDefiner)
                 .forEach { changeSet.addChange(it) }
         } else {

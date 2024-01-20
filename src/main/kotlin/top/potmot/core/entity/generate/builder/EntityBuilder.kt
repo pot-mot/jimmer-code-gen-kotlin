@@ -52,12 +52,19 @@ abstract class EntityBuilder: CodeBuilder() {
 
     open fun GenEntityPropertiesView.tableAnnotation(): String =
         buildString {
+            val context = getContextGenConfig()
+
             append("@Table(name = \"")
-            append(table.schema?.name?.let { "${it.trim().changeCase()}." } ?: "")
-            append(getContextGenConfig().dataSourceType.getIdentifierFilter()
+
+            context.tablePath.takeIf { it.isNotBlank() }?.let {
+                append(it.trim().changeCase())
+                append(".")
+            }
+            append(context.dataSourceType.getIdentifierFilter()
                 .getIdentifier(table.name.trim())
                 .replace("\"", "\\\"")
                 .changeCase())
+
             append("\")")
         }
 
@@ -113,9 +120,9 @@ abstract class EntityBuilder: CodeBuilder() {
                 result += LogicalDeleted::class
             }
 
-            associationType?.let {associationType ->
+            associationType?.let {type ->
                 associationAnnotation?.let {associationAnnotation ->
-                    result += associationType.toAnnotation()
+                    result += type.toAnnotation()
 
                     if (associationAnnotation.contains("@JoinTable")) {
                         result += JoinTable::class

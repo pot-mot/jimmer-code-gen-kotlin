@@ -21,16 +21,16 @@ GenAssociationView {
             id
             name
             comment
-            type
             typeCode
+            rawType
         }
 
         targetColumn {
             id
             name
             comment
-            type
             typeCode
+            rawType
         }
     }
 }
@@ -53,8 +53,10 @@ input GenAssociationInput {
 input GenAssociationModelInput {
     id(model)
     name
-    associationType
+    type
     dissociateAction
+    updateAction
+    deleteAction
     fake
 
     sourceTable {
@@ -72,14 +74,14 @@ input GenAssociationModelInput {
         sourceColumn {
             name
             comment
-            type
             typeCode
+            rawType
         }
         targetColumn {
             name
             comment
-            type
             typeCode
+            rawType
         }
     }
 }

@@ -148,19 +148,20 @@ fun Column.toGenColumn(
     index: Long
 ): GenColumn {
     val column = this
+    val columnDataType = column.columnDataType
     return new(GenColumn::class).by {
         this.orderKey = index
         this.name = column.name
-        this.typeCode = column.type.javaSqlType.vendorTypeNumber
-        this.overwriteByType = false
-        this.type = column.type.name
+        this.typeCode = columnDataType.javaSqlType.vendorTypeNumber
+        this.overwriteByRaw = false
+        this.rawType = columnDataType.name
+        this.typeNotNull = !columnDataType.isNullable
         this.displaySize = column.size.toLong()
-        this.numericPrecision = column.decimalDigits.toLong()
+        this.numericPrecision = columnDataType.precision
         this.defaultValue = column.defaultValue
         this.comment = column.remarks
         this.partOfPk = column.isPartOfPrimaryKey
         this.autoIncrement = column.isAutoIncremented
-        this.typeNotNull = !column.isNullable
     }
 }
 
@@ -178,8 +179,10 @@ private fun ForeignKey.toGenAssociation(
 ): GenAssociation {
     var association = new(GenAssociation::class).by {
         this.name = this@toGenAssociation.name
-        this.associationType = AssociationType.MANY_TO_ONE
+        this.type = AssociationType.MANY_TO_ONE
         this.dissociateAction = deleteRule.toDissociateAction()
+        this.updateAction = updateRule.toString()
+        this.deleteAction = deleteRule.toString()
         this.fake = false
     }
 

@@ -31,18 +31,6 @@ interface GenColumn : BaseEntity {
     override val id: Long
 
     /**
-     * 对应属性
-     */
-    @OneToMany(mappedBy = "column")
-    val properties: List<GenProperty>
-
-    /**
-     * 对应属性 ID 视图
-     */
-    @IdView("properties")
-    val propertyIds: List<Long>
-
-    /**
      * 归属表
      */
     @Key
@@ -57,48 +45,48 @@ interface GenColumn : BaseEntity {
     val tableId: Long
 
     /**
-     * 列在表中顺序
-     */
-    val orderKey: Long
-
-    /**
-     * 列名称
+     * 名称
      */
     @Key
     val name: String
 
     /**
-     * 列 JdbcType 码值
+     * JdbcType 码值
      */
     val typeCode: Int
 
     /**
      * 覆盖为字面类型
      */
-    val overwriteByType: Boolean
+    val overwriteByRaw: Boolean
 
     /**
-     * 列字面类型
+     * 字面类型
      */
-    val type: String
+    val rawType: String
 
     /**
-     * 列展示长度
+     * 是否非空
+     */
+    val typeNotNull: Boolean
+
+    /**
+     * 展示长度
      */
     val displaySize: Long
 
     /**
-     * 列精度
+     * 数字精度
      */
     val numericPrecision: Long
 
     /**
-     * 列默认值
+     * 默认值
      */
     val defaultValue: String?
 
     /**
-     * 列注释
+     * 注释
      */
     val comment: String
 
@@ -113,11 +101,6 @@ interface GenColumn : BaseEntity {
     val autoIncrement: Boolean
 
     /**
-     * 是否非空
-     */
-    val typeNotNull: Boolean
-
-    /**
      * 是否为业务键
      */
     val businessKey: Boolean
@@ -126,6 +109,11 @@ interface GenColumn : BaseEntity {
      * 是否为逻辑删除
      */
     val logicalDelete: Boolean
+
+    /**
+     * 在表中顺序
+     */
+    val orderKey: Long
 
     /**
      * 生成枚举
@@ -157,5 +145,17 @@ interface GenColumn : BaseEntity {
      */
     @OneToMany(mappedBy = "sourceColumn")
     val outColumnReferences: List<GenColumnReference>
+
+    /**
+     * 对应属性
+     */
+    @OneToMany(mappedBy = "column")
+    val properties: List<GenProperty>
+
+    /**
+     * 对应属性 ID 视图
+     */
+    @IdView("properties")
+    val propertyIds: List<Long>
 }
 

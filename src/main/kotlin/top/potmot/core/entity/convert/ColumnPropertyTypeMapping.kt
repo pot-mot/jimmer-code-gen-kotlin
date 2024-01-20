@@ -2,10 +2,10 @@ package top.potmot.core.entity.convert
 
 import top.potmot.context.getContextGenConfig
 import top.potmot.core.database.generate.getColumnTypeDefiner
-import top.potmot.core.database.meta.ColumnTypeMeta
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.error.ColumnTypeException
+import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenTypeMappingView
 import java.math.BigDecimal
 import java.sql.Types
@@ -124,4 +124,4 @@ fun getPropertyType (
         language,
     )
         ?: getPropertyType(typeMeta.typeCode, typeMeta.typeNotNull, language)
-        ?: typeMeta.type
+        ?: typeMeta.rawType

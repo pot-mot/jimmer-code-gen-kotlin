@@ -31,6 +31,7 @@ CREATE TABLE `gen_model`
     `data_source_type`           varchar(500) NOT NULL,
     `author`                     varchar(500) NOT NULL,
     `package_path`               varchar(500) NOT NULL,
+    `table_path`                 varchar(500) NOT NULL,
     `lower_case_name`            boolean      NOT NULL DEFAULT TRUE,
     `real_fk`                    boolean      NOT NULL DEFAULT TRUE,
     `id_view_property`           boolean      NOT NULL DEFAULT TRUE,
@@ -39,14 +40,14 @@ CREATE TABLE `gen_model`
     `column_annotation`          boolean      NOT NULL DEFAULT TRUE,
     `join_table_annotation`      boolean      NOT NULL DEFAULT TRUE,
     `join_column_annotation`     boolean      NOT NULL DEFAULT TRUE,
-    `table_name_prefixes`          varchar(500) NOT NULL,
-    `table_name_suffixes`          varchar(500) NOT NULL,
-    `table_comment_prefixes`       varchar(500) NOT NULL,
-    `table_comment_suffixes`       varchar(500) NOT NULL,
-    `column_name_prefixes`         varchar(500) NOT NULL,
-    `column_name_suffixes`         varchar(500) NOT NULL,
-    `column_comment_prefixes`      varchar(500) NOT NULL,
-    `column_comment_suffixes`      varchar(500) NOT NULL,
+    `table_name_prefixes`        varchar(500) NOT NULL,
+    `table_name_suffixes`        varchar(500) NOT NULL,
+    `table_comment_prefixes`     varchar(500) NOT NULL,
+    `table_comment_suffixes`     varchar(500) NOT NULL,
+    `column_name_prefixes`       varchar(500) NOT NULL,
+    `column_name_suffixes`       varchar(500) NOT NULL,
+    `column_comment_prefixes`    varchar(500) NOT NULL,
+    `column_comment_suffixes`    varchar(500) NOT NULL,
     `created_time`               TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `modified_time`              TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `remark`                     varchar(500) NOT NULL DEFAULT '',
@@ -62,6 +63,7 @@ COMMENT ON COLUMN `gen_model`.`language` IS '语言';
 COMMENT ON COLUMN `gen_model`.`data_source_type` IS '数据源类型';
 COMMENT ON COLUMN `gen_model`.`author` IS '作者';
 COMMENT ON COLUMN `gen_model`.`package_path` IS '包路径';
+COMMENT ON COLUMN `gen_model`.`table_path` IS '表路径';
 COMMENT ON COLUMN `gen_model`.`lower_case_name` IS '启用小写命名';
 COMMENT ON COLUMN `gen_model`.`real_fk` IS '启用真实外键';
 COMMENT ON COLUMN `gen_model`.`id_view_property` IS '生成 IdView 属性';
@@ -232,9 +234,9 @@ COMMENT ON TABLE `gen_table` IS '生成表';
 COMMENT ON COLUMN `gen_table`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_table`.`model_id` IS '模型';
 COMMENT ON COLUMN `gen_table`.`schema_id` IS '数据架构';
-COMMENT ON COLUMN `gen_table`.`name` IS '表名称';
-COMMENT ON COLUMN `gen_table`.`comment` IS '表注释';
-COMMENT ON COLUMN `gen_table`.`type` IS '表种类';
+COMMENT ON COLUMN `gen_table`.`name` IS '名称';
+COMMENT ON COLUMN `gen_table`.`comment` IS '注释';
+COMMENT ON COLUMN `gen_table`.`type` IS '种类';
 COMMENT ON COLUMN `gen_table`.`order_key` IS '自定排序';
 COMMENT ON COLUMN `gen_table`.`created_time` IS '创建时间';
 COMMENT ON COLUMN `gen_table`.`modified_time` IS '修改时间';
@@ -249,15 +251,15 @@ CREATE TABLE `gen_column`
     `table_id`          bigint       NOT NULL,
     `name`              varchar(500) NOT NULL,
     `type_code`         int          NOT NULL,
-    `overwrite_by_type` boolean      NOT NULL DEFAULT FALSE,
-    `type`              varchar(500) NOT NULL,
+    `overwrite_by_raw`  boolean      NOT NULL DEFAULT FALSE,
+    `raw_type`          varchar(500) NOT NULL,
+    `type_not_null`     boolean      NOT NULL DEFAULT FALSE,
     `display_size`      bigint       NOT NULL DEFAULT 0,
     `numeric_precision` bigint       NOT NULL DEFAULT 0,
     `default_value`     varchar(500) NULL     DEFAULT NULL,
     `comment`           varchar(500) NOT NULL,
     `part_of_pk`        boolean      NOT NULL DEFAULT FALSE,
     `auto_increment`    boolean      NOT NULL DEFAULT FALSE,
-    `type_not_null`     boolean      NOT NULL DEFAULT FALSE,
     `business_key`      boolean      NOT NULL DEFAULT FALSE,
     `logical_delete`    boolean      NOT NULL DEFAULT FALSE,
     `enum_id`           bigint       NULL     DEFAULT NULL,
@@ -276,21 +278,21 @@ CREATE INDEX `idx_column_enum` ON `gen_column` (`enum_id`);
 COMMENT ON TABLE `gen_column` IS '生成列';
 COMMENT ON COLUMN `gen_column`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_column`.`table_id` IS '归属表';
-COMMENT ON COLUMN `gen_column`.`name` IS '列名称';
-COMMENT ON COLUMN `gen_column`.`type_code` IS '列 JdbcType 码值';
-COMMENT ON COLUMN `gen_column`.`overwrite_by_type` IS '覆盖为字面类型';
-COMMENT ON COLUMN `gen_column`.`type` IS '列字面类型';
-COMMENT ON COLUMN `gen_column`.`display_size` IS '列展示长度';
-COMMENT ON COLUMN `gen_column`.`numeric_precision` IS '列精度';
+COMMENT ON COLUMN `gen_column`.`name` IS '名称';
+COMMENT ON COLUMN `gen_column`.`type_code` IS 'JdbcType 码值';
+COMMENT ON COLUMN `gen_column`.`overwrite_by_raw` IS '覆盖为字面类型';
+COMMENT ON COLUMN `gen_column`.`raw_type` IS '字面类型';
+COMMENT ON COLUMN `gen_column`.`type_not_null` IS '是否非空';
+COMMENT ON COLUMN `gen_column`.`display_size` IS '展示长度';
+COMMENT ON COLUMN `gen_column`.`numeric_precision` IS '数字精度';
 COMMENT ON COLUMN `gen_column`.`default_value` IS '列默认值';
-COMMENT ON COLUMN `gen_column`.`comment` IS '列注释';
+COMMENT ON COLUMN `gen_column`.`comment` IS '注释';
 COMMENT ON COLUMN `gen_column`.`part_of_pk` IS '是否主键';
 COMMENT ON COLUMN `gen_column`.`auto_increment` IS '是否自增';
-COMMENT ON COLUMN `gen_column`.`type_not_null` IS '是否非空';
 COMMENT ON COLUMN `gen_column`.`business_key` IS '是否为业务键';
 COMMENT ON COLUMN `gen_column`.`logical_delete` IS '是否为逻辑删除';
 COMMENT ON COLUMN `gen_column`.`enum_id` IS '枚举';
-COMMENT ON COLUMN `gen_column`.`order_key` IS '列在表中顺序';
+COMMENT ON COLUMN `gen_column`.`order_key` IS '在表中顺序';
 COMMENT ON COLUMN `gen_column`.`created_time` IS '创建时间';
 COMMENT ON COLUMN `gen_column`.`modified_time` IS '修改时间';
 COMMENT ON COLUMN `gen_column`.`remark` IS '备注';
@@ -305,8 +307,10 @@ CREATE TABLE `gen_association`
     `name`              varchar(500) NOT NULL,
     `source_table_id`   bigint       NOT NULL,
     `target_table_id`   bigint       NOT NULL,
-    `association_type`  varchar(500) NOT NULL,
+    `type`              varchar(500) NOT NULL,
     `dissociate_action` varchar(500) NULL     DEFAULT NULL,
+    `update_action`     varchar(500) NOT NULL,
+    `delete_action`     varchar(500) NOT NULL,
     `fake`              boolean      NOT NULL DEFAULT TRUE,
     `order_key`         bigint       NOT NULL DEFAULT 0,
     `created_time`      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -328,8 +332,10 @@ COMMENT ON COLUMN `gen_association`.`model_id` IS '模型';
 COMMENT ON COLUMN `gen_association`.`name` IS '关联名称';
 COMMENT ON COLUMN `gen_association`.`source_table_id` IS '主表';
 COMMENT ON COLUMN `gen_association`.`target_table_id` IS '从表';
-COMMENT ON COLUMN `gen_association`.`association_type` IS '关联类型';
+COMMENT ON COLUMN `gen_association`.`type` IS '关联类型';
 COMMENT ON COLUMN `gen_association`.`dissociate_action` IS '脱钩行为';
+COMMENT ON COLUMN `gen_association`.`update_action` IS '更新行为';
+COMMENT ON COLUMN `gen_association`.`delete_action` IS '删除行为';
 COMMENT ON COLUMN `gen_association`.`fake` IS '是否伪外键';
 COMMENT ON COLUMN `gen_association`.`order_key` IS '自定排序';
 COMMENT ON COLUMN `gen_association`.`created_time` IS '创建时间';
