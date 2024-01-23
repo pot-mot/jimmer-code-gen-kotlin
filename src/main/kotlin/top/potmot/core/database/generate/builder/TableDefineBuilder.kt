@@ -142,11 +142,11 @@ abstract class TableDefineBuilder(
             appendLine("    FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { produceIdentifier(it) }})")
             append("  REFERENCES ${produceIdentifier(meta.targetTableName)} (${meta.targetColumnNames.joinToString(", ") { produceIdentifier(it) }})")
 
-            meta.onDelete.takeIf { it.isNotBlank() }?.let {
-                append("\n  $it")
-            }
             meta.onUpdate.takeIf { it.isNotBlank() }?.let {
-                append("\n  $it")
+                append("\n  ON UPDATE ${it.changeCase()}")
+            }
+            meta.onDelete.takeIf { it.isNotBlank() }?.let {
+                append("\n  ON DELETE ${it.changeCase()}")
             }
         }
 

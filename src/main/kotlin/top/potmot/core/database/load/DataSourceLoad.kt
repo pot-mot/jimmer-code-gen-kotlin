@@ -155,9 +155,9 @@ fun Column.toGenColumn(
         this.typeCode = columnDataType.javaSqlType.vendorTypeNumber
         this.overwriteByRaw = false
         this.rawType = columnDataType.name
-        this.typeNotNull = !columnDataType.isNullable
+        this.typeNotNull = !column.isNullable
         this.displaySize = column.size.toLong()
-        this.numericPrecision = columnDataType.precision
+        this.numericPrecision = column.decimalDigits.toLong()
         this.defaultValue = column.defaultValue
         this.comment = column.remarks
         this.partOfPk = column.isPartOfPrimaryKey
