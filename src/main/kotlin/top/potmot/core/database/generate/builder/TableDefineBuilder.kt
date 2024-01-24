@@ -1,6 +1,6 @@
 package top.potmot.core.database.generate.builder
 
-import top.potmot.core.database.generate.ColumnTypeDefiner
+import top.potmot.core.database.generate.columnTypeDefiner.ColumnTypeDefiner
 import top.potmot.core.database.meta.ForeignKeyMeta
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.core.database.meta.getAssociations
@@ -117,10 +117,10 @@ abstract class TableDefineBuilder(
             }
 
             createIndex(
+                index.name,
                 table.name,
                 columnNames,
                 index.uniqueIndex,
-                index.name,
             )
         }
 
@@ -210,10 +210,10 @@ abstract class TableDefineBuilder(
     }
 
     open fun createIndex(
+        name: String,
         tableName: String,
         columnNames: List<String>,
         unique: Boolean = false,
-        name: String = "${if (unique) "u" else ""}idx_${tableName}_${columnNames.joinToString("_") { it }}"
     ): String {
         return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${produceIdentifier(name)} ON ${
             produceIdentifier(tableName)

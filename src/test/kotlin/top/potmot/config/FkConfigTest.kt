@@ -24,11 +24,14 @@ import java.time.LocalDateTime
 class FkConfigTest(
     @Autowired val configService: ConfigService
 ) {
+    val global = GlobalConfig.common
+
     @Test
     @Order(1)
     fun testRealAssociationRealFkConfig() {
         configService.setConfig(GenConfigProperties(realFk = true, idViewProperty = false))
-        assertEquals(true, GlobalGenConfig.realFk)
+
+        assertEquals(true, global.realFk)
 
         val entity = createTable().toGenEntity(
             null,
@@ -38,6 +41,7 @@ class FkConfigTest(
         assert(entity.properties.size == 1)
 
         val propertyStr = entity.properties[0].toString()
+        println(propertyStr)
         assert(!propertyStr.contains("foreignKeyType = ForeignKeyType.REAL"))
         assert(!propertyStr.contains("foreignKeyType = ForeignKeyType.FAKE"))
     }
@@ -45,8 +49,9 @@ class FkConfigTest(
     @Test
     @Order(2)
     fun testRealAssociationFakeFkConfig() {
-        configService.setConfig(GenConfigProperties(realFk = false, idViewProperty = false))
-        assertEquals(false, GlobalGenConfig.realFk)
+        configService.setConfig(GenConfigProperties(realFk = false))
+
+        assertEquals(false, global.realFk)
 
         val entity = createTable().toGenEntity(
             null,
@@ -68,8 +73,9 @@ class FkConfigTest(
 
         table.outAssociations[0].fake = true
 
-        configService.setConfig(GenConfigProperties(realFk = true, idViewProperty = false))
-        assertEquals(true, GlobalGenConfig.realFk)
+        configService.setConfig(GenConfigProperties(realFk = true))
+
+        assertEquals(true, global.realFk)
 
         val entity = table.toGenEntity(
             null,
@@ -79,6 +85,7 @@ class FkConfigTest(
         assert(entity.properties.size == 1)
 
         val propertyStr = entity.properties[0].toString()
+        println(propertyStr)
         assert(!propertyStr.contains("foreignKeyType = ForeignKeyType.REAL"))
         assert(propertyStr.contains("foreignKeyType = ForeignKeyType.FAKE"))
     }
@@ -90,8 +97,9 @@ class FkConfigTest(
 
         table.outAssociations[0].fake = true
 
-        configService.setConfig(GenConfigProperties(realFk = false, idViewProperty = false))
-        assertEquals(false, GlobalGenConfig.realFk)
+        configService.setConfig(GenConfigProperties(realFk = false))
+
+        assertEquals(false, global.realFk)
 
         val entity = table.toGenEntity(
             null,
@@ -101,7 +109,7 @@ class FkConfigTest(
         assert(entity.properties.size == 1)
 
         val propertyStr = entity.properties[0].toString()
-        listOf(propertyStr)
+        println(propertyStr)
         assert(!propertyStr.contains("foreignKeyType = ForeignKeyType.REAL"))
         assert(!propertyStr.contains("foreignKeyType = ForeignKeyType.FAKE"))
     }

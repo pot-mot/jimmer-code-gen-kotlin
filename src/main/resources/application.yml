@@ -35,13 +35,14 @@ jimmer:
   default-enum-strategy: NAME
 
 # 代码生成
-gen:
-  language: kotlin
-  table-name-prefixes: t_,gen_
-  table-name-suffixes:
-  table-comment-prefixes:
-  table-comment-suffixes: 表
-  column-name-prefixes:
-  column-name-suffixes:
-  column-comment-prefixes:
-  column-comment-suffixes:
+jimmer-code-gen:
+  common:
+    language: kotlin
+    table-name-prefixes: t_
+    table-name-suffixes:
+    table-comment-prefixes:
+    table-comment-suffixes: 表
+    column-name-prefixes:
+    column-name-suffixes:
+    column-comment-prefixes:
+    column-comment-suffixes:

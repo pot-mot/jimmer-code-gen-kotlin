@@ -1,11 +1,11 @@
 package top.potmot.core.database.generate.mysql
 
-import top.potmot.core.database.generate.ColumnTypeDefiner
+import top.potmot.core.database.generate.columnTypeDefiner.ColumnTypeDefiner
 import top.potmot.model.dto.ColumnTypeMeta
 import java.sql.Types
 
 // https://www.mysqlzh.com/doc/106.html
-class MysqlColumnTypeDefiner : ColumnTypeDefiner {
+object MysqlColumnTypeDefiner : ColumnTypeDefiner {
     override fun needDisplaySize(typeCode: Int): Boolean =
         when (typeCode) {
             Types.BIT, Types.BOOLEAN,

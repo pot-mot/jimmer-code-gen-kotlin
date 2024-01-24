@@ -5,11 +5,9 @@ import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
-private val POSTGRE_TABLE_DEFINE_BUILDER = PostgreTableDefineBuilder()
-
-class PostgreTableDefineGenerator : TableDefineGenerator() {
+object PostgreTableDefineGenerator : TableDefineGenerator() {
     override fun stringify(tables: Collection<GenTableAssociationsView>): String =
-        POSTGRE_TABLE_DEFINE_BUILDER.let {
+        PostgreTableDefineBuilder.let {
             buildString {
                 tables.forEach { table ->
                     appendLine(it.dropTable(table.name) + ";")

@@ -4,7 +4,7 @@ import top.potmot.core.entity.generate.builder.EntityBuilder
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.shortType
 
-class KotlinEntityBuilder : EntityBuilder() {
+object KotlinEntityBuilder : EntityBuilder() {
     override fun packageLine(path: String): String = "package $path"
 
     override fun importLine(item: String): String = "import $item"

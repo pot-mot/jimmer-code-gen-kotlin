@@ -1,4 +1,4 @@
-package top.potmot.core.database.generate
+package top.potmot.core.database.generate.columnTypeDefiner
 
 import top.potmot.error.ColumnTypeException
 import top.potmot.model.dto.ColumnTypeMeta

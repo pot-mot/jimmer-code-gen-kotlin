@@ -5,11 +5,9 @@ import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
-private val MYSQL_TABLE_DEFINE_BUILDER = MysqlTableDefineBuilder()
-
-class MysqlTableDefineGenerator: TableDefineGenerator() {
+object MysqlTableDefineGenerator: TableDefineGenerator() {
     override fun stringify(tables: Collection<GenTableAssociationsView>): String =
-        MYSQL_TABLE_DEFINE_BUILDER.let {
+        MysqlTableDefineBuilder.let {
             buildString {
                 tables.forEach {table ->
                     appendLine(it.dropTable(table.name) + ";")

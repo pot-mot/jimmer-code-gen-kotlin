@@ -7,7 +7,7 @@ import java.security.MessageDigest
  * 映射定长标识符，如果标识符超过指定长度，则会进行截断并填补 MD5 值
  */
 class IdentifierFilter(
-    private val maxLength: Int = 63,
+    private val maxLength: Int,
     private val truncateLength: Int = maxLength / 8 + 1
 ) {
     private val hashMap: HashMap<String, String> = HashMap()

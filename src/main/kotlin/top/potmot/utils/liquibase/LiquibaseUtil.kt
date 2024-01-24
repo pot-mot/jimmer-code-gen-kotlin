@@ -18,8 +18,8 @@ import liquibase.resource.OpenOptions
 import liquibase.resource.Resource
 import liquibase.serializer.core.xml.XMLChangeLogSerializer
 import top.potmot.context.getContextGenConfig
-import top.potmot.core.database.generate.ColumnTypeDefiner
-import top.potmot.core.database.generate.getColumnTypeDefiner
+import top.potmot.core.database.generate.columnTypeDefiner.ColumnTypeDefiner
+import top.potmot.core.database.generate.columnTypeDefiner.getColumnTypeDefiner
 import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.core.database.meta.toMappingTableMeta
 import top.potmot.enumeration.AssociationType

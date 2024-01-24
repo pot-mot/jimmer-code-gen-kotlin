@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import top.potmot.context.cleanContextGenConfig
-import top.potmot.context.equals
 import top.potmot.context.getContextGenConfig
 import top.potmot.context.merge
 import top.potmot.context.toProperties
@@ -23,7 +22,7 @@ import top.potmot.service.ConfigService
 class AssociationMatchTest(
     @Autowired val configService: ConfigService
 ) {
-    val global = GlobalGenConfig
+    val global = GlobalConfig.common
 
     /**
      * 测试配置编辑功能是否符合预期
@@ -33,8 +32,7 @@ class AssociationMatchTest(
     fun testEquals() {
         val context = getContextGenConfig()
 
-        assert(global equals context)
-        assert(context equals global)
+        assert(global == context)
 
         cleanContextGenConfig()
     }
@@ -60,8 +58,8 @@ class AssociationMatchTest(
         configService.setConfig(GenConfigProperties(columnNamePrefixes = testColumnPrefix))
         assertEquals(testColumnPrefix, global.columnNamePrefixes)
 
-        assertEquals("", context.columnNamePrefixes)
-        assertEquals("C_", global.columnNamePrefixes)
+        assertEquals(testColumnPrefix, context.columnNamePrefixes)
+        assertEquals(testColumnPrefix, global.columnNamePrefixes)
 
         cleanContextGenConfig()
     }
@@ -76,23 +74,19 @@ class AssociationMatchTest(
 
         context.merge(GenConfigProperties(author = "abc"))
 
-        assert(!(global equals context))
-        assert(!(context equals global))
+        assert(global != context)
 
         context.merge(global.toProperties())
 
-        assert(global equals context)
-        assert(context equals global)
+        assert(global == context)
 
         global.merge(GenConfigProperties(author = "c"))
 
-        assert(!(global equals context))
-        assert(!(context equals global))
+        assert(global != context)
 
         global.merge(context.toProperties())
 
-        assert(global equals context)
-        assert(context equals global)
+        assert(global == context)
 
         cleanContextGenConfig()
     }

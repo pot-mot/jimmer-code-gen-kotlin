@@ -65,7 +65,7 @@
 - [application-mysql.yml](src%2Fmain%2Fresources%2Fapplication-mysql.yml)
 - [application-postgresql.yml](src%2Fmain%2Fresources%2Fapplication-postgresql.yml)
 
-`.gen` 路径下为全局配置，具体请参照 [GlobalGenConfig.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fconfig%2FGlobalGenConfig.kt)
+`jimmer-code-gen.common` 路径下为全局 GenConfig 配置，具体请参照 [GlobalConfig.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fconfig%2FGlobalConfig.kt)
 
 ### 启动
 
@@ -129,8 +129,8 @@
 
 针对目标数据源实现以下两个类，并补充对应入口文件：
 
-- [ColumnTypeDefiner.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FColumnTypeDefiner.kt)
-  - [ColumnTypeDefine.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FColumnTypeDefine.kt) 入口文件
+- [ColumnTypeDefiner.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FcolumnTypeDefiner%2FColumnTypeDefiner.kt)
+  - [ColumnTypeDefine.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FcolumnTypeDefiner%2FColumnTypeDefine.kt) 入口文件
 - [TableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerator.kt)
   - [TableDefineGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerate.kt) 入口文件
 

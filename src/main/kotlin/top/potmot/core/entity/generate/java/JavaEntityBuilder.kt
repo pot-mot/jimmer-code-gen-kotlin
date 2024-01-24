@@ -6,7 +6,7 @@ import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.shortType
 import kotlin.reflect.KClass
 
-class JavaEntityBuilder: EntityBuilder() {
+object JavaEntityBuilder: EntityBuilder() {
     override fun packageLine(path: String): String = "package ${path};"
 
     override fun importLine(item: String): String = "import ${item};"

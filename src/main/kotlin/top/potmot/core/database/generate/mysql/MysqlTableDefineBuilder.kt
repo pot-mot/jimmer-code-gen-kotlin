@@ -1,15 +1,15 @@
 package top.potmot.core.database.generate.mysql
 
 import top.potmot.core.database.generate.builder.TableDefineBuilder
-import top.potmot.core.database.generate.getColumnTypeDefiner
+import top.potmot.core.database.generate.columnTypeDefiner.getColumnTypeDefiner
 import top.potmot.core.database.generate.getIdentifierFilter
 import top.potmot.core.database.meta.MappingTableMeta
-import top.potmot.enumeration.DataSourceType
+import top.potmot.enumeration.DataSourceType.MySQL
 import top.potmot.model.dto.GenTableAssociationsView
 
-class MysqlTableDefineBuilder : TableDefineBuilder(
-    DataSourceType.MySQL.getIdentifierFilter(),
-    DataSourceType.MySQL.getColumnTypeDefiner()
+object MysqlTableDefineBuilder : TableDefineBuilder(
+    MySQL.getIdentifierFilter(),
+    MySQL.getColumnTypeDefiner()
 ) {
     override fun String.escape(): String =
         "`${removePrefix("`").removeSuffix("`")}`"

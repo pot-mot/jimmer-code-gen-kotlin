@@ -1,7 +1,7 @@
 package top.potmot.core.entity.convert
 
 import top.potmot.context.getContextGenConfig
-import top.potmot.core.database.generate.getColumnTypeDefiner
+import top.potmot.core.database.generate.columnTypeDefiner.getColumnTypeDefiner
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.error.ColumnTypeException

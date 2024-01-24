@@ -20,16 +20,16 @@ plugins {
 }
 
 group = "top.potmot"
-version = "0.0.3" // 2024-1-20
+version = "0.0.4" // 2024-1-25
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.8.80"
+val jimmerVersion = "0.8.86"
 
-val mysqlVersion = "8.0.30"
+val mysqlVersion = "8.3.0"
 val postgreVersion = "42.6.0"
 val h2Version = "2.2.224"
 
-val schemacrawlerVersion = "16.20.4"
+val schemacrawlerVersion = "16.21.1"
 val liquibaseVersion = "4.22.0"
 
 repositories {
@@ -40,8 +40,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    implementation("org.springframework.boot:spring-boot-configuration-processor")
-
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation("org.babyfish.jimmer:jimmer-spring-boot-starter:${jimmerVersion}")
@@ -50,7 +48,7 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    runtimeOnly("mysql:mysql-connector-java:${mysqlVersion}")
+    runtimeOnly("com.mysql:mysql-connector-j:${mysqlVersion}")
 
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
     implementation("org.postgresql:postgresql:${postgreVersion}")
@@ -60,18 +58,23 @@ dependencies {
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler
     implementation("us.fatehi:schemacrawler-api:${schemacrawlerVersion}") {
         exclude(group = "org.slf4j", module = "slf4j-nop")
+        exclude(group = "org.slf4j", module = "slf4j-jdk14")
     }
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler-tools
     implementation("us.fatehi:schemacrawler-tools:${schemacrawlerVersion}"){
         exclude(group = "org.slf4j", module = "slf4j-nop")
+        exclude(group = "org.slf4j", module = "slf4j-jdk14")
     }
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler-mysql
     implementation("us.fatehi:schemacrawler-mysql:${schemacrawlerVersion}") {
         exclude(group = "org.slf4j", module = "slf4j-nop")
+        exclude(group = "org.slf4j", module = "slf4j-jdk14")
+        exclude(group = "com.mysql", module = "mysql-connector-j")
     }
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler-postgresql
     implementation("us.fatehi:schemacrawler-postgresql:${schemacrawlerVersion}") {
         exclude(group = "org.slf4j", module = "slf4j-nop")
+        exclude(group = "org.slf4j", module = "slf4j-jdk14")
     }
 
     // https://mvnrepository.com/artifact/org.liquibase/liquibase-core

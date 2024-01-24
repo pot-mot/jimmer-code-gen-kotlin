@@ -1,11 +1,11 @@
 package top.potmot.core.database.generate.postgres
 
-import top.potmot.core.database.generate.ColumnTypeDefiner
+import top.potmot.core.database.generate.columnTypeDefiner.ColumnTypeDefiner
 import top.potmot.model.dto.ColumnTypeMeta
 import java.sql.Types
 
 // https://www.postgresql.org/docs/current/datatype.html
-class PostgreColumnTypeDefiner : ColumnTypeDefiner {
+object PostgreColumnTypeDefiner : ColumnTypeDefiner {
     override fun needDisplaySize(typeCode: Int): Boolean =
         when (typeCode) {
             Types.BIT -> true

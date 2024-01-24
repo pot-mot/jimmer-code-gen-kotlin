@@ -1,28 +1,24 @@
 package top.potmot.core.database.generate
 
-import top.potmot.context.getContextGenConfig
 import top.potmot.core.database.generate.mysql.MysqlTableDefineGenerator
 import top.potmot.core.database.generate.postgres.PostgreTableDefineGenerator
 import top.potmot.enumeration.DataSourceType
 import top.potmot.utils.identifier.IdentifierFilter
 
-private val MYSQL_GENERATOR = MysqlTableDefineGenerator()
-
-
-private val POSTGRE_GENERATOR = PostgreTableDefineGenerator()
-
-fun DataSourceType?.getTableDefineGenerator(): TableDefineGenerator =
-    when (this ?: getContextGenConfig().dataSourceType) {
-        DataSourceType.MySQL -> MYSQL_GENERATOR
-        DataSourceType.PostgreSQL -> POSTGRE_GENERATOR
+fun DataSourceType.getTableDefineGenerator(): TableDefineGenerator =
+    when (this) {
+        DataSourceType.MySQL -> MysqlTableDefineGenerator
+        DataSourceType.PostgreSQL -> PostgreTableDefineGenerator
     }
 
-private val MYSQL_IDENTIFIER_FILTER = IdentifierFilter()
+private const val MYSQL_IDENTIFIER_MAX_LENGTH = 63
+private val MYSQL_IDENTIFIER_FILTER = IdentifierFilter(MYSQL_IDENTIFIER_MAX_LENGTH)
 
-private val POSTGRE_IDENTIFIER_FILTER = IdentifierFilter()
+private const val POSTGRE_IDENTIFIER_MAX_LENGTH = 63
+private val POSTGRE_IDENTIFIER_FILTER = IdentifierFilter(POSTGRE_IDENTIFIER_MAX_LENGTH)
 
-fun DataSourceType?.getIdentifierFilter(): IdentifierFilter =
-    when (this ?: getContextGenConfig().dataSourceType) {
+fun DataSourceType.getIdentifierFilter(): IdentifierFilter =
+    when (this) {
         DataSourceType.MySQL -> MYSQL_IDENTIFIER_FILTER
         DataSourceType.PostgreSQL -> POSTGRE_IDENTIFIER_FILTER
     }

@@ -3,7 +3,7 @@ package top.potmot.core.entity.generate.kotlin
 import top.potmot.core.entity.generate.builder.EnumBuilder
 import top.potmot.model.dto.GenEntityPropertiesView
 
-class KotlinEnumBuilder: EnumBuilder() {
+object KotlinEnumBuilder: EnumBuilder() {
     override fun packageLine(path: String): String = "package $path"
 
     override fun importLine(item: String): String = "import $item"

@@ -1,15 +1,15 @@
 package top.potmot.core.database.generate.postgres
 
 import top.potmot.core.database.generate.builder.TableDefineBuilder
-import top.potmot.core.database.generate.getColumnTypeDefiner
+import top.potmot.core.database.generate.columnTypeDefiner.getColumnTypeDefiner
 import top.potmot.core.database.generate.getIdentifierFilter
 import top.potmot.core.database.meta.MappingTableMeta
-import top.potmot.enumeration.DataSourceType
+import top.potmot.enumeration.DataSourceType.PostgreSQL
 import top.potmot.model.dto.GenTableAssociationsView
 
-class PostgreTableDefineBuilder : TableDefineBuilder(
-    DataSourceType.PostgreSQL.getIdentifierFilter(),
-    DataSourceType.PostgreSQL.getColumnTypeDefiner()
+object PostgreTableDefineBuilder : TableDefineBuilder(
+    PostgreSQL.getIdentifierFilter(),
+    PostgreSQL.getColumnTypeDefiner()
 ) {
     override fun String.escape(): String =
         "\"${removePrefix("\"").removeSuffix("\"")}\""
