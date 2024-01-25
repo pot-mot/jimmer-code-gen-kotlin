@@ -30,33 +30,26 @@ GenTableColumnsView {
 }
 
 input GenTableModelInput {
-    #allScalars
-    id(model)
+    #allScalars(GenTable)
     -id
-    -createdTime
-    -modifiedTime
+    id(model)
 
     columns {
-        #allScalars
+        #allScalars(GenColumn)
+        -id
         enum {
             name
         }
-        -id
-        -createdTime
-        -modifiedTime
     }
 
     indexes {
-        name
-        uniqueIndex
-
+        #allScalars(GenTableIndex)
+        -id
         columns {
             name
         }
     }
 }
-
-
 
 /**
  * base on GenTableColumnsView and single part of GenAssociationView

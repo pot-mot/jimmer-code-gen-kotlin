@@ -34,6 +34,7 @@ class TestLiquibaseCreateSql {
         autoIncrement = true,
         typeNotNull = true,
         businessKey = false,
+        idGeneration = true,
         logicalDelete = false,
     )
 
@@ -52,6 +53,7 @@ class TestLiquibaseCreateSql {
         autoIncrement = false,
         typeNotNull = true,
         businessKey = false,
+        idGeneration = false,
         logicalDelete = false,
     )
 
@@ -59,7 +61,6 @@ class TestLiquibaseCreateSql {
         remark = "",
         name = "table",
         comment = "comment",
-        orderKey = 1,
         type = TableType.TABLE,
         columns = listOf(
             column1,
@@ -78,7 +79,6 @@ class TestLiquibaseCreateSql {
             type = DataSourceType.MySQL,
             username = "root",
             password = "root",
-            orderKey = 0L,
             remark = "test"
         ).toEntity()
 
@@ -119,7 +119,6 @@ class TestLiquibaseCreateSql {
             type = DataSourceType.PostgreSQL,
             username = "postgres",
             password = "root",
-            orderKey = 0L,
             remark = "test"
         ).toEntity()
 

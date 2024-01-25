@@ -95,7 +95,6 @@ class EntityGenerateTest {
         name = "Entity",
         comment = "comment",
         author = "Potmot",
-        orderKey = 1,
         table = baseTable,
         packagePath = "com.example.test",
         properties = listOf(
@@ -124,7 +123,7 @@ import org.babyfish.jimmer.sql.Table
  * @author Potmot
  */
 @Entity
-@Table(name = "TABLE")
+@Table(name = "table")
 interface Entity {
     /**
      * ID
@@ -167,7 +166,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Potmot
  */
 @Entity
-@Table(name = "TABLE")
+@Table(name = "table")
 public interface Entity {
     /**
      * ID

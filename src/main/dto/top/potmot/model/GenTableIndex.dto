@@ -1,0 +1,6 @@
+input GenTableIndexInput {
+    #allScalars(GenTableIndex)
+    -id
+    tableId
+    columnIds
+}

@@ -91,7 +91,7 @@ fun GenTableModelInput.toInputPart(enumNameIdMap: Map<String, Long>): Pair<GenTa
     return Pair(entity, indexes)
 }
 
-fun GenTableIndex.toInput(columnNameIdMap: Map<String, Long>): GenTableIndex =
+fun GenTableIndex.setColumnIds(columnNameIdMap: Map<String, Long>) =
     this.copy {
         this.columnIds = columns.mapNotNull {
             columnNameIdMap[it.name]
@@ -110,7 +110,7 @@ fun GenAssociationModelInput.toInput(
         ?: throw ModelLoadException.association("association [${name}] recreate fail: \ntargetTable [${targetTable.name}] not found")
     val targetTableColumnsMap = targetTablePair.second.columns.associate { it.name to it.id }
 
-    val columnReferenceInputs = columnReferences.map {
+    val columnReferenceInputs = columnReferences.mapIndexed { index, it ->
         val sourceColumnId = sourceTableColumnsMap[it.sourceColumn.name]
             ?: throw ModelLoadException.association("association [${name}] recreate fail: \nsourceColumn [${it.sourceColumn.name}] not found")
 
@@ -118,7 +118,10 @@ fun GenAssociationModelInput.toInput(
             ?: throw ModelLoadException.association("association [${name}] recreate fail: \ntargetColumn [${it.targetColumn.name}] not found")
 
         GenAssociationInput.TargetOf_columnReferences(
-            sourceColumnId, targetColumnId
+            orderKey = index.toLong(),
+            remark = "",
+            sourceColumnId = sourceColumnId,
+            targetColumnId = targetColumnId
         )
     }
 
@@ -131,7 +134,6 @@ fun GenAssociationModelInput.toInput(
         fake = fake,
         columnReferences = columnReferenceInputs,
         remark = "",
-        orderKey = 0,
         updateAction = this.updateAction,
         deleteAction = this.deleteAction
     )

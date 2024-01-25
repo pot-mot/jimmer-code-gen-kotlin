@@ -3,7 +3,5 @@ GenTypeMappingView {
 }
 
 input GenTypeMappingInput {
-    #allScalars
-    -createdTime
-    -modifiedTime
+    #allScalars(GenTypeMapping)
 }

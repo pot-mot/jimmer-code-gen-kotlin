@@ -122,7 +122,6 @@ class FkConfigTest(
         name = "table1",
         comment = "Table comment",
         type = TableType.TABLE,
-        orderKey = 1,
         entityId = 123,
         columns = listOf(
             GenTableAssociationsView.TargetOf_columns(
@@ -143,6 +142,7 @@ class FkConfigTest(
                 autoIncrement = false,
                 typeNotNull = true,
                 businessKey = false,
+                idGeneration = false,
                 logicalDelete = false,
                 tableId = 1,
                 enumId = null,
@@ -162,7 +162,6 @@ class FkConfigTest(
                 updateAction = "",
                 deleteAction = "",
                 fake = false,
-                orderKey = 1,
                 targetTable = GenTableAssociationsView.TargetOf_outAssociations.TargetOf_targetTable_2(
                     id = 2,
                     name = "table2",

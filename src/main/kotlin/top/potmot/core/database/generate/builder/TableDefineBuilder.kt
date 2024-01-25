@@ -28,17 +28,17 @@ abstract class TableDefineBuilder(
     abstract fun String.escape(): String
 
     @Throws(ColumnTypeException::class)
-    open fun getColumnTypeDefine(typeMeta: ColumnTypeMeta): String =
+    open fun getColumnTypeDefine(typeMeta: ColumnTypeMeta) =
         columnTypeDefiner.getTypeDefine(typeMeta)
 
-    fun produceIdentifier(identifier: String): String =
+    fun produceIdentifier(identifier: String) =
         identifierFilter.getIdentifier(identifier.trim()).escape().changeCase()
 
     open fun createTable(
         name: String,
         lines: List<String>,
         append: String = ""
-    ): String =
+    ) =
         buildString {
             append("CREATE TABLE ${produceIdentifier(name)} (\n")
             append("    ${lines.joinToString(",\n    ")}\n")
@@ -48,21 +48,21 @@ abstract class TableDefineBuilder(
     open fun dropTable(
         name: String,
         append: String = ""
-    ): String =
+    ) =
         "DROP TABLE IF EXISTS ${produceIdentifier(name)}${if (append.isBlank()) "" else " $append"}"
 
-    fun alterTable(
+    open fun alterTable(
         name: String
-    ): String =
+    ) =
         "ALTER TABLE ${produceIdentifier(name)} "
 
     open fun createPkLine(
         table: GenTableAssociationsView,
-    ): String =
+    ) =
         pkDefine(table.pkColumns().map { it.name })
 
     @Throws(ColumnTypeException::class)
-    open fun columnStringify(column: GenTableAssociationsView.TargetOf_columns): String =
+    open fun columnStringify(column: GenTableAssociationsView.TargetOf_columns) =
         buildString {
             append(produceIdentifier(column.name))
             append(' ')
@@ -127,17 +127,17 @@ abstract class TableDefineBuilder(
     open fun addConstraint(
         tableName: String,
         constraintName: String
-    ): String =
+    ) =
         "${alterTable(tableName)}ADD CONSTRAINT ${produceIdentifier(constraintName)} "
 
     open fun pkDefine(
         columnNames: List<String>
-    ): String =
+    ) =
         "PRIMARY KEY (${columnNames.joinToString(",") { produceIdentifier(it) }})"
 
     open fun fkDefine(
         meta: ForeignKeyMeta
-    ): String =
+    ) =
         buildString {
             appendLine("    FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { produceIdentifier(it) }})")
             append("  REFERENCES ${produceIdentifier(meta.targetTableName)} (${meta.targetColumnNames.joinToString(", ") { produceIdentifier(it) }})")
@@ -154,7 +154,7 @@ abstract class TableDefineBuilder(
     open fun createPkName(
         tableName: String,
         columnNames: List<String>
-    ): String =
+    ) =
         "pk_${tableName}"
 
     open fun createPkConstraint(
@@ -163,13 +163,13 @@ abstract class TableDefineBuilder(
 
         constraintName: String =
             createPkName(tableName, columnNames)
-    ): String =
+    ) =
         "${addConstraint(tableName, constraintName)}${pkDefine(columnNames)}"
 
     open fun createFkConstraint(
         meta: ForeignKeyMeta,
         fake: Boolean = false,
-    ): String =
+    ) =
         if (!fake) {
             "${addConstraint(meta.sourceTableName, meta.name)}\n${fkDefine(meta)}"
         } else {

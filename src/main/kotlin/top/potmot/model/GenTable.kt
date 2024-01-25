@@ -30,7 +30,7 @@ interface GenTable : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 模型
@@ -88,9 +88,9 @@ interface GenTable : BaseEntity {
     val type: TableType
 
     /**
-     * 自定排序
+     * 备注
      */
-    val orderKey: Long
+    val remark: String
 
     /**
      * 列

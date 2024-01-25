@@ -30,7 +30,6 @@ class TestDataSourceExecute {
             type = DataSourceType.MySQL,
             username = "root",
             password = "root",
-            orderKey = 0L,
             remark = "test"
         ).toEntity()
 
@@ -79,7 +78,6 @@ class TestDataSourceExecute {
             type = DataSourceType.PostgreSQL,
             username = "postgres",
             password = "root",
-            orderKey = 0L,
             remark = "test"
         ).toEntity()
 

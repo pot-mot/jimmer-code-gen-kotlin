@@ -28,7 +28,7 @@ interface GenColumn : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 归属表
@@ -91,7 +91,7 @@ interface GenColumn : BaseEntity {
     val comment: String
 
     /**
-     * 是否主键
+     * 是否为主键的部分
      */
     val partOfPk: Boolean
 
@@ -106,14 +106,24 @@ interface GenColumn : BaseEntity {
     val businessKey: Boolean
 
     /**
+     * 是否为 ID 生成
+     */
+    val idGeneration: Boolean
+
+    /**
      * 是否为逻辑删除
      */
     val logicalDelete: Boolean
 
     /**
-     * 在表中顺序
+     * 排序键
      */
     val orderKey: Long
+
+    /**
+     * 备注
+     */
+    val remark: String
 
     /**
      * 生成枚举

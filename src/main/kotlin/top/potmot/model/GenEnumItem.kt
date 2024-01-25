@@ -26,7 +26,7 @@ interface GenEnumItem : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 生成枚举
@@ -59,7 +59,12 @@ interface GenEnumItem : BaseEntity {
     val comment: String
 
     /**
-     * 自定排序
+     * 排序键
      */
     val orderKey: Long
+
+    /**
+     * 备注
+     */
+    val remark: String
 }

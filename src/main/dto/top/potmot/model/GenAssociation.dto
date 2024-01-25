@@ -36,15 +36,13 @@ GenAssociationView {
 }
 
 input GenAssociationInput {
-    #allScalars
-    -id
-    -createdTime
-    -modifiedTime
+    #allScalars(GenAssociation)
 
     id(sourceTable)
     id(targetTable)
 
     columnReferences {
+        #allScalars(GenColumnReference)
         id(sourceColumn)
         id(targetColumn)
     }

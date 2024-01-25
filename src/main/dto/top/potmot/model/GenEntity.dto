@@ -51,28 +51,23 @@ GenEntityPropertiesView {
 }
 
 input GenEntityConfigInput {
-    #allScalars
-    -createdTime
-    -modifiedTime
+    #allScalars(GenEntity)
 
     properties {
-        #allScalars
-        -createdTime
-        -modifiedTime
+        #allScalars(GenProperty)
     }
 }
 
 input GenEntityModelInput {
-    #allScalars
+    #allScalars(GenEntity)
+    -id
     table {
         name
     }
-    -id
-    -createdTime
-    -modifiedTime
 
     properties {
-        #allScalars
+        #allScalars(GenProperty)
+        -id
         column {
             name
         }
@@ -82,8 +77,5 @@ input GenEntityModelInput {
         enum {
             name
         }
-        -id
-        -createdTime
-        -modifiedTime
     }
 }

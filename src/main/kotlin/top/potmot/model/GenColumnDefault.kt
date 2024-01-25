@@ -23,7 +23,7 @@ interface GenColumnDefault : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 数据源类型
@@ -40,7 +40,7 @@ interface GenColumnDefault : BaseEntity {
     /**
      * 数据库类型表达式
      */
-    val type: String
+    val rawType: String
 
     /**
      * 列展示长度
@@ -58,7 +58,12 @@ interface GenColumnDefault : BaseEntity {
     val defaultValue: String?
 
     /**
-     * 自定排序
+     * 排序键
      */
     val orderKey: Long
+
+    /**
+     * 备注
+     */
+    val remark: String
 }

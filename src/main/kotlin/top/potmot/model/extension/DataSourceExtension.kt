@@ -26,7 +26,12 @@ fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
 }
 
 @Throws(DataSourceException.SqlExecuteFail::class)
-fun GenDataSource.execute(schemaName: String, sql: String, log: Boolean = false, ignoreExecuteFail: Boolean = false): List<SQLExecuteResult> {
+fun GenDataSource.execute(
+    schemaName: String,
+    sql: String,
+    log: Boolean = false,
+    ignoreExecuteFail: Boolean = false
+): List<SQLExecuteResult> {
     val connection =
         when (this.type) {
             DataSourceType.MySQL -> {

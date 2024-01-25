@@ -26,7 +26,7 @@ interface GenColumnReference : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 关联
@@ -71,9 +71,13 @@ interface GenColumnReference : BaseEntity {
     val targetColumnId: Long
 
     /**
-     * 自定排序
+     * 排序键
      */
     val orderKey: Long
 
+    /**
+     * 备注
+     */
+    val remark: String
 }
 

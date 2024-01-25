@@ -7,7 +7,7 @@ import java.time.LocalDateTime
  * 基础实体
  */
 @MappedSuperclass
-interface BaseEntity : Identifiable<Long> {
+interface BaseEntity {
     /**
      * 创建事件
      */
@@ -17,9 +17,4 @@ interface BaseEntity : Identifiable<Long> {
      * 修改时间
      */
     val modifiedTime: LocalDateTime
-
-    /**
-     * 备注
-     */
-    val remark: String
 }

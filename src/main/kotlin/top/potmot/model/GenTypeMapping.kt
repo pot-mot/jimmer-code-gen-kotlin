@@ -21,7 +21,7 @@ import top.potmot.model.base.BaseEntity
 interface GenTypeMapping : BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 数据源类型
@@ -48,8 +48,12 @@ interface GenTypeMapping : BaseEntity {
     val propertyType: String
 
     /**
-     * 自定排序
+     * 排序键
      */
     val orderKey: Long
-}
 
+    /**
+     * 备注
+     */
+    val remark: String
+}

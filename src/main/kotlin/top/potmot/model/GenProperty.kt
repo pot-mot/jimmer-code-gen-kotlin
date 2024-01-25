@@ -27,7 +27,7 @@ interface GenProperty : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 对应列 ID
@@ -97,12 +97,12 @@ interface GenProperty : BaseEntity {
     val typeNotNull: Boolean
 
     /**
-     * 是否Id
+     * 是否 ID 属性
      */
     val idProperty: Boolean
 
     /**
-     * Id 生成类型
+     * ID 生成类型
      */
     val idGenerationType: GenerationType?
 
@@ -147,9 +147,14 @@ interface GenProperty : BaseEntity {
     val otherAnnotation: String?
 
     /**
-     * 自定排序
+     * 排序键
      */
     val orderKey: Long
+
+    /**
+     * 备注
+     */
+    val remark: String
 
     /**
      * 生成枚举 ID 视图

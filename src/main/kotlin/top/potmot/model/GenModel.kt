@@ -25,7 +25,7 @@ interface GenModel : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 名称
@@ -81,6 +81,11 @@ interface GenModel : BaseEntity {
      * 生成 IdView 属性
      */
     val idViewProperty: Boolean
+
+    /**
+     * ID 生成类型
+     */
+    val idGenerationType: GenerationType
 
     /**
      * 逻辑删除注解
@@ -146,6 +151,11 @@ interface GenModel : BaseEntity {
      * 转换属性时移除的列注释后缀
      */
     val columnCommentSuffixes: String
+
+    /**
+     * 备注
+     */
+    val remark: String
 
     /**
      * 表

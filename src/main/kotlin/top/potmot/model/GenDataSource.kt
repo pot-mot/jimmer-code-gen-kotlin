@@ -25,7 +25,7 @@ interface GenDataSource : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 数据库类型
@@ -71,9 +71,9 @@ interface GenDataSource : BaseEntity {
     val password: String
 
     /**
-     * 自定排序
+     * 备注
      */
-    val orderKey: Long
+    val remark: String
 
     /**
      * 架构

@@ -1,7 +1,7 @@
 package top.potmot.core.entity.convert
 
 import org.babyfish.jimmer.kt.new
-import org.babyfish.jimmer.sql.GenerationType
+import top.potmot.context.getContextGenConfig
 import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
@@ -70,7 +70,7 @@ private fun GenProperty.toIdProperty(
         keyProperty = false
         logicalDelete = false
         idView = false
-        if (column.autoIncrement) {
-            idGenerationType = GenerationType.IDENTITY
+        if (column.idGeneration) {
+            idGenerationType = getContextGenConfig().idGenerationType
         }
     }

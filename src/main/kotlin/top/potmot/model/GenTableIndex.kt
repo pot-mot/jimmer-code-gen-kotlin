@@ -28,7 +28,7 @@ interface GenTableIndex : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 归属表
@@ -54,6 +54,11 @@ interface GenTableIndex : BaseEntity {
      * 唯一索引
      */
     val uniqueIndex: Boolean
+
+    /**
+     * 备注
+     */
+    val remark: String
 
     /**
      * 列

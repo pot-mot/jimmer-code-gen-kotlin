@@ -1,4 +1,4 @@
-package top.potmot.model
+package top.potmot.modelLoad
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer

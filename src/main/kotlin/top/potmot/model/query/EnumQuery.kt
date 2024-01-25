@@ -13,12 +13,12 @@ import top.potmot.model.comment
 import top.potmot.model.modelId
 import top.potmot.model.name
 
-class EnumQuery : BaseQuery<GenEnum>() {
-    val keywords: List<String>? = null
-    val names: List<String>? = null
-    val modelIds: List<Long>? = null
-    val nonModel: Boolean? = null
-
+data class EnumQuery(
+    val keywords: List<String>? = null,
+    val names: List<String>? = null,
+    val modelIds: List<Long>? = null,
+    val nonModel: Boolean? = null,
+) : BaseQuery<GenEnum>() {
     override fun toPredicateList(table: KNonNullTable<GenEnum>): MutableList<KNonNullExpression<Boolean>?> {
         val predicates = super.toPredicateList(table)
 

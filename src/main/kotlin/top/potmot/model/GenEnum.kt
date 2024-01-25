@@ -29,7 +29,7 @@ interface GenEnum : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 模型
@@ -67,9 +67,9 @@ interface GenEnum : BaseEntity {
     val enumType: EnumType?
 
     /**
-     * 自定排序
+     * 备注
      */
-    val orderKey: Long
+    val remark: String
 
     /**
      * 生成枚举元素

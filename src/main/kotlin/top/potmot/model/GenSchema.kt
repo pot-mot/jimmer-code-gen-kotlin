@@ -27,7 +27,7 @@ interface GenSchema : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 数据源 ID
@@ -50,9 +50,9 @@ interface GenSchema : BaseEntity {
     val name: String
 
     /**
-     * 自定排序
+     * 备注
      */
-    val orderKey: Long
+    val remark: String
 
     /**
      * 表

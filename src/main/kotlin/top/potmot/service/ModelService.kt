@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.load.getGraphEntities
 import top.potmot.core.database.load.parseGraphData
+import top.potmot.core.database.load.setColumnIds
 import top.potmot.core.database.load.toInput
 import top.potmot.core.database.load.toInputPart
 import top.potmot.error.ModelLoadException
@@ -95,7 +96,7 @@ class ModelService(
 
                 /**
                  * 2.2.2
-                 * 保存余下的 indexes
+                 * 基于回填的 column id 保存 indexes
                  */
                 val savedTables = savedModelWithTables.tables
                 val savedTableMap = savedTables.associateBy { it.name }
@@ -104,9 +105,9 @@ class ModelService(
                         throw ModelLoadException.index("Indexes [${indexes.joinToString(",") { it.name }}] recreate fail: \nTable [${table.name}] not found")
                     }
                     val savedTable = savedTableMap[table.name]!!
+                    val columnNameIdMap = savedTable.columns.associate { it.name to it.id }
                     sqlClient.update(savedTable.copy {
-                        this.indexes =
-                            indexes.map { index -> index.toInput(savedTable.columns.associate { it.name to it.id }) }
+                        this.indexes = indexes.map { it.setColumnIds(columnNameIdMap) }
                     })
                 }
 

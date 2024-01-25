@@ -20,14 +20,14 @@ import top.potmot.model.sourceTableId
 import top.potmot.model.targetColumnId
 import top.potmot.model.targetTableId
 
-class AssociationQuery : BaseQuery<GenAssociation>() {
-    val keywords: List<String>? = null
-    val type: AssociationType? = null
-    val sourceTableId: Long? = null
-    val targetTableId: Long? = null
-    val sourceColumnId: Long? = null
+data class AssociationQuery(
+    val keywords: List<String>? = null,
+    val type: AssociationType? = null,
+    val sourceTableId: Long? = null,
+    val targetTableId: Long? = null,
+    val sourceColumnId: Long? = null,
     val targetColumnId: Long? = null
-
+): BaseQuery<GenAssociation>() {
     override fun toPredicateList(table: KNonNullTable<GenAssociation>): MutableList<KNonNullExpression<Boolean>?> {
         val predicates = super.toPredicateList(table)
 
@@ -52,7 +52,7 @@ class AssociationQuery : BaseQuery<GenAssociation>() {
     }
 }
 
-class AssociationTableQuery(
+data class AssociationTableQuery(
     val tableIds: List<Long>? = null,
     val sourceTableIds: List<Long>? = null,
     val targetTableIds: List<Long>? = null,
@@ -83,7 +83,7 @@ class AssociationTableQuery(
     }
 }
 
-class AssociationColumnQuery(
+data class AssociationColumnQuery(
     val columnIds: List<Long>? = null,
     val sourceColumnIds: List<Long>? = null,
     val targetColumnIds: List<Long>? = null,

@@ -13,29 +13,21 @@ GenEnumItemsView {
 }
 
 input GenEnumItemsInput {
-    #allScalars
+    #allScalars(GenEnum)
     id(model)
-    -createdTime
-    -modifiedTime
 
     items {
-        #allScalars
-        -createdTime
-        -modifiedTime
+        #allScalars(GenEnumItem)
     }
 }
 
 input GenEnumModelInput {
-    #allScalars
-    id(model)
+    #allScalars(GenEnum)
     -id
-    -createdTime
-    -modifiedTime
+    id(model)
 
     items {
-        #allScalars
+        #allScalars(GenEnumItem)
         -id
-        -createdTime
-        -modifiedTime
     }
 }

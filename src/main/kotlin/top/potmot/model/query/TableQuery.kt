@@ -16,22 +16,22 @@ import top.potmot.model.name
 import top.potmot.model.schemaId
 import top.potmot.model.type
 
-class TableQuery : BaseQuery<GenTable>() {
-    val keywords: List<String>? = null
-    val schemaIds: List<Long>? = null
-    val nonSchema: Boolean? = null
-    val modelIds: List<Long>? = null
-    val nonModel: Boolean? = null
+data class TableQuery(
+    val keywords: List<String>? = null,
+    val schemaIds: List<Long>? = null,
+    val nonSchema: Boolean? = null,
+    val modelIds: List<Long>? = null,
+    val nonModel: Boolean? = null,
     val type: TableType? = null
-
+) : BaseQuery<GenTable>() {
     override fun toPredicateList(table: KNonNullTable<GenTable>): MutableList<KNonNullExpression<Boolean>?> {
         val predicates = super.toPredicateList(table)
 
         keywords?.takeIf { it.isNotEmpty() }?.forEach {
             predicates += or(
-                    table.name ilike it,
-                    table.comment ilike it
-                )
+                table.name ilike it,
+                table.comment ilike it
+            )
         }
 
         nonModel?.let {

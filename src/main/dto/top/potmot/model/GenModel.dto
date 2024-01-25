@@ -8,60 +8,46 @@ GenModelView {
 
     // same with GenEnumModelInput
     enums {
-        #allScalars
-        id(model)
+        #allScalars(GenEnum)
         -id
-        -createdTime
-        -modifiedTime
+        id(model)
 
         items {
-          #allScalars
-          -id
-          -createdTime
-          -modifiedTime
+            #allScalars(GenEnumItem)
+            -id
         }
     }
 }
 
 input GenModelInput {
-    #allScalars
+    #allScalars(GenModel)
     graphData?
-    -createdTime
-    -modifiedTime
 
     // same with GenEnumModelInput
     enums {
-        #allScalars
-        id(model)
+        #allScalars(GenEnum)
         -id
-        -createdTime
-        -modifiedTime
+        id(model)
 
         items {
-          #allScalars
-          -id
-          -createdTime
-          -modifiedTime
+            #allScalars(GenEnumItem)
+            -id
         }
     }
 }
 
 
 GenConfig {
-    #allScalars
+    #allScalars(GenModel)
     -id
-    -createdTime
-    -modifiedTime
     -name
     -graphData
     -remark
 }
 
 input GenConfigProperties {
-    #allScalars?
+    #allScalars(GenModel)?
     -id
-    -createdTime
-    -modifiedTime
     -name
     -graphData
     -remark

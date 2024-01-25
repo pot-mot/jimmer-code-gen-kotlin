@@ -13,12 +13,12 @@ import top.potmot.model.comment
 import top.potmot.model.modelId
 import top.potmot.model.name
 
-class EntityQuery : BaseQuery<GenEntity>() {
-    val keywords: List<String>? = null
-    val names: List<String>? = null
-    val modelIds: List<Long>? = null
-    val nonModel: Boolean? = null
-
+data class EntityQuery(
+    val keywords: List<String>? = null,
+    val names: List<String>? = null,
+    val modelIds: List<Long>? = null,
+    val nonModel: Boolean? = null,
+): BaseQuery<GenEntity>() {
     override fun toPredicateList(table: KNonNullTable<GenEntity>): MutableList<KNonNullExpression<Boolean>?> {
         val predicates = super.toPredicateList(table)
 

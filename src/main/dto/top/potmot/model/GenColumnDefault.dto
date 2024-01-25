@@ -3,7 +3,5 @@ GenColumnDefaultView {
 }
 
 input GenColumnDefaultInput {
-    #allScalars
-    -createdTime
-    -modifiedTime
+    #allScalars(GenColumnDefault)
 }

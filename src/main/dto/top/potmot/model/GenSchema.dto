@@ -3,14 +3,25 @@ GenSchemaView {
     id(dataSource)
 }
 
-GenSchemaTablesView {
-    #allScalars
+GenSchemaPreview {
+    #allScalars(GenSchema)
+    -id
     id(dataSource)
+}
+
+input GenSchemaInput {
+    #allScalars(GenSchema)
+    -id
+    dataSourceId
 
     tables {
-        id
-        name
-        comment
-        type
+        #allScalars(GenTable)
+        -id
+        id(model)
+
+        columns {
+            #allScalars(GenColumn)
+            -id
+        }
     }
 }

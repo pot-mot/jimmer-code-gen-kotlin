@@ -43,7 +43,7 @@ data class MappingTableMeta(
             return sourceColumns + targetColumns
         }
 
-    val sourceFk: ForeignKeyMeta
+    val sourceFk
         get() = ForeignKeyMeta(
             name = "${name}_S",
             sourceTableName = name,
@@ -52,7 +52,7 @@ data class MappingTableMeta(
             targetColumnNames = sourceColumnNames,
         )
 
-    val targetFk: ForeignKeyMeta
+    val targetFk
         get() = ForeignKeyMeta(
             name = "${name}_T",
             sourceTableName = name,
@@ -65,22 +65,22 @@ data class MappingTableMeta(
 fun createMappingTableComment(
     sourceTableComment: String,
     targetTableComment: String,
-): String =
+) =
     "${sourceTableComment.clearTableComment()}与${targetTableComment.clearTableComment()}的映射关系表"
 
 fun createMappingColumnName(
     tableName: String,
     columnName: String,
-): String =
+) =
    "${tableName.clearTableName()}_${columnName.clearColumnName()}"
 
 fun createMappingColumnNames(
     tableName: String,
     columnNames: List<String>,
-): List<String> =
+) =
     columnNames.map { createMappingColumnName(tableName, it) }
 
-fun GenAssociation.toMappingTableMeta(): MappingTableMeta =
+fun GenAssociation.toMappingTableMeta() =
     MappingTableMeta(
         name = this.name,
         sourceTableName = sourceTable.name,
@@ -95,7 +95,7 @@ fun GenAssociation.toMappingTableMeta(): MappingTableMeta =
 private fun createMappingTableColumn(
     name: String,
     type: ColumnTypeMeta
-): GenTableAssociationsView.TargetOf_columns =
+) =
     GenTableAssociationsView.TargetOf_columns(
         id = 0,
         createdTime = LocalDateTime.now(),
@@ -109,10 +109,11 @@ private fun createMappingTableColumn(
         displaySize = type.displaySize,
         numericPrecision = type.numericPrecision,
         typeNotNull = type.typeNotNull,
-        logicalDelete = false,
         partOfPk = true,
         autoIncrement = false,
         businessKey = false,
+        idGeneration = false,
+        logicalDelete = false,
         comment = "",
         tableId = 0,
     )

@@ -10,6 +10,7 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.base.BaseEntity
@@ -28,7 +29,7 @@ interface GenAssociation : BaseEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    override val id: Long
+    val id: Long
 
     /**
      * 模型
@@ -80,7 +81,7 @@ interface GenAssociation : BaseEntity {
     /**
      * 列引用
      */
-    @OneToMany(mappedBy = "association")
+    @OneToMany(mappedBy = "association", orderedProps = [OrderedProp(value = "orderKey")])
     val columnReferences: List<GenColumnReference>
 
     /**
@@ -116,8 +117,8 @@ interface GenAssociation : BaseEntity {
     val fake: Boolean
 
     /**
-     * 自定排序
+     * 备注
      */
-    val orderKey: Long
+    val remark: String
 }
 

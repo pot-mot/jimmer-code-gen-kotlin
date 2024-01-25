@@ -12,15 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.load.getCatalog
-import top.potmot.core.database.load.getFkAssociations
-import top.potmot.core.database.load.getGenIndexes
-import top.potmot.core.database.load.toGenSchema
-import top.potmot.core.database.load.toGenTable
+import top.potmot.core.database.load.toInput
+import top.potmot.core.database.load.toView
 import top.potmot.error.DataSourceLoadException
 import top.potmot.model.GenDataSource
 import top.potmot.model.GenSchema
-import top.potmot.model.GenTable
 import top.potmot.model.dataSourceId
+import top.potmot.model.dto.GenSchemaPreview
 import top.potmot.model.dto.GenSchemaView
 import top.potmot.model.extension.toSource
 import top.potmot.model.id
@@ -38,25 +36,20 @@ class SchemaService(
      */
     @GetMapping("/dataSource/{dataSourceId}/schema/preview")
     @Transactional
-    fun preview(@PathVariable dataSourceId: Long): List<GenSchema> {
-        val dataSource = getDataSource(dataSourceId)
-
-        if (dataSource != null) {
+    fun preview(@PathVariable dataSourceId: Long): List<GenSchemaPreview> =
+        getDataSource(dataSourceId)?.let {
             val schemas =
-                dataSource
-                    .getCatalog(withTable = false)
-                    .let {catalog ->
-                        catalog.schemas.mapNotNull{
-                            it.toGenSchema(catalog, dataSourceId, withTable = false)
+                it.getCatalog(withTable = false)
+                    .let { catalog ->
+                        catalog.schemas.mapNotNull { schema ->
+                            schema.toView(dataSourceId)
                         }
                     }
-                    .map { it }
-            dataSource.close()
-            return schemas
-        }
 
-        return emptyList()
-    }
+            it.close()
+
+            schemas
+        } ?: emptyList()
 
     /**
      * 导入 schema
@@ -78,50 +71,30 @@ class SchemaService(
 
             // 遍历 schema 进行保存 （因为一个 schema name 有可能会获取到多个不同的 schema）
             catalog.schemas.forEach {schema ->
-                val genSchema = schema.toGenSchema(
+                val genSchema = schema.toInput(
                     catalog,
                     dataSourceId,
-                    withTable = false
                 )
 
-                val newSchemaId = sqlClient.save(genSchema).modifiedEntity.id
+                val savedSchema = sqlClient.save(genSchema).modifiedEntity
 
-                val tables = catalog.getTables(schema)
+                val tableNameMap = savedSchema.tables.associateBy { it.name }
 
-                val genTableNameMap = mutableMapOf<String, GenTable>()
-
-                // 获取 table 的外键以生成关联
-                val tableGenTablePairs = tables.map { table ->
-                    val genTable = table.toGenTable(
-                        schemaId = newSchemaId
-                    )
-
-                    if (genTableNameMap.containsKey(genTable.name)) {
-                        throw DataSourceLoadException.Table("DataSource load fail: \nmore than one table has then same name: [${genTable.name}] ")
+                catalog.getTables(schema).forEach { table ->
+                    table.foreignKeys.forEach {
+                        sqlClient.save(it.toInput(tableNameMap))
                     }
 
-                    val savedGenTable = sqlClient.save(genTable) {
-                        this.setKeyProps(GenTable::schema, GenTable::name)
-                    }.modifiedEntity
-
-                    genTableNameMap[genTable.name] = savedGenTable
-
-                    Pair(table, savedGenTable)
+                    table.indexes.forEach {index ->
+                        tableNameMap[table.name]?.let { genTable ->
+                            index.toInput(genTable)?.let {
+                                sqlClient.save(it)
+                            }
+                        }
+                    }
                 }
 
-                tableGenTablePairs.forEach { (table, genTable) ->
-                    table.getFkAssociations(genTableNameMap)
-                        .forEach { association ->
-                            sqlClient.save(association)
-                        }
-
-                    table.getGenIndexes(genTable)
-                        .forEach {index ->
-                            sqlClient.save(index)
-                        }
-                }
-
-                result += newSchemaId
+                result += savedSchema.id
             }
 
             dataSource.close()
