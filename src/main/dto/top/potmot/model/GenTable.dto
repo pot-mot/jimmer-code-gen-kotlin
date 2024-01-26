@@ -21,10 +21,8 @@ GenTableColumnsView {
     }
 
     indexes {
-        id
+        #allScalars
         id(table)
-        name
-        uniqueIndex
         columnIds
     }
 }
