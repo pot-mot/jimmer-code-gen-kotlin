@@ -6,7 +6,7 @@ import java.sql.Types
 
 // https://www.postgresql.org/docs/current/datatype.html
 object PostgreColumnTypeDefiner : ColumnTypeDefiner {
-    override fun needDisplaySize(typeCode: Int): Boolean =
+    override fun needDataSize(typeCode: Int): Boolean =
         when (typeCode) {
             Types.BIT -> true
 
@@ -25,11 +25,11 @@ object PostgreColumnTypeDefiner : ColumnTypeDefiner {
             else -> false
         }
 
-    override fun requiredDisplaySize(typeCode: Int): Boolean = false
+    override fun requiredDataSize(typeCode: Int): Boolean = false
 
     override fun requiredNumericPrecision(typeCode: Int): Boolean = false
 
-    override fun defaultDisplaySize(typeCode: Int): Long? =
+    override fun defaultDataSize(typeCode: Int): Long? =
         when (typeCode) {
             Types.CHAR, Types.BIT -> 1L
 

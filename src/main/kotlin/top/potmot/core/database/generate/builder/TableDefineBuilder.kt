@@ -140,13 +140,13 @@ abstract class TableDefineBuilder(
     ) =
         buildString {
             appendLine("    FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { produceIdentifier(it) }})")
-            append("  REFERENCES ${produceIdentifier(meta.targetTableName)} (${meta.targetColumnNames.joinToString(", ") { produceIdentifier(it) }})")
+            append("        REFERENCES ${produceIdentifier(meta.targetTableName)} (${meta.targetColumnNames.joinToString(", ") { produceIdentifier(it) }})")
 
             meta.onUpdate.takeIf { it.isNotBlank() }?.let {
-                append("\n  ON UPDATE ${it.changeCase()}")
+                append("\n    ON UPDATE ${it.changeCase()}")
             }
             meta.onDelete.takeIf { it.isNotBlank() }?.let {
-                append("\n  ON DELETE ${it.changeCase()}")
+                append("\n    ON DELETE ${it.changeCase()}")
             }
         }
 
@@ -170,14 +170,17 @@ abstract class TableDefineBuilder(
         meta: ForeignKeyMeta,
         fake: Boolean = false,
     ) =
-        if (!fake) {
-            "${addConstraint(meta.sourceTableName, meta.name)}\n${fkDefine(meta)}"
-        } else {
-            "-- fake association ${meta.name}"
+        "${addConstraint(meta.sourceTableName, meta.name)}\n${fkDefine(meta)}".let {
+            if (fake) {
+                it.split("\n").joinToString("\n") { "-- $it" }
+            } else {
+                it
+            }
         }
 
     open fun createMappingTable(
         meta: MappingTableMeta,
+        fake: Boolean = false,
         otherLines: List<String> = emptyList(),
         append: String = "",
     ): List<String> {
@@ -194,10 +197,12 @@ abstract class TableDefineBuilder(
 
         val sourceFk = createFkConstraint(
             meta.sourceFk,
+            fake,
         )
 
         val targetFk = createFkConstraint(
             meta.targetFk,
+            fake,
         )
 
         return listOf(
@@ -253,7 +258,8 @@ abstract class TableDefineBuilder(
 
                 MANY_TO_MANY -> {
                     createMappingTable(
-                        association.toMappingTableMeta()
+                        association.toMappingTableMeta(),
+                        fake = association.fake
                     ).let {
                         list += it
                     }

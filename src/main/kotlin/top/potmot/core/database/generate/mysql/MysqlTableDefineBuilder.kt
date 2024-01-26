@@ -32,11 +32,13 @@ object MysqlTableDefineBuilder : TableDefineBuilder(
 
     override fun createMappingTable(
         meta: MappingTableMeta,
+        fake: Boolean,
         otherLines: List<String>,
         append: String,
     ): List<String> {
         return super.createMappingTable(
             meta,
+            fake,
             otherLines,
             append + defaultParams(meta.comment)
         )

@@ -289,7 +289,7 @@ CREATE TABLE "gen_column"
     "type_code"         int          NOT NULL,
     "overwrite_by_raw"  boolean      NOT NULL,
     "raw_type"          varchar(500) NOT NULL,
-    "display_size"      bigint       NOT NULL,
+    "data_size"         bigint       NOT NULL,
     "numeric_precision" bigint       NOT NULL,
     "default_value"     text         NULL     DEFAULT NULL,
     "comment"           text         NOT NULL,
@@ -297,7 +297,7 @@ CREATE TABLE "gen_column"
     "auto_increment"    boolean      NOT NULL,
     "type_not_null"     boolean      NOT NULL,
     "business_key"      boolean      NOT NULL,
-    "id_generation"      boolean      NOT NULL,
+    "id_generation"     boolean      NOT NULL,
     "logical_delete"    boolean      NOT NULL,
     "enum_id"           bigint       NULL     DEFAULT NULL,
     "order_key"         bigint       NOT NULL,
@@ -320,10 +320,10 @@ COMMENT ON COLUMN "gen_column"."type_code" IS '列 JdbcType 码值';
 COMMENT ON COLUMN "gen_column"."overwrite_by_raw" IS '覆盖为字面类型';
 COMMENT ON COLUMN "gen_column"."raw_type" IS '字面类型';
 COMMENT ON COLUMN "gen_column"."type_not_null" IS '是否非空';
-COMMENT ON COLUMN "gen_column"."display_size" IS '列展示长度';
-COMMENT ON COLUMN "gen_column"."numeric_precision" IS '列精度';
-COMMENT ON COLUMN "gen_column"."default_value" IS '列默认值';
-COMMENT ON COLUMN "gen_column"."comment" IS '列注释';
+COMMENT ON COLUMN "gen_column"."data_size" IS '长度';
+COMMENT ON COLUMN "gen_column"."numeric_precision" IS '精度';
+COMMENT ON COLUMN "gen_column"."default_value" IS '默认值';
+COMMENT ON COLUMN "gen_column"."comment" IS '注释';
 COMMENT ON COLUMN "gen_column"."part_of_pk" IS '是否为主键的部分';
 COMMENT ON COLUMN "gen_column"."auto_increment" IS '是否自增';
 COMMENT ON COLUMN "gen_column"."business_key" IS '是否为业务键';
@@ -635,8 +635,8 @@ CREATE TABLE "gen_column_default"
     "id"                BIGSERIAL NOT NULL,
     "data_source_type"  text      NOT NULL,
     "type_code"         int       NOT NULL,
-    "raw_type"              text      NOT NULL,
-    "display_size"      bigint    NOT NULL,
+    "raw_type"          text      NOT NULL,
+    "data_size"         bigint    NOT NULL,
     "numeric_precision" bigint    NOT NULL,
     "default_value"     text      NULL     DEFAULT NULL,
     "order_key"         bigint    NOT NULL,
@@ -651,7 +651,7 @@ COMMENT ON COLUMN "gen_column_default"."id" IS 'ID';
 COMMENT ON COLUMN "gen_column_default"."data_source_type" IS '数据源类型';
 COMMENT ON COLUMN "gen_column_default"."type_code" IS 'JdbcType 码值';
 COMMENT ON COLUMN "gen_column_default"."raw_type" IS '字面类型';
-COMMENT ON COLUMN "gen_column_default"."display_size" IS '列展示长度';
+COMMENT ON COLUMN "gen_column_default"."data_size" IS '列长度';
 COMMENT ON COLUMN "gen_column_default"."numeric_precision" IS '列精度';
 COMMENT ON COLUMN "gen_column_default"."default_value" IS '默认值';
 COMMENT ON COLUMN "gen_column_default"."order_key" IS '排序键';

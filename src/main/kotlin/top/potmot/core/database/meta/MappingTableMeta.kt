@@ -106,7 +106,7 @@ private fun createMappingTableColumn(
         typeCode = type.typeCode,
         overwriteByRaw = type.overwriteByRaw,
         rawType = type.rawType,
-        displaySize = type.displaySize,
+        dataSize = type.dataSize,
         numericPrecision = type.numericPrecision,
         typeNotNull = type.typeNotNull,
         partOfPk = true,

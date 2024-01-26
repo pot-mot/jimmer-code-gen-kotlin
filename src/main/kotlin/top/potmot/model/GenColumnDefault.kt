@@ -43,12 +43,12 @@ interface GenColumnDefault : BaseEntity {
     val rawType: String
 
     /**
-     * 列展示长度
+     * 长度
      */
-    val displaySize: Long
+    val dataSize: Long
 
     /**
-     * 列精度
+     * 精度
      */
     val numericPrecision: Long
 

@@ -71,12 +71,12 @@ interface GenColumn : BaseEntity {
     val typeNotNull: Boolean
 
     /**
-     * 展示长度
+     * 长度
      */
-    val displaySize: Long
+    val dataSize: Long
 
     /**
-     * 数字精度
+     * 精度
      */
     val numericPrecision: Long
 

@@ -135,7 +135,7 @@ fun Column.toInput(
     overwriteByRaw = false,
     rawType = columnDataType.name,
     typeNotNull = !isNullable,
-    displaySize = size.toLong(),
+    dataSize = size.toLong(),
     numericPrecision = decimalDigits.toLong(),
     defaultValue = defaultValue,
     comment = remarks,

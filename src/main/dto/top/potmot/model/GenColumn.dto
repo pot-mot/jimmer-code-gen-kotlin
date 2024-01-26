@@ -10,7 +10,7 @@ ColumnTypeMeta {
     overwriteByRaw
     rawType
     typeNotNull
-    displaySize
+    dataSize
     numericPrecision
     autoIncrement
 }

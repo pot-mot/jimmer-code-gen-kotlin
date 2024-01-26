@@ -10,37 +10,37 @@ import top.potmot.model.dto.ColumnTypeMeta
  * getType 即基于数据源类型规范化 type，同时修正 typeMeta 中的其他数据
  */
 interface ColumnTypeDefiner {
-    fun needDisplaySize(typeCode: Int): Boolean
+    fun needDataSize(typeCode: Int): Boolean
 
     fun needNumericPrecision(typeCode: Int): Boolean
 
-    fun requiredDisplaySize(typeCode: Int): Boolean
+    fun requiredDataSize(typeCode: Int): Boolean
 
     fun requiredNumericPrecision(typeCode: Int): Boolean
 
-    fun defaultDisplaySize(typeCode: Int): Long?
+    fun defaultDataSize(typeCode: Int): Long?
 
     fun defaultNumericPrecision(typeCode: Int): Long?
 
     @Throws(ColumnTypeException::class)
     fun getTypeDefine(typeMeta: ColumnTypeMeta): String =
-        getTypeName(typeMeta) + getTypeDisplaySizeAndNumericPrecision(typeMeta.typeCode, typeMeta.displaySize, typeMeta.numericPrecision)
+        getTypeName(typeMeta) + getTypeDataSizeAndNumericPrecision(typeMeta.typeCode, typeMeta.dataSize, typeMeta.numericPrecision)
 
     fun getTypeName(typeMeta: ColumnTypeMeta): String
 
     @Throws(ColumnTypeException::class)
-    fun getTypeDisplaySizeAndNumericPrecision(typeCode: Int, displaySize: Long? = null, numericPrecision: Long? = null): String =
+    fun getTypeDataSizeAndNumericPrecision(typeCode: Int, dataSize: Long? = null, numericPrecision: Long? = null): String =
         buildString {
-            var tempDisplaySize: Long? = null
+            var tempDataSize: Long? = null
 
-            val isNeedDisplaySize = needDisplaySize(typeCode)
-            val isRequiredDisplaySize = requiredDisplaySize(typeCode)
+            val isNeedDataSize = needDataSize(typeCode)
+            val isRequiredDataSize = requiredDataSize(typeCode)
 
-            if (isNeedDisplaySize || isRequiredDisplaySize) {
-                tempDisplaySize = displaySize ?: defaultDisplaySize(typeCode)
+            if (isNeedDataSize || isRequiredDataSize) {
+                tempDataSize = dataSize ?: defaultDataSize(typeCode)
 
-                if (isRequiredDisplaySize && tempDisplaySize == null) {
-                    throw ColumnTypeException.missRequiredParam("displaySize is required for type [${typeCode}]")
+                if (isRequiredDataSize && tempDataSize == null) {
+                    throw ColumnTypeException.missRequiredParam("dataSize is required for type [${typeCode}]")
                 }
             }
 
@@ -58,26 +58,26 @@ interface ColumnTypeDefiner {
             }
 
 
-            val appendDisplaySize = isRequiredDisplaySize || (tempDisplaySize != null)
+            val appendDataSize = isRequiredDataSize || (tempDataSize != null)
 
             val appendNumericPrecision = isRequiredNumericPrecision || (tempNumericPrecision != null)
 
-            if (appendDisplaySize || appendNumericPrecision) {
+            if (appendDataSize || appendNumericPrecision) {
                 append("(")
             }
 
-            if (appendDisplaySize) {
-                append(tempDisplaySize)
+            if (appendDataSize) {
+                append(tempDataSize)
             }
 
             if (appendNumericPrecision) {
-                if (appendDisplaySize) {
+                if (appendDataSize) {
                     append(",")
                 }
                 append(tempNumericPrecision)
             }
 
-            if (appendDisplaySize || appendNumericPrecision) {
+            if (appendDataSize || appendNumericPrecision) {
                 append(")")
             }
         }

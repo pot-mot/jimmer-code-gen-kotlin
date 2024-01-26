@@ -6,14 +6,8 @@ import java.sql.Types
 
 // https://www.mysqlzh.com/doc/106.html
 object MysqlColumnTypeDefiner : ColumnTypeDefiner {
-    override fun needDisplaySize(typeCode: Int): Boolean =
+    override fun needDataSize(typeCode: Int): Boolean =
         when (typeCode) {
-            Types.BIT, Types.BOOLEAN,
-            Types.TINYINT,
-            Types.SMALLINT,
-            Types.INTEGER,
-            Types.BIGINT -> true
-
             Types.CHAR, Types.VARCHAR,
             Types.NCHAR, Types.NVARCHAR,
             Types.BINARY, Types.VARBINARY -> true
@@ -34,11 +28,11 @@ object MysqlColumnTypeDefiner : ColumnTypeDefiner {
             else -> false
         }
 
-    override fun requiredDisplaySize(typeCode: Int): Boolean = needDisplaySize(typeCode)
+    override fun requiredDataSize(typeCode: Int): Boolean = needDataSize(typeCode)
 
     override fun requiredNumericPrecision(typeCode: Int): Boolean = needNumericPrecision(typeCode)
 
-    override fun defaultDisplaySize(typeCode: Int): Long? = null
+    override fun defaultDataSize(typeCode: Int): Long? = null
 
     override fun defaultNumericPrecision(typeCode: Int): Long? = null
     override fun getTypeName(typeMeta: ColumnTypeMeta): String {
@@ -47,7 +41,7 @@ object MysqlColumnTypeDefiner : ColumnTypeDefiner {
         if (typeMeta.rawType.uppercase().startsWith("ENUM") ||
             typeMeta.rawType.uppercase().startsWith("SET")
         ) {
-            typeMeta.displaySize = 0
+            typeMeta.dataSize = 0
             typeMeta.numericPrecision = 0
 
             return typeMeta.rawType

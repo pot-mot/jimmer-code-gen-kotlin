@@ -134,7 +134,7 @@ class FkConfigTest(
                 typeCode = Types.BIGINT,
                 overwriteByRaw = false,
                 rawType = "",
-                displaySize = 11,
+                dataSize = 11,
                 numericPrecision = 0,
                 defaultValue = "",
                 comment = "Column comment",
