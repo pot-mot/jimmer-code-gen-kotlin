@@ -25,10 +25,10 @@ data class MappingTableMeta(
         get() = createMappingTableComment(sourceTableComment, targetTableComment)
 
     val mappingSourceColumnNames
-        get() = createMappingColumnNames(sourceTableName, sourceColumnNames)
+        get() = sourceColumnNames.map { createMappingColumnName(sourceTableName, it) }
 
     val mappingTargetColumnNames
-        get() = createMappingColumnNames(targetTableName, targetColumnNames)
+        get() = targetColumnNames.map { createMappingColumnName(targetTableName, it) }
 
     val columns: List<GenTableAssociationsView.TargetOf_columns>
         get() {
@@ -73,12 +73,6 @@ fun createMappingColumnName(
     columnName: String,
 ) =
    "${tableName.clearTableName()}_${columnName.clearColumnName()}"
-
-fun createMappingColumnNames(
-    tableName: String,
-    columnNames: List<String>,
-) =
-    columnNames.map { createMappingColumnName(tableName, it) }
 
 fun GenAssociation.toMappingTableMeta() =
     MappingTableMeta(

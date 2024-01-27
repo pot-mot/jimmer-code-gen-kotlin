@@ -126,9 +126,13 @@ abstract class EntityBuilder: CodeBuilder() {
 
                     if (associationAnnotation.contains("@JoinTable")) {
                         result += JoinTable::class
-                    }
-
-                    if (associationAnnotation.contains("@JoinColumn")) {
+                        if (
+                            associationAnnotation.contains("joinColumns") ||
+                            associationAnnotation.contains("inverseColumns")
+                        ) {
+                            result += JoinColumn::class
+                        }
+                    } else if (associationAnnotation.contains("@JoinColumn")) {
                         result += JoinColumn::class
                     }
 

@@ -6,8 +6,8 @@ import top.potmot.context.getContextGenConfig
 import top.potmot.core.database.generate.getIdentifierFilter
 import top.potmot.core.database.meta.getAssociations
 import top.potmot.core.database.meta.getTypeMeta
+import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
-import top.potmot.core.entity.meta.setAssociation
 import top.potmot.core.entity.meta.toJoinColumns
 import top.potmot.core.entity.meta.toJoinTable
 import top.potmot.enumeration.AssociationType.MANY_TO_MANY
@@ -293,3 +293,19 @@ private fun createIdViewProperty(
         this.idViewAnnotation = "@IdView(\"${associationProperty.name}\")"
         this.keyProperty = false
     }
+
+
+private fun GenPropertyDraft.setAssociation(
+    meta: AssociationAnnotationMeta
+) {
+    val context = getContextGenConfig()
+    val associationAnnotationBuilder = context.language.getAssociationAnnotationBuilder()
+
+    this.associationType = meta.type
+    this.associationAnnotation = associationAnnotationBuilder.build(meta)
+    meta.mappedBy?.takeIf { it.isNotBlank() }?.let {
+        if (associationType == ONE_TO_ONE) {
+            this.typeNotNull = false
+        }
+    }
+}

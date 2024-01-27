@@ -178,9 +178,9 @@ public interface MNSource {
     
     @ManyToMany
     @JoinTable(
-        name = "M_N_SOURCE_M_N_TARGET_MAPPING",
-        joinColumnName = "M_N_SOURCE_ID",
-        inverseJoinColumnName = "M_N_TARGET_ID"
+            name = "M_N_SOURCE_M_N_TARGET_MAPPING",
+            joinColumnName = "M_N_SOURCE_ID",
+            inverseJoinColumnName = "M_N_TARGET_ID"
     )
     List<MNTarget> mNTargets();
     
@@ -241,8 +241,8 @@ public interface MOSource {
     
     @ManyToOne
     @JoinColumn(
-        name = "SOURCE_ID",
-        referencedColumnName = "ID"
+            name = "SOURCE_ID",
+            referencedColumnName = "ID"
     )
     MOTarget mOTarget();
     
@@ -332,8 +332,8 @@ public interface OMTarget {
     
     @ManyToOne
     @JoinColumn(
-        name = "ID",
-        referencedColumnName = "SOURCE_ID"
+            name = "ID",
+            referencedColumnName = "SOURCE_ID"
     )
     OMSource oMSource();
     
@@ -365,8 +365,8 @@ public interface OOSource {
     
     @OneToOne
     @JoinColumn(
-        name = "TARGET_ID",
-        referencedColumnName = "ID"
+            name = "TARGET_ID",
+            referencedColumnName = "ID"
     )
     OOTarget oOTarget();
     
@@ -437,8 +437,8 @@ public interface TreeNode {
     
     @ManyToOne
     @JoinColumn(
-        name = "PARENT_ID",
-        referencedColumnName = "ID"
+            name = "PARENT_ID",
+            referencedColumnName = "ID"
     )
     TreeNode treeNode();
     

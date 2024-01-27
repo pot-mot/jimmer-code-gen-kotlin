@@ -31,8 +31,6 @@ class H2Initializer(
     @Throws(DataSourceException.H2InitFail::class)
     private fun initH2() {
         dataSource.connection.use { connection ->
-
-
             val inputStream = sqlPath?.let {
                 H2Initializer::class.java
                     .classLoader
