@@ -177,7 +177,7 @@ fun ForeignKey.toInput(
                             "association table not equals meta table [${meta.source.table}]"
                 )
             }
-            sourceTableId = meta.target.table.id
+            sourceTableId = meta.source.table.id
 
             if (targetTableId != null && targetTableId != meta.target.table.id) {
                 throw DataSourceLoadException.association(
