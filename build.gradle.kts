@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "top.potmot"
-version = "0.0.4" // 2024-1-25
+version = "0.0.5" // 2024-1-31
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 val jimmerVersion = "0.8.87"

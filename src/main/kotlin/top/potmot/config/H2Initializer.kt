@@ -50,7 +50,6 @@ class H2Initializer(
             if (failResults.isNotEmpty()) {
                 failResults.forEach {
                     logger.error("execute fail: ${it.sql}")
-                    it.exception?.printStackTrace()
                 }
                 throw Exception("h2 init fail")
             }

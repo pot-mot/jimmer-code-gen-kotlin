@@ -104,7 +104,7 @@ interface GenProperty : BaseEntity {
     /**
      * ID 生成类型
      */
-    val idGenerationType: GenerationType?
+    val idGenerationAnnotation: String?
 
     /**
      * 是否为业务键属性
@@ -122,7 +122,7 @@ interface GenProperty : BaseEntity {
     val idView: Boolean
 
     /**
-     * ID 视图注释
+     * ID 视图注解
      */
     val idViewAnnotation: String?
 
@@ -132,17 +132,17 @@ interface GenProperty : BaseEntity {
     val associationType: AssociationType?
 
     /**
-     * 关联注释
+     * 关联注解
      */
     val associationAnnotation: String?
 
     /**
-     * 脱钩注释
+     * 脱钩注解
      */
     val dissociateAnnotation: String?
 
     /**
-     * 其他注释
+     * 其他注解
      */
     val otherAnnotation: String?
 

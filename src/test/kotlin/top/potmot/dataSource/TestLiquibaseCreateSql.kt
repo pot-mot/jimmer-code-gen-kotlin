@@ -34,7 +34,6 @@ class TestLiquibaseCreateSql {
         autoIncrement = true,
         typeNotNull = true,
         businessKey = false,
-        idGeneration = true,
         logicalDelete = false,
     )
 
@@ -53,7 +52,6 @@ class TestLiquibaseCreateSql {
         autoIncrement = false,
         typeNotNull = true,
         businessKey = false,
-        idGeneration = false,
         logicalDelete = false,
     )
 

@@ -35,7 +35,6 @@ CREATE TABLE `gen_model`
     `lower_case_name`            boolean      NOT NULL,
     `real_fk`                    boolean      NOT NULL,
     `id_view_property`           boolean      NOT NULL,
-    `id_generation_type`         varchar(500) NOT NULL,
     `logical_deleted_annotation` varchar(500) NOT NULL,
     `table_annotation`           boolean      NOT NULL,
     `column_annotation`          boolean      NOT NULL,
@@ -68,7 +67,6 @@ COMMENT ON COLUMN `gen_model`.`table_path` IS '表路径';
 COMMENT ON COLUMN `gen_model`.`lower_case_name` IS '启用小写命名';
 COMMENT ON COLUMN `gen_model`.`real_fk` IS '启用真实外键';
 COMMENT ON COLUMN `gen_model`.`id_view_property` IS '生成 IdView 属性';
-COMMENT ON COLUMN `gen_model`.`id_generation_type` IS 'ID 生成类型';
 COMMENT ON COLUMN `gen_model`.`logical_deleted_annotation` IS '逻辑删除注解';
 COMMENT ON COLUMN `gen_model`.`table_annotation` IS '生成 Table 注解';
 COMMENT ON COLUMN `gen_model`.`column_annotation` IS '生成 Column 注解';
@@ -254,7 +252,6 @@ CREATE TABLE `gen_column`
     `comment`           varchar(500) NOT NULL,
     `part_of_pk`        boolean      NOT NULL,
     `auto_increment`    boolean      NOT NULL,
-    `id_generation`     boolean      NOT NULL,
     `business_key`      boolean      NOT NULL,
     `logical_delete`    boolean      NOT NULL,
     `enum_id`           bigint       NULL     DEFAULT NULL,
@@ -285,7 +282,6 @@ COMMENT ON COLUMN `gen_column`.`comment` IS '注释';
 COMMENT ON COLUMN `gen_column`.`part_of_pk` IS '是否为主键的部分';
 COMMENT ON COLUMN `gen_column`.`auto_increment` IS '是否自增';
 COMMENT ON COLUMN `gen_column`.`business_key` IS '是否为业务键';
-COMMENT ON COLUMN `gen_column`.`id_generation` IS '是否为 ID 生成';
 COMMENT ON COLUMN `gen_column`.`logical_delete` IS '是否为逻辑删除';
 COMMENT ON COLUMN `gen_column`.`enum_id` IS '枚举';
 COMMENT ON COLUMN `gen_column`.`remark` IS '备注';
@@ -452,30 +448,30 @@ COMMENT ON COLUMN `gen_entity`.`modified_time` IS '修改时间';
 -- ----------------------------
 CREATE TABLE `gen_property`
 (
-    `id`                     bigint       NOT NULL AUTO_INCREMENT,
-    `entity_id`              bigint       NOT NULL,
-    `column_id`              bigint       NULL     DEFAULT NULL,
-    `name`                   varchar(500) NOT NULL,
-    `comment`                varchar(500) NOT NULL,
-    `type`                   varchar(500) NOT NULL,
-    `type_table_id`          bigint       NULL     DEFAULT NULL,
-    `list_type`              boolean      NOT NULL,
-    `type_not_null`          boolean      NOT NULL,
-    `id_property`            boolean      NOT NULL,
-    `id_generation_type`     varchar(500) NULL     DEFAULT NULL,
-    `key_property`           boolean      NOT NULL,
-    `logical_delete`         boolean      NOT NULL,
-    `id_view`                boolean      NOT NULL,
-    `id_view_annotation`     varchar(500) NULL     DEFAULT NULL,
-    `association_type`       varchar(500) NULL     DEFAULT NULL,
-    `association_annotation` varchar(500) NULL     DEFAULT NULL,
-    `dissociate_annotation`  varchar(500) NULL     DEFAULT NULL,
-    `other_annotation`       varchar(500) NULL     DEFAULT NULL,
-    `enum_id`                bigint       NULL     DEFAULT NULL,
-    `order_key`              bigint       NOT NULL,
-    `remark`                 varchar(500) NOT NULL,
-    `created_time`           TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `modified_time`          TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `id`                       bigint       NOT NULL AUTO_INCREMENT,
+    `entity_id`                bigint       NOT NULL,
+    `column_id`                bigint       NULL     DEFAULT NULL,
+    `name`                     varchar(500) NOT NULL,
+    `comment`                  varchar(500) NOT NULL,
+    `type`                     varchar(500) NOT NULL,
+    `type_table_id`            bigint       NULL     DEFAULT NULL,
+    `list_type`                boolean      NOT NULL,
+    `type_not_null`            boolean      NOT NULL,
+    `id_property`              boolean      NOT NULL,
+    `id_generation_annotation` varchar(500) NULL     DEFAULT NULL,
+    `key_property`             boolean      NOT NULL,
+    `logical_delete`           boolean      NOT NULL,
+    `id_view`                  boolean      NOT NULL,
+    `id_view_annotation`       varchar(500) NULL     DEFAULT NULL,
+    `association_type`         varchar(500) NULL     DEFAULT NULL,
+    `association_annotation`   varchar(500) NULL     DEFAULT NULL,
+    `dissociate_annotation`    varchar(500) NULL     DEFAULT NULL,
+    `other_annotation`         varchar(500) NULL     DEFAULT NULL,
+    `enum_id`                  bigint       NULL     DEFAULT NULL,
+    `order_key`                bigint       NOT NULL,
+    `remark`                   varchar(500) NOT NULL,
+    `created_time`             TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified_time`            TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_property_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
     CONSTRAINT `fk_property_entity` FOREIGN KEY (`entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
@@ -499,7 +495,7 @@ COMMENT ON COLUMN `gen_property`.`type_table_id` IS '类型对应表';
 COMMENT ON COLUMN `gen_property`.`list_type` IS '是否列表';
 COMMENT ON COLUMN `gen_property`.`type_not_null` IS '是否非空';
 COMMENT ON COLUMN `gen_property`.`id_property` IS '是否 ID 属性';
-COMMENT ON COLUMN `gen_property`.`id_generation_type` IS 'ID 生成类型';
+COMMENT ON COLUMN `gen_property`.`id_generation_annotation` IS 'ID 生成注释';
 COMMENT ON COLUMN `gen_property`.`key_property` IS '是否为业务键属性';
 COMMENT ON COLUMN `gen_property`.`logical_delete` IS '是否为逻辑删除属性';
 COMMENT ON COLUMN `gen_property`.`id_view` IS '是否为 视图属性';

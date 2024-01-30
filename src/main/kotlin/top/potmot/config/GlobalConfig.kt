@@ -1,6 +1,5 @@
 package top.potmot.config
 
-import org.babyfish.jimmer.sql.GenerationType
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import top.potmot.enumeration.DataSourceType
@@ -23,7 +22,6 @@ object GlobalConfig {
         packagePath = "com.example",
         tablePath = "",
         idViewProperty = true,
-        idGenerationType = GenerationType.IDENTITY,
         logicalDeletedAnnotation = "@LogicalDeleted(\"true\")",
         tableAnnotation = true,
         columnAnnotation = true,

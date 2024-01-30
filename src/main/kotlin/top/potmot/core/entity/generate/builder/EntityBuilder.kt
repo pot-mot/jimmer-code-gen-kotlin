@@ -13,6 +13,7 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Table
+import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import top.potmot.context.getContextGenConfig
 import top.potmot.core.database.generate.getIdentifierFilter
 import top.potmot.model.dto.GenEntityPropertiesView
@@ -20,6 +21,7 @@ import top.potmot.model.extension.fullType
 import top.potmot.model.extension.now
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
+import java.util.UUID
 import kotlin.reflect.KClass
 
 abstract class EntityBuilder: CodeBuilder() {
@@ -108,9 +110,15 @@ abstract class EntityBuilder: CodeBuilder() {
 
             if (idProperty) {
                 result += Id::class
-                if (idGenerationType != null) {
+
+                idGenerationAnnotation?.let {
                     result += GeneratedValue::class
-                    result += GenerationType::class
+                    if (it.contains("GenerationType")) {
+                        result += GenerationType::class
+                    } else if (it.contains("generatorType") && it.contains("UUIDIdGenerator")) {
+                        result += UUIDIdGenerator::class
+                        result += UUID::class
+                    }
                 }
             } else if (keyProperty) {
                 result += Key::class
@@ -198,8 +206,8 @@ abstract class EntityBuilder: CodeBuilder() {
         property.apply {
             if (idProperty) {
                 list += "@Id"
-                if (idGenerationType != null) {
-                    list += "@GeneratedValue(strategy = GenerationType.${idGenerationType})"
+                idGenerationAnnotation.takeIf { !idGenerationAnnotation.isNullOrBlank() }?.let {
+                    list += it
                 }
             } else if (keyProperty) {
                 list += "@Key"
@@ -211,8 +219,7 @@ abstract class EntityBuilder: CodeBuilder() {
 
             associationType?.let {
                 associationAnnotation?.let {associationAnnotation ->
-                    list += associationAnnotation.split("\n")
-
+                    list += associationAnnotation
                     dissociateAnnotation?.let { list += it }
                 }
 
@@ -228,6 +235,6 @@ abstract class EntityBuilder: CodeBuilder() {
             otherAnnotation.takeIf { !otherAnnotation.isNullOrBlank() }?.let { list += it }
         }
 
-        return list
+        return list.flatMap { it.split("\n") }
     }
 }

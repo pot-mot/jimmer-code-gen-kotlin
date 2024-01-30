@@ -1,16 +1,12 @@
 package top.potmot.core.entity.convert
 
 import org.babyfish.jimmer.kt.new
-import top.potmot.context.getContextGenConfig
 import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.model.GenProperty
 import top.potmot.model.by
-import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenTableAssociationsView
-
-typealias TypeMapping = (column: ColumnTypeMeta) -> String
 
 /**
  * 转换基本属性
@@ -46,7 +42,7 @@ fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
         this.listType = false
         this.typeNotNull = column.typeNotNull
         this.idProperty = false
-        this.idGenerationType = null
+        this.idGenerationAnnotation = null
         this.keyProperty = column.businessKey
         this.logicalDelete = column.logicalDelete
         this.enumId = column.enumId
@@ -70,7 +66,7 @@ private fun GenProperty.toIdProperty(
         keyProperty = false
         logicalDelete = false
         idView = false
-        if (column.idGeneration) {
-            idGenerationType = getContextGenConfig().idGenerationType
+        if (column.autoIncrement) {
+            idGenerationAnnotation = "@GeneratedValue(strategy = GenerationType.IDENTITY)"
         }
     }

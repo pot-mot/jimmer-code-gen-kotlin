@@ -142,7 +142,6 @@ class FkConfigTest(
                 autoIncrement = false,
                 typeNotNull = true,
                 businessKey = false,
-                idGeneration = false,
                 logicalDelete = false,
                 tableId = 1,
                 enumId = null,

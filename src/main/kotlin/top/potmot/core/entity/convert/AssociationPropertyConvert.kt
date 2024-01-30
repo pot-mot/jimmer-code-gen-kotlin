@@ -101,7 +101,7 @@ fun convertAssociationProperties(
             type = tableNameToClassName(targetTable.name)
             typeTableId = targetTable.id
             idProperty = false
-            idGenerationType = null
+            idGenerationAnnotation = null
 
             when (outAssociation.type) {
                 ONE_TO_ONE, MANY_TO_ONE -> {
@@ -192,7 +192,7 @@ fun convertAssociationProperties(
             type = tableNameToClassName(sourceTable.name)
             typeTableId = sourceTable.id
             idProperty = false
-            idGenerationType = null
+            idGenerationAnnotation = null
 
             val mappedBy = tableNameToPropertyName(table.name).let {
                 if (targetPlural) it.toPlural() else it
@@ -262,7 +262,7 @@ private fun createIdViewProperty(
 ) =
     deepClone(baseProperty).copy {
         idProperty = false
-        idGenerationType = null
+        idGenerationAnnotation = null
 
         if (associationProperty.typeNotNull != baseProperty.typeNotNull) {
             this.typeNotNull = associationProperty.typeNotNull

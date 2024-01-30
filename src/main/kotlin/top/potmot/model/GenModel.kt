@@ -83,11 +83,6 @@ interface GenModel : BaseEntity {
     val idViewProperty: Boolean
 
     /**
-     * ID 生成类型
-     */
-    val idGenerationType: GenerationType
-
-    /**
      * 逻辑删除注解
      */
     val logicalDeletedAnnotation: String

@@ -61,7 +61,7 @@ private const val mysqlResult = """
 [(all-tables.sql, DROP TABLE IF EXISTS `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B`;
 
 CREATE TABLE `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B` (
-    `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B` BIGINT NOT NULL AUTO_INCREMENT,
     `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_D409B7E8` VARCHAR(500) NOT NULL,
     PRIMARY KEY (`SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B`)
 )
@@ -76,7 +76,7 @@ CREATE INDEX `IDX_MULTI_COLUMNS` ON `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
 ), (sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B`;
 
 CREATE TABLE `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B` (
-    `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B` BIGINT(0) NOT NULL AUTO_INCREMENT,
+    `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B` BIGINT NOT NULL AUTO_INCREMENT,
     `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_D409B7E8` VARCHAR(500) NOT NULL,
     PRIMARY KEY (`SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B`)
 )
@@ -152,7 +152,6 @@ private const val longNameModelGraphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -169,7 +168,6 @@ private const val longNameModelGraphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": false,
                                 "autoIncrement": false,
-                                "idGeneration": false,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false

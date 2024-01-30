@@ -2,6 +2,9 @@ logging:
   level:
     top.potmot: debug
 
+jimmer:
+  pretty-sql: false
+
 gen:
   language: kotlin
   data-source-type: postgresql

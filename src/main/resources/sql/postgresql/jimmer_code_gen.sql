@@ -40,7 +40,6 @@ CREATE TABLE "gen_model"
     "lower_case_name"            boolean      NOT NULL,
     "real_fk"                    boolean      NOT NULL,
     "id_view_property"           boolean      NOT NULL,
-    "id_generation_type"         text         NOT NULL,
     "logical_deleted_annotation" text         NOT NULL,
     "table_annotation"           boolean      NOT NULL,
     "column_annotation"          boolean      NOT NULL,
@@ -73,7 +72,6 @@ COMMENT ON COLUMN "gen_model"."table_path" IS '表路径';
 COMMENT ON COLUMN "gen_model"."lower_case_name" IS '启用小写命名';
 COMMENT ON COLUMN "gen_model"."real_fk" IS '启用真实外键';
 COMMENT ON COLUMN "gen_model"."id_view_property" IS '生成 IdView 属性';
-COMMENT ON COLUMN "gen_model"."id_generation_type" IS 'ID 生成类型';
 COMMENT ON COLUMN "gen_model"."logical_deleted_annotation" IS '逻辑删除注解';
 COMMENT ON COLUMN "gen_model"."table_annotation" IS '生成 Table 注解';
 COMMENT ON COLUMN "gen_model"."column_annotation" IS '生成 Column 注解';
@@ -297,7 +295,6 @@ CREATE TABLE "gen_column"
     "auto_increment"    boolean      NOT NULL,
     "type_not_null"     boolean      NOT NULL,
     "business_key"      boolean      NOT NULL,
-    "id_generation"     boolean      NOT NULL,
     "logical_delete"    boolean      NOT NULL,
     "enum_id"           bigint       NULL     DEFAULT NULL,
     "order_key"         bigint       NOT NULL,
@@ -327,7 +324,6 @@ COMMENT ON COLUMN "gen_column"."comment" IS '注释';
 COMMENT ON COLUMN "gen_column"."part_of_pk" IS '是否为主键的部分';
 COMMENT ON COLUMN "gen_column"."auto_increment" IS '是否自增';
 COMMENT ON COLUMN "gen_column"."business_key" IS '是否为业务键';
-COMMENT ON COLUMN "gen_column"."id_generation" IS '是否为 ID 生成';
 COMMENT ON COLUMN "gen_column"."logical_delete" IS '是否为逻辑删除';
 COMMENT ON COLUMN "gen_column"."enum_id" IS '枚举';
 COMMENT ON COLUMN "gen_column"."order_key" IS '排序键';
@@ -535,7 +531,7 @@ CREATE TABLE "gen_property"
     "list_type"              boolean     NOT NULL,
     "type_not_null"          boolean     NOT NULL,
     "id_property"            boolean     NOT NULL,
-    "id_generation_type"     text        NULL     DEFAULT NULL,
+    "id_generation_annotation"     text        NULL     DEFAULT NULL,
     "key_property"           boolean     NOT NULL,
     "logical_delete"         boolean     NOT NULL,
     "id_view"                boolean     NOT NULL,
@@ -572,15 +568,15 @@ COMMENT ON COLUMN "gen_property"."type_table_id" IS '类型对应表';
 COMMENT ON COLUMN "gen_property"."list_type" IS '是否列表';
 COMMENT ON COLUMN "gen_property"."type_not_null" IS '是否非空';
 COMMENT ON COLUMN "gen_property"."id_property" IS '是否 ID 属性';
-COMMENT ON COLUMN "gen_property"."id_generation_type" IS 'ID 生成类型';
+COMMENT ON COLUMN "gen_property"."id_generation_annotation" IS 'ID 生成注解';
 COMMENT ON COLUMN "gen_property"."key_property" IS '是否为业务键属性';
 COMMENT ON COLUMN "gen_property"."logical_delete" IS '是否为逻辑删除属性';
 COMMENT ON COLUMN "gen_property"."id_view" IS '是否为 视图属性';
-COMMENT ON COLUMN "gen_property"."id_view_annotation" IS 'ID 视图注释';
+COMMENT ON COLUMN "gen_property"."id_view_annotation" IS 'ID 视图注解';
 COMMENT ON COLUMN "gen_property"."association_type" IS '关联类型';
-COMMENT ON COLUMN "gen_property"."association_annotation" IS '关联注释';
-COMMENT ON COLUMN "gen_property"."dissociate_annotation" IS '脱钩注释';
-COMMENT ON COLUMN "gen_property"."other_annotation" IS '其他注释';
+COMMENT ON COLUMN "gen_property"."association_annotation" IS '关联注解';
+COMMENT ON COLUMN "gen_property"."dissociate_annotation" IS '脱钩注解';
+COMMENT ON COLUMN "gen_property"."other_annotation" IS '其他注解';
 COMMENT ON COLUMN "gen_property"."enum_id" IS '对应枚举';
 COMMENT ON COLUMN "gen_property"."order_key" IS '排序键';
 COMMENT ON COLUMN "gen_property"."remark" IS '备注';

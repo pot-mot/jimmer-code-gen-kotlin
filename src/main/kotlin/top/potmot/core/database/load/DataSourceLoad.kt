@@ -141,7 +141,6 @@ fun Column.toInput(
     comment = remarks,
     partOfPk = isPartOfPrimaryKey,
     autoIncrement = isAutoIncremented,
-    idGeneration = false,
     businessKey = false,
     logicalDelete = false,
     orderKey = orderKey,

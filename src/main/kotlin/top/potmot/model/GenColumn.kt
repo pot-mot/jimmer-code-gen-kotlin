@@ -106,11 +106,6 @@ interface GenColumn : BaseEntity {
     val businessKey: Boolean
 
     /**
-     * 是否为 ID 生成
-     */
-    val idGeneration: Boolean
-
-    /**
      * 是否为逻辑删除
      */
     val logicalDelete: Boolean

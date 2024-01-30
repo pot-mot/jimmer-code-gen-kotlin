@@ -50,7 +50,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -67,7 +66,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": false,
                                 "autoIncrement": false,
-                                "idGeneration": false,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -153,7 +151,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -227,7 +224,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -244,7 +240,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": false,
                                 "autoIncrement": false,
-                                "idGeneration": false,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -327,7 +322,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -401,7 +395,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -554,7 +547,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -705,7 +697,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -722,7 +713,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": false,
                                 "autoIncrement": false,
-                                "idGeneration": false,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -882,7 +872,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -1033,7 +1022,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -1050,7 +1038,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": false,
                                 "autoIncrement": false,
-                                "idGeneration": false,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -1210,7 +1197,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -1227,7 +1213,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": false,
                                 "autoIncrement": false,
-                                "idGeneration": false,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false,
@@ -1247,7 +1232,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": false,
                                 "autoIncrement": false,
-                                "idGeneration": false,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false,
@@ -1267,7 +1251,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": false,
                                 "autoIncrement": false,
-                                "idGeneration": false,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false,
@@ -1371,7 +1354,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": true,
                                 "autoIncrement": true,
-                                "idGeneration": true,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -1388,7 +1370,6 @@ val graphData = """
                                 "numericPrecision": 0,
                                 "partOfPk": false,
                                 "autoIncrement": false,
-                                "idGeneration": false,
                                 "remark": "",
                                 "logicalDelete": false,
                                 "businessKey": false
@@ -1462,7 +1443,6 @@ val baseModel = """
     "realFk": true,
     "idViewProperty": true,
     "logicalDeletedAnnotation": "@LogicalDeleted(\"true\")",
-    "idGenerationType": "IDENTITY",
     "tableAnnotation": true,
     "columnAnnotation": true,
     "joinTableAnnotation": true,

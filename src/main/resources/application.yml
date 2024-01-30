@@ -26,7 +26,7 @@ jimmer:
     ts:
       path: /ts.zip
       mutable: true
-  show-sql: on
+  show-sql: true
   pretty-sql: true
   id-only-target-checking-level: ALL
   database-validation:

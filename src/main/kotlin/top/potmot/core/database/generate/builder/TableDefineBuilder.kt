@@ -54,7 +54,7 @@ abstract class TableDefineBuilder(
     open fun alterTable(
         name: String
     ) =
-        "ALTER TABLE ${produceIdentifier(name)} "
+        "ALTER TABLE ${produceIdentifier(name)}"
 
     open fun createPkLine(
         table: GenTableAssociationsView,
@@ -125,10 +125,9 @@ abstract class TableDefineBuilder(
         }
 
     open fun addConstraint(
-        tableName: String,
         constraintName: String
     ) =
-        "${alterTable(tableName)}ADD CONSTRAINT ${produceIdentifier(constraintName)} "
+        "ADD CONSTRAINT ${produceIdentifier(constraintName)}"
 
     open fun pkDefine(
         columnNames: List<String>
@@ -136,17 +135,30 @@ abstract class TableDefineBuilder(
         "PRIMARY KEY (${columnNames.joinToString(",") { produceIdentifier(it) }})"
 
     open fun fkDefine(
-        meta: ForeignKeyMeta
+        meta: ForeignKeyMeta,
+        indentCount: Int = 2,
     ) =
         buildString {
-            appendLine("    FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { produceIdentifier(it) }})")
-            append("        REFERENCES ${produceIdentifier(meta.targetTableName)} (${meta.targetColumnNames.joinToString(", ") { produceIdentifier(it) }})")
+            val indent = "    "
+            var temp = indentCount
+
+            append(indent.repeat(temp++))
+            appendLine("FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { produceIdentifier(it) }})")
+
+            append(indent.repeat(temp++))
+            append(
+                "REFERENCES ${produceIdentifier(meta.targetTableName)} (${
+                    meta.targetColumnNames.joinToString(
+                        ", "
+                    ) { produceIdentifier(it) }
+                })"
+            )
 
             meta.onUpdate.takeIf { it.isNotBlank() }?.let {
-                append("\n    ON UPDATE ${it.changeCase()}")
+                append("\n${indent.repeat(temp)}ON UPDATE ${it.changeCase()}")
             }
             meta.onDelete.takeIf { it.isNotBlank() }?.let {
-                append("\n    ON DELETE ${it.changeCase()}")
+                append("\n${indent.repeat(temp)}ON DELETE ${it.changeCase()}")
             }
         }
 
@@ -164,19 +176,26 @@ abstract class TableDefineBuilder(
         constraintName: String =
             createPkName(tableName, columnNames)
     ) =
-        "${addConstraint(tableName, constraintName)}${pkDefine(columnNames)}"
+        "${alterTable(tableName)} ${addConstraint(constraintName)} ${pkDefine(columnNames)}"
 
     open fun createFkConstraint(
         meta: ForeignKeyMeta,
         fake: Boolean = false,
     ) =
-        "${addConstraint(meta.sourceTableName, meta.name)}\n${fkDefine(meta)}".let {
-            if (fake) {
-                it.split("\n").joinToString("\n") { "-- $it" }
-            } else {
-                it
+        listOf(
+            alterTable(meta.sourceTableName),
+            "\n    ",
+            addConstraint(meta.name),
+            "\n",
+            fkDefine(meta),
+        ).joinToString("")
+            .let {
+                if (fake) {
+                    it.split("\n").joinToString("\n") {line -> "-- $line" }
+                } else {
+                    it
+                }
             }
-        }
 
     open fun createMappingTable(
         meta: MappingTableMeta,

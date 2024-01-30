@@ -7,8 +7,11 @@ import top.potmot.error.ConvertEntityException
 import top.potmot.model.GenEntity
 import top.potmot.model.by
 import top.potmot.model.copy
+import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTypeMappingView
+
+typealias TypeMapping = (column: ColumnTypeMeta) -> String
 
 /**
  * 转换 table 为 entity

@@ -1,6 +1,5 @@
 package top.potmot.generate
 
-import org.babyfish.jimmer.sql.GenerationType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
@@ -54,7 +53,7 @@ class EntityGenerateTest {
         listType = false,
         typeNotNull = true,
         idProperty = true,
-        idGenerationType = GenerationType.SEQUENCE,
+        idGenerationAnnotation = "@GeneratedValue(strategy = GenerationType.SEQUENCE)",
         keyProperty = false,
         logicalDelete = false,
         idView = false,

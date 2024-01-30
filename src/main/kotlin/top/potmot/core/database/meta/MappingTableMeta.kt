@@ -106,7 +106,6 @@ private fun createMappingTableColumn(
         partOfPk = true,
         autoIncrement = false,
         businessKey = false,
-        idGeneration = false,
         logicalDelete = false,
         comment = "",
         tableId = 0,

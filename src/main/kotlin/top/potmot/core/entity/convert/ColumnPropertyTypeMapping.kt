@@ -57,26 +57,21 @@ private fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
     }
 }
 
+/**
+ * 传入数据源的 typeDefine，根据 typeMapping 进行匹配
+ */
 private fun mappingPropertyType(
-    databaseTypeString: String,
-    typeMappings: List<GenTypeMappingView>,
-    dataSourceType: DataSourceType,
-    language: GenLanguage
+    typeDefine: String,
+    typeMappings: List<GenTypeMappingView>
 ): String? {
     for (typeMapping in typeMappings) {
-        if (typeMapping.dataSourceType != dataSourceType) {
-            continue
-        }
-        if (typeMapping.language != language) {
-            continue
-        }
         if (typeMapping.typeExpression.isBlank()) {
             continue
         }
         if (typeMapping.propertyType.isBlank()) {
             continue
         }
-        if (databaseTypeString.isBlank()) {
+        if (typeDefine.isBlank()) {
             continue
         }
 
@@ -84,7 +79,7 @@ private fun mappingPropertyType(
 
         try {
             val regex = Regex(typeMapping.typeExpression)
-            matchResult = regex.matches(databaseTypeString)
+            matchResult = regex.matches(typeDefine)
         } catch (e: java.util.regex.PatternSyntaxException) {
             return null
         }
@@ -97,18 +92,10 @@ private fun mappingPropertyType(
     return null
 }
 
-private fun getPropertyType(
-    typeCode: Int,
-    typeNotNull: Boolean,
-    language: GenLanguage = getContextGenConfig().language,
-): String? =
-    when(language) {
-        GenLanguage.JAVA -> jdbcTypeToJavaType(typeCode, typeNotNull)?.name
-        GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeCode)?.qualifiedName
-    }
 
 /**
- * 基于 ColumnTypeMeta 映射 property type，需要通过 dataSourceType 和 language 参数获取映射方式
+ * 基于 ColumnTypeMeta 映射 property type
+ * 通过 dataSourceType 和 language 参数获取映射方式
  */
 @Throws(ColumnTypeException::class)
 fun getPropertyType (
@@ -119,9 +106,10 @@ fun getPropertyType (
 ): String =
     mappingPropertyType(
         dataSourceType.getColumnTypeDefiner().getTypeDefine(typeMeta),
-        typeMappings,
-        dataSourceType,
-        language,
+        typeMappings.filter { it.language == language && it.dataSourceType == dataSourceType },
     )
-        ?: getPropertyType(typeMeta.typeCode, typeMeta.typeNotNull, language)
+        ?: when(language) {
+            GenLanguage.JAVA -> jdbcTypeToJavaType(typeMeta.typeCode, typeMeta.typeNotNull)?.name
+            GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeMeta.typeCode)?.qualifiedName
+        }
         ?: typeMeta.rawType
