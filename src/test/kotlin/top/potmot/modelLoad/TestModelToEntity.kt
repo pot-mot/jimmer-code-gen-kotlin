@@ -185,7 +185,7 @@ public interface MNSource {
     List<MNTarget> mNTargets();
     
     @IdView("mNTargets")
-    List<long> mNTargetIds();
+    List<Long> mNTargetIds();
 }
 ), (top/potmot/MNTarget.java, package top.potmot;
 
@@ -214,7 +214,7 @@ public interface MNTarget {
     List<MNSource> mNSources();
     
     @IdView("mNSources")
-    List<long> mNSourceIds();
+    List<Long> mNSourceIds();
 }
 ), (top/potmot/MOSource.java, package top.potmot;
 
@@ -276,7 +276,7 @@ public interface MOTarget {
     List<MOSource> mOSources();
     
     @IdView("mOSources")
-    List<long> mOSourceIds();
+    List<Long> mOSourceIds();
 }
 ), (top/potmot/OMSource.java, package top.potmot;
 
@@ -305,7 +305,7 @@ public interface OMSource {
     List<OMTarget> oMTargets();
     
     @IdView("oMTargets")
-    List<long> oMTargetIds();
+    List<Long> oMTargetIds();
 }
 ), (top/potmot/OMTarget.java, package top.potmot;
 
@@ -417,6 +417,7 @@ import org.babyfish.jimmer.sql.JoinColumn;
 import org.babyfish.jimmer.sql.ManyToOne;
 import org.babyfish.jimmer.sql.OneToMany;
 import org.babyfish.jimmer.sql.Table;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author 
@@ -433,17 +434,19 @@ public interface TreeNode {
     List<TreeNode> treeNodes();
     
     @IdView("treeNodes")
-    List<long> treeNodeIds();
+    List<Long> treeNodeIds();
     
     @ManyToOne
     @JoinColumn(
             name = "PARENT_ID",
             referencedColumnName = "ID"
     )
+    @Nullable
     TreeNode treeNode();
     
     @IdView("treeNode")
-    long treeNodeId();
+    @Nullable
+    Long treeNodeId();
 }
 )]
     """
@@ -826,10 +829,10 @@ interface TreeNode {
         name = "PARENT_ID",
         referencedColumnName = "ID"
     )
-    val treeNode: TreeNode
+    val treeNode: TreeNode?
     
     @IdView("treeNode")
-    val treeNodeId: Long
+    val treeNodeId: Long?
 }
 )]
     """

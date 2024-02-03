@@ -208,6 +208,10 @@ fun convertAssociationProperties(
                             mappedBy,
                         )
                     )
+
+                    if(inAssociation.type == ONE_TO_ONE) {
+                        typeNotNull = false
+                    }
                 }
 
                 ONE_TO_MANY -> {
@@ -245,6 +249,7 @@ private fun GenPropertyDraft.toPlural() {
     this.listType = true
     this.typeNotNull = true
     this.keyProperty = false
+    this.logicalDelete = false
 }
 
 /**
@@ -269,19 +274,20 @@ private fun createIdViewProperty(
         }
 
         if (associationProperty.listType) {
-            this.name = associationProperty.name.toSingular() + "Ids"
-            this.listType = true
-            this.typeNotNull = true
+            this.name = associationProperty.name.toSingular() + "Id"
+            this.toPlural()
         } else {
             this.name = associationProperty.name + "Id"
         }
 
         this.type = baseColumn.getTypeMeta()
             .let {
-                it.typeNotNull = this.typeNotNull
-                it
-            }
-            .let {
+                // 同步关联属性的可空性
+                it.typeNotNull = associationProperty.typeNotNull
+                // 当为列表属性时，java 为允许集合泛型使用，必须调整为可空模式
+                if (this.listType) {
+                    it.typeNotNull = false
+                }
                 typeMapping(it)
             }
 
@@ -303,9 +309,4 @@ private fun GenPropertyDraft.setAssociation(
 
     this.associationType = meta.type
     this.associationAnnotation = associationAnnotationBuilder.build(meta)
-    meta.mappedBy?.takeIf { it.isNotBlank() }?.let {
-        if (associationType == ONE_TO_ONE) {
-            this.typeNotNull = false
-        }
-    }
 }

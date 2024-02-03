@@ -26,6 +26,12 @@ jimmer:
     ts:
       path: /ts.zip
       mutable: true
+#    openapi:
+#      path: '/open-api.yml'
+#      ui-path: '/open-api.html'
+#      properties:
+#        info:
+#          title: Jimmer Code Gen
   show-sql: true
   pretty-sql: true
   id-only-target-checking-level: ALL
