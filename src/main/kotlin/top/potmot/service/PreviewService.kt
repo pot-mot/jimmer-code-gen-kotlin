@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.context.cleanContextGenConfig
-import top.potmot.context.getContextGenConfig
-import top.potmot.context.merge
+import top.potmot.context.getContextOrGlobal
+import top.potmot.context.useContext
 import top.potmot.core.database.generate.getTableDefineGenerator
 import top.potmot.core.entity.generate.getEntityGenerator
 import top.potmot.enumeration.DataSourceType
@@ -46,21 +45,15 @@ class PreviewService(
     fun previewTableDefine(
         @RequestParam tableIds: List<Long>,
         @RequestParam(required = false) properties: GenConfigProperties?,
-    ): List<Pair<String, String>> {
-        val context = getContextGenConfig()
-        properties?.let { context.merge(it) }
-
-        val tableDefines = sqlClient.createQuery(GenTable::class) {
-            where(table.id valueIn tableIds)
-            select(table.fetch(GenTableAssociationsView::class))
-        }.execute().let {
-            generateTableDefines(it)
+    ): List<Pair<String, String>> =
+        useContext(properties) {
+            sqlClient.createQuery(GenTable::class) {
+                where(table.id valueIn tableIds)
+                select(table.fetch(GenTableAssociationsView::class))
+            }.execute().let {
+                generateTableDefines(it)
+            }
         }
-
-        cleanContextGenConfig()
-
-        return tableDefines
-    }
 
     @GetMapping("/entity")
     @Throws(GenerateEntityException::class)
@@ -68,42 +61,30 @@ class PreviewService(
         @RequestParam entityIds: List<Long>,
         @RequestParam(required = false) withPath: Boolean?,
         @RequestParam(required = false) properties: GenConfigProperties?,
-    ): List<Pair<String, String>> {
-        val context = getContextGenConfig()
-        properties?.let { context.merge(it) }
-
-        val entities = sqlClient.createQuery(GenEntity::class) {
-            where(table.id valueIn entityIds)
-            select(table.fetch(GenEntityPropertiesView::class))
-        }.execute().let {
-            generateEntitiesCode(it, withPath)
+    ): List<Pair<String, String>> =
+        useContext(properties) {
+            sqlClient.createQuery(GenEntity::class) {
+                where(table.id valueIn entityIds)
+                select(table.fetch(GenEntityPropertiesView::class))
+            }.execute().let {
+                generateEntitiesCode(it, withPath)
+            }
         }
-
-        cleanContextGenConfig()
-
-        return entities
-    }
 
     @GetMapping("/enum")
     fun previewEnums(
         @RequestParam enumIds: List<Long>,
         @RequestParam(required = false) withPath: Boolean?,
         @RequestParam(required = false) properties: GenConfigProperties?,
-    ): List<Pair<String, String>> {
-        val context = getContextGenConfig()
-        properties?.let { context.merge(it) }
-
-        val enums = sqlClient.createQuery(GenEnum::class) {
-            where(table.id valueIn enumIds)
-            select(table.fetch(PropertyEnum::class))
-        }.execute().let {
-            generateEnumsCode(it, withPath)
+    ): List<Pair<String, String>> =
+        useContext(properties) {
+            sqlClient.createQuery(GenEnum::class) {
+                where(table.id valueIn enumIds)
+                select(table.fetch(PropertyEnum::class))
+            }.execute().let {
+                generateEnumsCode(it, withPath)
+            }
         }
-
-        cleanContextGenConfig()
-
-        return enums
-    }
 
 
     @GetMapping("/entity/byTable")
@@ -127,19 +108,14 @@ class PreviewService(
 
         val properties = GenConfigProperties(model)
 
-        val context = getContextGenConfig()
-        context.merge(properties)
+        return useContext(properties) {
+            val tables = sqlClient.createQuery(GenTable::class) {
+                where(table.modelId eq id)
+                select(table.fetch(GenTableAssociationsView::class))
+            }.execute()
 
-        val tables = sqlClient.createQuery(GenTable::class) {
-            where(table.modelId eq id)
-            select(table.fetch(GenTableAssociationsView::class))
-        }.execute()
-
-        val tableDefines = generateTableDefines(tables, model.dataSourceType)
-
-        cleanContextGenConfig()
-
-        return tableDefines
+            generateTableDefines(tables, model.dataSourceType)
+        }
     }
 
     @GetMapping("/model/entity")
@@ -152,23 +128,20 @@ class PreviewService(
 
         val properties = GenConfigProperties(model)
 
-        val context = getContextGenConfig()
-        context.merge(properties)
+        return useContext(properties) {
+            val entityCodes = if (model.syncConvertEntity) {
+                val tableIds = getTableIdsByModelId(id)
+                previewEntityByTable(tableIds, model.id, withPath, properties)
+            } else {
+                val entities = getEntityByModelId(id)
+                generateEntitiesCode(entities, withPath)
+            }
 
-        val entityCodes = if (model.syncConvertEntity) {
-            val tableIds = getTableIdsByModelId(id)
-            previewEntityByTable(tableIds, model.id, withPath, properties)
-        } else {
-            val entities = getEntityByModelId(id)
-            generateEntitiesCode(entities, withPath)
+            val enumCodes =
+                previewEnums(model.enumIds, withPath, properties)
+
+            (entityCodes + enumCodes).distinct()
         }
-
-        val enumCodes =
-            previewEnums(model.enumIds, withPath, properties)
-
-        cleanContextGenConfig()
-
-        return (entityCodes + enumCodes).distinct()
     }
 
 
@@ -180,7 +153,7 @@ class PreviewService(
     fun generateEntitiesCode(
         entities: Collection<GenEntityPropertiesView>,
         withPath: Boolean?,
-        language: GenLanguage = getContextGenConfig().language,
+        language: GenLanguage = getContextOrGlobal().language,
     ): List<Pair<String, String>> =
         language.getEntityGenerator().let {
             entities.flatMap { entity ->
@@ -191,10 +164,10 @@ class PreviewService(
     fun generateEnumsCode(
         enums: Collection<PropertyEnum>,
         withPath: Boolean?,
-        language: GenLanguage = getContextGenConfig().language,
+        language: GenLanguage = getContextOrGlobal().language,
     ): List<Pair<String, String>> =
         language.getEntityGenerator().let {
-            enums.map {enum ->
+            enums.map { enum ->
                 it.generate(enum, withPath ?: false)
             }.distinct().sortedBy { it.first }
         }
@@ -203,7 +176,7 @@ class PreviewService(
     @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
     fun generateTableDefines(
         tables: Collection<GenTableAssociationsView>,
-        dataSourceType: DataSourceType = getContextGenConfig().dataSourceType
+        dataSourceType: DataSourceType = getContextOrGlobal().dataSourceType
     ): List<Pair<String, String>> =
         dataSourceType.getTableDefineGenerator()
             .generate(tables)

@@ -1,7 +1,7 @@
 package top.potmot.core.entity.generate.builder
 
 import org.babyfish.jimmer.sql.ForeignKeyType
-import top.potmot.context.getContextGenConfig
+import top.potmot.context.getContextOrGlobal
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.meta.JoinColumnMeta
 import top.potmot.core.entity.meta.JoinTableMeta
@@ -18,22 +18,22 @@ open class AssociationAnnotationBuilder(
                 append("@JoinColumn(name = \"${meta.joinColumnName}\")")
             } else {
                 appendLine("@JoinColumn(")
-                appendLine("${indent}name = \"${meta.joinColumnName}\",")
+                append("${indent}name = \"${meta.joinColumnName}\"")
 
                 if (meta.referencedColumnName != null) {
-                    appendLine("${indent}referencedColumnName = \"${meta.referencedColumnName.changeCase()}\"")
+                    append(",\n${indent}referencedColumnName = \"${meta.referencedColumnName.changeCase()}\"")
                 }
                 if (meta.foreignKeyType != null) {
-                    val realFk = getContextGenConfig().realFk
+                    val realFk = getContextOrGlobal().realFk
 
                     if (
                         (realFk && meta.foreignKeyType == ForeignKeyType.FAKE) ||
                         (!realFk && meta.foreignKeyType == ForeignKeyType.REAL)
                     ) {
-                        appendLine("    foreignKeyType = ForeignKeyType.${meta.foreignKeyType.name}")
+                        append(",\n${indent}foreignKeyType = ForeignKeyType.${meta.foreignKeyType.name}")
                     }
                 }
-                append(")")
+                append("\n)")
             }
         }
 
@@ -66,13 +66,13 @@ open class AssociationAnnotationBuilder(
         buildString {
             append("@" + meta.type.toAnnotation().simpleName)
             if (meta.mappedBy.isNullOrBlank()) {
-                if (getContextGenConfig().joinColumnAnnotation) {
+                if (getContextOrGlobal().joinColumnAnnotation) {
                     meta.joinColumns.forEach {
                         append("\n${build(it)}")
                     }
                 }
 
-                if (getContextGenConfig().joinTableAnnotation) {
+                if (getContextOrGlobal().joinTableAnnotation) {
                     meta.joinTable?.let {
                         append("\n${build(it)}")
                     }

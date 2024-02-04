@@ -4,11 +4,3 @@ logging:
 
 jimmer:
   pretty-sql: false
-
-gen:
-  language: kotlin
-  data-source-type: postgresql
-  lower-case-name: false
-  column-annotation: true
-  join-column-annotation: true
-  join-table-annotation: true

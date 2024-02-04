@@ -14,7 +14,7 @@ import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Table
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
-import top.potmot.context.getContextGenConfig
+import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.getIdentifierFilter
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.fullType
@@ -54,7 +54,7 @@ abstract class EntityBuilder: CodeBuilder() {
 
     open fun GenEntityPropertiesView.tableAnnotation(): String =
         buildString {
-            val context = getContextGenConfig()
+            val context = getContextOrGlobal()
 
             append("@Table(name = \"")
 
@@ -74,7 +74,7 @@ abstract class EntityBuilder: CodeBuilder() {
         column?.takeUnless { idView || !associationAnnotation.isNullOrBlank() }?.let {
             buildString {
                 append("@Column(name = \"")
-                append(getContextGenConfig().dataSourceType.getIdentifierFilter()
+                append(getContextOrGlobal().dataSourceType.getIdentifierFilter()
                     .getIdentifier(it.name.trim())
                     .replace("\"", "\\\"")
                     .changeCase()
@@ -89,7 +89,7 @@ abstract class EntityBuilder: CodeBuilder() {
             entity.comment,
             entity.remark,
             params = mapOf(
-                Pair("author", entity.author.ifEmpty { getContextGenConfig().author }),
+                Pair("author", entity.author.ifEmpty { getContextOrGlobal().author }),
                 Pair("since", now())
             )
         )
@@ -104,7 +104,7 @@ abstract class EntityBuilder: CodeBuilder() {
         val result = mutableSetOf<KClass<*>>()
 
         property.apply {
-            if (getContextGenConfig().columnAnnotation && column != null) {
+            if (getContextOrGlobal().columnAnnotation && column != null) {
                 result += Column::class
             }
 
@@ -167,7 +167,7 @@ abstract class EntityBuilder: CodeBuilder() {
         val result = mutableSetOf<KClass<*>>()
 
         entity.apply {
-            if (getContextGenConfig().tableAnnotation) {
+            if (getContextOrGlobal().tableAnnotation) {
                 result += Table::class
             }
             result += Entity::class
@@ -192,7 +192,7 @@ abstract class EntityBuilder: CodeBuilder() {
         entity.apply {
             list += "@Entity"
 
-            if (getContextGenConfig().tableAnnotation) {
+            if (getContextOrGlobal().tableAnnotation) {
                 list += tableAnnotation()
             }
         }
@@ -214,7 +214,7 @@ abstract class EntityBuilder: CodeBuilder() {
             }
 
             if (logicalDelete) {
-                list += getContextGenConfig().logicalDeletedAnnotation
+                list += getContextOrGlobal().logicalDeletedAnnotation
             }
 
             associationType?.let {
@@ -228,7 +228,7 @@ abstract class EntityBuilder: CodeBuilder() {
                 }
             }
 
-            if (getContextGenConfig().columnAnnotation) {
+            if (getContextOrGlobal().columnAnnotation) {
                 columnAnnotation()?.let { list += it }
             }
 

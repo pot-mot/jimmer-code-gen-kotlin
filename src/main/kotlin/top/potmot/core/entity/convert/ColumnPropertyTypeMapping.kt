@@ -1,6 +1,6 @@
 package top.potmot.core.entity.convert
 
-import top.potmot.context.getContextGenConfig
+import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.columnTypeDefiner.getColumnTypeDefiner
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
@@ -101,8 +101,8 @@ private fun mappingPropertyType(
 fun getPropertyType (
     typeMeta: ColumnTypeMeta,
     typeMappings: List<GenTypeMappingView> = emptyList(),
-    dataSourceType: DataSourceType = getContextGenConfig().dataSourceType,
-    language: GenLanguage = getContextGenConfig().language,
+    dataSourceType: DataSourceType = getContextOrGlobal().dataSourceType,
+    language: GenLanguage = getContextOrGlobal().language,
 ): String =
     mappingPropertyType(
         dataSourceType.getColumnTypeDefiner().getTypeDefine(typeMeta),

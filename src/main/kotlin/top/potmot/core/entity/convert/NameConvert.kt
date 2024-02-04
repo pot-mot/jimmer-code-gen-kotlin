@@ -1,6 +1,6 @@
 package top.potmot.core.entity.convert
 
-import top.potmot.context.getContextGenConfig
+import top.potmot.context.getContextOrGlobal
 import top.potmot.utils.string.removePrefixes
 import top.potmot.utils.string.removeSuffixes
 import top.potmot.utils.string.splitTrim
@@ -50,20 +50,20 @@ fun columnNameToPropertyName(name: String): String =
  * 根据配置清理表名的前缀和后缀
  */
 fun String.clearTableName(): String =
-    this.removePrefixes(getContextGenConfig().tableNamePrefixes.splitTrim())
-        .removeSuffixes(getContextGenConfig().tableNameSuffixes.splitTrim())
+    this.removePrefixes(getContextOrGlobal().tableNamePrefixes.splitTrim())
+        .removeSuffixes(getContextOrGlobal().tableNameSuffixes.splitTrim())
 
 fun String.clearTableComment(): String =
-    this.removePrefixes(getContextGenConfig().tableCommentPrefixes.splitTrim())
-        .removeSuffixes(getContextGenConfig().tableCommentSuffixes.splitTrim())
+    this.removePrefixes(getContextOrGlobal().tableCommentPrefixes.splitTrim())
+        .removeSuffixes(getContextOrGlobal().tableCommentSuffixes.splitTrim())
 
 /**
  * 根据配置清理列名的前缀和后缀
  */
 fun String.clearColumnName(): String =
-    this.removePrefixes(getContextGenConfig().columnNamePrefixes.splitTrim())
-        .removeSuffixes(getContextGenConfig().columnNameSuffixes.splitTrim())
+    this.removePrefixes(getContextOrGlobal().columnNamePrefixes.splitTrim())
+        .removeSuffixes(getContextOrGlobal().columnNameSuffixes.splitTrim())
 
 fun String.clearColumnComment(): String =
-    this.removePrefixes(getContextGenConfig().columnCommentPrefixes.splitTrim())
-        .removeSuffixes(getContextGenConfig().columnCommentSuffixes.splitTrim())
+    this.removePrefixes(getContextOrGlobal().columnCommentPrefixes.splitTrim())
+        .removeSuffixes(getContextOrGlobal().columnCommentSuffixes.splitTrim())

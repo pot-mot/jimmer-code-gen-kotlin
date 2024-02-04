@@ -1,25 +1,34 @@
 package top.potmot.context
 
+import org.babyfish.jimmer.kt.merge
 import top.potmot.config.GlobalConfig
 import top.potmot.model.dto.GenConfig
+import top.potmot.model.dto.GenConfigProperties
 
-private val genConfigContextMap = mutableMapOf<Long, GenConfig>()
+private val contextMap = mutableMapOf<Long, GenConfig>()
 
-fun hasContextGenConfig(id: Long = Thread.currentThread().id): Boolean =
-    genConfigContextMap.containsKey(id)
+fun getContext(id: Long = Thread.currentThread().id) =
+    contextMap[id]
 
-fun getContextGenConfig(id: Long = Thread.currentThread().id): GenConfig {
-    val value = genConfigContextMap[id]
+fun getContextOrGlobal(id: Long = Thread.currentThread().id) =
+    contextMap[id] ?: GlobalConfig.common
 
-    return if (value == null) {
-        val newContext = GlobalConfig.common.copy()
-        genConfigContextMap[id] = newContext
-        newContext
-    } else {
-        value
-    }
+fun cleanContext(id: Long = Thread.currentThread().id) {
+    contextMap.remove(id)
 }
 
-fun cleanContextGenConfig(id: Long = Thread.currentThread().id) {
-    genConfigContextMap.remove(id)
+fun <T> useContext(
+    initProperties: GenConfigProperties? = GlobalConfig.common.toProperties(),
+    id: Long = Thread.currentThread().id,
+    block: () -> T
+): T {
+    val context = merge(
+        GlobalConfig.common.toEntity(),
+        initProperties?.toEntity()
+    )
+    contextMap[id] = GenConfig(context)
+    val temp = block()
+    cleanContext(id)
+
+    return temp
 }

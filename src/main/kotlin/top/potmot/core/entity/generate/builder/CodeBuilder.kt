@@ -1,6 +1,6 @@
 package top.potmot.core.entity.generate.builder
 
-import top.potmot.context.getContextGenConfig
+import top.potmot.context.getContextOrGlobal
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.utils.string.appendLines
 import top.potmot.utils.string.toBlockLines
@@ -12,7 +12,7 @@ abstract class CodeBuilder {
     abstract fun importLine(item: String): String
 
     fun String.changeCase(): String =
-        this.let { if (getContextGenConfig().lowerCaseName) lowercase() else uppercase() }
+        this.let { if (getContextOrGlobal().lowerCaseName) lowercase() else uppercase() }
 
     fun createBlockComment(
         comment: String,

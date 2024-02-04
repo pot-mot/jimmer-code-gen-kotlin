@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.context.cleanContextGenConfig
-import top.potmot.context.getContextGenConfig
-import top.potmot.context.merge
+import top.potmot.context.cleanContext
+import top.potmot.context.getContextOrGlobal
+import top.potmot.context.useContext
 import top.potmot.core.entity.convert.toGenEntity
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
@@ -53,23 +53,19 @@ class ConvertService(
     ): List<Long> {
         val result = mutableListOf<Long>()
 
-        val context = getContextGenConfig()
+        useContext(properties) {
+            val tables = getTableByModel(tableIds)
 
-        properties?.let { context.merge(it) }
+            val typeMappings = getTypeMappings()
 
-        val tables = getTableByModel(tableIds)
-
-        val typeMappings = getTypeMappings()
-
-        tables
-            .map {
-                it.toGenEntity(modelId, typeMappings)
-            }
-            .forEach {
-                result += sqlClient.save(it).modifiedEntity.id
-            }
-
-        cleanContextGenConfig()
+            tables
+                .map {
+                    it.toGenEntity(modelId, typeMappings)
+                }
+                .forEach {
+                    result += sqlClient.save(it).modifiedEntity.id
+                }
+        }
 
         return result
     }

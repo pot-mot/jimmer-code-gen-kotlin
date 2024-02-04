@@ -1,7 +1,7 @@
 package top.potmot.core.entity.convert
 
 import org.babyfish.jimmer.kt.new
-import top.potmot.context.getContextGenConfig
+import top.potmot.context.getContextOrGlobal
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.model.GenEntity
@@ -65,7 +65,7 @@ private fun tableToEntity(
     modelId: Long?,
 ): GenEntity {
     return new(GenEntity::class).by {
-        val context = getContextGenConfig()
+        val context = getContextOrGlobal()
 
         this.table().id = genTable.id
         this.modelId = modelId

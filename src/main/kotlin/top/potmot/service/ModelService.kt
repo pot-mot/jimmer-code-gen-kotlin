@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import top.potmot.core.database.load.GraphData
 import top.potmot.core.database.load.getGraphEntities
 import top.potmot.core.database.load.parseGraphData
 import top.potmot.core.database.load.setColumnIds
@@ -22,12 +23,10 @@ import top.potmot.model.GenModel
 import top.potmot.model.by
 import top.potmot.model.copy
 import top.potmot.model.createdTime
-import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenModelInput
 import top.potmot.model.dto.GenModelSimpleView
 import top.potmot.model.dto.GenModelView
-import top.potmot.model.dto.GenTableModelInput
 
 @RestController
 @RequestMapping("/model")
@@ -41,7 +40,7 @@ class ModelService(
     }
 
     @GetMapping("/valueData/{id}")
-    fun getValueData(@PathVariable id: Long): Pair<List<GenTableModelInput>, List<GenAssociationModelInput>>? {
+    fun getValueData(@PathVariable id: Long): GraphData? {
         return sqlClient.findById(GenModelView::class, id)?.getGraphEntities()
     }
 
