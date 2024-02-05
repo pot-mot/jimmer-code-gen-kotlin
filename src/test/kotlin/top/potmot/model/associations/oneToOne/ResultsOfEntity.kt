@@ -73,6 +73,7 @@ const val javaFakeFkResult = """
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
+import org.babyfish.jimmer.sql.ForeignKeyType;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
 import org.babyfish.jimmer.sql.Id;
@@ -207,6 +208,7 @@ const val kotlinFakeFkResult = """
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.ForeignKeyType
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id

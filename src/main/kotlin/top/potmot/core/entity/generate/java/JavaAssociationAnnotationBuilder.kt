@@ -9,21 +9,23 @@ object JavaAssociationAnnotationBuilder: AssociationAnnotationBuilder("        "
             appendLine("@JoinTable(")
             appendLine("${indent}name = \"${meta.tableName}\",")
 
-            if (meta.columnNamePairs.size == 1) {
+            val foreignKeyTypeProp = createForeignKeyType(meta.foreignKeyType)
+
+            if (meta.columnNamePairs.size == 1 && foreignKeyTypeProp == null) {
                 appendLine("${indent}joinColumnName = \"${meta.columnNamePairs[0].first}\",")
                 appendLine("${indent}inverseJoinColumnName = \"${meta.columnNamePairs[0].second}\"")
             } else {
                 appendLine("${indent}joinColumns = {")
                 meta.columnNamePairs.forEach {
-                    appendLine("${indent}${indent}@JoinColumn(name = \"${it.first}\"),")
+                    appendLine("$indent${indent}@JoinColumn(name = \"${it.first}\", ${foreignKeyTypeProp ?: ""}),")
                 }
-                appendLine("${indent}}")
+                appendLine("$indent},")
 
                 appendLine("${indent}inverseColumns = {")
                 meta.columnNamePairs.forEach {
-                    appendLine("${indent}${indent}@JoinColumn(name = \"${it.second}\"),")
+                    appendLine("$indent${indent}@JoinColumn(name = \"${it.second}\", ${foreignKeyTypeProp ?: ""}),")
                 }
-                appendLine("${indent}}")
+                appendLine("$indent}")
             }
 
             append(")")

@@ -3,6 +3,7 @@ package top.potmot.core.entity.generate.builder
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.ForeignKeyType
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
@@ -135,13 +136,16 @@ abstract class EntityBuilder: CodeBuilder() {
                     if (associationAnnotation.contains("@JoinTable")) {
                         result += JoinTable::class
                         if (
-                            associationAnnotation.contains("joinColumns") ||
-                            associationAnnotation.contains("inverseColumns")
+                            associationAnnotation.contains("joinColumns = ") ||
+                            associationAnnotation.contains("inverseColumns = ")
                         ) {
                             result += JoinColumn::class
                         }
                     } else if (associationAnnotation.contains("@JoinColumn")) {
                         result += JoinColumn::class
+                    }
+                    if (associationAnnotation.contains("ForeignKeyType")) {
+                        result += ForeignKeyType::class
                     }
 
                     if (dissociateAnnotation != null) {

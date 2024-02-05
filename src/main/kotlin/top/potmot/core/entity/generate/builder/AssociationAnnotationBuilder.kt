@@ -10,6 +10,17 @@ import top.potmot.utils.string.changeCase
 open class AssociationAnnotationBuilder(
     val indent: String = "    "
 ) {
+    protected fun createForeignKeyType(foreignKeyType: ForeignKeyType?): String? {
+        val realFk = getContextOrGlobal().realFk
+
+        return if (
+            (realFk && foreignKeyType == ForeignKeyType.FAKE) ||
+            (!realFk && foreignKeyType == ForeignKeyType.REAL)
+        ) {
+            "foreignKeyType = ForeignKeyType.${foreignKeyType.name}"
+        } else null
+    }
+
     open fun build(meta: JoinColumnMeta) =
         buildString {
             val onlyName = meta.referencedColumnName == null && meta.foreignKeyType == null
@@ -23,15 +34,8 @@ open class AssociationAnnotationBuilder(
                 if (meta.referencedColumnName != null) {
                     append(",\n${indent}referencedColumnName = \"${meta.referencedColumnName.changeCase()}\"")
                 }
-                if (meta.foreignKeyType != null) {
-                    val realFk = getContextOrGlobal().realFk
-
-                    if (
-                        (realFk && meta.foreignKeyType == ForeignKeyType.FAKE) ||
-                        (!realFk && meta.foreignKeyType == ForeignKeyType.REAL)
-                    ) {
-                        append(",\n${indent}foreignKeyType = ForeignKeyType.${meta.foreignKeyType.name}")
-                    }
+                createForeignKeyType(meta.foreignKeyType)?.let {
+                    append(",\n${indent}$it")
                 }
                 append("\n)")
             }
@@ -42,19 +46,21 @@ open class AssociationAnnotationBuilder(
             appendLine("@JoinTable(")
             appendLine("${indent}name = \"${meta.tableName}\",")
 
-            if (meta.columnNamePairs.size == 1) {
+            val foreignKeyTypeProp = createForeignKeyType(meta.foreignKeyType)
+
+            if (meta.columnNamePairs.size == 1 && foreignKeyTypeProp == null) {
                 appendLine("${indent}joinColumnName = \"${meta.columnNamePairs[0].first}\",")
                 appendLine("${indent}inverseJoinColumnName = \"${meta.columnNamePairs[0].second}\"")
             } else {
                 appendLine("${indent}joinColumns = [")
                 meta.columnNamePairs.forEach {
-                    appendLine("$indent${indent}JoinColumn(name = \"${it.first}\"),")
+                    appendLine("$indent${indent}JoinColumn(name = \"${it.first}\", ${foreignKeyTypeProp ?: ""}),")
                 }
-                appendLine("$indent]")
+                appendLine("$indent],")
 
                 appendLine("${indent}inverseColumns = [")
                 meta.columnNamePairs.forEach {
-                    appendLine("$indent${indent}JoinColumn(name = \"${it.second}\"),")
+                    appendLine("$indent${indent}JoinColumn(name = \"${it.second}\", ${foreignKeyTypeProp ?: ""}),")
                 }
                 appendLine("$indent]")
             }

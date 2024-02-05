@@ -74,10 +74,12 @@ const val javaFakeFkResult = """
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
+import org.babyfish.jimmer.sql.ForeignKeyType;
 import org.babyfish.jimmer.sql.GeneratedValue;
 import org.babyfish.jimmer.sql.GenerationType;
 import org.babyfish.jimmer.sql.Id;
 import org.babyfish.jimmer.sql.IdView;
+import org.babyfish.jimmer.sql.JoinColumn;
 import org.babyfish.jimmer.sql.JoinTable;
 import org.babyfish.jimmer.sql.ManyToMany;
 import org.babyfish.jimmer.sql.Table;
@@ -96,8 +98,12 @@ public interface MNSource {
     @ManyToMany
     @JoinTable(
             name = "MANY_TO_MANY_MAPPING",
-            joinColumnName = "M_N_SOURCE_ID",
-            inverseJoinColumnName = "M_N_TARGET_ID"
+            joinColumns = {
+                    @JoinColumn(name = "M_N_SOURCE_ID", foreignKeyType = ForeignKeyType.REAL),
+            },
+            inverseColumns = {
+                    @JoinColumn(name = "M_N_TARGET_ID", foreignKeyType = ForeignKeyType.REAL),
+            }
     )
     List<MNTarget> mNTargets();
     
@@ -207,10 +213,12 @@ const val kotlinFakeFkResult = """
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.ForeignKeyType
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.JoinTable
 import org.babyfish.jimmer.sql.ManyToMany
 import org.babyfish.jimmer.sql.Table
@@ -229,8 +237,12 @@ interface MNSource {
     @ManyToMany
     @JoinTable(
         name = "MANY_TO_MANY_MAPPING",
-        joinColumnName = "M_N_SOURCE_ID",
-        inverseJoinColumnName = "M_N_TARGET_ID"
+        joinColumns = [
+            JoinColumn(name = "M_N_SOURCE_ID", foreignKeyType = ForeignKeyType.REAL),
+        ],
+        inverseColumns = [
+            JoinColumn(name = "M_N_TARGET_ID", foreignKeyType = ForeignKeyType.REAL),
+        ]
     )
     val mNTargets: List<MNTarget>
     
