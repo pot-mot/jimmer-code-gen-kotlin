@@ -20,12 +20,12 @@ private val mapper = jacksonObjectMapper()
     .registerModule(ImmutableModule())
     .registerModule(JavaTimeModule())
 
-data class GraphData(
+data class ModelInputEntities (
     val tables: List<GenTableModelInput>,
     val associations: List<GenAssociationModelInput>,
 )
 
-fun parseGraphData(modelId: Long, graphData: String): GraphData {
+fun parseGraphData(modelId: Long, graphData: String): ModelInputEntities {
     val tables = mutableListOf<GenTableModelInput>()
     val associations = mutableListOf<GenAssociationModelInput>()
 
@@ -45,10 +45,10 @@ fun parseGraphData(modelId: Long, graphData: String): GraphData {
         }
     }
 
-    return GraphData(tables, associations)
+    return ModelInputEntities(tables, associations)
 }
 
-fun GenModelView.getGraphEntities(): GraphData =
+fun GenModelView.getGraphEntities(): ModelInputEntities =
     parseGraphData(this.id, this.graphData)
 
 private fun JsonNode.toTable(modelId: Long): GenTableModelInput {

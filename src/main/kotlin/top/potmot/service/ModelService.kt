@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.database.load.GraphData
+import top.potmot.core.database.load.ModelInputEntities
 import top.potmot.core.database.load.getGraphEntities
 import top.potmot.core.database.load.parseGraphData
 import top.potmot.core.database.load.setColumnIds
@@ -40,10 +40,9 @@ class ModelService(
     }
 
     @GetMapping("/valueData/{id}")
-    fun getValueData(@PathVariable id: Long): GraphData? {
+    fun getValueData(@PathVariable id: Long): ModelInputEntities? {
         return sqlClient.findById(GenModelView::class, id)?.getGraphEntities()
     }
-
 
     @GetMapping
     fun list(): List<GenModelSimpleView> {
