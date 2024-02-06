@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.enumeration.DataSourceType
+import top.potmot.dataSource.mysqlDataSource
+import top.potmot.dataSource.postgresDataSource
 import top.potmot.enumeration.TableType
-import top.potmot.model.dto.GenDataSourceInput
 import top.potmot.model.dto.GenTableModelInput
 import top.potmot.model.extension.execute
 import top.potmot.utils.liquibase.createSql
@@ -22,16 +22,7 @@ class TestLiquibaseCreateSql {
     @Test
     @Order(1)
     fun testCreateMySQLCreateSQL() {
-        val dataSource = GenDataSourceInput(
-            name = "test",
-            host = "127.0.0.1",
-            port = "3307",
-            urlSuffix = "",
-            type = DataSourceType.MySQL,
-            username = "root",
-            password = "root",
-            remark = "test"
-        ).toEntity()
+        val dataSource = mysqlDataSource.toEntity()
 
         val sql = dataSource.createSql(
             listOf(table),
@@ -62,16 +53,7 @@ class TestLiquibaseCreateSql {
     @Test
     @Order(2)
     fun testCreatePostgreCreateSQL() {
-        val dataSource = GenDataSourceInput(
-            name = "test",
-            host = "127.0.0.1",
-            port = "5432",
-            urlSuffix = "/postgres",
-            type = DataSourceType.PostgreSQL,
-            username = "postgres",
-            password = "root",
-            remark = "test"
-        ).toEntity()
+        val dataSource = postgresDataSource.toEntity()
 
         val sql = dataSource.createSql(
             listOf(table),

@@ -176,9 +176,7 @@ CREATE TABLE "gen_data_source"
     "id"            BIGSERIAL   NOT NULL,
     "type"          text        NOT NULL,
     "name"          text        NOT NULL,
-    "host"          text        NOT NULL,
-    "port"          text        NOT NULL,
-    "url_suffix"    text        NOT NULL,
+    "url"    text        NOT NULL,
     "username"      text        NOT NULL,
     "password"      text        NOT NULL,
     "remark"        text        NOT NULL,
@@ -191,9 +189,7 @@ COMMENT ON TABLE "gen_data_source" IS '生成数据源';
 COMMENT ON COLUMN "gen_data_source"."id" IS 'ID';
 COMMENT ON COLUMN "gen_data_source"."type" IS '数据库类型';
 COMMENT ON COLUMN "gen_data_source"."name" IS '名称';
-COMMENT ON COLUMN "gen_data_source"."host" IS '主机';
-COMMENT ON COLUMN "gen_data_source"."port" IS '端口';
-COMMENT ON COLUMN "gen_data_source"."url_suffix" IS '链接后缀';
+COMMENT ON COLUMN "gen_data_source"."url" IS '链接';
 COMMENT ON COLUMN "gen_data_source"."username" IS '用户名';
 COMMENT ON COLUMN "gen_data_source"."password" IS '密码';
 COMMENT ON COLUMN "gen_data_source"."remark" IS '备注';

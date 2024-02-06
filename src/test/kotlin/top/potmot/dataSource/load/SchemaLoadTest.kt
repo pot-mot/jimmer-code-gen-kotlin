@@ -7,8 +7,9 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.enumeration.DataSourceType
-import top.potmot.model.dto.GenDataSourceInput
+import top.potmot.dataSource.h2DataSource
+import top.potmot.dataSource.mysqlDataSource
+import top.potmot.dataSource.postgresDataSource
 import top.potmot.model.query.TableQuery
 import top.potmot.service.DataSourceService
 import top.potmot.service.SchemaService
@@ -26,16 +27,7 @@ class SchemaLoadTest(
     @Order(1)
     fun testLoadMysqlSchema() {
         val savedDataSourceId = dataSourceService.create(
-            GenDataSourceInput(
-                name = "test",
-                host = "127.0.0.1",
-                port = "3306",
-                urlSuffix = "",
-                type = DataSourceType.MySQL,
-                username = "root",
-                password = "root",
-                remark = "test"
-            )
+            mysqlDataSource
         )
 
         val schema = schemaService.preview(savedDataSourceId).first { it.name == "jimmer_code_gen" }
@@ -53,19 +45,28 @@ class SchemaLoadTest(
     @Order(2)
     fun testLoadPostgreSchema() {
         val savedDataSourceId = dataSourceService.create(
-            GenDataSourceInput(
-                name = "test",
-                host = "127.0.0.1",
-                port = "5432",
-                urlSuffix = "/postgres",
-                type = DataSourceType.PostgreSQL,
-                username = "postgres",
-                password = "root",
-                remark = "test"
-            )
+            postgresDataSource
         )
 
         val schema = schemaService.preview(savedDataSourceId).first { it.name == "jimmer_code_gen" }
+
+        val savedSchemaIds = schemaService.load(savedDataSourceId, schema.name)
+
+        assert(savedSchemaIds.size == 1)
+
+        val saveTables = tableService.queryIdView(TableQuery(schemaIds = savedSchemaIds))
+
+        assert(saveTables.size == 15)
+    }
+
+    @Test
+    @Order(3)
+    fun testLoadH2Schema() {
+        val savedDataSourceId = dataSourceService.create(
+            h2DataSource
+        )
+
+        val schema = schemaService.preview(savedDataSourceId).first { it.name == "jimmer_code_gen.jimmer_code_gen" }
 
         val savedSchemaIds = schemaService.load(savedDataSourceId, schema.name)
 

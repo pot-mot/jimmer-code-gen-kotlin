@@ -6,9 +6,7 @@ GenDataSourceView {
 
 GenDataSourceTemplateView {
     name
-    host
-    port
-    urlSuffix
+    url
     username
     remark
 }

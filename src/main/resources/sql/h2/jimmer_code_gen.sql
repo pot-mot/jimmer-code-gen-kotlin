@@ -152,9 +152,7 @@ CREATE TABLE `gen_data_source`
     `id`            bigint       NOT NULL AUTO_INCREMENT,
     `type`          varchar(500) NOT NULL,
     `name`          varchar(500) NOT NULL,
-    `host`          varchar(500) NOT NULL,
-    `port`          varchar(500) NOT NULL,
-    `url_suffix`    varchar(500) NOT NULL,
+    `url`    varchar(500) NOT NULL,
     `username`      varchar(500) NOT NULL,
     `password`      varchar(500) NOT NULL,
     `remark`        varchar(500) NOT NULL,
@@ -167,9 +165,7 @@ COMMENT ON TABLE `gen_data_source` IS '生成数据源';
 COMMENT ON COLUMN `gen_data_source`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_data_source`.`type` IS '数据库类型';
 COMMENT ON COLUMN `gen_data_source`.`name` IS '名称';
-COMMENT ON COLUMN `gen_data_source`.`host` IS '主机';
-COMMENT ON COLUMN `gen_data_source`.`port` IS '端口';
-COMMENT ON COLUMN `gen_data_source`.`url_suffix` IS '链接后缀';
+COMMENT ON COLUMN `gen_data_source`.`url` IS '链接';
 COMMENT ON COLUMN `gen_data_source`.`username` IS '用户名';
 COMMENT ON COLUMN `gen_data_source`.`password` IS '密码';
 COMMENT ON COLUMN `gen_data_source`.`remark` IS '备注';

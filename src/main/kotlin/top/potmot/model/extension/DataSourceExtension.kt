@@ -18,7 +18,7 @@ import us.fatehi.utility.datasource.MultiUseUserCredentials
 @Throws(DataSourceException.ConnectFail::class)
 fun DatabaseConnectionSource.test(): DatabaseConnectionSource {
     try {
-        this.get().close()
+        get().close()
         return this
     } catch (e: Exception) {
         throw DataSourceException.connectFail("dataSource connect fail", e)
@@ -33,14 +33,11 @@ fun GenDataSource.execute(
     ignoreExecuteFail: Boolean = false
 ): List<SQLExecuteResult> {
     val connection =
-        when (this.type) {
-            DataSourceType.MySQL -> {
-                this.toSource("/${schemaName}").get()
-            }
-            DataSourceType.PostgreSQL -> {
-                this.toSource("?currentSchema=${schemaName}").get()
-            }
-        }
+        when (type) {
+            DataSourceType.MySQL -> toSource("/${schemaName}")
+            DataSourceType.PostgreSQL -> toSource("?currentSchema=${schemaName}")
+            DataSourceType.H2 -> toSource("/${schemaName}")
+        }.get()
 
     try {
         return connection.execute(sql, log, ignoreExecuteFail)
@@ -59,7 +56,7 @@ fun GenDataSource.execute(
 @Throws(DataSourceException.ConnectFail::class)
 fun GenDataSource.toSource(urlSuffix: String): DatabaseConnectionSource {
     return DatabaseConnectionSources.newDatabaseConnectionSource(
-        this.url + urlSuffix,
+        url + urlSuffix,
         MultiUseUserCredentials(this.username, this.password)
     ).test()
 }

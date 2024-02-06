@@ -42,5 +42,6 @@ class TestLongName(
         when(config.dataSourceType) {
             DataSourceType.MySQL -> if (config.lowerCaseName) mysqlLowerResult else mysqlUpperResult
             DataSourceType.PostgreSQL -> if (config.lowerCaseName) postgresLowerResult else postgresUpperResult
+            DataSourceType.H2 -> if (config.lowerCaseName) mysqlLowerResult else mysqlUpperResult
         }
 }

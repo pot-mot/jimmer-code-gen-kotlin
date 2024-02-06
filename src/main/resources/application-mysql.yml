@@ -8,5 +8,6 @@ spring:
 jimmer:
   dialect: org.babyfish.jimmer.sql.dialect.MySqlDialect
 
-gen:
-  dataSourceType: mysql
+jimmer-code-gen:
+  common:
+    dataSourceType: mysql
