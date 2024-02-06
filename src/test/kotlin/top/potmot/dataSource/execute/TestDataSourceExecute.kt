@@ -49,7 +49,7 @@ class TestDataSourceExecute {
         )
 
         assertEquals(
-            6,
+            7,
             sqlExecuteResults.size,
         )
 
@@ -61,7 +61,7 @@ class TestDataSourceExecute {
 
     @Test
     @Order(2)
-    fun testPostgreSqlExecute() {
+    fun testPostgresExecute() {
         val dataSource = postgresDataSource.toEntity()
 
         val sqlExecuteResults = dataSource.execute("jimmer_code_gen", """
@@ -85,7 +85,7 @@ class TestDataSourceExecute {
         """)
 
         assertEquals(
-            6,
+            7,
             sqlExecuteResults.size,
         )
 
@@ -124,7 +124,7 @@ class TestDataSourceExecute {
         )
 
         assertEquals(
-            6,
+            7,
             sqlExecuteResults.size,
         )
 

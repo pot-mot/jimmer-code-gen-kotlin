@@ -56,4 +56,10 @@ object H2TableDefineBuilder : TableDefineBuilder(
             append,
         ) + "${createTableComment(meta.name, meta.comment)}"
     }
+
+    override fun columnStringify(column: GenTableAssociationsView.TargetOf_columns): String =
+        listOf(
+            super.columnStringify(column),
+            if (column.autoIncrement) " AUTO_INCREMENT" else ""
+        ).joinToString("")
 }

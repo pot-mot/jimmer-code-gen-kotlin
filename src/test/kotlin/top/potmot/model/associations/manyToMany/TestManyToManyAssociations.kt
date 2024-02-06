@@ -34,6 +34,6 @@ class TestManyToManyAssociations(
         when(config.dataSourceType) {
             DataSourceType.MySQL -> mysqlResult
             DataSourceType.PostgreSQL -> postgresResult
-            DataSourceType.H2 -> mysqlResult
+            DataSourceType.H2 -> h2Result
         }
 }

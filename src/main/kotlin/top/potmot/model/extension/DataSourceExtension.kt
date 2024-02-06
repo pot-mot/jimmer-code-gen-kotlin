@@ -32,15 +32,15 @@ fun GenDataSource.execute(
     log: Boolean = false,
     ignoreExecuteFail: Boolean = false
 ): List<SQLExecuteResult> {
-    val connection =
-        when (type) {
-            DataSourceType.MySQL -> toSource("/${schemaName}")
-            DataSourceType.PostgreSQL -> toSource("?currentSchema=${schemaName}")
-            DataSourceType.H2 -> toSource("/${schemaName}")
-        }.get()
+    val connection = toSource().get()
 
     try {
-        return connection.execute(sql, log, ignoreExecuteFail)
+        val useSchema = when(type) {
+            DataSourceType.MySQL, DataSourceType.H2 -> "USE `$schemaName`;"
+            DataSourceType.PostgreSQL -> "SET SEARCH_PATH TO \"$schemaName\";"
+        }
+
+        return connection.execute("$useSchema $sql", log, ignoreExecuteFail)
     } catch (e: Exception) {
         connection.rollback()
 
