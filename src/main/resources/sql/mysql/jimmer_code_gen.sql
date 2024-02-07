@@ -24,7 +24,7 @@ CREATE TABLE `gen_model`
 (
     `id`                         bigint       NOT NULL AUTO_INCREMENT,
     `name`                       varchar(500) NOT NULL COMMENT '名称',
-    `graph_data`                 varchar(500) NOT NULL COMMENT 'Graph 数据',
+    `graph_data`                 longtext     NOT NULL COMMENT 'Graph 数据',
     `sync_convert_entity`        boolean      NOT NULL COMMENT '同步转换实体',
     `language`                   varchar(500) NOT NULL COMMENT '语言',
     `data_source_type`           varchar(500) NOT NULL COMMENT '数据源类型',

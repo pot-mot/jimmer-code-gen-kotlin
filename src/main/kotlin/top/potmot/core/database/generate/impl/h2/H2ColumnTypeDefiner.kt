@@ -72,11 +72,11 @@ object H2ColumnTypeDefiner : ColumnTypeDefiner {
 
         when (typeMeta.typeCode) {
             Types.CHAR, Types.NCHAR -> {
-                typeMeta.rawType = "CHAR"
+                typeMeta.rawType = "CHARACTER"
             }
 
             Types.VARCHAR, Types.NVARCHAR, Types.LONGVARCHAR, Types.LONGNVARCHAR -> {
-                typeMeta.rawType = "CHAR VARYING"
+                typeMeta.rawType = "CHARACTER VARYING"
             }
 
             Types.BINARY -> {

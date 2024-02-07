@@ -90,6 +90,7 @@ fun GenTableModelInput.toInputPart(enumNameIdMap: Map<String, Long>): Pair<GenTa
 
     val entity = this.toEntity().copy {
         this.columns = columns
+        this.schemaId = null
         unload(this, GenTable::indexes)
     }
 

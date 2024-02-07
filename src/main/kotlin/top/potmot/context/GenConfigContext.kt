@@ -11,7 +11,7 @@ fun getContext(id: Long = Thread.currentThread().id) =
     contextMap[id]
 
 fun getContextOrGlobal(id: Long = Thread.currentThread().id) =
-    contextMap[id] ?: GlobalGenConfig
+    contextMap[id] ?: GenConfig(GlobalGenConfig.toEntity())
 
 fun cleanContext(id: Long = Thread.currentThread().id) {
     contextMap.remove(id)

@@ -5,7 +5,7 @@ import top.potmot.model.dto.GenDataSourceTemplateView
 
 private val mysqlDefaultDataSource = GenDataSourceTemplateView(
     name = "mysql",
-    url = "jdbc:mysql://localhost:3306/",
+    url = "jdbc:mysql://localhost:3306",
     username = "root",
     remark = "MySQL DataSource",
 )

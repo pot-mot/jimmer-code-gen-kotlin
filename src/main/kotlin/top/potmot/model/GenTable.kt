@@ -49,6 +49,7 @@ interface GenTable : BaseEntity {
     /**
      * 数据架构
      */
+    @Key
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
     val schema: GenSchema?

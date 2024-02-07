@@ -12,7 +12,7 @@ repositories {
 }
 
 plugins {
-    id("org.springframework.boot") version "2.7.13"
+    id("org.springframework.boot") version "2.7.18"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.21"
     kotlin("plugin.spring") version "1.9.21"
@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "top.potmot"
-version = "0.0.6" // 2024-2-5
+version = "0.0.7" // 2024-2-7
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 val jimmerVersion = "0.8.90"
