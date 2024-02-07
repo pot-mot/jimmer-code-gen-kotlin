@@ -9,7 +9,7 @@ import top.potmot.utils.string.trimToLetterOrDigit
 /**
  * 转换表名为类名
  * 根据分割符将一个字符串转成首字母大写其余小写的形式
- * 将根据 GlobalConfig 判断移除表前缀或后缀
+ * 将根据 GlobalGenConfig 判断移除表前缀或后缀
  * eq:
  *      HELLO_WORLD -> HelloWorld
  */

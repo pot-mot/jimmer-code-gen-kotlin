@@ -152,7 +152,7 @@ CREATE TABLE `gen_data_source`
     `id`            bigint       NOT NULL AUTO_INCREMENT,
     `type`          varchar(500) NOT NULL,
     `name`          varchar(500) NOT NULL,
-    `url`    varchar(500) NOT NULL,
+    `url`           varchar(500) NOT NULL,
     `username`      varchar(500) NOT NULL,
     `password`      varchar(500) NOT NULL,
     `remark`        varchar(500) NOT NULL,

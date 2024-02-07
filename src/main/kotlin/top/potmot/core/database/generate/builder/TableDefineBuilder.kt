@@ -1,6 +1,6 @@
 package top.potmot.core.database.generate.builder
 
-import top.potmot.core.database.generate.columnTypeDefiner.ColumnTypeDefiner
+import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
 import top.potmot.core.database.meta.ForeignKeyMeta
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.core.database.meta.getAssociations
@@ -18,9 +18,13 @@ import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.extension.pkColumns
-import top.potmot.utils.identifier.IdentifierFilter
+import top.potmot.core.database.generate.identifier.IdentifierFilter
 import top.potmot.utils.string.changeCase
 
+/**
+ * 表定义构建器
+ * 基于 IdentifierFilter 转换实体
+ */
 abstract class TableDefineBuilder(
     private val identifierFilter: IdentifierFilter,
     private val columnTypeDefiner: ColumnTypeDefiner

@@ -1,6 +1,7 @@
 package top.potmot.core.entity.generate.builder
 
 import top.potmot.context.getContextOrGlobal
+import top.potmot.core.entity.meta.judgeImportPathInDefaultPackage
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.utils.string.appendLines
 import top.potmot.utils.string.toBlockLines

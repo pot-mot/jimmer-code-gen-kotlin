@@ -16,7 +16,7 @@ import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Table
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import top.potmot.context.getContextOrGlobal
-import top.potmot.core.database.generate.getIdentifierFilter
+import top.potmot.core.database.generate.identifier.getIdentifierFilter
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.extension.fullType
 import top.potmot.model.extension.now

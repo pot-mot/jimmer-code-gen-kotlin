@@ -9,5 +9,4 @@ jimmer:
   dialect: org.babyfish.jimmer.sql.dialect.MySqlDialect
 
 jimmer-code-gen:
-  common:
-    dataSourceType: mysql
+  dataSourceType: mysql

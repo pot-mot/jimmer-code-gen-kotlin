@@ -6,27 +6,28 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.config.GlobalConfig
+import top.potmot.config.GlobalGenConfig
 import top.potmot.model.dto.GenConfig
 import top.potmot.model.dto.GenConfigProperties
+import top.potmot.utils.bean.copyPropertiesFrom
 
 @RestController
 @RequestMapping("/config")
 class ConfigService {
     @GetMapping
     fun getConfig(): GenConfig {
-        return GlobalConfig.common
+        return GlobalGenConfig
     }
 
     @PutMapping
     fun setConfig(
-        @RequestBody newConfig: GenConfigProperties
+        @RequestBody properties: GenConfigProperties
     ) {
-        val newConfigEntity = merge(
-            GlobalConfig.common.toEntity(),
-            newConfig.toEntity()
-        )
+        val newConfig = GenConfig(merge(
+            GlobalGenConfig.toEntity(),
+            properties.toEntity()
+        ))
 
-        GlobalConfig.common = GenConfig(newConfigEntity)
+        GlobalGenConfig.copyPropertiesFrom(newConfig)
     }
 }

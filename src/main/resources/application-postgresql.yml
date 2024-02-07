@@ -9,5 +9,4 @@ jimmer:
   dialect: org.babyfish.jimmer.sql.dialect.PostgresDialect
 
 jimmer-code-gen:
-  common:
-    dataSourceType: postgresql
+  dataSourceType: postgresql

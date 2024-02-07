@@ -43,7 +43,7 @@ class SchemaLoadTest(
 
     @Test
     @Order(2)
-    fun testLoadPostgreSchema() {
+    fun testLoadPostgresSchema() {
         val savedDataSourceId = dataSourceService.create(
             postgresDataSource
         )

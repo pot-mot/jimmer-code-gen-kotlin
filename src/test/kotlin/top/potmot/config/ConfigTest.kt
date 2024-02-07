@@ -21,20 +21,20 @@ class AssociationMatchTest(
     @Test
     fun testConfigEdit() {
         useContext {
-            assertEquals(GenLanguage.KOTLIN, GlobalConfig.common.language)
+            assertEquals(GenLanguage.KOTLIN, GlobalGenConfig.language)
 
             val testAuthor = "AUTHOR"
             configService.setConfig(GenConfigProperties(author = testAuthor))
-            assertEquals(testAuthor, GlobalConfig.common.author)
+            assertEquals(testAuthor, GlobalGenConfig.author)
 
             configService.setConfig(GenConfigProperties(language = GenLanguage.JAVA))
-            assertEquals(GenLanguage.JAVA, GlobalConfig.common.language)
+            assertEquals(GenLanguage.JAVA, GlobalGenConfig.language)
 
             val testColumnPrefix = "C_"
             configService.setConfig(GenConfigProperties(columnNamePrefixes = testColumnPrefix))
-            assertEquals(testColumnPrefix, GlobalConfig.common.columnNamePrefixes)
+            assertEquals(testColumnPrefix, GlobalGenConfig.columnNamePrefixes)
 
-            assertEquals(testColumnPrefix, GlobalConfig.common.columnNamePrefixes)
+            assertEquals(testColumnPrefix, GlobalGenConfig.columnNamePrefixes)
         }
     }
 }

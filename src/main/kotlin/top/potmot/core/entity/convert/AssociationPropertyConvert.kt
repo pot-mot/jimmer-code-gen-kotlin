@@ -3,7 +3,7 @@ package top.potmot.core.entity.convert
 import org.babyfish.jimmer.ImmutableObjects.deepClone
 import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import top.potmot.context.getContextOrGlobal
-import top.potmot.core.database.generate.getIdentifierFilter
+import top.potmot.core.database.generate.identifier.getIdentifierFilter
 import top.potmot.core.database.meta.getAssociations
 import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.core.entity.generate.getAssociationAnnotationBuilder

@@ -2,7 +2,7 @@ package top.potmot.core.entity.meta
 
 import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.model.GenAssociation
-import top.potmot.utils.identifier.IdentifierFilter
+import top.potmot.core.database.generate.identifier.IdentifierFilter
 import top.potmot.utils.string.changeCase
 
 data class JoinColumnMeta(
