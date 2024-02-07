@@ -1,12 +1,11 @@
 package top.potmot.core.database.generate.impl.mysql
 
 import top.potmot.core.database.generate.builder.TableDefineBuilder
-import top.potmot.core.database.generate.identifier.MYSQL_IDENTIFIER_FILTER
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.model.dto.GenTableAssociationsView
 
 object MysqlTableDefineBuilder : TableDefineBuilder(
-    MYSQL_IDENTIFIER_FILTER,
+    MysqlIdentifierFilter,
     MysqlColumnTypeDefiner
 ) {
     override fun String.escape(): String =

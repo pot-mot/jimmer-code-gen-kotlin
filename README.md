@@ -65,7 +65,7 @@
 - [application-mysql.yml](src%2Fmain%2Fresources%2Fapplication-mysql.yml)
 - [application-postgresql.yml](src%2Fmain%2Fresources%2Fapplication-postgresql.yml)
 
-`jimmer-code-gen.common` 路径下为全局 GenConfig 配置，具体请参照 [GlobalGenConfig.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fconfig%2FGlobalConfig.kt)
+`jimmer-code-gen` 路径下为全局 GenConfig 配置，具体请参照 [GlobalGenConfig.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fconfig%2FGlobalGenConfig.kt)
 
 ### 启动
 
@@ -127,12 +127,14 @@
 
 #### 生成 TableDefine
 
-针对目标数据源实现以下两个类，并补充对应入口文件：
+针对目标数据源，需要于 [impl](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2Fimpl) 中进行实现，并补充对应入口文件：
 
-- [ColumnTypeDefiner.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FcolumnTypeDefiner%2FColumnTypeDefiner.kt)
-  - [ColumnTypeDefine.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FcolumnTypeDefiner%2FColumnTypeDefine.kt) 入口文件
-- [TableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerator.kt)
-  - [TableDefineGenerate.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerate.kt) 入口文件
+- [ColumnTypeDefiner.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FcolumnType%2FColumnTypeDefiner.kt) 列类型定义器
+  - [Index.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FcolumnType%2FIndex.kt) 入口文件
+- [IdentifierFilter.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2Fidentifier%2FIdentifierFilter.kt) 标志符过滤器（过长标志符处理）
+  - [Index.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FcolumnType%2FIndex.kt) 入口文件
+- [TableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerator.kt) 表定义生成器
+  - [Index.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FIndex.kt) 入口文件
 
 #### [Liquibase](https://www.liquibase.org/)
 关于 TableDefine 有另一种更完善的 diff 生成方式，[LiquibaseUtil.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Fliquibase%2FLiquibaseUtil.kt)，
