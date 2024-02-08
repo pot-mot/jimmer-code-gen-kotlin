@@ -15,13 +15,10 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.database.load.ModelInputEntities
 import top.potmot.core.database.load.getGraphEntities
 import top.potmot.core.database.load.parseGraphData
-import top.potmot.core.database.load.setColumnIds
 import top.potmot.core.database.load.toInput
-import top.potmot.core.database.load.toInputPart
 import top.potmot.error.ModelLoadException
 import top.potmot.model.GenModel
 import top.potmot.model.by
-import top.potmot.model.copy
 import top.potmot.model.createdTime
 import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenModelInput
@@ -58,78 +55,57 @@ class ModelService(
     fun save(
         @RequestBody input: GenModelInput
     ): Long {
-        /**
-         * 1. 创建或更新 model
-         */
-        val model = sqlClient.save(input).modifiedEntity
+        // 保存 model 和 enums
+        val savedModel = sqlClient.save(input).modifiedEntity
 
-        /**
-         * 2. 保存关联数据
-         */
+        // 当 graphData 不为空，进行处理
         if (!input.graphData.isNullOrBlank()) {
-            parseGraphData(model.id, input.graphData!!).let { (tables, associations) ->
-                /**
-                 * 2.1
-                 * 创建 enum name -> id map，用于映射 table.columns.enum
-                 */
-                val enumNameIdMap = model.enums.associate { it.name to it.id }
+            parseGraphData(savedModel.id, input.graphData!!).let { (tables, associations) ->
+                // 创建 enum name -> id map，用于映射 table.columns.enum
+                val enumNameIdMap = savedModel.enums.associate { it.name to it.id }
 
-                /**
-                 * 2.2
-                 * 保存 tables
-                 */
-                val tableIndexesPairs = tables.map {
-                    it.toInputPart(enumNameIdMap)
-                }.toMutableList()
-
-                /**
-                 * 2.2.1
-                 * 保存 table，忽视 indexes
-                 */
-                val modelWithTables = new(GenModel::class).by {
-                    this.id = model.id
-                    this.tables = tableIndexesPairs.map { it.first }
-                }
-                val savedModelWithTables = sqlClient.update(modelWithTables).modifiedEntity
-
-                /**
-                 * 2.2.2
-                 * 基于回填的 column id 保存 indexes
-                 */
-                val savedTables = savedModelWithTables.tables
-                val savedTableMap = savedTables.associateBy { it.name }
-                tableIndexesPairs.forEach { (table, indexes) ->
-                    if (!savedTableMap.containsKey(table.name)) {
-                        throw ModelLoadException.index("Indexes [${indexes.joinToString(",") { it.name }}] recreate fail: \nTable [${table.name}] not found")
+                val tableIndexesPairs =
+                    tables.map {
+                        it.toInput(enumNameIdMap)
                     }
-                    val savedTable = savedTableMap[table.name]!!
+
+                // 保存 tables
+                val tableInputs = tableIndexesPairs.map { it.first }
+                val savedTables = sqlClient.entities.saveInputs(tableInputs).simpleResults.map { it.modifiedEntity }
+
+                val savedTableMap = savedTables.associateBy { it.name }
+
+                // 保存 indexes
+                tableIndexesPairs.forEach { (table, indexes) ->
+                    val savedTable = savedTableMap[table.name] ?:
+                        throw ModelLoadException.index("Indexes [${indexes.joinToString(",") { it.name }}] recreate fail: \nTable [${table.name}] not found")
+
                     val columnNameIdMap = savedTable.columns.associate { it.name to it.id }
-                    sqlClient.update(savedTable.copy {
-                        this.indexes = indexes.map { it.setColumnIds(columnNameIdMap) }
-                    })
+
+                    val indexInputs = indexes.map { it.toInput(savedTable.id, columnNameIdMap) }
+                    sqlClient.entities.saveInputs(indexInputs)
                 }
 
-                /**
-                 * 2.3 保存 association
-                 */
+                // 保存 associations
                 val associationInputs = associations.map { it.toInput(savedTables) }
                 val modelWithAssociations = new(GenModel::class).by {
-                    this.id = model.id
+                    this.id = savedModel.id
                     this.associations = associationInputs.map { it.toEntity() }
                 }
                 sqlClient.update(modelWithAssociations).modifiedEntity
 
-                if (!model.syncConvertEntity) {
+                // 当模型未开启同步时，仅在初始化时进行转换，后续手动控制模型转换
+                if (!savedModel.syncConvertEntity) {
                     convertService.convert(
                         savedTables.map { it.id },
-                        model.id,
-                        GenConfigProperties(model)
+                        savedModel.id,
+                        GenConfigProperties(savedModel)
                     )
                 }
             }
         }
 
-        return model.id
+        return savedModel.id
     }
 
     @DeleteMapping("/{ids}")

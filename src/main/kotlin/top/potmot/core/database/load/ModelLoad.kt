@@ -6,14 +6,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.babyfish.jimmer.jackson.ImmutableModule
-import org.babyfish.jimmer.kt.unload
 import top.potmot.error.ModelLoadException
 import top.potmot.model.GenTable
-import top.potmot.model.GenTableIndex
-import top.potmot.model.copy
 import top.potmot.model.dto.GenAssociationInput
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenModelView
+import top.potmot.model.dto.GenTableIndexInput
+import top.potmot.model.dto.GenTableInput
 import top.potmot.model.dto.GenTableModelInput
 
 private val mapper = jacksonObjectMapper()
@@ -79,49 +78,75 @@ private fun JsonNode.toAssociation(modelId: Long): GenAssociationModelInput {
     return mapper.readValue<GenAssociationModelInput>(this.toString())
 }
 
-fun GenTableModelInput.toInputPart(enumNameIdMap: Map<String, Long>): Pair<GenTable, List<GenTableIndex>> {
-    val columns = this.columns.map {input ->
-        input.toEntity().copy {
-            enumId = enumNameIdMap[input.enum?.name]
+fun GenTableModelInput.toInput(
+    enumNameIdMap: Map<String, Long>
+): Pair<GenTableInput, List<GenTableModelInput.TargetOf_indexes>> {
+    val entity = GenTableInput(
+        name = name,
+        comment = comment,
+        type = type,
+        remark = remark,
+        modelId = modelId,
+        columns = columns.map {
+            GenTableInput.TargetOf_columns(
+                name = it.name,
+                typeCode = it.typeCode,
+                overwriteByRaw = it.overwriteByRaw,
+                rawType = it.rawType,
+                typeNotNull = it.typeNotNull,
+                dataSize = it.dataSize,
+                numericPrecision = it.numericPrecision,
+                defaultValue = it.defaultValue,
+                comment = it.comment,
+                partOfPk = it.partOfPk,
+                autoIncrement = it.autoIncrement,
+                businessKey = it.businessKey,
+                logicalDelete = it.logicalDelete,
+                orderKey = it.orderKey,
+                remark = it.remark,
+                enumId = enumNameIdMap[it.enum?.name]
+            )
         }
-    }
-
-    val indexes = this.indexes.map { it.toEntity() }
-
-    val entity = this.toEntity().copy {
-        this.columns = columns
-        this.schemaId = null
-        unload(this, GenTable::indexes)
-    }
+    )
 
     return Pair(entity, indexes)
 }
 
-fun GenTableIndex.setColumnIds(columnNameIdMap: Map<String, Long>) =
-    this.copy {
-        this.columnIds = columns.mapNotNull {
+@Throws(ModelLoadException::class)
+fun GenTableModelInput.TargetOf_indexes.toInput(
+    tableId: Long,
+    columnNameIdMap: Map<String, Long>
+) =
+    GenTableIndexInput(
+        name = name,
+        uniqueIndex = uniqueIndex,
+        remark = remark,
+        tableId = tableId,
+        columnIds = columns.map {
             columnNameIdMap[it.name]
+                ?: throw ModelLoadException.column("index [${name}] to input fail: \ncolumn [${it.name}] not find")
         }
-    }
+    )
 
+@Throws(ModelLoadException::class)
 fun GenAssociationModelInput.toInput(
     tables: List<GenTable>
 ): GenAssociationInput {
     val tableMap = tables.associate { it.name to Pair(it.id, it) }
     val sourceTablePair = tableMap[sourceTable.name]
-        ?: throw ModelLoadException.association("association [${name}] recreate fail: \nsourceTable [${sourceTable.name}] not found")
+        ?: throw ModelLoadException.association("association [${name}] to input fail: \nsourceTable [${sourceTable.name}] not found")
     val sourceTableColumnsMap = sourceTablePair.second.columns.associate { it.name to it.id }
 
     val targetTablePair = tableMap[targetTable.name]
-        ?: throw ModelLoadException.association("association [${name}] recreate fail: \ntargetTable [${targetTable.name}] not found")
+        ?: throw ModelLoadException.association("association [${name}] to input fail: \ntargetTable [${targetTable.name}] not found")
     val targetTableColumnsMap = targetTablePair.second.columns.associate { it.name to it.id }
 
     val columnReferenceInputs = columnReferences.mapIndexed { index, it ->
         val sourceColumnId = sourceTableColumnsMap[it.sourceColumn.name]
-            ?: throw ModelLoadException.association("association [${name}] recreate fail: \nsourceColumn [${it.sourceColumn.name}] not found")
+            ?: throw ModelLoadException.association("association [${name}] to input fail: \nsourceColumn [${it.sourceColumn.name}] not found")
 
         val targetColumnId = targetTableColumnsMap[it.targetColumn.name]
-            ?: throw ModelLoadException.association("association [${name}] recreate fail: \ntargetColumn [${it.targetColumn.name}] not found")
+            ?: throw ModelLoadException.association("association [${name}] to input fail: \ntargetColumn [${it.targetColumn.name}] not found")
 
         GenAssociationInput.TargetOf_columnReferences(
             orderKey = index.toLong(),

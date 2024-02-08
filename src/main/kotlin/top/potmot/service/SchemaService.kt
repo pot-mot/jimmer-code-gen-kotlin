@@ -71,27 +71,28 @@ class SchemaService(
 
             // 遍历 schema 进行保存 （因为一个 schema name 有可能会获取到多个不同的 schema）
             catalog.schemas.forEach {schema ->
-                val genSchema = schema.toInput(
-                    catalog,
-                    dataSourceId,
-                )
+                val tables = catalog.getTables(schema)
 
-                val savedSchema = sqlClient.save(genSchema).modifiedEntity
+                // 保存 schema
+                val schemaInput = schema.toInput(dataSourceId)
+                val savedSchema = sqlClient.save(schemaInput).modifiedEntity
 
-                val tableNameMap = savedSchema.tables.associateBy { it.name }
+                // 保存 tables
+                val tableInputs = tables.map { it.toInput(savedSchema.id) }
+                val savedTables = sqlClient.entities.saveInputs(tableInputs).simpleResults.map { it.modifiedEntity }
 
-                catalog.getTables(schema).forEach { table ->
-                    table.foreignKeys.forEach {
-                        sqlClient.save(it.toInput(tableNameMap))
+                val tableNameMap = savedTables.associateBy { it.name }
+
+                tables.forEach { table ->
+                    // 保存 associations
+                    val associationInputs = table.foreignKeys.map { it.toInput(tableNameMap) }
+                    sqlClient.entities.saveInputs(associationInputs)
+
+                    // 保存 indexes
+                    val indexInputs = table.indexes.mapNotNull {index ->
+                        tableNameMap[table.name]?.let { index.toInput(it) }
                     }
-
-                    table.indexes.forEach {index ->
-                        tableNameMap[table.name]?.let { genTable ->
-                            index.toInput(genTable)?.let {
-                                sqlClient.save(it)
-                            }
-                        }
-                    }
+                    sqlClient.entities.saveInputs(indexInputs)
                 }
 
                 result += savedSchema.id

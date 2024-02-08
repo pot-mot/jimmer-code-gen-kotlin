@@ -15,7 +15,7 @@ import top.potmot.service.ModelService
 import top.potmot.service.PreviewService
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "h2")
+@ActiveProfiles("test-kotlin", "h2", "hide-sql")
 class TestLongName(
     @Autowired modelService: ModelService,
     @Autowired previewService: PreviewService
@@ -27,7 +27,11 @@ class TestLongName(
         createBaseModel(LONG_NAMES)
 
     override val entityTestProperties: List<GenConfigProperties>
-        get() = super.entityTestProperties.multiple(lowerCaseNameProperties)
+        get() = super.entityTestProperties.multiple(lowerCaseNameProperties).map {
+            // 控制应用 Postgres 的 identifierFilter 处理注解对应名称
+            it.dataSourceType = DataSourceType.PostgreSQL
+            it
+        }
 
     override val tableDefineTestProperties: List<GenConfigProperties>
         get() = super.tableDefineTestProperties.multiple(lowerCaseNameProperties)
@@ -42,6 +46,6 @@ class TestLongName(
         when(config.dataSourceType) {
             DataSourceType.MySQL -> if (config.lowerCaseName) mysqlLowerResult else mysqlUpperResult
             DataSourceType.PostgreSQL -> if (config.lowerCaseName) postgresLowerResult else postgresUpperResult
-            DataSourceType.H2 -> if (config.lowerCaseName) mysqlLowerResult else mysqlUpperResult
+            DataSourceType.H2 -> if (config.lowerCaseName) h2LowerCaseResult else h2UpperCaseResult
         }
 }

@@ -47,7 +47,7 @@ const val LONG_NAMES = """
                                 "overwriteByRaw": false,
                                 "rawType": "VARCHAR",
                                 "typeNotNull": true,
-                                "dataSize": "500",
+                                "dataSize": 500,
                                 "numericPrecision": 0,
                                 "partOfPk": false,
                                 "autoIncrement": false,

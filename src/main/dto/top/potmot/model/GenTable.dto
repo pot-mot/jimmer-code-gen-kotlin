@@ -27,6 +27,19 @@ GenTableColumnsView {
     }
 }
 
+input GenTableInput {
+    #allScalars(GenTable)
+    -id
+    id(model)
+    id(schema)
+
+    columns {
+        #allScalars(GenColumn)
+        -id
+        id(enum)
+    }
+}
+
 input GenTableModelInput {
     #allScalars(GenTable)
     -id

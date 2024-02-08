@@ -13,15 +13,4 @@ input GenSchemaInput {
     #allScalars(GenSchema)
     -id
     dataSourceId
-
-    tables {
-        #allScalars(GenTable)
-        -id
-        id(model)
-
-        columns {
-            #allScalars(GenColumn)
-            -id
-        }
-    }
 }

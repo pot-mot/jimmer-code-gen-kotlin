@@ -22,6 +22,7 @@ import top.potmot.model.dto.GenAssociationInput
 import top.potmot.model.dto.GenSchemaInput
 import top.potmot.model.dto.GenSchemaPreview
 import top.potmot.model.dto.GenTableIndexInput
+import top.potmot.model.dto.GenTableInput
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import java.util.regex.Pattern
 
@@ -106,18 +107,15 @@ fun Schema.toView(
 )
 
 fun Schema.toInput(
-    catalog: Catalog,
     dataSourceId: Long,
 ) = GenSchemaInput(
     dataSourceId = dataSourceId,
     name = fullName,
     remark = remarks,
-    tables = catalog.getTables(this).map {
-        it.toInput()
-    }
 )
 
-fun Table.toInput() = GenSchemaInput.TargetOf_tables(
+fun Table.toInput(schemaId: Long) = GenTableInput(
+    schemaId = schemaId,
     name = this.name,
     comment = remarks,
     type = TableType.fromValue(type.tableType),
@@ -127,9 +125,9 @@ fun Table.toInput() = GenSchemaInput.TargetOf_tables(
     }
 )
 
-fun Column.toInput(
+private fun Column.toInput(
     orderKey: Long
-) = GenSchemaInput.TargetOf_tables.TargetOf_columns_2(
+) = GenTableInput.TargetOf_columns(
     name = name,
     typeCode = columnDataType.javaSqlType.vendorTypeNumber,
     overwriteByRaw = false,
@@ -151,6 +149,7 @@ fun Column.toInput(
  * 根据 Table 中的外键转换 Association
  * 要求 GenTable 已经 save，具有 columns，columns 具有 id 与 name
  */
+@Throws(DataSourceLoadException::class)
 fun ForeignKey.toInput(
     tableNameMap: Map<String, GenTable>
 ): GenAssociationInput {
@@ -218,7 +217,7 @@ fun Index.toInput(table: GenTable): GenTableIndexInput? {
     val columnIds = columns.map {
         val nameMatchColumns = table.columns.filter { column -> column.name == it.name }
         if (nameMatchColumns.size != 1) {
-            throw DataSourceLoadException.index("Load index [$name] fail: \nmatch name ${it.name} column more than one in table [${table.name}]")
+            throw DataSourceLoadException.index("Index [$name] fail: \nmatch name ${it.name} column more than one in table [${table.name}]")
         }
         nameMatchColumns[0].id
     }
