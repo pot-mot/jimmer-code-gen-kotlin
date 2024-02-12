@@ -3,6 +3,8 @@ package top.potmot.service
 import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.sql.kt.ast.expression.eq
+import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -18,12 +20,15 @@ import top.potmot.core.database.load.parseGraphData
 import top.potmot.core.database.load.toInput
 import top.potmot.error.ModelLoadException
 import top.potmot.model.GenModel
+import top.potmot.model.GenTable
 import top.potmot.model.by
 import top.potmot.model.createdTime
 import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenModelInput
 import top.potmot.model.dto.GenModelSimpleView
 import top.potmot.model.dto.GenModelView
+import top.potmot.model.id
+import top.potmot.model.modelId
 
 @RestController
 @RequestMapping("/model")
@@ -73,12 +78,18 @@ class ModelService(
                 val tableInputs = tableIndexesPairs.map { it.first }
                 val savedTables = sqlClient.entities.saveInputs(tableInputs).simpleResults.map { it.modifiedEntity }
 
+                // 移除其他 tables
+                sqlClient.createDelete(GenTable::class) {
+                    where(table.modelId eq savedModel.id)
+                    where(table.id valueNotIn savedTables.map { it.id })
+                }.execute()
+
                 val savedTableMap = savedTables.associateBy { it.name }
 
                 // 保存 indexes
                 tableIndexesPairs.forEach { (table, indexes) ->
-                    val savedTable = savedTableMap[table.name] ?:
-                        throw ModelLoadException.index("Indexes [${indexes.joinToString(",") { it.name }}] recreate fail: \nTable [${table.name}] not found")
+                    val savedTable = savedTableMap[table.name]
+                        ?: throw ModelLoadException.index("Indexes [${indexes.joinToString(",") { it.name }}] recreate fail: \nTable [${table.name}] not found")
 
                     val columnNameIdMap = savedTable.columns.associate { it.name to it.id }
 
