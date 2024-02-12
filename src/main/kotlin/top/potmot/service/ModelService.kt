@@ -21,6 +21,7 @@ import top.potmot.core.database.load.toInput
 import top.potmot.error.ModelLoadException
 import top.potmot.model.GenModel
 import top.potmot.model.GenTable
+import top.potmot.model.GenTableIndex
 import top.potmot.model.by
 import top.potmot.model.createdTime
 import top.potmot.model.dto.GenConfigProperties
@@ -29,6 +30,7 @@ import top.potmot.model.dto.GenModelSimpleView
 import top.potmot.model.dto.GenModelView
 import top.potmot.model.id
 import top.potmot.model.modelId
+import top.potmot.model.tableId
 
 @RestController
 @RequestMapping("/model")
@@ -78,7 +80,7 @@ class ModelService(
                 val tableInputs = tableIndexesPairs.map { it.first }
                 val savedTables = sqlClient.entities.saveInputs(tableInputs).simpleResults.map { it.modifiedEntity }
 
-                // 移除其他 tables
+                // 移除遗留 tables
                 sqlClient.createDelete(GenTable::class) {
                     where(table.modelId eq savedModel.id)
                     where(table.id valueNotIn savedTables.map { it.id })
@@ -94,7 +96,13 @@ class ModelService(
                     val columnNameIdMap = savedTable.columns.associate { it.name to it.id }
 
                     val indexInputs = indexes.map { it.toInput(savedTable.id, columnNameIdMap) }
-                    sqlClient.entities.saveInputs(indexInputs)
+                    val savedIndexes = sqlClient.entities.saveInputs(indexInputs).simpleResults.map { it.modifiedEntity }
+
+                    // 移除遗留 indexes
+                    sqlClient.createDelete(GenTableIndex::class) {
+                        where(this.table.tableId eq savedTable.id)
+                        where(this.table.id valueNotIn savedIndexes.map { it.id })
+                    }.execute()
                 }
 
                 // 保存 associations
