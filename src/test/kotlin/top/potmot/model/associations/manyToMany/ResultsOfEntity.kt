@@ -101,7 +101,7 @@ public interface MNSource {
             joinColumns = {
                     @JoinColumn(name = "M_N_SOURCE_ID", foreignKeyType = ForeignKeyType.REAL),
             },
-            inverseColumns = {
+            inverseJoinColumns = {
                     @JoinColumn(name = "M_N_TARGET_ID", foreignKeyType = ForeignKeyType.REAL),
             }
     )
@@ -240,7 +240,7 @@ interface MNSource {
         joinColumns = [
             JoinColumn(name = "M_N_SOURCE_ID", foreignKeyType = ForeignKeyType.REAL),
         ],
-        inverseColumns = [
+        inverseJoinColumns = [
             JoinColumn(name = "M_N_TARGET_ID", foreignKeyType = ForeignKeyType.REAL),
         ]
     )

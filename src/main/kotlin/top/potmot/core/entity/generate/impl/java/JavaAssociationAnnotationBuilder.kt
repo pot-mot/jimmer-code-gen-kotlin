@@ -21,7 +21,7 @@ object JavaAssociationAnnotationBuilder: AssociationAnnotationBuilder("        "
                 }
                 appendLine("$indent},")
 
-                appendLine("${indent}inverseColumns = {")
+                appendLine("${indent}inverseJoinColumns = {")
                 meta.columnNamePairs.forEach {
                     appendLine("$indent${indent}@JoinColumn(name = \"${it.second}\", ${foreignKeyTypeProp ?: ""}),")
                 }
