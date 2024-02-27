@@ -29,10 +29,10 @@ import top.potmot.model.by
 import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.model.dto.PropertyEnum
 import top.potmot.model.id
 import top.potmot.model.modelId
 import top.potmot.model.tableId
-import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as PropertyEnum
 
 @RestController
 @RequestMapping("/preview")

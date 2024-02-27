@@ -2,7 +2,7 @@ package top.potmot.core.entity.generate
 
 import top.potmot.error.GenerateEntityException
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2 as PropertyEnum
+import top.potmot.model.dto.PropertyEnum
 
 abstract class EntityCodeGenerator {
     abstract fun getFileSuffix(): String

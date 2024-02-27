@@ -2,17 +2,18 @@ package top.potmot.core.entity.generate.builder
 
 import org.babyfish.jimmer.sql.EnumItem
 import top.potmot.enumeration.EnumType
-import top.potmot.model.dto.GenEntityPropertiesView
+import top.potmot.model.dto.PropertyEnum
+import top.potmot.model.dto.PropertyEnumItem
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 import kotlin.reflect.KClass
 
 abstract class EnumBuilder : CodeBuilder() {
-    abstract fun enumLine(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): String
+    abstract fun enumLine(enum: PropertyEnum): String
 
-    abstract fun itemLine(item: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3): String
+    abstract fun itemLine(item: PropertyEnumItem): String
 
-    fun build(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): String =
+    fun build(enum: PropertyEnum): String =
         buildString {
             appendLine(packageLine(enum.packagePath))
 
@@ -34,7 +35,7 @@ abstract class EnumBuilder : CodeBuilder() {
             appendLine("}")
         }
 
-    open fun importClasses(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): Set<KClass<*>> {
+    open fun importClasses(enum: PropertyEnum): Set<KClass<*>> {
         val result = mutableSetOf<KClass<*>>()
 
         enum.apply {
@@ -49,22 +50,22 @@ abstract class EnumBuilder : CodeBuilder() {
         return result
     }
 
-    open fun importLines(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): Set<String> =
+    open fun importLines(enum: PropertyEnum): Set<String> =
         classesToLines(importClasses(enum))
 
-    open fun blockComment(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): String? =
+    open fun blockComment(enum: PropertyEnum): String? =
         createBlockComment(
             enum.comment,
             enum.remark
         )
 
-    open fun blockComment(enumItem: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3): String? =
+    open fun blockComment(enumItem: PropertyEnumItem): String? =
         createBlockComment(
             enumItem.comment,
             enumItem.remark
         )
 
-    open fun annotationLines(enum: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2): List<String> {
+    open fun annotationLines(enum: PropertyEnum): List<String> {
         val list = mutableListOf<String>()
 
         enum.enumType?.let {
@@ -75,7 +76,7 @@ abstract class EnumBuilder : CodeBuilder() {
     }
 
     open fun annotationBlock(
-        enumItem: GenEntityPropertiesView.TargetOf_properties.TargetOf_enum_2.TargetOf_items_3,
+        enumItem: PropertyEnumItem,
         enumType: EnumType?
     ): String? =
         when (enumType) {
