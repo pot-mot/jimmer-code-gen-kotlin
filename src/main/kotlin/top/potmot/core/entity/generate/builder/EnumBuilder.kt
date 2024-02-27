@@ -29,7 +29,7 @@ abstract class EnumBuilder : CodeBuilder() {
                 appendBlock(blockComment(item)) { "    $it" }
                 appendBlock(annotationBlock(item, enum.enumType)) { "    $it" }
                 appendLine("    ${itemLine(item)}")
-                if (index < enum.items.size - 1) appendLine("    ")
+                if (index < enum.items.size - 1) appendLine()
             }
 
             appendLine("}")

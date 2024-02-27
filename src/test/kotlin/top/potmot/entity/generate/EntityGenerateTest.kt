@@ -130,7 +130,7 @@ interface Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     val id: Long
-    
+
     /**
      * comment
      * remark p1.
@@ -173,7 +173,7 @@ public interface Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     Long id();
-    
+
     /**
      * comment
      * remark p1.

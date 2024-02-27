@@ -21,7 +21,7 @@ public interface Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddd
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B")
     long sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd();
-    
+
     @Column(name = "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_D409B7E8")
     String sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd1();
 }
@@ -48,7 +48,7 @@ public interface Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddd
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b")
     long sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd();
-    
+
     @Column(name = "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_d409b7e8")
     String sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd1();
 }
@@ -76,7 +76,7 @@ interface Sdaadsdassdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B")
     val sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd: Long
-    
+
     @Column(name = "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_D409B7E8")
     val sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd1: String
 }
@@ -103,7 +103,7 @@ interface Sdaadsdassdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b")
     val sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd: Long
-    
+
     @Column(name = "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_d409b7e8")
     val sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd1: String
 }

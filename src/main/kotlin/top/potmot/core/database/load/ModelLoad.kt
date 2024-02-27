@@ -2,10 +2,7 @@ package top.potmot.core.database.load
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.babyfish.jimmer.jackson.ImmutableModule
 import top.potmot.error.ModelLoadException
 import top.potmot.model.GenTable
 import top.potmot.model.dto.GenAssociationInput
@@ -14,10 +11,7 @@ import top.potmot.model.dto.GenModelView
 import top.potmot.model.dto.GenTableIndexInput
 import top.potmot.model.dto.GenTableInput
 import top.potmot.model.dto.GenTableModelInput
-
-private val mapper = jacksonObjectMapper()
-    .registerModule(ImmutableModule())
-    .registerModule(JavaTimeModule())
+import top.potmot.utils.json.commonObjectMapper
 
 data class ModelInputEntities (
     val tables: List<GenTableModelInput>,
@@ -28,7 +22,7 @@ fun parseGraphData(modelId: Long, graphData: String): ModelInputEntities {
     val tables = mutableListOf<GenTableModelInput>()
     val associations = mutableListOf<GenAssociationModelInput>()
 
-    val jsonNode = mapper.readTree(graphData)
+    val jsonNode = commonObjectMapper.readTree(graphData)
 
     val cells = jsonNode.path("json").path("cells").toList()
 
@@ -55,7 +49,7 @@ private fun JsonNode.toTable(modelId: Long): GenTableModelInput {
         val node = this as ObjectNode
         node.put("modelId", modelId)
     }
-    return mapper.readValue<GenTableModelInput>(this.toString())
+    return commonObjectMapper.readValue<GenTableModelInput>(this.toString())
 }
 
 private fun JsonNode.toAssociation(modelId: Long): GenAssociationModelInput {
@@ -75,7 +69,7 @@ private fun JsonNode.toAssociation(modelId: Long): GenAssociationModelInput {
             }
         }
     }
-    return mapper.readValue<GenAssociationModelInput>(this.toString())
+    return commonObjectMapper.readValue<GenAssociationModelInput>(this.toString())
 }
 
 fun GenTableModelInput.toInput(

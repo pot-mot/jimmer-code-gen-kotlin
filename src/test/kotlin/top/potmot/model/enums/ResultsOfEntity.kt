@@ -6,7 +6,7 @@ const val javaResult = """
 
 public enum EnumCommon {
     item1,
-    
+
     item2,
 }
 ), (top/potmot/EnumName.java, package top.potmot;
@@ -18,7 +18,7 @@ import org.babyfish.jimmer.sql.EnumItem;
 public enum EnumName {
     @EnumItem(name = "item1")
     item1,
-    
+
     @EnumItem(name = "item2")
     item2,
 }
@@ -31,7 +31,7 @@ import org.babyfish.jimmer.sql.EnumItem;
 public enum EnumOrdinal {
     @EnumItem(ordinal = 0)
     item1,
-    
+
     @EnumItem(ordinal = 1)
     item2,
 }
@@ -51,10 +51,10 @@ public interface EnumTable {
     @Column(name = "ENUM_COMMON")
     @Nullable
     EnumCommon enumCommon();
-    
+
     @Column(name = "ENUM_ORDINAL")
     EnumOrdinal enumOrdinal();
-    
+
     @Column(name = "ENUM_NAME")
     EnumName enumName();
 }
@@ -67,7 +67,7 @@ const val kotlinResult = """
 
 enum class EnumCommon {
     item1,
-    
+
     item2,
 }
 ), (top/potmot/EnumName.kt, package top.potmot
@@ -79,7 +79,7 @@ import org.babyfish.jimmer.sql.EnumItem
 enum class EnumName {
     @EnumItem(name = "item1")
     item1,
-    
+
     @EnumItem(name = "item2")
     item2,
 }
@@ -92,7 +92,7 @@ import org.babyfish.jimmer.sql.EnumItem
 enum class EnumOrdinal {
     @EnumItem(ordinal = 0)
     item1,
-    
+
     @EnumItem(ordinal = 1)
     item2,
 }
@@ -110,10 +110,10 @@ import org.babyfish.jimmer.sql.Table
 interface EnumTable {
     @Column(name = "ENUM_COMMON")
     val enumCommon: EnumCommon?
-    
+
     @Column(name = "ENUM_ORDINAL")
     val enumOrdinal: EnumOrdinal
-    
+
     @Column(name = "ENUM_NAME")
     val enumName: EnumName
 }

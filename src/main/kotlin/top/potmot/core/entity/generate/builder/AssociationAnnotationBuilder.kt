@@ -31,9 +31,10 @@ open class AssociationAnnotationBuilder(
                 appendLine("@JoinColumn(")
                 append("${indent}name = \"${meta.joinColumnName}\"")
 
-                if (meta.referencedColumnName != null) {
-                    append(",\n${indent}referencedColumnName = \"${meta.referencedColumnName.changeCase()}\"")
+                meta.referencedColumnName?.let {
+                    append(",\n${indent}referencedColumnName = \"${it.changeCase()}\"")
                 }
+
                 createForeignKeyType(meta.foreignKeyType)?.let {
                     append(",\n${indent}$it")
                 }

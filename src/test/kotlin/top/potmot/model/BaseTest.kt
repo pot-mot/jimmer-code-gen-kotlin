@@ -10,6 +10,12 @@ import top.potmot.service.ModelService
 import top.potmot.service.PreviewService
 import top.potmot.util.replaceSinceTimeComment
 
+/**
+ * 测试 model 生成 entity 和 sql 是否符合 Results 的约定
+ *
+ * 可按照需要调整 entityTestProperties 和 tableDefineTestProperties 两组测试属性集
+ * 并实现 EntityResult、TableDefineResult 匹配特定属性集的输出
+ */
 abstract class BaseTest(
     private val modelService: ModelService,
     private val previewService: PreviewService,

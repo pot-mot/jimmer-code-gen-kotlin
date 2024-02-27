@@ -6,10 +6,17 @@ import top.potmot.core.database.generate.identifier.IdentifierFilter
 import top.potmot.utils.string.changeCase
 
 data class JoinColumnMeta(
-    val joinColumnName: String,
-    val referencedColumnName: String? = null,
-    val foreignKeyType: ForeignKeyType? = null,
-)
+    var joinColumnName: String,
+    var referencedColumnName: String? = null,
+    var foreignKeyType: ForeignKeyType? = null,
+) {
+    fun reverse(): JoinColumnMeta {
+        val temp = joinColumnName
+        joinColumnName = referencedColumnName ?: ""
+        referencedColumnName = temp
+        return this
+    }
+}
 
 fun GenAssociation.toJoinColumns(
     identifierFilter: IdentifierFilter

@@ -47,7 +47,7 @@ abstract class EntityBuilder: CodeBuilder() {
                 appendBlock(blockComment(property)) { "    $it" }
                 appendLines(annotationLines(property)) { "    $it" }
                 appendLine("    ${propertyLine(property)}")
-                if (index < entity.properties.size - 1) appendLine("    ")
+                if (index < entity.properties.size - 1) appendLine()
             }
 
             appendLine("}")

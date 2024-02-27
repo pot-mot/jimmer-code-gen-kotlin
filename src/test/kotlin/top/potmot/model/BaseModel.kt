@@ -1,24 +1,18 @@
 package top.potmot.model
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.babyfish.jimmer.jackson.ImmutableModule
 import top.potmot.model.dto.GenModelInput
-
-private val mapper = jacksonObjectMapper()
-    .registerModule(ImmutableModule())
-    .registerModule(JavaTimeModule())
+import top.potmot.utils.json.commonObjectMapper
 
 fun createBaseModel(
     graphData: String,
     enumJsons: List<String> = emptyList()
 ) =
-    mapper.readValue<GenModelInput>(
+    commonObjectMapper.readValue<GenModelInput>(
         baseModel
     ).let {
         it.graphData = graphData
-        it.enums = enumJsons.map { json -> mapper.readValue<GenModelInput.TargetOf_enums>(json) }
+        it.enums = enumJsons.map { json -> commonObjectMapper.readValue<GenModelInput.TargetOf_enums>(json) }
         it
     }
 

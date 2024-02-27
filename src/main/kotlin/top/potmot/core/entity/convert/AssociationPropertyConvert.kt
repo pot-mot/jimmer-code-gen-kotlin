@@ -71,7 +71,7 @@ fun convertAssociationProperties(
         if (!propertiesMap.containsKey(baseColumn.id)) {
             throw ConvertEntityException.association(
                 "out association [${outAssociation.name}] convert property fail: \n" +
-                    "sourceColumn [${baseColumn.name}] not found in table [${table.name}]"
+                        "sourceColumn [${baseColumn.name}] not found in table [${table.name}]"
             )
         }
 
@@ -113,6 +113,11 @@ fun convertAssociationProperties(
                     )
                     outAssociation.dissociateAction?.let {
                         this.dissociateAnnotation = "@OnDissociate(DissociateAction.${it.name})"
+                    }
+
+                    // 当外键为伪时，需要将类型设置为可空
+                    if (outAssociation.fake) {
+                        typeNotNull = false
                     }
                 }
 
@@ -209,7 +214,12 @@ fun convertAssociationProperties(
                         )
                     )
 
-                    if(inAssociation.type == ONE_TO_ONE) {
+                    // 当关联为一对一时，被动方需要将类型设置为可空
+                    if (inAssociation.type == ONE_TO_ONE) {
+                        typeNotNull = false
+                    }
+                    // 当外键为伪时，需要将类型设置为可空
+                    if (inAssociation.fake && inAssociation.type == MANY_TO_ONE) {
                         typeNotNull = false
                     }
                 }
@@ -218,11 +228,15 @@ fun convertAssociationProperties(
                     setAssociation(
                         AssociationAnnotationMeta(
                             MANY_TO_ONE,
-                            joinColumns = inAssociation.toJoinColumns(identifierFilter)
+                            joinColumns = inAssociation.toJoinColumns(identifierFilter).map { it.reverse() }
                         )
                     )
                     inAssociation.dissociateAction?.let {
                         this.dissociateAnnotation = "@OnDissociate(DissociateAction.${it})"
+                    }
+                    // 当外键为伪时，需要将类型设置为可空
+                    if (inAssociation.fake) {
+                        typeNotNull = false
                     }
                 }
             }
@@ -284,7 +298,7 @@ private fun createIdViewProperty(
             .let {
                 // 同步关联属性的可空性
                 it.typeNotNull = associationProperty.typeNotNull
-                // 当为列表属性时，java 为允许集合泛型使用，必须调整为可空模式
+                // 当为列表属性时，java 为允许集合泛型使用，此时映射时必须调整为可空模式
                 if (this.listType) {
                     it.typeNotNull = false
                 }
