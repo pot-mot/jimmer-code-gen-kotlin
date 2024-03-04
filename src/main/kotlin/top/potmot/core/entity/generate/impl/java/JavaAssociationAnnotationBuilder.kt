@@ -3,7 +3,7 @@ package top.potmot.core.entity.generate.impl.java
 import top.potmot.core.entity.generate.builder.AssociationAnnotationBuilder
 import top.potmot.core.entity.meta.JoinTableMeta
 
-object JavaAssociationAnnotationBuilder: AssociationAnnotationBuilder("        ") {
+object JavaAssociationAnnotationBuilder : AssociationAnnotationBuilder("        ") {
     override fun build(meta: JoinTableMeta) =
         buildString {
             appendLine("@JoinTable(")

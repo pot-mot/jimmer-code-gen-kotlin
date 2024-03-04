@@ -70,7 +70,7 @@ class SchemaService(
             val catalog = dataSource.getCatalog(schemaPattern = name)
 
             // 遍历 schema 进行保存 （因为一个 schema name 有可能会获取到多个不同的 schema）
-            catalog.schemas.forEach {schema ->
+            catalog.schemas.forEach { schema ->
                 val tables = catalog.getTables(schema)
 
                 // 保存 schema
@@ -89,7 +89,7 @@ class SchemaService(
                     sqlClient.entities.saveInputs(associationInputs)
 
                     // 保存 indexes
-                    val indexInputs = table.indexes.mapNotNull {index ->
+                    val indexInputs = table.indexes.mapNotNull { index ->
                         tableNameMap[table.name]?.let { index.toInput(it) }
                     }
                     sqlClient.entities.saveInputs(indexInputs)

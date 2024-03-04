@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.context.cleanContext
-import top.potmot.context.getContextOrGlobal
 import top.potmot.context.useContext
 import top.potmot.core.entity.convert.toGenEntity
 import top.potmot.error.ColumnTypeException

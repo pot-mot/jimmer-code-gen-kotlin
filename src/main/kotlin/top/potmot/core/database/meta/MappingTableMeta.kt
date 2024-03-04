@@ -72,7 +72,7 @@ fun createMappingColumnName(
     tableName: String,
     columnName: String,
 ) =
-   "${tableName.clearTableName()}_${columnName.clearColumnName()}"
+    "${tableName.clearTableName()}_${columnName.clearColumnName()}"
 
 fun GenAssociation.toMappingTableMeta() =
     MappingTableMeta(

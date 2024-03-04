@@ -1,6 +1,8 @@
 package top.potmot.model.defaultValue
 
-import top.potmot.enumeration.DataSourceType.*
+import top.potmot.enumeration.DataSourceType.H2
+import top.potmot.enumeration.DataSourceType.MySQL
+import top.potmot.enumeration.DataSourceType.PostgreSQL
 import top.potmot.model.dto.GenDataSourceTemplateView
 
 private val mysqlDefaultDataSource = GenDataSourceTemplateView(

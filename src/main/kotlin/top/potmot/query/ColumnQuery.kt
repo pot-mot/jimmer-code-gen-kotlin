@@ -1,4 +1,4 @@
-package top.potmot.model.query
+package top.potmot.query
 
 import org.babyfish.jimmer.sql.kt.ast.expression.KNonNullExpression
 import org.babyfish.jimmer.sql.kt.ast.expression.`eq?`
@@ -7,7 +7,6 @@ import org.babyfish.jimmer.sql.kt.ast.expression.or
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.babyfish.jimmer.sql.kt.ast.table.KNonNullTable
 import top.potmot.model.GenColumn
-import top.potmot.model.base.BaseQuery
 import top.potmot.model.comment
 import top.potmot.model.name
 import top.potmot.model.partOfPk
@@ -21,7 +20,7 @@ data class ColumnQuery(
     val typeCode: Int? = null,
     val rawType: String? = null,
     val partOfPk: Boolean? = null
-) : BaseQuery<GenColumn>() {
+) : BaseEntityQuery<GenColumn>() {
     override fun toPredicateList(table: KNonNullTable<GenColumn>): MutableList<KNonNullExpression<Boolean>?> {
         val predicates = super.toPredicateList(table)
 

@@ -35,7 +35,7 @@ fun GenDataSource.execute(
     val connection = toSource().get()
 
     try {
-        val useSchema = when(type) {
+        val useSchema = when (type) {
             DataSourceType.MySQL, DataSourceType.H2 -> "USE `$schemaName`;"
             DataSourceType.PostgreSQL -> "SET SEARCH_PATH TO \"$schemaName\";"
         }

@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.model.GenColumn
-import top.potmot.model.base.Query
 import top.potmot.model.dto.GenColumnCommonView
-import top.potmot.model.query.ColumnQuery
+import top.potmot.query.ColumnQuery
+import top.potmot.query.Query
 import kotlin.reflect.KClass
 
 @RestController

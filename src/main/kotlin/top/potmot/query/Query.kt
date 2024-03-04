@@ -1,4 +1,4 @@
-package top.potmot.model.base
+package top.potmot.query
 
 import org.babyfish.jimmer.sql.kt.ast.expression.KNonNullExpression
 import org.babyfish.jimmer.sql.kt.ast.table.KNonNullTable

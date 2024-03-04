@@ -35,7 +35,7 @@ import java.io.OutputStream
 import java.io.StringWriter
 import java.net.URI
 import java.sql.Types
-import java.util.*
+import java.util.Scanner
 
 // https://blog.csdn.net/qq_42629988/article/details/122883976
 
@@ -111,7 +111,7 @@ private fun GenTableModelInput.toCreateTableChange(typeDefiner: ColumnTypeDefine
  * 从 GenTableModelInput 中获取 AddUniqueConstraintChange
  */
 private fun GenTableModelInput.getAddUniqueConstraintChange(): List<AddUniqueConstraintChange> =
-    indexes.filter { it.uniqueIndex }.map {index ->
+    indexes.filter { it.uniqueIndex }.map { index ->
         val addUniqueConstraintChange = AddUniqueConstraintChange()
 
         addUniqueConstraintChange.constraintName = index.name
@@ -155,7 +155,7 @@ private fun GenAssociationModelInput.toManyToManyChanges(typeDefiner: ColumnType
     mappingTable.remarks = meta.comment
 
     // 关联表源列
-    meta.mappingSourceColumnNames.mapIndexed {index, it ->
+    meta.mappingSourceColumnNames.mapIndexed { index, it ->
         val mappingSourceColumn = ColumnConfig()
 
         mappingSourceColumn.setName(it)
@@ -165,7 +165,7 @@ private fun GenAssociationModelInput.toManyToManyChanges(typeDefiner: ColumnType
     }
 
     // 关联表目标列
-    meta.mappingTargetColumnNames.mapIndexed {index, it ->
+    meta.mappingTargetColumnNames.mapIndexed { index, it ->
         val mappingSourceColumn = ColumnConfig()
 
         mappingSourceColumn.setName(it)
@@ -211,13 +211,13 @@ fun createDatabaseChangeLog(
 
     val typeDefiner = dataSource.type.getColumnTypeDefiner()
 
-    tables.forEach {column ->
+    tables.forEach { column ->
         column.toCreateTableChange(typeDefiner)
             .apply { changeSet.addChange(this) }
         column.getAddUniqueConstraintChange().forEach { changeSet.addChange(it) }
     }
 
-    associations.forEach {association ->
+    associations.forEach { association ->
         if (association.type == AssociationType.MANY_TO_MANY) {
             association.toManyToManyChanges(typeDefiner)
                 .forEach { changeSet.addChange(it) }
@@ -329,7 +329,7 @@ private fun changeLogToCreateSql(
             val columns = line
                 .substring(startIndex + 1, endIndex)
                 .split(",")
-                .joinToString(",\n") {"$indent${it.trim()}"}
+                .joinToString(",\n") { "$indent${it.trim()}" }
 
             sb.appendLine(columns)
 

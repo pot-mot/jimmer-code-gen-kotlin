@@ -96,7 +96,8 @@ class ModelService(
                     val columnNameIdMap = savedTable.columns.associate { it.name to it.id }
 
                     val indexInputs = indexes.map { it.toInput(savedTable.id, columnNameIdMap) }
-                    val savedIndexes = sqlClient.entities.saveInputs(indexInputs).simpleResults.map { it.modifiedEntity }
+                    val savedIndexes =
+                        sqlClient.entities.saveInputs(indexInputs).simpleResults.map { it.modifiedEntity }
 
                     // 移除遗留 indexes
                     sqlClient.createDelete(GenTableIndex::class) {

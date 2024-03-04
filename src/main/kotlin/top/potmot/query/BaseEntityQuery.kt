@@ -1,12 +1,13 @@
-package top.potmot.model.base
+package top.potmot.query
 
 import org.babyfish.jimmer.sql.kt.ast.expression.KNonNullExpression
 import org.babyfish.jimmer.sql.kt.ast.expression.`between?`
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.babyfish.jimmer.sql.kt.ast.table.KNonNullTable
+import top.potmot.query.param.TimeRangeQueryParam
 import java.time.LocalDateTime
 
-abstract class BaseQuery<E : Any> : Query<E> {
+abstract class BaseEntityQuery<E : Any> : Query<E> {
     val ids: List<Long>? = null
     val createdTime: TimeRangeQueryParam? = null
     val modifiedTime: TimeRangeQueryParam? = null

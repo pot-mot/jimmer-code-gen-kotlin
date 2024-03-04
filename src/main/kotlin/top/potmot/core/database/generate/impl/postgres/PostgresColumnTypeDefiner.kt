@@ -67,12 +67,15 @@ object PostgresColumnTypeDefiner : ColumnTypeDefiner {
             Types.BIT -> {
                 typeMeta.rawType = "BIT"
             }
+
             Types.TINYINT, Types.SMALLINT -> {
                 typeMeta.rawType = "SMALLINT"
             }
+
             Types.INTEGER -> {
                 typeMeta.rawType = "INT"
             }
+
             Types.BIGINT -> {
                 typeMeta.rawType = "BIGINT"
             }
@@ -81,9 +84,11 @@ object PostgresColumnTypeDefiner : ColumnTypeDefiner {
                 typeMeta.rawType = "REAL"
 
             }
+
             Types.DOUBLE -> {
                 typeMeta.rawType = "DOUBLE PRECISION"
             }
+
             Types.NUMERIC, Types.DECIMAL -> {
                 typeMeta.rawType = "NUMERIC"
             }
@@ -100,6 +105,7 @@ object PostgresColumnTypeDefiner : ColumnTypeDefiner {
             Types.TIME_WITH_TIMEZONE -> {
                 typeMeta.rawType = "TIMETZ"
             }
+
             Types.TIMESTAMP_WITH_TIMEZONE -> {
                 typeMeta.rawType = "TIMESTAMPTZ"
             }
@@ -107,6 +113,7 @@ object PostgresColumnTypeDefiner : ColumnTypeDefiner {
             Types.TIME -> {
                 typeMeta.rawType = "TIME"
             }
+
             Types.TIMESTAMP -> {
                 typeMeta.rawType = "TIMESTAMP"
             }
@@ -117,9 +124,11 @@ object PostgresColumnTypeDefiner : ColumnTypeDefiner {
                 Types.TINYINT, Types.SMALLINT -> {
                     typeMeta.rawType = "SMALLSERIAL"
                 }
+
                 Types.INTEGER -> {
                     typeMeta.rawType = "SERIAL"
                 }
+
                 Types.BIGINT -> {
                     typeMeta.rawType = "BIGSERIAL"
                 }

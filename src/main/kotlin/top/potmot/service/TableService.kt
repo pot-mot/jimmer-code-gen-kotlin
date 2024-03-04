@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.model.GenTable
-import top.potmot.model.base.Query
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTableColumnsView
 import top.potmot.model.dto.GenTableCommonView
 import top.potmot.model.dto.GenTableIdView
-import top.potmot.model.query.TableQuery
+import top.potmot.query.Query
+import top.potmot.query.TableQuery
 import kotlin.reflect.KClass
 
 @RestController

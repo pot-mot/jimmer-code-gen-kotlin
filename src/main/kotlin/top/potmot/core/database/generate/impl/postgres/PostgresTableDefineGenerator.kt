@@ -21,7 +21,7 @@ object PostgresTableDefineGenerator : TableDefineGenerator() {
                     if (createTable.isNotBlank()) appendLine()
 
                     val indexLines = it.indexLines(table)
-                    appendLines(indexLines) { "$it;"}
+                    appendLines(indexLines) { "$it;" }
                     if (indexLines.isNotEmpty()) appendLine()
 
                     val commentLines = PostgresTableDefineBuilder.commentLines(table)
@@ -29,8 +29,8 @@ object PostgresTableDefineGenerator : TableDefineGenerator() {
                     if (commentLines.isNotEmpty()) appendLine()
                 }
 
-                tables.forEach {table ->
-                    appendLines(it.associationsStringify(table)) { "$it;\n"}
+                tables.forEach { table ->
+                    appendLines(it.associationsStringify(table)) { "$it;\n" }
                 }
             }
         }

@@ -26,7 +26,7 @@ abstract class TableDefineGenerator {
     ): List<Pair<String, String>> =
         listOf(
             Pair(formatFileName("all-tables"), stringify(tables))
-        ).let {list ->
+        ).let { list ->
             if (withSingleTable) {
                 list + tables.map { generate(it) }
             } else {

@@ -1,4 +1,4 @@
-package top.potmot.model.base
+package top.potmot.query.param
 
 /**
  * 范围查询参数

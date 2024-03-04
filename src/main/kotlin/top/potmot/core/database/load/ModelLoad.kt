@@ -13,7 +13,7 @@ import top.potmot.model.dto.GenTableInput
 import top.potmot.model.dto.GenTableModelInput
 import top.potmot.utils.json.commonObjectMapper
 
-data class ModelInputEntities (
+data class ModelInputEntities(
     val tables: List<GenTableModelInput>,
     val associations: List<GenAssociationModelInput>,
 )

@@ -11,7 +11,7 @@ const val API = "/api"
 @Configuration
 class WebConfig : WebMvcConfigurer {
     override fun configurePathMatch(configurer: PathMatchConfigurer) {
-        configurer.addPathPrefix(API) {controller ->
+        configurer.addPathPrefix(API) { controller ->
             controller.kotlin.findAnnotation<RestController>() != null
         }
     }

@@ -23,10 +23,12 @@ class ConfigService {
     fun setConfig(
         @RequestBody properties: GenConfigProperties
     ) {
-        val newConfig = GenConfig(merge(
-            GlobalGenConfig.toEntity(),
-            properties.toEntity()
-        ))
+        val newConfig = GenConfig(
+            merge(
+                GlobalGenConfig.toEntity(),
+                properties.toEntity()
+            )
+        )
 
         GlobalGenConfig.copyPropertiesFrom(newConfig)
     }

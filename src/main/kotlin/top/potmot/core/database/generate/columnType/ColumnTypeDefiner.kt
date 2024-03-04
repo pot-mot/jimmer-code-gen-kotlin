@@ -24,12 +24,20 @@ interface ColumnTypeDefiner {
 
     @Throws(ColumnTypeException::class)
     fun getTypeDefine(typeMeta: ColumnTypeMeta): String =
-        getTypeName(typeMeta) + getTypeDataSizeAndNumericPrecision(typeMeta.typeCode, typeMeta.dataSize, typeMeta.numericPrecision)
+        getTypeName(typeMeta) + getTypeDataSizeAndNumericPrecision(
+            typeMeta.typeCode,
+            typeMeta.dataSize,
+            typeMeta.numericPrecision
+        )
 
     fun getTypeName(typeMeta: ColumnTypeMeta): String
 
     @Throws(ColumnTypeException::class)
-    fun getTypeDataSizeAndNumericPrecision(typeCode: Int, dataSize: Long? = null, numericPrecision: Long? = null): String =
+    fun getTypeDataSizeAndNumericPrecision(
+        typeCode: Int,
+        dataSize: Long? = null,
+        numericPrecision: Long? = null
+    ): String =
         buildString {
             var tempDataSize: Long? = null
 

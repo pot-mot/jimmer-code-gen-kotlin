@@ -1,6 +1,7 @@
 package top.potmot.core.database.generate.builder
 
 import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
+import top.potmot.core.database.generate.identifier.IdentifierFilter
 import top.potmot.core.database.meta.ForeignKeyMeta
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.core.database.meta.getAssociations
@@ -18,7 +19,6 @@ import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.extension.pkColumns
-import top.potmot.core.database.generate.identifier.IdentifierFilter
 import top.potmot.utils.string.changeCase
 
 /**
@@ -195,7 +195,7 @@ abstract class TableDefineBuilder(
         ).joinToString("")
             .let {
                 if (fake) {
-                    it.split("\n").joinToString("\n") {line -> "-- $line" }
+                    it.split("\n").joinToString("\n") { line -> "-- $line" }
                 } else {
                     it
                 }

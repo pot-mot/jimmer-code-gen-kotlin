@@ -1,4 +1,4 @@
-package top.potmot.model.query
+package top.potmot.query
 
 import org.babyfish.jimmer.sql.kt.ast.expression.KNonNullExpression
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
@@ -7,19 +7,18 @@ import org.babyfish.jimmer.sql.kt.ast.expression.isNull
 import org.babyfish.jimmer.sql.kt.ast.expression.or
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.babyfish.jimmer.sql.kt.ast.table.KNonNullTable
-import top.potmot.model.GenEnum
-import top.potmot.model.base.BaseQuery
+import top.potmot.model.GenEntity
 import top.potmot.model.comment
 import top.potmot.model.modelId
 import top.potmot.model.name
 
-data class EnumQuery(
+data class EntityQuery(
     val keywords: List<String>? = null,
     val names: List<String>? = null,
     val modelIds: List<Long>? = null,
     val nonModel: Boolean? = null,
-) : BaseQuery<GenEnum>() {
-    override fun toPredicateList(table: KNonNullTable<GenEnum>): MutableList<KNonNullExpression<Boolean>?> {
+) : BaseEntityQuery<GenEntity>() {
+    override fun toPredicateList(table: KNonNullTable<GenEntity>): MutableList<KNonNullExpression<Boolean>?> {
         val predicates = super.toPredicateList(table)
 
         keywords?.takeIf { it.isNotEmpty() }?.forEach {

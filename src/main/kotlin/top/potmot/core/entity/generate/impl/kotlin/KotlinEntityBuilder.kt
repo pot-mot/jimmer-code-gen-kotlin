@@ -2,7 +2,7 @@ package top.potmot.core.entity.generate.impl.kotlin
 
 import top.potmot.core.entity.generate.builder.EntityBuilder
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.extension.shortType
+import top.potmot.model.dto.GenPropertyView
 
 object KotlinEntityBuilder : EntityBuilder() {
     override fun packageLine(path: String): String = "package $path"
@@ -12,6 +12,6 @@ object KotlinEntityBuilder : EntityBuilder() {
     override fun entityLine(entity: GenEntityPropertiesView): String =
         "interface ${entity.name}"
 
-    override fun propertyLine(property: GenEntityPropertiesView.TargetOf_properties): String =
+    override fun propertyLine(property: GenPropertyView): String =
         "val ${property.name}: ${property.shortType()}${if (property.typeNotNull) "" else "?"}"
 }

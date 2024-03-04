@@ -1,4 +1,4 @@
-package top.potmot.model.query
+package top.potmot.query
 
 import org.babyfish.jimmer.sql.kt.ast.expression.KNonNullExpression
 import org.babyfish.jimmer.sql.kt.ast.expression.and
@@ -10,15 +10,13 @@ import org.babyfish.jimmer.sql.kt.ast.table.KNonNullTable
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.SelectType
 import top.potmot.model.GenAssociation
-import top.potmot.model.type
-import top.potmot.model.base.BaseQuery
-import top.potmot.model.base.Query
 import top.potmot.model.columnReferences
 import top.potmot.model.name
 import top.potmot.model.sourceColumnId
 import top.potmot.model.sourceTableId
 import top.potmot.model.targetColumnId
 import top.potmot.model.targetTableId
+import top.potmot.model.type
 
 data class AssociationQuery(
     val keywords: List<String>? = null,
@@ -27,7 +25,7 @@ data class AssociationQuery(
     val targetTableId: Long? = null,
     val sourceColumnId: Long? = null,
     val targetColumnId: Long? = null
-): BaseQuery<GenAssociation>() {
+) : BaseEntityQuery<GenAssociation>() {
     override fun toPredicateList(table: KNonNullTable<GenAssociation>): MutableList<KNonNullExpression<Boolean>?> {
         val predicates = super.toPredicateList(table)
 
@@ -76,10 +74,12 @@ data class AssociationTableQuery(
             predicates += table.targetTableId valueIn it
         }
 
-        return arrayOf(when (selectType) {
-            SelectType.AND -> and(*predicates.toTypedArray())
-            SelectType.OR -> or(*predicates.toTypedArray())
-        })
+        return arrayOf(
+            when (selectType) {
+                SelectType.AND -> and(*predicates.toTypedArray())
+                SelectType.OR -> or(*predicates.toTypedArray())
+            }
+        )
     }
 }
 
@@ -107,10 +107,12 @@ data class AssociationColumnQuery(
             predicates += table.columnReferences { targetColumnId valueIn it }
         }
 
-        return arrayOf(when (selectType) {
-            SelectType.AND -> and(*predicates.toTypedArray())
-            SelectType.OR -> or(*predicates.toTypedArray())
-        })
+        return arrayOf(
+            when (selectType) {
+                SelectType.AND -> and(*predicates.toTypedArray())
+                SelectType.OR -> or(*predicates.toTypedArray())
+            }
+        )
     }
 }
 

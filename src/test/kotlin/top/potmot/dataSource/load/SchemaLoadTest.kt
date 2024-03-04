@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles
 import top.potmot.dataSource.h2DataSource
 import top.potmot.dataSource.mysqlDataSource
 import top.potmot.dataSource.postgresDataSource
-import top.potmot.model.query.TableQuery
+import top.potmot.query.TableQuery
 import top.potmot.service.DataSourceService
 import top.potmot.service.SchemaService
 import top.potmot.service.TableService

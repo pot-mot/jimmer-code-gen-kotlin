@@ -11,7 +11,7 @@ import top.potmot.model.dto.GenConfig
  */
 @Component
 @ConfigurationProperties(prefix = "jimmer-code-gen")
-object GlobalGenConfig: GenConfig(
+object GlobalGenConfig : GenConfig(
     syncConvertEntity = true,
     dataSourceType = DataSourceType.MySQL,
     language = GenLanguage.KOTLIN,

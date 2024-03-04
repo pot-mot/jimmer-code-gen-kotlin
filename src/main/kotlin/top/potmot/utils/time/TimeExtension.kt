@@ -1,4 +1,4 @@
-package top.potmot.model.extension
+package top.potmot.utils.time
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

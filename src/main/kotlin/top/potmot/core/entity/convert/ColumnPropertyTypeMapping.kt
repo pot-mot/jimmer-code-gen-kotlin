@@ -98,7 +98,7 @@ private fun mappingPropertyType(
  * 通过 dataSourceType 和 language 参数获取映射方式
  */
 @Throws(ColumnTypeException::class)
-fun getPropertyType (
+fun getPropertyType(
     typeMeta: ColumnTypeMeta,
     typeMappings: List<GenTypeMappingView> = emptyList(),
     dataSourceType: DataSourceType = getContextOrGlobal().dataSourceType,
@@ -108,7 +108,7 @@ fun getPropertyType (
         dataSourceType.getColumnTypeDefiner().getTypeDefine(typeMeta),
         typeMappings.filter { it.language == language && it.dataSourceType == dataSourceType },
     )
-        ?: when(language) {
+        ?: when (language) {
             GenLanguage.JAVA -> jdbcTypeToJavaType(typeMeta.typeCode, typeMeta.typeNotNull)?.name
             GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeMeta.typeCode)?.qualifiedName
         }

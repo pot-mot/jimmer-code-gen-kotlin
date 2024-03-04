@@ -18,17 +18,17 @@ import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.getIdentifierFilter
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.extension.fullType
-import top.potmot.model.extension.now
+import top.potmot.model.dto.GenPropertyView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
+import top.potmot.utils.time.now
 import java.util.UUID
 import kotlin.reflect.KClass
 
-abstract class EntityBuilder: CodeBuilder() {
+abstract class EntityBuilder : CodeBuilder() {
     abstract fun entityLine(entity: GenEntityPropertiesView): String
 
-    abstract fun propertyLine(property:  GenEntityPropertiesView.TargetOf_properties): String
+    abstract fun propertyLine(property: GenPropertyView): String
 
     fun build(entity: GenEntityPropertiesView): String =
         buildString {
@@ -63,22 +63,25 @@ abstract class EntityBuilder: CodeBuilder() {
                 append(it.trim().changeCase())
                 append(".")
             }
-            append(context.dataSourceType.getIdentifierFilter()
-                .getIdentifier(table.name.trim())
-                .replace("\"", "\\\"")
-                .changeCase())
+            append(
+                context.dataSourceType.getIdentifierFilter()
+                    .getIdentifier(table.name.trim())
+                    .replace("\"", "\\\"")
+                    .changeCase()
+            )
 
             append("\")")
         }
 
-    open fun GenEntityPropertiesView.TargetOf_properties.columnAnnotation(): String? =
+    open fun GenPropertyView.columnAnnotation(): String? =
         column?.takeUnless { idView || !associationAnnotation.isNullOrBlank() }?.let {
             buildString {
                 append("@Column(name = \"")
-                append(getContextOrGlobal().dataSourceType.getIdentifierFilter()
-                    .getIdentifier(it.name.trim())
-                    .replace("\"", "\\\"")
-                    .changeCase()
+                append(
+                    getContextOrGlobal().dataSourceType.getIdentifierFilter()
+                        .getIdentifier(it.name.trim())
+                        .replace("\"", "\\\"")
+                        .changeCase()
                 )
                 append("\")")
             }
@@ -95,13 +98,13 @@ abstract class EntityBuilder: CodeBuilder() {
             )
         )
 
-    open fun blockComment(property: GenEntityPropertiesView.TargetOf_properties): String? =
+    open fun blockComment(property: GenPropertyView): String? =
         createBlockComment(
             property.comment,
             property.remark
         )
 
-    open fun importClasses(property: GenEntityPropertiesView.TargetOf_properties): Set<KClass<*>> {
+    open fun importClasses(property: GenPropertyView): Set<KClass<*>> {
         val result = mutableSetOf<KClass<*>>()
 
         property.apply {
@@ -129,8 +132,8 @@ abstract class EntityBuilder: CodeBuilder() {
                 result += LogicalDeleted::class
             }
 
-            associationType?.let {type ->
-                associationAnnotation?.let {associationAnnotation ->
+            associationType?.let { type ->
+                associationAnnotation?.let { associationAnnotation ->
                     result += type.toAnnotation()
 
                     if (associationAnnotation.contains("@JoinTable")) {
@@ -180,14 +183,58 @@ abstract class EntityBuilder: CodeBuilder() {
         return result
     }
 
-    open fun importItems(property: GenEntityPropertiesView.TargetOf_properties): Set<String> =
+    /**
+     * 获取属性的简单类型名
+     * 判断过程如下：
+     *  1. 优先采用枚举类型
+     *  2. 使用 typeTable 对应的 Entity
+     *  3. 使用映射后的 type
+     */
+    fun GenPropertyView.shortType(): String {
+        enum?.let { return it.name }
+
+        val baseType =
+            typeTable?.entity?.name ?: let {
+                type.split(".").last()
+            }
+
+        return if (listType) {
+            "List<$baseType>"
+        } else {
+            baseType
+        }
+    }
+
+    fun GenPropertyView.fullType(): String {
+        enum?.let {
+            return if (it.packagePath.isNotBlank()) {
+                it.packagePath + "." + it.name
+            } else {
+                it.name
+            }
+        }
+
+        typeTable?.let { table ->
+            table.entity?.let {
+                return if (it.packagePath.isNotBlank()) {
+                    it.packagePath + "." + it.name
+                } else {
+                    it.name
+                }
+            }
+        }
+
+        return type
+    }
+
+    open fun importItems(property: GenPropertyView): Set<String> =
         classesToLines(importClasses(property)) + property.fullType()
 
     open fun importItems(entity: GenEntityPropertiesView): List<String> {
         val imports = mutableListOf<String>()
         imports.addAll(classesToLines(importClasses(entity)))
         entity.properties.flatMapTo(imports) { importItems(it) }
-        return imports.sorted().distinct().let {importItemsFilter(entity, it)}
+        return imports.sorted().distinct().let { importItemsFilter(entity, it) }
     }
 
     open fun annotationLines(entity: GenEntityPropertiesView): List<String> {
@@ -204,7 +251,7 @@ abstract class EntityBuilder: CodeBuilder() {
         return list
     }
 
-    open fun annotationLines(property: GenEntityPropertiesView.TargetOf_properties): List<String> {
+    open fun annotationLines(property: GenPropertyView): List<String> {
         val list = mutableListOf<String>()
 
         property.apply {
@@ -222,7 +269,7 @@ abstract class EntityBuilder: CodeBuilder() {
             }
 
             associationType?.let {
-                associationAnnotation?.let {associationAnnotation ->
+                associationAnnotation?.let { associationAnnotation ->
                     list += associationAnnotation
                     dissociateAnnotation?.let { list += it }
                 }
