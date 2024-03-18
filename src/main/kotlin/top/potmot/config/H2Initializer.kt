@@ -31,6 +31,24 @@ class H2Initializer(
     @Throws(DataSourceException.H2InitFail::class)
     private fun initH2() {
         dataSource.connection.use { connection ->
+            /**
+             * 校验 schema jimmer_code_gen 是否存在
+             */
+            val schemaCountSql = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'jimmer_code_gen';"
+
+            val statement = connection.createStatement()
+            val resultSet = statement.executeQuery(schemaCountSql)
+            resultSet.next()
+            val count = resultSet.getInt(1)
+
+            if (count == 1) {
+                logger.info("h2 database already have schema `jimmer_code_gen`")
+                return
+            }
+
+            /**
+             * 获取 jimmer_code_gen.sql
+             */
             val inputStream = sqlPath?.let {
                 H2Initializer::class.java
                     .classLoader
@@ -41,6 +59,9 @@ class H2Initializer(
                 reader.readText()
             }
 
+            /**
+             * 执行 jimmer_code_gen.sql
+             */
             logger.info("start init h2 database")
 
             val results = connection.execute(sqls)

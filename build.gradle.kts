@@ -23,7 +23,7 @@ group = "top.potmot"
 version = "0.0.8" // 2024-2-26
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.8.102"
+val jimmerVersion = "0.8.110"
 
 val mysqlVersion = "8.3.0"
 val postgreVersion = "42.7.2"
@@ -92,7 +92,6 @@ kotlin {
 }
 
 ksp {
-    arg("jimmer.dto.dirs", "src/main/dto")
     arg("jimmer.dto.mutable", "true")
 }
 

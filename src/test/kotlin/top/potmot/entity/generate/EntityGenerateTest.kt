@@ -5,8 +5,6 @@ import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import top.potmot.core.entity.generate.impl.java.JavaEntityCodeGenerator
 import top.potmot.core.entity.generate.impl.kotlin.KotlinEntityCodeGenerator
 import top.potmot.enumeration.AssociationType
@@ -18,8 +16,6 @@ import java.time.LocalDateTime
 /**
  * 验证 EntityGenerate 的基本功能
  */
-@SpringBootTest
-@ActiveProfiles("test-kotlin", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class EntityGenerateTest {
     @Test
@@ -42,7 +38,7 @@ class EntityGenerateTest {
         )
     }
 
-    private final val pkProperty = GenPropertyView(
+    private val pkProperty = GenPropertyView(
         entityId = 1,
         id = 1,
         createdTime = LocalDateTime.now(),
@@ -61,7 +57,7 @@ class EntityGenerateTest {
         orderKey = 1,
     )
 
-    private final val manyToOneProperty = GenPropertyView(
+    private val manyToOneProperty = GenPropertyView(
         id = 2,
         createdTime = LocalDateTime.now(),
         modifiedTime = LocalDateTime.now(),
@@ -82,12 +78,12 @@ class EntityGenerateTest {
     )
 
 
-    private final val baseTable = GenEntityPropertiesView.TargetOf_table(
+    private val baseTable = GenEntityPropertiesView.TargetOf_table(
         id = 1,
         name = "table",
     )
 
-    private final val baseEntity = GenEntityPropertiesView(
+    private val baseEntity = GenEntityPropertiesView(
         id = 1,
         createdTime = LocalDateTime.now(),
         modifiedTime = LocalDateTime.now(),
@@ -103,7 +99,7 @@ class EntityGenerateTest {
         )
     )
 
-    private final val kotlinExpected = """package com.example.test
+    private val kotlinExpected = """package com.example.test
 
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -145,7 +141,7 @@ interface Entity {
 }
 """
 
-    private final val javaExpected = """package com.example.test;
+    private val javaExpected = """package com.example.test;
 
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.GeneratedValue;

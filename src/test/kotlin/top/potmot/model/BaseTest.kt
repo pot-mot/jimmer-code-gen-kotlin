@@ -20,7 +20,7 @@ abstract class BaseTest(
     private val modelService: ModelService,
     private val previewService: PreviewService,
 ) {
-    val logger = LoggerFactory.getLogger(BaseTest::class.java)
+    private val logger = LoggerFactory.getLogger(BaseTest::class.java)
 
     abstract fun getBaseModel(): GenModelInput
 
@@ -44,7 +44,7 @@ abstract class BaseTest(
     }
 
     @Test
-    open fun testEntity() {
+    open fun testEntities() =
         entityTestProperties.forEach {
             val entity = merge(getBaseModel().toEntity(), it.toEntity())
             val model = GenModelInput(entity)
@@ -52,7 +52,6 @@ abstract class BaseTest(
             logger.debug(it.toEntity().toString())
             testEntity(model, config)
         }
-    }
 
     open val tableDefineTestProperties = dataSourceTypeProperties
 
@@ -70,7 +69,7 @@ abstract class BaseTest(
     }
 
     @Test
-    open fun testTableDefine() {
+    open fun testTableDefines() =
         tableDefineTestProperties.forEach {
             val entity = merge(getBaseModel().toEntity(), it.toEntity())
             val model = GenModelInput(entity)
@@ -78,5 +77,4 @@ abstract class BaseTest(
             logger.debug(it.toEntity().toString())
             testTableDefine(model, config)
         }
-    }
 }

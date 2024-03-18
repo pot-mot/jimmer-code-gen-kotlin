@@ -5,15 +5,11 @@ import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import top.potmot.core.entity.convert.tableNameToClassName
 
 /**
  * 校验名称转换是否符合预期
  */
-@SpringBootTest
-@ActiveProfiles("test-kotlin", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class NameConvertTest {
     @Test
