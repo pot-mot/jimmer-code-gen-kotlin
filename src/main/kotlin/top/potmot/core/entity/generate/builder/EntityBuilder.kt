@@ -21,6 +21,7 @@ import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenPropertyView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
+import top.potmot.utils.string.changeCase
 import top.potmot.utils.time.now
 import java.util.UUID
 import kotlin.reflect.KClass
