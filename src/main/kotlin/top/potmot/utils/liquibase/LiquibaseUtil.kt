@@ -35,7 +35,7 @@ import java.io.OutputStream
 import java.io.StringWriter
 import java.net.URI
 import java.sql.Types
-import java.util.Scanner
+import java.util.*
 
 // https://blog.csdn.net/qq_42629988/article/details/122883976
 

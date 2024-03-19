@@ -27,7 +27,7 @@ import top.potmot.utils.string.changeCase
  */
 abstract class TableDefineBuilder(
     private val identifierFilter: IdentifierFilter,
-    private val columnTypeDefiner: ColumnTypeDefiner
+    private val columnTypeDefiner: ColumnTypeDefiner,
 ) {
     abstract fun String.escape(): String
 

@@ -8,16 +8,9 @@ abstract class TableDefineGenerator {
     protected open fun formatFileName(name: String): String =
         "$name.sql"
 
-    protected abstract fun stringify(tables: Collection<GenTableAssociationsView>): String
-
-    protected fun stringify(table: GenTableAssociationsView): String =
-        stringify(listOf(table))
-
-    @Throws(ColumnTypeException::class, GenerateTableDefineException::class)
-    fun generate(
-        table: GenTableAssociationsView
-    ): Pair<String, String> =
-        Pair(formatFileName(table.name), stringify(table))
+    protected abstract fun stringify(
+        tables: Collection<GenTableAssociationsView>,
+    ): String
 
     @Throws(ColumnTypeException::class, GenerateTableDefineException::class)
     fun generate(
@@ -25,12 +18,14 @@ abstract class TableDefineGenerator {
         withSingleTable: Boolean = true
     ): List<Pair<String, String>> =
         listOf(
-            Pair(formatFileName("all-tables"), stringify(tables))
+            formatFileName("all-tables") to stringify(tables)
         ).let { list ->
             if (withSingleTable) {
-                list + tables.map { generate(it) }
+                list + tables.map { table ->
+                    formatFileName(table.name) to stringify(listOf(table))
+                }.distinct().sortedBy { it.first }
             } else {
                 list
             }
-        }.distinct()
+        }
 }

@@ -6,7 +6,7 @@ import top.potmot.model.dto.GenTableAssociationsView
 
 object MysqlTableDefineBuilder : TableDefineBuilder(
     MysqlIdentifierFilter,
-    MysqlColumnTypeDefiner
+    MysqlColumnTypeDefiner,
 ) {
     override fun String.escape(): String =
         "`${removePrefix("`").removeSuffix("`")}`"

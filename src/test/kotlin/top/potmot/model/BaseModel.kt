@@ -27,7 +27,7 @@ private const val baseModel = """
     "author": "",
     "packagePath": "top.potmot",
     "tablePath": "",
-    "lowerCaseName": false,
+    "databaseNamingStrategy": "UPPER_CASE",
     "realFk": true,
     "idViewProperty": true,
     "logicalDeletedAnnotation": "@LogicalDeleted(\"true\")",

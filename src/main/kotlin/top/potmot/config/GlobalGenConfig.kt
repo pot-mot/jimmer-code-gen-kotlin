@@ -3,6 +3,7 @@ package top.potmot.config
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import top.potmot.enumeration.DataSourceType
+import top.potmot.enumeration.DatabaseNamingStrategyType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.dto.GenConfig
 
@@ -16,7 +17,7 @@ object GlobalGenConfig : GenConfig(
     dataSourceType = DataSourceType.MySQL,
     language = GenLanguage.KOTLIN,
     realFk = true,
-    lowerCaseName = true,
+    databaseNamingStrategy = DatabaseNamingStrategyType.LOWER_CASE,
     author = "",
     packagePath = "com.example",
     tablePath = "",

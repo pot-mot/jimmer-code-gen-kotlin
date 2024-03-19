@@ -31,7 +31,7 @@ CREATE TABLE `gen_model`
     `author`                     varchar(500) NOT NULL COMMENT '作者',
     `package_path`               varchar(500) NOT NULL COMMENT '包路径',
     `table_path`                 varchar(500) NOT NULL COMMENT '表路径',
-    `lower_case_name`            boolean      NOT NULL COMMENT '启用小写命名',
+    `database_naming_strategy`   varchar(500) NOT NULL COMMENT '数据库命名策略',
     `real_fk`                    boolean      NOT NULL COMMENT '启用真实外键',
     `id_view_property`           boolean      NOT NULL COMMENT '生成 IdView 属性',
     `logical_deleted_annotation` varchar(500) NOT NULL COMMENT '逻辑删除注解',

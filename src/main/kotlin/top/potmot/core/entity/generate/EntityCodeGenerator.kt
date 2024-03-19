@@ -27,23 +27,32 @@ abstract class EntityCodeGenerator {
     protected abstract fun stringify(enum: PropertyEnum): String
 
     @Throws(GenerateEntityException::class)
-    fun generate(
+    fun generateEntity(
         entity: GenEntityPropertiesView,
         withPath: Boolean = false
     ): Pair<String, String> =
         Pair(formatFileName(entity, withPath), stringify(entity))
 
-    fun generate(
+    @Throws(GenerateEntityException::class)
+    fun generateEntities(
+        entities: Collection<GenEntityPropertiesView>,
+        withPath: Boolean = false
+    ): List<Pair<String, String>> =
+        entities
+            .map { generateEntity(it, withPath) }
+            .distinct().sortedBy { it.first }
+
+    fun generateEnum(
         enum: PropertyEnum,
         withPath: Boolean = false
     ): Pair<String, String> =
         Pair(formatFileName(enum, withPath), stringify(enum))
 
-    @Throws(GenerateEntityException::class)
-    fun generateWithEnums(
-        entity: GenEntityPropertiesView,
+    fun generateEnums(
+        enums: Collection<PropertyEnum>,
         withPath: Boolean = false
     ): List<Pair<String, String>> =
-        listOf(generate(entity, withPath)) +
-                entity.properties.mapNotNull { it.enum }.map { generate(it, withPath) }
+        enums
+            .map { generateEnum(it, withPath) }
+            .distinct().sortedBy { it.first }
 }

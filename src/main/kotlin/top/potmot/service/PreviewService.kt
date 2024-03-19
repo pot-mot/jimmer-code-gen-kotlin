@@ -26,6 +26,7 @@ import top.potmot.model.GenEnum
 import top.potmot.model.GenModel
 import top.potmot.model.GenTable
 import top.potmot.model.by
+import top.potmot.model.dto.GenConfig
 import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenTableAssociationsView
@@ -114,7 +115,7 @@ class PreviewService(
                 select(table.fetch(GenTableAssociationsView::class))
             }.execute()
 
-            generateTableDefines(tables, model.dataSourceType)
+            generateTableDefines(tables, dataSourceType = model.dataSourceType)
         }
     }
 
@@ -140,7 +141,7 @@ class PreviewService(
             val enumCodes =
                 previewEnums(model.enumIds, withPath, properties)
 
-            (entityCodes + enumCodes).distinct()
+            (entityCodes + enumCodes).distinct().sortedBy { it.first }
         }
     }
 
@@ -150,38 +151,29 @@ class PreviewService(
      */
 
     @Throws(GenerateEntityException::class)
-    fun generateEntitiesCode(
+    private fun generateEntitiesCode(
         entities: Collection<GenEntityPropertiesView>,
         withPath: Boolean?,
-        language: GenLanguage = getContextOrGlobal().language,
+        context: GenConfig = getContextOrGlobal(),
+        language: GenLanguage = context.language,
     ): List<Pair<String, String>> =
-        language.getEntityGenerator().let {
-            entities.flatMap { entity ->
-                it.generateWithEnums(entity, withPath ?: false)
-            }.distinct().sortedBy { it.first }
-        }
+        language.getEntityGenerator().generateEntities(entities, withPath ?: false)
 
-    fun generateEnumsCode(
+    private fun generateEnumsCode(
         enums: Collection<PropertyEnum>,
         withPath: Boolean?,
-        language: GenLanguage = getContextOrGlobal().language,
+        context: GenConfig = getContextOrGlobal(),
+        language: GenLanguage = context.language,
     ): List<Pair<String, String>> =
-        language.getEntityGenerator().let {
-            enums.map { enum ->
-                it.generate(enum, withPath ?: false)
-            }.distinct().sortedBy { it.first }
-        }
-
+        language.getEntityGenerator().generateEnums(enums, withPath ?: false)
 
     @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
-    fun generateTableDefines(
+    private fun generateTableDefines(
         tables: Collection<GenTableAssociationsView>,
-        dataSourceType: DataSourceType = getContextOrGlobal().dataSourceType
+        context: GenConfig = getContextOrGlobal(),
+        dataSourceType: DataSourceType = context.dataSourceType,
     ): List<Pair<String, String>> =
-        dataSourceType.getTableDefineGenerator()
-            .generate(tables)
-            .distinct().sortedBy { it.first }
-
+        dataSourceType.getTableDefineGenerator().generate(tables)
 
     /**
      * 基本查询

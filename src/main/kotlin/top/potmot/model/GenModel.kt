@@ -8,6 +8,7 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.Table
 import top.potmot.enumeration.DataSourceType
+import top.potmot.enumeration.DatabaseNamingStrategyType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.base.BaseEntity
 
@@ -68,9 +69,9 @@ interface GenModel : BaseEntity {
     val tablePath: String
 
     /**
-     * 启用小写命名
+     * 数据库命名策略
      */
-    val lowerCaseName: Boolean
+    val databaseNamingStrategy: DatabaseNamingStrategyType
 
     /**
      * 启用真实外键

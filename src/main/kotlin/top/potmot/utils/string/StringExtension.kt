@@ -1,6 +1,7 @@
 package top.potmot.utils.string
 
 import top.potmot.context.getContextOrGlobal
+import top.potmot.core.database.name.getNameProvider
 
 fun String.startsWithAny(prefixes: Collection<String>): String? {
     for (prefix in prefixes) {
@@ -90,7 +91,7 @@ fun String.toSingular(): String =
  * 根据全局配置的大小写进行切换
  */
 fun String.changeCase(): String =
-    this.let { if (getContextOrGlobal().lowerCaseName) lowercase() else uppercase() }
+    getContextOrGlobal().databaseNamingStrategy.getNameProvider().default(this)
 
 fun String.trimToLetterOrDigit(): String {
     var startIndex = 0

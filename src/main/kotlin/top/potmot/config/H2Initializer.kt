@@ -34,7 +34,8 @@ class H2Initializer(
             /**
              * 校验 schema jimmer_code_gen 是否存在
              */
-            val schemaCountSql = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'jimmer_code_gen';"
+            val schemaCountSql =
+                "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'jimmer_code_gen';"
 
             val statement = connection.createStatement()
             val resultSet = statement.executeQuery(schemaCountSql)

@@ -28,34 +28,34 @@ DROP TABLE IF EXISTS "gen_column_default" CASCADE;
 -- ----------------------------
 CREATE TABLE "gen_model"
 (
-    "id"                         BIGSERIAL    NOT NULL,
-    "name"                       text         NOT NULL,
-    "graph_data"                 text         NOT NULL,
-    "sync_convert_entity"        boolean      NOT NULL,
-    "language"                   text         NOT NULL,
-    "data_source_type"           text         NOT NULL,
-    "author"                     text         NOT NULL,
-    "package_path"               text         NOT NULL,
-    "table_path"                 varchar(500) NOT NULL,
-    "lower_case_name"            boolean      NOT NULL,
-    "real_fk"                    boolean      NOT NULL,
-    "id_view_property"           boolean      NOT NULL,
-    "logical_deleted_annotation" text         NOT NULL,
-    "table_annotation"           boolean      NOT NULL,
-    "column_annotation"          boolean      NOT NULL,
-    "join_table_annotation"      boolean      NOT NULL,
-    "join_column_annotation"     boolean      NOT NULL,
-    "table_name_prefixes"        text         NOT NULL,
-    "table_name_suffixes"        text         NOT NULL,
-    "table_comment_prefixes"     text         NOT NULL,
-    "table_comment_suffixes"     text         NOT NULL,
-    "column_name_prefixes"       text         NOT NULL,
-    "column_name_suffixes"       text         NOT NULL,
-    "column_comment_prefixes"    text         NOT NULL,
-    "column_comment_suffixes"    text         NOT NULL,
-    "remark"                     text         NOT NULL,
-    "created_time"               TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"              TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "id"                         BIGSERIAL NOT NULL,
+    "name"                       text      NOT NULL,
+    "graph_data"                 text      NOT NULL,
+    "sync_convert_entity"        boolean   NOT NULL,
+    "language"                   text      NOT NULL,
+    "data_source_type"           text      NOT NULL,
+    "author"                     text      NOT NULL,
+    "package_path"               text      NOT NULL,
+    "table_path"                 text      NOT NULL,
+    "database_naming_strategy"   text      NOT NULL,
+    "real_fk"                    boolean   NOT NULL,
+    "id_view_property"           boolean   NOT NULL,
+    "logical_deleted_annotation" text      NOT NULL,
+    "table_annotation"           boolean   NOT NULL,
+    "column_annotation"          boolean   NOT NULL,
+    "join_table_annotation"      boolean   NOT NULL,
+    "join_column_annotation"     boolean   NOT NULL,
+    "table_name_prefixes"        text      NOT NULL,
+    "table_name_suffixes"        text      NOT NULL,
+    "table_comment_prefixes"     text      NOT NULL,
+    "table_comment_suffixes"     text      NOT NULL,
+    "column_name_prefixes"       text      NOT NULL,
+    "column_name_suffixes"       text      NOT NULL,
+    "column_comment_prefixes"    text      NOT NULL,
+    "column_comment_suffixes"    text      NOT NULL,
+    "remark"                     text      NOT NULL,
+    "created_time"               TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id")
 );
 
@@ -69,7 +69,7 @@ COMMENT ON COLUMN "gen_model"."data_source_type" IS '数据源类型';
 COMMENT ON COLUMN "gen_model"."author" IS '作者';
 COMMENT ON COLUMN "gen_model"."package_path" IS '包路径';
 COMMENT ON COLUMN "gen_model"."table_path" IS '表路径';
-COMMENT ON COLUMN "gen_model"."lower_case_name" IS '启用小写命名';
+COMMENT ON COLUMN "gen_model"."database_naming_strategy" IS '数据库命名策略';
 COMMENT ON COLUMN "gen_model"."real_fk" IS '启用真实外键';
 COMMENT ON COLUMN "gen_model"."id_view_property" IS '生成 IdView 属性';
 COMMENT ON COLUMN "gen_model"."logical_deleted_annotation" IS '逻辑删除注解';

@@ -6,7 +6,7 @@ import top.potmot.model.dto.GenTableAssociationsView
 
 object H2TableDefineBuilder : TableDefineBuilder(
     H2IdentifierFilter,
-    H2ColumnTypeDefiner
+    H2ColumnTypeDefiner,
 ) {
     override fun String.escape(): String =
         "`${removePrefix("`").removeSuffix("`")}`"
