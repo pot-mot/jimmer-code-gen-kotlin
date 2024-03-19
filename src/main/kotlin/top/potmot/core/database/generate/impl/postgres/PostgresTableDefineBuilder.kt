@@ -5,7 +5,7 @@ import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.model.dto.GenTableAssociationsView
 
 object PostgresTableDefineBuilder : TableDefineBuilder(
-    PostgresIdentifierFilter,
+    PostgresIdentifierProcessor,
     PostgresColumnTypeDefiner,
 ) {
     override fun String.escape(): String =
@@ -13,14 +13,14 @@ object PostgresTableDefineBuilder : TableDefineBuilder(
 
     private fun createTableComment(name: String, comment: String): String? =
         if (comment.isNotEmpty()) {
-            "COMMENT ON TABLE ${produceIdentifier(name)} IS '${comment}'"
+            "COMMENT ON TABLE ${processIdentifier(name)} IS '${comment}'"
         } else {
             null
         }
 
     private fun createColumnComment(tableName: String, columnName: String, comment: String): String? =
         if (comment.isNotEmpty()) {
-            "COMMENT ON COLUMN ${produceIdentifier(tableName)}.${produceIdentifier(columnName)} IS '${comment}'"
+            "COMMENT ON COLUMN ${processIdentifier(tableName)}.${processIdentifier(columnName)} IS '${comment}'"
         } else {
             null
         }

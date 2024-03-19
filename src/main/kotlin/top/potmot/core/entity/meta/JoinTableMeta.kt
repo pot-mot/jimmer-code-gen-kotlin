@@ -1,7 +1,7 @@
 package top.potmot.core.entity.meta
 
 import org.babyfish.jimmer.sql.ForeignKeyType
-import top.potmot.core.database.generate.identifier.IdentifierFilter
+import top.potmot.core.database.generate.identifier.IdentifierProcessor
 import top.potmot.core.database.meta.createMappingColumnName
 import top.potmot.model.GenAssociation
 import top.potmot.utils.string.changeCase
@@ -13,16 +13,16 @@ data class JoinTableMeta(
 )
 
 fun GenAssociation.toJoinTable(
-    identifierFilter: IdentifierFilter
+    identifierProcessor: IdentifierProcessor
 ) =
     JoinTableMeta(
-        identifierFilter.getIdentifier(name).changeCase(),
+        identifierProcessor.process(name).changeCase(),
         columnReferences.map {
             Pair(
-                identifierFilter.getIdentifier(
+                identifierProcessor.process(
                     createMappingColumnName(sourceTable.name, it.sourceColumn.name)
                 ).changeCase(),
-                identifierFilter.getIdentifier(
+                identifierProcessor.process(
                     createMappingColumnName(targetTable.name, it.targetColumn.name)
                 ).changeCase(),
             )

@@ -66,7 +66,7 @@ abstract class EntityBuilder : CodeBuilder() {
             }
             append(
                 context.dataSourceType.getIdentifierFilter()
-                    .getIdentifier(table.name.trim())
+                    .process(table.name.trim())
                     .replace("\"", "\\\"")
                     .changeCase()
             )
@@ -80,7 +80,7 @@ abstract class EntityBuilder : CodeBuilder() {
                 append("@Column(name = \"")
                 append(
                     getContextOrGlobal().dataSourceType.getIdentifierFilter()
-                        .getIdentifier(it.name.trim())
+                        .process(it.name.trim())
                         .replace("\"", "\\\"")
                         .changeCase()
                 )

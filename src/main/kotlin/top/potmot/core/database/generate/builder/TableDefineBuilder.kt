@@ -1,7 +1,7 @@
 package top.potmot.core.database.generate.builder
 
 import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
-import top.potmot.core.database.generate.identifier.IdentifierFilter
+import top.potmot.core.database.generate.identifier.IdentifierProcessor
 import top.potmot.core.database.meta.ForeignKeyMeta
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.core.database.meta.getAssociations
@@ -23,10 +23,10 @@ import top.potmot.utils.string.changeCase
 
 /**
  * 表定义构建器
- * 基于 IdentifierFilter 转换实体
+ * 基于 IdentifierProcessor 转换实体
  */
 abstract class TableDefineBuilder(
-    private val identifierFilter: IdentifierFilter,
+    private val identifierProcessor: IdentifierProcessor,
     private val columnTypeDefiner: ColumnTypeDefiner,
 ) {
     abstract fun String.escape(): String
@@ -35,8 +35,8 @@ abstract class TableDefineBuilder(
     open fun getColumnTypeDefine(typeMeta: ColumnTypeMeta) =
         columnTypeDefiner.getTypeDefine(typeMeta)
 
-    fun produceIdentifier(identifier: String) =
-        identifierFilter.getIdentifier(identifier.trim()).escape().changeCase()
+    fun processIdentifier(identifier: String) =
+        identifierProcessor.process(identifier.trim()).escape().changeCase()
 
     open fun createTable(
         name: String,
@@ -44,7 +44,7 @@ abstract class TableDefineBuilder(
         append: String = ""
     ) =
         buildString {
-            append("CREATE TABLE ${produceIdentifier(name)} (\n")
+            append("CREATE TABLE ${processIdentifier(name)} (\n")
             append("    ${lines.joinToString(",\n    ")}\n")
             append(")${append}")
         }
@@ -53,12 +53,12 @@ abstract class TableDefineBuilder(
         name: String,
         append: String = ""
     ) =
-        "DROP TABLE IF EXISTS ${produceIdentifier(name)}${if (append.isBlank()) "" else " $append"}"
+        "DROP TABLE IF EXISTS ${processIdentifier(name)}${if (append.isBlank()) "" else " $append"}"
 
     open fun alterTable(
         name: String
     ) =
-        "ALTER TABLE ${produceIdentifier(name)}"
+        "ALTER TABLE ${processIdentifier(name)}"
 
     open fun createPkLine(
         table: GenTableAssociationsView,
@@ -68,7 +68,7 @@ abstract class TableDefineBuilder(
     @Throws(ColumnTypeException::class)
     open fun columnStringify(column: GenTableAssociationsView.TargetOf_columns) =
         buildString {
-            append(produceIdentifier(column.name))
+            append(processIdentifier(column.name))
             append(' ')
             append(getColumnTypeDefine(column.getTypeMeta()))
 
@@ -131,12 +131,12 @@ abstract class TableDefineBuilder(
     open fun addConstraint(
         constraintName: String
     ) =
-        "ADD CONSTRAINT ${produceIdentifier(constraintName)}"
+        "ADD CONSTRAINT ${processIdentifier(constraintName)}"
 
     open fun pkDefine(
         columnNames: List<String>
     ) =
-        "PRIMARY KEY (${columnNames.joinToString(",") { produceIdentifier(it) }})"
+        "PRIMARY KEY (${columnNames.joinToString(",") { processIdentifier(it) }})"
 
     open fun fkDefine(
         meta: ForeignKeyMeta,
@@ -147,14 +147,14 @@ abstract class TableDefineBuilder(
             var temp = indentCount
 
             append(indent.repeat(temp++))
-            appendLine("FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { produceIdentifier(it) }})")
+            appendLine("FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { processIdentifier(it) }})")
 
             append(indent.repeat(temp++))
             append(
-                "REFERENCES ${produceIdentifier(meta.targetTableName)} (${
+                "REFERENCES ${processIdentifier(meta.targetTableName)} (${
                     meta.targetColumnNames.joinToString(
                         ", "
-                    ) { produceIdentifier(it) }
+                    ) { processIdentifier(it) }
                 })"
             )
 
@@ -243,9 +243,9 @@ abstract class TableDefineBuilder(
         columnNames: List<String>,
         unique: Boolean = false,
     ): String {
-        return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${produceIdentifier(name)} ON ${
-            produceIdentifier(tableName)
-        } (${columnNames.joinToString(", ") { produceIdentifier(it) }})"
+        return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${processIdentifier(name)} ON ${
+            processIdentifier(tableName)
+        } (${columnNames.joinToString(", ") { processIdentifier(it) }})"
     }
 
     /**

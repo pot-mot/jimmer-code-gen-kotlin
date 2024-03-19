@@ -131,7 +131,7 @@
 
 - [ColumnTypeDefiner.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FcolumnType%2FColumnTypeDefiner.kt) 列类型定义器
   - [Index.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FcolumnType%2FIndex.kt) 入口文件
-- [IdentifierFilter.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2Fidentifier%2FIdentifierFilter.kt) 标志符过滤器（过长标志符处理）
+- [IdentifierProcessor.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2Fidentifier%2FIdentifierProcessor.kt) 标志符处理器
   - [Index.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FcolumnType%2FIndex.kt) 入口文件
 - [TableDefineGenerator.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FTableDefineGenerator.kt) 表定义生成器
   - [Index.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fcore%2Fdatabase%2Fgenerate%2FIndex.kt) 入口文件

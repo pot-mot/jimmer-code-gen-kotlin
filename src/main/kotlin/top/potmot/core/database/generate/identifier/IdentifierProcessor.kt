@@ -4,20 +4,20 @@ import java.math.BigInteger
 import java.security.MessageDigest
 
 /**
- * 映射定长标识符，如果标识符超过指定长度，则会进行截断并填补 MD5 值
+ * 处理定长标识符，如果标识符超过指定长度，则会进行截断并填补 MD5 值
  */
-open class IdentifierFilter(
+open class IdentifierProcessor(
     private val maxLength: Int,
     private val truncateLength: Int = maxLength / 8 + 1
 ) {
-    private val hashMap: HashMap<String, String> = HashMap()
+    private val cache: HashMap<String, String> = HashMap()
 
-    fun getIdentifier(identifier: String): String {
-        val truncatedIdentifier = hashMap.getOrDefault(identifier, identifier)
+    fun process(identifier: String): String {
+        val truncatedIdentifier = cache.getOrDefault(identifier, identifier)
 
         return if (truncatedIdentifier.length > maxLength) {
             val result = truncateIdentifier(truncatedIdentifier)
-            hashMap[identifier] = result
+            cache[identifier] = result
             result
         } else {
             truncatedIdentifier

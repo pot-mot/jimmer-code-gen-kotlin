@@ -5,7 +5,7 @@ import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.model.dto.GenTableAssociationsView
 
 object MysqlTableDefineBuilder : TableDefineBuilder(
-    MysqlIdentifierFilter,
+    MysqlIdentifierProcessor,
     MysqlColumnTypeDefiner,
 ) {
     override fun String.escape(): String =

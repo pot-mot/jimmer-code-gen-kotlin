@@ -5,14 +5,14 @@ import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
-import top.potmot.core.database.generate.identifier.IdentifierFilter
+import top.potmot.core.database.generate.identifier.IdentifierProcessor
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class IdentifierFilterTest {
     @Test
     @Order(1)
     fun testSameIdentifier() {
-        val filter = IdentifierFilter(8, 4)
+        val filter = IdentifierProcessor(8, 4)
 
         val id1 = "ABCDEFGH"
         val id2 = "ABCD_EFGH"
@@ -20,10 +20,10 @@ class IdentifierFilterTest {
 
         val id4 = "ABCD_EFGH1"
 
-        assert(id1 == filter.getIdentifier(id1))
+        assert(id1 == filter.process(id1))
 
-        assertEquals(filter.getIdentifier(id2), filter.getIdentifier(id3))
+        assertEquals(filter.process(id2), filter.process(id3))
 
-        assert(filter.getIdentifier(id4).length == 8)
+        assert(filter.process(id4).length == 8)
     }
 }

@@ -1,13 +1,13 @@
 package top.potmot.core.database.generate.identifier
 
-import top.potmot.core.database.generate.impl.h2.H2IdentifierFilter
-import top.potmot.core.database.generate.impl.mysql.MysqlIdentifierFilter
-import top.potmot.core.database.generate.impl.postgres.PostgresIdentifierFilter
+import top.potmot.core.database.generate.impl.h2.H2IdentifierProcessor
+import top.potmot.core.database.generate.impl.mysql.MysqlIdentifierProcessor
+import top.potmot.core.database.generate.impl.postgres.PostgresIdentifierProcessor
 import top.potmot.enumeration.DataSourceType
 
-fun DataSourceType.getIdentifierFilter(): IdentifierFilter =
+fun DataSourceType.getIdentifierFilter(): IdentifierProcessor =
     when (this) {
-        DataSourceType.MySQL -> MysqlIdentifierFilter
-        DataSourceType.PostgreSQL -> PostgresIdentifierFilter
-        DataSourceType.H2 -> H2IdentifierFilter
+        DataSourceType.MySQL -> MysqlIdentifierProcessor
+        DataSourceType.PostgreSQL -> PostgresIdentifierProcessor
+        DataSourceType.H2 -> H2IdentifierProcessor
     }
