@@ -19,24 +19,18 @@ import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.extension.pkColumns
-import top.potmot.utils.string.changeCase
 
 /**
  * 表定义构建器
- * 基于 IdentifierProcessor 转换实体
+ * 基于 IdentifierTruncator 转换实体
  */
 abstract class TableDefineBuilder(
-    private val identifierProcessor: IdentifierProcessor,
-    private val columnTypeDefiner: ColumnTypeDefiner,
+    protected val identifiers: IdentifierProcessor,
+    protected val columnTypes: ColumnTypeDefiner,
 ) {
-    abstract fun String.escape(): String
-
     @Throws(ColumnTypeException::class)
     open fun getColumnTypeDefine(typeMeta: ColumnTypeMeta) =
-        columnTypeDefiner.getTypeDefine(typeMeta)
-
-    fun processIdentifier(identifier: String) =
-        identifierProcessor.process(identifier.trim()).escape().changeCase()
+        columnTypes.getTypeDefine(typeMeta)
 
     open fun createTable(
         name: String,
@@ -44,7 +38,7 @@ abstract class TableDefineBuilder(
         append: String = ""
     ) =
         buildString {
-            append("CREATE TABLE ${processIdentifier(name)} (\n")
+            append("CREATE TABLE ${identifiers.tableName(name)} (\n")
             append("    ${lines.joinToString(",\n    ")}\n")
             append(")${append}")
         }
@@ -53,12 +47,12 @@ abstract class TableDefineBuilder(
         name: String,
         append: String = ""
     ) =
-        "DROP TABLE IF EXISTS ${processIdentifier(name)}${if (append.isBlank()) "" else " $append"}"
+        "DROP TABLE IF EXISTS ${identifiers.tableName(name)}${if (append.isBlank()) "" else " $append"}"
 
     open fun alterTable(
         name: String
     ) =
-        "ALTER TABLE ${processIdentifier(name)}"
+        "ALTER TABLE ${identifiers.tableName(name)}"
 
     open fun createPkLine(
         table: GenTableAssociationsView,
@@ -68,7 +62,7 @@ abstract class TableDefineBuilder(
     @Throws(ColumnTypeException::class)
     open fun columnStringify(column: GenTableAssociationsView.TargetOf_columns) =
         buildString {
-            append(processIdentifier(column.name))
+            append(identifiers.columnName(column.name))
             append(' ')
             append(getColumnTypeDefine(column.getTypeMeta()))
 
@@ -131,12 +125,12 @@ abstract class TableDefineBuilder(
     open fun addConstraint(
         constraintName: String
     ) =
-        "ADD CONSTRAINT ${processIdentifier(constraintName)}"
+        "ADD CONSTRAINT ${identifiers.constraintName(constraintName)}"
 
     open fun pkDefine(
         columnNames: List<String>
     ) =
-        "PRIMARY KEY (${columnNames.joinToString(",") { processIdentifier(it) }})"
+        "PRIMARY KEY (${columnNames.joinToString(",") { identifiers.primaryKeyName(it) }})"
 
     open fun fkDefine(
         meta: ForeignKeyMeta,
@@ -147,22 +141,25 @@ abstract class TableDefineBuilder(
             var temp = indentCount
 
             append(indent.repeat(temp++))
-            appendLine("FOREIGN KEY (${meta.sourceColumnNames.joinToString(", ") { processIdentifier(it) }})")
+            appendLine(
+                "FOREIGN KEY (${
+                    meta.sourceColumnNames.joinToString(", ") {
+                        identifiers.foreignKeyName(it)
+                    }
+                })")
 
             append(indent.repeat(temp++))
             append(
-                "REFERENCES ${processIdentifier(meta.targetTableName)} (${
-                    meta.targetColumnNames.joinToString(
-                        ", "
-                    ) { processIdentifier(it) }
+                "REFERENCES ${identifiers.tableName(meta.targetTableName)} (${
+                    meta.targetColumnNames.joinToString(", ") { identifiers.columnName(it) }
                 })"
             )
 
             meta.onUpdate.takeIf { it.isNotBlank() }?.let {
-                append("\n${indent.repeat(temp)}ON UPDATE ${it.changeCase()}")
+                append("\n${indent.repeat(temp)}ON UPDATE $it")
             }
             meta.onDelete.takeIf { it.isNotBlank() }?.let {
-                append("\n${indent.repeat(temp)}ON DELETE ${it.changeCase()}")
+                append("\n${indent.repeat(temp)}ON DELETE $it")
             }
         }
 
@@ -243,9 +240,9 @@ abstract class TableDefineBuilder(
         columnNames: List<String>,
         unique: Boolean = false,
     ): String {
-        return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${processIdentifier(name)} ON ${
-            processIdentifier(tableName)
-        } (${columnNames.joinToString(", ") { processIdentifier(it) }})"
+        return "CREATE ${if (unique) "UNIQUE " else ""}INDEX ${identifiers.indexName(name)} ON ${
+            identifiers.tableName(tableName)
+        } (${columnNames.joinToString(", ") { identifiers.columnName(it) }})"
     }
 
     /**

@@ -3,7 +3,7 @@ package top.potmot.core.entity.convert
 import org.babyfish.jimmer.ImmutableObjects.deepClone
 import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import top.potmot.context.getContextOrGlobal
-import top.potmot.core.database.generate.identifier.getIdentifierFilter
+import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.database.meta.getAssociations
 import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
@@ -44,7 +44,7 @@ fun convertAssociationProperties(
 ): Map<Long, List<GenProperty>> {
     val context = getContextOrGlobal()
 
-    val identifierFilter = context.dataSourceType.getIdentifierFilter()
+    val identifiers = context.dataSourceType.getIdentifierProcessor()
 
     val (
         outAssociations,
@@ -108,7 +108,7 @@ fun convertAssociationProperties(
                     setAssociation(
                         AssociationAnnotationMeta(
                             outAssociation.type,
-                            joinColumns = outAssociation.toJoinColumns(identifierFilter)
+                            joinColumns = outAssociation.toJoinColumns(identifiers)
                         )
                     )
                     outAssociation.dissociateAction?.let {
@@ -126,7 +126,7 @@ fun convertAssociationProperties(
                     setAssociation(
                         AssociationAnnotationMeta(
                             outAssociation.type,
-                            joinTable = outAssociation.toJoinTable(identifierFilter)
+                            joinTable = outAssociation.toJoinTable(identifiers)
                         )
                     )
                 }
@@ -228,7 +228,7 @@ fun convertAssociationProperties(
                     setAssociation(
                         AssociationAnnotationMeta(
                             MANY_TO_ONE,
-                            joinColumns = inAssociation.toJoinColumns(identifierFilter).map { it.reverse() }
+                            joinColumns = inAssociation.toJoinColumns(identifiers).map { it.reverse() }
                         )
                     )
                     inAssociation.dissociateAction?.let {

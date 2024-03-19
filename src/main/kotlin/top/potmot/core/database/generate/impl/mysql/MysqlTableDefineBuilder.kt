@@ -8,9 +8,6 @@ object MysqlTableDefineBuilder : TableDefineBuilder(
     MysqlIdentifierProcessor,
     MysqlColumnTypeDefiner,
 ) {
-    override fun String.escape(): String =
-        "`${removePrefix("`").removeSuffix("`")}`"
-
     private fun defaultParams(comment: String): String =
         """
   ENGINE = InnoDB

@@ -1,21 +1,9 @@
 package top.potmot.utils.string
 
-import top.potmot.context.getContextOrGlobal
-import top.potmot.core.database.name.getNameProvider
-
 fun String.startsWithAny(prefixes: Collection<String>): String? {
     for (prefix in prefixes) {
         if (startsWith(prefix)) {
             return prefix
-        }
-    }
-    return null
-}
-
-fun String.endsWithAny(suffixes: Collection<String>): String? {
-    for (suffix in suffixes) {
-        if (endsWith(suffix)) {
-            return suffix
         }
     }
     return null
@@ -86,12 +74,6 @@ fun String.toPlural(): String =
  */
 fun String.toSingular(): String =
     EnglishWordUtil.singularize(this)
-
-/**
- * 根据全局配置的大小写进行切换
- */
-fun String.changeCase(): String =
-    getContextOrGlobal().databaseNamingStrategy.getNameProvider().default(this)
 
 fun String.trimToLetterOrDigit(): String {
     var startIndex = 0

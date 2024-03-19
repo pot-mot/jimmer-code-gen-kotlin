@@ -16,12 +16,12 @@ import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Table
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import top.potmot.context.getContextOrGlobal
-import top.potmot.core.database.generate.identifier.getIdentifierFilter
+import top.potmot.core.database.generate.identifier.IdentifierType
+import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenPropertyView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
-import top.potmot.utils.string.changeCase
 import top.potmot.utils.time.now
 import java.util.*
 import kotlin.reflect.KClass
@@ -30,6 +30,8 @@ abstract class EntityBuilder : CodeBuilder() {
     abstract fun entityLine(entity: GenEntityPropertiesView): String
 
     abstract fun propertyLine(property: GenPropertyView): String
+
+    fun String.quotationEscape(): String = replace("\"", "\\\"")
 
     fun build(entity: GenEntityPropertiesView): String =
         buildString {
@@ -57,18 +59,16 @@ abstract class EntityBuilder : CodeBuilder() {
     open fun GenEntityPropertiesView.tableAnnotation(): String =
         buildString {
             val context = getContextOrGlobal()
+            val identifiers = context.dataSourceType.getIdentifierProcessor()
 
             append("@Table(name = \"")
 
             context.tablePath.takeIf { it.isNotBlank() }?.let {
-                append(it.trim().changeCase())
+                append(it.let { identifiers.process(it, IdentifierType.DEFAULT) })
                 append(".")
             }
             append(
-                context.dataSourceType.getIdentifierFilter()
-                    .process(table.name.trim())
-                    .replace("\"", "\\\"")
-                    .changeCase()
+                table.name.let { identifiers.process(it, IdentifierType.TABLE_NAME) }.quotationEscape()
             )
 
             append("\")")
@@ -76,13 +76,13 @@ abstract class EntityBuilder : CodeBuilder() {
 
     open fun GenPropertyView.columnAnnotation(): String? =
         column?.takeUnless { idView || !associationAnnotation.isNullOrBlank() }?.let {
+            val context = getContextOrGlobal()
+            val identifiers = context.dataSourceType.getIdentifierProcessor()
+
             buildString {
                 append("@Column(name = \"")
                 append(
-                    getContextOrGlobal().dataSourceType.getIdentifierFilter()
-                        .process(it.name.trim())
-                        .replace("\"", "\\\"")
-                        .changeCase()
+                    it.name.let { identifiers.process(it, IdentifierType.COLUMN_NAME) }.quotationEscape()
                 )
                 append("\")")
             }

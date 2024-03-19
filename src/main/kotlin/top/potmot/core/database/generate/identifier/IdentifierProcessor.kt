@@ -1,41 +1,41 @@
 package top.potmot.core.database.generate.identifier
 
-import java.math.BigInteger
-import java.security.MessageDigest
+import top.potmot.context.getContextOrGlobal
+import top.potmot.enumeration.DatabaseNamingStrategyType.LOWER_CASE
+import top.potmot.enumeration.DatabaseNamingStrategyType.RAW
+import top.potmot.enumeration.DatabaseNamingStrategyType.UPPER_CASE
 
 /**
- * 处理定长标识符，如果标识符超过指定长度，则会进行截断并填补 MD5 值
+ * 标志符处理器，供应数据库定制化的标志符规则
  */
-open class IdentifierProcessor(
-    private val maxLength: Int,
-    private val truncateLength: Int = maxLength / 8 + 1
-) {
-    private val cache: HashMap<String, String> = HashMap()
+interface IdentifierProcessor {
+    fun processIdentifier(identifier: String, type: IdentifierType): String
 
-    fun process(identifier: String): String {
-        val truncatedIdentifier = cache.getOrDefault(identifier, identifier)
+    fun escape(identifier: String): String
 
-        return if (truncatedIdentifier.length > maxLength) {
-            val result = truncateIdentifier(truncatedIdentifier)
-            cache[identifier] = result
-            result
-        } else {
-            truncatedIdentifier
-        }
+    fun process(identifier: String, type: IdentifierType) =
+        changeCase(processIdentifier(identifier.trim(), type))
+
+    fun processAndEscape(identifier: String, type: IdentifierType) =
+        escape(process(identifier.trim(), type))
+
+    fun changeCase(identifier: String): String = when (getContextOrGlobal().databaseNamingStrategy) {
+        RAW -> identifier
+        LOWER_CASE -> identifier.lowercase()
+        UPPER_CASE -> identifier.uppercase()
     }
 
-    private fun truncateIdentifier(identifier: String): String {
-        val index = maxLength - truncateLength - 1
+    fun default(identifier: String) = processAndEscape(identifier, IdentifierType.DEFAULT)
 
-        val firstPart = identifier.substring(0, index)
-        val secondPart = identifier.substring(index)
+    fun tableName(identifier: String) = processAndEscape(identifier, IdentifierType.TABLE_NAME)
 
-        val md5 = MessageDigest.getInstance("MD5")
-        val hashBytes = md5.digest(secondPart.toByteArray())
-        val hashValue = BigInteger(1, hashBytes).toString(16)
+    fun columnName(identifier: String) = processAndEscape(identifier, IdentifierType.COLUMN_NAME)
 
-        val truncatedHash = hashValue.substring(0, truncateLength)
+    fun indexName(identifier: String) = processAndEscape(identifier, IdentifierType.INDEX_NAME)
 
-        return "${firstPart}_$truncatedHash"
-    }
+    fun constraintName(identifier: String) = processAndEscape(identifier, IdentifierType.CONSTRAINT_NAME)
+
+    fun primaryKeyName(identifier: String) = processAndEscape(identifier, IdentifierType.PRIMARY_KEY_NAME)
+
+    fun foreignKeyName(identifier: String) = processAndEscape(identifier, IdentifierType.FOREIGN_KEY_NAME)
 }

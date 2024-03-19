@@ -8,19 +8,16 @@ object H2TableDefineBuilder : TableDefineBuilder(
     H2IdentifierProcessor,
     H2ColumnTypeDefiner,
 ) {
-    override fun String.escape(): String =
-        "`${removePrefix("`").removeSuffix("`")}`"
-
     private fun createTableComment(name: String, comment: String): String? =
         if (comment.isNotEmpty()) {
-            "COMMENT ON TABLE ${processIdentifier(name)} IS '${comment}'"
+            "COMMENT ON TABLE ${identifiers.tableName(name)} IS '${comment}'"
         } else {
             null
         }
 
     private fun createColumnComment(tableName: String, columnName: String, comment: String): String? =
         if (comment.isNotEmpty()) {
-            "COMMENT ON COLUMN ${processIdentifier(tableName)}.${processIdentifier(columnName)} IS '${comment}'"
+            "COMMENT ON COLUMN ${identifiers.tableName(tableName)}.${identifiers.columnName(columnName)} IS '${comment}'"
         } else {
             null
         }

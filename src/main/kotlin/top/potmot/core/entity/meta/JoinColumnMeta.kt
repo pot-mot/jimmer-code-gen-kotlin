@@ -2,8 +2,8 @@ package top.potmot.core.entity.meta
 
 import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.core.database.generate.identifier.IdentifierProcessor
+import top.potmot.core.database.generate.identifier.IdentifierType
 import top.potmot.model.GenAssociation
-import top.potmot.utils.string.changeCase
 
 data class JoinColumnMeta(
     var joinColumnName: String,
@@ -19,12 +19,12 @@ data class JoinColumnMeta(
 }
 
 fun GenAssociation.toJoinColumns(
-    identifierProcessor: IdentifierProcessor
+    identifiers: IdentifierProcessor
 ) =
     columnReferences.map {
         JoinColumnMeta(
-            joinColumnName = identifierProcessor.process(it.sourceColumn.name).changeCase(),
-            referencedColumnName = identifierProcessor.process(it.targetColumn.name).changeCase(),
+            joinColumnName = identifiers.process(it.sourceColumn.name, IdentifierType.COLUMN_NAME),
+            referencedColumnName = identifiers.process(it.targetColumn.name, IdentifierType.COLUMN_NAME),
             foreignKeyType = if (fake) ForeignKeyType.FAKE else ForeignKeyType.REAL
         )
     }

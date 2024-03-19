@@ -5,7 +5,6 @@ import top.potmot.context.getContextOrGlobal
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.meta.JoinColumnMeta
 import top.potmot.core.entity.meta.JoinTableMeta
-import top.potmot.utils.string.changeCase
 
 open class AssociationAnnotationBuilder(
     val indent: String = "    "
@@ -32,7 +31,7 @@ open class AssociationAnnotationBuilder(
                 append("${indent}name = \"${meta.joinColumnName}\"")
 
                 meta.referencedColumnName?.let {
-                    append(",\n${indent}referencedColumnName = \"${it.changeCase()}\"")
+                    append(",\n${indent}referencedColumnName = \"$it\"")
                 }
 
                 createForeignKeyType(meta.foreignKeyType)?.let {

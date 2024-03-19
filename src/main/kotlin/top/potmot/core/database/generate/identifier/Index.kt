@@ -5,7 +5,7 @@ import top.potmot.core.database.generate.impl.mysql.MysqlIdentifierProcessor
 import top.potmot.core.database.generate.impl.postgres.PostgresIdentifierProcessor
 import top.potmot.enumeration.DataSourceType
 
-fun DataSourceType.getIdentifierFilter(): IdentifierProcessor =
+fun DataSourceType.getIdentifierProcessor(): IdentifierProcessor =
     when (this) {
         DataSourceType.MySQL -> MysqlIdentifierProcessor
         DataSourceType.PostgreSQL -> PostgresIdentifierProcessor
