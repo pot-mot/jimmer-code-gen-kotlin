@@ -45,6 +45,10 @@ input GenTableModelInput {
     -id
     id(model)
 
+    superTables {
+        name
+    }
+
     columns {
         #allScalars(GenColumn)
         -id
@@ -68,6 +72,8 @@ input GenTableModelInput {
 GenTableAssociationsView {
     #allScalars
     id(entity)
+
+    superTables*
 
     columns {
         #allScalars

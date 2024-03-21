@@ -11,6 +11,10 @@ GenEntityPropertiesView {
         name
     }
 
+    superEntities {
+        name
+    }
+
     properties {
         #allScalars
         id(entity)
@@ -47,13 +51,5 @@ GenEntityPropertiesView {
                 remark
             }
         }
-    }
-}
-
-input GenEntityConfigInput {
-    #allScalars(GenEntity)
-
-    properties {
-        #allScalars(GenProperty)
     }
 }

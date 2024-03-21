@@ -3,19 +3,16 @@ package top.potmot.service
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenEntity
 import top.potmot.model.dto.GenEntityCommonView
-import top.potmot.model.dto.GenEntityConfigInput
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.query.EntityQuery
 import top.potmot.query.Query
@@ -46,13 +43,7 @@ class EntityService(
 
     @GetMapping("/language")
     fun listLanguage(): List<GenLanguage> {
-        return GenLanguage.values().toList()
-    }
-
-    @PutMapping("/config")
-    @Transactional
-    fun config(@RequestBody entity: GenEntityConfigInput): Int {
-        return sqlClient.save(entity).totalAffectedRowCount
+        return GenLanguage.entries
     }
 
     @PostMapping("/query")
