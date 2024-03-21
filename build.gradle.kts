@@ -92,7 +92,7 @@ kotlin {
 }
 
 ksp {
-    arg("jimmer.dto.mutable", "true")
+//    arg("jimmer.dto.mutable", "true")
 }
 
 tasks.withType<KotlinCompile> {

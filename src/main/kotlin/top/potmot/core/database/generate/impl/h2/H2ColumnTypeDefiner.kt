@@ -64,90 +64,49 @@ object H2ColumnTypeDefiner : ColumnTypeDefiner {
         if (typeMeta.overwriteByRaw) return typeMeta.rawType
 
         if (typeMeta.rawType.uppercase().startsWith("ENUM")) {
-            typeMeta.dataSize = 0
-            typeMeta.numericPrecision = 0
-
             return typeMeta.rawType
         }
 
-        when (typeMeta.typeCode) {
-            Types.CHAR, Types.NCHAR -> {
-                typeMeta.rawType = "CHARACTER"
-            }
+        return when (typeMeta.typeCode) {
+            Types.CHAR, Types.NCHAR -> "CHARACTER"
 
-            Types.VARCHAR, Types.NVARCHAR, Types.LONGVARCHAR, Types.LONGNVARCHAR -> {
-                typeMeta.rawType = "CHARACTER VARYING"
-            }
+            Types.VARCHAR, Types.NVARCHAR, Types.LONGVARCHAR, Types.LONGNVARCHAR -> "CHARACTER VARYING"
 
-            Types.BINARY -> {
-                typeMeta.rawType = "BINARY"
-            }
+            Types.BINARY -> "BINARY"
 
-            Types.VARBINARY, Types.LONGVARBINARY -> {
-                typeMeta.rawType = "BINARY VARYING"
-            }
+            Types.VARBINARY, Types.LONGVARBINARY -> "BINARY VARYING"
 
-            Types.BIT -> {
-                typeMeta.rawType = "BOOLEAN"
-            }
+            Types.BIT -> "BOOLEAN"
 
-            Types.TINYINT -> {
-                typeMeta.rawType = "TINYINT"
-            }
+            Types.TINYINT -> "TINYINT"
 
-            Types.SMALLINT -> {
-                typeMeta.rawType = "SMALLINT"
-            }
+            Types.SMALLINT -> "SMALLINT"
 
-            Types.INTEGER -> {
-                typeMeta.rawType = "INTEGER"
-            }
+            Types.INTEGER -> "INTEGER"
 
-            Types.BIGINT -> {
-                typeMeta.rawType = "BIGINT"
-            }
+            Types.BIGINT -> "BIGINT"
 
-            Types.REAL, Types.FLOAT -> {
-                typeMeta.rawType = "REAL"
-            }
+            Types.REAL, Types.FLOAT -> "REAL"
 
-            Types.DOUBLE -> {
-                typeMeta.rawType = "DOUBLE PRECISION"
-            }
+            Types.DOUBLE -> "DOUBLE PRECISION"
 
-            Types.NUMERIC, Types.DECIMAL -> {
-                typeMeta.rawType = "NUMERIC"
-            }
+            Types.NUMERIC, Types.DECIMAL -> "NUMERIC"
 
-            Types.BOOLEAN -> {
-                typeMeta.rawType = "BOOLEAN"
-            }
+            Types.BOOLEAN -> "BOOLEAN"
 
-            Types.DATE -> {
-                typeMeta.rawType = "DATE"
-            }
+            Types.DATE -> "DATE"
 
-            Types.TIME -> {
-                typeMeta.rawType = "TIME"
-            }
+            Types.TIME -> "TIME"
 
-            Types.TIME_WITH_TIMEZONE -> {
-                typeMeta.rawType = "TIME WITH TIME ZONE"
-            }
+            Types.TIME_WITH_TIMEZONE -> "TIME WITH TIME ZONE"
 
-            Types.TIMESTAMP -> {
-                typeMeta.rawType = "TIMESTAMP"
-            }
+            Types.TIMESTAMP -> "TIMESTAMP"
 
-            Types.TIMESTAMP_WITH_TIMEZONE -> {
-                typeMeta.rawType = "TIMESTAMP WITH TIME ZONE"
-            }
+            Types.TIMESTAMP_WITH_TIMEZONE -> "TIMESTAMP WITH TIME ZONE"
 
-            Types.JAVA_OBJECT -> {
-                typeMeta.rawType = "JAVA_OBJECT"
-            }
+            Types.JAVA_OBJECT -> "JAVA_OBJECT"
+
+            else -> typeMeta.rawType
         }
-
-        return typeMeta.rawType
     }
 }

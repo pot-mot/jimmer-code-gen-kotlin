@@ -10,11 +10,10 @@ fun createBaseModel(
 ) =
     commonObjectMapper.readValue<GenModelInput>(
         baseModel
-    ).let {
-        it.graphData = graphData
-        it.enums = enumJsons.map { json -> commonObjectMapper.readValue<GenModelInput.TargetOf_enums>(json) }
-        it
-    }
+    ).copy(
+        graphData = graphData,
+        enums = enumJsons.map { json -> commonObjectMapper.readValue<GenModelInput.TargetOf_enums>(json) }
+    )
 
 private const val baseModel = """
 {

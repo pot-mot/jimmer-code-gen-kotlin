@@ -294,16 +294,13 @@ private fun createIdViewProperty(
             this.name = associationProperty.name + "Id"
         }
 
-        this.type = baseColumn.getTypeMeta()
-            .let {
-                // 同步关联属性的可空性
-                it.typeNotNull = associationProperty.typeNotNull
+        this.type = typeMapping(
+            baseColumn.getTypeMeta().copy(
                 // 当为列表属性时，java 为允许集合泛型使用，此时映射时必须调整为可空模式
-                if (this.listType) {
-                    it.typeNotNull = false
-                }
-                typeMapping(it)
-            }
+                // 除此以外同步关联属性的可空性
+                typeNotNull = if (this.listType) false else associationProperty.typeNotNull
+            )
+        )
 
         associationProperty.comment.takeIf { it.isNotBlank() }?.let {
             this.comment = "$it ID 视图"
