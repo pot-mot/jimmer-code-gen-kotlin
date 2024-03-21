@@ -231,6 +231,22 @@ COMMENT ON COLUMN `gen_table`.`created_time` IS '创建时间';
 COMMENT ON COLUMN `gen_table`.`modified_time` IS '修改时间';
 
 -- ----------------------------
+-- Table structure for gen_super_table_mapping
+-- ----------------------------
+CREATE TABLE `gen_super_table_mapping`
+(
+    `super_table_id`  bigint NOT NULL,
+    `inherit_table_id` bigint NOT NULL,
+    PRIMARY KEY (`super_table_id`, `inherit_table_id`),
+    CONSTRAINT `fk_super_table_mapping_super_table` FOREIGN KEY (`super_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `fk_super_table_mapping_inherit_table` FOREIGN KEY (`inherit_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+);
+
+COMMENT ON TABLE `gen_super_table_mapping` IS '上级表与继承表关联表';
+COMMENT ON COLUMN `gen_super_table_mapping`.`super_table_id` IS '上级表';
+COMMENT ON COLUMN `gen_super_table_mapping`.`inherit_table_id` IS '继承表';
+
+-- ----------------------------
 -- Table structure for gen_column
 -- ----------------------------
 CREATE TABLE `gen_column`
@@ -400,8 +416,8 @@ CREATE TABLE `gen_index_column_mapping`
     CONSTRAINT `fk_index_mapping_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 );
 
-COMMENT ON TABLE `gen_index_column_mapping` IS '唯一索引与列关联表';
-COMMENT ON COLUMN `gen_index_column_mapping`.`index_id` IS '唯一索引';
+COMMENT ON TABLE `gen_index_column_mapping` IS '索引与列关联表';
+COMMENT ON COLUMN `gen_index_column_mapping`.`index_id` IS '索引';
 COMMENT ON COLUMN `gen_index_column_mapping`.`column_id` IS '列';
 
 -- ----------------------------
@@ -438,6 +454,22 @@ COMMENT ON COLUMN `gen_entity`.`author` IS '作者';
 COMMENT ON COLUMN `gen_entity`.`remark` IS '备注';
 COMMENT ON COLUMN `gen_entity`.`created_time` IS '创建时间';
 COMMENT ON COLUMN `gen_entity`.`modified_time` IS '修改时间';
+
+-- ----------------------------
+-- Table structure for gen_super_entity_mapping
+-- ----------------------------
+CREATE TABLE `gen_super_entity_mapping`
+(
+    `super_entity_id`  bigint NOT NULL,
+    `inherit_entity_id` bigint NOT NULL,
+    PRIMARY KEY (`super_entity_id`, `inherit_entity_id`),
+    CONSTRAINT `fk_super_entity_mapping_super_entity` FOREIGN KEY (`super_entity_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `fk_super_entity_mapping_inherit_entity` FOREIGN KEY (`inherit_entity_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+);
+
+COMMENT ON TABLE `gen_super_entity_mapping` IS '上级实体与继承实体关联表';
+COMMENT ON COLUMN `gen_super_entity_mapping`.`super_entity_id` IS '上级实体';
+COMMENT ON COLUMN `gen_super_entity_mapping`.`inherit_entity_id` IS '继承实体';
 
 -- ----------------------------
 -- Table structure for gen_property

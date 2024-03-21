@@ -6,7 +6,9 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.JoinTable
 import org.babyfish.jimmer.sql.Key
+import org.babyfish.jimmer.sql.ManyToMany
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
@@ -62,6 +64,17 @@ interface GenEntity : BaseEntity {
     @OnDissociate(DissociateAction.DELETE)
     @Key
     val table: GenTable
+
+    /**
+     * 上级实体
+     */
+    @ManyToMany
+    @JoinTable(
+        name = "jimmer_code_gen.gen_super_entity_mapping",
+        joinColumnName = "inherit_entity_id",
+        inverseJoinColumnName = "super_entity_id"
+    )
+    val superEntities: List<GenEntity>
 
     /**
      * 类名称

@@ -164,6 +164,21 @@ CREATE TABLE `gen_table`
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Table structure for gen_super_table_mapping
+-- ----------------------------
+CREATE TABLE `gen_super_table_mapping`
+(
+    `super_table_id`  bigint NOT NULL COMMENT '上级表',
+    `inherit_table_id` bigint NOT NULL COMMENT '继承表',
+    PRIMARY KEY (`super_table_id`, `inherit_table_id`),
+    CONSTRAINT `fk_super_table_mapping_super_table` FOREIGN KEY (`super_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `fk_super_table_mapping_inherit_table` FOREIGN KEY (`inherit_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+    COMMENT = '上级表与继承表关联表'
+  ROW_FORMAT = Dynamic;
+
+-- ----------------------------
 -- Table structure for gen_column
 -- ----------------------------
 CREATE TABLE `gen_column`
@@ -278,14 +293,14 @@ CREATE TABLE `gen_table_index`
 -- ----------------------------
 CREATE TABLE `gen_index_column_mapping`
 (
-    `index_id`  bigint NOT NULL COMMENT '唯一索引',
+    `index_id`  bigint NOT NULL COMMENT '索引',
     `column_id` bigint NOT NULL COMMENT '列',
     PRIMARY KEY (`index_id`, `column_id`) USING BTREE,
     CONSTRAINT `fk_columns_mapping_index` FOREIGN KEY (`index_id`) REFERENCES `gen_table_index` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
     CONSTRAINT `fk_index_mapping_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
-    COMMENT = '唯一索引与列关联表'
+    COMMENT = '索引与列关联表'
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -312,6 +327,21 @@ CREATE TABLE `gen_entity`
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '生成实体'
+  ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for gen_super_entity_mapping
+-- ----------------------------
+CREATE TABLE `gen_super_entity_mapping`
+(
+    `super_entity_id`  bigint NOT NULL COMMENT '上级实体',
+    `inherit_entity_id` bigint NOT NULL COMMENT '继承实体',
+    PRIMARY KEY (`super_entity_id`, `inherit_entity_id`),
+    CONSTRAINT `fk_super_entity_mapping_super_entity` FOREIGN KEY (`super_entity_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `fk_super_entity_mapping_inherit_entity` FOREIGN KEY (`inherit_entity_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+    COMMENT = '上级实体与继承实体关联表'
   ROW_FORMAT = Dynamic;
 
 -- ----------------------------
