@@ -57,25 +57,3 @@ input GenEntityConfigInput {
         #allScalars(GenProperty)
     }
 }
-
-input GenEntityModelInput {
-    #allScalars(GenEntity)
-    -id
-    table {
-        name
-    }
-
-    properties {
-        #allScalars(GenProperty)
-        -id
-        column {
-            name
-        }
-        typeTable {
-            name
-        }
-        enum {
-            name
-        }
-    }
-}
