@@ -233,8 +233,8 @@ open class MutableGenConfig(
         return __hash
     }
 
-    override fun equals(o: Any?): Boolean {
-        val __other = o as? MutableGenConfig ?: return false
+    override fun equals(other: Any?): Boolean {
+        val __other = other as? MutableGenConfig ?: return false
         return syncConvertEntity == __other.syncConvertEntity&&
         language == __other.language&&
         dataSourceType == __other.dataSourceType&&
