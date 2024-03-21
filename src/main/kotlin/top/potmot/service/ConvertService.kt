@@ -13,34 +13,22 @@ import top.potmot.context.useContext
 import top.potmot.core.entity.convert.toGenEntity
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
+import top.potmot.model.GenEntity
 import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
 import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTypeMappingView
+import top.potmot.model.extension.GenTableAssociationsOneDeepSuperTableFetcher
 import top.potmot.model.id
 import top.potmot.model.orderKey
+import top.potmot.model.tableId
 
 @RestController
 @RequestMapping("/convert")
 class ConvertService(
     @Autowired val sqlClient: KSqlClient
 ) {
-    fun getTableByModel(tableIds: List<Long>): List<GenTableAssociationsView> =
-        sqlClient.createQuery(GenTable::class) {
-            where(
-                table.id valueIn tableIds
-            )
-            select(table.fetch(GenTableAssociationsView::class))
-        }.execute()
-
-    fun getTypeMappings(): List<GenTypeMappingView> =
-        sqlClient.createQuery(GenTypeMapping::class) {
-            orderBy(table.orderKey)
-            select(table.fetch(GenTypeMappingView::class))
-        }.execute()
-
-
     @PostMapping
     @Transactional
     @Throws(ConvertEntityException::class, ColumnTypeException::class)
@@ -52,19 +40,51 @@ class ConvertService(
         val result = mutableListOf<Long>()
 
         useContext(properties) {
-            val tables = getTableByModel(tableIds)
+            val tables = getTableViews(tableIds)
 
             val typeMappings = getTypeMappings()
 
-            tables
-                .map {
-                    it.toGenEntity(modelId, typeMappings)
+            tables.forEach { table ->
+                val entity = table.toGenEntity(modelId, typeMappings)
+                val savedEntity = sqlClient.save(entity).modifiedEntity
+
+                // FIXME 基于关联属性装填超级类 id 并保存，但是发生 N+1 查询
+                table.superTables?.map { it.id }?.let { superTableIds ->
+                    val superEntityIds = getEntityIdsByTableIds(superTableIds)
+                    if (table.superTables.isNotEmpty())
+                        sqlClient.getAssociations(GenEntity::superEntities)
+                            .saveAll(listOf(savedEntity.id), superEntityIds)
                 }
-                .forEach {
-                    result += sqlClient.save(it).modifiedEntity.id
-                }
+
+                result += savedEntity.id
+            }
         }
 
         return result
     }
+
+    private fun getTableViews(tableIds: List<Long>): List<GenTableAssociationsView> =
+        if (tableIds.isEmpty()) emptyList()
+        else sqlClient.createQuery(GenTable::class) {
+            where(
+                table.id valueIn tableIds
+            )
+            select(table.fetch(GenTableAssociationsOneDeepSuperTableFetcher))
+        }.execute().map {
+            GenTableAssociationsView(it)
+        }
+
+    private fun getEntityIdsByTableIds(tableIds: List<Long>): List<Long> =
+        sqlClient.createQuery(GenEntity::class) {
+            where(
+                table.tableId valueIn tableIds
+            )
+            select(table.id)
+        }.execute()
+
+    private fun getTypeMappings(): List<GenTypeMappingView> =
+        sqlClient.createQuery(GenTypeMapping::class) {
+            orderBy(table.orderKey)
+            select(table.fetch(GenTypeMappingView::class))
+        }.execute()
 }

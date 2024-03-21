@@ -12,7 +12,16 @@ object JavaEntityBuilder : EntityBuilder() {
     override fun importLine(item: String): String = "import ${item};"
 
     override fun entityLine(entity: GenEntityPropertiesView): String =
-        "public interface ${entity.name}"
+        buildString {
+            append("public interface ${entity.name}")
+
+            if (entity.superEntities.isNotEmpty()) {
+                append(" implements")
+                entity.superEntities.forEach {
+                    append(" ${it.name},")
+                }
+            }
+        }
 
     override fun propertyLine(property: GenPropertyView): String =
         "${property.shortType()} ${property.name}();"

@@ -73,17 +73,20 @@ interface GenTable : BaseEntity {
     )
     val superTables: List<GenTable>
 
-    /**
-     * 对应实体 ID
-     */
-    @IdView
-    val entityId: Long?
+    @IdView("superTables")
+    val superTableIds: List<Long>
 
     /**
      * 对应实体
      */
     @OneToOne(mappedBy = "table")
     val entity: GenEntity?
+
+    /**
+     * 对应实体 ID
+     */
+    @IdView
+    val entityId: Long?
 
     /**
      * 名称

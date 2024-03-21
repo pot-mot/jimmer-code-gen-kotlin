@@ -52,7 +52,7 @@ interface GenEntity : BaseEntity {
     val packagePath: String
 
     /**
-     * 对应表 ID
+     * 对应表 ID 视图
      */
     @IdView
     val tableId: Long
@@ -75,6 +75,12 @@ interface GenEntity : BaseEntity {
         inverseJoinColumnName = "super_entity_id"
     )
     val superEntities: List<GenEntity>
+
+    /**
+     * 上级实体 ID 视图
+     */
+    @IdView("superEntities")
+    val superEntityIds: List<Long>
 
     /**
      * 类名称
