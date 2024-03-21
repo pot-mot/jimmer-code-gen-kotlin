@@ -1,5 +1,6 @@
 package top.potmot.dataSource.load
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
@@ -10,10 +11,20 @@ import org.springframework.test.context.ActiveProfiles
 import top.potmot.dataSource.h2DataSource
 import top.potmot.dataSource.mysqlDataSource
 import top.potmot.dataSource.postgresDataSource
+import top.potmot.enumeration.SelectType
+import top.potmot.query.AssociationQuery
+import top.potmot.query.AssociationTableQuery
 import top.potmot.query.TableQuery
+import top.potmot.service.AssociationService
 import top.potmot.service.DataSourceService
 import top.potmot.service.SchemaService
 import top.potmot.service.TableService
+
+private const val SAVED_SCHEMA_SIZE = 1
+
+private const val SAVED_TABLE_SIZE = 17
+
+private const val SAVED_ASSOCIATION_SIZE = 26
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin", "h2")
@@ -21,59 +32,52 @@ import top.potmot.service.TableService
 class SchemaLoadTest(
     @Autowired val dataSourceService: DataSourceService,
     @Autowired val schemaService: SchemaService,
-    @Autowired val tableService: TableService
+    @Autowired val tableService: TableService,
+    @Autowired val associationService: AssociationService
 ) {
+    fun validateResult(dataSourceId: Long) {
+        val schema = schemaService.preview(dataSourceId).first { it.name.split(".").last() == "jimmer_code_gen" }
+
+        val savedSchemaIds = schemaService.load(dataSourceId, schema.name)
+        assertEquals(SAVED_SCHEMA_SIZE, savedSchemaIds.size)
+
+        val saveTables = tableService.queryIdView(TableQuery(schemaIds = savedSchemaIds))
+        assertEquals(SAVED_TABLE_SIZE, saveTables.size)
+
+        val saveAssociations = associationService.queryByTable(AssociationTableQuery(
+            tableIds = saveTables.map { it.id },
+            selectType = SelectType.AND
+        ))
+        assertEquals(SAVED_ASSOCIATION_SIZE, saveAssociations.size)
+    }
+
     @Test
     @Order(1)
     fun testLoadMysqlSchema() {
-        val savedDataSourceId = dataSourceService.create(
+        val dataSourceId = dataSourceService.create(
             mysqlDataSource
         )
 
-        val schema = schemaService.preview(savedDataSourceId).first { it.name == "jimmer_code_gen" }
-
-        val savedSchemaIds = schemaService.load(savedDataSourceId, schema.name)
-
-        assert(savedSchemaIds.size == 1)
-
-        val saveTables = tableService.queryIdView(TableQuery(schemaIds = savedSchemaIds))
-
-        assert(saveTables.size == 15)
+        validateResult(dataSourceId)
     }
 
     @Test
     @Order(2)
     fun testLoadPostgresSchema() {
-        val savedDataSourceId = dataSourceService.create(
+        val dataSourceId = dataSourceService.create(
             postgresDataSource
         )
 
-        val schema = schemaService.preview(savedDataSourceId).first { it.name == "jimmer_code_gen" }
-
-        val savedSchemaIds = schemaService.load(savedDataSourceId, schema.name)
-
-        assert(savedSchemaIds.size == 1)
-
-        val saveTables = tableService.queryIdView(TableQuery(schemaIds = savedSchemaIds))
-
-        assert(saveTables.size == 15)
+        validateResult(dataSourceId)
     }
 
     @Test
     @Order(3)
     fun testLoadH2Schema() {
-        val savedDataSourceId = dataSourceService.create(
+        val dataSourceId = dataSourceService.create(
             h2DataSource
         )
 
-        val schema = schemaService.preview(savedDataSourceId).first { it.name == "jimmer_code_gen.jimmer_code_gen" }
-
-        val savedSchemaIds = schemaService.load(savedDataSourceId, schema.name)
-
-        assert(savedSchemaIds.size == 1)
-
-        val saveTables = tableService.queryIdView(TableQuery(schemaIds = savedSchemaIds))
-
-        assert(saveTables.size == 15)
+        validateResult(dataSourceId)
     }
 }

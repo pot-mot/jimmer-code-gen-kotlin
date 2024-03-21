@@ -9,6 +9,7 @@ const val PARSE_RESULT = """
             "type" : "TABLE",
             "remark" : "",
             "modelId" : 1,
+            "superTables" : [ ],
             "columns" : [
                 {
                     "name" : "id",
@@ -55,6 +56,7 @@ const val PARSE_RESULT = """
             "type" : "TABLE",
             "remark" : "",
             "modelId" : 1,
+            "superTables" : [ ],
             "columns" : [
                 {
                     "name" : "id",
@@ -83,6 +85,7 @@ const val PARSE_RESULT = """
             "type" : "TABLE",
             "remark" : "",
             "modelId" : 1,
+            "superTables" : [ ],
             "columns" : [
                 {
                     "name" : "id",
@@ -129,6 +132,7 @@ const val PARSE_RESULT = """
             "type" : "TABLE",
             "remark" : "",
             "modelId" : 1,
+            "superTables" : [ ],
             "columns" : [
                 {
                     "name" : "id",
@@ -175,6 +179,7 @@ const val PARSE_RESULT = """
             "type" : "TABLE",
             "remark" : "",
             "modelId" : 1,
+            "superTables" : [ ],
             "columns" : [
                 {
                     "name" : "id",
@@ -203,6 +208,7 @@ const val PARSE_RESULT = """
             "type" : "TABLE",
             "remark" : "",
             "modelId" : 1,
+            "superTables" : [ ],
             "columns" : [
                 {
                     "name" : "id",
@@ -231,6 +237,7 @@ const val PARSE_RESULT = """
             "type" : "TABLE",
             "remark" : "",
             "modelId" : 1,
+            "superTables" : [ ],
             "columns" : [
                 {
                     "name" : "id",
@@ -259,6 +266,7 @@ const val PARSE_RESULT = """
             "type" : "TABLE",
             "remark" : "",
             "modelId" : 1,
+            "superTables" : [ ],
             "columns" : [
                 {
                     "name" : "id",
@@ -305,6 +313,7 @@ const val PARSE_RESULT = """
             "type" : "TABLE",
             "remark" : "",
             "modelId" : 1,
+            "superTables" : [ ],
             "columns" : [
                 {
                     "name" : "id",
