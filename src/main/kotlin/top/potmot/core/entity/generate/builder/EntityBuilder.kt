@@ -12,12 +12,14 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.JoinTable
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.LogicalDeleted
+import org.babyfish.jimmer.sql.MappedSuperclass
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Table
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.IdentifierType
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
+import top.potmot.enumeration.TableType
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenPropertyView
 import top.potmot.utils.string.appendBlock
@@ -105,6 +107,50 @@ abstract class EntityBuilder : CodeBuilder() {
             property.remark
         )
 
+    /**
+     * 获取属性的简单类型名
+     * 判断过程如下：
+     *  1. 优先采用枚举类型
+     *  2. 使用 typeTable 对应的 Entity
+     *  3. 使用映射后的 type
+     */
+    fun GenPropertyView.shortType(): String {
+        enum?.let { return it.name }
+
+        val baseType =
+            typeTable?.entity?.name ?: let {
+                type.split(".").last()
+            }
+
+        return if (listType) {
+            "List<$baseType>"
+        } else {
+            baseType
+        }
+    }
+
+    fun GenPropertyView.fullType(): String {
+        enum?.let {
+            return if (it.packagePath.isNotBlank()) {
+                it.packagePath + "." + it.name
+            } else {
+                it.name
+            }
+        }
+
+        typeTable?.let { table ->
+            table.entity?.let {
+                return if (it.packagePath.isNotBlank()) {
+                    it.packagePath + "." + it.name
+                } else {
+                    it.name
+                }
+            }
+        }
+
+        return type
+    }
+
     open fun importClasses(property: GenPropertyView): Set<KClass<*>> {
         val result = mutableSetOf<KClass<*>>()
 
@@ -175,57 +221,17 @@ abstract class EntityBuilder : CodeBuilder() {
         val result = mutableSetOf<KClass<*>>()
 
         entity.apply {
-            if (getContextOrGlobal().tableAnnotation) {
-                result += Table::class
-            }
-            result += Entity::class
-        }
-
-        return result
-    }
-
-    /**
-     * 获取属性的简单类型名
-     * 判断过程如下：
-     *  1. 优先采用枚举类型
-     *  2. 使用 typeTable 对应的 Entity
-     *  3. 使用映射后的 type
-     */
-    fun GenPropertyView.shortType(): String {
-        enum?.let { return it.name }
-
-        val baseType =
-            typeTable?.entity?.name ?: let {
-                type.split(".").last()
-            }
-
-        return if (listType) {
-            "List<$baseType>"
-        } else {
-            baseType
-        }
-    }
-
-    fun GenPropertyView.fullType(): String {
-        enum?.let {
-            return if (it.packagePath.isNotBlank()) {
-                it.packagePath + "." + it.name
+            if (entity.table.type == TableType.SUPER_TABLE) {
+                result += MappedSuperclass::class
             } else {
-                it.name
-            }
-        }
-
-        typeTable?.let { table ->
-            table.entity?.let {
-                return if (it.packagePath.isNotBlank()) {
-                    it.packagePath + "." + it.name
-                } else {
-                    it.name
+                result += Entity::class
+                if (getContextOrGlobal().tableAnnotation) {
+                    result += Table::class
                 }
             }
         }
 
-        return type
+        return result
     }
 
     open fun importItems(property: GenPropertyView): Set<String> =
@@ -242,10 +248,14 @@ abstract class EntityBuilder : CodeBuilder() {
         val list = mutableListOf<String>()
 
         entity.apply {
-            list += "@Entity"
+            if (entity.table.type == TableType.SUPER_TABLE) {
+                list += "@MappedSuperclass"
+            } else {
+                list += "@Entity"
 
-            if (getContextOrGlobal().tableAnnotation) {
-                list += tableAnnotation()
+                if (getContextOrGlobal().tableAnnotation) {
+                    list += tableAnnotation()
+                }
             }
         }
 

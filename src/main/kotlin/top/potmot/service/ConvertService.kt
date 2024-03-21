@@ -44,19 +44,29 @@ class ConvertService(
 
             val typeMappings = getTypeMappings()
 
+            val tableEntityPairs = mutableListOf<Pair<GenTableAssociationsView, GenEntity>>()
+
             tables.forEach { table ->
                 val entity = table.toGenEntity(modelId, typeMappings)
                 val savedEntity = sqlClient.save(entity).modifiedEntity
 
+                tableEntityPairs += table to savedEntity
+
+                result += savedEntity.id
+            }
+
+            tableEntityPairs.forEach { (table, entity) ->
                 // FIXME 基于关联属性装填超级类 id 并保存，但是发生 N+1 查询
                 table.superTables?.map { it.id }?.let { superTableIds ->
                     val superEntityIds = getEntityIdsByTableIds(superTableIds)
-                    if (table.superTables.isNotEmpty())
-                        sqlClient.getAssociations(GenEntity::superEntities)
-                            .saveAll(listOf(savedEntity.id), superEntityIds)
-                }
 
-                result += savedEntity.id
+                    if (superTableIds.size != superEntityIds.size) {
+                        throw ConvertEntityException.superTable("SuperTableIds [${superTableIds}] can't match superEntityIds [${superEntityIds}]")
+                    }
+
+                    sqlClient.getAssociations(GenEntity::superEntities)
+                        .saveAll(listOf(entity.id), superEntityIds)
+                }
             }
         }
 

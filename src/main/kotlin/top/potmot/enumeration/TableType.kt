@@ -2,6 +2,7 @@ package top.potmot.enumeration
 
 enum class TableType {
     TABLE,
+    SUPER_TABLE,
     VIEW,
     SYSTEM_TABLE,
     GLOBAL_TEMPORARY,

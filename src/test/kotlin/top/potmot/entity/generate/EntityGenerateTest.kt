@@ -8,6 +8,7 @@ import org.junit.jupiter.api.TestMethodOrder
 import top.potmot.core.entity.generate.impl.java.JavaEntityCodeGenerator
 import top.potmot.core.entity.generate.impl.kotlin.KotlinEntityCodeGenerator
 import top.potmot.enumeration.AssociationType
+import top.potmot.enumeration.TableType
 import top.potmot.model.dto.GenEntityPropertiesView
 import top.potmot.model.dto.GenPropertyView
 import top.potmot.util.replaceSinceTimeComment
@@ -81,6 +82,7 @@ class EntityGenerateTest {
     private val baseTable = GenEntityPropertiesView.TargetOf_table(
         id = 1,
         name = "table",
+        type = TableType.TABLE
     )
 
     private val baseEntity = GenEntityPropertiesView(

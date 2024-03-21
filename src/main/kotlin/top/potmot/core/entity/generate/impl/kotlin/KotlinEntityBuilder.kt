@@ -15,9 +15,7 @@ object KotlinEntityBuilder : EntityBuilder() {
 
             if (entity.superEntities.isNotEmpty()) {
                 append(" :")
-                entity.superEntities.forEach {
-                    append(" ${it.name},")
-                }
+                append(" ${entity.superEntities.joinToString(", ") { it.name }}")
             }
         }
 

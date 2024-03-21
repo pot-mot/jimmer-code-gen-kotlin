@@ -68,7 +68,7 @@ class ModelService(
 
         // 当 graphData 不为空，进行处理
         if (!input.graphData.isNullOrBlank()) {
-            parseGraphData(savedModel.id, input.graphData!!).let { (tableModelInputs, associationModelInputs) ->
+            parseGraphData(savedModel.id, input.graphData).let { (tableModelInputs, associationModelInputs) ->
                 // 创建 enum name -> id map，用于映射 table.columns.enum
                 val enumNameIdMap = savedModel.enums.associate { it.name to it.id }
 
@@ -95,7 +95,8 @@ class ModelService(
                         ?: throw ModelLoadException.table("Table [${table.name}] not found")
 
                     val superTables = superTableNames.map { superTableName ->
-                        savedTableNameMap[superTableName] ?: throw ModelLoadException.table("Super table [${superTableName}] not found")
+                        savedTableNameMap[superTableName]
+                            ?: throw ModelLoadException.table("Super table [${superTableName}] not found")
                     }
 
                     sqlClient.getAssociations(GenTable::superTables)

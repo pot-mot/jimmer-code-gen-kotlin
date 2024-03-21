@@ -4,5 +4,6 @@ import org.babyfish.jimmer.error.ErrorFamily
 
 @ErrorFamily
 enum class ConvertEntityErrorCode {
-    ASSOCIATION
+    ASSOCIATION,
+    SUPER_TABLE,
 }

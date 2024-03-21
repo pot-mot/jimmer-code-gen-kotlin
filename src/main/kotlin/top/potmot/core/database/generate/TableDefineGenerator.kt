@@ -1,5 +1,6 @@
 package top.potmot.core.database.generate
 
+import top.potmot.enumeration.TableType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.dto.GenTableAssociationsView
@@ -18,9 +19,13 @@ abstract class TableDefineGenerator {
         tables: Collection<GenTableAssociationsView>,
         withSingleTable: Boolean = true
     ): List<Pair<String, String>> {
-        val fullTables = tables.map { it.toFull() }
+        val fullTables = tables
+            .filter { it.type != TableType.SUPER_TABLE }
+            .map { it.toFull() }
 
-        val result = listOf(formatFileName("all-tables") to stringify(fullTables))
+        val result = listOf(
+            formatFileName("all-tables") to stringify(fullTables)
+        )
 
         return if (withSingleTable) {
             result + fullTables.map { table ->

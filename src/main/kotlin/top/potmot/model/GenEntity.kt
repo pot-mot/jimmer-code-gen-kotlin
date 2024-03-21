@@ -83,6 +83,18 @@ interface GenEntity : BaseEntity {
     val superEntityIds: List<Long>
 
     /**
+     * 继承实体
+     */
+    @ManyToMany(mappedBy = "superEntities")
+    val inheritEntities: List<GenEntity>
+
+    /**
+     * 继承实体 ID 视图
+     */
+    @IdView("inheritEntities")
+    val inheritEntityIds: List<Long>
+
+    /**
      * 类名称
      */
     val name: String

@@ -9,6 +9,7 @@ GenEntityPropertiesView {
     table {
         id
         name
+        type
     }
 
     superEntities {

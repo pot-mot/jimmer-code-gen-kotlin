@@ -17,9 +17,7 @@ object JavaEntityBuilder : EntityBuilder() {
 
             if (entity.superEntities.isNotEmpty()) {
                 append(" implements")
-                entity.superEntities.forEach {
-                    append(" ${it.name},")
-                }
+                append(" ${entity.superEntities.joinToString(", ") { it.name }}")
             }
         }
 

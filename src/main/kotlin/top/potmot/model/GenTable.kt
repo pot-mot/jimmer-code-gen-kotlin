@@ -73,8 +73,23 @@ interface GenTable : BaseEntity {
     )
     val superTables: List<GenTable>
 
+    /**
+     * 上级表 ID 视图
+     */
     @IdView("superTables")
     val superTableIds: List<Long>
+
+    /**
+     * 继承表
+     */
+    @ManyToMany(mappedBy = "superTables")
+    val inheritTables: List<GenTable>
+
+    /**
+     * 继承表 ID 视图
+     */
+    @IdView("inheritTables")
+    val inheritTableIds: List<Long>
 
     /**
      * 对应实体
