@@ -18,6 +18,7 @@ import top.potmot.core.database.load.ModelInputEntities
 import top.potmot.core.database.load.getGraphEntities
 import top.potmot.core.database.load.parseGraphData
 import top.potmot.core.database.load.toInput
+import top.potmot.core.database.load.toInputs
 import top.potmot.error.ModelLoadException
 import top.potmot.model.GenModel
 import top.potmot.model.GenTable
@@ -67,18 +68,18 @@ class ModelService(
 
         // 当 graphData 不为空，进行处理
         if (!input.graphData.isNullOrBlank()) {
-            parseGraphData(savedModel.id, input.graphData!!).let { (tables, associations) ->
+            parseGraphData(savedModel.id, input.graphData!!).let { (tableModelInputs, associationModelInputs) ->
                 // 创建 enum name -> id map，用于映射 table.columns.enum
                 val enumNameIdMap = savedModel.enums.associate { it.name to it.id }
 
-                val tableIndexesPairs =
-                    tables.map {
-                        it.toInput(enumNameIdMap)
+                val tableInputsList =
+                    tableModelInputs.map {
+                        it.toInputs(enumNameIdMap)
                     }
 
                 // 保存 tables
-                val tableInputs = tableIndexesPairs.map { it.first }
-                val savedTables = sqlClient.entities.saveInputs(tableInputs).simpleResults.map { it.modifiedEntity }
+                val tables = tableInputsList.map { it.table }
+                val savedTables = sqlClient.entities.saveInputs(tables).simpleResults.map { it.modifiedEntity }
 
                 // 移除遗留 tables
                 sqlClient.createDelete(GenTable::class) {
@@ -86,11 +87,24 @@ class ModelService(
                     where(table.id valueNotIn savedTables.map { it.id })
                 }.execute()
 
-                val savedTableMap = savedTables.associateBy { it.name }
+                val savedTableNameMap = savedTables.associateBy { it.name }
+
+                // 保存 superTables
+                tableInputsList.forEach { (table, _, superTableNames) ->
+                    val inheritTable = savedTableNameMap[table.name]
+                        ?: throw ModelLoadException.table("Table [${table.name}] not found")
+
+                    val superTables = superTableNames.map { superTableName ->
+                        savedTableNameMap[superTableName] ?: throw ModelLoadException.table("Super table [${superTableName}] not found")
+                    }
+
+                    sqlClient.getAssociations(GenTable::superTables)
+                        .saveAll(listOf(inheritTable.id), superTables.map { it.id })
+                }
 
                 // 保存 indexes
-                tableIndexesPairs.forEach { (table, indexes) ->
-                    val savedTable = savedTableMap[table.name]
+                tableInputsList.forEach { (table, indexes) ->
+                    val savedTable = savedTableNameMap[table.name]
                         ?: throw ModelLoadException.index("Indexes [${indexes.joinToString(",") { it.name }}] recreate fail: \nTable [${table.name}] not found")
 
                     val columnNameIdMap = savedTable.columns.associate { it.name to it.id }
@@ -107,7 +121,7 @@ class ModelService(
                 }
 
                 // 保存 associations
-                val associationInputs = associations.map { it.toInput(savedTables) }
+                val associationInputs = associationModelInputs.map { it.toInput(savedTables) }
                 val modelWithAssociations = new(GenModel::class).by {
                     this.id = savedModel.id
                     this.associations = associationInputs.map { it.toEntity() }

@@ -72,10 +72,16 @@ private fun JsonNode.toAssociation(modelId: Long): GenAssociationModelInput {
     return commonObjectMapper.readValue<GenAssociationModelInput>(this.toString())
 }
 
-fun GenTableModelInput.toInput(
+data class GenTableInputs(
+    val table: GenTableInput,
+    val indexes: List<GenTableModelInput.TargetOf_indexes>,
+    val superTableNames: List<String>
+)
+
+fun GenTableModelInput.toInputs(
     enumNameIdMap: Map<String, Long>
-): Pair<GenTableInput, List<GenTableModelInput.TargetOf_indexes>> {
-    val entity = GenTableInput(
+): GenTableInputs {
+    val table = GenTableInput(
         name = name,
         comment = comment,
         type = type,
@@ -103,7 +109,9 @@ fun GenTableModelInput.toInput(
         }
     )
 
-    return Pair(entity, indexes)
+    val superTableNames = superTables.map { it.name }
+
+    return GenTableInputs(table, indexes, superTableNames)
 }
 
 @Throws(ModelLoadException::class)
