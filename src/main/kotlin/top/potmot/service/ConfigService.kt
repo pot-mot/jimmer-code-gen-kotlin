@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.config.GlobalGenConfig
 import top.potmot.model.dto.GenConfig
 import top.potmot.model.dto.GenConfigProperties
+import top.potmot.model.dto.MutableGenConfig
 import top.potmot.utils.bean.copyPropertiesFrom
 
 @RestController
@@ -16,14 +17,14 @@ import top.potmot.utils.bean.copyPropertiesFrom
 class ConfigService {
     @GetMapping
     fun getConfig(): GenConfig {
-        return GlobalGenConfig
+        return GenConfig(GlobalGenConfig.toEntity())
     }
 
     @PutMapping
     fun setConfig(
         @RequestBody properties: GenConfigProperties
     ) {
-        val newConfig = GenConfig(
+        val newConfig = MutableGenConfig(
             merge(
                 GlobalGenConfig.toEntity(),
                 properties.toEntity()

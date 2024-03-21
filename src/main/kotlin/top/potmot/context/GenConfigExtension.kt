@@ -1,10 +1,10 @@
 package top.potmot.context
 
 import org.babyfish.jimmer.kt.merge
-import top.potmot.model.dto.GenConfig
 import top.potmot.model.dto.GenConfigProperties
+import top.potmot.model.dto.MutableGenConfig
 
-fun GenConfig.toProperties(): GenConfigProperties =
+fun MutableGenConfig.toProperties(): GenConfigProperties =
     GenConfigProperties(this.toEntity())
 
 fun List<GenConfigProperties>.multiple(other: List<GenConfigProperties>): List<GenConfigProperties> {

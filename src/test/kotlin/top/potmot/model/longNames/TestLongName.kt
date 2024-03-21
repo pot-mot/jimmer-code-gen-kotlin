@@ -30,8 +30,7 @@ class TestLongName(
     override val entityTestProperties: List<GenConfigProperties>
         get() = super.entityTestProperties.multiple(databaseNamingStrategyProperties).map {
             // 控制应用 Postgres 的 identifierFilter 处理注解对应名称
-            it.dataSourceType = DataSourceType.PostgreSQL
-            it
+            it.copy(dataSourceType = DataSourceType.PostgreSQL)
         }
 
     override val tableDefineTestProperties: List<GenConfigProperties>

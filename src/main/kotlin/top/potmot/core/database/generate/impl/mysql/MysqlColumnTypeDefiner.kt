@@ -41,82 +41,45 @@ object MysqlColumnTypeDefiner : ColumnTypeDefiner {
         if (typeMeta.rawType.uppercase().startsWith("ENUM") ||
             typeMeta.rawType.uppercase().startsWith("SET")
         ) {
-            typeMeta.dataSize = 0
-            typeMeta.numericPrecision = 0
-
             return typeMeta.rawType
         }
 
-        when (typeMeta.typeCode) {
-            Types.CHAR, Types.NCHAR -> {
-                typeMeta.rawType = "CHAR"
-            }
+        return when (typeMeta.typeCode) {
+            Types.CHAR, Types.NCHAR -> "CHAR"
 
-            Types.VARCHAR, Types.NVARCHAR -> {
-                typeMeta.rawType = "VARCHAR"
-            }
+            Types.VARCHAR, Types.NVARCHAR -> "VARCHAR"
 
-            Types.LONGVARCHAR, Types.LONGNVARCHAR -> {
-                typeMeta.rawType = "LONGTEXT"
-            }
+            Types.LONGVARCHAR, Types.LONGNVARCHAR -> "LONGTEXT"
 
-            Types.BINARY -> {
-                typeMeta.rawType = "BINARY"
-            }
+            Types.BINARY -> "BINARY"
 
-            Types.VARBINARY, Types.LONGVARBINARY -> {
-                typeMeta.rawType = "VARBINARY"
-            }
+            Types.VARBINARY, Types.LONGVARBINARY -> "VARBINARY"
 
-            Types.BIT -> {
-                typeMeta.rawType = "BIT"
-            }
+            Types.BIT -> "BIT"
 
-            Types.TINYINT -> {
-                typeMeta.rawType = "TINYINT"
-            }
+            Types.TINYINT -> "TINYINT"
 
-            Types.SMALLINT -> {
-                typeMeta.rawType = "SMALLINT"
-            }
+            Types.SMALLINT -> "SMALLINT"
 
-            Types.INTEGER -> {
-                typeMeta.rawType = "INT"
-            }
+            Types.INTEGER -> "INT"
 
-            Types.BIGINT -> {
-                typeMeta.rawType = "BIGINT"
-            }
+            Types.BIGINT -> "BIGINT"
 
-            Types.REAL, Types.FLOAT -> {
-                typeMeta.rawType = "FLOAT"
-            }
+            Types.REAL, Types.FLOAT -> "FLOAT"
 
-            Types.DOUBLE -> {
-                typeMeta.rawType = "DOUBLE"
-            }
+            Types.DOUBLE -> "DOUBLE"
 
-            Types.NUMERIC, Types.DECIMAL -> {
-                typeMeta.rawType = "DECIMAL"
-            }
+            Types.NUMERIC, Types.DECIMAL -> "DECIMAL"
 
-            Types.BOOLEAN -> {
-                typeMeta.rawType = "BOOLEAN"
-            }
+            Types.BOOLEAN -> "BOOLEAN"
 
-            Types.DATE -> {
-                typeMeta.rawType = "DATE"
-            }
+            Types.DATE -> "DATE"
 
-            Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP_WITH_TIMEZONE -> {
-                typeMeta.rawType = "TIMESTAMP"
-            }
+            Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP_WITH_TIMEZONE -> "TIMESTAMP"
 
-            Types.TIME, Types.TIMESTAMP -> {
-                typeMeta.rawType = "DATETIME"
-            }
+            Types.TIME, Types.TIMESTAMP -> "DATETIME"
+
+            else -> typeMeta.rawType
         }
-
-        return typeMeta.rawType
     }
 }

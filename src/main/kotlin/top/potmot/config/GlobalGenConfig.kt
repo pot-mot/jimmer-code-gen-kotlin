@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DatabaseNamingStrategyType
 import top.potmot.enumeration.GenLanguage
-import top.potmot.model.dto.GenConfig
+import top.potmot.model.dto.MutableGenConfig
 
 /**
  * 代码生成配置
  */
 @Component
 @ConfigurationProperties(prefix = "jimmer-code-gen")
-object GlobalGenConfig : GenConfig(
+object GlobalGenConfig : MutableGenConfig(
     syncConvertEntity = true,
     dataSourceType = DataSourceType.MySQL,
     language = GenLanguage.KOTLIN,

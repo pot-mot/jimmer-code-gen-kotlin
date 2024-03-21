@@ -52,89 +52,54 @@ object PostgresColumnTypeDefiner : ColumnTypeDefiner {
     override fun getTypeName(typeMeta: ColumnTypeMeta): String {
         if (typeMeta.overwriteByRaw) return typeMeta.rawType
 
-        when (typeMeta.typeCode) {
+        if (typeMeta.autoIncrement) {
+            return when (typeMeta.typeCode) {
+                Types.TINYINT, Types.SMALLINT -> "SMALLSERIAL"
+
+                Types.INTEGER -> "SERIAL"
+
+                Types.BIGINT -> "BIGSERIAL"
+
+                else -> typeMeta.rawType
+            }
+        }
+
+        return when (typeMeta.typeCode) {
             Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR,
             Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR,
-            Types.CLOB, Types.NCLOB -> {
-                typeMeta.rawType = "TEXT"
-            }
+            Types.CLOB, Types.NCLOB -> "TEXT"
 
             Types.BLOB,
-            Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> {
-                typeMeta.rawType = "BYTEA"
-            }
+            Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> "BYTEA"
 
-            Types.BIT -> {
-                typeMeta.rawType = "BIT"
-            }
+            Types.BIT -> "BIT"
 
-            Types.TINYINT, Types.SMALLINT -> {
-                typeMeta.rawType = "SMALLINT"
-            }
+            Types.TINYINT, Types.SMALLINT -> "SMALLINT"
 
-            Types.INTEGER -> {
-                typeMeta.rawType = "INT"
-            }
+            Types.INTEGER -> "INT"
 
-            Types.BIGINT -> {
-                typeMeta.rawType = "BIGINT"
-            }
+            Types.BIGINT -> "BIGINT"
 
-            Types.REAL, Types.FLOAT -> {
-                typeMeta.rawType = "REAL"
+            Types.REAL, Types.FLOAT -> "REAL"
 
-            }
+            Types.DOUBLE -> "DOUBLE PRECISION"
 
-            Types.DOUBLE -> {
-                typeMeta.rawType = "DOUBLE PRECISION"
-            }
+            Types.NUMERIC, Types.DECIMAL -> "NUMERIC"
 
-            Types.NUMERIC, Types.DECIMAL -> {
-                typeMeta.rawType = "NUMERIC"
-            }
-
-            Types.BOOLEAN -> {
-                typeMeta.rawType = "BOOLEAN"
-            }
+            Types.BOOLEAN -> "BOOLEAN"
 
 
-            Types.DATE -> {
-                typeMeta.rawType = "DATE"
-            }
+            Types.DATE -> "DATE"
 
-            Types.TIME_WITH_TIMEZONE -> {
-                typeMeta.rawType = "TIMETZ"
-            }
+            Types.TIME_WITH_TIMEZONE -> "TIMETZ"
 
-            Types.TIMESTAMP_WITH_TIMEZONE -> {
-                typeMeta.rawType = "TIMESTAMPTZ"
-            }
+            Types.TIMESTAMP_WITH_TIMEZONE -> "TIMESTAMPTZ"
 
-            Types.TIME -> {
-                typeMeta.rawType = "TIME"
-            }
+            Types.TIME -> "TIME"
 
-            Types.TIMESTAMP -> {
-                typeMeta.rawType = "TIMESTAMP"
-            }
+            Types.TIMESTAMP -> "TIMESTAMP"
+
+            else -> typeMeta.rawType
         }
-
-        if (typeMeta.autoIncrement) {
-            when (typeMeta.typeCode) {
-                Types.TINYINT, Types.SMALLINT -> {
-                    typeMeta.rawType = "SMALLSERIAL"
-                }
-
-                Types.INTEGER -> {
-                    typeMeta.rawType = "SERIAL"
-                }
-
-                Types.BIGINT -> {
-                    typeMeta.rawType = "BIGSERIAL"
-                }
-            }
-        }
-
-        return typeMeta.rawType
     }
 }
