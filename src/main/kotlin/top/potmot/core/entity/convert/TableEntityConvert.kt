@@ -74,5 +74,6 @@ private fun tableToEntity(
         this.comment = genTable.comment.clearTableComment()
         this.remark = genTable.remark
         this.packagePath = context.packagePath
+        this.superEntityIds = emptyList()
     }
 }

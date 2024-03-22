@@ -32,6 +32,7 @@ input GenTableInput {
     -id
     id(model)
     id(schema)
+    id(superTables) as superTableIds
 
     columns {
         #allScalars(GenColumn)
