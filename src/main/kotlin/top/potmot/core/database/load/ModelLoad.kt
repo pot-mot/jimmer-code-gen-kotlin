@@ -87,6 +87,7 @@ fun GenTableModelInput.toInputs(
         type = type,
         remark = remark,
         modelId = modelId,
+        superTableIds = emptyList(),
         columns = columns.map {
             GenTableInput.TargetOf_columns(
                 name = it.name,
