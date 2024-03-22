@@ -22,6 +22,7 @@ const val LONG_NAMES = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,

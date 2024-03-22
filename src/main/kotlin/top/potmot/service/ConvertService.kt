@@ -19,7 +19,7 @@ import top.potmot.model.GenTypeMapping
 import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTypeMappingView
-import top.potmot.model.extension.GenTableAssociationsOneDeepSuperTableFetcher
+import top.potmot.model.extension.GenTableAssociationsOneDepthSuperTableFetcher
 import top.potmot.model.id
 import top.potmot.model.orderKey
 import top.potmot.model.tableId
@@ -79,7 +79,7 @@ class ConvertService(
             where(
                 table.id valueIn tableIds
             )
-            select(table.fetch(GenTableAssociationsOneDeepSuperTableFetcher))
+            select(table.fetch(GenTableAssociationsOneDepthSuperTableFetcher))
         }.execute().map {
             GenTableAssociationsView(it)
         }

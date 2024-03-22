@@ -17,7 +17,7 @@ fun GenTableAssociationsView.toFull(): GenTableAssociationsView = copy(
     columns = columns + allSuperTables().flatMap { it.columns }
 )
 
-val GenTableAssociationsOneDeepSuperTableFetcher = newFetcher(GenTable::class).by(GenTableAssociationsView.METADATA.fetcher) {
+val GenTableAssociationsOneDepthSuperTableFetcher = newFetcher(GenTable::class).by(GenTableAssociationsView.METADATA.fetcher) {
     `superTables*` {
         depth(1)
     }

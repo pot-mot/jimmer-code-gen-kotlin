@@ -22,6 +22,7 @@ const val GRAPH_DATA = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -123,6 +124,7 @@ const val GRAPH_DATA = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -196,6 +198,7 @@ const val GRAPH_DATA = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -294,6 +297,7 @@ const val GRAPH_DATA = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -392,6 +396,7 @@ const val GRAPH_DATA = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -465,6 +470,7 @@ const val GRAPH_DATA = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -538,6 +544,7 @@ const val GRAPH_DATA = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -611,6 +618,7 @@ const val GRAPH_DATA = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -709,6 +717,7 @@ const val GRAPH_DATA = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,

@@ -12,6 +12,7 @@ const val ENUM_TABLE = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,

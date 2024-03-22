@@ -22,6 +22,7 @@ const val MANY_TO_ONE = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -120,6 +121,7 @@ const val MANY_TO_ONE = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -256,6 +258,7 @@ const val ONE_TO_MANY = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -354,6 +357,7 @@ const val ONE_TO_MANY = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -490,6 +494,7 @@ const val ONE_TO_ONE = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -563,6 +568,7 @@ const val ONE_TO_ONE = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -724,6 +730,7 @@ const val MANY_TO_MANY = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -797,6 +804,7 @@ const val MANY_TO_MANY = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -933,6 +941,7 @@ const val TREE_NODE = """
                         "comment": "",
                         "remark": "",
                         "type": "TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,

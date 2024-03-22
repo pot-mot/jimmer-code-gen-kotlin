@@ -137,6 +137,7 @@ const val GRAPH_DATA = """
                         "comment": "",
                         "remark": "",
                         "type": "SUPER_TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
@@ -167,6 +168,7 @@ const val GRAPH_DATA = """
                         "comment": "",
                         "remark": "",
                         "type": "SUPER_TABLE",
+                        "superTables": [],
                         "columns": [
                             {
                                 "orderKey": 1,
