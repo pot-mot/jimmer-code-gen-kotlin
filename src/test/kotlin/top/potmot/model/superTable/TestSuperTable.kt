@@ -12,7 +12,7 @@ import top.potmot.service.ModelService
 import top.potmot.service.PreviewService
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "h2")
+@ActiveProfiles("test-kotlin", "h2", "hide-sql")
 class TestSuperTable(
     @Autowired modelService: ModelService,
     @Autowired previewService: PreviewService

@@ -24,7 +24,7 @@ public interface OMSource {
     @Column(name = "ID")
     long id();
 
-    @OneToMany(mappedBy = "oMSource")
+    @OneToMany(mappedBy = "source")
     List<OMTarget> oMTargets();
 
     @IdView("oMTargets")
@@ -58,10 +58,10 @@ public interface OMTarget {
             name = "SOURCE_ID",
             referencedColumnName = "ID"
     )
-    OMSource oMSource();
+    OMSource source();
 
-    @IdView("oMSource")
-    long oMSourceId();
+    @IdView("source")
+    long sourceId();
 }
 )]
 """
@@ -90,7 +90,7 @@ public interface OMSource {
     @Column(name = "ID")
     long id();
 
-    @OneToMany(mappedBy = "oMSource")
+    @OneToMany(mappedBy = "source")
     List<OMTarget> oMTargets();
 
     @IdView("oMTargets")
@@ -126,10 +126,10 @@ public interface OMTarget {
             referencedColumnName = "ID",
             foreignKeyType = ForeignKeyType.REAL
     )
-    OMSource oMSource();
+    OMSource source();
 
-    @IdView("oMSource")
-    long oMSourceId();
+    @IdView("source")
+    long sourceId();
 }
 )]
 """
@@ -157,7 +157,7 @@ interface OMSource {
     @Column(name = "ID")
     val id: Long
 
-    @OneToMany(mappedBy = "oMSource")
+    @OneToMany(mappedBy = "source")
     val oMTargets: List<OMTarget>
 
     @IdView("oMTargets")
@@ -191,10 +191,10 @@ interface OMTarget {
         name = "SOURCE_ID",
         referencedColumnName = "ID"
     )
-    val oMSource: OMSource
+    val source: OMSource
 
-    @IdView("oMSource")
-    val oMSourceId: Long
+    @IdView("source")
+    val sourceId: Long
 }
 )]
 """
@@ -222,7 +222,7 @@ interface OMSource {
     @Column(name = "ID")
     val id: Long
 
-    @OneToMany(mappedBy = "oMSource")
+    @OneToMany(mappedBy = "source")
     val oMTargets: List<OMTarget>
 
     @IdView("oMTargets")
@@ -258,10 +258,10 @@ interface OMTarget {
         referencedColumnName = "ID",
         foreignKeyType = ForeignKeyType.REAL
     )
-    val oMSource: OMSource
+    val source: OMSource
 
-    @IdView("oMSource")
-    val oMSourceId: Long
+    @IdView("source")
+    val sourceId: Long
 }
 )]
 """

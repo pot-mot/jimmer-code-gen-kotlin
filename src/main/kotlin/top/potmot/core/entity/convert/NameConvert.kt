@@ -6,20 +6,22 @@ import top.potmot.utils.string.removeSuffixes
 import top.potmot.utils.string.splitTrim
 import top.potmot.utils.string.trimToLetterOrDigit
 
+const val SEPARATOR = "_"
+
 /**
- * 转换表名为类名
+ * 转换下划线命名为大驼峰名名
  * 根据分割符将一个字符串转成首字母大写其余小写的形式
  * 将根据 GlobalGenConfig 判断移除表前缀或后缀
  * eq:
  *      HELLO_WORLD -> HelloWorld
  */
-fun tableNameToClassName(name: String): String =
+fun snakeToCamel(name: String): String =
     buildString {
         // 将 newName 按照 SEPARATOR 进行分割成一个字符串数组并且去掉数组中的空字符串
         name
             .trimToLetterOrDigit()
             .clearTableName()
-            .split("_")
+            .split(SEPARATOR)
             .dropLastWhile { it.isEmpty() }
             .forEach {
                 if (it.isNotEmpty()) {
@@ -34,17 +36,22 @@ fun tableNameToClassName(name: String): String =
             }
     }
 
-/**
- * 转换表名为属性名
- * 在转换表名为类名基础上将首字母转小写
- * eq:
- *      HELLO_WORLD -> helloWorld
- */
-fun tableNameToPropertyName(name: String): String =
-    tableNameToClassName(name).replaceFirstChar { it.lowercase() }
+fun tableNameToClassName(name: String): String =
+    snakeToCamel(name)
 
 fun columnNameToPropertyName(name: String): String =
-    tableNameToClassName(name).replaceFirstChar { it.lowercase() }
+    snakeToCamel(name).replaceFirstChar { it.lowercase() }
+
+private fun String.removeLastId(): String =
+    if (lowercase().endsWith("id"))
+        slice(0 until length - 2)
+    else
+        this
+
+fun propertyNameToAssociationPropertyName(propertyName: String, tableName: String): String {
+    val associationPropertyName = propertyName.removeLastId()
+    return associationPropertyName.ifBlank { tableNameToClassName(tableName).replaceFirstChar { it.lowercase() } }
+}
 
 /**
  * 根据配置清理表名的前缀和后缀

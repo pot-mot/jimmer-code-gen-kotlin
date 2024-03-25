@@ -29,10 +29,10 @@ public interface OOSource {
             name = "TARGET_ID",
             referencedColumnName = "ID"
     )
-    OOTarget oOTarget();
+    OOTarget target();
 
-    @IdView("oOTarget")
-    long oOTargetId();
+    @IdView("target")
+    long targetId();
 }
 ), (top/potmot/OOTarget.java, package top.potmot;
 
@@ -57,7 +57,7 @@ public interface OOTarget {
     @Column(name = "ID")
     long id();
 
-    @OneToOne(mappedBy = "oOTarget")
+    @OneToOne(mappedBy = "target")
     @Nullable
     OOSource oOSource();
 
@@ -99,10 +99,10 @@ public interface OOSource {
             referencedColumnName = "ID",
             foreignKeyType = ForeignKeyType.REAL
     )
-    OOTarget oOTarget();
+    OOTarget target();
 
-    @IdView("oOTarget")
-    long oOTargetId();
+    @IdView("target")
+    long targetId();
 }
 ), (top/potmot/OOTarget.java, package top.potmot;
 
@@ -127,7 +127,7 @@ public interface OOTarget {
     @Column(name = "ID")
     long id();
 
-    @OneToOne(mappedBy = "oOTarget")
+    @OneToOne(mappedBy = "target")
     @Nullable
     OOSource oOSource();
 
@@ -167,10 +167,10 @@ interface OOSource {
         name = "TARGET_ID",
         referencedColumnName = "ID"
     )
-    val oOTarget: OOTarget
+    val target: OOTarget
 
-    @IdView("oOTarget")
-    val oOTargetId: Long
+    @IdView("target")
+    val targetId: Long
 }
 ), (top/potmot/OOTarget.kt, package top.potmot
 
@@ -194,7 +194,7 @@ interface OOTarget {
     @Column(name = "ID")
     val id: Long
 
-    @OneToOne(mappedBy = "oOTarget")
+    @OneToOne(mappedBy = "target")
     val oOSource: OOSource?
 
     @IdView("oOSource")
@@ -234,10 +234,10 @@ interface OOSource {
         referencedColumnName = "ID",
         foreignKeyType = ForeignKeyType.REAL
     )
-    val oOTarget: OOTarget
+    val target: OOTarget
 
-    @IdView("oOTarget")
-    val oOTargetId: Long
+    @IdView("target")
+    val targetId: Long
 }
 ), (top/potmot/OOTarget.kt, package top.potmot
 
@@ -261,7 +261,7 @@ interface OOTarget {
     @Column(name = "ID")
     val id: Long
 
-    @OneToOne(mappedBy = "oOTarget")
+    @OneToOne(mappedBy = "target")
     val oOSource: OOSource?
 
     @IdView("oOSource")

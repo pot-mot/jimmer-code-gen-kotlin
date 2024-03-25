@@ -64,9 +64,11 @@ fun convertAssociationProperties(
             )
         }
 
+        val baseColumn = outAssociation.columnReferences[0].sourceColumn
+
         val targetTable = outAssociation.targetTable
 
-        val baseColumn = outAssociation.columnReferences[0].sourceColumn
+        val targetColumn = outAssociation.columnReferences[0].targetColumn
 
         if (!propertiesMap.containsKey(baseColumn.id)) {
             throw ConvertEntityException.association(
@@ -96,7 +98,7 @@ fun convertAssociationProperties(
 
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = deepClone(baseProperty).copy {
-            name = tableNameToPropertyName(targetTable.name)
+            name = propertyNameToAssociationPropertyName(baseProperty.name, targetTable.name)
             comment = targetTable.comment.clearTableComment()
             type = tableNameToClassName(targetTable.name)
             typeTableId = targetTable.id
@@ -132,7 +134,9 @@ fun convertAssociationProperties(
                 }
 
                 ONE_TO_MANY -> {
-                    val mappedBy = tableNameToPropertyName(table.name)
+                    val mappedBy = propertyNameToAssociationPropertyName(
+                        columnNameToPropertyName(targetColumn.name), table.name
+                    )
 
                     keyProperty = false
                     setAssociation(
@@ -165,9 +169,11 @@ fun convertAssociationProperties(
             )
         }
 
+        val baseColumn = inAssociation.columnReferences[0].targetColumn
+
         val sourceTable = inAssociation.sourceTable
 
-        val baseColumn = inAssociation.columnReferences[0].targetColumn
+        val targetColumn = inAssociation.columnReferences[0].sourceColumn
 
         val currentColumnProperties = propertiesMap[baseColumn.id]
 
@@ -192,14 +198,16 @@ fun convertAssociationProperties(
 
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = deepClone(baseProperty).copy {
-            name = tableNameToPropertyName(sourceTable.name)
+            name = propertyNameToAssociationPropertyName(baseProperty.name, sourceTable.name)
             comment = sourceTable.comment.clearTableComment()
             type = tableNameToClassName(sourceTable.name)
             typeTableId = sourceTable.id
             idProperty = false
             idGenerationAnnotation = null
 
-            val mappedBy = tableNameToPropertyName(table.name).let {
+            val mappedBy = propertyNameToAssociationPropertyName(
+                columnNameToPropertyName(targetColumn.name), table.name
+            ).let {
                 if (targetPlural) it.toPlural() else it
             }
 

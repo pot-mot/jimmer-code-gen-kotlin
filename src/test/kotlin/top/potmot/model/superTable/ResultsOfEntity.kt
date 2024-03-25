@@ -1,74 +1,44 @@
 package top.potmot.model.superTable
 
 const val javaResult = """
-[(top/potmot/BaseEntity1.java, package top.potmot;
-
-import java.time.LocalDateTime;
-import org.babyfish.jimmer.sql.Column;
-import org.babyfish.jimmer.sql.MappedSuperclass;
-
-/**
- * @author 
- */
-@MappedSuperclass
-public interface BaseEntity1 {
-    @Column(name = "CREATE_TIME")
-    LocalDateTime createTime();
-}
-), (top/potmot/BaseEntity2.java, package top.potmot;
-
-import java.time.LocalDateTime;
-import org.babyfish.jimmer.sql.Column;
-import org.babyfish.jimmer.sql.MappedSuperclass;
-
-/**
- * @author 
- */
-@MappedSuperclass
-public interface BaseEntity2 {
-    @Column(name = "UPDATE_TIME")
-    LocalDateTime updateTime();
-}
-), (top/potmot/MOSource.java, package top.potmot;
+[(top/potmot/BaseEntity.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.Column;
-import org.babyfish.jimmer.sql.Entity;
-import org.babyfish.jimmer.sql.GeneratedValue;
-import org.babyfish.jimmer.sql.GenerationType;
-import org.babyfish.jimmer.sql.Id;
 import org.babyfish.jimmer.sql.IdView;
 import org.babyfish.jimmer.sql.JoinColumn;
 import org.babyfish.jimmer.sql.ManyToOne;
-import org.babyfish.jimmer.sql.Table;
+import org.babyfish.jimmer.sql.MappedSuperclass;
 
 /**
  * @author 
  */
-@Entity
-@Table(name = "M_O_SOURCE")
-public interface MOSource implements BaseEntity1, BaseEntity2 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    long id();
+@MappedSuperclass
+public interface BaseEntity {
+    @ManyToOne
+    @JoinColumn(
+            name = "CREATE_USER_ID",
+            referencedColumnName = "ID"
+    )
+    User createUser();
+
+    @IdView("createUser")
+    long createUserId();
 
     @ManyToOne
     @JoinColumn(
-            name = "SOURCE_ID",
+            name = "MODIFY_USER_ID",
             referencedColumnName = "ID"
     )
-    MOTarget mOTarget();
+    User modifyUser();
 
-    @IdView("mOTarget")
-    long mOTargetId();
+    @IdView("modifyUser")
+    long modifyUserId();
 }
-), (top/potmot/MOTarget.java, package top.potmot;
+), (top/potmot/User.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
-import org.babyfish.jimmer.sql.GeneratedValue;
-import org.babyfish.jimmer.sql.GenerationType;
 import org.babyfish.jimmer.sql.Id;
 import org.babyfish.jimmer.sql.IdView;
 import org.babyfish.jimmer.sql.OneToMany;
@@ -78,90 +48,62 @@ import org.babyfish.jimmer.sql.Table;
  * @author 
  */
 @Entity
-@Table(name = "M_O_TARGET")
-public interface MOTarget implements BaseEntity1 {
+@Table(name = "USER")
+public interface User implements BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     long id();
 
-    @OneToMany(mappedBy = "mOTarget")
-    List<MOSource> mOSources();
+    @OneToMany(mappedBy = "modifyUser")
+    List<BaseEntity> baseEntities();
 
-    @IdView("mOSources")
-    List<Long> mOSourceIds();
+    @IdView("baseEntities")
+    List<Long> baseEntityIds();
+
+    @Column(name = "NAME")
+    String name();
 }
 )]
 """
 
 const val kotlinResult = """
-[(top/potmot/BaseEntity1.kt, package top.potmot
-
-import java.time.LocalDateTime
-import org.babyfish.jimmer.sql.Column
-import org.babyfish.jimmer.sql.MappedSuperclass
-
-/**
- * @author 
- */
-@MappedSuperclass
-interface BaseEntity1 {
-    @Column(name = "CREATE_TIME")
-    val createTime: LocalDateTime
-}
-), (top/potmot/BaseEntity2.kt, package top.potmot
-
-import java.time.LocalDateTime
-import org.babyfish.jimmer.sql.Column
-import org.babyfish.jimmer.sql.MappedSuperclass
-
-/**
- * @author 
- */
-@MappedSuperclass
-interface BaseEntity2 {
-    @Column(name = "UPDATE_TIME")
-    val updateTime: LocalDateTime
-}
-), (top/potmot/MOSource.kt, package top.potmot
+[(top/potmot/BaseEntity.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
-import org.babyfish.jimmer.sql.Entity
-import org.babyfish.jimmer.sql.GeneratedValue
-import org.babyfish.jimmer.sql.GenerationType
-import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.ManyToOne
-import org.babyfish.jimmer.sql.Table
+import org.babyfish.jimmer.sql.MappedSuperclass
 
 /**
  * @author 
  */
-@Entity
-@Table(name = "M_O_SOURCE")
-interface MOSource : BaseEntity1, BaseEntity2 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    val id: Long
+@MappedSuperclass
+interface BaseEntity {
+    @ManyToOne
+    @JoinColumn(
+        name = "CREATE_USER_ID",
+        referencedColumnName = "ID"
+    )
+    val createUser: User
+
+    @IdView("createUser")
+    val createUserId: Long
 
     @ManyToOne
     @JoinColumn(
-        name = "SOURCE_ID",
+        name = "MODIFY_USER_ID",
         referencedColumnName = "ID"
     )
-    val mOTarget: MOTarget
+    val modifyUser: User
 
-    @IdView("mOTarget")
-    val mOTargetId: Long
+    @IdView("modifyUser")
+    val modifyUserId: Long
 }
-), (top/potmot/MOTarget.kt, package top.potmot
+), (top/potmot/User.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
-import org.babyfish.jimmer.sql.GeneratedValue
-import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.OneToMany
@@ -171,18 +113,20 @@ import org.babyfish.jimmer.sql.Table
  * @author 
  */
 @Entity
-@Table(name = "M_O_TARGET")
-interface MOTarget : BaseEntity1 {
+@Table(name = "USER")
+interface User : BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     val id: Long
 
-    @OneToMany(mappedBy = "mOTarget")
-    val mOSources: List<MOSource>
+    @OneToMany(mappedBy = "modifyUser")
+    val baseEntities: List<BaseEntity>
 
-    @IdView("mOSources")
-    val mOSourceIds: List<Long>
+    @IdView("baseEntities")
+    val baseEntityIds: List<Long>
+
+    @Column(name = "NAME")
+    val name: String
 }
 )]
 """

@@ -29,10 +29,10 @@ public interface MOSource {
             name = "SOURCE_ID",
             referencedColumnName = "ID"
     )
-    MOTarget mOTarget();
+    MOTarget source();
 
-    @IdView("mOTarget")
-    long mOTargetId();
+    @IdView("source")
+    long sourceId();
 }
 ), (top/potmot/MOTarget.java, package top.potmot;
 
@@ -57,7 +57,7 @@ public interface MOTarget {
     @Column(name = "ID")
     long id();
 
-    @OneToMany(mappedBy = "mOTarget")
+    @OneToMany(mappedBy = "source")
     List<MOSource> mOSources();
 
     @IdView("mOSources")
@@ -97,10 +97,10 @@ public interface MOSource {
             referencedColumnName = "ID",
             foreignKeyType = ForeignKeyType.REAL
     )
-    MOTarget mOTarget();
+    MOTarget source();
 
-    @IdView("mOTarget")
-    long mOTargetId();
+    @IdView("source")
+    long sourceId();
 }
 ), (top/potmot/MOTarget.java, package top.potmot;
 
@@ -125,7 +125,7 @@ public interface MOTarget {
     @Column(name = "ID")
     long id();
 
-    @OneToMany(mappedBy = "mOTarget")
+    @OneToMany(mappedBy = "source")
     List<MOSource> mOSources();
 
     @IdView("mOSources")
@@ -163,10 +163,10 @@ interface MOSource {
         name = "SOURCE_ID",
         referencedColumnName = "ID"
     )
-    val mOTarget: MOTarget
+    val source: MOTarget
 
-    @IdView("mOTarget")
-    val mOTargetId: Long
+    @IdView("source")
+    val sourceId: Long
 }
 ), (top/potmot/MOTarget.kt, package top.potmot
 
@@ -190,7 +190,7 @@ interface MOTarget {
     @Column(name = "ID")
     val id: Long
 
-    @OneToMany(mappedBy = "mOTarget")
+    @OneToMany(mappedBy = "source")
     val mOSources: List<MOSource>
 
     @IdView("mOSources")
@@ -230,10 +230,10 @@ interface MOSource {
         referencedColumnName = "ID",
         foreignKeyType = ForeignKeyType.REAL
     )
-    val mOTarget: MOTarget
+    val source: MOTarget
 
-    @IdView("mOTarget")
-    val mOTargetId: Long
+    @IdView("source")
+    val sourceId: Long
 }
 ), (top/potmot/MOTarget.kt, package top.potmot
 
@@ -257,7 +257,7 @@ interface MOTarget {
     @Column(name = "ID")
     val id: Long
 
-    @OneToMany(mappedBy = "mOTarget")
+    @OneToMany(mappedBy = "source")
     val mOSources: List<MOSource>
 
     @IdView("mOSources")

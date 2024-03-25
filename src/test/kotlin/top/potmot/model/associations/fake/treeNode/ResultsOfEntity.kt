@@ -28,7 +28,7 @@ public interface TreeNode {
     @Column(name = "ID")
     long id();
 
-    @OneToMany(mappedBy = "treeNode")
+    @OneToMany(mappedBy = "parent")
     List<TreeNode> treeNodes();
 
     @IdView("treeNodes")
@@ -41,11 +41,11 @@ public interface TreeNode {
             foreignKeyType = ForeignKeyType.FAKE
     )
     @Nullable
-    TreeNode treeNode();
+    TreeNode parent();
 
-    @IdView("treeNode")
+    @IdView("parent")
     @Nullable
-    Long treeNodeId();
+    Long parentId();
 }
 )]
 """
@@ -77,7 +77,7 @@ public interface TreeNode {
     @Column(name = "ID")
     long id();
 
-    @OneToMany(mappedBy = "treeNode")
+    @OneToMany(mappedBy = "parent")
     List<TreeNode> treeNodes();
 
     @IdView("treeNodes")
@@ -89,11 +89,11 @@ public interface TreeNode {
             referencedColumnName = "ID"
     )
     @Nullable
-    TreeNode treeNode();
+    TreeNode parent();
 
-    @IdView("treeNode")
+    @IdView("parent")
     @Nullable
-    Long treeNodeId();
+    Long parentId();
 }
 )]
 """
@@ -124,7 +124,7 @@ interface TreeNode {
     @Column(name = "ID")
     val id: Long
 
-    @OneToMany(mappedBy = "treeNode")
+    @OneToMany(mappedBy = "parent")
     val treeNodes: List<TreeNode>
 
     @IdView("treeNodes")
@@ -136,10 +136,10 @@ interface TreeNode {
         referencedColumnName = "ID",
         foreignKeyType = ForeignKeyType.FAKE
     )
-    val treeNode: TreeNode?
+    val parent: TreeNode?
 
-    @IdView("treeNode")
-    val treeNodeId: Long?
+    @IdView("parent")
+    val parentId: Long?
 }
 )]
 """
@@ -169,7 +169,7 @@ interface TreeNode {
     @Column(name = "ID")
     val id: Long
 
-    @OneToMany(mappedBy = "treeNode")
+    @OneToMany(mappedBy = "parent")
     val treeNodes: List<TreeNode>
 
     @IdView("treeNodes")
@@ -180,10 +180,10 @@ interface TreeNode {
         name = "PARENT_ID",
         referencedColumnName = "ID"
     )
-    val treeNode: TreeNode?
+    val parent: TreeNode?
 
-    @IdView("treeNode")
-    val treeNodeId: Long?
+    @IdView("parent")
+    val parentId: Long?
 }
 )]
 """

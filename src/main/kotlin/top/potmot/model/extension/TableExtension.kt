@@ -13,9 +13,16 @@ fun GenTableAssociationsView.allSuperTables(): List<GenTableAssociationsView> {
     return result + result.flatMap { it.allSuperTables() }
 }
 
-fun GenTableAssociationsView.toFull(): GenTableAssociationsView = copy(
-    columns = columns + allSuperTables().flatMap { it.columns }
-)
+fun GenTableAssociationsView.toFull(): GenTableAssociationsView {
+    val allSuperTables = allSuperTables()
+
+    return copy(
+        superTables = emptyList(),
+        columns = columns + allSuperTables.flatMap { it.columns },
+        inAssociations = inAssociations + allSuperTables.flatMap { it.inAssociations },
+        outAssociations = outAssociations + allSuperTables.flatMap { it.outAssociations }
+    )
+}
 
 val GenTableAssociationsOneDepthSuperTableFetcher = newFetcher(GenTable::class).by(GenTableAssociationsView.METADATA.fetcher) {
     `superTables*` {
