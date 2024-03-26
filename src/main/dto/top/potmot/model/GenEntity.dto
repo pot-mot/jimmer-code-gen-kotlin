@@ -54,3 +54,19 @@ GenEntityPropertiesView {
         }
     }
 }
+
+input GenEntityInput {
+    #allScalars(GenEntity)
+    -id
+    id(model)
+    id(table)
+    id(superEntities) as superEntityIds
+
+    properties {
+        #allScalars(GenProperty)
+        -id
+        id(column)
+        id(typeTable)
+        id(enum)
+    }
+}

@@ -1,6 +1,8 @@
 package top.potmot.core.database.meta
 
+import top.potmot.core.entity.meta.OutAssociationMeta
 import top.potmot.model.GenAssociation
+import top.potmot.model.dto.GenAssociationInput
 
 data class ForeignKeyMeta(
     val name: String,
@@ -23,13 +25,13 @@ fun ForeignKeyMeta.reversed(): ForeignKeyMeta =
         onDelete,
     )
 
-fun GenAssociation.toFkMeta(): ForeignKeyMeta =
+fun OutAssociationMeta.toFkMeta(): ForeignKeyMeta =
     ForeignKeyMeta(
-        name = this.name,
+        name = association.name,
         sourceTableName = this.sourceTable.name,
-        sourceColumnNames = this.columnReferences.map { it.sourceColumn.name },
+        sourceColumnNames = sourceColumns.map { it.name },
         targetTableName = this.targetTable.name,
-        targetColumnNames = this.columnReferences.map { it.targetColumn.name },
-        onUpdate = this.updateAction,
-        onDelete = this.deleteAction,
+        targetColumnNames = targetColumns.map { it.name },
+        onUpdate = association.updateAction,
+        onDelete = association.deleteAction,
     )

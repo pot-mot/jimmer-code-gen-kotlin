@@ -3,6 +3,7 @@ package top.potmot.core.database.meta
 import top.potmot.core.entity.convert.clearColumnName
 import top.potmot.core.entity.convert.clearTableComment
 import top.potmot.core.entity.convert.clearTableName
+import top.potmot.core.entity.meta.OutAssociationMeta
 import top.potmot.model.GenAssociation
 import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenTableAssociationsView
@@ -83,7 +84,19 @@ fun GenAssociation.toMappingTableMeta() =
         targetTableComment = targetTable.comment,
         sourceColumnNames = this.columnReferences.map { it.sourceColumn.name },
         targetColumnNames = this.columnReferences.map { it.targetColumn.name },
-        columnTypes = this.columnReferences.map { it.sourceColumn.getTypeMeta() },
+        columnTypes = this.columnReferences.map { ColumnTypeMeta(it.sourceColumn) },
+    )
+
+fun OutAssociationMeta.toMappingTableMeta() =
+    MappingTableMeta(
+        name = association.name,
+        sourceTableName = sourceTable.name,
+        targetTableName = targetTable.name,
+        sourceTableComment = sourceTable.comment,
+        targetTableComment = targetTable.comment,
+        sourceColumnNames = sourceColumns.map { it.name },
+        targetColumnNames = targetColumns.map { it.name },
+        columnTypes = sourceColumns.map { it.getTypeMeta() },
     )
 
 private fun createMappingTableColumn(

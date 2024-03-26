@@ -15,7 +15,7 @@ const val SEPARATOR = "_"
  * eq:
  *      HELLO_WORLD -> HelloWorld
  */
-fun snakeToCamel(name: String): String =
+fun snakeToUpperCamel(name: String): String =
     buildString {
         // 将 newName 按照 SEPARATOR 进行分割成一个字符串数组并且去掉数组中的空字符串
         name
@@ -36,22 +36,8 @@ fun snakeToCamel(name: String): String =
             }
     }
 
-fun tableNameToClassName(name: String): String =
-    snakeToCamel(name)
-
-fun columnNameToPropertyName(name: String): String =
-    snakeToCamel(name).replaceFirstChar { it.lowercase() }
-
-private fun String.removeLastId(): String =
-    if (lowercase().endsWith("id"))
-        slice(0 until length - 2)
-    else
-        this
-
-fun propertyNameToAssociationPropertyName(propertyName: String, tableName: String): String {
-    val associationPropertyName = propertyName.removeLastId()
-    return associationPropertyName.ifBlank { tableNameToClassName(tableName).replaceFirstChar { it.lowercase() } }
-}
+fun snakeToLowerCamel(name: String): String =
+    snakeToUpperCamel(name).replaceFirstChar { it.lowercase() }
 
 /**
  * 根据配置清理表名的前缀和后缀

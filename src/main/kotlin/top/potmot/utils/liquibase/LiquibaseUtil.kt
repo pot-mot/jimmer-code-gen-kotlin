@@ -20,10 +20,10 @@ import liquibase.serializer.core.xml.XMLChangeLogSerializer
 import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
 import top.potmot.core.database.generate.columnType.getColumnTypeDefiner
-import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.core.database.meta.toMappingTableMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.model.GenDataSource
+import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenAssociationModelInput
 import top.potmot.model.dto.GenTableModelInput
 import top.potmot.model.extension.toSource
@@ -48,7 +48,7 @@ private fun GenTableModelInput.TargetOf_columns.toColumnConfig(typeDefiner: Colu
     // 基本信息
     columnConfig.name = name
     columnConfig.remarks = comment
-    columnConfig.type = typeDefiner.getTypeDefine(getTypeMeta())
+    columnConfig.type = typeDefiner.getTypeDefine(ColumnTypeMeta(this.toEntity()))
     columnConfig.isAutoIncrement = autoIncrement
 
     defaultValue.let {

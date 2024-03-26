@@ -1,11 +1,9 @@
 package top.potmot.core.entity.convert
 
-import org.babyfish.jimmer.kt.new
 import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
-import top.potmot.model.GenProperty
-import top.potmot.model.by
+import top.potmot.model.dto.GenPropertyInput
 import top.potmot.model.dto.GenTableAssociationsView
 
 /**
@@ -30,43 +28,41 @@ fun convertBaseProperties(
  */
 fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
     typeMapping: TypeMapping,
-): GenProperty {
+): GenPropertyInput {
     val column = this
 
-    return new(GenProperty::class).by {
-        this.columnId = column.id
-        this.name = columnNameToPropertyName(column.name)
-        this.comment = column.comment.clearColumnComment()
-        this.type = typeMapping(column.getTypeMeta())
-        this.typeTableId = null
-        this.listType = false
-        this.typeNotNull = column.typeNotNull
-        this.idProperty = false
-        this.idGenerationAnnotation = null
-        this.keyProperty = column.businessKey
-        this.logicalDelete = column.logicalDelete
-        this.enumId = column.enumId
-        this.idView = false
-        this.idViewAnnotation = null
-        this.associationType = null
-        this.associationAnnotation = null
-        this.dissociateAnnotation = null
-        this.otherAnnotation = null
-        this.remark = column.remark
-        this.orderKey = column.orderKey
-    }
+    return GenPropertyInput(
+        columnId = column.id,
+        name = snakeToLowerCamel(column.name),
+        comment = column.comment.clearColumnComment(),
+        type = typeMapping(column.getTypeMeta()),
+        typeTableId = null,
+        listType = false,
+        typeNotNull = column.typeNotNull,
+        idProperty = false,
+        idGenerationAnnotation = null,
+        keyProperty = column.businessKey,
+        logicalDelete = column.logicalDelete,
+        enumId = column.enumId,
+        idView = false,
+        idViewAnnotation = null,
+        associationType = null,
+        associationAnnotation = null,
+        dissociateAnnotation = null,
+        otherAnnotation = null,
+        remark = column.remark,
+        orderKey = column.orderKey,
+    )
 }
 
-private fun GenProperty.toIdProperty(
+private fun GenPropertyInput.toIdProperty(
     column: GenTableAssociationsView.TargetOf_columns
 ) =
-    new(GenProperty::class).by(this) {
-        idProperty = true
-        typeNotNull = true
-        keyProperty = false
-        logicalDelete = false
-        idView = false
-        if (column.autoIncrement) {
-            idGenerationAnnotation = "@GeneratedValue(strategy = GenerationType.IDENTITY)"
-        }
-    }
+    copy(
+        idProperty = true,
+        typeNotNull = true,
+        keyProperty = false,
+        logicalDelete = false,
+        idView = false,
+        idGenerationAnnotation = if (column.autoIncrement) "@GeneratedValue(strategy = GenerationType.IDENTITY)" else null
+    )

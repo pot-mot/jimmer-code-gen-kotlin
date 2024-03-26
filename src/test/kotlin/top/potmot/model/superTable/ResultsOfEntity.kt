@@ -8,31 +8,36 @@ import org.babyfish.jimmer.sql.IdView;
 import org.babyfish.jimmer.sql.JoinColumn;
 import org.babyfish.jimmer.sql.ManyToOne;
 import org.babyfish.jimmer.sql.MappedSuperclass;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author 
  */
 @MappedSuperclass
 public interface BaseEntity {
-    @ManyToOne
+    @ManyToOne(inputNotNull = true)
     @JoinColumn(
             name = "CREATE_USER_ID",
             referencedColumnName = "ID"
     )
+    @Nullable
     User createUser();
 
     @IdView("createUser")
-    long createUserId();
+    @Nullable
+    Long createUserId();
 
-    @ManyToOne
+    @ManyToOne(inputNotNull = true)
     @JoinColumn(
             name = "MODIFY_USER_ID",
             referencedColumnName = "ID"
     )
+    @Nullable
     User modifyUser();
 
     @IdView("modifyUser")
-    long modifyUserId();
+    @Nullable
+    Long modifyUserId();
 }
 ), (top/potmot/User.java, package top.potmot;
 
@@ -80,25 +85,25 @@ import org.babyfish.jimmer.sql.MappedSuperclass
  */
 @MappedSuperclass
 interface BaseEntity {
-    @ManyToOne
+    @ManyToOne(inputNotNull = true)
     @JoinColumn(
         name = "CREATE_USER_ID",
         referencedColumnName = "ID"
     )
-    val createUser: User
+    val createUser: User?
 
     @IdView("createUser")
-    val createUserId: Long
+    val createUserId: Long?
 
-    @ManyToOne
+    @ManyToOne(inputNotNull = true)
     @JoinColumn(
         name = "MODIFY_USER_ID",
         referencedColumnName = "ID"
     )
-    val modifyUser: User
+    val modifyUser: User?
 
     @IdView("modifyUser")
-    val modifyUserId: Long
+    val modifyUserId: Long?
 }
 ), (top/potmot/User.kt, package top.potmot
 

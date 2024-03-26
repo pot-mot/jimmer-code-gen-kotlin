@@ -1,14 +1,13 @@
 package top.potmot.core.database.meta
 
-import org.babyfish.jimmer.ImmutableObjects
+import top.potmot.core.entity.meta.InAssociationMeta
+import top.potmot.core.entity.meta.OutAssociationMeta
 import top.potmot.error.ConvertEntityException
-import top.potmot.model.GenAssociation
-import top.potmot.model.copy
 import top.potmot.model.dto.GenTableAssociationsView
 
 data class TableAssociations(
-    val outAssociations: List<GenAssociation>,
-    val inAssociations: List<GenAssociation>,
+    val outAssociations: List<OutAssociationMeta>,
+    val inAssociations: List<InAssociationMeta>,
 )
 
 @Throws(ConvertEntityException::class)
@@ -16,39 +15,45 @@ fun GenTableAssociationsView.getAssociations(): TableAssociations {
     val columnMap = columns.associateBy { it.id }
 
     val outAssociations = this.outAssociations.map { outAssociation ->
-        outAssociation.toEntity().copy {
-            this.sourceTable = ImmutableObjects.toLonely(this@getAssociations.toEntity())
-            this.columnReferences = outAssociation.columnReferences.map { columnReference ->
-                columnReference.toEntity().copy {
-                    if (!columnMap.containsKey(columnReference.sourceColumn.id)) {
-                        throw ConvertEntityException.association(
-                            "out association [${outAssociation.name}] recreate fail: " +
-                                    " sourceColumn [${columnReference.sourceColumn.id}] not found in table [${this@getAssociations.name}]"
-                        )
-                    }
-                    this.sourceColumn =
-                        ImmutableObjects.toLonely(columnMap[columnReference.sourceColumn.id]!!.toEntity())
-                }
+        val sourceColumns =
+            outAssociation.columnReferences.map { columnReference ->
+                columnMap[columnReference.sourceColumn.id] ?: throw ConvertEntityException.association(
+                    "OutAssociation [${outAssociation.name}] create fail: " +
+                            " sourceColumn [${columnReference.sourceColumn.id}] not found in table [${this@getAssociations.name}]"
+                )
             }
-        }
+
+        val targetColumns =
+            outAssociation.columnReferences.map { it.targetColumn }
+
+        OutAssociationMeta(
+            association = outAssociation,
+            sourceTable = this@getAssociations,
+            sourceColumns = sourceColumns,
+            targetTable = outAssociation.targetTable,
+            targetColumns = targetColumns,
+        )
     }
 
     val inAssociations = this.inAssociations.map { inAssociation ->
-        inAssociation.toEntity().copy {
-            this.targetTable = ImmutableObjects.toLonely(this@getAssociations.toEntity())
-            this.columnReferences = inAssociation.columnReferences.map { columnReference ->
-                columnReference.toEntity().copy {
-                    if (!columnMap.containsKey(columnReference.targetColumn.id)) {
-                        throw ConvertEntityException.association(
-                            "in association [${inAssociation.name}] recreate fail: " +
-                                    " targetColumn [${columnReference.targetColumn.id}] not found in table [${this@getAssociations.name}]"
-                        )
-                    }
-                    this.targetColumn =
-                        ImmutableObjects.toLonely(columnMap[columnReference.targetColumn.id]!!.toEntity())
-                }
+        val targetColumns =
+            inAssociation.columnReferences.map { columnReference ->
+                columnMap[columnReference.targetColumn.id] ?: throw ConvertEntityException.association(
+                    "InAssociation [${inAssociation.name}] create fail: " +
+                            " targetColumn [${columnReference.targetColumn.id}] not found in table [${this@getAssociations.name}]"
+                )
             }
-        }
+
+        val sourceColumns =
+            inAssociation.columnReferences.map { it.sourceColumn }
+
+        InAssociationMeta(
+            association = inAssociation,
+            targetTable = this@getAssociations,
+            targetColumns = targetColumns,
+            sourceTable = inAssociation.sourceTable,
+            sourceColumns = sourceColumns,
+        )
     }
 
     return TableAssociations(

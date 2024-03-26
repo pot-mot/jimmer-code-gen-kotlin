@@ -104,6 +104,7 @@ GenTableAssociationsView {
                 id
                 name
                 comment
+                partOfPk
             }
             targetColumn {
                 id
@@ -128,6 +129,7 @@ GenTableAssociationsView {
                 id
                 name
                 comment
+                partOfPk
             }
         }
     }

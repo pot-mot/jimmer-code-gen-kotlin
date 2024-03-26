@@ -15,13 +15,13 @@ object EnglishWordUtil {
     private val uncountables: MutableList<String> = ArrayList()
 
     //二、单数 -> 复数的不规则变化
-    private val unregularSingularToPlural: MutableList<PatternAndReplacement> = ArrayList()
+    private val irregularSingularToPlural: MutableList<PatternAndReplacement> = ArrayList()
 
     //三、单数 -> 复数
     private val singularToPlural: MutableList<PatternAndReplacement> = ArrayList()
 
     //四、复数 -> 单数的不规则变化
-    private val unregularPluralToSingular: MutableList<PatternAndReplacement> = ArrayList()
+    private val irregularPluralToSingular: MutableList<PatternAndReplacement> = ArrayList()
 
     //五、复数 -> 单数
     private val pluralToSingular: MutableList<PatternAndReplacement> = ArrayList()
@@ -43,63 +43,63 @@ object EnglishWordUtil {
         uncountables.add("news")
         uncountables.add("human")
         //二、单数 -> 复数的不规则变化
-        unregularSingularToPlural.add(
+        irregularSingularToPlural.add(
             PatternAndReplacement(
                 Pattern.compile("^person$", Pattern.CASE_INSENSITIVE),
                 "people"
             )
         )
-        unregularSingularToPlural.add(
+        irregularSingularToPlural.add(
             PatternAndReplacement(
                 Pattern.compile("([^(Ger)])man", Pattern.CASE_INSENSITIVE),
                 "$1men"
             )
         )
-        unregularSingularToPlural.add(PatternAndReplacement(Pattern.compile("^man$", Pattern.CASE_INSENSITIVE), "men"))
-        unregularSingularToPlural.add(
+        irregularSingularToPlural.add(PatternAndReplacement(Pattern.compile("^man$", Pattern.CASE_INSENSITIVE), "men"))
+        irregularSingularToPlural.add(
             PatternAndReplacement(
                 Pattern.compile("^child$", Pattern.CASE_INSENSITIVE),
                 "children"
             )
         )
-        unregularSingularToPlural.add(
+        irregularSingularToPlural.add(
             PatternAndReplacement(
                 Pattern.compile("^foot$", Pattern.CASE_INSENSITIVE),
                 "feet"
             )
         )
-        unregularSingularToPlural.add(
+        irregularSingularToPlural.add(
             PatternAndReplacement(
                 Pattern.compile("^tooth$", Pattern.CASE_INSENSITIVE),
                 "teeth"
             )
         )
-        unregularSingularToPlural.add(
+        irregularSingularToPlural.add(
             PatternAndReplacement(
-                Pattern.compile("^(m|l)ouse$", Pattern.CASE_INSENSITIVE),
+                Pattern.compile("^([ml])ouse$", Pattern.CASE_INSENSITIVE),
                 "$1ice"
             )
         )
-        unregularSingularToPlural.add(
+        irregularSingularToPlural.add(
             PatternAndReplacement(
                 Pattern.compile("^matrix$", Pattern.CASE_INSENSITIVE),
                 "matrices"
             )
         )
-        unregularSingularToPlural.add(
+        irregularSingularToPlural.add(
             PatternAndReplacement(
                 Pattern.compile("^vertex$", Pattern.CASE_INSENSITIVE),
                 "vertices"
             )
         )
-        unregularSingularToPlural.add(PatternAndReplacement(Pattern.compile("^ox$", Pattern.CASE_INSENSITIVE), "oxen"))
-        unregularSingularToPlural.add(
+        irregularSingularToPlural.add(PatternAndReplacement(Pattern.compile("^ox$", Pattern.CASE_INSENSITIVE), "oxen"))
+        irregularSingularToPlural.add(
             PatternAndReplacement(
                 Pattern.compile("^goose$", Pattern.CASE_INSENSITIVE),
                 "geese"
             )
         )
-        unregularSingularToPlural.add(
+        irregularSingularToPlural.add(
             PatternAndReplacement(
                 Pattern.compile("^basis$", Pattern.CASE_INSENSITIVE),
                 "bases"
@@ -160,63 +160,63 @@ object EnglishWordUtil {
         singularToPlural.add(PatternAndReplacement(Pattern.compile("(house)$", Pattern.CASE_INSENSITIVE), "houses"))
 
         //四、复数 -> 单数的不规则变化
-        unregularPluralToSingular.add(
+        irregularPluralToSingular.add(
             PatternAndReplacement(
                 Pattern.compile("^people$", Pattern.CASE_INSENSITIVE),
                 "person"
             )
         )
-        unregularPluralToSingular.add(
+        irregularPluralToSingular.add(
             PatternAndReplacement(
                 Pattern.compile("([^(Ger)])men", Pattern.CASE_INSENSITIVE),
                 "$1man"
             )
         )
-        unregularPluralToSingular.add(PatternAndReplacement(Pattern.compile("^men$", Pattern.CASE_INSENSITIVE), "man"))
-        unregularPluralToSingular.add(
+        irregularPluralToSingular.add(PatternAndReplacement(Pattern.compile("^men$", Pattern.CASE_INSENSITIVE), "man"))
+        irregularPluralToSingular.add(
             PatternAndReplacement(
                 Pattern.compile("^children$", Pattern.CASE_INSENSITIVE),
                 "child"
             )
         )
-        unregularPluralToSingular.add(
+        irregularPluralToSingular.add(
             PatternAndReplacement(
                 Pattern.compile("^feet$", Pattern.CASE_INSENSITIVE),
                 "foot"
             )
         )
-        unregularPluralToSingular.add(
+        irregularPluralToSingular.add(
             PatternAndReplacement(
                 Pattern.compile("^teeth$", Pattern.CASE_INSENSITIVE),
                 "tooth"
             )
         )
-        unregularPluralToSingular.add(
+        irregularPluralToSingular.add(
             PatternAndReplacement(
-                Pattern.compile("^(m|l)ice$", Pattern.CASE_INSENSITIVE),
+                Pattern.compile("^([ml])ice$", Pattern.CASE_INSENSITIVE),
                 "$1ouse"
             )
         )
-        unregularPluralToSingular.add(
+        irregularPluralToSingular.add(
             PatternAndReplacement(
                 Pattern.compile("^matrices$", Pattern.CASE_INSENSITIVE),
                 "matrix"
             )
         )
-        unregularPluralToSingular.add(
+        irregularPluralToSingular.add(
             PatternAndReplacement(
                 Pattern.compile("^vertices$", Pattern.CASE_INSENSITIVE),
                 "vertex"
             )
         )
-        unregularPluralToSingular.add(PatternAndReplacement(Pattern.compile("^oxen$", Pattern.CASE_INSENSITIVE), "ox"))
-        unregularPluralToSingular.add(
+        irregularPluralToSingular.add(PatternAndReplacement(Pattern.compile("^oxen$", Pattern.CASE_INSENSITIVE), "ox"))
+        irregularPluralToSingular.add(
             PatternAndReplacement(
                 Pattern.compile("^geese$", Pattern.CASE_INSENSITIVE),
                 "goose"
             )
         )
-        unregularPluralToSingular.add(
+        irregularPluralToSingular.add(
             PatternAndReplacement(
                 Pattern.compile("^bases$", Pattern.CASE_INSENSITIVE),
                 "basis"
@@ -287,7 +287,7 @@ object EnglishWordUtil {
 
     // 是否为单数形式
     fun isSingular(word: String?): Boolean {
-        if (word == null || word.length == 0) {
+        if (word.isNullOrEmpty()) {
             return false
         }
         // 1、单复数同形
@@ -295,8 +295,8 @@ object EnglishWordUtil {
             return true
         }
         //2、不规则变化
-        for (unregular in unregularSingularToPlural) {
-            val matcher = unregular.pattern.matcher(word)
+        for (irregular in irregularSingularToPlural) {
+            val matcher = irregular.pattern.matcher(word)
             if (matcher.find()) {
                 return true
             }
@@ -312,8 +312,8 @@ object EnglishWordUtil {
     }
 
     // 单数 -> 复数
-    fun pluralize(word: String?): String {
-        if (word == null || word.length == 0) {
+    fun toPlural(word: String?): String {
+        if (word.isNullOrEmpty()) {
             return ""
         }
         //1、单复数同形
@@ -321,10 +321,10 @@ object EnglishWordUtil {
             return word
         }
         //2、不规则变化
-        for (unregular in unregularSingularToPlural) {
-            val matcher = unregular.pattern.matcher(word)
+        for (irregular in irregularSingularToPlural) {
+            val matcher = irregular.pattern.matcher(word)
             if (matcher.find()) {
-                return matcher.replaceAll(unregular.replacement)
+                return matcher.replaceAll(irregular.replacement)
             }
         }
         //3、规则变化
@@ -339,7 +339,7 @@ object EnglishWordUtil {
 
     // 是否为复数形式
     fun isPlural(word: String?): Boolean {
-        if (word == null || word.length == 0) {
+        if (word.isNullOrEmpty()) {
             return false
         }
         // 1、单复数同形
@@ -347,8 +347,8 @@ object EnglishWordUtil {
             return true
         }
         //2、不规则变化
-        for (unregular in unregularPluralToSingular) {
-            val matcher = unregular.pattern.matcher(word)
+        for (irregular in irregularPluralToSingular) {
+            val matcher = irregular.pattern.matcher(word)
             if (matcher.find()) {
                 return true
             }
@@ -364,8 +364,8 @@ object EnglishWordUtil {
     }
 
     // 复数 -> 单数
-    fun singularize(word: String?): String {
-        if (word == null || word.length == 0) {
+    fun toSingular(word: String?): String {
+        if (word.isNullOrEmpty()) {
             return ""
         }
         //1、单复数同形
@@ -373,10 +373,10 @@ object EnglishWordUtil {
             return word
         }
         //2、不规则变化
-        for (unregular in unregularPluralToSingular) {
-            val matcher = unregular.pattern.matcher(word)
+        for (irregular in irregularPluralToSingular) {
+            val matcher = irregular.pattern.matcher(word)
             if (matcher.find()) {
-                return matcher.replaceAll(unregular.replacement)
+                return matcher.replaceAll(irregular.replacement)
             }
         }
         //3、规则变化

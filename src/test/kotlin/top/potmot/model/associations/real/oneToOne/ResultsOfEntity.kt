@@ -24,7 +24,7 @@ public interface OOSource {
     @Column(name = "ID")
     long id();
 
-    @OneToOne
+    @OneToOne(inputNotNull = true)
     @JoinColumn(
             name = "TARGET_ID",
             referencedColumnName = "ID"
@@ -93,7 +93,7 @@ public interface OOSource {
     @Column(name = "ID")
     long id();
 
-    @OneToOne
+    @OneToOne(inputNotNull = true)
     @JoinColumn(
             name = "TARGET_ID",
             referencedColumnName = "ID",
@@ -162,7 +162,7 @@ interface OOSource {
     @Column(name = "ID")
     val id: Long
 
-    @OneToOne
+    @OneToOne(inputNotNull = true)
     @JoinColumn(
         name = "TARGET_ID",
         referencedColumnName = "ID"
@@ -228,7 +228,7 @@ interface OOSource {
     @Column(name = "ID")
     val id: Long
 
-    @OneToOne
+    @OneToOne(inputNotNull = true)
     @JoinColumn(
         name = "TARGET_ID",
         referencedColumnName = "ID",

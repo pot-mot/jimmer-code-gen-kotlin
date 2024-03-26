@@ -1,13 +1,10 @@
 package top.potmot.core.entity.convert
 
-import org.babyfish.jimmer.kt.new
 import top.potmot.context.getContextOrGlobal
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
-import top.potmot.model.GenEntity
-import top.potmot.model.by
-import top.potmot.model.copy
 import top.potmot.model.dto.ColumnTypeMeta
+import top.potmot.model.dto.GenEntityInput
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTypeMappingView
 
@@ -29,7 +26,7 @@ typealias TypeMapping = (column: ColumnTypeMeta) -> String
 fun GenTableAssociationsView.toGenEntity(
     modelId: Long?,
     typeMappings: List<GenTypeMappingView>,
-): GenEntity {
+): GenEntityInput {
     val baseEntity = tableToEntity(this, modelId)
 
     val typeMapping: TypeMapping = { typeMeta -> getPropertyType(typeMeta, typeMappings) }
@@ -45,16 +42,17 @@ fun GenTableAssociationsView.toGenEntity(
         typeMapping
     )
 
-    val associationProperties = associationPropertyMap.flatMap { it.value }
+    val associationProperties = associationPropertyMap
+        .flatMap { it.value }
+        .mapIndexed { index, genProperty ->
+            genProperty.copy(
+                orderKey = index.toLong()
+            )
+        }
 
-    return baseEntity.copy {
-        this.properties =
-            associationProperties.mapIndexed { index, genProperty ->
-                genProperty.copy {
-                    orderKey = index.toLong()
-                }
-            }
-    }
+    return baseEntity.copy(
+        properties = associationProperties
+    )
 }
 
 /**
@@ -63,17 +61,18 @@ fun GenTableAssociationsView.toGenEntity(
 private fun tableToEntity(
     genTable: GenTableAssociationsView,
     modelId: Long?,
-): GenEntity {
-    return new(GenEntity::class).by {
-        val context = getContextOrGlobal()
+): GenEntityInput {
+    val context = getContextOrGlobal()
 
-        this.table().id = genTable.id
-        this.modelId = modelId
-        this.author = context.author
-        this.name = tableNameToClassName(genTable.name)
-        this.comment = genTable.comment.clearTableComment()
-        this.remark = genTable.remark
-        this.packagePath = context.packagePath
-        this.superEntityIds = emptyList()
-    }
+    return GenEntityInput(
+        tableId = genTable.id,
+        modelId = modelId,
+        author = context.author,
+        name = snakeToUpperCamel(genTable.name),
+        comment = genTable.comment.clearTableComment(),
+        remark = genTable.remark,
+        packagePath = context.packagePath,
+        superEntityIds = emptyList(),
+        properties = emptyList()
+    )
 }

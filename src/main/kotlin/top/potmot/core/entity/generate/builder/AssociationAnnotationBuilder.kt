@@ -71,7 +71,12 @@ open class AssociationAnnotationBuilder(
     open fun build(meta: AssociationAnnotationMeta) =
         buildString {
             append("@" + meta.type.toAnnotation().simpleName)
+
             if (meta.mappedBy.isNullOrBlank()) {
+                if (meta.inputNotNull != null) {
+                    append("(inputNotNull = ${meta.inputNotNull}")
+                }
+
                 if (getContextOrGlobal().joinColumnAnnotation) {
                     meta.joinColumns.forEach {
                         append("\n${build(it)}")

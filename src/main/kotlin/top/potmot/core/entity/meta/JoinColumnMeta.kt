@@ -3,29 +3,33 @@ package top.potmot.core.entity.meta
 import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.core.database.generate.identifier.IdentifierProcessor
 import top.potmot.core.database.generate.identifier.IdentifierType
-import top.potmot.model.GenAssociation
 
 data class JoinColumnMeta(
     var joinColumnName: String,
     var referencedColumnName: String? = null,
     var foreignKeyType: ForeignKeyType? = null,
-) {
-    fun reverse(): JoinColumnMeta {
-        val temp = joinColumnName
-        joinColumnName = referencedColumnName ?: ""
-        referencedColumnName = temp
-        return this
-    }
-}
+)
 
-fun GenAssociation.toJoinColumns(
+fun OutAssociationMeta.toJoinColumns(
     identifiers: IdentifierProcessor
 ) =
-    columnReferences.map {
+    sourceColumns.mapIndexed { index, sourceColumn ->
+        val targetColumn = targetColumns[index]
         JoinColumnMeta(
-            joinColumnName = identifiers.process(it.sourceColumn.name, IdentifierType.COLUMN_NAME),
-            referencedColumnName = identifiers.process(it.targetColumn.name, IdentifierType.COLUMN_NAME),
-            foreignKeyType = if (fake) ForeignKeyType.FAKE else ForeignKeyType.REAL
+            joinColumnName = identifiers.process(sourceColumn.name, IdentifierType.COLUMN_NAME),
+            referencedColumnName = identifiers.process(targetColumn.name, IdentifierType.COLUMN_NAME),
+            foreignKeyType = if (association.fake) ForeignKeyType.FAKE else ForeignKeyType.REAL
         )
     }
 
+fun InAssociationMeta.toJoinColumns(
+    identifiers: IdentifierProcessor
+) =
+    targetColumns.mapIndexed { index, targetColumn ->
+        val sourceColumn = sourceColumns[index]
+        JoinColumnMeta(
+            joinColumnName = identifiers.process(targetColumn.name, IdentifierType.COLUMN_NAME),
+            referencedColumnName = identifiers.process(sourceColumn.name, IdentifierType.COLUMN_NAME),
+            foreignKeyType = if (association.fake) ForeignKeyType.FAKE else ForeignKeyType.REAL
+        )
+    }
