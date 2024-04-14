@@ -4,6 +4,6 @@ typealias GenPropertyInput = GenEntityInput.TargetOf_properties
 
 typealias GenPropertyView = GenEntityPropertiesView.TargetOf_properties
 
-typealias PropertyEnum = GenEntityPropertiesView.TargetOf_properties.TargetOf_enum
+typealias GenPropertyEnum = GenEntityPropertiesView.TargetOf_properties.TargetOf_enum
 
-typealias PropertyEnumItem = GenEntityPropertiesView.TargetOf_properties.TargetOf_enum.TargetOf_items
+typealias GenPropertyEnumItem = GenEntityPropertiesView.TargetOf_properties.TargetOf_enum.TargetOf_items

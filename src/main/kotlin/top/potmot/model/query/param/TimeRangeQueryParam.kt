@@ -1,4 +1,4 @@
-package top.potmot.query.param
+package top.potmot.model.query.param
 
 import java.time.LocalDateTime
 

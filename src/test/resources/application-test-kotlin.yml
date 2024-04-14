@@ -4,3 +4,4 @@ logging:
 
 jimmer:
   pretty-sql: false
+  inline-sql-variables: false

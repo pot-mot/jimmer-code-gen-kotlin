@@ -1,10 +1,10 @@
-package top.potmot.query
+package top.potmot.model.query
 
 import org.babyfish.jimmer.sql.kt.ast.expression.KNonNullExpression
 import org.babyfish.jimmer.sql.kt.ast.expression.`between?`
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.babyfish.jimmer.sql.kt.ast.table.KNonNullTable
-import top.potmot.query.param.TimeRangeQueryParam
+import top.potmot.model.query.param.TimeRangeQueryParam
 import java.time.LocalDateTime
 
 abstract class BaseEntityQuery<E : Any> : Query<E> {

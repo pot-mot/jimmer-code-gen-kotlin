@@ -13,8 +13,9 @@ import top.potmot.model.GenEnum
 import top.potmot.model.dto.GenEnumItemsInput
 import top.potmot.model.dto.GenEnumItemsView
 import top.potmot.model.dto.GenEnumView
-import top.potmot.query.EnumQuery
-import top.potmot.query.Query
+import top.potmot.model.query.EnumQuery
+import top.potmot.model.query.Query
+import top.potmot.model.query.where
 import kotlin.reflect.KClass
 
 @RestController
@@ -41,7 +42,7 @@ class EnumService(
 
     fun <T : View<GenEnum>> executeQuery(query: Query<GenEnum>, viewCLass: KClass<T>): List<T> {
         return sqlClient.createQuery(GenEnum::class) {
-            where(*query.toPredicates(table))
+            where(query)
             select(table.fetch(viewCLass))
         }.execute()
     }

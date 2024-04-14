@@ -12,8 +12,8 @@ import top.potmot.dataSource.h2DataSource
 import top.potmot.dataSource.mysqlDataSource
 import top.potmot.dataSource.postgresDataSource
 import top.potmot.enumeration.SelectType
-import top.potmot.query.AssociationTableQuery
-import top.potmot.query.TableQuery
+import top.potmot.model.query.AssociationTableQuery
+import top.potmot.model.query.TableQuery
 import top.potmot.service.AssociationService
 import top.potmot.service.DataSourceService
 import top.potmot.service.SchemaService
@@ -43,10 +43,12 @@ class SchemaLoadTest(
         val saveTables = tableService.queryIdView(TableQuery(schemaIds = savedSchemaIds))
         assertEquals(SAVED_TABLE_SIZE, saveTables.size)
 
-        val saveAssociations = associationService.queryByTable(AssociationTableQuery(
+        val saveAssociations = associationService.queryByTable(
+            AssociationTableQuery(
             tableIds = saveTables.map { it.id },
             selectType = SelectType.AND
-        ))
+        )
+        )
         assertEquals(SAVED_ASSOCIATION_SIZE, saveAssociations.size)
     }
 

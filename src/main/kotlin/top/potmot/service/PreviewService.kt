@@ -1,6 +1,5 @@
 package top.potmot.service
 
-import org.babyfish.jimmer.sql.fetcher.Fetcher
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
@@ -24,22 +23,20 @@ import top.potmot.error.GenerateTableDefineException
 import top.potmot.model.GenEntity
 import top.potmot.model.GenEnum
 import top.potmot.model.GenModel
+import top.potmot.model.GenModelFetcherDsl
 import top.potmot.model.GenTable
 import top.potmot.model.by
 import top.potmot.model.dto.GenConfig
 import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenEntityPropertiesView
+import top.potmot.model.dto.GenPropertyEnum
 import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.dto.PropertyEnum
 import top.potmot.model.id
-import top.potmot.model.modelId
-import top.potmot.model.tableId
 
 @RestController
 @RequestMapping("/preview")
 class PreviewService(
-    @Autowired val sqlClient: KSqlClient,
-    @Autowired val convertService: ConvertService
+    @Autowired val sqlClient: KSqlClient
 ) {
     @GetMapping("/tableDefine")
     @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
@@ -48,12 +45,8 @@ class PreviewService(
         @RequestParam(required = false) properties: GenConfigProperties?,
     ): List<Pair<String, String>> =
         useContext(properties) {
-            sqlClient.createQuery(GenTable::class) {
-                where(table.id valueIn tableIds)
-                select(table.fetch(GenTableAssociationsView::class))
-            }.execute().let {
-                generateTableDefines(it)
-            }
+            val tables = sqlClient.getTables(tableIds)
+            generateTableDefines(tables)
         }
 
     @GetMapping("/entity")
@@ -64,12 +57,8 @@ class PreviewService(
         @RequestParam(required = false) properties: GenConfigProperties?,
     ): List<Pair<String, String>> =
         useContext(properties) {
-            sqlClient.createQuery(GenEntity::class) {
-                where(table.id valueIn entityIds)
-                select(table.fetch(GenEntityPropertiesView::class))
-            }.execute().let {
-                generateEntitiesCode(it, withPath)
-            }
+            val entities = sqlClient.getEntities(entityIds)
+            generateEntitiesCode(entities, withPath)
         }
 
     @GetMapping("/enum")
@@ -79,42 +68,24 @@ class PreviewService(
         @RequestParam(required = false) properties: GenConfigProperties?,
     ): List<Pair<String, String>> =
         useContext(properties) {
-            sqlClient.createQuery(GenEnum::class) {
-                where(table.id valueIn enumIds)
-                select(table.fetch(PropertyEnum::class))
-            }.execute().let {
-                generateEnumsCode(it, withPath)
-            }
+            val enums = sqlClient.getEnums(enumIds)
+            generateEnumsCode(enums, withPath)
         }
-
-
-    @GetMapping("/entity/byTable")
-    @Throws(ConvertEntityException::class, ColumnTypeException::class, GenerateEntityException::class)
-    fun previewEntityByTable(
-        @RequestParam tableIds: List<Long>,
-        @RequestParam(required = false) modelId: Long?,
-        @RequestParam(required = false) withPath: Boolean?,
-        @RequestParam(required = false) properties: GenConfigProperties?,
-    ): List<Pair<String, String>> {
-        val entityIds = convertService.convert(tableIds, modelId, properties)
-        return previewEntity(entityIds.toList(), withPath, properties)
-    }
 
     @PostMapping("/model/sql")
     @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
     fun previewModelSql(
         @RequestParam id: Long,
     ): List<Pair<String, String>> {
-        val model = getModel(id, propertiesFetcher) ?: return emptyList()
+        val model = sqlClient.getModel(id) {
+            allScalarFields()
+            tableIds()
+        } ?: return emptyList()
 
         val properties = GenConfigProperties(model)
 
         return useContext(properties) {
-            val tables = sqlClient.createQuery(GenTable::class) {
-                where(table.modelId eq id)
-                select(table.fetch(GenTableAssociationsView::class))
-            }.execute()
-
+            val tables = sqlClient.getTables(model.tableIds)
             generateTableDefines(tables, dataSourceType = model.dataSourceType)
         }
     }
@@ -125,23 +96,20 @@ class PreviewService(
         @RequestParam id: Long,
         @RequestParam(required = false) withPath: Boolean?
     ): List<Pair<String, String>> {
-        val model = getModel(id, enumsFetcher) ?: return emptyList()
+        val model = sqlClient.getModel(id) {
+            allScalarFields()
+            entities()
+            enumIds()
+        } ?: return emptyList()
 
         val properties = GenConfigProperties(model)
 
         return useContext(properties) {
-            val entityCodes = if (model.syncConvertEntity) {
-                val tableIds = getTableIdsByModelId(id)
-                previewEntityByTable(tableIds, model.id, withPath, properties)
-            } else {
-                val entities = getEntityByModelId(id)
-                generateEntitiesCode(entities, withPath)
-            }
+            val entities = sqlClient.getEntities(model.entityIds)
+            val enums = sqlClient.getEnums(model.enumIds)
 
-            val enumCodes =
-                previewEnums(model.enumIds, withPath, properties)
-
-            (entityCodes + enumCodes).distinct().sortedBy { it.first }
+            (generateEntitiesCode(entities, withPath) + generateEnumsCode(enums, withPath))
+                .distinct().sortedBy { it.first }
         }
     }
 
@@ -160,7 +128,7 @@ class PreviewService(
         language.getEntityGenerator().generateEntities(entities, withPath ?: false)
 
     private fun generateEnumsCode(
-        enums: Collection<PropertyEnum>,
+        enums: Collection<GenPropertyEnum>,
         withPath: Boolean?,
         context: GenConfig = getContextOrGlobal(),
         language: GenLanguage = context.language,
@@ -179,33 +147,27 @@ class PreviewService(
      * 基本查询
      */
 
-    fun getTableIdsByModelId(modelId: Long): List<Long> =
-        sqlClient.createQuery(GenTable::class) {
-            where(table.modelId eq modelId)
-            select(table.id)
+    private fun KSqlClient.getModel(id: Long, block: GenModelFetcherDsl.() -> Unit): GenModel? =
+        createQuery(GenModel::class) {
+            where(table.id eq id)
+            select(table.fetch(newFetcher(GenModel::class).by(block)))
+        }.execute().firstOrNull()
+
+    private fun KSqlClient.getTables(ids: List<Long>) =
+        createQuery(GenTable::class) {
+            where(table.id valueIn ids)
+            select(table.fetch(GenTableAssociationsView::class))
         }.execute()
 
-    fun getEntityByModelId(modelId: Long): List<GenEntityPropertiesView> =
-        sqlClient.createQuery(GenEntity::class) {
-            where(
-                table.tableId valueIn subQuery(GenTable::class) {
-                    where(table.modelId eq modelId)
-                    select(table.id)
-                }
-            )
+    private fun KSqlClient.getEntities(ids: List<Long>) =
+        createQuery(GenEntity::class) {
+            where(table.id valueIn ids)
             select(table.fetch(GenEntityPropertiesView::class))
         }.execute()
 
-    private final val propertiesFetcher = GenConfigProperties.METADATA.fetcher
-
-    private final val enumsFetcher = newFetcher(GenModel::class).by(propertiesFetcher) {
-        enumIds()
-    }
-
-    fun getModel(id: Long, fetcher: Fetcher<GenModel>): GenModel? {
-        return sqlClient.createQuery(GenModel::class) {
-            where(table.id eq id)
-            select(table.fetch(fetcher))
-        }.execute().firstOrNull()
-    }
+    private fun KSqlClient.getEnums(ids: List<Long>) =
+        createQuery(GenEnum::class) {
+            where(table.id valueIn ids)
+            select(table.fetch(GenPropertyEnum::class))
+        }.execute()
 }

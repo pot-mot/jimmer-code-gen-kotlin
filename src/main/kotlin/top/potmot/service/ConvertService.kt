@@ -40,9 +40,9 @@ class ConvertService(
         val result = mutableListOf<Long>()
 
         useContext(properties) {
-            val tables = getTableViews(tableIds)
+            val tables = sqlClient.getTableViews(tableIds)
 
-            val typeMappings = getTypeMappings()
+            val typeMappings = sqlClient.getTypeMappings()
 
             val tableEntityPairs = mutableListOf<Pair<GenTableAssociationsView, GenEntity>>()
 
@@ -58,7 +58,7 @@ class ConvertService(
             tableEntityPairs.forEach { (table, entity) ->
                 // FIXME 基于关联属性装填超级类 id 并保存，但是发生 N+1 查询
                 table.superTables?.map { it.id }?.let { superTableIds ->
-                    val superEntityIds = getEntityIdsByTableIds(superTableIds)
+                    val superEntityIds = sqlClient.getEntityIds(superTableIds)
 
                     if (superTableIds.size != superEntityIds.size) {
                         throw ConvertEntityException.superTable("SuperTableIds [${superTableIds}] can't match superEntityIds [${superEntityIds}]")
@@ -73,9 +73,9 @@ class ConvertService(
         return result
     }
 
-    private fun getTableViews(tableIds: List<Long>): List<GenTableAssociationsView> =
+    private fun KSqlClient.getTableViews(tableIds: List<Long>): List<GenTableAssociationsView> =
         if (tableIds.isEmpty()) emptyList()
-        else sqlClient.createQuery(GenTable::class) {
+        else createQuery(GenTable::class) {
             where(
                 table.id valueIn tableIds
             )
@@ -84,16 +84,16 @@ class ConvertService(
             GenTableAssociationsView(it)
         }
 
-    private fun getEntityIdsByTableIds(tableIds: List<Long>): List<Long> =
-        sqlClient.createQuery(GenEntity::class) {
+    private fun KSqlClient.getEntityIds(tableIds: List<Long>): List<Long> =
+        createQuery(GenEntity::class) {
             where(
                 table.tableId valueIn tableIds
             )
             select(table.id)
         }.execute()
 
-    private fun getTypeMappings(): List<GenTypeMappingView> =
-        sqlClient.createQuery(GenTypeMapping::class) {
+    private fun KSqlClient.getTypeMappings(): List<GenTypeMappingView> =
+        createQuery(GenTypeMapping::class) {
             orderBy(table.orderKey)
             select(table.fetch(GenTypeMappingView::class))
         }.execute()

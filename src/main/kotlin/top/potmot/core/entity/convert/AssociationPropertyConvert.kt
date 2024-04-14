@@ -286,11 +286,25 @@ fun convertAssociationProperties(
 }
 
 private fun GenPropertyDraft.toPlural() {
-    this.name = this.name.toPlural()
-    this.listType = true
-    this.typeNotNull = true
-    this.keyProperty = false
-    this.logicalDelete = false
+    name = name.toPlural()
+    listType = true
+    typeNotNull = true
+    keyProperty = false
+    logicalDelete = false
+}
+
+private fun GenPropertyDraft.setAssociation(
+    meta: AssociationAnnotationMeta,
+    dissociateAction: DissociateAction? = null,
+) {
+    val context = getContextOrGlobal()
+    val associationAnnotationBuilder = context.language.getAssociationAnnotationBuilder()
+
+    associationType = meta.type
+    associationAnnotation = associationAnnotationBuilder.build(meta)
+    dissociateAnnotation = dissociateAction?.let {
+        "@OnDissociate(DissociateAction.${it.name})"
+    }
 }
 
 /**
@@ -340,20 +354,6 @@ private fun createIdViewProperty(
         }.let {
             GenPropertyInput(it)
         }
-
-private fun GenPropertyDraft.setAssociation(
-    meta: AssociationAnnotationMeta,
-    dissociateAction: DissociateAction? = null,
-) {
-    val context = getContextOrGlobal()
-    val associationAnnotationBuilder = context.language.getAssociationAnnotationBuilder()
-
-    associationType = meta.type
-    associationAnnotation = associationAnnotationBuilder.build(meta)
-    dissociateAnnotation = dissociateAction?.let {
-        "@OnDissociate(DissociateAction.${it.name})"
-    }
-}
 
 private fun String.removeLastId(): String =
     if (lowercase().endsWith("id"))

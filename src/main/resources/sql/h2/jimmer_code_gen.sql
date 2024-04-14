@@ -17,6 +17,8 @@ DROP TABLE IF EXISTS `gen_property`;
 DROP TABLE IF EXISTS `gen_index_column_mapping`;
 DROP TABLE IF EXISTS `gen_type_mapping`;
 DROP TABLE IF EXISTS `gen_column_default`;
+DROP TABLE IF EXISTS `gen_super_table_mapping`;
+DROP TABLE IF EXISTS `gen_super_entity_mapping`;
 
 -- ----------------------------
 -- Table structure for gen_model
@@ -26,7 +28,6 @@ CREATE TABLE `gen_model`
     `id`                         bigint       NOT NULL AUTO_INCREMENT,
     `name`                       varchar(500) NOT NULL,
     `graph_data`                 longtext     NOT NULL,
-    `sync_convert_entity`        boolean      NOT NULL,
     `language`                   varchar(500) NOT NULL,
     `data_source_type`           varchar(500) NOT NULL,
     `author`                     varchar(500) NOT NULL,
@@ -58,7 +59,6 @@ COMMENT ON TABLE `gen_model` IS '生成模型';
 COMMENT ON COLUMN `gen_model`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_model`.`name` IS '名称';
 COMMENT ON COLUMN `gen_model`.`graph_data` IS 'Graph 数据';
-COMMENT ON COLUMN `gen_model`.`sync_convert_entity` IS '同步转换实体';
 COMMENT ON COLUMN `gen_model`.`language` IS '语言';
 COMMENT ON COLUMN `gen_model`.`data_source_type` IS '数据源类型';
 COMMENT ON COLUMN `gen_model`.`author` IS '作者';

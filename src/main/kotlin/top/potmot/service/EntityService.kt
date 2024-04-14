@@ -14,8 +14,9 @@ import top.potmot.enumeration.GenLanguage
 import top.potmot.model.GenEntity
 import top.potmot.model.dto.GenEntityCommonView
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.query.EntityQuery
-import top.potmot.query.Query
+import top.potmot.model.query.EntityQuery
+import top.potmot.model.query.Query
+import top.potmot.model.query.where
 import kotlin.reflect.KClass
 
 @RestController
@@ -58,7 +59,7 @@ class EntityService(
 
     fun <T : View<GenEntity>> executeQuery(query: Query<GenEntity>, viewClass: KClass<T>): List<T> {
         return sqlClient.createQuery(GenEntity::class) {
-            where(*query.toPredicates(table))
+            where(query)
             select(table.fetch(viewClass))
         }.execute()
     }

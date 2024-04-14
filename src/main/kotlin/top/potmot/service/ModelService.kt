@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -25,8 +26,9 @@ import top.potmot.model.GenTable
 import top.potmot.model.GenTableIndex
 import top.potmot.model.by
 import top.potmot.model.createdTime
-import top.potmot.model.dto.GenConfigProperties
-import top.potmot.model.dto.GenModelInput
+import top.potmot.model.dto.GenModelConfigInput
+import top.potmot.model.dto.GenModelCreateInput
+import top.potmot.model.dto.GenModelGraphDataInput
 import top.potmot.model.dto.GenModelSimpleView
 import top.potmot.model.dto.GenModelView
 import top.potmot.model.id
@@ -37,7 +39,6 @@ import top.potmot.model.tableId
 @RequestMapping("/model")
 class ModelService(
     @Autowired val sqlClient: KSqlClient,
-    @Autowired val convertService: ConvertService
 ) {
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenModelView? {
@@ -59,15 +60,23 @@ class ModelService(
 
     @PostMapping
     @Transactional
+    fun create(
+        @RequestBody input: GenModelCreateInput
+    ): Long {
+        return sqlClient.insert(input).modifiedEntity.id
+    }
+
+    @PutMapping("/graphData")
+    @Transactional
     @Throws(ModelLoadException::class)
-    fun save(
-        @RequestBody input: GenModelInput
+    fun saveGraphData(
+        @RequestBody input: GenModelGraphDataInput
     ): Long {
         // 保存 model 和 enums
         val savedModel = sqlClient.save(input).modifiedEntity
 
         // 当 graphData 不为空，进行处理
-        if (!input.graphData.isNullOrBlank()) {
+        if (input.graphData.isNotBlank()) {
             parseGraphData(savedModel.id, input.graphData).let { (tableModelInputs, associationModelInputs) ->
                 // 创建 enum name -> id map，用于映射 table.columns.enum
                 val enumNameIdMap = savedModel.enums.associate { it.name to it.id }
@@ -128,19 +137,18 @@ class ModelService(
                     this.associations = associationInputs.map { it.toEntity() }
                 }
                 sqlClient.update(modelWithAssociations).modifiedEntity
-
-                // 当模型未开启同步时，仅在初始化时进行转换，后续手动控制模型转换
-                if (!savedModel.syncConvertEntity) {
-                    convertService.convert(
-                        savedTables.map { it.id },
-                        savedModel.id,
-                        GenConfigProperties(savedModel)
-                    )
-                }
             }
         }
 
         return savedModel.id
+    }
+
+    @PutMapping("/config")
+    @Transactional
+    fun config(
+        @RequestBody input: GenModelConfigInput
+    ): Long {
+        return sqlClient.update(input).modifiedEntity.id
     }
 
     @DeleteMapping("/{ids}")

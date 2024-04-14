@@ -18,11 +18,6 @@ import top.potmot.model.`by`
 
 open class MutableGenConfig(
     /**
-     * 同步转换实体
-     */
-    @JsonProperty(required = true)
-    var syncConvertEntity: Boolean,
-    /**
      * 语言
      */
     @JsonProperty(required = true)
@@ -129,7 +124,6 @@ open class MutableGenConfig(
     var columnCommentSuffixes: String,
 ) : View<GenModel> {
     constructor(base: GenModel) : this(
-        base.syncConvertEntity,
         base.language,
         base.dataSourceType,
         base.author,
@@ -154,7 +148,6 @@ open class MutableGenConfig(
 
     override fun toEntity(): GenModel = new(GenModel::class).by {
         val that = this@MutableGenConfig
-        syncConvertEntity = that.syncConvertEntity
         language = that.language
         dataSourceType = that.dataSourceType
         author = that.author
@@ -179,7 +172,6 @@ open class MutableGenConfig(
     }
 
     fun copy(
-        syncConvertEntity: Boolean = this.syncConvertEntity,
         language: GenLanguage = this.language,
         dataSourceType: DataSourceType = this.dataSourceType,
         author: String = this.author,
@@ -201,15 +193,14 @@ open class MutableGenConfig(
         columnNameSuffixes: String = this.columnNameSuffixes,
         columnCommentPrefixes: String = this.columnCommentPrefixes,
         columnCommentSuffixes: String = this.columnCommentSuffixes,
-    ): MutableGenConfig = MutableGenConfig(syncConvertEntity, language, dataSourceType, author, packagePath,
+    ): MutableGenConfig = MutableGenConfig(language, dataSourceType, author, packagePath,
             tablePath, databaseNamingStrategy, realFk, idViewProperty, logicalDeletedAnnotation,
             tableAnnotation, columnAnnotation, joinTableAnnotation, joinColumnAnnotation,
             tableNamePrefixes, tableNameSuffixes, tableCommentPrefixes, tableCommentSuffixes,
             columnNamePrefixes, columnNameSuffixes, columnCommentPrefixes, columnCommentSuffixes)
 
     override fun hashCode(): Int {
-        var __hash = syncConvertEntity.hashCode()
-        __hash = 31 * __hash + language.hashCode()
+        var __hash = language.hashCode()
         __hash = 31 * __hash + dataSourceType.hashCode()
         __hash = 31 * __hash + author.hashCode()
         __hash = 31 * __hash + packagePath.hashCode()
@@ -235,8 +226,7 @@ open class MutableGenConfig(
 
     override fun equals(other: Any?): Boolean {
         val __other = other as? MutableGenConfig ?: return false
-        return syncConvertEntity == __other.syncConvertEntity&&
-        language == __other.language&&
+        return language == __other.language&&
         dataSourceType == __other.dataSourceType&&
         author == __other.author&&
         packagePath == __other.packagePath&&
@@ -260,8 +250,7 @@ open class MutableGenConfig(
     }
 
     override fun toString(): String = "GenConfig(" +
-        "syncConvertEntity=" + syncConvertEntity +
-        ", language=" + language +
+        "language=" + language +
         ", dataSourceType=" + dataSourceType +
         ", author=" + author +
         ", packagePath=" + packagePath +
@@ -289,7 +278,6 @@ open class MutableGenConfig(
         val METADATA: ViewMetadata<GenModel, MutableGenConfig> =
             ViewMetadata<GenModel, MutableGenConfig>(
                 newFetcher(GenModel::class).by {
-                    syncConvertEntity()
                     language()
                     dataSourceType()
                     author()

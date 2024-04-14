@@ -10,7 +10,7 @@ import java.sql.JDBCType
 class JdbcService {
     @GetMapping("/type")
     fun listType(): Map<String, Int> =
-        JDBCType.values().associate {
+        JDBCType.entries.associate {
             Pair(it.name, it.vendorTypeNumber)
         }
 }

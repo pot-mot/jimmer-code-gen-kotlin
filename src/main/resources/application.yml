@@ -22,23 +22,29 @@ jimmer:
   language: kotlin
   default-batch-size: 128
   default-list-batch-size: 128
+
+  id-only-target-checking-level: ALL
+  database-validation:
+    mode: ERROR
+    schema: jimmer_code_gen
+  default-enum-strategy: NAME
+
   client:
     ts:
       path: /ts.zip
       mutable: true
+
 #    openapi:
 #      path: '/open-api.yml'
 #      ui-path: '/open-api.html'
 #      properties:
 #        info:
 #          title: Jimmer Code Gen
+
   show-sql: true
   pretty-sql: true
-  id-only-target-checking-level: ALL
-  database-validation:
-    mode: ERROR
-    schema: jimmer_code_gen
-  default-enum-strategy: NAME
+  inline-sql-variables: true
+
 
 # 代码生成
 jimmer-code-gen:

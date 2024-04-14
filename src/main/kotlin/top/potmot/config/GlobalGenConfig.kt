@@ -13,7 +13,6 @@ import top.potmot.model.dto.MutableGenConfig
 @Component
 @ConfigurationProperties(prefix = "jimmer-code-gen")
 object GlobalGenConfig : MutableGenConfig(
-    syncConvertEntity = true,
     dataSourceType = DataSourceType.MySQL,
     language = GenLanguage.KOTLIN,
     realFk = true,

@@ -2,7 +2,7 @@ package top.potmot.core.entity.generate
 
 import top.potmot.error.GenerateEntityException
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.PropertyEnum
+import top.potmot.model.dto.GenPropertyEnum
 
 abstract class EntityCodeGenerator {
     abstract fun getFileSuffix(): String
@@ -17,14 +17,14 @@ abstract class EntityCodeGenerator {
         "${if (withPath) formatFilePath(entity.packagePath) else ""}${entity.name}${getFileSuffix()}"
 
     private fun formatFileName(
-        enum: PropertyEnum,
+        enum: GenPropertyEnum,
         withPath: Boolean
     ): String =
         "${if (withPath) formatFilePath(enum.packagePath) else ""}${enum.name}${getFileSuffix()}"
 
     protected abstract fun stringify(entity: GenEntityPropertiesView): String
 
-    protected abstract fun stringify(enum: PropertyEnum): String
+    protected abstract fun stringify(enum: GenPropertyEnum): String
 
     @Throws(GenerateEntityException::class)
     fun generateEntity(
@@ -43,13 +43,13 @@ abstract class EntityCodeGenerator {
             .distinct().sortedBy { it.first }
 
     fun generateEnum(
-        enum: PropertyEnum,
+        enum: GenPropertyEnum,
         withPath: Boolean = false
     ): Pair<String, String> =
         Pair(formatFileName(enum, withPath), stringify(enum))
 
     fun generateEnums(
-        enums: Collection<PropertyEnum>,
+        enums: Collection<GenPropertyEnum>,
         withPath: Boolean = false
     ): List<Pair<String, String>> =
         enums

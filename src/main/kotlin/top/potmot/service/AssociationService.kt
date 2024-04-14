@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.model.GenAssociation
 import top.potmot.model.dto.GenAssociationInput
 import top.potmot.model.dto.GenAssociationView
-import top.potmot.query.AssociationColumnQuery
-import top.potmot.query.AssociationQuery
-import top.potmot.query.AssociationTableQuery
-import top.potmot.query.Query
+import top.potmot.model.query.AssociationColumnQuery
+import top.potmot.model.query.AssociationQuery
+import top.potmot.model.query.AssociationTableQuery
+import top.potmot.model.query.Query
+import top.potmot.model.query.where
 import kotlin.reflect.KClass
 
 @RestController
@@ -59,7 +60,7 @@ class AssociationService(
 
     fun <T : View<GenAssociation>> executeQuery(query: Query<GenAssociation>, viewClass: KClass<T>): List<T> {
         return sqlClient.createQuery(GenAssociation::class) {
-            where(*query.toPredicates(table))
+            where(query)
             select(table.fetch(viewClass))
         }.execute()
     }

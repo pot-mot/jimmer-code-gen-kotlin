@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.model.GenTable
-import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTableColumnsView
 import top.potmot.model.dto.GenTableCommonView
 import top.potmot.model.dto.GenTableIdView
-import top.potmot.query.Query
-import top.potmot.query.TableQuery
+import top.potmot.model.query.Query
+import top.potmot.model.query.TableQuery
+import top.potmot.model.query.where
 import kotlin.reflect.KClass
 
 @RestController
@@ -39,11 +39,6 @@ class TableService(
         return executeQuery(query, GenTableColumnsView::class)
     }
 
-    @PostMapping("/query")
-    fun queryAssociationsView(@RequestBody query: TableQuery): List<GenTableAssociationsView> {
-        return executeQuery(query, GenTableAssociationsView::class)
-    }
-
     @DeleteMapping("/{ids}")
     @Transactional
     fun delete(@PathVariable ids: List<Long>): Int {
@@ -52,7 +47,7 @@ class TableService(
 
     fun <T : View<GenTable>> executeQuery(query: Query<GenTable>, viewCLass: KClass<T>): List<T> {
         return sqlClient.createQuery(GenTable::class) {
-            where(*query.toPredicates(table))
+            where(query)
             select(table.fetch(viewCLass))
         }.execute()
     }

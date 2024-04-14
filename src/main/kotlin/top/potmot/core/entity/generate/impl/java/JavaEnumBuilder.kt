@@ -1,17 +1,17 @@
 package top.potmot.core.entity.generate.impl.java
 
 import top.potmot.core.entity.generate.builder.EnumBuilder
-import top.potmot.model.dto.PropertyEnum
-import top.potmot.model.dto.PropertyEnumItem
+import top.potmot.model.dto.GenPropertyEnum
+import top.potmot.model.dto.GenPropertyEnumItem
 
 object JavaEnumBuilder : EnumBuilder() {
     override fun packageLine(path: String): String = "package ${path};"
 
     override fun importLine(item: String): String = "import ${item};"
 
-    override fun enumLine(enum: PropertyEnum): String =
+    override fun enumLine(enum: GenPropertyEnum): String =
         "public enum ${enum.name}"
 
-    override fun itemLine(item: PropertyEnumItem): String =
+    override fun itemLine(item: GenPropertyEnumItem): String =
         "${item.name},"
 }

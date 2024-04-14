@@ -2,7 +2,7 @@ package top.potmot.core.entity.generate.impl.kotlin
 
 import top.potmot.core.entity.generate.EntityCodeGenerator
 import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.PropertyEnum
+import top.potmot.model.dto.GenPropertyEnum
 
 object KotlinEntityCodeGenerator : EntityCodeGenerator() {
     override fun getFileSuffix(): String = ".kt"
@@ -10,6 +10,6 @@ object KotlinEntityCodeGenerator : EntityCodeGenerator() {
     override fun stringify(entity: GenEntityPropertiesView): String =
         KotlinEntityBuilder.build(entity)
 
-    override fun stringify(enum: PropertyEnum): String =
+    override fun stringify(enum: GenPropertyEnum): String =
         KotlinEnumBuilder.build(enum)
 }

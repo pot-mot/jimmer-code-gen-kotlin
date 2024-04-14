@@ -39,11 +39,6 @@ interface GenModel : BaseEntity {
     val graphData: String
 
     /**
-     * 同步转换实体
-     */
-    val syncConvertEntity: Boolean
-
-    /**
      * 语言
      */
     val language: GenLanguage
