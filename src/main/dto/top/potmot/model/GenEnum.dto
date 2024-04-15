@@ -20,14 +20,3 @@ input GenEnumItemsInput {
         #allScalars(GenEnumItem)
     }
 }
-
-input GenEnumModelInput {
-    #allScalars(GenEnum)
-    -id
-    id(model)
-
-    items {
-        #allScalars(GenEnumItem)
-        -id
-    }
-}

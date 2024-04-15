@@ -6,7 +6,6 @@ GenModelSimpleView {
 GenModelView {
     #allScalars
 
-    // same with GenEnumModelInput
     enums {
         #allScalars(GenEnum)
         -id
@@ -19,23 +18,9 @@ GenModelView {
     }
 }
 
-input GenModelCreateInput {
+input GenModelInput {
     #allScalars(GenModel)
-    -id
-    -graphData
-}
 
-input GenModelConfigInput {
-    #allScalars(GenModel)
-    id!
-    -graphData
-}
-
-input GenModelGraphDataInput {
-    id!
-    graphData
-
-    // same with GenEnumModelInput
     enums {
         #allScalars(GenEnum)
         -id

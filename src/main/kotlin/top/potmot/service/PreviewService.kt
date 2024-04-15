@@ -154,19 +154,22 @@ class PreviewService(
         }.execute().firstOrNull()
 
     private fun KSqlClient.getTables(ids: List<Long>) =
-        createQuery(GenTable::class) {
+        if (ids.isEmpty()) emptyList()
+        else createQuery(GenTable::class) {
             where(table.id valueIn ids)
             select(table.fetch(GenTableAssociationsView::class))
         }.execute()
 
     private fun KSqlClient.getEntities(ids: List<Long>) =
-        createQuery(GenEntity::class) {
+        if (ids.isEmpty()) emptyList()
+        else createQuery(GenEntity::class) {
             where(table.id valueIn ids)
             select(table.fetch(GenEntityPropertiesView::class))
         }.execute()
 
     private fun KSqlClient.getEnums(ids: List<Long>) =
-        createQuery(GenEnum::class) {
+        if (ids.isEmpty()) emptyList()
+        else createQuery(GenEnum::class) {
             where(table.id valueIn ids)
             select(table.fetch(GenPropertyEnum::class))
         }.execute()
