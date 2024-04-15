@@ -9,6 +9,7 @@ import top.potmot.model.associations.AssociationsBaseTest
 import top.potmot.model.associations.fake.MANY_TO_MANY
 import top.potmot.model.createBaseModel
 import top.potmot.model.dto.GenConfig
+import top.potmot.service.ConvertService
 import top.potmot.service.ModelService
 import top.potmot.service.PreviewService
 
@@ -16,9 +17,11 @@ import top.potmot.service.PreviewService
 @ActiveProfiles("test-kotlin", "h2", "hide-sql")
 class TestManyToManyAssociations(
     @Autowired modelService: ModelService,
+    @Autowired convertService: ConvertService,
     @Autowired previewService: PreviewService
 ): AssociationsBaseTest(
     modelService,
+    convertService,
     previewService,
 ) {
     override fun getBaseModel() =

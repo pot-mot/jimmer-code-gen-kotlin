@@ -1,21 +1,23 @@
 package top.potmot.model.modelParse
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import top.potmot.core.database.load.ModelInputEntities
 import top.potmot.core.database.load.parseGraphData
-import top.potmot.utils.json.prettyObjectMapper
+import top.potmot.utils.json.commonObjectMapper
 
 class TestParse {
     @Test
     fun testAssociationsGraphDataParse() {
-        val entities = parseGraphData(1, GRAPH_DATA)
+        val graphData = parseGraphData(1, GRAPH_DATA)
 
-        assertEquals(9, entities.tables.size)
-        assertEquals(5, entities.associations.size)
+        assertEquals(9, graphData.tables.size)
+        assertEquals(5, graphData.associations.size)
 
         assertEquals(
-            PARSE_RESULT.trim(),
-            prettyObjectMapper.writeValueAsString(entities).trim()
+            commonObjectMapper.readValue<ModelInputEntities>(PARSE_RESULT).toString(),
+            graphData.toString()
         )
     }
 }

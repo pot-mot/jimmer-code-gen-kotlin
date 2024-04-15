@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import top.potmot.model.dto.GenConfig
 import top.potmot.model.dto.GenModelInput
+import top.potmot.service.ConvertService
 import top.potmot.service.ModelService
 import top.potmot.service.PreviewService
 import top.potmot.util.replaceSinceTimeComment
@@ -18,6 +19,7 @@ import top.potmot.util.replaceSinceTimeComment
  */
 abstract class BaseTest(
     private val modelService: ModelService,
+    private val convertService: ConvertService,
     private val previewService: PreviewService,
 ) {
     private val logger = LoggerFactory.getLogger(BaseTest::class.java)
@@ -35,6 +37,7 @@ abstract class BaseTest(
         config: GenConfig,
     ) {
         val id = modelService.save(model)
+        convertService.convertModel(id, null)
         val entityCodes = previewService.previewModelEntity(id, true)
 
         assertEquals(

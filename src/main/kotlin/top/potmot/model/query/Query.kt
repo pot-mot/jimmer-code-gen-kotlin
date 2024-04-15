@@ -9,5 +9,5 @@ interface Query<E : Any> {
 }
 
 fun <E : Any> KMutableRootQuery<E>.where(query: Query<E>) {
-    where(query)
+    where(*query.toPredicates(table))
 }

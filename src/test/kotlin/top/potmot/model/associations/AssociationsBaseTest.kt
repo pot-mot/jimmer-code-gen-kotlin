@@ -5,6 +5,7 @@ import top.potmot.model.BaseTest
 import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.languageProperties
 import top.potmot.model.realFkProperties
+import top.potmot.service.ConvertService
 import top.potmot.service.ModelService
 import top.potmot.service.PreviewService
 
@@ -13,9 +14,11 @@ import top.potmot.service.PreviewService
  */
 abstract class AssociationsBaseTest(
     modelService: ModelService,
+    convertService: ConvertService,
     previewService: PreviewService,
 ): BaseTest(
     modelService,
+    convertService,
     previewService
 ) {
     override val entityTestProperties: List<GenConfigProperties>

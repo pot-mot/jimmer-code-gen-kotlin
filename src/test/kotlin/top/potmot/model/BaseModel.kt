@@ -20,7 +20,6 @@ private const val baseModel = """
     "remark": "",
     "name": "test",
     "graphData": "",
-    "syncConvertEntity": true,
     "language": "KOTLIN",
     "dataSourceType": "MySQL",
     "author": "",

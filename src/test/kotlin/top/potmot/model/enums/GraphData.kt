@@ -71,7 +71,8 @@ const val ENUM_TABLE = """
                                     "name": "EnumName"
                                 }
                             }
-                        ]
+                        ],
+                        "indexes": []
                     }
                 },
                 "zIndex": 1

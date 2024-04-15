@@ -16,7 +16,5 @@ val commonObjectMapper = jacksonObjectMapper()
     .registerModule(ImmutableModule())
     .registerModule(JavaTimeModule())!!
 
-val prettyObjectMapper = jacksonObjectMapper()
-    .registerModule(ImmutableModule())
-    .registerModule(JavaTimeModule())
+val prettyObjectWriter = commonObjectMapper
     .writer(printer)!!

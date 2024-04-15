@@ -8,6 +8,7 @@ import top.potmot.enumeration.GenLanguage
 import top.potmot.model.BaseTest
 import top.potmot.model.createBaseModel
 import top.potmot.model.dto.GenConfig
+import top.potmot.service.ConvertService
 import top.potmot.service.ModelService
 import top.potmot.service.PreviewService
 
@@ -15,9 +16,11 @@ import top.potmot.service.PreviewService
 @ActiveProfiles("test-kotlin", "h2", "hide-sql")
 class TestSuperTable(
     @Autowired modelService: ModelService,
+    @Autowired convertService: ConvertService,
     @Autowired previewService: PreviewService
 ): BaseTest(
     modelService,
+    convertService,
     previewService
 ) {
     override fun getBaseModel() =
