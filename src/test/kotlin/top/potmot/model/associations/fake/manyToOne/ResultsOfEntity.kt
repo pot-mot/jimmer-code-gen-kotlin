@@ -140,7 +140,7 @@ public interface MOTarget {
 )]
 """
 
-    const val kotlinRealFkResult = """
+const val kotlinRealFkResult = """
 [(top/potmot/MOSource.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column

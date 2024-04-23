@@ -1,6 +1,5 @@
 package top.potmot.model.longNames
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import top.potmot.context.multiple
@@ -12,21 +11,10 @@ import top.potmot.model.createBaseModel
 import top.potmot.model.databaseNamingStrategyProperties
 import top.potmot.model.dto.GenConfig
 import top.potmot.model.dto.GenConfigProperties
-import top.potmot.service.ConvertService
-import top.potmot.service.ModelService
-import top.potmot.service.PreviewService
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin", "h2", "hide-sql")
-class TestLongName(
-    @Autowired modelService: ModelService,
-    @Autowired convertService: ConvertService,
-    @Autowired previewService: PreviewService
-) : BaseTest(
-    modelService,
-    convertService,
-    previewService,
-) {
+class TestLongName : BaseTest() {
     override fun getBaseModel() =
         createBaseModel(LONG_NAMES)
 

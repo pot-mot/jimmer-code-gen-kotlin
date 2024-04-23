@@ -73,6 +73,9 @@ fun String.toPlural(): String = EnglishWordUtil.toPlural(this)
  */
 fun String.toSingular(): String = EnglishWordUtil.toSingular(this)
 
+/**
+ * 移除两侧的非字母或数字符号
+ */
 fun String.trimToLetterOrDigit(): String {
     var startIndex = 0
     var endIndex = length - 1
@@ -91,3 +94,9 @@ fun String.trimToLetterOrDigit(): String {
 
     return substring(startIndex, endIndex + 1)
 }
+
+fun String.isAllUpperCase(): Boolean =
+    all { it.isUpperCase() }
+
+fun String.isAllLowerCase(): Boolean =
+    all { it.isLowerCase() }

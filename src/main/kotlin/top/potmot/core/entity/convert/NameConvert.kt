@@ -1,6 +1,8 @@
 package top.potmot.core.entity.convert
 
 import top.potmot.context.getContextOrGlobal
+import top.potmot.utils.string.isAllLowerCase
+import top.potmot.utils.string.isAllUpperCase
 import top.potmot.utils.string.removePrefixes
 import top.potmot.utils.string.removeSuffixes
 import top.potmot.utils.string.splitTrim
@@ -22,14 +24,17 @@ fun snakeToUpperCamel(name: String): String =
             .trimToLetterOrDigit()
             .clearTableName()
             .split(SEPARATOR)
-            .dropLastWhile { it.isEmpty() }
             .forEach {
                 if (it.isNotEmpty()) {
-                    // 将字符串的第一个字符转换为大写字符
-                    append(it[0].uppercaseChar())
-
-                    // 将字符串的第二个字符到最后一个字符转换为小写字符
-                    if (it.length > 1) {
+                    if (it.isAllUpperCase()) {
+                        append(it[0])
+                        append(it.substring(1).lowercase())
+                    } else if (it.isAllLowerCase()){
+                        // 将字符串的第一个字符转换为大写字符
+                        append(it[0].uppercaseChar())
+                        append(it.substring(1))
+                    } else {
+                        append(it[0].uppercaseChar())
                         append(it.substring(1).lowercase())
                     }
                 }

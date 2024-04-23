@@ -64,7 +64,8 @@ class TestDataSourceExecute {
     fun testPostgresExecute() {
         val dataSource = postgresDataSource.toEntity()
 
-        val sqlExecuteResults = dataSource.execute("jimmer_code_gen", """
+        val sqlExecuteResults = dataSource.execute(
+            "jimmer_code_gen", """
             -- remove existed table
             DROP TABLE IF EXISTS "test";
             
@@ -82,7 +83,8 @@ class TestDataSourceExecute {
             
             -- remove existed table
             DROP TABLE "test";
-        """)
+        """
+        )
 
         assertEquals(
             7,

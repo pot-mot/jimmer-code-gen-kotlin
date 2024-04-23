@@ -100,7 +100,7 @@
 
 ### Code Generate 代码生成
 
-- [PreviewService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FPreviewService.kt) 预览生成代码
+- [GenerateService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FGenerateService.kt) 生成代码
 
 #### 生成工具类
 
@@ -140,7 +140,7 @@
 关于 TableDefine 有另一种更完善的 diff 生成方式，[LiquibaseUtil.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Futils%2Fliquibase%2FLiquibaseUtil.kt)，
 但关于在不同数据源种类间进行类型映射没有较好的解决方案，且**必须真正连接数据源才可进行生成**，考虑到目前项目无法对生成 sql 的效果做出保证，所以目前依然使用手动拼接方案。
 
-如要尝试，请自行在 [PreviewService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FPreviewService.kt) 使用 LiquibaseUtil 中的 createSql 覆盖 previewModelSql。
+如要尝试，请自行在 [GenerateService.kt](src%2Fmain%2Fkotlin%2Ftop%2Fpotmot%2Fservice%2FGenerateService.kt) 使用 LiquibaseUtil 中的 createSql 覆盖 previewModelSql。
 
 ### 关于超级聚合根类型与大量 output/view dto
 > 此处的"超级聚合根类型"是指从聚合根出发，关联层级极深的类型  

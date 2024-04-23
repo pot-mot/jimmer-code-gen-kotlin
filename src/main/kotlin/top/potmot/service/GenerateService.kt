@@ -35,12 +35,12 @@ import top.potmot.model.id
 
 @RestController
 @RequestMapping("/preview")
-class PreviewService(
+class GenerateService(
     @Autowired val sqlClient: KSqlClient
 ) {
     @GetMapping("/tableDefine")
     @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
-    fun previewTableDefine(
+    fun generateTableDefine(
         @RequestParam tableIds: List<Long>,
         @RequestParam(required = false) properties: GenConfigProperties?,
     ): List<Pair<String, String>> =
@@ -51,7 +51,7 @@ class PreviewService(
 
     @GetMapping("/entity")
     @Throws(GenerateEntityException::class)
-    fun previewEntity(
+    fun generateEntity(
         @RequestParam entityIds: List<Long>,
         @RequestParam(required = false) withPath: Boolean?,
         @RequestParam(required = false) properties: GenConfigProperties?,
@@ -62,7 +62,7 @@ class PreviewService(
         }
 
     @GetMapping("/enum")
-    fun previewEnums(
+    fun generateEnums(
         @RequestParam enumIds: List<Long>,
         @RequestParam(required = false) withPath: Boolean?,
         @RequestParam(required = false) properties: GenConfigProperties?,
@@ -74,7 +74,7 @@ class PreviewService(
 
     @PostMapping("/model/sql")
     @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
-    fun previewModelSql(
+    fun generateModelSql(
         @RequestParam id: Long,
     ): List<Pair<String, String>> {
         val model = sqlClient.getModel(id) {
@@ -92,7 +92,7 @@ class PreviewService(
 
     @GetMapping("/model/entity")
     @Throws(ConvertEntityException::class, ColumnTypeException::class, GenerateEntityException::class)
-    fun previewModelEntity(
+    fun generateModelEntity(
         @RequestParam id: Long,
         @RequestParam(required = false) withPath: Boolean?
     ): List<Pair<String, String>> {
@@ -119,7 +119,7 @@ class PreviewService(
      */
 
     @Throws(GenerateEntityException::class)
-    private fun generateEntitiesCode(
+    fun generateEntitiesCode(
         entities: Collection<GenEntityPropertiesView>,
         withPath: Boolean?,
         context: GenConfig = getContextOrGlobal(),
@@ -127,7 +127,7 @@ class PreviewService(
     ): List<Pair<String, String>> =
         language.getEntityGenerator().generateEntities(entities, withPath ?: false)
 
-    private fun generateEnumsCode(
+    fun generateEnumsCode(
         enums: Collection<GenPropertyEnum>,
         withPath: Boolean?,
         context: GenConfig = getContextOrGlobal(),
@@ -136,7 +136,7 @@ class PreviewService(
         language.getEntityGenerator().generateEnums(enums, withPath ?: false)
 
     @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
-    private fun generateTableDefines(
+    fun generateTableDefines(
         tables: Collection<GenTableAssociationsView>,
         context: GenConfig = getContextOrGlobal(),
         dataSourceType: DataSourceType = context.dataSourceType,

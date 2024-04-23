@@ -4,11 +4,12 @@ import org.babyfish.jimmer.kt.merge
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import top.potmot.model.dto.GenConfig
 import top.potmot.model.dto.GenModelInput
 import top.potmot.service.ConvertService
+import top.potmot.service.GenerateService
 import top.potmot.service.ModelService
-import top.potmot.service.PreviewService
 import top.potmot.util.replaceSinceTimeComment
 
 /**
@@ -17,11 +18,16 @@ import top.potmot.util.replaceSinceTimeComment
  * 可按照需要调整 entityTestProperties 和 tableDefineTestProperties 两组测试属性集
  * 并实现 EntityResult、TableDefineResult 匹配特定属性集的输出
  */
-abstract class BaseTest(
-    private val modelService: ModelService,
-    private val convertService: ConvertService,
-    private val previewService: PreviewService,
-) {
+abstract class BaseTest {
+    @Autowired
+    lateinit var modelService: ModelService
+
+    @Autowired
+    lateinit var convertService: ConvertService
+
+    @Autowired
+    lateinit var generateService: GenerateService
+
     private val logger = LoggerFactory.getLogger(BaseTest::class.java)
 
     abstract fun getBaseModel(): GenModelInput
@@ -38,7 +44,7 @@ abstract class BaseTest(
     ) {
         val id = modelService.save(model)
         convertService.convertModel(id, null)
-        val entityCodes = previewService.previewModelEntity(id, true)
+        val entityCodes = generateService.generateModelEntity(id, true)
 
         assertEquals(
             getEntityResult(config).replaceSinceTimeComment().trim(),
@@ -63,7 +69,7 @@ abstract class BaseTest(
         config: GenConfig,
     ) {
         val id = modelService.save(model)
-        val tableDefineCodes = previewService.previewModelSql(id)
+        val tableDefineCodes = generateService.generateModelSql(id)
 
         assertEquals(
             getTableDefineResult(config).trim(),

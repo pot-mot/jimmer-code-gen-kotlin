@@ -45,9 +45,9 @@ class SchemaLoadTest(
 
         val saveAssociations = associationService.queryByTable(
             AssociationTableQuery(
-            tableIds = saveTables.map { it.id },
-            selectType = SelectType.AND
-        )
+                tableIds = saveTables.map { it.id },
+                selectType = SelectType.AND
+            )
         )
         assertEquals(SAVED_ASSOCIATION_SIZE, saveAssociations.size)
     }

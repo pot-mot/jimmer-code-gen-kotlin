@@ -13,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles
 @SpringBootTest
 @ActiveProfiles("test-kotlin", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class DatabaseNamingStrategyTest (
+class DatabaseNamingStrategyTest(
     @Autowired val databaseNamingStrategy: DatabaseNamingStrategy
 ) {
     @Test
