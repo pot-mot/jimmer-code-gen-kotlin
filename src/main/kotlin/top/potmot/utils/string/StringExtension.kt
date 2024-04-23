@@ -1,5 +1,7 @@
 package top.potmot.utils.string
 
+import top.potmot.core.entity.convert.SEPARATOR
+
 fun String.startsWithAny(prefixes: Collection<String>): String? {
     for (prefix in prefixes) {
         if (startsWith(prefix)) {
@@ -17,7 +19,7 @@ fun String.startsWithAny(prefixes: Collection<String>): String? {
  */
 fun String.removePrefixes(
     prefixes: List<String>,
-    separator: String = "_"
+    separator: String = SEPARATOR
 ): String {
     var result = this
 
@@ -42,7 +44,7 @@ fun String.removePrefixes(
  */
 fun String.removeSuffixes(
     suffixes: List<String>,
-    separator: String = "_"
+    separator: String = SEPARATOR
 ): String {
     var result = this
 
