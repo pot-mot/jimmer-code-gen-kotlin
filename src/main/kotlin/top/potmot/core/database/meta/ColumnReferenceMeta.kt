@@ -1,7 +1,9 @@
 package top.potmot.core.database.meta
 
 import org.babyfish.jimmer.ImmutableObjects.isLoaded
+import schemacrawler.schema.Column
 import schemacrawler.schema.ColumnReference
+import top.potmot.error.DataSourceLoadException
 import top.potmot.model.GenColumn
 import top.potmot.model.GenSchema
 import top.potmot.model.GenSchemaProps
@@ -25,8 +27,13 @@ data class ColumnReferenceMeta(
     val target: ColumnReferenceMetaPart
 )
 
+private fun Column.keyPath() =
+    key().toString().let {
+        it.substring(9, it.length - 2).split("/").reversed()
+    }
+
 private fun ColumnReference.getSourceNames(): ColumnReferenceNamePart {
-    val sourceNameList = foreignKeyColumn.fullName.split(".").reversed()
+    val sourceNameList = foreignKeyColumn.keyPath()
 
     val sourceSchemaName = sourceNameList[2]
     val sourceTableName = sourceNameList[1]
@@ -40,7 +47,7 @@ private fun ColumnReference.getSourceNames(): ColumnReferenceNamePart {
 }
 
 private fun ColumnReference.getTargetNames(): ColumnReferenceNamePart {
-    val targetNameList = primaryKeyColumn.fullName.split(".").reversed()
+    val targetNameList = primaryKeyColumn.keyPath()
 
     val targetSchemaName = targetNameList[2]
     val targetTableName = targetNameList[1]
@@ -55,34 +62,42 @@ private fun ColumnReference.getTargetNames(): ColumnReferenceNamePart {
 
 private fun ColumnReferenceNamePart.toMetaPart(
     tableNameMap: Map<String, GenTable>
-): ColumnReferenceMetaPart? {
-    val table = tableNameMap[tableName] ?: return null
-    val column = table.columns.find { column -> column.name == columnName } ?: return null
+): ColumnReferenceMetaPart {
+    val table = tableNameMap[tableName]
+        ?: throw DataSourceLoadException.table(
+            "Can not find table [$tableName]"
+        )
+    val column = table.columns.find { column -> column.name == columnName }
+        ?: throw DataSourceLoadException.table(
+            "Can not find table column [$tableName.$columnName]"
+        )
     val schema = if (isLoaded(table, GenTableProps.SCHEMA)) table.schema else null
 
-    if (schema != null && isLoaded(schema, GenSchemaProps.NAME) && schema.name != schemaName) return null
+    if (schema != null && isLoaded(
+            schema,
+            GenSchemaProps.NAME
+        ) && schema.name != schemaName
+    ) throw DataSourceLoadException.table(
+        "Can not match schema [$schemaName]"
+    )
 
     return ColumnReferenceMetaPart(schema, table, column)
 }
 
 private fun ColumnReference.getSourceMeta(
     tableNameMap: Map<String, GenTable>
-): ColumnReferenceMetaPart? =
+): ColumnReferenceMetaPart =
     getSourceNames().toMetaPart(tableNameMap)
 
 private fun ColumnReference.getTargetMeta(
     tableNameMap: Map<String, GenTable>
-): ColumnReferenceMetaPart? =
+): ColumnReferenceMetaPart =
     getTargetNames().toMetaPart(tableNameMap)
 
 fun ColumnReference.toColumnReferenceMeta(
     tableNameMap: Map<String, GenTable>
-): ColumnReferenceMeta? =
-    getSourceMeta(tableNameMap)?.let { sourceMeta ->
-        getTargetMeta(tableNameMap)?.let { targetMeta ->
-            ColumnReferenceMeta(
-                sourceMeta,
-                targetMeta
-            )
-        }
-    }
+): ColumnReferenceMeta =
+    ColumnReferenceMeta(
+        getSourceMeta(tableNameMap),
+        getTargetMeta(tableNameMap)
+    )

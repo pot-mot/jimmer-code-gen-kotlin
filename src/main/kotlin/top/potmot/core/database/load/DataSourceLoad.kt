@@ -155,11 +155,17 @@ fun ForeignKey.toInput(
 ): GenAssociationInput {
     val columnReferences = mutableListOf<GenAssociationInput.TargetOf_columnReferences>()
 
+    if (this.columnReferences.isEmpty())
+        throw DataSourceLoadException.association(
+            "Convert foreign key [${name}] to association fail: \n" +
+                    "column references is empty"
+        )
+
     var sourceTableId: Long? = null
     var targetTableId: Long? = null
 
     this.columnReferences.forEachIndexed { index, columnRef ->
-        columnRef.toColumnReferenceMeta(tableNameMap)?.let { meta ->
+        columnRef.toColumnReferenceMeta(tableNameMap).let { meta ->
             columnReferences +=
                 GenAssociationInput.TargetOf_columnReferences(
                     orderKey = index.toLong(),

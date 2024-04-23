@@ -29,7 +29,7 @@ val mysqlVersion = "8.3.0"
 val postgreVersion = "42.7.2"
 val h2Version = "2.2.224"
 
-val schemacrawlerVersion = "16.21.1"
+val schemacrawlerVersion = "16.21.2"
 val liquibaseVersion = "4.22.0"
 
 repositories {
