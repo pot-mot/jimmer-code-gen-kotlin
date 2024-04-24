@@ -64,6 +64,13 @@ fun convertAssociationProperties(
             _,
         ) = outAssociation
 
+        if (association.type == ONE_TO_MANY) {
+            throw ConvertEntityException.association(
+                "OutAssociation [${association.name}] convert property fail: \n" +
+                        "AssociationType can not be OneToMany"
+            )
+        }
+
         val sourceColumn = sourceColumns[0]
 
         if (!propertiesMap.containsKey(sourceColumn.id)) {
@@ -78,18 +85,11 @@ fun convertAssociationProperties(
         if (currentColumnProperties.isNullOrEmpty()) {
             throw ConvertEntityException.association(
                 "OutAssociation [${association.name}] convert property fail: \n" +
-                        "SourceColumn [${sourceColumn.name}] converted BaseProperty not found"
+                        "SourceColumn [${sourceColumn.name}] converted baseProperty not found"
             )
         }
 
         val sourceProperty = currentColumnProperties[0]
-
-        if (association.type == MANY_TO_ONE || association.type == ONE_TO_ONE) {
-            currentColumnProperties.clear()
-        }
-
-        // 当关联类型为 ONE_TO_MANY 或 MANY_TO_MANY 时，目标属性需要为复数形式
-        val targetPlural = association.type == MANY_TO_MANY
 
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = sourceProperty.toEntity().copy {
@@ -105,42 +105,33 @@ fun convertAssociationProperties(
             idProperty = false
             idGenerationAnnotation = null
 
-            when (association.type) {
-                ONE_TO_ONE, MANY_TO_ONE -> {
-                    setAssociation(
-                        AssociationAnnotationMeta(
-                            association.type,
-                            joinColumns = outAssociation.toJoinColumns(identifiers)
-                        ),
-                        association.dissociateAction
-                    )
+            if (association.type == ONE_TO_ONE || association.type == MANY_TO_ONE) {
+                setAssociation(
+                    AssociationAnnotationMeta(
+                        association.type,
+                        joinColumns = outAssociation.toJoinColumns(identifiers)
+                    ),
+                    association.dissociateAction
+                )
 
-                    // 当外键为伪时，需要将类型设置为可空
-                    if (association.fake) {
-                        typeNotNull = false
-                    }
+                // 当外键为伪时，需要将类型设置为可空
+                if (association.fake) {
+                    typeNotNull = false
                 }
 
-                MANY_TO_MANY -> {
-                    keyProperty = false
-                    setAssociation(
-                        AssociationAnnotationMeta(
-                            association.type,
-                            joinTable = outAssociation.toJoinTable(identifiers)
-                        )
-                    )
-                }
-
-                ONE_TO_MANY -> {
-                    throw ConvertEntityException.association(
-                        "OutAssociation [${association.name}] convert property fail: \n" +
-                                "AssociationType can not be OneToMany"
-                    )
-                }
+                currentColumnProperties.clear()
             }
 
-            // 当目标为复数时，该属性也为复数
-            if (targetPlural) toPlural()
+            if (association.type == MANY_TO_MANY) {
+                keyProperty = false
+                setAssociation(
+                    AssociationAnnotationMeta(
+                        association.type,
+                        joinTable = outAssociation.toJoinTable(identifiers)
+                    )
+                )
+                toPlural()
+            }
         }.let {
             GenPropertyInput(it)
         }
@@ -168,6 +159,13 @@ fun convertAssociationProperties(
             targetColumns,
         ) = inAssociation
 
+        if (association.type == ONE_TO_MANY) {
+            throw ConvertEntityException.association(
+                "InAssociation [${association.name}] convert property fail: \n" +
+                        "AssociationType can not be OneToMany"
+            )
+        }
+
         val sourceColumn = sourceColumns[0]
 
         val targetColumn = targetColumns[0]
@@ -183,16 +181,6 @@ fun convertAssociationProperties(
 
         val targetProperty = currentColumnProperties[0]
 
-        if (association.type == ONE_TO_MANY) {
-            currentColumnProperties.clear()
-        }
-
-        // 当关联类型为 MANY_TO_ONE 或 MANY_TO_MANY 时，来源属性需要为复数形式
-        val sourcePlural = association.type == MANY_TO_ONE || association.type == MANY_TO_MANY
-
-        // 当关联类型为 ONE_TO_MANY 或 MANY_TO_MANY 时，目标属性需要为复数形式
-        val targetPlural = association.type == ONE_TO_MANY || association.type == MANY_TO_MANY
-
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = targetProperty.toEntity().copy {
             name =
@@ -206,46 +194,36 @@ fun convertAssociationProperties(
             typeTableId = sourceTable.id
             idProperty = false
             idGenerationAnnotation = null
+            keyProperty = false
 
-            when (association.type) {
-                ONE_TO_ONE, MANY_TO_ONE, MANY_TO_MANY -> {
-                    keyProperty = false
-
-                    val mappedBy =
-                        (if (sourceColumn.partOfPk)
-                            snakeToLowerCamel(targetTable.name)
-                        else
-                            snakeToLowerCamel(sourceColumn.name).removeLastId())
-                            .let {
-                                if (targetPlural) it.toPlural() else it
-                            }
-
-                    setAssociation(
-                        AssociationAnnotationMeta(
-                            association.type.reversed(),
-                            mappedBy,
-                        )
-                    )
-
-                    // 当关联为一对一时，被动方需要将类型设置为可空
-                    if (association.type == ONE_TO_ONE) {
-                        typeNotNull = false
+            val mappedBy =
+                (if (sourceColumn.partOfPk)
+                    snakeToLowerCamel(targetTable.name)
+                else
+                    snakeToLowerCamel(sourceColumn.name).removeLastId())
+                    .let {
+                        if (association.type == MANY_TO_MANY) it.toPlural() else it
                     }
-                    // 当外键为伪时，需要将类型设置为可空
-                    if (association.fake && association.type == MANY_TO_ONE) {
-                        typeNotNull = false
-                    }
-                }
 
-                ONE_TO_MANY -> {
-                    throw ConvertEntityException.association(
-                        "OutAssociation [${association.name}] convert property fail: \n" +
-                                "AssociationType can not be OneToMany"
-                    )
-                }
+            setAssociation(
+                AssociationAnnotationMeta(
+                    association.type.reversed(),
+                    mappedBy,
+                )
+            )
+
+            // 当关联为一对一时，被动方需要将类型设置为可空
+            if (association.type == ONE_TO_ONE) {
+                typeNotNull = false
+            }
+            // 当外键为伪时，需要将类型设置为可空
+            if (association.fake && association.type == MANY_TO_ONE) {
+                typeNotNull = false
             }
 
-            if (sourcePlural) toPlural()
+            if (association.type != ONE_TO_ONE) {
+                toPlural()
+            }
         }.let {
             GenPropertyInput(it)
         }
@@ -308,31 +286,31 @@ private fun createIdViewProperty(
             idGenerationAnnotation = null
 
             if (associationProperty.typeNotNull != baseProperty.typeNotNull) {
-                this.typeNotNull = associationProperty.typeNotNull
+                typeNotNull = associationProperty.typeNotNull
             }
 
             if (associationProperty.listType) {
-                this.name = associationProperty.name.toSingular() + "Id"
-                this.toPlural()
+                name = associationProperty.name.toSingular() + "Id"
+                toPlural()
             } else {
-                this.name = associationProperty.name + "Id"
+                name = associationProperty.name + "Id"
             }
 
-            this.type = typeMapping(
+            type = typeMapping(
                 baseColumn.getTypeMeta().copy(
                     // 当为列表属性时，java 为允许集合泛型使用，此时映射时必须调整为可空模式
                     // 除此以外同步关联属性的可空性
-                    typeNotNull = if (this.listType) false else associationProperty.typeNotNull
+                    typeNotNull = if (listType) false else associationProperty.typeNotNull
                 )
             )
 
             associationProperty.comment.takeIf { it.isNotBlank() }?.let {
-                this.comment = "$it ID 视图"
+                comment = "$it ID 视图"
             }
-            this.associationType = associationProperty.associationType
-            this.idView = true
-            this.idViewAnnotation = "@IdView(\"${associationProperty.name}\")"
-            this.keyProperty = false
+            associationType = associationProperty.associationType
+            idView = true
+            idViewAnnotation = "@IdView(\"${associationProperty.name}\")"
+            keyProperty = false
         }.let {
             GenPropertyInput(it)
         }
