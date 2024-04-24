@@ -2,10 +2,12 @@ package top.potmot.model
 
 import org.babyfish.jimmer.kt.merge
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import top.potmot.model.dto.GenConfig
+import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenModelInput
 import top.potmot.service.ConvertService
 import top.potmot.service.GenerateService
@@ -15,10 +17,12 @@ import top.potmot.util.replaceSinceTimeComment
 /**
  * 测试 model 生成 entity 和 sql 是否符合 Results 的约定
  *
- * 可按照需要调整 entityTestProperties 和 tableDefineTestProperties 两组测试属性集
+ * 可按照需要调整 entityProperties 和 tableDefineProperties 两组测试属性集
  * 并实现 EntityResult、TableDefineResult 匹配特定属性集的输出
  */
 abstract class BaseTest {
+    val logger = LoggerFactory.getLogger(BaseTest::class.java)
+
     @Autowired
     lateinit var modelService: ModelService
 
@@ -28,20 +32,22 @@ abstract class BaseTest {
     @Autowired
     lateinit var generateService: GenerateService
 
-    private val logger = LoggerFactory.getLogger(BaseTest::class.java)
-
     abstract fun getBaseModel(): GenModelInput
 
     abstract fun getEntityResult(config: GenConfig): String
 
     abstract fun getTableDefineResult(config: GenConfig): String
 
-    open val entityTestProperties = languageProperties
+    @ParameterizedTest
+    @MethodSource("entityProperties")
+    open fun testEntities(properties: GenConfigProperties) {
+        val propertiesEntity = properties.toEntity()
+        logger.debug(propertiesEntity.toString())
 
-    private fun testEntity(
-        model: GenModelInput,
-        config: GenConfig,
-    ) {
+        val entity = merge(getBaseModel().toEntity(), propertiesEntity)
+        val model = GenModelInput(entity)
+        val config = GenConfig(entity)
+
         val id = modelService.save(model)
         convertService.convertModel(id, null)
         val entityCodes = generateService.generateModelEntity(id, true)
@@ -52,22 +58,16 @@ abstract class BaseTest {
         )
     }
 
-    @Test
-    open fun testEntities() =
-        entityTestProperties.forEach {
-            val entity = merge(getBaseModel().toEntity(), it.toEntity())
-            val model = GenModelInput(entity)
-            val config = GenConfig(entity)
-            logger.debug(it.toEntity().toString())
-            testEntity(model, config)
-        }
+    @ParameterizedTest
+    @MethodSource("tableDefineProperties")
+    open fun testTableDefines(properties: GenConfigProperties) {
+        val propertiesEntity = properties.toEntity()
+        logger.debug(propertiesEntity.toString())
 
-    open val tableDefineTestProperties = dataSourceTypeProperties
+        val entity = merge(getBaseModel().toEntity(), properties.toEntity())
+        val model = GenModelInput(entity)
+        val config = GenConfig(entity)
 
-    private fun testTableDefine(
-        model: GenModelInput,
-        config: GenConfig,
-    ) {
         val id = modelService.save(model)
         val tableDefineCodes = generateService.generateModelSql(id)
 
@@ -77,13 +77,11 @@ abstract class BaseTest {
         )
     }
 
-    @Test
-    open fun testTableDefines() =
-        tableDefineTestProperties.forEach {
-            val entity = merge(getBaseModel().toEntity(), it.toEntity())
-            val model = GenModelInput(entity)
-            val config = GenConfig(entity)
-            logger.debug(it.toEntity().toString())
-            testTableDefine(model, config)
-        }
+    companion object {
+        @JvmStatic
+        fun entityProperties(): List<GenConfigProperties> = languageProperties
+
+        @JvmStatic
+        fun tableDefineProperties(): List<GenConfigProperties> = dataSourceTypeProperties
+    }
 }

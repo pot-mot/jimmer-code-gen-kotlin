@@ -8,24 +8,17 @@ import top.potmot.enumeration.DatabaseNamingStrategyType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.BaseTest
 import top.potmot.model.createBaseModel
+import top.potmot.model.dataSourceTypeProperties
 import top.potmot.model.databaseNamingStrategyProperties
 import top.potmot.model.dto.GenConfig
 import top.potmot.model.dto.GenConfigProperties
+import top.potmot.model.languageProperties
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin", "h2", "hide-sql")
 class TestLongName : BaseTest() {
     override fun getBaseModel() =
         createBaseModel(LONG_NAMES)
-
-    override val entityTestProperties: List<GenConfigProperties>
-        get() = super.entityTestProperties.multiple(databaseNamingStrategyProperties).map {
-            // 控制应用 Postgres 的 identifierFilter 处理注解对应名称
-            it.copy(dataSourceType = DataSourceType.PostgreSQL)
-        }
-
-    override val tableDefineTestProperties: List<GenConfigProperties>
-        get() = super.tableDefineTestProperties.multiple(databaseNamingStrategyProperties)
 
     override fun getEntityResult(config: GenConfig) =
         when (config.language) {
@@ -62,4 +55,15 @@ class TestLongName : BaseTest() {
                 DatabaseNamingStrategyType.RAW -> h2LowerCaseResult
             }
         }
+
+    companion object {
+        @JvmStatic
+        fun entityProperties(): List<GenConfigProperties> = languageProperties.multiple(databaseNamingStrategyProperties).map {
+            // 控制应用 Postgres 的 identifierFilter 处理注解对应名称
+            it.copy(dataSourceType = DataSourceType.PostgreSQL)
+        }
+
+        @JvmStatic
+        fun tableDefineProperties(): List<GenConfigProperties> = dataSourceTypeProperties.multiple(databaseNamingStrategyProperties)
+    }
 }
