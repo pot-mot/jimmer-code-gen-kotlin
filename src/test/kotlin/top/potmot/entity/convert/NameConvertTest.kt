@@ -14,13 +14,13 @@ import top.potmot.core.entity.convert.snakeToUpperCamel
 class NameConvertTest {
     @Test
     @Order(1)
-    fun testsnakeToUpperCamel() {
+    fun testSnakeToUpperCamel() {
         assertEquals("CreateUserId", snakeToUpperCamel("CREATE_USER_ID"))
         assertEquals("HelloWorld", snakeToUpperCamel("HELLO_WORLD"))
         assertEquals("HelloWorld", snakeToUpperCamel("hello_world"))
-        assertEquals("HelloWorld", snakeToUpperCamel("hELLO_wORLD"))
+        assertEquals("HELLOWORLD", snakeToUpperCamel("hELLO_wORLD"))
         assertEquals("HelloWorld", snakeToUpperCamel("Hello_World"))
-        assertEquals("Helloworld", snakeToUpperCamel("HelloWorld"))
+        assertEquals("HelloWorld", snakeToUpperCamel("HelloWorld"))
         assertEquals("HelloWorld", snakeToUpperCamel("`hello_world`"))
         assertEquals("HelloWorld", snakeToUpperCamel("  `hello_world`  "))
         assertEquals("HelloWorld", snakeToUpperCamel("\"hello_world\""))

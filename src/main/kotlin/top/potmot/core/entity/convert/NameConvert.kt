@@ -35,7 +35,7 @@ fun snakeToUpperCamel(name: String): String =
                         append(it.substring(1))
                     } else {
                         append(it[0].uppercaseChar())
-                        append(it.substring(1).lowercase())
+                        append(it.substring(1))
                     }
                 }
             }
