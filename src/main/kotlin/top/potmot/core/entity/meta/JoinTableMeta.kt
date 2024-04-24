@@ -3,6 +3,7 @@ package top.potmot.core.entity.meta
 import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.core.database.generate.identifier.IdentifierProcessor
 import top.potmot.core.database.generate.identifier.IdentifierType
+import top.potmot.core.database.meta.OutAssociationMeta
 import top.potmot.core.database.meta.createMappingColumnName
 
 data class JoinTableMeta(

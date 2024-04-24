@@ -79,7 +79,7 @@ fun convertAssociationProperties(
         if (currentColumnProperties.isNullOrEmpty()) {
             throw ConvertEntityException.association(
                 "OutAssociation [${association.name}] convert property fail: \n" +
-                        "SourceColumn [${sourceColumn.name}] converted property not found"
+                        "SourceColumn [${sourceColumn.name}] converted BaseProperty not found"
             )
         }
 

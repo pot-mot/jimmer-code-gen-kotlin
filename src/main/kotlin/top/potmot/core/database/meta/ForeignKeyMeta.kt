@@ -1,9 +1,5 @@
 package top.potmot.core.database.meta
 
-import top.potmot.core.entity.meta.OutAssociationMeta
-import top.potmot.model.GenAssociation
-import top.potmot.model.dto.GenAssociationInput
-
 data class ForeignKeyMeta(
     val name: String,
     val sourceTableName: String,

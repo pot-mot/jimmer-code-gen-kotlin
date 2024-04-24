@@ -1,7 +1,5 @@
 package top.potmot.core.database.meta
 
-import top.potmot.core.entity.meta.InAssociationMeta
-import top.potmot.core.entity.meta.OutAssociationMeta
 import top.potmot.error.ConvertEntityException
 import top.potmot.model.dto.GenTableAssociationsView
 

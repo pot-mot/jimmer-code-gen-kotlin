@@ -3,7 +3,6 @@ package top.potmot.core.database.meta
 import top.potmot.core.entity.convert.clearColumnName
 import top.potmot.core.entity.convert.clearTableComment
 import top.potmot.core.entity.convert.clearTableName
-import top.potmot.core.entity.meta.OutAssociationMeta
 import top.potmot.model.GenAssociation
 import top.potmot.model.dto.ColumnTypeMeta
 import top.potmot.model.dto.GenTableAssociationsView

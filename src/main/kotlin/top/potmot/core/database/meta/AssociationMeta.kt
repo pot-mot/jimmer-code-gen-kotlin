@@ -1,4 +1,4 @@
-package top.potmot.core.entity.meta
+package top.potmot.core.database.meta
 
 import top.potmot.model.dto.GenTableAssociationsView
 
