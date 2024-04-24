@@ -5,6 +5,7 @@ import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.database.meta.getAssociations
 import top.potmot.core.database.meta.getTypeMeta
+import top.potmot.core.database.meta.produceOneToMany
 import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.meta.toJoinColumns
@@ -47,7 +48,7 @@ fun convertAssociationProperties(
     val (
         outAssociations,
         inAssociations,
-    ) = table.getAssociations()
+    ) = table.getAssociations().produceOneToMany()
 
     val propertiesMap =
         basePropertyMap.mapValues {
@@ -60,12 +61,10 @@ fun convertAssociationProperties(
             sourceTable,
             sourceColumns,
             targetTable,
-            targetColumns,
+            _,
         ) = outAssociation
 
         val sourceColumn = sourceColumns[0]
-
-        val targetColumn = targetColumns[0]
 
         if (!propertiesMap.containsKey(sourceColumn.id)) {
             throw ConvertEntityException.association(
@@ -90,7 +89,7 @@ fun convertAssociationProperties(
         }
 
         // 当关联类型为 ONE_TO_MANY 或 MANY_TO_MANY 时，目标属性需要为复数形式
-        val targetPlural = association.type == ONE_TO_MANY || association.type == MANY_TO_MANY
+        val targetPlural = association.type == MANY_TO_MANY
 
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = sourceProperty.toEntity().copy {
@@ -133,19 +132,9 @@ fun convertAssociationProperties(
                 }
 
                 ONE_TO_MANY -> {
-                    val mappedBy =
-                        if (targetColumn.partOfPk)
-                            snakeToLowerCamel(targetTable.name)
-                        else
-                            snakeToLowerCamel(targetColumn.name).removeLastId()
-
-                    keyProperty = false
-
-                    setAssociation(
-                        AssociationAnnotationMeta(
-                            association.type,
-                            mappedBy = mappedBy
-                        )
+                    throw ConvertEntityException.association(
+                        "OutAssociation [${association.name}] convert property fail: \n" +
+                                "AssociationType can not be OneToMany"
                     )
                 }
             }
@@ -233,7 +222,7 @@ fun convertAssociationProperties(
 
                     setAssociation(
                         AssociationAnnotationMeta(
-                            association.type.reverse(),
+                            association.type.reversed(),
                             mappedBy,
                         )
                     )
@@ -249,17 +238,10 @@ fun convertAssociationProperties(
                 }
 
                 ONE_TO_MANY -> {
-                    setAssociation(
-                        AssociationAnnotationMeta(
-                            MANY_TO_ONE,
-                            joinColumns = inAssociation.toJoinColumns(identifiers)
-                        ),
-                        association.dissociateAction
+                    throw ConvertEntityException.association(
+                        "OutAssociation [${association.name}] convert property fail: \n" +
+                                "AssociationType can not be OneToMany"
                     )
-                    // 当外键为伪时，需要将类型设置为可空
-                    if (association.fake) {
-                        typeNotNull = false
-                    }
                 }
             }
 

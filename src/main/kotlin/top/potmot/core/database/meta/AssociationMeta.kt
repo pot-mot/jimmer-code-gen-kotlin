@@ -1,19 +1,24 @@
 package top.potmot.core.database.meta
 
+import top.potmot.model.dto.GenAssociationSimpleView
 import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.model.dto.SourceColumn
+import top.potmot.model.dto.SourceTable
+import top.potmot.model.dto.TargetColumn
+import top.potmot.model.dto.TargetTable
 
 data class OutAssociationMeta(
-    val association: GenTableAssociationsView.TargetOf_outAssociations,
+    val association: GenAssociationSimpleView,
     val sourceTable: GenTableAssociationsView,
     val sourceColumns: List<GenTableAssociationsView.TargetOf_columns>,
-    val targetTable: GenTableAssociationsView.TargetOf_outAssociations.TargetOf_targetTable,
-    val targetColumns: List<GenTableAssociationsView.TargetOf_outAssociations.TargetOf_columnReferences.TargetOf_targetColumn>,
+    val targetTable: TargetTable,
+    val targetColumns: List<TargetColumn>,
 )
 
 data class InAssociationMeta(
-    val association: GenTableAssociationsView.TargetOf_inAssociations,
-    val sourceTable: GenTableAssociationsView.TargetOf_inAssociations.TargetOf_sourceTable,
-    val sourceColumns: List<GenTableAssociationsView.TargetOf_inAssociations.TargetOf_columnReferences.TargetOf_sourceColumn>,
+    val association: GenAssociationSimpleView,
+    val sourceTable: SourceTable,
+    val sourceColumns: List<SourceColumn>,
     val targetTable: GenTableAssociationsView,
     val targetColumns: List<GenTableAssociationsView.TargetOf_columns>,
 )

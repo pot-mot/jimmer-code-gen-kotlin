@@ -20,7 +20,7 @@ enum class AssociationType {
             MANY_TO_MANY -> ManyToMany::class
         }
 
-    fun reverse(): AssociationType =
+    fun reversed(): AssociationType =
         when (this) {
             ONE_TO_ONE -> ONE_TO_ONE
             MANY_TO_ONE -> ONE_TO_MANY

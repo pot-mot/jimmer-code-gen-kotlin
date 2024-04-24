@@ -2,6 +2,10 @@ GenAssociationIdView {
     id
 }
 
+GenAssociationSimpleView {
+    #allScalars
+}
+
 GenAssociationView {
     #allScalars
 
