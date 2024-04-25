@@ -1,7 +1,139 @@
 package top.potmot.model.associations.fake.oneToMany
 
+const val kotlinRealFkResult = """
+[(top/potmot/Order.kt, package top.potmot
+
+import org.babyfish.jimmer.sql.Column
+import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.GeneratedValue
+import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.Table
+
+/**
+ * @author 
+ */
+@Entity
+@Table(name = "ORDER")
+interface Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    val id: Long
+
+    @OneToMany(mappedBy = "order")
+    val orderDetails: List<OrderDetail>
+
+    @IdView("orderDetails")
+    val orderDetailIds: List<Long>
+}
+), (top/potmot/OrderDetail.kt, package top.potmot
+
+import org.babyfish.jimmer.sql.Column
+import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.ForeignKeyType
+import org.babyfish.jimmer.sql.GeneratedValue
+import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.JoinColumn
+import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.Table
+
+/**
+ * @author 
+ */
+@Entity
+@Table(name = "ORDER_DETAIL")
+interface OrderDetail {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    val id: Long
+
+    @ManyToOne
+    @JoinColumn(
+        name = "ORDER_ID",
+        referencedColumnName = "ID",
+        foreignKeyType = ForeignKeyType.FAKE
+    )
+    val order: Order?
+
+    @IdView("order")
+    val orderId: Long?
+}
+)]
+"""
+
+const val kotlinFakeFkResult = """
+[(top/potmot/Order.kt, package top.potmot
+
+import org.babyfish.jimmer.sql.Column
+import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.GeneratedValue
+import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.Table
+
+/**
+ * @author 
+ */
+@Entity
+@Table(name = "ORDER")
+interface Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    val id: Long
+
+    @OneToMany(mappedBy = "order")
+    val orderDetails: List<OrderDetail>
+
+    @IdView("orderDetails")
+    val orderDetailIds: List<Long>
+}
+), (top/potmot/OrderDetail.kt, package top.potmot
+
+import org.babyfish.jimmer.sql.Column
+import org.babyfish.jimmer.sql.Entity
+import org.babyfish.jimmer.sql.GeneratedValue
+import org.babyfish.jimmer.sql.GenerationType
+import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.JoinColumn
+import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.Table
+
+/**
+ * @author 
+ */
+@Entity
+@Table(name = "ORDER_DETAIL")
+interface OrderDetail {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    val id: Long
+
+    @ManyToOne
+    @JoinColumn(
+        name = "ORDER_ID",
+        referencedColumnName = "ID"
+    )
+    val order: Order?
+
+    @IdView("order")
+    val orderId: Long?
+}
+)]
+"""
+
 const val javaRealFkResult = """
-[(top/potmot/OMSource.java, package top.potmot;
+[(top/potmot/Order.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -17,20 +149,20 @@ import org.babyfish.jimmer.sql.Table;
  * @author 
  */
 @Entity
-@Table(name = "O_M_SOURCE")
-public interface OMSource {
+@Table(name = "ORDER")
+public interface Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     long id();
 
-    @OneToMany(mappedBy = "source")
-    List<OMTarget> oMTargets();
+    @OneToMany(mappedBy = "order")
+    List<OrderDetail> orderDetails();
 
-    @IdView("oMTargets")
-    List<Long> oMTargetIds();
+    @IdView("orderDetails")
+    List<Long> orderDetailIds();
 }
-), (top/potmot/OMTarget.java, package top.potmot;
+), (top/potmot/OrderDetail.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -48,8 +180,8 @@ import org.jetbrains.annotations.Nullable;
  * @author 
  */
 @Entity
-@Table(name = "O_M_TARGET")
-public interface OMTarget {
+@Table(name = "ORDER_DETAIL")
+public interface OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -57,22 +189,22 @@ public interface OMTarget {
 
     @ManyToOne
     @JoinColumn(
-            name = "SOURCE_ID",
+            name = "ORDER_ID",
             referencedColumnName = "ID",
             foreignKeyType = ForeignKeyType.FAKE
     )
     @Nullable
-    OMSource source();
+    Order order();
 
-    @IdView("source")
+    @IdView("order")
     @Nullable
-    Long sourceId();
+    Long orderId();
 }
 )]
 """
 
 const val javaFakeFkResult = """
-[(top/potmot/OMSource.java, package top.potmot;
+[(top/potmot/Order.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -88,20 +220,20 @@ import org.babyfish.jimmer.sql.Table;
  * @author 
  */
 @Entity
-@Table(name = "O_M_SOURCE")
-public interface OMSource {
+@Table(name = "ORDER")
+public interface Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     long id();
 
-    @OneToMany(mappedBy = "source")
-    List<OMTarget> oMTargets();
+    @OneToMany(mappedBy = "order")
+    List<OrderDetail> orderDetails();
 
-    @IdView("oMTargets")
-    List<Long> oMTargetIds();
+    @IdView("orderDetails")
+    List<Long> orderDetailIds();
 }
-), (top/potmot/OMTarget.java, package top.potmot;
+), (top/potmot/OrderDetail.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -118,8 +250,8 @@ import org.jetbrains.annotations.Nullable;
  * @author 
  */
 @Entity
-@Table(name = "O_M_TARGET")
-public interface OMTarget {
+@Table(name = "ORDER_DETAIL")
+public interface OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -127,147 +259,15 @@ public interface OMTarget {
 
     @ManyToOne
     @JoinColumn(
-            name = "SOURCE_ID",
+            name = "ORDER_ID",
             referencedColumnName = "ID"
     )
     @Nullable
-    OMSource source();
+    Order order();
 
-    @IdView("source")
+    @IdView("order")
     @Nullable
-    Long sourceId();
-}
-)]
-"""
-
-const val kotlinRealFkResult = """
-[(top/potmot/OMSource.kt, package top.potmot
-
-import org.babyfish.jimmer.sql.Column
-import org.babyfish.jimmer.sql.Entity
-import org.babyfish.jimmer.sql.GeneratedValue
-import org.babyfish.jimmer.sql.GenerationType
-import org.babyfish.jimmer.sql.Id
-import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.OneToMany
-import org.babyfish.jimmer.sql.Table
-
-/**
- * @author 
- */
-@Entity
-@Table(name = "O_M_SOURCE")
-interface OMSource {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    val id: Long
-
-    @OneToMany(mappedBy = "source")
-    val oMTargets: List<OMTarget>
-
-    @IdView("oMTargets")
-    val oMTargetIds: List<Long>
-}
-), (top/potmot/OMTarget.kt, package top.potmot
-
-import org.babyfish.jimmer.sql.Column
-import org.babyfish.jimmer.sql.Entity
-import org.babyfish.jimmer.sql.ForeignKeyType
-import org.babyfish.jimmer.sql.GeneratedValue
-import org.babyfish.jimmer.sql.GenerationType
-import org.babyfish.jimmer.sql.Id
-import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.JoinColumn
-import org.babyfish.jimmer.sql.ManyToOne
-import org.babyfish.jimmer.sql.Table
-
-/**
- * @author 
- */
-@Entity
-@Table(name = "O_M_TARGET")
-interface OMTarget {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    val id: Long
-
-    @ManyToOne
-    @JoinColumn(
-        name = "SOURCE_ID",
-        referencedColumnName = "ID",
-        foreignKeyType = ForeignKeyType.FAKE
-    )
-    val source: OMSource?
-
-    @IdView("source")
-    val sourceId: Long?
-}
-)]
-"""
-
-const val kotlinFakeFkResult = """
-[(top/potmot/OMSource.kt, package top.potmot
-
-import org.babyfish.jimmer.sql.Column
-import org.babyfish.jimmer.sql.Entity
-import org.babyfish.jimmer.sql.GeneratedValue
-import org.babyfish.jimmer.sql.GenerationType
-import org.babyfish.jimmer.sql.Id
-import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.OneToMany
-import org.babyfish.jimmer.sql.Table
-
-/**
- * @author 
- */
-@Entity
-@Table(name = "O_M_SOURCE")
-interface OMSource {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    val id: Long
-
-    @OneToMany(mappedBy = "source")
-    val oMTargets: List<OMTarget>
-
-    @IdView("oMTargets")
-    val oMTargetIds: List<Long>
-}
-), (top/potmot/OMTarget.kt, package top.potmot
-
-import org.babyfish.jimmer.sql.Column
-import org.babyfish.jimmer.sql.Entity
-import org.babyfish.jimmer.sql.GeneratedValue
-import org.babyfish.jimmer.sql.GenerationType
-import org.babyfish.jimmer.sql.Id
-import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.JoinColumn
-import org.babyfish.jimmer.sql.ManyToOne
-import org.babyfish.jimmer.sql.Table
-
-/**
- * @author 
- */
-@Entity
-@Table(name = "O_M_TARGET")
-interface OMTarget {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
-    val id: Long
-
-    @ManyToOne
-    @JoinColumn(
-        name = "SOURCE_ID",
-        referencedColumnName = "ID"
-    )
-    val source: OMSource?
-
-    @IdView("source")
-    val sourceId: Long?
+    Long orderId();
 }
 )]
 """

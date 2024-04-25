@@ -21,7 +21,7 @@ import top.potmot.util.replaceSinceTimeComment
  * 并实现 EntityResult、TableDefineResult 匹配特定属性集的输出
  */
 abstract class BaseTest {
-    val logger = LoggerFactory.getLogger(BaseTest::class.java)
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     @Autowired
     lateinit var modelService: ModelService

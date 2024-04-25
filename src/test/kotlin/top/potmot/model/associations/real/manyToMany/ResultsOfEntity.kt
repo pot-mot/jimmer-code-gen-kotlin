@@ -1,7 +1,7 @@
 package top.potmot.model.associations.real.manyToMany
 
 const val javaRealFkResult = """
-[(top/potmot/MNSource.java, package top.potmot;
+[(top/potmot/Course.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -18,8 +18,8 @@ import org.babyfish.jimmer.sql.Table;
  * @author 
  */
 @Entity
-@Table(name = "M_N_SOURCE")
-public interface MNSource {
+@Table(name = "COURSE")
+public interface Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -27,16 +27,16 @@ public interface MNSource {
 
     @ManyToMany
     @JoinTable(
-            name = "MANY_TO_MANY_MAPPING",
-            joinColumnName = "M_N_SOURCE_ID",
-            inverseJoinColumnName = "M_N_TARGET_ID"
+            name = "COURSE_STUDENT_MAPPING",
+            joinColumnName = "COURSE_ID",
+            inverseJoinColumnName = "STUDENT_ID"
     )
-    List<MNTarget> mNTargets();
+    List<Student> students();
 
-    @IdView("mNTargets")
-    List<Long> mNTargetIds();
+    @IdView("students")
+    List<Long> studentIds();
 }
-), (top/potmot/MNTarget.java, package top.potmot;
+), (top/potmot/Student.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -52,24 +52,24 @@ import org.babyfish.jimmer.sql.Table;
  * @author 
  */
 @Entity
-@Table(name = "M_N_TARGET")
-public interface MNTarget {
+@Table(name = "STUDENT")
+public interface Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     long id();
 
-    @ManyToMany(mappedBy = "mNTargets")
-    List<MNSource> mNSources();
+    @ManyToMany(mappedBy = "students")
+    List<Course> courses();
 
-    @IdView("mNSources")
-    List<Long> mNSourceIds();
+    @IdView("courses")
+    List<Long> courseIds();
 }
 )]
 """
 
 const val javaFakeFkResult = """
-[(top/potmot/MNSource.java, package top.potmot;
+[(top/potmot/Course.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -88,8 +88,8 @@ import org.babyfish.jimmer.sql.Table;
  * @author 
  */
 @Entity
-@Table(name = "M_N_SOURCE")
-public interface MNSource {
+@Table(name = "COURSE")
+public interface Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -97,20 +97,20 @@ public interface MNSource {
 
     @ManyToMany
     @JoinTable(
-            name = "MANY_TO_MANY_MAPPING",
+            name = "COURSE_STUDENT_MAPPING",
             joinColumns = {
-                    @JoinColumn(name = "M_N_SOURCE_ID", foreignKeyType = ForeignKeyType.REAL),
+                    @JoinColumn(name = "COURSE_ID", foreignKeyType = ForeignKeyType.REAL),
             },
             inverseJoinColumns = {
-                    @JoinColumn(name = "M_N_TARGET_ID", foreignKeyType = ForeignKeyType.REAL),
+                    @JoinColumn(name = "STUDENT_ID", foreignKeyType = ForeignKeyType.REAL),
             }
     )
-    List<MNTarget> mNTargets();
+    List<Student> students();
 
-    @IdView("mNTargets")
-    List<Long> mNTargetIds();
+    @IdView("students")
+    List<Long> studentIds();
 }
-), (top/potmot/MNTarget.java, package top.potmot;
+), (top/potmot/Student.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -126,24 +126,24 @@ import org.babyfish.jimmer.sql.Table;
  * @author 
  */
 @Entity
-@Table(name = "M_N_TARGET")
-public interface MNTarget {
+@Table(name = "STUDENT")
+public interface Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     long id();
 
-    @ManyToMany(mappedBy = "mNTargets")
-    List<MNSource> mNSources();
+    @ManyToMany(mappedBy = "students")
+    List<Course> courses();
 
-    @IdView("mNSources")
-    List<Long> mNSourceIds();
+    @IdView("courses")
+    List<Long> courseIds();
 }
 )]
 """
 
 const val kotlinRealFkResult = """
-[(top/potmot/MNSource.kt, package top.potmot
+[(top/potmot/Course.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -159,8 +159,8 @@ import org.babyfish.jimmer.sql.Table
  * @author 
  */
 @Entity
-@Table(name = "M_N_SOURCE")
-interface MNSource {
+@Table(name = "COURSE")
+interface Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -168,16 +168,16 @@ interface MNSource {
 
     @ManyToMany
     @JoinTable(
-        name = "MANY_TO_MANY_MAPPING",
-        joinColumnName = "M_N_SOURCE_ID",
-        inverseJoinColumnName = "M_N_TARGET_ID"
+        name = "COURSE_STUDENT_MAPPING",
+        joinColumnName = "COURSE_ID",
+        inverseJoinColumnName = "STUDENT_ID"
     )
-    val mNTargets: List<MNTarget>
+    val students: List<Student>
 
-    @IdView("mNTargets")
-    val mNTargetIds: List<Long>
+    @IdView("students")
+    val studentIds: List<Long>
 }
-), (top/potmot/MNTarget.kt, package top.potmot
+), (top/potmot/Student.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -192,24 +192,24 @@ import org.babyfish.jimmer.sql.Table
  * @author 
  */
 @Entity
-@Table(name = "M_N_TARGET")
-interface MNTarget {
+@Table(name = "STUDENT")
+interface Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     val id: Long
 
-    @ManyToMany(mappedBy = "mNTargets")
-    val mNSources: List<MNSource>
+    @ManyToMany(mappedBy = "students")
+    val courses: List<Course>
 
-    @IdView("mNSources")
-    val mNSourceIds: List<Long>
+    @IdView("courses")
+    val courseIds: List<Long>
 }
 )]
 """
 
 const val kotlinFakeFkResult = """
-[(top/potmot/MNSource.kt, package top.potmot
+[(top/potmot/Course.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -227,8 +227,8 @@ import org.babyfish.jimmer.sql.Table
  * @author 
  */
 @Entity
-@Table(name = "M_N_SOURCE")
-interface MNSource {
+@Table(name = "COURSE")
+interface Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -236,20 +236,20 @@ interface MNSource {
 
     @ManyToMany
     @JoinTable(
-        name = "MANY_TO_MANY_MAPPING",
+        name = "COURSE_STUDENT_MAPPING",
         joinColumns = [
-            JoinColumn(name = "M_N_SOURCE_ID", foreignKeyType = ForeignKeyType.REAL),
+            JoinColumn(name = "COURSE_ID", foreignKeyType = ForeignKeyType.REAL),
         ],
         inverseJoinColumns = [
-            JoinColumn(name = "M_N_TARGET_ID", foreignKeyType = ForeignKeyType.REAL),
+            JoinColumn(name = "STUDENT_ID", foreignKeyType = ForeignKeyType.REAL),
         ]
     )
-    val mNTargets: List<MNTarget>
+    val students: List<Student>
 
-    @IdView("mNTargets")
-    val mNTargetIds: List<Long>
+    @IdView("students")
+    val studentIds: List<Long>
 }
-), (top/potmot/MNTarget.kt, package top.potmot
+), (top/potmot/Student.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -264,18 +264,18 @@ import org.babyfish.jimmer.sql.Table
  * @author 
  */
 @Entity
-@Table(name = "M_N_TARGET")
-interface MNTarget {
+@Table(name = "STUDENT")
+interface Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     val id: Long
 
-    @ManyToMany(mappedBy = "mNTargets")
-    val mNSources: List<MNSource>
+    @ManyToMany(mappedBy = "students")
+    val courses: List<Course>
 
-    @IdView("mNSources")
-    val mNSourceIds: List<Long>
+    @IdView("courses")
+    val courseIds: List<Long>
 }
 )]
 """

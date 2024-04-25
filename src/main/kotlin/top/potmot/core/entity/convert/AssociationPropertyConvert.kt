@@ -21,7 +21,6 @@ import top.potmot.model.copy
 import top.potmot.model.dto.GenPropertyInput
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.utils.string.toPlural
-import top.potmot.utils.string.toSingular
 
 /**
  * 根据基础属性和表关联转换关联属性
@@ -91,14 +90,15 @@ fun convertAssociationProperties(
 
         val sourceProperty = currentColumnProperties[0]
 
+        val singularName =
+            if (sourceProperty.idProperty)
+                snakeToLowerCamel(targetTable.name)
+            else
+                sourceProperty.name.removeLastId()
+
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = sourceProperty.toEntity().copy {
-            name =
-                if (sourceProperty.idProperty)
-                    snakeToLowerCamel(targetTable.name)
-                else
-                    sourceProperty.name.removeLastId()
-
+            name = singularName
             comment = targetTable.comment.clearTableComment()
             type = snakeToUpperCamel(targetTable.name)
             typeTableId = targetTable.id
@@ -106,6 +106,11 @@ fun convertAssociationProperties(
             idGenerationAnnotation = null
 
             if (association.type == ONE_TO_ONE || association.type == MANY_TO_ONE) {
+                // 当外键为伪时，需要将类型设置为可空
+                if (association.fake) {
+                    typeNotNull = false
+                }
+
                 setAssociation(
                     AssociationAnnotationMeta(
                         association.type,
@@ -114,11 +119,7 @@ fun convertAssociationProperties(
                     association.dissociateAction
                 )
 
-                // 当外键为伪时，需要将类型设置为可空
-                if (association.fake) {
-                    typeNotNull = false
-                }
-
+                // 此时这两个属性将覆盖原始属性，故移除原始属性
                 currentColumnProperties.clear()
             }
 
@@ -140,6 +141,7 @@ fun convertAssociationProperties(
 
         if (context.idViewProperty) {
             currentColumnProperties += createIdViewProperty(
+                singularName,
                 sourceProperty,
                 sourceColumn,
                 associationProperty,
@@ -181,14 +183,15 @@ fun convertAssociationProperties(
 
         val targetProperty = currentColumnProperties[0]
 
+        val singularName =
+            if (targetProperty.idProperty)
+                snakeToLowerCamel(sourceTable.name)
+            else
+                targetProperty.name.removeLastId()
+
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = targetProperty.toEntity().copy {
-            name =
-                if (targetProperty.idProperty)
-                    snakeToLowerCamel(sourceTable.name)
-                else
-                    targetProperty.name.removeLastId()
-
+            name = singularName
             comment = sourceTable.comment.clearTableComment()
             type = snakeToUpperCamel(sourceTable.name)
             typeTableId = sourceTable.id
@@ -205,6 +208,15 @@ fun convertAssociationProperties(
                         if (association.type == MANY_TO_MANY) it.toPlural() else it
                     }
 
+            // 被动方需要将类型设置为可空
+            if (
+                (association.type == ONE_TO_ONE) ||
+                (association.fake && association.type == MANY_TO_ONE)
+            ) {
+                typeNotNull = false
+
+            }
+
             setAssociation(
                 AssociationAnnotationMeta(
                     association.type.reversed(),
@@ -212,16 +224,7 @@ fun convertAssociationProperties(
                 )
             )
 
-            // 当关联为一对一时，被动方需要将类型设置为可空
-            if (association.type == ONE_TO_ONE) {
-                typeNotNull = false
-            }
-            // 当外键为伪时，需要将类型设置为可空
-            if (association.fake && association.type == MANY_TO_ONE) {
-                typeNotNull = false
-            }
-
-            if (association.type != ONE_TO_ONE) {
+            if (association.type == MANY_TO_ONE || association.type == MANY_TO_MANY) {
                 toPlural()
             }
         }.let {
@@ -232,6 +235,7 @@ fun convertAssociationProperties(
 
         if (context.idViewProperty) {
             currentColumnProperties += createIdViewProperty(
+                singularName,
                 targetProperty,
                 targetColumn,
                 associationProperty,
@@ -275,6 +279,7 @@ private fun GenPropertyDraft.setAssociation(
  * @param associationProperty 关联属性
  */
 private fun createIdViewProperty(
+    singularName: String,
     baseProperty: GenPropertyInput,
     baseColumn: GenTableAssociationsView.TargetOf_columns,
     associationProperty: GenPropertyInput,
@@ -282,6 +287,7 @@ private fun createIdViewProperty(
 ): GenPropertyInput =
     baseProperty.toEntity()
         .copy {
+            name = singularName + "Id"
             idProperty = false
             idGenerationAnnotation = null
 
@@ -290,10 +296,7 @@ private fun createIdViewProperty(
             }
 
             if (associationProperty.listType) {
-                name = associationProperty.name.toSingular() + "Id"
                 toPlural()
-            } else {
-                name = associationProperty.name + "Id"
             }
 
             type = typeMapping(
