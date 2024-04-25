@@ -14,6 +14,7 @@ import top.potmot.enumeration.AssociationType.MANY_TO_MANY
 import top.potmot.enumeration.AssociationType.MANY_TO_ONE
 import top.potmot.enumeration.AssociationType.ONE_TO_MANY
 import top.potmot.enumeration.AssociationType.ONE_TO_ONE
+import top.potmot.enumeration.TableType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.model.GenPropertyDraft
@@ -106,8 +107,8 @@ fun convertAssociationProperties(
             idGenerationAnnotation = null
 
             if (association.type == ONE_TO_ONE || association.type == MANY_TO_ONE) {
-                // 当外键为伪时，需要将类型设置为可空
-                if (association.fake) {
+                // 当外键为伪或表为高级表时，需要将类型设置为可空
+                if (association.fake || sourceTable.type == TableType.SUPER_TABLE) {
                     typeNotNull = false
                 }
 

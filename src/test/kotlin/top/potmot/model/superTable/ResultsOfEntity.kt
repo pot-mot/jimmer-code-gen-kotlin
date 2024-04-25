@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @MappedSuperclass
 public interface BaseEntity {
-    @ManyToOne(inputNotNull = true)
+    @ManyToOne
     @JoinColumn(
             name = "CREATE_USER_ID",
             referencedColumnName = "ID"
@@ -27,7 +27,7 @@ public interface BaseEntity {
     @Nullable
     Long createUserId();
 
-    @ManyToOne(inputNotNull = true)
+    @ManyToOne
     @JoinColumn(
             name = "MODIFY_USER_ID",
             referencedColumnName = "ID"
@@ -124,7 +124,7 @@ import org.babyfish.jimmer.sql.MappedSuperclass
  */
 @MappedSuperclass
 interface BaseEntity {
-    @ManyToOne(inputNotNull = true)
+    @ManyToOne
     @JoinColumn(
         name = "CREATE_USER_ID",
         referencedColumnName = "ID"
@@ -134,7 +134,7 @@ interface BaseEntity {
     @IdView("createUser")
     val createUserId: Long?
 
-    @ManyToOne(inputNotNull = true)
+    @ManyToOne
     @JoinColumn(
         name = "MODIFY_USER_ID",
         referencedColumnName = "ID"

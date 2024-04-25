@@ -40,7 +40,7 @@ abstract class BaseTest {
 
     @ParameterizedTest
     @MethodSource("entityProperties")
-    open fun testEntities(properties: GenConfigProperties) {
+    fun testEntities(properties: GenConfigProperties) {
         val propertiesEntity = properties.toEntity()
         logger.debug(propertiesEntity.toString())
 
@@ -60,7 +60,7 @@ abstract class BaseTest {
 
     @ParameterizedTest
     @MethodSource("tableDefineProperties")
-    open fun testTableDefines(properties: GenConfigProperties) {
+    fun testTableDefines(properties: GenConfigProperties) {
         val propertiesEntity = properties.toEntity()
         logger.debug(propertiesEntity.toString())
 
