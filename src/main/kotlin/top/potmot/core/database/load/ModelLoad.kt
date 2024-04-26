@@ -3,6 +3,8 @@ package top.potmot.core.database.load
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.readValue
+import top.potmot.constant.ASSOCIATION_EDGE
+import top.potmot.constant.TABLE_NODE
 import top.potmot.error.ModelLoadException
 import top.potmot.model.GenTable
 import top.potmot.model.dto.GenAssociationInput
@@ -27,11 +29,11 @@ fun parseGraphData(modelId: Long, graphData: String): ModelInputEntities {
     val cells = jsonNode.path("json").path("cells").toList()
 
     cells.forEach { cell ->
-        if (cell.path("shape").textValue() == ModelShape.ASSOCIATION_EDGE.name) {
+        if (cell.path("shape").textValue() == ASSOCIATION_EDGE) {
             cell.path("data").path("association").takeIf { it.isMissingNode.not() }?.let {
                 associations += it.toAssociation(modelId)
             }
-        } else if (cell.path("shape").textValue() == ModelShape.TABLE_NODE.name) {
+        } else if (cell.path("shape").textValue() == TABLE_NODE) {
             cell.path("data").path("table").takeIf { it.isMissingNode.not() }?.let {
                 tables += it.toTable(modelId)
             }

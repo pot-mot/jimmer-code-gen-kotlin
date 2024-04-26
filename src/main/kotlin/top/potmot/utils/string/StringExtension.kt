@@ -1,6 +1,6 @@
 package top.potmot.utils.string
 
-import top.potmot.core.entity.convert.SEPARATOR
+import top.potmot.constant.SEPARATOR
 
 fun String.startsWithAny(prefixes: Collection<String>): String? {
     for (prefix in prefixes) {

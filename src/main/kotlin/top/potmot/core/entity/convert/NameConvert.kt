@@ -1,5 +1,6 @@
 package top.potmot.core.entity.convert
 
+import top.potmot.constant.SEPARATOR
 import top.potmot.context.getContextOrGlobal
 import top.potmot.utils.string.isAllLowerCase
 import top.potmot.utils.string.isAllUpperCase
@@ -7,8 +8,6 @@ import top.potmot.utils.string.removePrefixes
 import top.potmot.utils.string.removeSuffixes
 import top.potmot.utils.string.splitTrim
 import top.potmot.utils.string.trimToLetterOrDigit
-
-const val SEPARATOR = "_"
 
 /**
  * 转换下划线命名为大驼峰名名

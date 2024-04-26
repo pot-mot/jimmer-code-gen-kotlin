@@ -10,7 +10,10 @@ import top.potmot.config.GlobalGenConfig
 import top.potmot.model.dto.GenConfig
 import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.MutableGenConfig
-import top.potmot.utils.bean.copyPropertiesFrom
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 
 @RestController
 @RequestMapping("/config")
@@ -32,5 +35,16 @@ class ConfigService {
         )
 
         GlobalGenConfig.copyPropertiesFrom(newConfig)
+    }
+
+    private fun MutableGenConfig.copyPropertiesFrom(source: MutableGenConfig) {
+        val properties = this::class.memberProperties
+        for (property in properties) {
+            if (property is KMutableProperty<*>) {
+                property.isAccessible = true
+                val value = (property as KProperty1<MutableGenConfig, *>).get(source)
+                property.setter.call(this, value)
+            }
+        }
     }
 }
