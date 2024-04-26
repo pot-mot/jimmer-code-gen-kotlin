@@ -4,6 +4,7 @@ import org.babyfish.jimmer.kt.merge
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
+import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
@@ -19,10 +20,10 @@ import top.potmot.model.GenEntity
 import top.potmot.model.GenModel
 import top.potmot.model.GenTable
 import top.potmot.model.GenTypeMapping
+import top.potmot.model.by
 import top.potmot.model.dto.GenConfigProperties
 import top.potmot.model.dto.GenTableAssociationsView
 import top.potmot.model.dto.GenTypeMappingView
-import top.potmot.model.extension.GenTableAssociationsOneDepthSuperTableFetcher
 import top.potmot.model.id
 import top.potmot.model.modelId
 import top.potmot.model.orderKey
@@ -110,9 +111,14 @@ class ConvertService(
         if (ids.isEmpty()) emptyList()
         else createQuery(GenTable::class) {
             where(table.id valueIn ids)
-            select(table.fetch(GenTableAssociationsOneDepthSuperTableFetcher))
+            select(table.fetch(oneDepthSuperTableFetcher))
         }.execute().map {
             GenTableAssociationsView(it)
+        }
+
+    private val oneDepthSuperTableFetcher =
+        newFetcher(GenTable::class).by(GenTableAssociationsView.METADATA.fetcher) {
+            `superTables*` { depth(1) }
         }
 
     private fun KSqlClient.getEntityIds(tableIds: List<Long>): List<Long> =

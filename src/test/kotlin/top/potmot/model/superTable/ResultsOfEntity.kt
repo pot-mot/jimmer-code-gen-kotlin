@@ -93,10 +93,10 @@ public interface User implements BaseEntity {
     long id();
 
     @OneToMany(mappedBy = "modifyUser")
-    List<BaseEntity> baseEntities();
+    List<User> users();
 
-    @IdView("baseEntities")
-    List<Long> baseEntityIds();
+    @IdView("users")
+    List<Long> userIds();
 
     @OneToMany(mappedBy = "user")
     List<Resource> resources();
@@ -197,10 +197,10 @@ interface User : BaseEntity {
     val id: Long
 
     @OneToMany(mappedBy = "modifyUser")
-    val baseEntities: List<BaseEntity>
+    val users: List<User>
 
-    @IdView("baseEntities")
-    val baseEntityIds: List<Long>
+    @IdView("users")
+    val userIds: List<Long>
 
     @OneToMany(mappedBy = "user")
     val resources: List<Resource>

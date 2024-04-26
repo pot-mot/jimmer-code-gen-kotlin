@@ -7,11 +7,3 @@ typealias GenPropertyView = GenEntityPropertiesView.TargetOf_properties
 typealias GenPropertyEnum = GenEntityPropertiesView.TargetOf_properties.TargetOf_enum
 
 typealias GenPropertyEnumItem = GenEntityPropertiesView.TargetOf_properties.TargetOf_enum.TargetOf_items
-
-typealias SourceTable = GenTableAssociationsView.TargetOf_inAssociations.TargetOf_sourceTable
-
-typealias SourceColumn = GenTableAssociationsView.TargetOf_inAssociations.TargetOf_columnReferences.TargetOf_sourceColumn
-
-typealias TargetTable = GenTableAssociationsView.TargetOf_outAssociations.TargetOf_targetTable
-
-typealias TargetColumn = GenTableAssociationsView.TargetOf_outAssociations.TargetOf_columnReferences.TargetOf_targetColumn

@@ -5,7 +5,6 @@ import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.database.meta.getAssociations
 import top.potmot.core.database.meta.getTypeMeta
-import top.potmot.core.database.meta.produceOneToMany
 import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.meta.toJoinColumns
@@ -48,7 +47,10 @@ fun convertAssociationProperties(
     val (
         outAssociations,
         inAssociations,
-    ) = table.getAssociations().produceOneToMany()
+    ) = table
+        .getAssociations()
+        .processOneToMany()
+        .processLeafTables()
 
     val propertiesMap =
         basePropertyMap.mapValues {

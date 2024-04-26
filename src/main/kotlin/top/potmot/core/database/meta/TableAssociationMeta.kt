@@ -4,10 +4,6 @@ import top.potmot.enumeration.AssociationType
 import top.potmot.error.ConvertEntityException
 import top.potmot.model.dto.GenAssociationSimpleView
 import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.dto.SourceColumn
-import top.potmot.model.dto.SourceTable
-import top.potmot.model.dto.TargetColumn
-import top.potmot.model.dto.TargetTable
 
 data class TableAssociationMeta(
     val outAssociations: List<OutAssociationMeta>,
@@ -64,55 +60,5 @@ fun GenTableAssociationsView.getAssociations(): TableAssociationMeta {
 
     return TableAssociationMeta(
         outAssociations, inAssociations
-    )
-}
-
-/**
- * 将所有 OneToMany 恢复为 ManyToOne
- */
-fun TableAssociationMeta.produceOneToMany(): TableAssociationMeta {
-    val newOutAssociations = mutableListOf<OutAssociationMeta>()
-
-    val newInAssociations = mutableListOf<InAssociationMeta>()
-
-    outAssociations.forEach {
-        if (it.association.type != AssociationType.ONE_TO_MANY) {
-            newOutAssociations += it
-        } else {
-            newInAssociations += it.reversed()
-        }
-    }
-
-    inAssociations.forEach {
-        if (it.association.type != AssociationType.ONE_TO_MANY) {
-            newInAssociations += it
-        } else {
-            newOutAssociations += it.reversed()
-        }
-    }
-
-    return TableAssociationMeta(
-        newOutAssociations,
-        newInAssociations
-    )
-}
-
-private fun OutAssociationMeta.reversed(): InAssociationMeta {
-    return InAssociationMeta(
-        association = association.copy(type = association.type.reversed()),
-        sourceTable = SourceTable(targetTable.toEntity()),
-        sourceColumns = targetColumns.map { SourceColumn(it.toEntity()) },
-        targetTable = sourceTable,
-        targetColumns = sourceColumns
-    )
-}
-
-private fun InAssociationMeta.reversed(): OutAssociationMeta {
-    return OutAssociationMeta(
-        association = association.copy(type = association.type.reversed()),
-        sourceTable = targetTable,
-        sourceColumns = targetColumns,
-        targetTable = TargetTable(sourceTable.toEntity()),
-        targetColumns = sourceColumns.map { TargetColumn(it.toEntity()) }
     )
 }

@@ -1,3 +1,6 @@
+import top.potmot.model.dto.share.ReferenceTable
+import top.potmot.model.dto.share.ReferenceColumn
+
 GenTableIdView {
     id
 }
@@ -93,14 +96,17 @@ GenTableAssociationsView {
     inAssociations {
         #allScalars
 
-        sourceTable {
+        sourceTable implements ReferenceTable {
             id
             name
             comment
+            type
+
+            inheritTables*
         }
 
         columnReferences {
-            sourceColumn {
+            sourceColumn implements ReferenceColumn {
                 id
                 name
                 comment
@@ -115,17 +121,20 @@ GenTableAssociationsView {
     outAssociations {
         #allScalars
 
-        targetTable {
+        targetTable implements ReferenceTable {
             id
             name
             comment
+            type
+
+            inheritTables*
         }
 
         columnReferences {
             sourceColumn {
                 id
             }
-            targetColumn {
+            targetColumn implements ReferenceColumn {
                 id
                 name
                 comment
