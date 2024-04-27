@@ -191,28 +191,12 @@ const val MANY_TO_ONE = """
                         "type": "MANY_TO_ONE",
                         "fake": false,
                         "name": "fk_detail_order",
-                        "sourceTable": {
-                            "name": "order_detail",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "order",
-                            "comment": ""
-                        },
+                        "sourceTableName": "order_detail",
+                        "targetTableName": "order",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "order_id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "order_id",
+                                "targetColumnName": "id"
                             }
                         ],
                         "updateAction": "",
@@ -432,28 +416,12 @@ const val ONE_TO_MANY = """
                         "type": "ONE_TO_MANY",
                         "fake": false,
                         "name": "fk_order_detail",
-                        "sourceTable": {
-                            "name": "order",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "order_detail",
-                            "comment": ""
-                        },
+                        "sourceTableName": "order",
+                        "targetTableName": "order_detail",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "order_id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "id",
+                                "targetColumnName": "order_id"
                             }
                         ],
                         "updateAction": "",
@@ -664,28 +632,12 @@ const val ONE_TO_ONE = """
                         "type": "ONE_TO_ONE",
                         "fake": false,
                         "name": "fk_detail_user",
-                        "sourceTable": {
-                            "name": "user_detail",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "user",
-                            "comment": ""
-                        },
+                        "sourceTableName": "user_detail",
+                        "targetTableName": "user",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "user_id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "user_id",
+                                "targetColumnName": "id"
                             }
                         ],
                         "updateAction": "",
@@ -874,28 +826,12 @@ const val MANY_TO_MANY = """
                         "type": "MANY_TO_MANY",
                         "fake": false,
                         "name": "course_student_mapping",
-                        "sourceTable": {
-                            "name": "course",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "student",
-                            "comment": ""
-                        },
+                        "sourceTableName": "course",
+                        "targetTableName": "student",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "id",
+                                "targetColumnName": "id"
                             }
                         ],
                         "updateAction": "",
@@ -1042,28 +978,12 @@ const val TREE_NODE = """
                         "updateAction": "",
                         "deleteAction": "",
                         "name": "fk_tree_node_parent",
-                        "sourceTable": {
-                            "name": "tree_node",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "tree_node",
-                            "comment": ""
-                        },
+                        "sourceTableName": "tree_node",
+                        "targetTableName": "tree_node",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "parent_id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "parent_id",
+                                "targetColumnName": "id"
                             }
                         ]
                     }

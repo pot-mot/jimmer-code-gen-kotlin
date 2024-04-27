@@ -61,29 +61,19 @@ input GenAssociationModelInput {
     deleteAction
     fake
 
-    sourceTable {
-        id(model)
-        name
-        comment
+    flat(sourceTable) {
+        name as sourceTableName
     }
-    targetTable {
-        id(model)
-        name
-        comment
+    flat(targetTable) {
+        name as targetTableName
     }
 
     columnReferences {
-        sourceColumn {
-            name
-            comment
-            typeCode
-            rawType
+        flat(sourceColumn) {
+            name as sourceColumnName
         }
-        targetColumn {
-            name
-            comment
-            typeCode
-            rawType
+        flat(targetColumn) {
+            name as targetColumnName
         }
     }
 }

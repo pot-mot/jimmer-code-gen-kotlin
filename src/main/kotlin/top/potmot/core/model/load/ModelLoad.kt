@@ -1,4 +1,4 @@
-package top.potmot.core.database.load
+package top.potmot.core.model.load
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -138,20 +138,20 @@ fun GenAssociationModelInput.toInput(
     tables: List<GenTable>
 ): GenAssociationInput {
     val tableMap = tables.associate { it.name to Pair(it.id, it) }
-    val sourceTablePair = tableMap[sourceTable.name]
-        ?: throw ModelLoadException.association("association [${name}] to input fail: \nsourceTable [${sourceTable.name}] not found")
+    val sourceTablePair = tableMap[sourceTableName]
+        ?: throw ModelLoadException.association("association [${name}] to input fail: \nsourceTable [${sourceTableName}] not found")
     val sourceTableColumnsMap = sourceTablePair.second.columns.associate { it.name to it.id }
 
-    val targetTablePair = tableMap[targetTable.name]
-        ?: throw ModelLoadException.association("association [${name}] to input fail: \ntargetTable [${targetTable.name}] not found")
+    val targetTablePair = tableMap[targetTableName]
+        ?: throw ModelLoadException.association("association [${name}] to input fail: \ntargetTable [${targetTableName}] not found")
     val targetTableColumnsMap = targetTablePair.second.columns.associate { it.name to it.id }
 
     val columnReferenceInputs = columnReferences.mapIndexed { index, it ->
-        val sourceColumnId = sourceTableColumnsMap[it.sourceColumn.name]
-            ?: throw ModelLoadException.association("association [${name}] to input fail: \nsourceColumn [${it.sourceColumn.name}] not found")
+        val sourceColumnId = sourceTableColumnsMap[it.sourceColumnName]
+            ?: throw ModelLoadException.association("association [${name}] to input fail: \nsourceColumn [${it.sourceColumnName}] not found")
 
-        val targetColumnId = targetTableColumnsMap[it.targetColumn.name]
-            ?: throw ModelLoadException.association("association [${name}] to input fail: \ntargetColumn [${it.targetColumn.name}] not found")
+        val targetColumnId = targetTableColumnsMap[it.targetColumnName]
+            ?: throw ModelLoadException.association("association [${name}] to input fail: \ntargetColumn [${it.targetColumnName}] not found")
 
         GenAssociationInput.TargetOf_columnReferences(
             orderKey = index.toLong(),

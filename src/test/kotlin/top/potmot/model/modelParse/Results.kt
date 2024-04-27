@@ -346,30 +346,12 @@ const val PARSE_RESULT = """
             "updateAction" : "",
             "deleteAction" : "",
             "fake" : false,
-            "sourceTable" : {
-                "modelId" : 1,
-                "name" : "tree_node",
-                "comment" : ""
-            },
-            "targetTable" : {
-                "modelId" : 1,
-                "name" : "tree_node",
-                "comment" : ""
-            },
+            "sourceTableName" : "tree_node",
+            "targetTableName" : "tree_node",
             "columnReferences" : [
                 {
-                    "sourceColumn" : {
-                        "name" : "parent_id",
-                        "comment" : "",
-                        "typeCode" : -5,
-                        "rawType" : "BIGINT"
-                    },
-                    "targetColumn" : {
-                        "name" : "id",
-                        "comment" : "",
-                        "typeCode" : -5,
-                        "rawType" : "BIGINT"
-                    }
+                    "sourceColumnName" : "parent_id",
+                    "targetColumnName" : "id"
                 }
             ]
         },
@@ -381,30 +363,12 @@ const val PARSE_RESULT = """
             "updateAction" : "",
             "deleteAction" : "",
             "fake" : false,
-            "sourceTable" : {
-                "modelId" : 1,
-                "name" : "o_o_source",
-                "comment" : ""
-            },
-            "targetTable" : {
-                "modelId" : 1,
-                "name" : "o_o_target",
-                "comment" : ""
-            },
+            "sourceTableName" : "o_o_source",
+            "targetTableName" : "o_o_target",
             "columnReferences" : [
                 {
-                    "sourceColumn" : {
-                        "name" : "target_id",
-                        "comment" : "",
-                        "typeCode" : -5,
-                        "rawType" : "BIGINT"
-                    },
-                    "targetColumn" : {
-                        "name" : "id",
-                        "comment" : "",
-                        "typeCode" : -5,
-                        "rawType" : "BIGINT"
-                    }
+                    "sourceColumnName" : "target_id",
+                    "targetColumnName" : "id"
                 }
             ]
         },
@@ -416,30 +380,12 @@ const val PARSE_RESULT = """
             "updateAction" : "",
             "deleteAction" : "",
             "fake" : false,
-            "sourceTable" : {
-                "modelId" : 1,
-                "name" : "o_m_source",
-                "comment" : ""
-            },
-            "targetTable" : {
-                "modelId" : 1,
-                "name" : "o_m_target",
-                "comment" : ""
-            },
+            "sourceTableName" : "o_m_source",
+            "targetTableName" : "o_m_target",
             "columnReferences" : [
                 {
-                    "sourceColumn" : {
-                        "name" : "id",
-                        "comment" : "",
-                        "typeCode" : -5,
-                        "rawType" : "BIGINT"
-                    },
-                    "targetColumn" : {
-                        "name" : "source_id",
-                        "comment" : "",
-                        "typeCode" : -5,
-                        "rawType" : "BIGINT"
-                    }
+                    "sourceColumnName" : "id",
+                    "targetColumnName" : "source_id"
                 }
             ]
         },
@@ -451,30 +397,12 @@ const val PARSE_RESULT = """
             "updateAction" : "",
             "deleteAction" : "",
             "fake" : false,
-            "sourceTable" : {
-                "modelId" : 1,
-                "name" : "m_o_source",
-                "comment" : ""
-            },
-            "targetTable" : {
-                "modelId" : 1,
-                "name" : "m_o_target",
-                "comment" : ""
-            },
+            "sourceTableName" : "m_o_source",
+            "targetTableName" : "m_o_target",
             "columnReferences" : [
                 {
-                    "sourceColumn" : {
-                        "name" : "source_id",
-                        "comment" : "",
-                        "typeCode" : -5,
-                        "rawType" : "BIGINT"
-                    },
-                    "targetColumn" : {
-                        "name" : "id",
-                        "comment" : "",
-                        "typeCode" : -5,
-                        "rawType" : "BIGINT"
-                    }
+                    "sourceColumnName" : "source_id",
+                    "targetColumnName" : "id"
                 }
             ]
         },
@@ -486,30 +414,12 @@ const val PARSE_RESULT = """
             "updateAction" : "",
             "deleteAction" : "",
             "fake" : false,
-            "sourceTable" : {
-                "modelId" : 1,
-                "name" : "m_n_source",
-                "comment" : ""
-            },
-            "targetTable" : {
-                "modelId" : 1,
-                "name" : "m_n_target",
-                "comment" : ""
-            },
+            "sourceTableName" : "m_n_source",
+            "targetTableName" : "m_n_target",
             "columnReferences" : [
                 {
-                    "sourceColumn" : {
-                        "name" : "id",
-                        "comment" : "",
-                        "typeCode" : -5,
-                        "rawType" : "BIGINT"
-                    },
-                    "targetColumn" : {
-                        "name" : "id",
-                        "comment" : "",
-                        "typeCode" : -5,
-                        "rawType" : "BIGINT"
-                    }
+                    "sourceColumnName" : "id",
+                    "targetColumnName" : "id"
                 }
             ]
         }

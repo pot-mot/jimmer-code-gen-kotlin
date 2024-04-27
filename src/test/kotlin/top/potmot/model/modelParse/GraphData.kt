@@ -790,28 +790,12 @@ const val GRAPH_DATA = """
                         "updateAction": "",
                         "deleteAction": "",
                         "name": "fk_tree_node_parent",
-                        "sourceTable": {
-                            "name": "tree_node",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "tree_node",
-                            "comment": ""
-                        },
+                        "sourceTableName": "tree_node",
+                        "targetTableName": "tree_node",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "parent_id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "parent_id",
+                                "targetColumnName": "id"
                             }
                         ]
                     }
@@ -843,28 +827,12 @@ const val GRAPH_DATA = """
                         "updateAction": "",
                         "deleteAction": "",
                         "name": "fk_one_to_one",
-                        "sourceTable": {
-                            "name": "o_o_source",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "o_o_target",
-                            "comment": ""
-                        },
+                        "sourceTableName": "o_o_source",
+                        "targetTableName": "o_o_target",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "target_id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "target_id",
+                                "targetColumnName": "id"
                             }
                         ]
                     }
@@ -895,28 +863,12 @@ const val GRAPH_DATA = """
                         "updateAction": "",
                         "deleteAction": "",
                         "name": "fk_one_to_many",
-                        "sourceTable": {
-                            "name": "o_m_source",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "o_m_target",
-                            "comment": ""
-                        },
+                        "sourceTableName": "o_m_source",
+                        "targetTableName": "o_m_target",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "source_id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "id",
+                                "targetColumnName": "source_id"
                             }
                         ]
                     }
@@ -947,28 +899,12 @@ const val GRAPH_DATA = """
                         "updateAction": "",
                         "deleteAction": "",
                         "name": "fk_many_to_one",
-                        "sourceTable": {
-                            "name": "m_o_source",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "m_o_target",
-                            "comment": ""
-                        },
+                        "sourceTableName": "m_o_source",
+                        "targetTableName": "m_o_target",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "source_id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "source_id",
+                                "targetColumnName": "id"
                             }
                         ]
                     }
@@ -999,28 +935,12 @@ const val GRAPH_DATA = """
                         "updateAction": "",
                         "deleteAction": "",
                         "name": "many_to_many_mapping",
-                        "sourceTable": {
-                            "name": "m_n_source",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "m_n_target",
-                            "comment": ""
-                        },
+                        "sourceTableName": "m_n_source",
+                        "targetTableName": "m_n_target",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "id",
+                                "targetColumnName": "id"
                             }
                         ]
                     }

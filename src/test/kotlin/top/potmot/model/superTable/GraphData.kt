@@ -176,28 +176,12 @@ const val GRAPH_DATA = """
                         "type": "MANY_TO_ONE",
                         "fake": false,
                         "name": "fk_base_create_user",
-                        "sourceTable": {
-                            "name": "base_entity",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "user",
-                            "comment": ""
-                        },
+                        "sourceTableName": "base_entity",
+                        "targetTableName": "user",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "create_user_id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "create_user_id",
+                                "targetColumnName": "id"
                             }
                         ],
                         "updateAction": "",
@@ -212,28 +196,12 @@ const val GRAPH_DATA = """
                         "type": "MANY_TO_ONE",
                         "fake": false,
                         "name": "fk_base_modify_user",
-                        "sourceTable": {
-                            "name": "base_entity",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "user",
-                            "comment": ""
-                        },
+                        "sourceTableName": "base_entity",
+                        "targetTableName": "user",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "modify_user_id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "modify_user_id",
+                                "targetColumnName": "id"
                             }
                         ],
                         "updateAction": "",
@@ -248,28 +216,12 @@ const val GRAPH_DATA = """
                         "type": "MANY_TO_ONE",
                         "fake": false,
                         "name": "fk_resource_user",
-                        "sourceTable": {
-                            "name": "resource",
-                            "comment": ""
-                        },
-                        "targetTable": {
-                            "name": "user",
-                            "comment": ""
-                        },
+                        "sourceTableName": "resource",
+                        "targetTableName": "user",
                         "columnReferences": [
                             {
-                                "sourceColumn": {
-                                    "name": "user_id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                },
-                                "targetColumn": {
-                                    "name": "id",
-                                    "comment": "",
-                                    "rawType": "BIGINT",
-                                    "typeCode": -5
-                                }
+                                "sourceColumnName": "user_id",
+                                "targetColumnName": "id"
                             }
                         ],
                         "updateAction": "",

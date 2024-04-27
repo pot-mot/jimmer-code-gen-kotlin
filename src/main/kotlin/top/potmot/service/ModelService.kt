@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.database.load.ModelInputEntities
-import top.potmot.core.database.load.getGraphEntities
-import top.potmot.core.database.load.parseGraphData
-import top.potmot.core.database.load.toInput
-import top.potmot.core.database.load.toInputs
+import top.potmot.core.model.load.ModelInputEntities
+import top.potmot.core.model.load.getGraphEntities
+import top.potmot.core.model.load.parseGraphData
+import top.potmot.core.model.load.toInput
+import top.potmot.core.model.load.toInputs
 import top.potmot.error.ModelLoadException
 import top.potmot.model.GenModel
 import top.potmot.model.GenTable

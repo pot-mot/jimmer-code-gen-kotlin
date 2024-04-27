@@ -128,16 +128,16 @@ private fun GenTableModelInput.getAddUniqueConstraintChange(): List<AddUniqueCon
 private fun GenAssociationModelInput.toFkChange(): AddForeignKeyConstraintChange {
     val fkChange = AddForeignKeyConstraintChange()
 
-    val sourceColumns = columnReferences.map { it.sourceColumn }
-    val targetColumns = columnReferences.map { it.targetColumn }
+    val sourceColumns = columnReferences.map { it.sourceColumnName }
+    val targetColumns = columnReferences.map { it.targetColumnName }
 
     fkChange.constraintName = name
 
-    fkChange.baseTableName = sourceTable.name
-    fkChange.baseColumnNames = sourceColumns.joinToString(",") { it.name }
+    fkChange.baseTableName = sourceTableName
+    fkChange.baseColumnNames = sourceColumns.joinToString(",")
 
-    fkChange.referencedTableName = targetTable.name
-    fkChange.referencedColumnNames = targetColumns.joinToString(",") { it.name }
+    fkChange.referencedTableName = targetTableName
+    fkChange.referencedColumnNames = targetColumns.joinToString(",")
 
     return fkChange
 }
