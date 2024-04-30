@@ -15,13 +15,13 @@ import top.potmot.core.database.load.getCatalog
 import top.potmot.core.database.load.toInput
 import top.potmot.core.database.load.toView
 import top.potmot.error.DataSourceLoadException
-import top.potmot.model.GenDataSource
-import top.potmot.model.GenSchema
-import top.potmot.model.dataSourceId
-import top.potmot.model.dto.GenSchemaPreview
-import top.potmot.model.dto.GenSchemaView
-import top.potmot.model.extension.toSource
-import top.potmot.model.id
+import top.potmot.entity.GenDataSource
+import top.potmot.entity.GenSchema
+import top.potmot.entity.dataSourceId
+import top.potmot.entity.dto.GenSchemaPreview
+import top.potmot.entity.dto.GenSchemaView
+import top.potmot.entity.extension.toSource
+import top.potmot.entity.id
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 
 @RestController

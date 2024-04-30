@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DatabaseNamingStrategyType
 import top.potmot.enumeration.GenLanguage
-import top.potmot.model.dto.MutableGenConfig
+import top.potmot.entity.dto.MutableGenConfig
 
 /**
  * 代码生成配置

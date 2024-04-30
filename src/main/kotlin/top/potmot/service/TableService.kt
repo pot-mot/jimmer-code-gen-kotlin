@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.model.GenTable
-import top.potmot.model.dto.GenTableColumnsView
-import top.potmot.model.dto.GenTableCommonView
-import top.potmot.model.dto.GenTableIdView
-import top.potmot.model.query.Query
-import top.potmot.model.query.TableQuery
-import top.potmot.model.query.where
+import top.potmot.entity.GenTable
+import top.potmot.entity.dto.GenTableColumnsView
+import top.potmot.entity.dto.GenTableCommonView
+import top.potmot.entity.dto.GenTableIdView
+import top.potmot.entity.query.Query
+import top.potmot.entity.query.TableQuery
+import top.potmot.entity.query.where
 import kotlin.reflect.KClass
 
 @RestController

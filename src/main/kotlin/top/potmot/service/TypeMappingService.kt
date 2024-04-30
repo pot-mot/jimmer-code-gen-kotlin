@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.model.GenTypeMapping
-import top.potmot.model.dto.GenTypeMappingInput
-import top.potmot.model.dto.GenTypeMappingView
-import top.potmot.model.orderKey
+import top.potmot.entity.GenTypeMapping
+import top.potmot.entity.dto.GenTypeMappingInput
+import top.potmot.entity.dto.GenTypeMappingView
+import top.potmot.entity.orderKey
 
 @RestController
 @RequestMapping("/typeMapping")

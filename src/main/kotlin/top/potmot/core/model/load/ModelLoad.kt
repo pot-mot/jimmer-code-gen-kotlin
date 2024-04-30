@@ -6,13 +6,13 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import top.potmot.constant.ASSOCIATION_EDGE
 import top.potmot.constant.TABLE_NODE
 import top.potmot.error.ModelLoadException
-import top.potmot.model.GenTable
-import top.potmot.model.dto.GenAssociationInput
-import top.potmot.model.dto.GenAssociationModelInput
-import top.potmot.model.dto.GenModelView
-import top.potmot.model.dto.GenTableIndexInput
-import top.potmot.model.dto.GenTableInput
-import top.potmot.model.dto.GenTableModelInput
+import top.potmot.entity.GenTable
+import top.potmot.entity.dto.GenAssociationInput
+import top.potmot.entity.dto.GenAssociationModelInput
+import top.potmot.entity.dto.GenModelView
+import top.potmot.entity.dto.GenTableIndexInput
+import top.potmot.entity.dto.GenTableInput
+import top.potmot.entity.dto.GenTableModelInput
 import top.potmot.utils.json.commonObjectMapper
 
 data class ModelInputEntities(

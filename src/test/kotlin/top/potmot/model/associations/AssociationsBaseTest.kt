@@ -2,7 +2,7 @@ package top.potmot.model.associations
 
 import top.potmot.context.multiple
 import top.potmot.model.BaseTest
-import top.potmot.model.dto.GenConfigProperties
+import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.model.languageProperties
 import top.potmot.model.realFkProperties
 

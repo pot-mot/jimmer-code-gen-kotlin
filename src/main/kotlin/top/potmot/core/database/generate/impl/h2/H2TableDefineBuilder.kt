@@ -2,7 +2,7 @@ package top.potmot.core.database.generate.impl.h2
 
 import top.potmot.core.database.generate.builder.TableDefineBuilder
 import top.potmot.core.database.meta.MappingTableMeta
-import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableAssociationsView
 
 object H2TableDefineBuilder : TableDefineBuilder(
     H2IdentifierProcessor,

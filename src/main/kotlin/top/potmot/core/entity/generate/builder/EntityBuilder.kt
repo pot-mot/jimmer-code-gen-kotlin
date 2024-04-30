@@ -20,8 +20,8 @@ import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.IdentifierType
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.enumeration.TableType
-import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenPropertyView
+import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenPropertyView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 import top.potmot.utils.time.now

@@ -9,8 +9,8 @@ import top.potmot.core.entity.generate.impl.java.JavaEntityCodeGenerator
 import top.potmot.core.entity.generate.impl.kotlin.KotlinEntityCodeGenerator
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
-import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenPropertyView
+import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenPropertyView
 import top.potmot.util.replaceSinceTimeComment
 import java.time.LocalDateTime
 

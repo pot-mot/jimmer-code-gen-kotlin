@@ -10,8 +10,8 @@ import top.potmot.model.BaseTest
 import top.potmot.model.createBaseModel
 import top.potmot.model.dataSourceTypeProperties
 import top.potmot.model.databaseNamingStrategyProperties
-import top.potmot.model.dto.GenConfig
-import top.potmot.model.dto.GenConfigProperties
+import top.potmot.entity.dto.GenConfig
+import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.model.languageProperties
 
 @SpringBootTest

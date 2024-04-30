@@ -1,8 +1,8 @@
 package top.potmot.core.entity.generate.impl.java
 
 import top.potmot.core.entity.generate.EntityCodeGenerator
-import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenPropertyEnum
+import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenPropertyEnum
 
 object JavaEntityCodeGenerator : EntityCodeGenerator() {
     override fun getFileSuffix(): String = ".java"

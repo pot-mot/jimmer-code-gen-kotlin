@@ -2,8 +2,8 @@ package top.potmot.core.database.generate
 
 import top.potmot.constant.INHERIT_PLACEHOLDER
 import top.potmot.constant.SEPARATOR
-import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.extension.allSuperTables
+import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.extension.allSuperTables
 
 fun GenTableAssociationsView.toFull(): GenTableAssociationsView {
     val allSuperTables = allSuperTables()

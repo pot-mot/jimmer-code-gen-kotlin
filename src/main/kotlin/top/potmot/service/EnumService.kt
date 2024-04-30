@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.model.GenEnum
-import top.potmot.model.dto.GenEnumItemsInput
-import top.potmot.model.dto.GenEnumItemsView
-import top.potmot.model.dto.GenEnumView
-import top.potmot.model.query.EnumQuery
-import top.potmot.model.query.Query
-import top.potmot.model.query.where
+import top.potmot.entity.GenEnum
+import top.potmot.entity.dto.GenEnumItemsInput
+import top.potmot.entity.dto.GenEnumItemsView
+import top.potmot.entity.dto.GenEnumView
+import top.potmot.entity.query.EnumQuery
+import top.potmot.entity.query.Query
+import top.potmot.entity.query.where
 import kotlin.reflect.KClass
 
 @RestController

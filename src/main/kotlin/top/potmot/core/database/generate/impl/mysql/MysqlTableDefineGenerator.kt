@@ -1,7 +1,7 @@
 package top.potmot.core.database.generate.impl.mysql
 
 import top.potmot.core.database.generate.TableDefineGenerator
-import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableAssociationsView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 

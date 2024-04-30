@@ -1,9 +1,8 @@
 package top.potmot.core.database.meta
 
-import top.potmot.enumeration.AssociationType
 import top.potmot.error.ConvertEntityException
-import top.potmot.model.dto.GenAssociationSimpleView
-import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenAssociationSimpleView
+import top.potmot.entity.dto.GenTableAssociationsView
 
 data class TableAssociationMeta(
     val outAssociations: List<OutAssociationMeta>,

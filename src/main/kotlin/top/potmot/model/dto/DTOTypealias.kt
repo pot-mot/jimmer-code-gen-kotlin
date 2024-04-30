@@ -1,9 +1,0 @@
-package top.potmot.model.dto
-
-typealias GenPropertyInput = GenEntityInput.TargetOf_properties
-
-typealias GenPropertyView = GenEntityPropertiesView.TargetOf_properties
-
-typealias GenPropertyEnum = GenEntityPropertiesView.TargetOf_properties.TargetOf_enum
-
-typealias GenPropertyEnumItem = GenEntityPropertiesView.TargetOf_properties.TargetOf_enum.TargetOf_items

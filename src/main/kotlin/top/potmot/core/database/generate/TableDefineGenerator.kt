@@ -3,7 +3,7 @@ package top.potmot.core.database.generate
 import top.potmot.enumeration.TableType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.GenerateTableDefineException
-import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableAssociationsView
 
 abstract class TableDefineGenerator {
     protected open fun formatFileName(name: String): String =

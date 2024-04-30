@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.model.GenColumn
-import top.potmot.model.dto.GenColumnView
-import top.potmot.model.query.ColumnQuery
-import top.potmot.model.query.Query
-import top.potmot.model.query.where
+import top.potmot.entity.GenColumn
+import top.potmot.entity.dto.GenColumnView
+import top.potmot.entity.query.ColumnQuery
+import top.potmot.entity.query.Query
+import top.potmot.entity.query.where
 import kotlin.reflect.KClass
 
 @RestController

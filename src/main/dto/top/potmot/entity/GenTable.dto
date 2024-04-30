@@ -1,0 +1,145 @@
+import top.potmot.entity.dto.share.ReferenceTable
+import top.potmot.entity.dto.share.ReferenceColumn
+
+GenTableIdView {
+    id
+}
+
+GenTableCommonView {
+    #allScalars
+    id(entity)
+}
+
+GenTableColumnsView {
+    #allScalars
+    id(entity)
+
+    columns {
+        #allScalars
+        id(table)
+        enum {
+            id
+            name
+        }
+    }
+
+    indexes {
+        #allScalars
+        id(table)
+        columnIds
+    }
+}
+
+input GenTableInput {
+    #allScalars(GenTable)
+    -id
+    id(model)
+    id(schema)
+    id(superTables) as superTableIds
+
+    columns {
+        #allScalars(GenColumn)
+        -id
+        id(enum)
+    }
+}
+
+input GenTableModelInput {
+    #allScalars(GenTable)
+    -id
+    id(model)
+
+    superTables {
+        name
+    }
+
+    columns {
+        #allScalars(GenColumn)
+        -id
+        enum {
+            name
+        }
+    }
+
+    indexes {
+        #allScalars(GenTableIndex)
+        -id
+        columns {
+            name
+        }
+    }
+}
+
+/**
+ * base on GenTableColumnsView and single part of GenAssociationView
+ */
+GenTableAssociationsView {
+    #allScalars
+    id(entity)
+
+    superTables*
+
+    columns {
+        #allScalars
+        id(table)
+        id(enum)
+    }
+
+    indexes {
+        id
+        id(table)
+        name
+        uniqueIndex
+        columnIds
+    }
+
+    inAssociations {
+        #allScalars
+
+        sourceTable implements ReferenceTable {
+            id
+            name
+            comment
+            type
+
+            inheritTables*
+        }
+
+        columnReferences {
+            sourceColumn implements ReferenceColumn {
+                id
+                name
+                comment
+                partOfPk
+            }
+            targetColumn {
+                id
+            }
+        }
+    }
+
+    outAssociations {
+        #allScalars
+
+        targetTable implements ReferenceTable {
+            id
+            name
+            comment
+            type
+
+            inheritTables*
+        }
+
+        columnReferences {
+            sourceColumn {
+                id
+            }
+            targetColumn implements ReferenceColumn {
+                id
+                name
+                comment
+                partOfPk
+            }
+        }
+    }
+}

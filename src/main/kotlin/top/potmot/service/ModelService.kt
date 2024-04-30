@@ -20,17 +20,17 @@ import top.potmot.core.model.load.parseGraphData
 import top.potmot.core.model.load.toInput
 import top.potmot.core.model.load.toInputs
 import top.potmot.error.ModelLoadException
-import top.potmot.model.GenModel
-import top.potmot.model.GenTable
-import top.potmot.model.GenTableIndex
-import top.potmot.model.by
-import top.potmot.model.createdTime
-import top.potmot.model.dto.GenModelInput
-import top.potmot.model.dto.GenModelSimpleView
-import top.potmot.model.dto.GenModelView
-import top.potmot.model.id
-import top.potmot.model.modelId
-import top.potmot.model.tableId
+import top.potmot.entity.GenModel
+import top.potmot.entity.GenTable
+import top.potmot.entity.GenTableIndex
+import top.potmot.entity.by
+import top.potmot.entity.createdTime
+import top.potmot.entity.dto.GenModelInput
+import top.potmot.entity.dto.GenModelSimpleView
+import top.potmot.entity.dto.GenModelView
+import top.potmot.entity.id
+import top.potmot.entity.modelId
+import top.potmot.entity.tableId
 
 @RestController
 @RequestMapping("/model")

@@ -1,8 +1,8 @@
 package top.potmot.context
 
 import org.babyfish.jimmer.kt.merge
-import top.potmot.model.dto.GenConfigProperties
-import top.potmot.model.dto.MutableGenConfig
+import top.potmot.entity.dto.GenConfigProperties
+import top.potmot.entity.dto.MutableGenConfig
 
 fun MutableGenConfig.toProperties(): GenConfigProperties =
     GenConfigProperties(this.toEntity())

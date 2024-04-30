@@ -1,7 +1,7 @@
 package top.potmot.dataSource
 
 import top.potmot.enumeration.DataSourceType
-import top.potmot.model.dto.GenDataSourceInput
+import top.potmot.entity.dto.GenDataSourceInput
 
 val mysqlDataSource = GenDataSourceInput(
     name = "test",

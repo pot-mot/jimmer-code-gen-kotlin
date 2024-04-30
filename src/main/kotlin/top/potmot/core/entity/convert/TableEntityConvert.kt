@@ -3,10 +3,10 @@ package top.potmot.core.entity.convert
 import top.potmot.context.getContextOrGlobal
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
-import top.potmot.model.dto.ColumnTypeMeta
-import top.potmot.model.dto.GenEntityInput
-import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.dto.GenTypeMappingView
+import top.potmot.entity.dto.ColumnTypeMeta
+import top.potmot.entity.dto.GenEntityInput
+import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTypeMappingView
 
 typealias TypeMapping = (column: ColumnTypeMeta) -> String
 

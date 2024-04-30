@@ -12,8 +12,8 @@ import top.potmot.dataSource.h2DataSource
 import top.potmot.dataSource.mysqlDataSource
 import top.potmot.dataSource.postgresDataSource
 import top.potmot.enumeration.SelectType
-import top.potmot.model.query.AssociationTableQuery
-import top.potmot.model.query.TableQuery
+import top.potmot.entity.query.AssociationTableQuery
+import top.potmot.entity.query.TableQuery
 import top.potmot.service.AssociationService
 import top.potmot.service.DataSourceService
 import top.potmot.service.SchemaService

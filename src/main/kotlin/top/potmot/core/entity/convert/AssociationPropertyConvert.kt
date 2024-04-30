@@ -16,10 +16,10 @@ import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.enumeration.TableType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
-import top.potmot.model.GenPropertyDraft
-import top.potmot.model.copy
-import top.potmot.model.dto.GenPropertyInput
-import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.entity.GenPropertyDraft
+import top.potmot.entity.copy
+import top.potmot.entity.dto.GenPropertyInput
+import top.potmot.entity.dto.GenTableAssociationsView
 import top.potmot.utils.string.toPlural
 
 /**

@@ -16,9 +16,9 @@ import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.error.GenerateTableDefineException
-import top.potmot.model.dto.ColumnTypeMeta
-import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.extension.pkColumns
+import top.potmot.entity.dto.ColumnTypeMeta
+import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.extension.pkColumns
 
 /**
  * 表定义构建器

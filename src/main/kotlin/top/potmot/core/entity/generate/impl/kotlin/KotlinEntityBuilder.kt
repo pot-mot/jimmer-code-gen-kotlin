@@ -1,8 +1,8 @@
 package top.potmot.core.entity.generate.impl.kotlin
 
 import top.potmot.core.entity.generate.builder.EntityBuilder
-import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenPropertyView
+import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenPropertyView
 
 object KotlinEntityBuilder : EntityBuilder() {
     override fun packageLine(path: String): String = "package $path"

@@ -2,8 +2,8 @@ package top.potmot.core.entity.generate.builder
 
 import org.babyfish.jimmer.sql.EnumItem
 import top.potmot.enumeration.EnumType
-import top.potmot.model.dto.GenPropertyEnum
-import top.potmot.model.dto.GenPropertyEnumItem
+import top.potmot.entity.dto.GenPropertyEnum
+import top.potmot.entity.dto.GenPropertyEnumItem
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 import kotlin.reflect.KClass

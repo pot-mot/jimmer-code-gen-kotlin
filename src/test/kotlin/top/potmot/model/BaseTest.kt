@@ -6,9 +6,9 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import top.potmot.model.dto.GenConfig
-import top.potmot.model.dto.GenConfigProperties
-import top.potmot.model.dto.GenModelInput
+import top.potmot.entity.dto.GenConfig
+import top.potmot.entity.dto.GenConfigProperties
+import top.potmot.entity.dto.GenModelInput
 import top.potmot.service.ConvertService
 import top.potmot.service.GenerateService
 import top.potmot.service.ModelService

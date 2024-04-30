@@ -1,8 +1,8 @@
 package top.potmot.core.entity.generate.impl.kotlin
 
 import top.potmot.core.entity.generate.EntityCodeGenerator
-import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenPropertyEnum
+import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenPropertyEnum
 
 object KotlinEntityCodeGenerator : EntityCodeGenerator() {
     override fun getFileSuffix(): String = ".kt"

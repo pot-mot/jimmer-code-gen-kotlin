@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.enumeration.DataSourceType
-import top.potmot.model.GenColumnDefault
-import top.potmot.model.GenTypeMapping
-import top.potmot.model.dataSourceType
-import top.potmot.model.dto.GenColumnDefaultInput
-import top.potmot.model.dto.GenColumnDefaultView
-import top.potmot.model.orderKey
+import top.potmot.entity.GenColumnDefault
+import top.potmot.entity.GenTypeMapping
+import top.potmot.entity.dataSourceType
+import top.potmot.entity.dto.GenColumnDefaultInput
+import top.potmot.entity.dto.GenColumnDefaultView
+import top.potmot.entity.orderKey
 
 @RestController
 @RequestMapping("/columnDefault")

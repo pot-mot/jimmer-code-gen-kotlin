@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.config.GlobalGenConfig
-import top.potmot.model.dto.GenConfig
-import top.potmot.model.dto.GenConfigProperties
-import top.potmot.model.dto.MutableGenConfig
+import top.potmot.entity.dto.GenConfig
+import top.potmot.entity.dto.GenConfigProperties
+import top.potmot.entity.dto.MutableGenConfig
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties

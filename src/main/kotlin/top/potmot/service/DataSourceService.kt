@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.error.DataSourceException
-import top.potmot.model.GenDataSource
-import top.potmot.model.copy
-import top.potmot.model.defaultValue.defaultDataSources
-import top.potmot.model.dto.GenDataSourceInput
-import top.potmot.model.dto.GenDataSourceTemplateView
-import top.potmot.model.dto.GenDataSourceView
-import top.potmot.model.extension.test
+import top.potmot.entity.GenDataSource
+import top.potmot.entity.copy
+import top.potmot.constant.defaultDataSources
+import top.potmot.entity.dto.GenDataSourceInput
+import top.potmot.entity.dto.GenDataSourceTemplateView
+import top.potmot.entity.dto.GenDataSourceView
+import top.potmot.entity.extension.test
 
 @RestController
 @RequestMapping("/dataSource")

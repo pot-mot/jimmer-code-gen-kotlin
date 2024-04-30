@@ -22,11 +22,11 @@ import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
 import top.potmot.core.database.generate.columnType.getColumnTypeDefiner
 import top.potmot.core.database.meta.toMappingTableMeta
 import top.potmot.enumeration.AssociationType
-import top.potmot.model.GenDataSource
-import top.potmot.model.dto.ColumnTypeMeta
-import top.potmot.model.dto.GenAssociationModelInput
-import top.potmot.model.dto.GenTableModelInput
-import top.potmot.model.extension.toSource
+import top.potmot.entity.GenDataSource
+import top.potmot.entity.dto.ColumnTypeMeta
+import top.potmot.entity.dto.GenAssociationModelInput
+import top.potmot.entity.dto.GenTableModelInput
+import top.potmot.entity.extension.toSource
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException

@@ -1,8 +1,8 @@
 package top.potmot.core.entity.generate.impl.kotlin
 
 import top.potmot.core.entity.generate.builder.EnumBuilder
-import top.potmot.model.dto.GenPropertyEnum
-import top.potmot.model.dto.GenPropertyEnumItem
+import top.potmot.entity.dto.GenPropertyEnum
+import top.potmot.entity.dto.GenPropertyEnumItem
 
 object KotlinEnumBuilder : EnumBuilder() {
     override fun packageLine(path: String): String = "package $path"

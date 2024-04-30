@@ -1,7 +1,7 @@
 package top.potmot.model
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import top.potmot.model.dto.GenModelInput
+import top.potmot.entity.dto.GenModelInput
 import top.potmot.utils.json.commonObjectMapper
 
 fun createBaseModel(

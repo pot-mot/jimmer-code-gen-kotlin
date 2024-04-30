@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.model.GenAssociation
-import top.potmot.model.dto.GenAssociationInput
-import top.potmot.model.dto.GenAssociationView
-import top.potmot.model.query.AssociationColumnQuery
-import top.potmot.model.query.AssociationQuery
-import top.potmot.model.query.AssociationTableQuery
-import top.potmot.model.query.Query
-import top.potmot.model.query.where
+import top.potmot.entity.GenAssociation
+import top.potmot.entity.dto.GenAssociationInput
+import top.potmot.entity.dto.GenAssociationView
+import top.potmot.entity.query.AssociationColumnQuery
+import top.potmot.entity.query.AssociationQuery
+import top.potmot.entity.query.AssociationTableQuery
+import top.potmot.entity.query.Query
+import top.potmot.entity.query.where
 import kotlin.reflect.KClass
 
 @RestController

@@ -4,11 +4,11 @@ import org.babyfish.jimmer.ImmutableObjects.isLoaded
 import schemacrawler.schema.Column
 import schemacrawler.schema.ColumnReference
 import top.potmot.error.DataSourceLoadException
-import top.potmot.model.GenColumn
-import top.potmot.model.GenSchema
-import top.potmot.model.GenSchemaProps
-import top.potmot.model.GenTable
-import top.potmot.model.GenTableProps
+import top.potmot.entity.GenColumn
+import top.potmot.entity.GenSchema
+import top.potmot.entity.GenSchemaProps
+import top.potmot.entity.GenTable
+import top.potmot.entity.GenTableProps
 
 data class ColumnReferenceNamePart(
     val schemaName: String?,

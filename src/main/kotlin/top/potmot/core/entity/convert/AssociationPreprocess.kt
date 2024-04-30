@@ -4,7 +4,7 @@ import top.potmot.core.database.meta.InAssociationMeta
 import top.potmot.core.database.meta.OutAssociationMeta
 import top.potmot.core.database.meta.TableAssociationMeta
 import top.potmot.enumeration.AssociationType
-import top.potmot.model.extension.allLeafTables
+import top.potmot.entity.extension.allLeafTables
 
 /**
  * 将所有 OneToMany 恢复为 ManyToOne

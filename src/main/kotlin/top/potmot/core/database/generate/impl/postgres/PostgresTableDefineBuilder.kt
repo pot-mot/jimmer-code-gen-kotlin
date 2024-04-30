@@ -2,7 +2,7 @@ package top.potmot.core.database.generate.impl.postgres
 
 import top.potmot.core.database.generate.builder.TableDefineBuilder
 import top.potmot.core.database.meta.MappingTableMeta
-import top.potmot.model.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableAssociationsView
 
 object PostgresTableDefineBuilder : TableDefineBuilder(
     PostgresIdentifierProcessor,

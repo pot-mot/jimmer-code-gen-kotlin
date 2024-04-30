@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.enumeration.GenLanguage
-import top.potmot.model.GenEntity
-import top.potmot.model.dto.GenEntityCommonView
-import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.query.EntityQuery
-import top.potmot.model.query.Query
-import top.potmot.model.query.where
+import top.potmot.entity.GenEntity
+import top.potmot.entity.dto.GenEntityCommonView
+import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.query.EntityQuery
+import top.potmot.entity.query.Query
+import top.potmot.entity.query.where
 import kotlin.reflect.KClass
 
 @RestController

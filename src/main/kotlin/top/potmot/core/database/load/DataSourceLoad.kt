@@ -17,12 +17,12 @@ import top.potmot.core.database.meta.toColumnReferenceMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
 import top.potmot.error.DataSourceLoadException
-import top.potmot.model.GenTable
-import top.potmot.model.dto.GenAssociationInput
-import top.potmot.model.dto.GenSchemaInput
-import top.potmot.model.dto.GenSchemaPreview
-import top.potmot.model.dto.GenTableIndexInput
-import top.potmot.model.dto.GenTableInput
+import top.potmot.entity.GenTable
+import top.potmot.entity.dto.GenAssociationInput
+import top.potmot.entity.dto.GenSchemaInput
+import top.potmot.entity.dto.GenSchemaPreview
+import top.potmot.entity.dto.GenTableIndexInput
+import top.potmot.entity.dto.GenTableInput
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import java.util.regex.Pattern
 

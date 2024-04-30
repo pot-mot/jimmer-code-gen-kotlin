@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import top.potmot.context.useContext
 import top.potmot.enumeration.GenLanguage
-import top.potmot.model.dto.GenConfigProperties
+import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.service.ConfigService
 
 @SpringBootTest

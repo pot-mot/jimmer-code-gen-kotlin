@@ -1,9 +1,9 @@
 package top.potmot.core.database.meta
 
-import top.potmot.model.dto.GenAssociationSimpleView
-import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.dto.share.ReferenceColumn
-import top.potmot.model.dto.share.ReferenceTable
+import top.potmot.entity.dto.GenAssociationSimpleView
+import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.share.ReferenceColumn
+import top.potmot.entity.dto.share.ReferenceTable
 
 data class OutAssociationMeta(
     val association: GenAssociationSimpleView,

@@ -1,8 +1,8 @@
 package top.potmot.core.entity.generate
 
 import top.potmot.error.GenerateEntityException
-import top.potmot.model.dto.GenEntityPropertiesView
-import top.potmot.model.dto.GenPropertyEnum
+import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenPropertyEnum
 
 abstract class EntityCodeGenerator {
     abstract fun getFileSuffix(): String

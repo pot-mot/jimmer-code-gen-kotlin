@@ -7,7 +7,7 @@ import top.potmot.enumeration.GenLanguage
 import top.potmot.model.associations.AssociationsBaseTest
 import top.potmot.model.associations.fake.TREE_NODE
 import top.potmot.model.createBaseModel
-import top.potmot.model.dto.GenConfig
+import top.potmot.entity.dto.GenConfig
 
 @SpringBootTest
 @ActiveProfiles("test-kotlin", "h2", "hide-sql")

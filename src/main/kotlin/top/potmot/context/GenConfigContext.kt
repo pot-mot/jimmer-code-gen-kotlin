@@ -2,8 +2,8 @@ package top.potmot.context
 
 import org.babyfish.jimmer.kt.merge
 import top.potmot.config.GlobalGenConfig
-import top.potmot.model.dto.GenConfig
-import top.potmot.model.dto.GenConfigProperties
+import top.potmot.entity.dto.GenConfig
+import top.potmot.entity.dto.GenConfigProperties
 
 private val contextMap = mutableMapOf<Long, GenConfig>()
 

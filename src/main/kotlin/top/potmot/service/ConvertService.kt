@@ -16,18 +16,18 @@ import top.potmot.context.useContext
 import top.potmot.core.entity.convert.toGenEntity
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
-import top.potmot.model.GenEntity
-import top.potmot.model.GenModel
-import top.potmot.model.GenTable
-import top.potmot.model.GenTypeMapping
-import top.potmot.model.by
-import top.potmot.model.dto.GenConfigProperties
-import top.potmot.model.dto.GenTableAssociationsView
-import top.potmot.model.dto.GenTypeMappingView
-import top.potmot.model.id
-import top.potmot.model.modelId
-import top.potmot.model.orderKey
-import top.potmot.model.tableId
+import top.potmot.entity.GenEntity
+import top.potmot.entity.GenModel
+import top.potmot.entity.GenTable
+import top.potmot.entity.GenTypeMapping
+import top.potmot.entity.by
+import top.potmot.entity.dto.GenConfigProperties
+import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTypeMappingView
+import top.potmot.entity.id
+import top.potmot.entity.modelId
+import top.potmot.entity.orderKey
+import top.potmot.entity.tableId
 
 @RestController
 @RequestMapping("/convert")

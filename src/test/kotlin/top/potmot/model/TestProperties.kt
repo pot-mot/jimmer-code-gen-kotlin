@@ -3,7 +3,7 @@ package top.potmot.model
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DatabaseNamingStrategyType
 import top.potmot.enumeration.GenLanguage
-import top.potmot.model.dto.GenConfigProperties
+import top.potmot.entity.dto.GenConfigProperties
 
 /**
  * 基础测试属性集

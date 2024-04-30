@@ -11,8 +11,8 @@ import top.potmot.dataSource.h2DataSource
 import top.potmot.dataSource.mysqlDataSource
 import top.potmot.dataSource.postgresDataSource
 import top.potmot.enumeration.TableType
-import top.potmot.model.dto.GenTableModelInput
-import top.potmot.model.extension.execute
+import top.potmot.entity.dto.GenTableModelInput
+import top.potmot.entity.extension.execute
 import top.potmot.utils.liquibase.createSql
 import java.sql.Types
 
