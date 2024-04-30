@@ -51,29 +51,3 @@ input GenAssociationInput {
         id(targetColumn)
     }
 }
-
-input GenAssociationModelInput {
-    id(model)
-    name
-    type
-    dissociateAction
-    updateAction
-    deleteAction
-    fake
-
-    flat(sourceTable) {
-        name as sourceTableName
-    }
-    flat(targetTable) {
-        name as targetTableName
-    }
-
-    columnReferences {
-        flat(sourceColumn) {
-            name as sourceColumnName
-        }
-        flat(targetColumn) {
-            name as targetColumnName
-        }
-    }
-}

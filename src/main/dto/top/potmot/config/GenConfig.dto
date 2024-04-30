@@ -1,0 +1,17 @@
+export top.potmot.entity.GenModel
+
+GenConfig {
+    #allScalars(GenModel)
+    -id
+    -name
+    -graphData
+    -remark
+}
+
+input GenConfigProperties {
+    #allScalars(GenModel)?
+    -id
+    -name
+    -graphData
+    -remark
+}

@@ -1,0 +1,27 @@
+export top.potmot.entity.GenTable
+
+input GenTableModelInput {
+    #allScalars(GenTable)
+    -id
+    id(model)
+
+    superTables {
+        name
+    }
+
+    columns {
+        #allScalars(GenColumn)
+        -id
+        enum {
+            name
+        }
+    }
+
+    indexes {
+        #allScalars(GenTableIndex)
+        -id
+        columns {
+            name
+        }
+    }
+}

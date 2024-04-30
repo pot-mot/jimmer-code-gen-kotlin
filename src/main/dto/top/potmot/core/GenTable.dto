@@ -1,0 +1,75 @@
+export top.potmot.entity.GenTable
+
+import top.potmot.entity.dto.share.ReferenceTable
+import top.potmot.entity.dto.share.ReferenceColumn
+
+GenTableAssociationsView {
+    #allScalars
+    id(entity)
+
+    superTables*
+
+    columns {
+        #allScalars
+        id(table)
+        id(enum)
+    }
+
+    indexes {
+        id
+        id(table)
+        name
+        uniqueIndex
+        columnIds
+    }
+
+    inAssociations {
+        #allScalars
+
+        sourceTable implements ReferenceTable {
+            id
+            name
+            comment
+            type
+
+            inheritTables*
+        }
+
+        columnReferences {
+            sourceColumn implements ReferenceColumn {
+                id
+                name
+                comment
+                partOfPk
+            }
+            targetColumn {
+                id
+            }
+        }
+    }
+
+    outAssociations {
+        #allScalars
+
+        targetTable implements ReferenceTable {
+            id
+            name
+            comment
+            type
+
+            inheritTables*
+        }
+
+        columnReferences {
+            sourceColumn {
+                id
+            }
+            targetColumn implements ReferenceColumn {
+                id
+                name
+                comment
+                partOfPk
+            }
+        }
+    }
+}

@@ -32,19 +32,3 @@ input GenModelInput {
         }
     }
 }
-
-GenConfig {
-    #allScalars(GenModel)
-    -id
-    -name
-    -graphData
-    -remark
-}
-
-input GenConfigProperties {
-    #allScalars(GenModel)?
-    -id
-    -name
-    -graphData
-    -remark
-}

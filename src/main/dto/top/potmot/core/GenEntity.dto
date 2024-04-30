@@ -1,0 +1,53 @@
+export top.potmot.entity.GenEntity
+
+GenEntityPropertiesView {
+    #allScalars
+
+    table {
+        id
+        name
+        type
+    }
+
+    superEntities {
+        name
+    }
+
+    properties {
+        #allScalars
+        id(entity)
+
+        column {
+            id
+            name
+        }
+
+        typeTable {
+            id
+
+            entity {
+                id
+                name
+                comment
+                packagePath
+            }
+        }
+
+        enum {
+            id
+            packagePath
+            name
+            comment
+            remark
+            enumType
+
+            items {
+                id
+                name
+                mappedValue
+                comment
+                remark
+            }
+        }
+    }
+}
