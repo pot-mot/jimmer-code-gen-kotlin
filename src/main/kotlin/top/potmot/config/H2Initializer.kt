@@ -42,7 +42,7 @@ class H2Initializer(
             resultSet.next()
             val count = resultSet.getInt(1)
 
-            if (count == 1) {
+            if (count > 0) {
                 logger.info("h2 database already have schema `jimmer_code_gen`")
                 return
             }
