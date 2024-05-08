@@ -3,7 +3,7 @@ package top.potmot.service
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -22,33 +22,30 @@ import kotlin.reflect.KClass
 @RestController
 @RequestMapping("/table")
 class TableService(
-    @Autowired val sqlClient: KSqlClient
+    @Autowired val sqlClient: KSqlClient,
+    @Autowired val transactionTemplate: TransactionTemplate
 ) {
     @PostMapping("/query/id")
-    fun queryIdView(@RequestBody query: TableQuery): List<GenTableIdView> {
-        return executeQuery(query, GenTableIdView::class)
-    }
+    fun queryIdView(@RequestBody query: TableQuery): List<GenTableIdView> =
+        sqlClient.queryTable(query, GenTableIdView::class)
 
     @PostMapping("/query/common")
-    fun queryCommonView(@RequestBody query: TableQuery): List<GenTableCommonView> {
-        return executeQuery(query, GenTableCommonView::class)
-    }
+    fun queryCommonView(@RequestBody query: TableQuery): List<GenTableCommonView> =
+        sqlClient.queryTable(query, GenTableCommonView::class)
 
     @PostMapping("/query/columns")
-    fun queryColumnsView(@RequestBody query: TableQuery): List<GenTableColumnsView> {
-        return executeQuery(query, GenTableColumnsView::class)
-    }
+    fun queryColumnsView(@RequestBody query: TableQuery): List<GenTableColumnsView> =
+        sqlClient.queryTable(query, GenTableColumnsView::class)
 
     @DeleteMapping("/{ids}")
-    @Transactional
-    fun delete(@PathVariable ids: List<Long>): Int {
-        return sqlClient.deleteByIds(GenTable::class, ids).totalAffectedRowCount
-    }
+    fun delete(@PathVariable ids: List<Long>): Int =
+        transactionTemplate.execute {
+            sqlClient.deleteByIds(GenTable::class, ids).totalAffectedRowCount
+        }!!
 
-    fun <T : View<GenTable>> executeQuery(query: Query<GenTable>, viewCLass: KClass<T>): List<T> {
-        return sqlClient.createQuery(GenTable::class) {
+    private fun <T : View<GenTable>> KSqlClient.queryTable(query: Query<GenTable>, viewCLass: KClass<T>): List<T> =
+        createQuery(GenTable::class) {
             where(query)
             select(table.fetch(viewCLass))
         }.execute()
-    }
 }

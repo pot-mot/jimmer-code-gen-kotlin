@@ -11,12 +11,3 @@ GenEnumItemsView {
         #allScalars
     }
 }
-
-input GenEnumItemsInput {
-    #allScalars(GenEnum)
-    id(model)
-
-    items {
-        #allScalars(GenEnumItem)
-    }
-}

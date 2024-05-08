@@ -3,7 +3,7 @@ package top.potmot.service
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -22,37 +22,29 @@ import top.potmot.entity.orderKey
 @RestController
 @RequestMapping("/columnDefault")
 class ColumnDefaultService(
-    @Autowired val sqlClient: KSqlClient
+    @Autowired val sqlClient: KSqlClient,
+    @Autowired val transactionTemplate: TransactionTemplate
 ) {
     @GetMapping("/{id}")
-    fun get(@PathVariable id: Long): GenColumnDefaultView? {
-        return sqlClient.findById(GenColumnDefaultView::class, id)
-    }
+    fun get(@PathVariable id: Long): GenColumnDefaultView? =
+        sqlClient.findById(GenColumnDefaultView::class, id)
 
     @GetMapping
     fun list(
         @RequestParam(required = false) dataSourceType: DataSourceType? = null
-    ): List<GenColumnDefaultView> {
-        return sqlClient.createQuery(GenColumnDefault::class) {
+    ): List<GenColumnDefaultView> =
+        sqlClient.createQuery(GenColumnDefault::class) {
             if (dataSourceType != null) {
                 where(table.dataSourceType eq dataSourceType)
             }
             orderBy(table.orderKey)
             select(table.fetch(GenColumnDefaultView::class))
         }.execute()
-    }
 
     @PostMapping
-    @Transactional
-    fun saveAll(@RequestBody typeMappings: List<GenColumnDefaultInput>): List<Long> {
-        val result = mutableListOf<Long>()
-
-        sqlClient.createDelete(GenTypeMapping::class) {}.execute()
-
-        typeMappings.forEach {
-            result += sqlClient.save(it).modifiedEntity.id
-        }
-
-        return result
-    }
+    fun saveAll(@RequestBody typeMappings: List<GenColumnDefaultInput>): List<Long> =
+        transactionTemplate.execute {
+            sqlClient.createDelete(GenTypeMapping::class) {}.execute()
+            sqlClient.entities.saveInputs(typeMappings).simpleResults.map { it.modifiedEntity.id }
+        }!!
 }

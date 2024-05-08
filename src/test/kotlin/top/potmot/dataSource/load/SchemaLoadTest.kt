@@ -55,7 +55,7 @@ class SchemaLoadTest(
     @Test
     @Order(1)
     fun testLoadMysqlSchema() {
-        val dataSourceId = dataSourceService.create(
+        val dataSourceId = dataSourceService.save(
             mysqlDataSource
         )
 
@@ -65,7 +65,7 @@ class SchemaLoadTest(
     @Test
     @Order(2)
     fun testLoadPostgresSchema() {
-        val dataSourceId = dataSourceService.create(
+        val dataSourceId = dataSourceService.save(
             postgresDataSource
         )
 
@@ -75,7 +75,7 @@ class SchemaLoadTest(
     @Test
     @Order(3)
     fun testLoadH2Schema() {
-        val dataSourceId = dataSourceService.create(
+        val dataSourceId = dataSourceService.save(
             h2DataSource
         )
 

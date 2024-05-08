@@ -11,7 +11,6 @@ import top.potmot.entity.dto.GenConfig
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.MutableGenConfig
 import kotlin.reflect.KMutableProperty
-import kotlin.reflect.KProperty1
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 
@@ -38,11 +37,11 @@ class ConfigService {
     }
 
     private fun MutableGenConfig.copyPropertiesFrom(source: MutableGenConfig) {
-        val properties = this::class.memberProperties
+        val properties = MutableGenConfig::class.memberProperties
         for (property in properties) {
             if (property is KMutableProperty<*>) {
                 property.isAccessible = true
-                val value = (property as KProperty1<MutableGenConfig, *>).get(source)
+                val value = (property).get(source)
                 property.setter.call(this, value)
             }
         }
