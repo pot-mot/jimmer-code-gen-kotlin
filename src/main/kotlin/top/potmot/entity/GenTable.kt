@@ -19,7 +19,7 @@ import top.potmot.enumeration.TableType
 import top.potmot.entity.base.BaseEntity
 
 /**
- * 生成表实体类
+ * 生成表
  *
  * @author potmot
  * @since 2023-08-14 15:29:23

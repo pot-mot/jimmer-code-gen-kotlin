@@ -13,7 +13,7 @@ import org.babyfish.jimmer.sql.Table
 import top.potmot.entity.base.BaseEntity
 
 /**
- * 生成关联实体类
+ * 生成关联
  *
  * @author potmot
  * @since 2023-08-12 10:47:36

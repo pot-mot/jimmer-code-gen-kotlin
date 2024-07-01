@@ -11,7 +11,7 @@ import top.potmot.enumeration.GenLanguage
 import top.potmot.entity.base.BaseEntity
 
 /**
- * 列到属性类型映射实体类
+ * 列到属性类型映射
  *
  * @author potmot
  * @since 2023-08-12 10:51:39

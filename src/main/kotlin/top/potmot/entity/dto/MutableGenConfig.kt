@@ -8,7 +8,7 @@ import kotlin.String
 import kotlin.jvm.JvmStatic
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.kt.new
-import org.babyfish.jimmer.sql.fetcher.ViewMetadata
+import org.babyfish.jimmer.sql.fetcher.DtoMetadata
 import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DatabaseNamingStrategyType
@@ -275,8 +275,8 @@ open class MutableGenConfig(
 
     companion object {
         @JvmStatic
-        val METADATA: ViewMetadata<GenModel, MutableGenConfig> =
-            ViewMetadata<GenModel, MutableGenConfig>(
+        val METADATA: DtoMetadata<GenModel, MutableGenConfig> =
+            DtoMetadata<GenModel, MutableGenConfig>(
                 newFetcher(GenModel::class).by {
                     language()
                     dataSourceType()

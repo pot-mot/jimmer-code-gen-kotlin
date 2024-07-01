@@ -11,7 +11,7 @@ import top.potmot.enumeration.DataSourceType
 import top.potmot.entity.base.BaseEntity
 
 /**
- * 生成数据源实体类
+ * 生成数据源
  *
  * @author potmot
  * @since 2023-08-14 23:07:56
