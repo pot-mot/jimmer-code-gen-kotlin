@@ -12,6 +12,7 @@ repositories {
 }
 
 plugins {
+    idea
     id("org.springframework.boot") version "2.7.18"
     id("io.spring.dependency-management") version "1.1.4"
     kotlin("jvm") version "1.9.21"
@@ -93,6 +94,13 @@ kotlin {
 
 ksp {
 //    arg("jimmer.dto.mutable", "true")
+}
+
+idea {
+    module {
+        isDownloadJavadoc = true
+        isDownloadSources = true
+    }
 }
 
 tasks.withType<KotlinCompile> {

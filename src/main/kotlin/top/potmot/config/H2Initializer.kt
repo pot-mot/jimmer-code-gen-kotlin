@@ -20,7 +20,7 @@ class H2Initializer(
     @Value("\${spring.datasource.sql-path:null}") private val sqlPath: String?,
 ) : KInitializer {
 
-    var logger = LoggerFactory.getLogger(H2Initializer::class.java)
+    var logger = LoggerFactory.getLogger(H2Initializer::class.java)!!
 
     override fun initialize(dsl: KSqlClient) {
         if (url != null && url.startsWith("jdbc:h2")) {
