@@ -5,6 +5,7 @@ import top.potmot.context.getContextOrGlobal
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.meta.JoinColumnMeta
 import top.potmot.core.entity.meta.JoinTableMeta
+import top.potmot.entity.GenPropertyDraft
 
 open class AssociationAnnotationBuilder(
     val indent: String = "    "
@@ -68,28 +69,10 @@ open class AssociationAnnotationBuilder(
             append(")")
         }
 
-    open fun build(meta: AssociationAnnotationMeta) =
-        buildString {
-            append("@" + meta.type.toAnnotation().simpleName)
-
-            if (meta.mappedBy.isNullOrBlank()) {
-                if (meta.inputNotNull != null) {
-                    append("(inputNotNull = ${meta.inputNotNull}")
-                }
-
-                if (getContextOrGlobal().joinColumnAnnotation) {
-                    meta.joinColumns.forEach {
-                        append("\n${build(it)}")
-                    }
-                }
-
-                if (getContextOrGlobal().joinTableAnnotation) {
-                    meta.joinTable?.let {
-                        append("\n${build(it)}")
-                    }
-                }
-            } else {
-                append("(mappedBy = \"${meta.mappedBy}\")")
-            }
-        }
+    open fun build(meta: AssociationAnnotationMeta, draft: GenPropertyDraft) {
+        draft.associationType = meta.type
+        draft.mappedBy = meta.mappedBy
+        draft.joinColumnAnnotation = meta.joinColumns.takeIf { it.isNotEmpty() }?.joinToString("\n") { build(it) }
+        draft.joinTableAnnotation = meta.joinTable?.let { build(it) }
+    }
 }

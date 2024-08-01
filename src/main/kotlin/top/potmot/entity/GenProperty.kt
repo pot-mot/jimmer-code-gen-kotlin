@@ -124,7 +124,7 @@ interface GenProperty : BaseEntity {
     /**
      * ID 视图注解
      */
-    val idViewAnnotation: String?
+    val idViewTarget: String?
 
     /**
      * 关联类型
@@ -132,9 +132,24 @@ interface GenProperty : BaseEntity {
     val associationType: AssociationType?
 
     /**
-     * 关联注解
+     * 映射镜像
      */
-    val associationAnnotation: String?
+    val mappedBy: String?
+
+    /**
+     * 输入非空
+     */
+    val inputNotNull: Boolean?
+
+    /**
+     * 关联列注解
+     */
+    val joinColumnAnnotation: String?
+
+    /**
+     * 关联表注解
+     */
+    val joinTableAnnotation: String?
 
     /**
      * 脱钩注解

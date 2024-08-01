@@ -73,7 +73,6 @@ class EntityGenerateTest {
         logicalDelete = false,
         idView = false,
         associationType = AssociationType.MANY_TO_ONE,
-        associationAnnotation = "@ManyToOne",
         entityId = 1,
         orderKey = 2,
     )

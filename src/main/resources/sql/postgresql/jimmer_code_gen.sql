@@ -563,8 +563,11 @@ CREATE TABLE "gen_property"
     "key_property"             boolean     NOT NULL,
     "logical_delete"           boolean     NOT NULL,
     "id_view"                  boolean     NOT NULL,
-    "id_view_annotation"       text        NULL     DEFAULT NULL,
-    "association_type"         text        NULL     DEFAULT NULL,
+    "id_view_target"           text        NULL     DEFAULT NULL,
+    "input_not_null"           boolean      NULL     DEFAULT NULL,
+    "join_column_annotation"   varchar(500) NULL     DEFAULT NULL,
+    "join_table_annotation"    varchar(500) NULL     DEFAULT NULL,
+    "mapped_by"                text        NULL     DEFAULT NULL,
     "association_annotation"   text        NULL     DEFAULT NULL,
     "dissociate_annotation"    text        NULL     DEFAULT NULL,
     "other_annotation"         text        NULL     DEFAULT NULL,
@@ -600,8 +603,11 @@ COMMENT ON COLUMN "gen_property"."id_generation_annotation" IS 'ID 生成注解'
 COMMENT ON COLUMN "gen_property"."key_property" IS '是否为业务键属性';
 COMMENT ON COLUMN "gen_property"."logical_delete" IS '是否为逻辑删除属性';
 COMMENT ON COLUMN "gen_property"."id_view" IS '是否为 视图属性';
-COMMENT ON COLUMN "gen_property"."id_view_annotation" IS 'ID 视图注解';
-COMMENT ON COLUMN "gen_property"."association_type" IS '关联类型';
+COMMENT ON COLUMN "gen_property"."id_view_target" IS 'ID 视图目标';
+COMMENT ON COLUMN "gen_property"."input_not_null" IS '输入非空';
+COMMENT ON COLUMN "gen_property"."join_column_annotation" IS '关联列注解';
+COMMENT ON COLUMN "gen_property"."join_table_annotation" IS '关联表注解';
+COMMENT ON COLUMN "gen_property"."mapped_by" IS '映射镜像';
 COMMENT ON COLUMN "gen_property"."association_annotation" IS '关联注解';
 COMMENT ON COLUMN "gen_property"."dissociate_annotation" IS '脱钩注解';
 COMMENT ON COLUMN "gen_property"."other_annotation" IS '其他注解';

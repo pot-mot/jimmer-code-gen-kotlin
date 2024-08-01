@@ -4,9 +4,10 @@ import org.babyfish.jimmer.sql.DissociateAction
 import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.database.meta.getAssociations
-import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
+import top.potmot.core.entity.meta.AssociationPropertyPair
+import top.potmot.core.entity.meta.ConvertPropertyMeta
 import top.potmot.core.entity.meta.toJoinColumns
 import top.potmot.core.entity.meta.toJoinTable
 import top.potmot.enumeration.AssociationType.MANY_TO_MANY
@@ -24,22 +25,17 @@ import top.potmot.utils.string.toPlural
 
 /**
  * 根据基础属性和表关联转换关联属性
- * 返回 Map<columnId, property>
  * 关联属性将在基础属性的基础上多出 typeTable、associationAnnotation、idView 等特征
  *
  * 因为 idView 属性并不单纯与基础属性类型相同，而是从关联属性映射而来，所以需要 typeMapping 进行对映射结果处理
  * 因为关联注释需要与数据源最终生成的 DDL 一致，所以需要 identifierFilter 处理 table 和 column
- *
- * 为规避重复生成关联属性，
- *  关联映射仅会使用 association 中 columnReferences 中的第一组去匹配对应属性，
- *  且只在映射关联注解时才会直接基于 association 产生对应 meta
  */
 @Throws(ConvertEntityException::class, ColumnTypeException::class)
 fun convertAssociationProperties(
     table: GenTableAssociationsView,
     basePropertyMap: Map<Long, GenPropertyInput>,
     typeMapping: TypeMapping,
-): Map<Long, List<GenPropertyInput>> {
+): Map<Long, ConvertPropertyMeta> {
     val context = getContextOrGlobal()
 
     val identifiers = context.dataSourceType.getIdentifierProcessor()
@@ -50,11 +46,14 @@ fun convertAssociationProperties(
     ) = table
         .getAssociations()
         .processOneToMany()
-        .processLeafTables()
+        .aggregateLeafTableAssociations()
 
     val propertiesMap =
         basePropertyMap.mapValues {
-            mutableListOf(it.value)
+            ConvertPropertyMeta(
+                it.value,
+                mutableListOf(),
+            )
         }.toMutableMap()
 
     outAssociations.forEach { outAssociation ->
@@ -82,16 +81,13 @@ fun convertAssociationProperties(
             )
         }
 
-        val currentColumnProperties = propertiesMap[sourceColumn.id]
-
-        if (currentColumnProperties.isNullOrEmpty()) {
-            throw ConvertEntityException.association(
+        val current = propertiesMap[sourceColumn.id]
+            ?: throw ConvertEntityException.association(
                 "OutAssociation [${association.name}] convert property fail: \n" +
                         "SourceColumn [${sourceColumn.name}] converted baseProperty not found"
             )
-        }
 
-        val sourceProperty = currentColumnProperties[0]
+        val sourceProperty = current.baseProperty
 
         val singularName =
             if (sourceProperty.idProperty)
@@ -122,8 +118,7 @@ fun convertAssociationProperties(
                     association.dissociateAction
                 )
 
-                // 此时这两个属性将覆盖原始属性，故移除原始属性
-                currentColumnProperties.clear()
+                current.enableBase = false
             }
 
             if (association.type == MANY_TO_MANY) {
@@ -140,10 +135,10 @@ fun convertAssociationProperties(
             GenPropertyInput(it)
         }
 
-        currentColumnProperties += associationProperty
+        val associationPropertyPair = AssociationPropertyPair(associationProperty)
 
         if (context.idViewProperty) {
-            currentColumnProperties += createIdViewProperty(
+            associationPropertyPair.idView = createIdViewProperty(
                 singularName,
                 sourceProperty,
                 sourceColumn,
@@ -152,7 +147,9 @@ fun convertAssociationProperties(
             )
         }
 
-        propertiesMap[sourceColumn.id] = currentColumnProperties
+        current.associationPropertyPairs += associationPropertyPair
+
+        propertiesMap[sourceColumn.id] = current
     }
 
     inAssociations.forEach { inAssociation ->
@@ -175,16 +172,13 @@ fun convertAssociationProperties(
 
         val targetColumn = targetColumns[0]
 
-        val currentColumnProperties = propertiesMap[targetColumn.id]
-
-        if (currentColumnProperties.isNullOrEmpty()) {
-            throw ConvertEntityException.association(
+        val current = propertiesMap[targetColumn.id]
+            ?: throw ConvertEntityException.association(
                 "InAssociation [${association.name}] convert property fail: \n" +
                         "TargetColumn [${targetColumn.name}] converted property not found"
             )
-        }
 
-        val targetProperty = currentColumnProperties[0]
+        val targetProperty = current.baseProperty
 
         val singularName =
             if (targetProperty.idProperty)
@@ -234,10 +228,10 @@ fun convertAssociationProperties(
             GenPropertyInput(it)
         }
 
-        currentColumnProperties += associationProperty
+        val associationPropertyPair = AssociationPropertyPair(associationProperty)
 
         if (context.idViewProperty) {
-            currentColumnProperties += createIdViewProperty(
+            associationPropertyPair.idView = createIdViewProperty(
                 singularName,
                 targetProperty,
                 targetColumn,
@@ -246,18 +240,12 @@ fun convertAssociationProperties(
             )
         }
 
-        propertiesMap[targetColumn.id] = currentColumnProperties
+        current.associationPropertyPairs += associationPropertyPair
+
+        propertiesMap[targetColumn.id] = current
     }
 
     return propertiesMap
-}
-
-private fun GenPropertyDraft.toPlural() {
-    name = name.toPlural()
-    listType = true
-    typeNotNull = true
-    keyProperty = false
-    logicalDelete = false
 }
 
 private fun GenPropertyDraft.setAssociation(
@@ -267,59 +255,11 @@ private fun GenPropertyDraft.setAssociation(
     val context = getContextOrGlobal()
     val associationAnnotationBuilder = context.language.getAssociationAnnotationBuilder()
 
-    associationType = meta.type
-    associationAnnotation = associationAnnotationBuilder.build(meta)
+    associationAnnotationBuilder.build(meta, this)
     dissociateAnnotation = dissociateAction?.let {
         "@OnDissociate(DissociateAction.${it.name})"
     }
 }
-
-/**
- * 从基础属性和关联属性生成 IdView
- *
- * @param baseProperty 基础属性
- * @param baseColumn 基础列
- * @param associationProperty 关联属性
- */
-private fun createIdViewProperty(
-    singularName: String,
-    baseProperty: GenPropertyInput,
-    baseColumn: GenTableAssociationsView.TargetOf_columns,
-    associationProperty: GenPropertyInput,
-    typeMapping: TypeMapping,
-): GenPropertyInput =
-    baseProperty.toEntity()
-        .copy {
-            name = singularName + "Id"
-            idProperty = false
-            idGenerationAnnotation = null
-
-            if (associationProperty.typeNotNull != baseProperty.typeNotNull) {
-                typeNotNull = associationProperty.typeNotNull
-            }
-
-            if (associationProperty.listType) {
-                toPlural()
-            }
-
-            type = typeMapping(
-                baseColumn.getTypeMeta().copy(
-                    // 当为列表属性时，java 为允许集合泛型使用，此时映射时必须调整为可空模式
-                    // 除此以外同步关联属性的可空性
-                    typeNotNull = if (listType) false else associationProperty.typeNotNull
-                )
-            )
-
-            associationProperty.comment.takeIf { it.isNotBlank() }?.let {
-                comment = "$it ID 视图"
-            }
-            associationType = associationProperty.associationType
-            idView = true
-            idViewAnnotation = "@IdView(\"${associationProperty.name}\")"
-            keyProperty = false
-        }.let {
-            GenPropertyInput(it)
-        }
 
 private fun String.removeLastId(): String =
     if (lowercase().endsWith("id"))

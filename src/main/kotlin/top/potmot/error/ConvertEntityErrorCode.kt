@@ -6,4 +6,5 @@ import org.babyfish.jimmer.error.ErrorFamily
 enum class ConvertEntityErrorCode {
     ASSOCIATION,
     SUPER_TABLE,
+    PROPERTY,
 }

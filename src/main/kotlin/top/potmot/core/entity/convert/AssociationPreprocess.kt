@@ -56,7 +56,17 @@ private fun InAssociationMeta.reversed(): OutAssociationMeta {
     )
 }
 
-fun TableAssociationMeta.processLeafTables() : TableAssociationMeta {
+/**
+ *  将所有叶子表中的关联汇集到祖关联元数据中，使对应上级表的关联转换为对全部叶子表的关联
+ *  eq:
+ *      存在关联：
+ *          BaseEntity.createBy -> User.id
+ *      假定 Entity1、Entity2、Entity3 继承于 BaseEntity，则该关联将转变为：
+ *          Entity1.createBy -> User.id
+ *          Entity2.createBy -> User.id
+ *          Entity3.createBy -> User.id
+ */
+fun TableAssociationMeta.aggregateLeafTableAssociations() : TableAssociationMeta {
     val newOutAssociations = mutableListOf<OutAssociationMeta>()
 
     val newInAssociations = mutableListOf<InAssociationMeta>()
@@ -76,7 +86,7 @@ fun TableAssociationMeta.processLeafTables() : TableAssociationMeta {
     inAssociations.forEach {
         val allLeafTables = it.sourceTable.allLeafTables()
 
-        if (it.sourceTable.allLeafTables().isNotEmpty()) {
+        if (allLeafTables.isNotEmpty()) {
             newInAssociations += allLeafTables.map { leafTable ->
                 it.copy(sourceTable = leafTable)
             }

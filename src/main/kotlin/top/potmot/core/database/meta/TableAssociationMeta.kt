@@ -9,39 +9,38 @@ data class TableAssociationMeta(
     val inAssociations: List<InAssociationMeta>,
 )
 
+val GenTableAssociationsView.columnMap
+    get() = columns.associateBy { it.id }
+
 @Throws(ConvertEntityException::class)
-fun GenTableAssociationsView.getAssociations(): TableAssociationMeta {
-    val table = this
+fun GenTableAssociationsView.outAssociations() = outAssociations.map { outAssociation ->
+    val sourceColumns =
+        outAssociation.columnReferences.map { columnReference ->
+            columnMap[columnReference.sourceColumn.id] ?: throw ConvertEntityException.association(
+                "OutAssociation [${outAssociation.name}] create fail: " +
+                        " sourceColumn [${columnReference.sourceColumn.id}] not found in table [$name]"
+            )
+        }
 
-    val columnMap = columns.associateBy { it.id }
+    val targetColumns =
+        outAssociation.columnReferences.map { it.targetColumn }
 
-    val outAssociations = this.outAssociations.map { outAssociation ->
-        val sourceColumns =
-            outAssociation.columnReferences.map { columnReference ->
-                columnMap[columnReference.sourceColumn.id] ?: throw ConvertEntityException.association(
-                    "OutAssociation [${outAssociation.name}] create fail: " +
-                            " sourceColumn [${columnReference.sourceColumn.id}] not found in table [${table.name}]"
-                )
-            }
+    OutAssociationMeta(
+        association = GenAssociationSimpleView(outAssociation.toEntity()),
+        sourceTable = this,
+        sourceColumns = sourceColumns,
+        targetTable = outAssociation.targetTable,
+        targetColumns = targetColumns,
+    )
+}
 
-        val targetColumns =
-            outAssociation.columnReferences.map { it.targetColumn }
-
-        OutAssociationMeta(
-            association = GenAssociationSimpleView(outAssociation.toEntity()),
-            sourceTable = table,
-            sourceColumns = sourceColumns,
-            targetTable = outAssociation.targetTable,
-            targetColumns = targetColumns,
-        )
-    }
-
-    val inAssociations = this.inAssociations.map { inAssociation ->
+@Throws(ConvertEntityException::class)
+fun GenTableAssociationsView.inAssociations() = inAssociations.map { inAssociation ->
         val targetColumns =
             inAssociation.columnReferences.map { columnReference ->
                 columnMap[columnReference.targetColumn.id] ?: throw ConvertEntityException.association(
                     "InAssociation [${inAssociation.name}] create fail: " +
-                            " targetColumn [${columnReference.targetColumn.id}] not found in table [${table.name}]"
+                            " targetColumn [${columnReference.targetColumn.id}] not found in table [$name]"
                 )
             }
 
@@ -50,14 +49,16 @@ fun GenTableAssociationsView.getAssociations(): TableAssociationMeta {
 
         InAssociationMeta(
             association = GenAssociationSimpleView(inAssociation.toEntity()),
-            targetTable = table,
+            targetTable = this,
             targetColumns = targetColumns,
             sourceTable = inAssociation.sourceTable,
             sourceColumns = sourceColumns,
         )
     }
 
+@Throws(ConvertEntityException::class)
+fun GenTableAssociationsView.getAssociations(): TableAssociationMeta {
     return TableAssociationMeta(
-        outAssociations, inAssociations
+        outAssociations(), inAssociations()
     )
 }

@@ -12,15 +12,20 @@ typealias TypeMapping = (column: ColumnTypeMeta) -> String
 
 /**
  * 转换 table 为 entity
- * 由以下流程组成
- *  tableToEntity -> baseEntity :
- *      仅有实体基本信息
- *  convertBaseProperties -> basePropertyMap Map<columnId, Property> :
- *      一列映射成一个属性的基础映射结果
- *  convertAssociationProperties -> associationPropertyMap Map<columnId, List<Property>> :
- *      一列映射成多个属性的关联映射结果
- *  fillProperty -> result :
- *      将 associationProperty 中的数据填充到 baseEntity 中
+ *
+ * 流程如下：
+ *  tableToEntity(): baseEntity
+ *      映射基本实体信息
+ *  convertBaseProperties(): Map<columnId, BaseProperty>
+ *      将列映射成基础属性
+ *  convertAssociationProperties(): Map<columnId, AssociationPropertyMeta>
+ *      基于列和基础属性转换出关联属性，并存储在List中
+ *  handleDuplicateName(): List<Property>
+ *      处理属性重名
+ *  sortProperties(): List<Property>
+ *      整理属性顺序
+ *
+ * 最终将 associationProperty 中的数据填充到 baseEntity 中
  */
 @Throws(ConvertEntityException::class, ColumnTypeException::class)
 fun GenTableAssociationsView.toGenEntity(
@@ -36,19 +41,17 @@ fun GenTableAssociationsView.toGenEntity(
         typeMapping,
     )
 
-    val associationPropertyMap = convertAssociationProperties(
+    val propertiesMap = convertAssociationProperties(
         this,
         basePropertyMap,
         typeMapping
     )
 
-    val associationProperties = associationPropertyMap
-        .flatMap { it.value }
-        .mapIndexed { index, genProperty ->
-            genProperty.copy(
-                orderKey = index.toLong()
-            )
-        }
+    val associationProperties = handleDuplicateName(
+        propertiesMap
+    ).let {
+        sortProperties(it)
+    }
 
     return baseEntity.copy(
         properties = associationProperties

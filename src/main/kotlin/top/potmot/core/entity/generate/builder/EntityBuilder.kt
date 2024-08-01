@@ -77,7 +77,7 @@ abstract class EntityBuilder : CodeBuilder() {
         }
 
     open fun GenPropertyView.columnAnnotation(): String? =
-        column?.takeUnless { idView || !associationAnnotation.isNullOrBlank() }?.let {
+        column?.let {
             val context = getContextOrGlobal()
             val identifiers = context.dataSourceType.getIdentifierProcessor()
 
@@ -180,32 +180,37 @@ abstract class EntityBuilder : CodeBuilder() {
             }
 
             associationType?.let { type ->
-                associationAnnotation?.let { associationAnnotation ->
+                if (idView) {
+                    result += IdView::class
+                } else {
                     result += type.toAnnotation()
 
-                    if (associationAnnotation.contains("@JoinTable")) {
+                    joinTableAnnotation?.let {
                         result += JoinTable::class
                         if (
-                            associationAnnotation.contains("joinColumns = ") ||
-                            associationAnnotation.contains("inverseJoinColumns = ")
+                            joinTableAnnotation.contains("joinColumns = ") ||
+                            joinTableAnnotation.contains("inverseJoinColumns = ")
                         ) {
                             result += JoinColumn::class
                         }
-                    } else if (associationAnnotation.contains("@JoinColumn")) {
-                        result += JoinColumn::class
+
+                        if (it.contains("ForeignKeyType")) {
+                            result += ForeignKeyType::class
+                        }
                     }
-                    if (associationAnnotation.contains("ForeignKeyType")) {
-                        result += ForeignKeyType::class
+
+                    joinColumnAnnotation?.let {
+                        result += JoinColumn::class
+
+                        if (it.contains("ForeignKeyType")) {
+                            result += ForeignKeyType::class
+                        }
                     }
 
                     if (dissociateAnnotation != null) {
                         result += OnDissociate::class
                         result += DissociateAction::class
                     }
-                }
-
-                if (associationAnnotation == null && idView) {
-                    result += IdView::class
                 }
             }
 
@@ -265,6 +270,8 @@ abstract class EntityBuilder : CodeBuilder() {
     open fun annotationLines(property: GenPropertyView): List<String> {
         val list = mutableListOf<String>()
 
+        val context = getContextOrGlobal()
+
         property.apply {
             if (idProperty) {
                 list += "@Id"
@@ -279,18 +286,29 @@ abstract class EntityBuilder : CodeBuilder() {
                 list += getContextOrGlobal().logicalDeletedAnnotation
             }
 
-            associationType?.let {
-                associationAnnotation?.let { associationAnnotation ->
-                    list += associationAnnotation
-                    dissociateAnnotation?.let { list += it }
-                }
+            if (associationType != null) {
+                if (idView) {
+                    idViewTarget?.let { list += "@IdView(\"$it\")" }
+                } else {
+                    val associationAnnotation = "@" + associationType.toAnnotation().simpleName
 
-                if (associationAnnotation == null && idView) {
-                    idViewAnnotation?.let { list += it }
-                }
-            }
+                    if (mappedBy != null) {
+                        list += "$associationAnnotation(mappedBy = \"$mappedBy\")"
+                    } else {
+                        list += associationAnnotation
 
-            if (getContextOrGlobal().columnAnnotation) {
+                        if (context.joinColumnAnnotation) {
+                            joinColumnAnnotation?.let { list += it }
+                        }
+
+                        if (context.joinTableAnnotation) {
+                            joinTableAnnotation?.let { list += it }
+                        }
+
+                        dissociateAnnotation?.let { list += it }
+                    }
+                }
+            } else if (getContextOrGlobal().columnAnnotation) {
                 columnAnnotation()?.let { list += it }
             }
 

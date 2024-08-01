@@ -235,7 +235,7 @@ COMMENT ON COLUMN `gen_table`.`modified_time` IS '修改时间';
 -- ----------------------------
 CREATE TABLE `gen_super_table_mapping`
 (
-    `super_table_id`  bigint NOT NULL,
+    `super_table_id`   bigint NOT NULL,
     `inherit_table_id` bigint NOT NULL,
     PRIMARY KEY (`super_table_id`, `inherit_table_id`),
     CONSTRAINT `fk_super_table_mapping_super_table` FOREIGN KEY (`super_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
@@ -460,7 +460,7 @@ COMMENT ON COLUMN `gen_entity`.`modified_time` IS '修改时间';
 -- ----------------------------
 CREATE TABLE `gen_super_entity_mapping`
 (
-    `super_entity_id`  bigint NOT NULL,
+    `super_entity_id`   bigint NOT NULL,
     `inherit_entity_id` bigint NOT NULL,
     PRIMARY KEY (`super_entity_id`, `inherit_entity_id`),
     CONSTRAINT `fk_super_entity_mapping_super_entity` FOREIGN KEY (`super_entity_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
@@ -490,9 +490,12 @@ CREATE TABLE `gen_property`
     `key_property`             boolean      NOT NULL,
     `logical_delete`           boolean      NOT NULL,
     `id_view`                  boolean      NOT NULL,
-    `id_view_annotation`       varchar(500) NULL     DEFAULT NULL,
+    `id_view_target`           varchar(500) NULL     DEFAULT NULL,
     `association_type`         varchar(500) NULL     DEFAULT NULL,
-    `association_annotation`   varchar(500) NULL     DEFAULT NULL,
+    `mapped_by`                varchar(500) NULL     DEFAULT NULL,
+    `input_not_null`           boolean      NULL     DEFAULT NULL,
+    `join_column_annotation`   varchar(500) NULL     DEFAULT NULL,
+    `join_table_annotation`    varchar(500) NULL     DEFAULT NULL,
     `dissociate_annotation`    varchar(500) NULL     DEFAULT NULL,
     `other_annotation`         varchar(500) NULL     DEFAULT NULL,
     `enum_id`                  bigint       NULL     DEFAULT NULL,
@@ -527,11 +530,14 @@ COMMENT ON COLUMN `gen_property`.`id_generation_annotation` IS 'ID 生成注释'
 COMMENT ON COLUMN `gen_property`.`key_property` IS '是否为业务键属性';
 COMMENT ON COLUMN `gen_property`.`logical_delete` IS '是否为逻辑删除属性';
 COMMENT ON COLUMN `gen_property`.`id_view` IS '是否为 视图属性';
-COMMENT ON COLUMN `gen_property`.`id_view_annotation` IS 'ID 视图注释';
+COMMENT ON COLUMN `gen_property`.`id_view_target` IS 'ID 视图目标';
 COMMENT ON COLUMN `gen_property`.`association_type` IS '关联类型';
-COMMENT ON COLUMN `gen_property`.`association_annotation` IS '关联注释';
-COMMENT ON COLUMN `gen_property`.`dissociate_annotation` IS '脱钩注释';
-COMMENT ON COLUMN `gen_property`.`other_annotation` IS '其他注释';
+COMMENT ON COLUMN `gen_property`.`mapped_by` IS '映射镜像';
+COMMENT ON COLUMN `gen_property`.`input_not_null` IS '输入非空';
+COMMENT ON COLUMN `gen_property`.`join_column_annotation` IS '关联列注解';
+COMMENT ON COLUMN `gen_property`.`join_table_annotation` IS '关联表注解';
+COMMENT ON COLUMN `gen_property`.`dissociate_annotation` IS '脱钩注解';
+COMMENT ON COLUMN `gen_property`.`other_annotation` IS '其他注解';
 COMMENT ON COLUMN `gen_property`.`enum_id` IS '对应枚举';
 COMMENT ON COLUMN `gen_property`.`order_key` IS '排序键';
 COMMENT ON COLUMN `gen_property`.`remark` IS '备注';
