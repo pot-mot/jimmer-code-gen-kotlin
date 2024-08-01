@@ -10,7 +10,9 @@ data class JoinColumnMeta(
     var joinColumnName: String,
     var referencedColumnName: String? = null,
     var foreignKeyType: ForeignKeyType? = null,
-)
+) {
+    fun realFk() = foreignKeyType == ForeignKeyType.REAL
+}
 
 fun OutAssociationMeta.toJoinColumns(
     identifiers: IdentifierProcessor

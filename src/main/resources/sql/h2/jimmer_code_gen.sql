@@ -463,8 +463,8 @@ CREATE TABLE `gen_super_entity_mapping`
     `super_entity_id`   bigint NOT NULL,
     `inherit_entity_id` bigint NOT NULL,
     PRIMARY KEY (`super_entity_id`, `inherit_entity_id`),
-    CONSTRAINT `fk_super_entity_mapping_super_entity` FOREIGN KEY (`super_entity_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_super_entity_mapping_inherit_entity` FOREIGN KEY (`inherit_entity_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_super_entity_mapping_super_entity` FOREIGN KEY (`super_entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `fk_super_entity_mapping_inherit_entity` FOREIGN KEY (`inherit_entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 );
 
 COMMENT ON TABLE `gen_super_entity_mapping` IS '上级实体与继承实体关联表';
@@ -494,8 +494,8 @@ CREATE TABLE `gen_property`
     `association_type`         varchar(500) NULL     DEFAULT NULL,
     `mapped_by`                varchar(500) NULL     DEFAULT NULL,
     `input_not_null`           boolean      NULL     DEFAULT NULL,
-    `join_column_annotation`   varchar(500) NULL     DEFAULT NULL,
-    `join_table_annotation`    varchar(500) NULL     DEFAULT NULL,
+    `join_column_metas`        varchar(500) NULL     DEFAULT NULL,
+    `join_table_meta`          varchar(500) NULL     DEFAULT NULL,
     `dissociate_annotation`    varchar(500) NULL     DEFAULT NULL,
     `other_annotation`         varchar(500) NULL     DEFAULT NULL,
     `enum_id`                  bigint       NULL     DEFAULT NULL,
@@ -534,8 +534,8 @@ COMMENT ON COLUMN `gen_property`.`id_view_target` IS 'ID 视图目标';
 COMMENT ON COLUMN `gen_property`.`association_type` IS '关联类型';
 COMMENT ON COLUMN `gen_property`.`mapped_by` IS '映射镜像';
 COMMENT ON COLUMN `gen_property`.`input_not_null` IS '输入非空';
-COMMENT ON COLUMN `gen_property`.`join_column_annotation` IS '关联列注解';
-COMMENT ON COLUMN `gen_property`.`join_table_annotation` IS '关联表注解';
+COMMENT ON COLUMN `gen_property`.`join_column_metas` IS '关联列元数据';
+COMMENT ON COLUMN `gen_property`.`join_table_meta` IS '关联表元数据';
 COMMENT ON COLUMN `gen_property`.`dissociate_annotation` IS '脱钩注解';
 COMMENT ON COLUMN `gen_property`.`other_annotation` IS '其他注解';
 COMMENT ON COLUMN `gen_property`.`enum_id` IS '对应枚举';

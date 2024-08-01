@@ -62,7 +62,6 @@ class ConvertService(
                 }
 
                 tableEntityPairs.forEach { (table, entity) ->
-                    // FIXME 基于关联属性装填超级类 id 并保存，必然发生 N+1 查询
                     table.superTables?.map { it.id }?.let { superTableIds ->
                         val superEntityIds = sqlClient.getEntityIds(superTableIds)
 

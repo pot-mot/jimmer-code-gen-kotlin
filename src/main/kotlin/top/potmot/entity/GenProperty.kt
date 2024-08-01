@@ -9,7 +9,10 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
+import org.babyfish.jimmer.sql.Serialized
 import org.babyfish.jimmer.sql.Table
+import top.potmot.core.entity.meta.JoinColumnMeta
+import top.potmot.core.entity.meta.JoinTableMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.entity.base.BaseEntity
 
@@ -144,12 +147,14 @@ interface GenProperty : BaseEntity {
     /**
      * 关联列注解
      */
-    val joinColumnAnnotation: String?
+    @Serialized
+    val joinColumnMetas: List<JoinColumnMeta>?
 
     /**
      * 关联表注解
      */
-    val joinTableAnnotation: String?
+    @Serialized
+    val joinTableMeta: JoinTableMeta?
 
     /**
      * 脱钩注解

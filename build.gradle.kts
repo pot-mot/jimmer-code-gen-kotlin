@@ -21,13 +21,13 @@ plugins {
 }
 
 group = "top.potmot"
-version = "0.1.2" // 2024-4-27
+version = "0.1.2" // 2024-8-1
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 val jimmerVersion = "0.8.140"
 
-val mysqlVersion = "8.3.0"
-val postgreVersion = "42.7.2"
+val mysqlVersion = "9.0.0"
+val postgresVersion = "42.7.3"
 val h2Version = "2.2.224"
 
 val schemacrawlerVersion = "16.21.2"
@@ -49,11 +49,13 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+    // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
     runtimeOnly("com.mysql:mysql-connector-j:${mysqlVersion}")
 
     // https://mvnrepository.com/artifact/org.postgresql/postgresql
-    implementation("org.postgresql:postgresql:${postgreVersion}")
+    runtimeOnly("org.postgresql:postgresql:${postgresVersion}")
 
+    // https://mvnrepository.com/artifact/com.h2database/h2
     runtimeOnly("com.h2database:h2:${h2Version}")
 
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler

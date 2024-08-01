@@ -4,7 +4,6 @@ import org.babyfish.jimmer.sql.DissociateAction
 import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.database.meta.getAssociations
-import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.meta.AssociationPropertyPair
 import top.potmot.core.entity.meta.ConvertPropertyMeta
@@ -252,10 +251,12 @@ private fun GenPropertyDraft.setAssociation(
     meta: AssociationAnnotationMeta,
     dissociateAction: DissociateAction? = null,
 ) {
-    val context = getContextOrGlobal()
-    val associationAnnotationBuilder = context.language.getAssociationAnnotationBuilder()
+    associationType = meta.type
+    mappedBy = meta.mappedBy
 
-    associationAnnotationBuilder.build(meta, this)
+    joinTableMeta = meta.joinTable
+    joinColumnMetas = meta.joinColumns
+
     dissociateAnnotation = dissociateAction?.let {
         "@OnDissociate(DissociateAction.${it.name})"
     }

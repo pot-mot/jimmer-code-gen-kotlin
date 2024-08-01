@@ -2,10 +2,8 @@ package top.potmot.core.entity.generate.builder
 
 import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.context.getContextOrGlobal
-import top.potmot.core.entity.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.meta.JoinColumnMeta
 import top.potmot.core.entity.meta.JoinTableMeta
-import top.potmot.entity.GenPropertyDraft
 
 open class AssociationAnnotationBuilder(
     val indent: String = "    "
@@ -68,11 +66,4 @@ open class AssociationAnnotationBuilder(
 
             append(")")
         }
-
-    open fun build(meta: AssociationAnnotationMeta, draft: GenPropertyDraft) {
-        draft.associationType = meta.type
-        draft.mappedBy = meta.mappedBy
-        draft.joinColumnAnnotation = meta.joinColumns.takeIf { it.isNotEmpty() }?.joinToString("\n") { build(it) }
-        draft.joinTableAnnotation = meta.joinTable?.let { build(it) }
-    }
 }

@@ -169,7 +169,7 @@ CREATE TABLE `gen_table`
 -- ----------------------------
 CREATE TABLE `gen_super_table_mapping`
 (
-    `super_table_id`  bigint NOT NULL COMMENT '上级表',
+    `super_table_id`   bigint NOT NULL COMMENT '上级表',
     `inherit_table_id` bigint NOT NULL COMMENT '继承表',
     PRIMARY KEY (`super_table_id`, `inherit_table_id`),
     CONSTRAINT `fk_super_table_mapping_super_table` FOREIGN KEY (`super_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
@@ -335,11 +335,11 @@ CREATE TABLE `gen_entity`
 -- ----------------------------
 CREATE TABLE `gen_super_entity_mapping`
 (
-    `super_entity_id`  bigint NOT NULL COMMENT '上级实体',
+    `super_entity_id`   bigint NOT NULL COMMENT '上级实体',
     `inherit_entity_id` bigint NOT NULL COMMENT '继承实体',
     PRIMARY KEY (`super_entity_id`, `inherit_entity_id`),
-    CONSTRAINT `fk_super_entity_mapping_super_entity` FOREIGN KEY (`super_entity_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_super_entity_mapping_inherit_entity` FOREIGN KEY (`inherit_entity_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_super_entity_mapping_super_entity` FOREIGN KEY (`super_entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+    CONSTRAINT `fk_super_entity_mapping_inherit_entity` FOREIGN KEY (`inherit_entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '上级实体与继承实体关联表'
@@ -368,8 +368,8 @@ CREATE TABLE `gen_property`
     `association_type`         varchar(500) NULL     DEFAULT NULL COMMENT '关联类型',
     `mapped_by`                varchar(500) NULL     DEFAULT NULL COMMENT '映射镜像',
     `input_not_null`           boolean      NULL     DEFAULT NULL COMMENT '输入非空',
-    `join_column_annotation`   varchar(500) NULL     DEFAULT NULL COMMENT '关联列注解',
-    `join_table_annotation`    varchar(500) NULL     DEFAULT NULL COMMENT '关联表注解',
+    `join_column_metas`        varchar(500) NULL     DEFAULT NULL COMMENT '关联列元数据',
+    `join_table_meta`          varchar(500) NULL     DEFAULT NULL COMMENT '关联表元数据',
     `dissociate_annotation`    varchar(500) NULL     DEFAULT NULL COMMENT '脱钩注解',
     `other_annotation`         varchar(500) NULL     DEFAULT NULL COMMENT '其他注解',
     `enum_id`                  bigint       NULL     DEFAULT NULL COMMENT '对应枚举',

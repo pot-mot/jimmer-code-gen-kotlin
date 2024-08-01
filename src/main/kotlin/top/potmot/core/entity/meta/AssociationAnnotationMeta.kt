@@ -6,6 +6,6 @@ data class AssociationAnnotationMeta(
     val type: AssociationType,
     val mappedBy: String? = null,
     val inputNotNull: Boolean? = null,
-    val joinColumns: List<JoinColumnMeta> = emptyList(),
+    val joinColumns: List<JoinColumnMeta>? = null,
     val joinTable: JoinTableMeta? = null,
 )

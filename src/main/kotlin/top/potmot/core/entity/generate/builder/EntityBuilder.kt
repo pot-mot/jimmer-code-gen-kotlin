@@ -19,6 +19,7 @@ import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.IdentifierType
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
+import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
 import top.potmot.enumeration.TableType
 import top.potmot.entity.dto.GenEntityPropertiesView
 import top.potmot.entity.dto.GenPropertyView
@@ -154,8 +155,10 @@ abstract class EntityBuilder : CodeBuilder() {
     open fun importClasses(property: GenPropertyView): Set<KClass<*>> {
         val result = mutableSetOf<KClass<*>>()
 
+        val context = getContextOrGlobal()
+
         property.apply {
-            if (getContextOrGlobal().columnAnnotation && column != null) {
+            if (context.columnAnnotation && column != null) {
                 result += Column::class
             }
 
@@ -185,24 +188,22 @@ abstract class EntityBuilder : CodeBuilder() {
                 } else {
                     result += type.toAnnotation()
 
-                    joinTableAnnotation?.let {
+                    joinTableMeta?.let {
                         result += JoinTable::class
-                        if (
-                            joinTableAnnotation.contains("joinColumns = ") ||
-                            joinTableAnnotation.contains("inverseJoinColumns = ")
-                        ) {
+
+                        if (it.columnNamePairs.size > 1) {
                             result += JoinColumn::class
                         }
 
-                        if (it.contains("ForeignKeyType")) {
+                        if (context.realFk != it.realFk()) {
                             result += ForeignKeyType::class
+                            result += JoinColumn::class
                         }
                     }
 
-                    joinColumnAnnotation?.let {
+                    joinColumnMetas?.takeIf { it.isNotEmpty() }?.let {
                         result += JoinColumn::class
-
-                        if (it.contains("ForeignKeyType")) {
+                        if (it.any { joinTableMeta -> context.realFk != joinTableMeta.realFk() }) {
                             result += ForeignKeyType::class
                         }
                     }
@@ -225,12 +226,14 @@ abstract class EntityBuilder : CodeBuilder() {
     open fun importClasses(entity: GenEntityPropertiesView): Set<KClass<*>> {
         val result = mutableSetOf<KClass<*>>()
 
+        val context = getContextOrGlobal()
+
         entity.apply {
             if (entity.table.type == TableType.SUPER_TABLE) {
                 result += MappedSuperclass::class
             } else {
                 result += Entity::class
-                if (getContextOrGlobal().tableAnnotation) {
+                if (context.tableAnnotation) {
                     result += Table::class
                 }
             }
@@ -252,13 +255,15 @@ abstract class EntityBuilder : CodeBuilder() {
     open fun annotationLines(entity: GenEntityPropertiesView): List<String> {
         val list = mutableListOf<String>()
 
+        val context = getContextOrGlobal()
+
         entity.apply {
             if (entity.table.type == TableType.SUPER_TABLE) {
                 list += "@MappedSuperclass"
             } else {
                 list += "@Entity"
 
-                if (getContextOrGlobal().tableAnnotation) {
+                if (context.tableAnnotation) {
                     list += tableAnnotation()
                 }
             }
@@ -283,7 +288,7 @@ abstract class EntityBuilder : CodeBuilder() {
             }
 
             if (logicalDelete) {
-                list += getContextOrGlobal().logicalDeletedAnnotation
+                list += context.logicalDeletedAnnotation
             }
 
             if (associationType != null) {
@@ -291,6 +296,7 @@ abstract class EntityBuilder : CodeBuilder() {
                     idViewTarget?.let { list += "@IdView(\"$it\")" }
                 } else {
                     val associationAnnotation = "@" + associationType.toAnnotation().simpleName
+                    val annotationBuilder = context.language.getAssociationAnnotationBuilder()
 
                     if (mappedBy != null) {
                         list += "$associationAnnotation(mappedBy = \"$mappedBy\")"
@@ -298,17 +304,17 @@ abstract class EntityBuilder : CodeBuilder() {
                         list += associationAnnotation
 
                         if (context.joinColumnAnnotation) {
-                            joinColumnAnnotation?.let { list += it }
+                            joinColumnMetas?.forEach { list += annotationBuilder.build(it) }
                         }
 
                         if (context.joinTableAnnotation) {
-                            joinTableAnnotation?.let { list += it }
+                            joinTableMeta?.let { list += annotationBuilder.build(it) }
                         }
 
                         dissociateAnnotation?.let { list += it }
                     }
                 }
-            } else if (getContextOrGlobal().columnAnnotation) {
+            } else if (context.columnAnnotation) {
                 columnAnnotation()?.let { list += it }
             }
 

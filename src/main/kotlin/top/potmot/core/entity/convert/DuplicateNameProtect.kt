@@ -23,14 +23,21 @@ fun handleDuplicateName(
 
     val nameMap = protectDuplicateItems.groupBy { it.property.name }
 
-    return nameMap.values.flatMap { produceDuplicateNameItems(it) }
+    val producedMappedByProperties = nameMap.flatMap { produceDuplicateNameMappedBy(it.value) }
+
+    producedMappedByProperties.groupBy { it.name }.values.filter { it.size > 1 }.forEach {
+        throw ConvertEntityException.property("PropertyName [${it.first().name}] is Duplicate.")
+    }
+
+    return producedMappedByProperties
 }
 
-fun produceDuplicateNameItems(items: List<ProtectDuplicateItem>): List<GenPropertyInput> =
+fun produceDuplicateNameMappedBy(items: List<ProtectDuplicateItem>): List<GenPropertyInput> =
     if (items.size == 1) {
-        when(val item = items.first()) {
+        when (val item = items.first()) {
             is BaseProtectDuplicateItem ->
                 listOf(item.property)
+
             is AssociationProtectDuplicateItem ->
                 listOfNotNull(item.property, item.idView)
         }
@@ -38,7 +45,7 @@ fun produceDuplicateNameItems(items: List<ProtectDuplicateItem>): List<GenProper
         items.flatMap { item ->
             when(item) {
                 is BaseProtectDuplicateItem ->
-                    throw ConvertEntityException.property("BaseProperty has same name [${item.property.name}]")
+                    listOf(item.property)
                 is AssociationProtectDuplicateItem -> {
                     val (property, idView) = item
                     val mappedBy = property.mappedBy
@@ -57,7 +64,7 @@ fun produceDuplicateNameItems(items: List<ProtectDuplicateItem>): List<GenProper
                             )
                         )
                     } else {
-                        throw ConvertEntityException.property("AssociationProperty has same name [${item.property.name}] and has no mappedBy")
+                        listOfNotNull(property, idView)
                     }
                 }
             }
