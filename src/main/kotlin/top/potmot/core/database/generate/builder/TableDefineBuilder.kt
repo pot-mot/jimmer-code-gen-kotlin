@@ -4,8 +4,8 @@ import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
 import top.potmot.core.database.generate.identifier.IdentifierProcessor
 import top.potmot.core.database.meta.ForeignKeyMeta
 import top.potmot.core.database.meta.MappingTableMeta
-import top.potmot.core.database.meta.getAssociations
 import top.potmot.core.database.meta.getTypeMeta
+import top.potmot.core.database.meta.outAssociations
 import top.potmot.core.database.meta.reversed
 import top.potmot.core.database.meta.toFkMeta
 import top.potmot.core.database.meta.toMappingTableMeta
@@ -254,7 +254,7 @@ abstract class TableDefineBuilder(
     ): List<String> {
         val list = mutableListOf<String>()
 
-        val (outAssociations) = table.getAssociations()
+        val outAssociations = table.outAssociations()
 
         outAssociations.forEach { outAssociation ->
             val (association) = outAssociation

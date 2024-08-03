@@ -417,7 +417,7 @@ CREATE TABLE `gen_type_mapping`
 CREATE TABLE `gen_column_default`
 (
     `id`                bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `data_source_type`  varchar(500) NOT NULL COMMENT '数据源类型',
+    `data_source_type`  varchar(500) NULL COMMENT '数据源类型',
     `type_code`         int(0)       NOT NULL COMMENT 'JdbcType 码值',
     `raw_type`          varchar(500) NOT NULL COMMENT '字面类型',
     `data_size`         bigint       NOT NULL COMMENT '列长度',

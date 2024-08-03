@@ -665,7 +665,7 @@ EXECUTE FUNCTION update_modified_time();
 CREATE TABLE "gen_column_default"
 (
     "id"                BIGSERIAL NOT NULL,
-    "data_source_type"  text      NOT NULL,
+    "data_source_type"  text      NULL,
     "type_code"         int       NOT NULL,
     "raw_type"          text      NOT NULL,
     "data_size"         bigint    NOT NULL,

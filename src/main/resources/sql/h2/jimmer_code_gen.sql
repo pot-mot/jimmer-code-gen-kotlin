@@ -578,7 +578,7 @@ COMMENT ON COLUMN `gen_type_mapping`.`modified_time` IS '修改时间';
 CREATE TABLE `gen_column_default`
 (
     `id`                bigint       NOT NULL AUTO_INCREMENT,
-    `data_source_type`  varchar(500) NOT NULL,
+    `data_source_type`  varchar(500) NULL,
     `type_code`         int          NOT NULL,
     `raw_type`          varchar(500) NOT NULL,
     `data_size`         bigint       NOT NULL,
