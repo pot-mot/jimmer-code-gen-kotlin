@@ -433,4 +433,9 @@ CREATE TABLE `gen_column_default`
     COMMENT = '列默认'
   ROW_FORMAT = Dynamic;
 
+INSERT INTO `gen_column_default`
+(`data_source_type`, `type_code`, `raw_type`, `data_size`, `numeric_precision`, `default_value`, `order_key`, `remark`)
+VALUES (NULL, 12, 'VARCHAR', 255, 0, NULL, 1, ''),
+       ('PostgreSQL', 12, 'TEXT', 0, 0, NULL, 2, '');
+
 SET FOREIGN_KEY_CHECKS = 1;

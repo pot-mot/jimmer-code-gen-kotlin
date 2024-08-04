@@ -678,7 +678,7 @@ CREATE TABLE "gen_column_default"
     PRIMARY KEY ("id")
 );
 
-COMMENT ON TABLE "gen_column_default" IS '列到属性类型映射';
+COMMENT ON TABLE "gen_column_default" IS '列默认';
 COMMENT ON COLUMN "gen_column_default"."id" IS 'ID';
 COMMENT ON COLUMN "gen_column_default"."data_source_type" IS '数据源类型';
 COMMENT ON COLUMN "gen_column_default"."type_code" IS 'JdbcType 码值';
@@ -696,3 +696,8 @@ CREATE TRIGGER "trg_update_gen_column_default_modified_time"
     ON "gen_column_default"
     FOR EACH ROW
 EXECUTE FUNCTION update_modified_time();
+
+INSERT INTO "gen_column_default"
+("data_source_type", "type_code", "raw_type", "data_size", "numeric_precision", "default_value", "order_key", "remark")
+VALUES (NULL, 12, 'VARCHAR', 255, 0, NULL, 1, ''),
+       ('PostgreSQL', 12, 'TEXT', 0, 0, NULL, 2, '');
