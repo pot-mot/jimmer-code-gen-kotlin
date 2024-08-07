@@ -7,7 +7,6 @@ import kotlin.Int
 import kotlin.String
 import kotlin.jvm.JvmStatic
 import org.babyfish.jimmer.View
-import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.fetcher.DtoMetadata
 import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
 import top.potmot.enumeration.DataSourceType
@@ -146,7 +145,7 @@ open class MutableGenConfig(
         base.columnCommentPrefixes,
         base.columnCommentSuffixes)
 
-    override fun toEntity(): GenModel = new(GenModel::class).by {
+    override fun toEntity(): GenModel = GenModel {
         val that = this@MutableGenConfig
         language = that.language
         dataSourceType = that.dataSourceType
