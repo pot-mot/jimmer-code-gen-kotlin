@@ -1,11 +1,14 @@
 package top.potmot.model
 
 import org.babyfish.jimmer.kt.merge
+import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.ActiveProfiles
+import top.potmot.entity.GenModel
 import top.potmot.entity.dto.GenConfig
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenModelInput
@@ -20,8 +23,12 @@ import top.potmot.util.replaceSinceTimeComment
  * 可按照需要调整 entityProperties 和 tableDefineProperties 两组测试属性集
  * 并实现 EntityResult、TableDefineResult 匹配特定属性集的输出
  */
+@ActiveProfiles("test", "postgresql")
 abstract class BaseTest {
     private val logger = LoggerFactory.getLogger(this::class.java)
+
+    @Autowired
+    lateinit var sqlClient: KSqlClient
 
     @Autowired
     lateinit var modelService: ModelService
@@ -51,6 +58,7 @@ abstract class BaseTest {
         val id = modelService.save(model)
         convertService.convertModel(id, null)
         val entityCodes = generateService.generateModelEntity(id, true)
+        sqlClient.deleteById(GenModel::class, id)
 
         assertEquals(
             getEntityResult(config).replaceSinceTimeComment().trim(),
@@ -70,6 +78,7 @@ abstract class BaseTest {
 
         val id = modelService.save(model)
         val tableDefineCodes = generateService.generateModelSql(id)
+        sqlClient.deleteById(GenModel::class, id)
 
         assertEquals(
             getTableDefineResult(config).trim(),

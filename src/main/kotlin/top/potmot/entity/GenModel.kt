@@ -19,7 +19,7 @@ import top.potmot.entity.base.BaseEntity
  * @since 2023-11-02 20:13:10
  */
 @Entity
-@Table(name = "jimmer_code_gen.gen_model")
+@Table(name = "gen_model")
 interface GenModel : BaseEntity {
     /**
      * ID

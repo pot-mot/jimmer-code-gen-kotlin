@@ -25,7 +25,7 @@ import top.potmot.entity.base.BaseEntity
  * @since 2023-08-14 15:29:23
  */
 @Entity
-@Table(name = "jimmer_code_gen.gen_table")
+@Table(name = "gen_table")
 interface GenTable : BaseEntity {
     /**
      * ID
@@ -67,7 +67,7 @@ interface GenTable : BaseEntity {
      */
     @ManyToMany
     @JoinTable(
-        name = "jimmer_code_gen.gen_super_table_mapping",
+        name = "gen_super_table_mapping",
         joinColumnName = "inherit_table_id",
         inverseJoinColumnName = "super_table_id"
     )
@@ -137,13 +137,13 @@ interface GenTable : BaseEntity {
     val columnIds: List<Long>
 
     /**
-     * 唯一索引
+     * 索引
      */
     @OneToMany(mappedBy = "table")
     val indexes: List<GenTableIndex>
 
     /**
-     * 唯一索引 ID 视图
+     * 索引 ID 视图
      */
     @IdView("indexes")
     val indexIds: List<Long>

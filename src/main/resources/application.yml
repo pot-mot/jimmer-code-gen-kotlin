@@ -26,7 +26,6 @@ jimmer:
   id-only-target-checking-level: ALL
   database-validation:
     mode: ERROR
-    schema: jimmer_code_gen
   default-enum-strategy: NAME
 
   client:

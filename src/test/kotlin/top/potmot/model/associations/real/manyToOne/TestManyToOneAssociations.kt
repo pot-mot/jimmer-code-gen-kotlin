@@ -1,7 +1,6 @@
 package top.potmot.model.associations.real.manyToOne
 
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.associations.AssociationsBaseTest
@@ -10,7 +9,6 @@ import top.potmot.model.createBaseModel
 import top.potmot.entity.dto.GenConfig
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "h2", "hide-sql")
 class TestManyToOneAssociations : AssociationsBaseTest() {
     override fun getBaseModel() =
         createBaseModel(MANY_TO_ONE)

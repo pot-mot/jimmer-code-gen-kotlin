@@ -26,7 +26,7 @@ private const val SAVED_TABLE_SIZE = 17
 private const val SAVED_ASSOCIATION_SIZE = 26
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "h2")
+@ActiveProfiles("test", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class SchemaLoadTest(
     @Autowired val dataSourceService: DataSourceService,
@@ -34,8 +34,8 @@ class SchemaLoadTest(
     @Autowired val tableService: TableService,
     @Autowired val associationService: AssociationService
 ) {
-    fun validateResult(dataSourceId: Long) {
-        val schema = schemaService.preview(dataSourceId).first { it.name.split(".").last() == "jimmer_code_gen" }
+    fun validateResult(dataSourceId: Long, schemaName: String = "jimmer_code_gen") {
+        val schema = schemaService.preview(dataSourceId).first { it.name.split(".").last() == schemaName }
 
         val savedSchemaIds = schemaService.load(dataSourceId, schema.name)
         assertEquals(SAVED_SCHEMA_SIZE, savedSchemaIds.size)
@@ -79,6 +79,6 @@ class SchemaLoadTest(
             h2DataSource
         )
 
-        validateResult(dataSourceId)
+        validateResult(dataSourceId, "PUBLIC")
     }
 }

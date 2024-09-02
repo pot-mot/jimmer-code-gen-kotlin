@@ -21,7 +21,7 @@ import top.potmot.entity.base.BaseEntity
  * @since 2023-08-12 10:49:27
  */
 @Entity
-@Table(name = "jimmer_code_gen.gen_column")
+@Table(name = "gen_column")
 interface GenColumn : BaseEntity {
     /**
      * ID
@@ -134,7 +134,7 @@ interface GenColumn : BaseEntity {
     val enumId: Long?
 
     /**
-     * 唯一索引
+     * 索引
      */
     @ManyToMany(mappedBy = "columns")
     val indexes: List<GenTableIndex>

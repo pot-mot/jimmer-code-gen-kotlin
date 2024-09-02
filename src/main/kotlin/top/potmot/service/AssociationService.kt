@@ -1,7 +1,6 @@
 package top.potmot.service
 
 import org.babyfish.jimmer.View
-import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
@@ -48,7 +47,7 @@ class AssociationService(
     @DeleteMapping("/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =
         transactionTemplate.execute {
-            sqlClient.deleteByIds(GenAssociation::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
+            sqlClient.deleteByIds(GenAssociation::class, ids).totalAffectedRowCount
         }!!
 
     private fun <T : View<GenAssociation>> KSqlClient.queryAssociation(query: Query<GenAssociation>, viewClass: KClass<T>): List<T> =

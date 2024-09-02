@@ -1,12 +1,14 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306
+    url: jdbc:mysql://localhost:3306/jimmer_code_gen
     username: root
     password: root
 
 jimmer:
   dialect: org.babyfish.jimmer.sql.dialect.MySqlDialect
+  database-validation:
+    catalog: jimmer_code_gen
 
 jimmer-code-gen:
   dataSourceType: mysql

@@ -1,7 +1,7 @@
 package top.potmot.service
 
 import org.babyfish.jimmer.kt.new
-import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
+import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
@@ -60,7 +60,7 @@ class ModelService(
     ): Long =
         transactionTemplate.execute {
             // 保存 model 和 enums
-            val savedModel = sqlClient.save(input).modifiedEntity
+            val savedModel = sqlClient.save(input, if (input.id == null) SaveMode.INSERT_ONLY else SaveMode.UPDATE_ONLY).modifiedEntity
 
             parseGraphData(savedModel.id, input.graphData).let { (tableModelInputs, associationModelInputs) ->
                 // 创建 enum name -> id map，用于映射 table.columns.enum
@@ -130,6 +130,6 @@ class ModelService(
     @DeleteMapping("/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =
         transactionTemplate.execute {
-            sqlClient.deleteByIds(GenModel::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
+            sqlClient.deleteByIds(GenModel::class, ids).totalAffectedRowCount
         }!!
 }

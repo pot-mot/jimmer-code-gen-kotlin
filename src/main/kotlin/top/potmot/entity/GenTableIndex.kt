@@ -21,7 +21,7 @@ import top.potmot.entity.base.BaseEntity
  * @since 2023-08-12 10:49:27
  */
 @Entity
-@Table(name = "jimmer_code_gen.gen_table_index")
+@Table(name = "gen_table_index")
 interface GenTableIndex : BaseEntity {
     /**
      * ID
@@ -51,7 +51,7 @@ interface GenTableIndex : BaseEntity {
     val name: String
 
     /**
-     * 唯一索引
+     * 索引
      */
     val uniqueIndex: Boolean
 
@@ -65,7 +65,7 @@ interface GenTableIndex : BaseEntity {
      */
     @ManyToMany
     @JoinTable(
-        name = "jimmer_code_gen.gen_index_column_mapping",
+        name = "gen_index_column_mapping",
         joinColumnName = "index_id",
         inverseJoinColumnName = "column_id"
     )

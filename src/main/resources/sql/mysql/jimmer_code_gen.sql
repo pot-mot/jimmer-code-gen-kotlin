@@ -73,7 +73,7 @@ CREATE TABLE `gen_enum`
     `modified_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_enum_model` (`model_id`) USING BTREE,
-    CONSTRAINT `fk_enum_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_enum_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '生成枚举'
@@ -95,7 +95,7 @@ CREATE TABLE `gen_enum_item`
     `modified_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_enum_item_enum` (`enum_id`) USING BTREE,
-    CONSTRAINT `fk_enum_item_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_enum_item_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '生成枚举元素'
@@ -134,7 +134,7 @@ CREATE TABLE `gen_schema`
     `modified_time`  datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_schema_data_source` (`data_source_id`) USING BTREE,
-    CONSTRAINT `fk_schema_data_source` FOREIGN KEY (`data_source_id`) REFERENCES `gen_data_source` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_schema_data_source` FOREIGN KEY (`data_source_id`) REFERENCES `gen_data_source` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '生成数据架构'
@@ -157,8 +157,8 @@ CREATE TABLE `gen_table`
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_table_model` (`model_id`) USING BTREE,
     INDEX `idx_table_schema` (`schema_id`) USING BTREE,
-    CONSTRAINT `fk_table_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_table_schema` FOREIGN KEY (`schema_id`) REFERENCES `gen_schema` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_table_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_table_schema` FOREIGN KEY (`schema_id`) REFERENCES `gen_schema` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '生成表'
@@ -172,8 +172,8 @@ CREATE TABLE `gen_super_table_mapping`
     `super_table_id`   bigint NOT NULL COMMENT '上级表',
     `inherit_table_id` bigint NOT NULL COMMENT '继承表',
     PRIMARY KEY (`super_table_id`, `inherit_table_id`),
-    CONSTRAINT `fk_super_table_mapping_super_table` FOREIGN KEY (`super_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_super_table_mapping_inherit_table` FOREIGN KEY (`inherit_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_super_table_mapping_super_table` FOREIGN KEY (`super_table_id`) REFERENCES `gen_table` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_super_table_mapping_inherit_table` FOREIGN KEY (`inherit_table_id`) REFERENCES `gen_table` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '上级表与继承表关联表'
@@ -207,8 +207,8 @@ CREATE TABLE `gen_column`
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_column_table` (`table_id`) USING BTREE,
     INDEX `idx_column_enum` (`enum_id`) USING BTREE,
-    CONSTRAINT `fk_column_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_column_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
+    CONSTRAINT `fk_column_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_column_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '生成列'
@@ -236,9 +236,9 @@ CREATE TABLE `gen_association`
     INDEX `idx_association_model` (`model_id`) USING BTREE,
     INDEX `idx_association_source_column` (`source_table_id`) USING BTREE,
     INDEX `idx_association_target_column` (`target_table_id`) USING BTREE,
-    CONSTRAINT `fk_association_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_association_source_column` FOREIGN KEY (`source_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_association_target_column` FOREIGN KEY (`target_table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_association_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_association_source_column` FOREIGN KEY (`source_table_id`) REFERENCES `gen_table` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_association_target_column` FOREIGN KEY (`target_table_id`) REFERENCES `gen_table` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '生成关联'
@@ -261,9 +261,9 @@ CREATE TABLE `gen_column_reference`
     INDEX `idx_column_reference_association` (`association_id`) USING BTREE,
     INDEX `idx_column_reference_source_column` (`source_column_id`) USING BTREE,
     INDEX `idx_column_reference_target_column` (`target_column_id`) USING BTREE,
-    CONSTRAINT `fk_column_reference_association` FOREIGN KEY (`association_id`) REFERENCES `gen_association` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_column_reference_source_column` FOREIGN KEY (`source_column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_column_reference_target_column` FOREIGN KEY (`target_column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_column_reference_association` FOREIGN KEY (`association_id`) REFERENCES `gen_association` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_column_reference_source_column` FOREIGN KEY (`source_column_id`) REFERENCES `gen_column` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_column_reference_target_column` FOREIGN KEY (`target_column_id`) REFERENCES `gen_column` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '列引用'
@@ -283,7 +283,7 @@ CREATE TABLE `gen_table_index`
     `modified_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_index_table` (`table_id`) USING BTREE,
-    CONSTRAINT `fk_index_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_index_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '表索引'
@@ -297,8 +297,8 @@ CREATE TABLE `gen_index_column_mapping`
     `index_id`  bigint NOT NULL COMMENT '索引',
     `column_id` bigint NOT NULL COMMENT '列',
     PRIMARY KEY (`index_id`, `column_id`) USING BTREE,
-    CONSTRAINT `fk_columns_mapping_index` FOREIGN KEY (`index_id`) REFERENCES `gen_table_index` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_index_mapping_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_columns_mapping_index` FOREIGN KEY (`index_id`) REFERENCES `gen_table_index` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_index_mapping_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '索引与列关联表'
@@ -323,8 +323,8 @@ CREATE TABLE `gen_entity`
     UNIQUE INDEX `u_entity_table` (`table_id`) USING BTREE,
     INDEX `idx_entity_model` (`model_id`) USING BTREE,
     INDEX `idx_entity_table` (`table_id`) USING BTREE,
-    CONSTRAINT `fk_entity_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_entity_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_entity_model` FOREIGN KEY (`model_id`) REFERENCES `gen_model` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_entity_table` FOREIGN KEY (`table_id`) REFERENCES `gen_table` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '生成实体'
@@ -338,8 +338,8 @@ CREATE TABLE `gen_super_entity_mapping`
     `super_entity_id`   bigint NOT NULL COMMENT '上级实体',
     `inherit_entity_id` bigint NOT NULL COMMENT '继承实体',
     PRIMARY KEY (`super_entity_id`, `inherit_entity_id`),
-    CONSTRAINT `fk_super_entity_mapping_super_entity` FOREIGN KEY (`super_entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_super_entity_mapping_inherit_entity` FOREIGN KEY (`inherit_entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+    CONSTRAINT `fk_super_entity_mapping_super_entity` FOREIGN KEY (`super_entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_super_entity_mapping_inherit_entity` FOREIGN KEY (`inherit_entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '上级实体与继承实体关联表'
@@ -382,10 +382,10 @@ CREATE TABLE `gen_property`
     INDEX `idx_property_entity` (`entity_id`) USING BTREE,
     INDEX `idx_property_enum` (`enum_id`) USING BTREE,
     INDEX `idx_property_type_table` (`type_table_id`) USING BTREE,
-    CONSTRAINT `fk_property_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
-    CONSTRAINT `fk_property_entity` FOREIGN KEY (`entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-    CONSTRAINT `fk_property_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
-    CONSTRAINT `fk_property_type_table` FOREIGN KEY (`type_table_id`) REFERENCES `gen_table` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
+    CONSTRAINT `fk_property_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_property_entity` FOREIGN KEY (`entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_property_enum` FOREIGN KEY (`enum_id`) REFERENCES `gen_enum` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    CONSTRAINT `fk_property_type_table` FOREIGN KEY (`type_table_id`) REFERENCES `gen_table` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB
   CHARACTER SET = utf8mb4
     COMMENT = '生成属性'

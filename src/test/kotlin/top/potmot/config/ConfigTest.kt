@@ -11,7 +11,7 @@ import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.service.ConfigService
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "h2")
+@ActiveProfiles("test", "h2")
 class AssociationMatchTest(
     @Autowired val configService: ConfigService
 ) {

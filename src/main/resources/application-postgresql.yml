@@ -1,12 +1,15 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=jimmer_code_gen
     username: postgres
     password: root
 
 jimmer:
   dialect: org.babyfish.jimmer.sql.dialect.PostgresDialect
+  database-validation:
+    catalog: postgres
+    schema: jimmer_code_gen
 
 jimmer-code-gen:
   dataSourceType: postgresql

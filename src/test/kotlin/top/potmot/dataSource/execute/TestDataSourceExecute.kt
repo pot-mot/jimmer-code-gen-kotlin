@@ -17,7 +17,7 @@ import top.potmot.entity.extension.execute
  * 其中数据源的基本数据基于默认连接配置，所以如果需要在自己的环境中进行测试，请修改对于 dataSource
  */
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "h2")
+@ActiveProfiles("test", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TestDataSourceExecute {
     @Test
@@ -103,7 +103,7 @@ class TestDataSourceExecute {
         val dataSource = h2DataSource.toEntity()
 
         val sqlExecuteResults = dataSource.execute(
-            "jimmer_code_gen", """
+            null, """
             -- remove existed table
             DROP TABLE IF EXISTS `test`;
             
@@ -126,7 +126,7 @@ class TestDataSourceExecute {
         )
 
         assertEquals(
-            7,
+            6,
             sqlExecuteResults.size,
         )
 

@@ -1,2 +1,4 @@
 jimmer:
   show-sql: false
+  pretty-sql: false
+  inline-sql-variables: false

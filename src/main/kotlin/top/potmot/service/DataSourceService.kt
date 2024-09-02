@@ -1,6 +1,5 @@
 package top.potmot.service
 
-import org.babyfish.jimmer.sql.ast.mutation.DeleteMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
@@ -80,6 +79,6 @@ class DataSourceService(
     @DeleteMapping("/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =
         transactionTemplate.execute {
-            sqlClient.deleteByIds(GenDataSource::class, ids, DeleteMode.PHYSICAL).totalAffectedRowCount
+            sqlClient.deleteByIds(GenDataSource::class, ids).totalAffectedRowCount
         }!!
 }
