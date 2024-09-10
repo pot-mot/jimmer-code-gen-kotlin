@@ -17,7 +17,7 @@ import top.potmot.utils.liquibase.createSql
 import java.sql.Types
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "h2")
+@ActiveProfiles("test", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class TestLiquibaseCreateSql {
     @Test
@@ -125,21 +125,21 @@ COMMENT ON COLUMN "table"."Another Name" IS 'Another comment';
         )
 
         val dropExistsResults =
-            dataSource.execute("jimmer_code_gen", "DROP TABLE IF EXISTS `table`", true)
+            dataSource.execute(null, "DROP TABLE IF EXISTS `table`", true)
 
-        assertEquals(2, dropExistsResults.size)
+        assertEquals(1, dropExistsResults.size)
         assertEquals(0, dropExistsResults.filter { !it.success }.size)
 
         val createResults =
-            dataSource.execute("jimmer_code_gen", sql, true)
+            dataSource.execute(null, sql, true)
 
-        assertEquals(5, createResults.size)
+        assertEquals(4, createResults.size)
         assertEquals(0, createResults.filter { !it.success }.size)
 
         val deleteResults =
-            dataSource.execute("jimmer_code_gen", "DROP TABLE `table`", true)
+            dataSource.execute(null, "DROP TABLE `table`", true)
 
-        assertEquals(2, deleteResults.size)
+        assertEquals(1, deleteResults.size)
         assertEquals(0, deleteResults.filter { !it.success }.size)
     }
 

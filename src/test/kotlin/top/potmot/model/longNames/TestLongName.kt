@@ -1,7 +1,6 @@
 package top.potmot.model.longNames
 
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import top.potmot.context.multiple
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DatabaseNamingStrategyType
@@ -15,7 +14,6 @@ import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.model.languageProperties
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "h2", "hide-sql")
 class TestLongName : BaseTest() {
     override fun getBaseModel() =
         createBaseModel(LONG_NAMES)

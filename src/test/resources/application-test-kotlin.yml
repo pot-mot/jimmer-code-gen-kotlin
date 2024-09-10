@@ -1,7 +1,0 @@
-logging:
-  level:
-    top.potmot: debug
-
-jimmer:
-  pretty-sql: false
-  inline-sql-variables: false

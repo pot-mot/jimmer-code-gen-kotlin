@@ -26,7 +26,7 @@ fun DatabaseConnectionSource.test(): DatabaseConnectionSource =
 
 @Throws(DataSourceException.SqlExecuteFail::class)
 fun GenDataSource.execute(
-    schemaName: String,
+    schemaName: String?,
     sql: String,
     log: Boolean = false,
     ignoreExecuteFail: Boolean = false
@@ -34,10 +34,14 @@ fun GenDataSource.execute(
     val connection = toSource().get()
 
     try {
-        val useSchema = when (type) {
-            DataSourceType.MySQL, DataSourceType.H2 -> "USE `$schemaName`;"
-            DataSourceType.PostgreSQL -> "SET SEARCH_PATH TO \"$schemaName\";"
-        }
+        val useSchema =
+            if (schemaName != null)
+                when (type) {
+                    DataSourceType.MySQL, DataSourceType.H2 -> "USE `$schemaName`;"
+                    DataSourceType.PostgreSQL -> "SET SEARCH_PATH TO \"$schemaName\";"
+                }
+            else
+                ""
 
         return connection.execute("$useSchema $sql", log, ignoreExecuteFail)
     } catch (e: Exception) {

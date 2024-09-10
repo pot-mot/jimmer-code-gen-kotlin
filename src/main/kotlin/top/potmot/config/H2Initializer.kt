@@ -48,7 +48,7 @@ class H2Initializer(
             }
 
             /**
-             * 获取 jimmer_code_gen.sql
+             * 获取 sql
              */
             val inputStream = sqlPath?.let {
                 H2Initializer::class.java
@@ -61,7 +61,7 @@ class H2Initializer(
             }
 
             /**
-             * 执行 jimmer_code_gen.sql
+             * 执行 sql
              */
             logger.info("start init h2 database")
 

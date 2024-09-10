@@ -5,7 +5,7 @@
 一款实体模型设计与代码生成工具，旨在快捷创建 [Jimmer](https://github.com/babyfish-ct/jimmer) 下的实体与关联。
 
 前往[发行版](https://github.com/pot-mot/jimmer-code-gen-kotlin/releases)获取 jar 包，使用 `java -jar` 直接启动 jar 包并从浏览器访问 `localhost:8080` 即可。  
-目前内置支持 H2、MySQL 5.7 或 8、PostgreSQL。  
+目前内置支持 H2、MySQL8、PostgreSQL。  
 默认采用 H2 内存模式，请注意及时保存模型。
 
 ## 仓库地址

@@ -1,7 +1,6 @@
 package top.potmot.model.enums
 
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.model.BaseTest
@@ -9,7 +8,6 @@ import top.potmot.model.createBaseModel
 import top.potmot.entity.dto.GenConfig
 
 @SpringBootTest
-@ActiveProfiles("test-kotlin", "h2", "hide-sql")
 class TestEnums : BaseTest() {
     override fun getBaseModel() =
         createBaseModel(ENUM_TABLE, ENUMS)

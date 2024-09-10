@@ -24,7 +24,7 @@ import top.potmot.entity.base.BaseEntity
  * @since 2023-08-12 10:48:54
  */
 @Entity
-@Table(name = "jimmer_code_gen.gen_entity")
+@Table(name = "gen_entity")
 interface GenEntity : BaseEntity {
     /**
      * ID
@@ -70,7 +70,7 @@ interface GenEntity : BaseEntity {
      */
     @ManyToMany
     @JoinTable(
-        name = "jimmer_code_gen.gen_super_entity_mapping",
+        name = "gen_super_entity_mapping",
         joinColumnName = "inherit_entity_id",
         inverseJoinColumnName = "super_entity_id"
     )
