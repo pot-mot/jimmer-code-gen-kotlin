@@ -23,7 +23,7 @@ import top.potmot.util.replaceSinceTimeComment
  * 可按照需要调整 entityProperties 和 tableDefineProperties 两组测试属性集
  * 并实现 EntityResult、TableDefineResult 匹配特定属性集的输出
  */
-@ActiveProfiles("test", "postgresql")
+@ActiveProfiles("test", "h2")
 abstract class BaseTest {
     private val logger = LoggerFactory.getLogger(this::class.java)
 

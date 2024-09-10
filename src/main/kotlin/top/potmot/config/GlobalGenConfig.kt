@@ -16,7 +16,7 @@ object GlobalGenConfig : MutableGenConfig(
     dataSourceType = DataSourceType.MySQL,
     language = GenLanguage.KOTLIN,
     realFk = true,
-    databaseNamingStrategy = DatabaseNamingStrategyType.LOWER_CASE,
+    databaseNamingStrategy = DatabaseNamingStrategyType.RAW,
     author = "",
     packagePath = "com.example",
     tablePath = "",
