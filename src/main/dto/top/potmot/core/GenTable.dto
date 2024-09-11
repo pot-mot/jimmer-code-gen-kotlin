@@ -5,6 +5,8 @@ import top.potmot.entity.dto.share.ReferenceColumn
 
 GenTableAssociationsView {
     #allScalars
+    logicalDelete
+
     id(entity)
 
     superTables*
@@ -31,6 +33,7 @@ GenTableAssociationsView {
             name
             comment
             type
+            logicalDelete
 
             inheritTables*
         }
@@ -41,6 +44,7 @@ GenTableAssociationsView {
                 name
                 comment
                 partOfPk
+                logicalDelete
             }
             targetColumn {
                 id
@@ -56,6 +60,7 @@ GenTableAssociationsView {
             name
             comment
             type
+            logicalDelete
 
             inheritTables*
         }
@@ -69,6 +74,7 @@ GenTableAssociationsView {
                 name
                 comment
                 partOfPk
+                logicalDelete
             }
         }
     }

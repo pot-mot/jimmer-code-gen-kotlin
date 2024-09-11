@@ -104,8 +104,8 @@ fun convertAssociationProperties(
             idGenerationAnnotation = null
 
             if (association.type == ONE_TO_ONE || association.type == MANY_TO_ONE) {
-                // 当外键为伪或表为高级表时，需要将类型设置为可空
-                if (association.fake || sourceTable.type == TableType.SUPER_TABLE) {
+                // 当外键为伪、表为高级表、表为逻辑删除时，需要将类型设置为可空
+                if (association.fake || sourceTable.type == TableType.SUPER_TABLE || targetTable.logicalDelete) {
                     typeNotNull = false
                 }
 
@@ -204,7 +204,7 @@ fun convertAssociationProperties(
                         if (association.type == MANY_TO_MANY) it.toPlural() else it
                     }
 
-            // 被动方需要将类型设置为可空
+            // 当关联为被动方或外键为伪需要将类型设置为可空
             if (
                 (association.type == ONE_TO_ONE) ||
                 (association.fake && association.type == MANY_TO_ONE)

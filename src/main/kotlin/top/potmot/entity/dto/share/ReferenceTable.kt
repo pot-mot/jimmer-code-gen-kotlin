@@ -24,6 +24,11 @@ interface ReferenceTable {
     val type: TableType
 
     /**
+     * 是否为逻辑删除
+     */
+    val logicalDelete: Boolean
+
+    /**
      * 继承表
      */
     val inheritTables: List<ReferenceTable>?

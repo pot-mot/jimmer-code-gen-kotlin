@@ -15,8 +15,10 @@ import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
+import org.babyfish.jimmer.sql.Transient
 import top.potmot.enumeration.TableType
 import top.potmot.entity.base.BaseEntity
+import top.potmot.entity.resolver.GenTableLogicalDeleteResolver
 
 /**
  * 生成表
@@ -171,5 +173,11 @@ interface GenTable : BaseEntity {
      */
     @IdView("outAssociations")
     val outAssociationIds: List<Long>
+
+    /**
+     * 是否为逻辑删除
+     */
+    @Transient(GenTableLogicalDeleteResolver::class)
+    val logicalDelete: Boolean
 }
 

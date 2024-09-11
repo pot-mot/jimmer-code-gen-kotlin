@@ -15,7 +15,9 @@ import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
+import org.babyfish.jimmer.sql.Transient
 import top.potmot.entity.base.BaseEntity
+import top.potmot.entity.resolver.GenEntityLogicalDeleteResolver
 
 /**
  * 生成实体
@@ -93,6 +95,12 @@ interface GenEntity : BaseEntity {
      */
     @IdView("inheritEntities")
     val inheritEntityIds: List<Long>
+
+    /**
+     * 是否为逻辑删除
+     */
+    @Transient(GenEntityLogicalDeleteResolver::class)
+    val logicalDelete: Boolean
 
     /**
      * 类名称
