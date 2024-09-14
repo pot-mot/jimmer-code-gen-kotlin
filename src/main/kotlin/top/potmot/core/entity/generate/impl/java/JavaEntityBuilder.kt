@@ -16,7 +16,7 @@ object JavaEntityBuilder : EntityBuilder() {
             append("public interface ${entity.name}")
 
             if (entity.superEntities.isNotEmpty()) {
-                append(" implements")
+                append(" extends")
                 append(" ${entity.superEntities.joinToString(", ") { it.name }}")
             }
         }

@@ -72,7 +72,7 @@ import org.babyfish.jimmer.sql.Table;
  */
 @Entity
 @Table(name = "BIZ_PROJECT")
-public interface BizProject implements BaseEntity {
+public interface BizProject extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -119,7 +119,7 @@ import org.babyfish.jimmer.sql.Table;
  */
 @Entity
 @Table(name = "SYS_USER")
-public interface SysUser implements BaseEntity {
+public interface SysUser extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
