@@ -8,7 +8,6 @@ import org.babyfish.jimmer.sql.IdView;
 import org.babyfish.jimmer.sql.JoinColumn;
 import org.babyfish.jimmer.sql.ManyToOne;
 import org.babyfish.jimmer.sql.MappedSuperclass;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * 基础实体
@@ -25,15 +24,13 @@ public interface BaseEntity {
             name = "CREATED_BY",
             referencedColumnName = "ID"
     )
-    @Nullable
     SysUser createdBy();
 
     /**
      * 用户 ID 视图
      */
     @IdView("createdBy")
-    @Nullable
-    Integer createdById();
+    int createdById();
 
     /**
      * 用户
@@ -43,15 +40,13 @@ public interface BaseEntity {
             name = "MODIFIED_BY",
             referencedColumnName = "ID"
     )
-    @Nullable
     SysUser modifiedBy();
 
     /**
      * 用户 ID 视图
      */
     @IdView("modifiedBy")
-    @Nullable
-    Integer modifiedById();
+    int modifiedById();
 }
 ), (top/potmot/BizProject.java, package top.potmot;
 
@@ -218,13 +213,13 @@ interface BaseEntity {
         name = "CREATED_BY",
         referencedColumnName = "ID"
     )
-    val createdBy: SysUser?
+    val createdBy: SysUser
 
     /**
      * 用户 ID 视图
      */
     @IdView("createdBy")
-    val createdById: Int?
+    val createdById: Int
 
     /**
      * 用户
@@ -234,13 +229,13 @@ interface BaseEntity {
         name = "MODIFIED_BY",
         referencedColumnName = "ID"
     )
-    val modifiedBy: SysUser?
+    val modifiedBy: SysUser
 
     /**
      * 用户 ID 视图
      */
     @IdView("modifiedBy")
-    val modifiedById: Int?
+    val modifiedById: Int
 }
 ), (top/potmot/BizProject.kt, package top.potmot
 

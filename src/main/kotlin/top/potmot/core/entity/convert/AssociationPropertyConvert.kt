@@ -104,8 +104,8 @@ fun convertAssociationProperties(
             idGenerationAnnotation = null
 
             if (association.type == ONE_TO_ONE || association.type == MANY_TO_ONE) {
-                // 当外键为伪、表为高级表、表为逻辑删除时，需要将类型设置为可空
-                if (association.fake || sourceTable.type == TableType.SUPER_TABLE || targetTable.logicalDelete) {
+                // 当外键为伪、表为逻辑删除时，需要将类型设置为可空
+                if (association.fake || targetTable.logicalDelete) {
                     typeNotNull = false
                 }
 
