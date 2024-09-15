@@ -1,12 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 repositories {
-//    maven {
-//        setUrl("https://maven.aliyun.com/repository/public/")
-//    }
-//    maven {
-//        setUrl("https://maven.aliyun.com/repository/spring/")
-//    }
     mavenLocal()
     mavenCentral()
 }
@@ -21,7 +15,7 @@ plugins {
 }
 
 group = "top.potmot"
-version = "0.1.3" // 2024-8-29
+version = "0.1.4" // 2024-9-15
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 val jimmerVersion = "0.8.176"
