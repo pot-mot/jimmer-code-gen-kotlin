@@ -3,13 +3,22 @@ export top.potmot.entity.GenTable
 import top.potmot.entity.dto.share.ReferenceTable
 import top.potmot.entity.dto.share.ReferenceColumn
 
-GenTableAssociationsView {
+GenTableAssociationsView implements ReferenceTable {
     #allScalars
     logicalDelete
 
     id(entity)
 
     superTables*
+    inheritTables implements ReferenceTable {
+        id
+        name
+        comment
+        type
+        logicalDelete
+
+        inheritTables*
+    }
 
     columns {
         #allScalars

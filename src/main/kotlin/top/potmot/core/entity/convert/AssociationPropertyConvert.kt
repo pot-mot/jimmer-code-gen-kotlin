@@ -13,7 +13,6 @@ import top.potmot.enumeration.AssociationType.MANY_TO_MANY
 import top.potmot.enumeration.AssociationType.MANY_TO_ONE
 import top.potmot.enumeration.AssociationType.ONE_TO_MANY
 import top.potmot.enumeration.AssociationType.ONE_TO_ONE
-import top.potmot.enumeration.TableType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.entity.GenPropertyDraft
@@ -45,7 +44,7 @@ fun convertAssociationProperties(
     ) = table
         .getAssociations()
         .processOneToMany()
-        .aggregateLeafTableAssociations()
+        .aggregateOtherSideLeafTableAssociations()
 
     val propertiesMap =
         basePropertyMap.mapValues {

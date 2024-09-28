@@ -3,8 +3,8 @@ package top.potmot.core.entity.convert
 import top.potmot.core.database.meta.InAssociationMeta
 import top.potmot.core.database.meta.OutAssociationMeta
 import top.potmot.core.database.meta.TableAssociationMeta
-import top.potmot.enumeration.AssociationType
 import top.potmot.entity.extension.allLeafTables
+import top.potmot.enumeration.AssociationType
 
 /**
  * 将所有 OneToMany 恢复为 ManyToOne
@@ -66,32 +66,33 @@ private fun InAssociationMeta.reversed(): OutAssociationMeta {
  *          Entity2.createBy -> User.id
  *          Entity3.createBy -> User.id
  */
-fun TableAssociationMeta.aggregateLeafTableAssociations() : TableAssociationMeta {
+fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations(): TableAssociationMeta {
     val newOutAssociations = mutableListOf<OutAssociationMeta>()
 
     val newInAssociations = mutableListOf<InAssociationMeta>()
 
     outAssociations.forEach {
-        val allLeafTables = it.targetTable.allLeafTables()
+        val allTargetLeafTables = it.targetTable.allLeafTables()
 
-        if (allLeafTables.isNotEmpty()) {
-            newOutAssociations += allLeafTables.map { leafTable ->
-                it.copy(targetTable = leafTable)
-            }
-        } else {
+        if (allTargetLeafTables.size == 1) {
             newOutAssociations += it
+        } else {
+            newOutAssociations +=
+                allTargetLeafTables.map { targetTable ->
+                    it.copy(targetTable = targetTable)
+                }
         }
     }
 
     inAssociations.forEach {
-        val allLeafTables = it.sourceTable.allLeafTables()
+        val allSourceLeafTables = it.sourceTable.allLeafTables()
 
-        if (allLeafTables.isNotEmpty()) {
-            newInAssociations += allLeafTables.map { leafTable ->
-                it.copy(sourceTable = leafTable)
-            }
-        } else {
+        if (allSourceLeafTables.size == 1) {
             newInAssociations += it
+        } else {
+            newInAssociations += allSourceLeafTables.map { sourceTable ->
+                it.copy(sourceTable = sourceTable)
+            }
         }
     }
 

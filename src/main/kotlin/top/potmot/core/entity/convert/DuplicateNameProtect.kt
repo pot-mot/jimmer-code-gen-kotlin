@@ -32,7 +32,7 @@ fun handleDuplicateName(
     return producedMappedByProperties
 }
 
-fun produceDuplicateNameMappedBy(items: List<ProtectDuplicateItem>): List<GenPropertyInput> =
+private fun produceDuplicateNameMappedBy(items: List<ProtectDuplicateItem>): List<GenPropertyInput> =
     if (items.size == 1) {
         when (val item = items.first()) {
             is BaseProtectDuplicateItem ->

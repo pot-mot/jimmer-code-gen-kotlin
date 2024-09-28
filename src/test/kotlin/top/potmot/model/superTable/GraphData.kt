@@ -381,7 +381,7 @@ const val GRAPH_DATA = """
                 "id": "7c2f4910-979e-450c-8911-a7716da66127",
                 "data": {
                     "association": {
-                        "name": "fk_{}_created_by",
+                        "name": "fk_{SOURCE}_created_by",
                         "sourceTableName": "BASE_ENTITY",
                         "targetTableName": "SYS_USER",
                         "columnReferences": [
@@ -417,7 +417,7 @@ const val GRAPH_DATA = """
                 "id": "f6621fee-6fb3-4c27-9057-4976f0251cce",
                 "data": {
                     "association": {
-                        "name": "fk_{}_modified_by",
+                        "name": "fk_{SOURCE}_modified_by",
                         "sourceTableName": "BASE_ENTITY",
                         "targetTableName": "SYS_USER",
                         "columnReferences": [

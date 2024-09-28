@@ -22,7 +22,6 @@ import top.potmot.entity.extension.pkColumns
 
 /**
  * 表定义构建器
- * 基于 IdentifierTruncator 转换实体
  */
 abstract class TableDefineBuilder(
     protected val identifiers: IdentifierProcessor,

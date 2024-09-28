@@ -24,8 +24,8 @@ fun ReferenceTable.allInheritTables(): List<ReferenceTable> {
 }
 
 /**
- * 获取全部叶子表，即下级非 SUPER_TABLE 的实表
+ * 获取全部叶子表，即从自身开始到下级全部非 SUPER_TABLE 的表
  */
 fun ReferenceTable.allLeafTables(): List<ReferenceTable> {
-    return allInheritTables().filter { it.type != TableType.SUPER_TABLE }
+    return (allInheritTables() + this).filter { it.type != TableType.SUPER_TABLE }
 }
