@@ -55,12 +55,12 @@ private fun produceDuplicateNameMappedBy(items: List<ProtectDuplicateItem>): Lis
                         listOfNotNull(
                             property.copy(
                                 name = newPropertyName,
-                                comment = "${property.comment} (映射自 ${property.type}.${mappedBy})"
+                                comment = "${property.comment} (MappedBy ${property.type}.${mappedBy})"
                             ),
                             idView?.copy(
                                 idViewTarget = newPropertyName,
                                 name = "${idView.name}${suffix}",
-                                comment = "${idView.comment} (映射自 ${property.type}.${mappedBy})"
+                                comment = "${idView.comment} (MappedBy ${property.type}.${mappedBy})"
                             )
                         )
                     } else {
