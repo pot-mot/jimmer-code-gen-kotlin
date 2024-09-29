@@ -18,7 +18,7 @@ group = "top.potmot"
 version = "0.1.4" // 2024-9-15
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.8.182"
+val jimmerVersion = "0.8.183"
 
 val mysqlVersion = "9.0.0"
 val postgresVersion = "42.7.3"
