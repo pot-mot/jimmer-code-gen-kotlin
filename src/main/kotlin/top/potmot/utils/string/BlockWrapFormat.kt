@@ -1,7 +1,7 @@
 package top.potmot.utils.string
 
 fun String.toBlockLines(
-    lineLength: Int = 40,
+    lineLength: Int = 80,
     paragraphSeparator: String = "\n",
     wordSeparator: String = " "
 ): List<String> {

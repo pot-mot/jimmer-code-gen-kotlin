@@ -113,8 +113,7 @@ import org.babyfish.jimmer.sql.Table
 /**
  * comment
  * remark p1.
- * remark p2 remark p2 remark p2 remark p2
- * remark p2 remark p2 remark p2 remark p2
+ * remark p2 remark p2 remark p2 remark p2 remark p2 remark p2 remark p2 remark p2
  * remark p2 remark p2
  * 
  * @author Potmot
@@ -132,8 +131,7 @@ interface Entity {
     /**
      * comment
      * remark p1.
-     * remark p2 remark p2 remark p2 remark p2
-     * remark p2 remark p2 remark p2 remark p2
+     * remark p2 remark p2 remark p2 remark p2 remark p2 remark p2 remark p2 remark p2
      * remark p2 remark p2
      */
     @Key
@@ -156,8 +154,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * comment
  * remark p1.
- * remark p2 remark p2 remark p2 remark p2
- * remark p2 remark p2 remark p2 remark p2
+ * remark p2 remark p2 remark p2 remark p2 remark p2 remark p2 remark p2 remark p2
  * remark p2 remark p2
  * 
  * @author Potmot
@@ -175,8 +172,7 @@ public interface Entity {
     /**
      * comment
      * remark p1.
-     * remark p2 remark p2 remark p2 remark p2
-     * remark p2 remark p2 remark p2 remark p2
+     * remark p2 remark p2 remark p2 remark p2 remark p2 remark p2 remark p2 remark p2
      * remark p2 remark p2
      */
     @Key

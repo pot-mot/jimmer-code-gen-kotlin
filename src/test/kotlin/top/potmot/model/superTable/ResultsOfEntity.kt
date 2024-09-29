@@ -121,61 +121,61 @@ public interface SysUser extends BaseEntity {
     int id();
 
     /**
-     * 项目 (映射自 BizProject.user)
+     * 项目 (MappedBy BizProject.user)
      */
     @OneToMany(mappedBy = "user")
     List<BizProject> bizProjectsForUser();
 
     /**
-     * 项目 ID 视图 (映射自 BizProject.user)
+     * 项目 ID 视图 (MappedBy BizProject.user)
      */
     @IdView("bizProjectsForUser")
     List<Integer> bizProjectIdsForUser();
 
     /**
-     * 项目 (映射自 BizProject.createdBy)
+     * 项目 (MappedBy BizProject.createdBy)
      */
     @OneToMany(mappedBy = "createdBy")
     List<BizProject> bizProjectsForCreatedBy();
 
     /**
-     * 项目 ID 视图 (映射自 BizProject.createdBy)
+     * 项目 ID 视图 (MappedBy BizProject.createdBy)
      */
     @IdView("bizProjectsForCreatedBy")
     List<Integer> bizProjectIdsForCreatedBy();
 
     /**
-     * 项目 (映射自 BizProject.modifiedBy)
+     * 项目 (MappedBy BizProject.modifiedBy)
      */
     @OneToMany(mappedBy = "modifiedBy")
     List<BizProject> bizProjectsForModifiedBy();
 
     /**
-     * 项目 ID 视图 (映射自 BizProject.modifiedBy)
+     * 项目 ID 视图 (MappedBy BizProject.modifiedBy)
      */
     @IdView("bizProjectsForModifiedBy")
     List<Integer> bizProjectIdsForModifiedBy();
 
     /**
-     * 用户 (映射自 SysUser.createdBy)
+     * 用户 (MappedBy SysUser.createdBy)
      */
     @OneToMany(mappedBy = "createdBy")
     List<SysUser> sysUsersForCreatedBy();
 
     /**
-     * 用户 ID 视图 (映射自 SysUser.createdBy)
+     * 用户 ID 视图 (MappedBy SysUser.createdBy)
      */
     @IdView("sysUsersForCreatedBy")
     List<Integer> sysUserIdsForCreatedBy();
 
     /**
-     * 用户 (映射自 SysUser.modifiedBy)
+     * 用户 (MappedBy SysUser.modifiedBy)
      */
     @OneToMany(mappedBy = "modifiedBy")
     List<SysUser> sysUsersForModifiedBy();
 
     /**
-     * 用户 ID 视图 (映射自 SysUser.modifiedBy)
+     * 用户 ID 视图 (MappedBy SysUser.modifiedBy)
      */
     @IdView("sysUsersForModifiedBy")
     List<Integer> sysUserIdsForModifiedBy();
@@ -309,61 +309,61 @@ interface SysUser : BaseEntity {
     val id: Int
 
     /**
-     * 项目 (映射自 BizProject.user)
+     * 项目 (MappedBy BizProject.user)
      */
     @OneToMany(mappedBy = "user")
     val bizProjectsForUser: List<BizProject>
 
     /**
-     * 项目 ID 视图 (映射自 BizProject.user)
+     * 项目 ID 视图 (MappedBy BizProject.user)
      */
     @IdView("bizProjectsForUser")
     val bizProjectIdsForUser: List<Int>
 
     /**
-     * 项目 (映射自 BizProject.createdBy)
+     * 项目 (MappedBy BizProject.createdBy)
      */
     @OneToMany(mappedBy = "createdBy")
     val bizProjectsForCreatedBy: List<BizProject>
 
     /**
-     * 项目 ID 视图 (映射自 BizProject.createdBy)
+     * 项目 ID 视图 (MappedBy BizProject.createdBy)
      */
     @IdView("bizProjectsForCreatedBy")
     val bizProjectIdsForCreatedBy: List<Int>
 
     /**
-     * 项目 (映射自 BizProject.modifiedBy)
+     * 项目 (MappedBy BizProject.modifiedBy)
      */
     @OneToMany(mappedBy = "modifiedBy")
     val bizProjectsForModifiedBy: List<BizProject>
 
     /**
-     * 项目 ID 视图 (映射自 BizProject.modifiedBy)
+     * 项目 ID 视图 (MappedBy BizProject.modifiedBy)
      */
     @IdView("bizProjectsForModifiedBy")
     val bizProjectIdsForModifiedBy: List<Int>
 
     /**
-     * 用户 (映射自 SysUser.createdBy)
+     * 用户 (MappedBy SysUser.createdBy)
      */
     @OneToMany(mappedBy = "createdBy")
     val sysUsersForCreatedBy: List<SysUser>
 
     /**
-     * 用户 ID 视图 (映射自 SysUser.createdBy)
+     * 用户 ID 视图 (MappedBy SysUser.createdBy)
      */
     @IdView("sysUsersForCreatedBy")
     val sysUserIdsForCreatedBy: List<Int>
 
     /**
-     * 用户 (映射自 SysUser.modifiedBy)
+     * 用户 (MappedBy SysUser.modifiedBy)
      */
     @OneToMany(mappedBy = "modifiedBy")
     val sysUsersForModifiedBy: List<SysUser>
 
     /**
-     * 用户 ID 视图 (映射自 SysUser.modifiedBy)
+     * 用户 ID 视图 (MappedBy SysUser.modifiedBy)
      */
     @IdView("sysUsersForModifiedBy")
     val sysUserIdsForModifiedBy: List<Int>
