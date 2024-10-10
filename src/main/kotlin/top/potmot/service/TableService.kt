@@ -40,7 +40,7 @@ class TableService(
     @DeleteMapping("/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =
         transactionTemplate.execute {
-            sqlClient.deleteByIds(GenTable::class, ids).totalAffectedRowCount
+            sqlClient.deleteByIds(GenTable::class, ids).affectedRowCount(GenTable::class)
         }!!
 
     private fun <T : View<GenTable>> KSqlClient.queryTable(query: Query<GenTable>, viewCLass: KClass<T>): List<T> =

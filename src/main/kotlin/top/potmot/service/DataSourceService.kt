@@ -79,6 +79,6 @@ class DataSourceService(
     @DeleteMapping("/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =
         transactionTemplate.execute {
-            sqlClient.deleteByIds(GenDataSource::class, ids).totalAffectedRowCount
+            sqlClient.deleteByIds(GenDataSource::class, ids).affectedRowCount(GenDataSource::class)
         }!!
 }

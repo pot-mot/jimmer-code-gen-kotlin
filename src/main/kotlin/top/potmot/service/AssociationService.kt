@@ -47,7 +47,7 @@ class AssociationService(
     @DeleteMapping("/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =
         transactionTemplate.execute {
-            sqlClient.deleteByIds(GenAssociation::class, ids).totalAffectedRowCount
+            sqlClient.deleteByIds(GenAssociation::class, ids).affectedRowCount(GenAssociation::class)
         }!!
 
     private fun <T : View<GenAssociation>> KSqlClient.queryAssociation(query: Query<GenAssociation>, viewClass: KClass<T>): List<T> =

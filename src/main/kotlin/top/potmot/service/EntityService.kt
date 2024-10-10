@@ -53,7 +53,7 @@ class EntityService(
     @DeleteMapping("/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =
         transactionTemplate.execute {
-            sqlClient.deleteByIds(GenEntity::class, ids).totalAffectedRowCount
+            sqlClient.deleteByIds(GenEntity::class, ids).affectedRowCount(GenEntity::class)
         }!!
 
     private fun <T : View<GenEntity>> KSqlClient.queryEntity(query: Query<GenEntity>, viewClass: KClass<T>): List<T> =

@@ -58,11 +58,15 @@ abstract class BaseTest {
         val id = modelService.save(model)
         convertService.convertModel(id, null)
         val entityCodes = generateService.generateModelEntity(id, true)
-        sqlClient.deleteById(GenModel::class, id)
+        val deleteResult = sqlClient.deleteById(GenModel::class, id)
 
         assertEquals(
             getEntityResult(config).replaceSinceTimeComment().trim(),
             entityCodes.toString().replaceSinceTimeComment().trim()
+        )
+        assertEquals(
+            1,
+            deleteResult.affectedRowCount(GenModel::class)
         )
     }
 
@@ -78,11 +82,15 @@ abstract class BaseTest {
 
         val id = modelService.save(model)
         val tableDefineCodes = generateService.generateModelSql(id)
-        sqlClient.deleteById(GenModel::class, id)
+        val deleteResult = sqlClient.deleteById(GenModel::class, id)
 
         assertEquals(
             getTableDefineResult(config).trim(),
             tableDefineCodes.toString().trim()
+        )
+        assertEquals(
+            1,
+            deleteResult.affectedRowCount(GenModel::class)
         )
     }
 

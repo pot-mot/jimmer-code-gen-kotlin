@@ -130,6 +130,6 @@ class ModelService(
     @DeleteMapping("/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =
         transactionTemplate.execute {
-            sqlClient.deleteByIds(GenModel::class, ids).totalAffectedRowCount
+            sqlClient.deleteByIds(GenModel::class, ids).affectedRowCount(GenModel::class)
         }!!
 }

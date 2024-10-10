@@ -112,6 +112,6 @@ class SchemaService(
     @DeleteMapping("/schema/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =
         transactionTemplate.execute {
-            sqlClient.deleteByIds(GenSchema::class, ids).totalAffectedRowCount
+            sqlClient.deleteByIds(GenSchema::class, ids).affectedRowCount(GenSchema::class)
         }!!
 }
