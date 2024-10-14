@@ -5,19 +5,21 @@ import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.share.ReferenceTable
 import top.potmot.enumeration.GenLanguage
+import top.potmot.error.ConvertEntityException
+import kotlin.jvm.Throws
 
 /**
  * 从基础属性和关联属性生成 IdView
- *
- * @param baseProperty 基础属性
- * @param associationProperty 关联属性
  */
+@Throws(ConvertEntityException.Property::class)
 fun createIdViewProperty(
     singularName: String,
     baseProperty: GenPropertyInput,
     baseColumn: GenTableAssociationsView.TargetOf_columns,
     associationProperty: GenPropertyInput,
+    typeTable: ReferenceTable,
     typeMapping: TypeMapping,
 ): GenPropertyInput =
     baseProperty.toEntity()
@@ -41,9 +43,13 @@ fun createIdViewProperty(
 
             val language = getContextOrGlobal().language
 
+            if (typeTable.pkColumns.size != 1)
+                throw ConvertEntityException.property("IdView Property [${name}] cannot parse from multi pkColumn Table [${typeTable.name}]")
+
             // IdView 的基础类型为外键列对应类型
             type = typeMapping(
                 baseColumn.getTypeMeta().copy(
+                    typeCode = typeTable.pkColumns[0].typeCode,
                     typeNotNull =
                         if (listType && language == GenLanguage.JAVA)
                             // 当为列表属性时，java 为允许集合泛型使用，基本类型需要转化为包装类型，因此此时映射时必须调整为可空模式

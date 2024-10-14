@@ -1,6 +1,7 @@
 export top.potmot.entity.GenTable
 
 import top.potmot.entity.dto.share.ReferenceTable
+import top.potmot.entity.dto.share.ReferenceTablePkColumn
 import top.potmot.entity.dto.share.ReferenceColumn
 
 GenTableAssociationsView implements ReferenceTable {
@@ -9,15 +10,9 @@ GenTableAssociationsView implements ReferenceTable {
 
     id(entity)
 
-    superTables*
-    inheritTables implements ReferenceTable {
+    pkColumns implements ReferenceTablePkColumn {
         id
-        name
-        comment
-        type
-        logicalDelete
-
-        inheritTables*
+        typeCode
     }
 
     columns {
@@ -43,6 +38,11 @@ GenTableAssociationsView implements ReferenceTable {
             comment
             type
             logicalDelete
+
+            pkColumns implements ReferenceTablePkColumn {
+                id
+                typeCode
+            }
 
             inheritTables*
         }
@@ -71,6 +71,11 @@ GenTableAssociationsView implements ReferenceTable {
             type
             logicalDelete
 
+            pkColumns implements ReferenceTablePkColumn {
+                id
+                typeCode
+            }
+
             inheritTables*
         }
 
@@ -86,5 +91,21 @@ GenTableAssociationsView implements ReferenceTable {
                 logicalDelete
             }
         }
+    }
+
+    superTables*
+    inheritTables implements ReferenceTable {
+        id
+        name
+        comment
+        type
+        logicalDelete
+
+        pkColumns implements ReferenceTablePkColumn {
+            id
+            typeCode
+        }
+
+        inheritTables*
     }
 }

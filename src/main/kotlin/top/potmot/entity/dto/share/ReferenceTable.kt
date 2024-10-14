@@ -29,7 +29,18 @@ interface ReferenceTable {
     val logicalDelete: Boolean
 
     /**
+     * 主键列
+     */
+    val pkColumns: List<ReferenceTablePkColumn>
+
+    /**
      * 继承表
      */
     val inheritTables: List<ReferenceTable>?
+}
+
+interface ReferenceTablePkColumn {
+    val id: Long
+
+    val typeCode: Int
 }

@@ -19,6 +19,7 @@ import org.babyfish.jimmer.sql.Transient
 import top.potmot.enumeration.TableType
 import top.potmot.entity.base.BaseEntity
 import top.potmot.entity.resolver.GenTableLogicalDeleteResolver
+import top.potmot.entity.resolver.GenTablePkColumnsResolver
 
 /**
  * 生成表
@@ -179,5 +180,11 @@ interface GenTable : BaseEntity {
      */
     @Transient(GenTableLogicalDeleteResolver::class)
     val logicalDelete: Boolean
+
+    /**
+     * 主键列
+     */
+    @Transient(GenTablePkColumnsResolver::class)
+    val pkColumns: List<GenColumn>
 }
 

@@ -141,6 +141,7 @@ fun convertAssociationProperties(
                 sourceProperty,
                 sourceColumn,
                 associationProperty,
+                targetTable,
                 typeMapping
             )
         }
@@ -234,6 +235,7 @@ fun convertAssociationProperties(
                 targetProperty,
                 targetColumn,
                 associationProperty,
+                sourceTable,
                 typeMapping
             )
         }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 import top.potmot.entity.GenColumn
 import top.potmot.entity.id
 import top.potmot.entity.logicalDelete
+import top.potmot.entity.partOfPk
 import top.potmot.entity.tableId
 
 @Component
@@ -28,4 +29,19 @@ class GenTableLogicalDeleteResolver(
             }
 
     override fun getDefaultValue(): Boolean = false
+}
+
+@Component
+class GenTablePkColumnsResolver(
+    @Autowired val sqlClient: KSqlClient
+) : KTransientResolver<Long, List<Long>> {
+    override fun resolve(ids: Collection<Long>): Map<Long, List<Long>> =
+        sqlClient.createQuery(GenColumn::class) {
+            where(table.tableId valueIn ids)
+            where(table.partOfPk eq true)
+            select(table.tableId, table.id)
+        }.execute()
+            .groupBy({it._1}) {
+                it._2
+            }
 }
