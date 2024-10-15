@@ -1,4 +1,4 @@
-package top.potmot.core.service.generate
+package top.potmot.core.business.service.generate
 
 import top.potmot.entity.dto.GenEntityPropertiesView
 

@@ -1,7 +1,6 @@
-package top.potmot.core.dto.generate
+package top.potmot.core.business.dto.generate
 
 import top.potmot.entity.dto.GenEntityPropertiesView
-import top.potmot.enumeration.AssociationType
 
 object DtoCodeGenerator {
     private fun formatFileName(
@@ -14,10 +13,12 @@ object DtoCodeGenerator {
         val idName = idProperty.name
 
         val specProperties = entity.properties.map {
-            if (it.associationType == AssociationType.MANY_TO_ONE) {
-                "associationIdEq(${it.name})"
-            } else if (it.associationType != null) {
-                null
+            if (it.associationType != null) {
+                if (it.idView) {
+                    it.name
+                } else {
+                    null
+                }
             } else if (it.type.startsWith("java.time.")) {
                 "le(${it.name})\nge(${it.name})"
             } else if (it.type.endsWith("String")) {

@@ -1,6 +1,6 @@
-package top.potmot.core.service.generate.impl.kotlin
+package top.potmot.core.business.service.generate.impl.kotlin
 
-import top.potmot.core.service.generate.ServiceCodeGenerator
+import top.potmot.core.business.service.generate.ServiceCodeGenerator
 import top.potmot.entity.dto.GenEntityPropertiesView
 
 object KotlinServiceCodeGenerator : ServiceCodeGenerator() {
