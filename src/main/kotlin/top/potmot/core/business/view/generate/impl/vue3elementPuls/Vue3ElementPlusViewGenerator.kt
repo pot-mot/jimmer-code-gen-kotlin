@@ -1,9 +1,9 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPuls
 
-import top.potmot.core.business.view.generate.ViewCodeGenerator
+import top.potmot.core.business.view.generate.ViewGenerator
 import top.potmot.entity.dto.GenEntityPropertiesView
 
-object Vue3ElementPlusViewCodeGenerator : ViewCodeGenerator() {
+object Vue3ElementPlusViewGenerator : ViewGenerator() {
     override fun getFileSuffix() = "vue"
 
     override fun stringifyTable(entity: GenEntityPropertiesView): String {
@@ -30,7 +30,7 @@ const emits = defineEmits<{
         <el-table-column type="index"/>
         <el-table-column type="selection"/>
         ${
-            entity.properties.joinToString("\n        ") {
+            entity.properties.filter { !it.idProperty }.joinToString("\n        ") {
                 """
                 <el-table-column label="${it.comment}" prop="${it.name}"/>
                 """.trim()
@@ -67,9 +67,22 @@ const emits = defineEmits<{
 
 <template>
     <el-form>
-        <el-form-item>
-        
+        ${
+            entity.properties.filter { !it.idProperty }.joinToString("\n") {
+                """
+        <el-form-item label="${it.comment}">
+            <el-input
+                placeholder="请输入${it.comment}"
+                v-model="formData.${it.name}"/>
         </el-form-item>
+                    """.trim()
+            }
+        }
+        
+        <div style="text-align: right;">
+            <el-button type="warning" @click="emits('cancel')" v-text="取消"/>
+            <el-button type="primary" @click="emits('submit')" v-text="提交"/>
+        </div>
     </el-form>
 </template>
         """.trim()
@@ -78,9 +91,18 @@ const emits = defineEmits<{
     override fun stringifyQueryForm(entity: GenEntityPropertiesView): String {
         val spec = "${entity.name}Spec"
 
+        val enums = entity.properties.mapNotNull { it.enum }
+        val enumConstants = enums.map { "${it.name}_CONSTANTS" }
+
         return """
 <script setup lang="ts">
-import type {${spec}} from "@/api/__generated/model/static";
+import type {${spec}, ${enums.joinToString(", ") { it.name }}} from "@/api/__generated/model/static";${
+    if (enumConstants.isNotEmpty()) {
+        "\nimport {${enumConstants.joinToString(", ")}} from \"@/api/__generated/model/static\";"
+    } else {
+        ""
+    }
+}
 
 const spec = defineModel<${spec}>({
     required: true
@@ -94,15 +116,37 @@ const emits = defineEmits<{
 <template>
     <el-form>
         <el-row :gutter="20">
-            <el-col :span="6">
-                <el-form-item label="内容">
+            ${
+                entity.properties.filter { !it.idProperty }.joinToString("\n") {
+                    if (it.enum != null) {
+                        """
+            <el-col :span="8">
+                <el-form-item label="${it.comment}">
+                    <el-select
+                        placeholder="请选择${it.comment}"
+                        v-model="spec.${it.name}"
+                        clearable
+                        @change="emits('query')">
+                        <el-option v-for="value in ${it.enum.name}_CONSTANTS" :value="value"/>
+                    </el-select>
+                </el-form-item>
+            </el-col>
+                    """.trim()
+                    } else {
+                        """
+            <el-col :span="8">
+                <el-form-item label="${it.comment}">
                     <el-input
-                        placeholder="请输入内容"
-                        v-model="spec.content"
+                        placeholder="请输入${it.comment}"
+                        v-model="spec.${it.name}"
                         clearable
                         @change="emits('query')"/>
                 </el-form-item>
             </el-col>
+                    """.trim()
+                    }
+                }
+            }
     
             <el-button :icon="Search" type="primary" @click="emits('query')"/>
         </el-row>

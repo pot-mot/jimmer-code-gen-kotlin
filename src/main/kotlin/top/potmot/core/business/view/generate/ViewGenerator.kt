@@ -2,7 +2,7 @@ package top.potmot.core.business.view.generate
 
 import top.potmot.entity.dto.GenEntityPropertiesView
 
-abstract class ViewCodeGenerator {
+abstract class ViewGenerator {
     abstract fun getFileSuffix(): String
 
     protected abstract fun stringifyTable(entity: GenEntityPropertiesView): String
@@ -26,7 +26,7 @@ abstract class ViewCodeGenerator {
         )
     }
 
-    fun generateViews(
+    fun generateView(
         entities: Collection<GenEntityPropertiesView>,
     ): List<Pair<String, String>> =
         entities

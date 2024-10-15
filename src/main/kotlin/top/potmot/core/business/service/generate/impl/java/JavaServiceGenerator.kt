@@ -1,9 +1,9 @@
 package top.potmot.core.business.service.generate.impl.java
 
-import top.potmot.core.business.service.generate.ServiceCodeGenerator
+import top.potmot.core.business.service.generate.ServiceGenerator
 import top.potmot.entity.dto.GenEntityPropertiesView
 
-object JavaServiceCodeGenerator : ServiceCodeGenerator() {
+object JavaServiceGenerator : ServiceGenerator() {
     override fun getFileSuffix(): String = ".java"
 
     override fun stringify(entity: GenEntityPropertiesView): String {

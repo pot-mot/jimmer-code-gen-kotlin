@@ -125,7 +125,7 @@ class GenerateService(
         context: GenConfig = getContextOrGlobal(),
         language: GenLanguage = context.language,
     ): List<Pair<String, String>> =
-        language.getEntityGenerator().generateEntities(entities, withPath ?: false)
+        language.getEntityGenerator().generateEntityWithEnums(entities, withPath ?: false)
 
     fun generateEnumsCode(
         enums: Collection<GenPropertyEnum>,
@@ -133,7 +133,7 @@ class GenerateService(
         context: GenConfig = getContextOrGlobal(),
         language: GenLanguage = context.language,
     ): List<Pair<String, String>> =
-        language.getEntityGenerator().generateEnums(enums, withPath ?: false)
+        language.getEntityGenerator().generateEnum(enums, withPath ?: false)
 
     @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
     fun generateTableDefines(

@@ -1,9 +1,9 @@
 package top.potmot.core.business.service.generate.impl.kotlin
 
-import top.potmot.core.business.service.generate.ServiceCodeGenerator
+import top.potmot.core.business.service.generate.ServiceGenerator
 import top.potmot.entity.dto.GenEntityPropertiesView
 
-object KotlinServiceCodeGenerator : ServiceCodeGenerator() {
+object KotlinServiceGenerator : ServiceGenerator() {
     override fun getFileSuffix(): String = ".kt"
 
     override fun stringify(entity: GenEntityPropertiesView): String {
