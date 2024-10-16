@@ -1,5 +1,7 @@
 package top.potmot.core.business.dto.generate
 
+import top.potmot.core.entityExtension.dto
+import top.potmot.core.entityExtension.noIdView
 import top.potmot.entity.dto.GenEntityPropertiesView
 import top.potmot.enumeration.AssociationType
 import top.potmot.utils.string.toSingular
@@ -10,11 +12,8 @@ object DtoGenerator {
     ): String =
         "${entity.name}.dto"
 
-    private fun GenEntityPropertiesView.noIdView() =
-        properties.count { it.idView } == 0 && properties.count { it.associationType != null } > 0
-
     private fun GenEntityPropertiesView.propertyIds(): List<String> =
-        if (noIdView()) {
+        if (noIdView) {
             properties
                 .filter { it.associationType != null }
                 .map { "id(${it.name})" }
@@ -25,7 +24,7 @@ object DtoGenerator {
         }
 
     private fun GenEntityPropertiesView.propertyIdsTargetOne(): List<String> =
-        if (noIdView()) {
+        if (noIdView) {
             properties
                 .filter { it.associationType == AssociationType.ONE_TO_ONE || it.associationType == AssociationType.MANY_TO_ONE }
                 .map { "id(${it.name})" }
@@ -37,8 +36,8 @@ object DtoGenerator {
         }
 
 
-    fun generateListView(entity: GenEntityPropertiesView) = buildString {
-        appendLine("${entity.name}ListView {")
+    private fun generateListView(entity: GenEntityPropertiesView) = buildString {
+        appendLine("${entity.dto.listView} {")
         appendLine("    #allScalars")
         entity.propertyIdsTargetOne().forEach {
             appendLine("    $it")
@@ -46,8 +45,8 @@ object DtoGenerator {
         appendLine("}")
     }
 
-    fun generateDetailView(entity: GenEntityPropertiesView) = buildString {
-        appendLine("${entity.name}DetailView {")
+    private fun generateDetailView(entity: GenEntityPropertiesView) = buildString {
+        appendLine("${entity.dto.detailView} {")
         appendLine("    #allScalars")
         entity.propertyIds().forEach {
             appendLine("    $it")
@@ -55,11 +54,11 @@ object DtoGenerator {
         appendLine("}")
     }
 
-    fun generateInsertInput(entity: GenEntityPropertiesView) = buildString {
+    private fun generateInsertInput(entity: GenEntityPropertiesView) = buildString {
             val idProperty = entity.properties.first { it.idProperty }
             val idName = idProperty.name
 
-            appendLine("input ${entity.name}InsertInput {")
+            appendLine("input ${entity.dto.insertInput} {")
             appendLine("    #allScalars(this)")
             appendLine("    -${idName}")
             entity.propertyIds().forEach {
@@ -68,11 +67,11 @@ object DtoGenerator {
             appendLine("}")
         }
 
-    fun generateUpdateInput(entity: GenEntityPropertiesView) = buildString {
+    private fun generateUpdateInput(entity: GenEntityPropertiesView) = buildString {
         val idProperty = entity.properties.first { it.idProperty }
         val idName = idProperty.name
 
-        appendLine("input ${entity.name}UpdateInput {")
+        appendLine("input ${entity.dto.updateInput} {")
         appendLine("    #allScalars(this)")
         appendLine("    ${idName}!")
         entity.propertyIds().forEach {
@@ -81,18 +80,20 @@ object DtoGenerator {
         appendLine("}")
     }
 
-    fun generateSpec(entity: GenEntityPropertiesView) = buildString {
-        appendLine("specification ${entity.name}Spec {")
+    private fun generateSpec(entity: GenEntityPropertiesView) = buildString {
+        appendLine("specification ${entity.dto.spec} {")
 
-        entity.properties.mapNotNull {
+        entity.properties.forEach {
             if (it.associationType == null) {
-                if (it.type.startsWith("java.time.")) {
+                if (it.enum != null) {
+                    appendLine("    eq(${it.name})")
+                } else if (it.type.startsWith("java.time.")) {
                     appendLine("    le(${it.name})")
                     appendLine("    ge(${it.name})")
                 } else if (it.type.endsWith("String")) {
                     appendLine("    like/i(${it.name})")
                 } else {
-                    it.name
+                    appendLine("    eq(${it.name})")
                 }
             } else if (!it.idView) {
                 if (it.associationType == AssociationType.ONE_TO_ONE || it.associationType == AssociationType.MANY_TO_ONE) {
@@ -100,26 +101,20 @@ object DtoGenerator {
                 } else {
                     appendLine("    associatedIdIn(${it.name}) as ${it.name.toSingular()}Ids")
                 }
-            } else {
-                null
             }
         }
 
         appendLine("}")
     }
 
-    fun stringify(entity: GenEntityPropertiesView): String {
+    private fun stringify(entity: GenEntityPropertiesView): String {
         return """
 export ${entity.packagePath}.${entity.name}
 
 ${generateListView(entity)}
-
 ${generateDetailView(entity)}
-
 ${generateInsertInput(entity)}
-
 ${generateUpdateInput(entity)}
-
 ${generateSpec(entity)}
         """.trim()
     }

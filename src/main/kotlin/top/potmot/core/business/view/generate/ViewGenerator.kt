@@ -1,5 +1,6 @@
 package top.potmot.core.business.view.generate
 
+import top.potmot.core.entityExtension.component
 import top.potmot.entity.dto.GenEntityPropertiesView
 
 abstract class ViewGenerator {
@@ -17,12 +18,13 @@ abstract class ViewGenerator {
         entity: GenEntityPropertiesView,
     ): List<Pair<String, String>> {
         val dir = entity.name.replaceFirstChar { it.lowercase() }
+        val (_, table, form, queryForm, page) = entity.component
 
         return listOf(
-            Pair("/components/${dir}/${entity.name}Table.${getFileSuffix()}", stringifyTable(entity)),
-            Pair("/components/${dir}/${entity.name}Form.${getFileSuffix()}", stringifyForm(entity)),
-            Pair("/components/${dir}/${entity.name}QueryForm.${getFileSuffix()}", stringifyQueryForm(entity)),
-            Pair("/pages/${dir}/${entity.name}Page.${getFileSuffix()}", stringifyPage(entity))
+            Pair("/components/${dir}/${table}.${getFileSuffix()}", stringifyTable(entity)),
+            Pair("/components/${dir}/${form}.${getFileSuffix()}", stringifyForm(entity)),
+            Pair("/components/${dir}/${queryForm}.${getFileSuffix()}", stringifyQueryForm(entity)),
+            Pair("/pages/${dir}/${page}.${getFileSuffix()}", stringifyPage(entity))
         )
     }
 

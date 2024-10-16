@@ -1,13 +1,16 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPuls
 
 import top.potmot.core.business.view.generate.ViewGenerator
+import top.potmot.core.entityExtension.component
+import top.potmot.core.entityExtension.dto
+import top.potmot.core.entityExtension.serviceName
 import top.potmot.entity.dto.GenEntityPropertiesView
 
 object Vue3ElementPlusViewGenerator : ViewGenerator() {
     override fun getFileSuffix() = "vue"
 
     override fun stringifyTable(entity: GenEntityPropertiesView): String {
-        val listView = "${entity.name}ListView"
+        val listView = entity.dto.listView
 
         return """
 <script setup lang="ts">
@@ -30,7 +33,7 @@ const emits = defineEmits<{
         <el-table-column type="index"/>
         <el-table-column type="selection"/>
         ${
-            entity.properties.filter { !it.idProperty }.joinToString("\n        ") {
+            entity.properties.filter { !it.idProperty && it.associationType == null }.joinToString("\n        ") {
                 """
                 <el-table-column label="${it.comment}" prop="${it.name}"/>
                 """.trim()
@@ -48,8 +51,7 @@ const emits = defineEmits<{
     }
 
     override fun stringifyForm(entity: GenEntityPropertiesView): String {
-        val insertInput = "${entity.name}InsertInput"
-        val updateInput = "${entity.name}UpdateInput"
+        val (_, _, _, insertInput, updateInput) = entity.dto
 
         return """
 <script setup lang="ts">
@@ -68,14 +70,14 @@ const emits = defineEmits<{
 <template>
     <el-form>
         ${
-            entity.properties.filter { !it.idProperty }.joinToString("\n") {
+            entity.properties.filter { !it.idProperty && it.associationType == null }.joinToString("\n") {
                 """
         <el-form-item label="${it.comment}">
             <el-input
                 placeholder="请输入${it.comment}"
                 v-model="formData.${it.name}"/>
         </el-form-item>
-                    """.trim()
+                    """.trimEnd()
             }
         }
         
@@ -89,7 +91,7 @@ const emits = defineEmits<{
     }
 
     override fun stringifyQueryForm(entity: GenEntityPropertiesView): String {
-        val spec = "${entity.name}Spec"
+        val spec = entity.dto.spec
 
         val enums = entity.properties.mapNotNull { it.enum }
         val enumConstants = enums.map { "${it.name}_CONSTANTS" }
@@ -117,7 +119,7 @@ const emits = defineEmits<{
     <el-form>
         <el-row :gutter="20">
             ${
-                entity.properties.filter { !it.idProperty }.joinToString("\n") {
+                entity.properties.filter { !it.idProperty && it.associationType == null }.joinToString("\n") {
                     if (it.enum != null) {
                         """
             <el-col :span="8">
@@ -127,11 +129,13 @@ const emits = defineEmits<{
                         v-model="spec.${it.name}"
                         clearable
                         @change="emits('query')">
-                        <el-option v-for="value in ${it.enum.name}_CONSTANTS" :value="value"/>
+                        <el-option 
+                            v-for="value in ${it.enum.name}_CONSTANTS" 
+                            :value="value"/>
                     </el-select>
                 </el-form-item>
             </el-col>
-                    """.trim()
+                    """.trimEnd()
                     } else {
                         """
             <el-col :span="8">
@@ -143,7 +147,7 @@ const emits = defineEmits<{
                         @change="emits('query')"/>
                 </el-form-item>
             </el-col>
-                    """.trim()
+                    """.trimEnd()
                     }
                 }
             }
@@ -158,14 +162,10 @@ const emits = defineEmits<{
     override fun stringifyPage(entity: GenEntityPropertiesView): String {
         val dir = entity.name.replaceFirstChar { it.lowercase() }
 
-        val serviceName = "${entity.name.replaceFirstChar { it.lowercase() }}Service"
+        val serviceName = entity.serviceName.replaceFirstChar { it.lowercase() }
 
-        val table = "${entity.name}Table"
-        val form = "${entity.name}Form"
-        val queryForm = "${entity.name}QueryForm"
-
-        val listView = "${entity.name}ListView"
-        val spec = "${entity.name}Spec"
+        val (_, table, form, queryForm) = entity.component
+        val (_, listView, _, _, _, spec) = entity.dto
 
         return """
 <script setup lang="ts">

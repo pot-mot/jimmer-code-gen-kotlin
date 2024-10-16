@@ -3,24 +3,13 @@ package top.potmot.core.business.service.generate
 import top.potmot.entity.dto.GenEntityPropertiesView
 
 abstract class ServiceGenerator {
-    abstract fun getFileSuffix(): String
-
-    private fun formatFilePath(packagePath: String): String =
+    protected fun formatFilePath(packagePath: String): String =
         packagePath.replace(".", "/") + "/"
 
-    private fun formatFileName(
-        entity: GenEntityPropertiesView,
-        withPath: Boolean
-    ): String =
-        "${if (withPath) formatFilePath(entity.packagePath) else ""}${entity.name}${getFileSuffix()}"
-
-    protected abstract fun stringify(entity: GenEntityPropertiesView): String
-
-    fun generateService(
+    abstract fun generateService(
         entity: GenEntityPropertiesView,
         withPath: Boolean = false
-    ): Pair<String, String> =
-        Pair(formatFileName(entity, withPath), stringify(entity))
+    ): Pair<String, String>
 
     fun generateService(
         entities: Collection<GenEntityPropertiesView>,

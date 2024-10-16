@@ -1,5 +1,6 @@
 package top.potmot.core.entity.generate
 
+import top.potmot.core.entityExtension.filePath
 import top.potmot.error.GenerateEntityException
 import top.potmot.entity.dto.GenEntityPropertiesView
 import top.potmot.entity.dto.GenPropertyEnum
@@ -7,20 +8,17 @@ import top.potmot.entity.dto.GenPropertyEnum
 abstract class EntityCodeGenerator {
     abstract fun getFileSuffix(): String
 
-    private fun formatFilePath(packagePath: String): String =
-        packagePath.replace(".", "/") + "/"
-
     private fun formatFileName(
         entity: GenEntityPropertiesView,
         withPath: Boolean
     ): String =
-        "${if (withPath) formatFilePath(entity.packagePath) else ""}${entity.name}${getFileSuffix()}"
+        "${if (withPath) entity.filePath else ""}${entity.name}${getFileSuffix()}"
 
     private fun formatFileName(
         enum: GenPropertyEnum,
         withPath: Boolean
     ): String =
-        "${if (withPath) formatFilePath(enum.packagePath) else ""}${enum.name}${getFileSuffix()}"
+        "${if (withPath) enum.filePath else ""}${enum.name}${getFileSuffix()}"
 
     protected abstract fun stringify(entity: GenEntityPropertiesView): String
 

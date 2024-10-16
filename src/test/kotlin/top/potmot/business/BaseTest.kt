@@ -1,17 +1,27 @@
 package top.potmot.business
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import top.potmot.core.business.dto.generate.DtoGenerator
 import top.potmot.core.business.service.generate.getServiceGenerator
 import top.potmot.core.business.view.generate.getViewGenerator
+import top.potmot.entity.GenEntity
 import top.potmot.entity.dto.GenEntityPropertiesView
 import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.ViewType
+import top.potmot.utils.json.commonObjectMapper
 
 
 abstract class BaseTest {
-    abstract fun getTestEntity(): GenEntityPropertiesView
+    abstract fun getTestEntityJson(): String
+
+    private fun getTestEntity(): GenEntityPropertiesView =
+        GenEntityPropertiesView(
+            commonObjectMapper.readValue<GenEntity>(getTestEntityJson())
+        )
 
     abstract fun getDtoResult(): String
 
@@ -29,27 +39,33 @@ abstract class BaseTest {
         )
     }
 
-    @Test
-    fun generateView() {
+    @ParameterizedTest
+    @MethodSource("viewTypes")
+    fun generateView(viewType: ViewType) {
         val entity = getTestEntity()
 
-        ViewType.entries.forEach {
-            assertEquals(
-                getViewResult(it).trim(),
-                it.getViewGenerator().generateView(entity).toString()
-            )
-        }
+        assertEquals(
+            getViewResult(viewType).trim(),
+            viewType.getViewGenerator().generateView(entity).toString()
+        )
     }
 
-    @Test
-    fun generateService() {
+    @ParameterizedTest
+    @MethodSource("languages")
+    fun generateService(language: GenLanguage) {
         val entity = getTestEntity()
 
-        GenLanguage.entries.forEach {
-            assertEquals(
-                getServiceResult(it).trim(),
-                it.getServiceGenerator().generateService(entity).toString()
-            )
-        }
+        assertEquals(
+            getServiceResult(language).trim(),
+            language.getServiceGenerator().generateService(entity).toString()
+        )
+    }
+
+    companion object {
+        @JvmStatic
+        fun languages() = GenLanguage.entries
+
+        @JvmStatic
+        fun viewTypes() = ViewType.entries
     }
 }

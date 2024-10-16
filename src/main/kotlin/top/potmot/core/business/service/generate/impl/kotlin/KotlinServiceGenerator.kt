@@ -1,31 +1,29 @@
 package top.potmot.core.business.service.generate.impl.kotlin
 
 import top.potmot.core.business.service.generate.ServiceGenerator
+import top.potmot.core.entityExtension.dto
+import top.potmot.core.entityExtension.packages
+import top.potmot.core.entityExtension.permissionPrefix
+import top.potmot.core.entityExtension.requestPath
 import top.potmot.entity.dto.GenEntityPropertiesView
 
 object KotlinServiceGenerator : ServiceGenerator() {
-    override fun getFileSuffix(): String = ".kt"
+    override fun generateService(
+        entity: GenEntityPropertiesView,
+        withPath: Boolean
+    ): Pair<String, String> {
+        val serviceName = "${entity.name}Service"
+        val fileName = "${if (withPath) formatFilePath(entity.packagePath) else ""}$serviceName.kt"
 
-    override fun stringify(entity: GenEntityPropertiesView): String {
+        val (_, servicePackage,  utilsPackage, exceptionPackage, dtoPackage) = entity.packages
+        val (_, listView, detailView, insertInput, updateInput, spec) = entity.dto
+
         val idProperty = entity.properties.first { it.idProperty }
         val idName = idProperty.name
         val idType = "${idProperty.type}${if (idProperty.typeNotNull) "" else "?"}"
 
-        val listView = "${entity.name}ListView"
-        val detailView = "${entity.name}DetailView"
-        val insertInput = "${entity.name}InsertInput"
-        val updateInput = "${entity.name}UpdateInput"
-        val spec = "${entity.name}Spec"
-
-        val servicePackagePath = entity.packagePath.replaceAfterLast(".", ".service")
-        val utilsPackagePath = entity.packagePath.replaceAfterLast(".", ".utils")
-        val exceptionPackagePath = entity.packagePath.replaceAfterLast(".", ".exception")
-        val requestPath = entity.name.replaceFirstChar { it.lowercase() }
-        
-        val permissionPrefix = entity.name.replaceFirstChar { it.lowercase() }
-
-        return """
-package $servicePackagePath
+        return fileName to """
+package $servicePackage
 
 import cn.dev33.satoken.annotation.SaCheckPermission
 import org.babyfish.jimmer.View
@@ -42,18 +40,18 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import ${entity.packagePath}.${entity.name}
-import ${entity.packagePath}.dto.${listView}
-import ${entity.packagePath}.dto.${detailView}
-import ${entity.packagePath}.dto.${insertInput}
-import ${entity.packagePath}.dto.${updateInput}
-import ${entity.packagePath}.dto.${spec}
+import ${dtoPackage}.${listView}
+import ${dtoPackage}.${detailView}
+import ${dtoPackage}.${insertInput}
+import ${dtoPackage}.${updateInput}
+import ${dtoPackage}.${spec}
 import ${entity.packagePath}.query.PageQuery
-import ${exceptionPackagePath}.AuthorizeException
-import ${utilsPackagePath}.sqlClient.queryPage
+import ${exceptionPackage}.AuthorizeException
+import ${utilsPackage}.sqlClient.queryPage
 
 @RestController
-@RequestMapping("/${requestPath}")
-class ${entity}Service(
+@RequestMapping("/${entity.requestPath}")
+class $serviceName(
     @Autowired
     private val sqlClient: KSqlClient,
 ) {
@@ -64,7 +62,7 @@ class ${entity}Service(
      * @return ${entity.comment}的详细信息。
      */
     @GetMapping("/{id}")
-    @SaCheckPermission("${permissionPrefix}:get")
+    @SaCheckPermission("${entity.permissionPrefix}:get")
     @Throws(AuthorizeException::class)
     fun get(@PathVariable id: ${idType}) = 
         sqlClient.findById(${detailView}::class, id)
@@ -76,7 +74,7 @@ class ${entity}Service(
      * @return ${entity.comment}列表。
      */
     @PostMapping("/list")
-    @SaCheckPermission("${permissionPrefix}:list")
+    @SaCheckPermission("${entity.permissionPrefix}:list")
     @Throws(AuthorizeException::class)
     fun list(@RequestBody spec: ${spec}) = 
         sqlClient.query(${listView}::class, spec)
@@ -88,7 +86,7 @@ class ${entity}Service(
      * @return ${entity.comment}分页数据。
      */
     @PostMapping("/page")
-    @SaCheckPermission("${permissionPrefix}:list")
+    @SaCheckPermission("${entity.permissionPrefix}:list")
     @Throws(AuthorizeException::class)
     fun page(@RequestBody query: PageQuery<${spec}>) = 
         sqlClient.queryPage(${listView}::class, query)
@@ -100,7 +98,7 @@ class ${entity}Service(
      * @return 插入的${entity.comment}的ID。
      */
     @PostMapping
-    @SaCheckPermission("${permissionPrefix}:insert")
+    @SaCheckPermission("${entity.permissionPrefix}:insert")
     @Transactional
     @Throws(AuthorizeException::class)
     fun insert(@RequestBody input: ${insertInput}) = 
@@ -113,7 +111,7 @@ class ${entity}Service(
      * @return 更新的${entity.comment}的ID。
      */
     @PutMapping
-    @SaCheckPermission("${permissionPrefix}:update")
+    @SaCheckPermission("${entity.permissionPrefix}:update")
     @Transactional
     @Throws(AuthorizeException::class)
     fun update(@RequestBody input: ${updateInput}) = 
@@ -126,7 +124,7 @@ class ${entity}Service(
      * @return 删除的${entity.comment}的行数。
      */
     @DeleteMapping
-    @SaCheckPermission("${permissionPrefix}:delete")
+    @SaCheckPermission("${entity.permissionPrefix}:delete")
     @Transactional
     @Throws(AuthorizeException::class)
     fun delete(@RequestParam ids: List<${idType}>) = 
