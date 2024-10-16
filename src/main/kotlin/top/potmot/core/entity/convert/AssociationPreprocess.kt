@@ -3,16 +3,17 @@ package top.potmot.core.entity.convert
 import top.potmot.core.database.meta.InAssociationMeta
 import top.potmot.core.database.meta.OutAssociationMeta
 import top.potmot.core.database.meta.TableAssociationMeta
+import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.extension.allLeafTables
 import top.potmot.enumeration.AssociationType
 
 /**
  * 将所有 OneToMany 恢复为 ManyToOne
  */
-fun TableAssociationMeta.processOneToMany(): TableAssociationMeta {
-    val newOutAssociations = mutableListOf<OutAssociationMeta>()
+fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.processOneToMany(): TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns> {
+    val newOutAssociations = mutableListOf<OutAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
 
-    val newInAssociations = mutableListOf<InAssociationMeta>()
+    val newInAssociations = mutableListOf<InAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
 
     outAssociations.forEach {
         if (it.association.type != AssociationType.ONE_TO_MANY) {
@@ -36,25 +37,23 @@ fun TableAssociationMeta.processOneToMany(): TableAssociationMeta {
     )
 }
 
-private fun OutAssociationMeta.reversed(): InAssociationMeta {
-    return InAssociationMeta(
+private fun OutAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.reversed() =
+    InAssociationMeta(
         association = association.copy(type = association.type.reversed()),
         sourceTable = targetTable,
         sourceColumns = targetColumns.map { it },
         targetTable = sourceTable,
         targetColumns = sourceColumns
     )
-}
 
-private fun InAssociationMeta.reversed(): OutAssociationMeta {
-    return OutAssociationMeta(
+private fun InAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.reversed() =
+    OutAssociationMeta(
         association = association.copy(type = association.type.reversed()),
         sourceTable = targetTable,
         sourceColumns = targetColumns,
         targetTable = sourceTable,
         targetColumns = sourceColumns.map { it }
     )
-}
 
 /**
  *  将所有叶子表中的关联汇集到祖关联元数据中，使对应上级表的关联转换为对全部叶子表的关联
@@ -66,10 +65,11 @@ private fun InAssociationMeta.reversed(): OutAssociationMeta {
  *          Entity2.createBy -> User.id
  *          Entity3.createBy -> User.id
  */
-fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations(): TableAssociationMeta {
-    val newOutAssociations = mutableListOf<OutAssociationMeta>()
+fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.aggregateOtherSideLeafTableAssociations():
+        TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns> {
+    val newOutAssociations = mutableListOf<OutAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
 
-    val newInAssociations = mutableListOf<InAssociationMeta>()
+    val newInAssociations = mutableListOf<InAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
 
     outAssociations.forEach {
         val allTargetLeafTables = it.targetTable.allLeafTables()

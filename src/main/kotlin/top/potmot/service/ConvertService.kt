@@ -20,7 +20,7 @@ import top.potmot.entity.GenTable
 import top.potmot.entity.GenTypeMapping
 import top.potmot.entity.by
 import top.potmot.entity.dto.GenConfigProperties
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
 import top.potmot.entity.id
 import top.potmot.entity.modelId
@@ -50,7 +50,7 @@ class ConvertService(
 
                 val typeMappings = sqlClient.getTypeMappings()
 
-                val tableEntityPairs = mutableListOf<Pair<GenTableAssociationsView, GenEntity>>()
+                val tableEntityPairs = mutableListOf<Pair<GenTableConvertView, GenEntity>>()
 
                 tables.forEach { table ->
                     val entity = table.toGenEntity(modelId, typeMappings)
@@ -106,17 +106,17 @@ class ConvertService(
             select(table.id)
         }.execute()
 
-    private fun KSqlClient.getTableViews(ids: List<Long>): List<GenTableAssociationsView> =
+    private fun KSqlClient.getTableViews(ids: List<Long>): List<GenTableConvertView> =
         if (ids.isEmpty()) emptyList()
         else createQuery(GenTable::class) {
             where(table.id valueIn ids)
             select(table.fetch(oneDepthSuperTableFetcher))
         }.execute().map {
-            GenTableAssociationsView(it)
+            GenTableConvertView(it)
         }
 
     private val oneDepthSuperTableFetcher =
-        newFetcher(GenTable::class).by(GenTableAssociationsView.METADATA.fetcher) {
+        newFetcher(GenTable::class).by(GenTableConvertView.METADATA.fetcher) {
             `superTables*` { depth(1) }
         }
 

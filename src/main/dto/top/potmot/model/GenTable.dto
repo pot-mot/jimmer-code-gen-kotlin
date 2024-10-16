@@ -1,5 +1,7 @@
 export top.potmot.entity.GenTable
 
+import top.potmot.entity.dto.share.ColumnTypeMeta
+
 input GenTableModelInput {
     #allScalars(GenTable)
     -id
@@ -9,7 +11,7 @@ input GenTableModelInput {
         name
     }
 
-    columns {
+    columns implements ColumnTypeMeta {
         #allScalars(GenColumn)
         -id
         enum {

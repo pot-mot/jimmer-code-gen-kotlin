@@ -23,7 +23,6 @@ import top.potmot.core.database.generate.columnType.getColumnTypeDefiner
 import top.potmot.core.database.meta.toMappingTableMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.entity.GenDataSource
-import top.potmot.entity.dto.ColumnTypeMeta
 import top.potmot.entity.dto.GenAssociationModelInput
 import top.potmot.entity.dto.GenTableModelInput
 import top.potmot.entity.extension.toSource
@@ -48,7 +47,7 @@ private fun GenTableModelInput.TargetOf_columns.toColumnConfig(typeDefiner: Colu
     // 基本信息
     columnConfig.name = name
     columnConfig.remarks = comment
-    columnConfig.type = typeDefiner.getTypeDefine(ColumnTypeMeta(this.toEntity()))
+    columnConfig.type = typeDefiner.getTypeDefine(this)
     columnConfig.isAutoIncrement = autoIncrement
 
     defaultValue.let {
@@ -149,7 +148,7 @@ private fun GenAssociationModelInput.toFkChange(): AddForeignKeyConstraintChange
 private fun GenAssociationModelInput.toManyToManyChanges(typeDefiner: ColumnTypeDefiner): List<Change> {
     val mappingTable = CreateTableChange()
 
-    val meta = toEntity().toMappingTableMeta()
+    val meta = toMappingTableMeta()
 
     mappingTable.tableName = meta.name
     mappingTable.remarks = meta.comment

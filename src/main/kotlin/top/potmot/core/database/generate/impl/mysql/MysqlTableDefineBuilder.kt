@@ -2,7 +2,7 @@ package top.potmot.core.database.generate.impl.mysql
 
 import top.potmot.core.database.generate.builder.TableDefineBuilder
 import top.potmot.core.database.meta.MappingTableMeta
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableGenerateView
 
 object MysqlTableDefineBuilder : TableDefineBuilder(
     MysqlIdentifierProcessor,
@@ -16,7 +16,7 @@ object MysqlTableDefineBuilder : TableDefineBuilder(
   ROW_FORMAT = Dynamic"""
 
     override fun createTable(
-        table: GenTableAssociationsView,
+        table: GenTableGenerateView,
         otherLines: List<String>
     ): String =
         super.createTable(
@@ -38,7 +38,7 @@ object MysqlTableDefineBuilder : TableDefineBuilder(
         )
     }
 
-    override fun columnStringify(column: GenTableAssociationsView.TargetOf_columns): String =
+    override fun columnStringify(column: GenTableGenerateView.TargetOf_columns): String =
         listOf(
             super.columnStringify(column),
             if (column.autoIncrement) " AUTO_INCREMENT" else "",

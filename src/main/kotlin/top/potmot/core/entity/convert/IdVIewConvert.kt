@@ -1,10 +1,9 @@
 package top.potmot.core.entity.convert
 
 import top.potmot.context.getContextOrGlobal
-import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenPropertyInput
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.share.ReferenceTable
 import top.potmot.enumeration.GenLanguage
 import top.potmot.error.ConvertEntityException
@@ -17,7 +16,7 @@ import kotlin.jvm.Throws
 fun createIdViewProperty(
     singularName: String,
     baseProperty: GenPropertyInput,
-    baseColumn: GenTableAssociationsView.TargetOf_columns,
+    baseColumn: GenTableConvertView.TargetOf_columns,
     associationProperty: GenPropertyInput,
     typeTable: ReferenceTable,
     typeMapping: TypeMapping,
@@ -48,7 +47,7 @@ fun createIdViewProperty(
 
             // IdView 的基础类型为外键列对应类型
             type = typeMapping(
-                baseColumn.getTypeMeta().copy(
+                baseColumn.copy(
                     typeCode = typeTable.pkColumns[0].typeCode,
                     typeNotNull =
                         if (listType && language == GenLanguage.JAVA)

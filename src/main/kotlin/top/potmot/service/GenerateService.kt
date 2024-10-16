@@ -30,7 +30,7 @@ import top.potmot.entity.dto.GenConfig
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenEnumGenerateView
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.id
 
 @RestController
@@ -137,7 +137,7 @@ class GenerateService(
 
     @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
     fun generateTableDefines(
-        tables: Collection<GenTableAssociationsView>,
+        tables: Collection<GenTableGenerateView>,
         context: GenConfig = getContextOrGlobal(),
         dataSourceType: DataSourceType = context.dataSourceType,
     ): List<Pair<String, String>> =
@@ -157,7 +157,7 @@ class GenerateService(
         if (ids.isEmpty()) emptyList()
         else createQuery(GenTable::class) {
             where(table.id valueIn ids)
-            select(table.fetch(GenTableAssociationsView::class))
+            select(table.fetch(GenTableGenerateView::class))
         }.execute()
 
     private fun KSqlClient.getEntities(ids: List<Long>) =

@@ -1,5 +1,7 @@
 package top.potmot.core.database.meta
 
+import top.potmot.entity.dto.GenTableGenerateView
+
 data class ForeignKeyMeta(
     val name: String,
     val sourceTableName: String,
@@ -21,7 +23,7 @@ fun ForeignKeyMeta.reversed(): ForeignKeyMeta =
         onDelete,
     )
 
-fun OutAssociationMeta.toFkMeta(): ForeignKeyMeta =
+fun OutAssociationMeta<GenTableGenerateView, GenTableGenerateView.TargetOf_columns>.toFkMeta(): ForeignKeyMeta =
     ForeignKeyMeta(
         name = association.name,
         sourceTableName = this.sourceTable.name,

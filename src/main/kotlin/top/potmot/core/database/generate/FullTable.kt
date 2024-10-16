@@ -3,11 +3,11 @@ package top.potmot.core.database.generate
 import top.potmot.constant.INHERIT_PLACEHOLDER
 import top.potmot.constant.SOURCE_INHERIT_PLACEHOLDER
 import top.potmot.constant.TARGET_INHERIT_PLACEHOLDER
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.extension.allSuperTables
 import top.potmot.utils.string.replaceFirstOrAppend
 
-fun GenTableAssociationsView.toFull(): GenTableAssociationsView {
+fun GenTableGenerateView.toFull(): GenTableGenerateView {
     val allSuperTables = allSuperTables()
 
     val tableName = this.name
@@ -52,24 +52,24 @@ fun GenTableAssociationsView.toFull(): GenTableAssociationsView {
     )
 }
 
-private fun GenTableAssociationsView.TargetOf_inAssociations.TargetOf_sourceTable.getLeafTables():
-        List<GenTableAssociationsView.TargetOf_inAssociations.TargetOf_sourceTable> =
+private fun GenTableGenerateView.TargetOf_inAssociations.TargetOf_sourceTable.getLeafTables():
+        List<GenTableGenerateView.TargetOf_inAssociations.TargetOf_sourceTable> =
     if (!this.inheritTables.isNullOrEmpty()) {
         this.inheritTables!!.flatMap { it.getLeafTables() }
     } else {
         listOf(this)
     }
 
-private fun GenTableAssociationsView.TargetOf_outAssociations.TargetOf_targetTable.getLeafTables():
-        List<GenTableAssociationsView.TargetOf_outAssociations.TargetOf_targetTable> =
+private fun GenTableGenerateView.TargetOf_outAssociations.TargetOf_targetTable.getLeafTables():
+        List<GenTableGenerateView.TargetOf_outAssociations.TargetOf_targetTable> =
     if (!this.inheritTables.isNullOrEmpty()) {
         this.inheritTables!!.flatMap { it.getLeafTables() }
     } else {
         listOf(this)
     }
 
-private fun GenTableAssociationsView.TargetOf_inAssociations.getLeafAssociations():
-        List<GenTableAssociationsView.TargetOf_inAssociations> =
+private fun GenTableGenerateView.TargetOf_inAssociations.getLeafAssociations():
+        List<GenTableGenerateView.TargetOf_inAssociations> =
     sourceTable.getLeafTables().map {
         if (it == sourceTable)
             this
@@ -77,8 +77,8 @@ private fun GenTableAssociationsView.TargetOf_inAssociations.getLeafAssociations
             copy(sourceTable = it, name = name.replaceFirstOrAppend(SOURCE_INHERIT_PLACEHOLDER, it.name))
     }
 
-private fun GenTableAssociationsView.TargetOf_outAssociations.getLeafAssociations():
-        List<GenTableAssociationsView.TargetOf_outAssociations> =
+private fun GenTableGenerateView.TargetOf_outAssociations.getLeafAssociations():
+        List<GenTableGenerateView.TargetOf_outAssociations> =
     targetTable.getLeafTables().map {
         if (it == targetTable)
             this

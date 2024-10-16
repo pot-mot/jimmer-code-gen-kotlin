@@ -3,9 +3,9 @@ package top.potmot.core.database.meta
 import top.potmot.core.entity.convert.clearColumnName
 import top.potmot.core.entity.convert.clearTableComment
 import top.potmot.core.entity.convert.clearTableName
-import top.potmot.entity.GenAssociation
-import top.potmot.entity.dto.ColumnTypeMeta
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenAssociationModelInput
+import top.potmot.entity.dto.GenTableGenerateView
+import top.potmot.entity.dto.share.ColumnTypeMeta
 import java.time.LocalDateTime
 
 data class MappingTableMeta(
@@ -30,10 +30,10 @@ data class MappingTableMeta(
     val mappingTargetColumnNames
         get() = targetColumnNames.map { createMappingColumnName(targetTableName, it) }
 
-    val columns: List<GenTableAssociationsView.TargetOf_columns>
+    val columns: List<GenTableGenerateView.TargetOf_columns>
         get() {
-            val sourceColumns = mutableListOf<GenTableAssociationsView.TargetOf_columns>()
-            val targetColumns = mutableListOf<GenTableAssociationsView.TargetOf_columns>()
+            val sourceColumns = mutableListOf<GenTableGenerateView.TargetOf_columns>()
+            val targetColumns = mutableListOf<GenTableGenerateView.TargetOf_columns>()
 
             columnTypes.mapIndexed { index, type ->
                 sourceColumns += createMappingTableColumn(mappingSourceColumnNames[index], type)
@@ -74,19 +74,20 @@ fun createMappingColumnName(
 ) =
     "${tableName.clearTableName()}_${columnName.clearColumnName()}"
 
-fun GenAssociation.toMappingTableMeta() =
+fun GenAssociationModelInput.toMappingTableMeta() =
+    // FIXME GenAssociationModelInput 实际上无法正常获得到 columnTypes
     MappingTableMeta(
         name = this.name,
-        sourceTableName = sourceTable.name,
-        targetTableName = targetTable.name,
-        sourceTableComment = sourceTable.comment,
-        targetTableComment = targetTable.comment,
-        sourceColumnNames = this.columnReferences.map { it.sourceColumn.name },
-        targetColumnNames = this.columnReferences.map { it.targetColumn.name },
-        columnTypes = this.columnReferences.map { ColumnTypeMeta(it.sourceColumn) },
+        sourceTableName = sourceTableName,
+        targetTableName = targetTableName,
+        sourceTableComment = "",
+        targetTableComment = "",
+        sourceColumnNames = columnReferences.map { it.sourceColumnName },
+        targetColumnNames = columnReferences.map { it.targetColumnName },
+        columnTypes = emptyList(),
     )
 
-fun OutAssociationMeta.toMappingTableMeta() =
+fun OutAssociationMeta<GenTableGenerateView, GenTableGenerateView.TargetOf_columns>.toMappingTableMeta() =
     MappingTableMeta(
         name = association.name,
         sourceTableName = sourceTable.name,
@@ -95,14 +96,14 @@ fun OutAssociationMeta.toMappingTableMeta() =
         targetTableComment = targetTable.comment,
         sourceColumnNames = sourceColumns.map { it.name },
         targetColumnNames = targetColumns.map { it.name },
-        columnTypes = sourceColumns.map { it.getTypeMeta() },
+        columnTypes = sourceColumns.map { it },
     )
 
 private fun createMappingTableColumn(
     name: String,
     type: ColumnTypeMeta
 ) =
-    GenTableAssociationsView.TargetOf_columns(
+    GenTableGenerateView.TargetOf_columns(
         id = 0,
         createdTime = LocalDateTime.now(),
         modifiedTime = LocalDateTime.now(),

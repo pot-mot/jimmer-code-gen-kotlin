@@ -4,7 +4,6 @@ import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
 import top.potmot.core.database.generate.identifier.IdentifierProcessor
 import top.potmot.core.database.meta.ForeignKeyMeta
 import top.potmot.core.database.meta.MappingTableMeta
-import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.core.database.meta.outAssociations
 import top.potmot.core.database.meta.reversed
 import top.potmot.core.database.meta.toFkMeta
@@ -16,8 +15,8 @@ import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.error.GenerateTableDefineException
-import top.potmot.entity.dto.ColumnTypeMeta
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.share.ColumnTypeMeta
+import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.extension.pkColumns
 
 /**
@@ -54,16 +53,16 @@ abstract class TableDefineBuilder(
         "ALTER TABLE ${identifiers.tableName(name)}"
 
     open fun createPkLine(
-        table: GenTableAssociationsView,
+        table: GenTableGenerateView,
     ) =
         pkDefine(table.pkColumns().map { it.name })
 
     @Throws(ColumnTypeException::class)
-    open fun columnStringify(column: GenTableAssociationsView.TargetOf_columns) =
+    open fun columnStringify(column: GenTableGenerateView.TargetOf_columns) =
         buildString {
             append(identifiers.columnName(column.name))
             append(' ')
-            append(getColumnTypeDefine(column.getTypeMeta()))
+            append(getColumnTypeDefine(column))
 
             if (column.typeNotNull) {
                 append(" NOT NULL")
@@ -80,7 +79,7 @@ abstract class TableDefineBuilder(
 
     @Throws(ColumnTypeException::class)
     open fun createTable(
-        table: GenTableAssociationsView,
+        table: GenTableGenerateView,
         otherLines: List<String> = emptyList()
     ): String {
         val lines = mutableListOf<String>()
@@ -101,7 +100,7 @@ abstract class TableDefineBuilder(
 
     @Throws(GenerateTableDefineException::class)
     open fun indexLines(
-        table: GenTableAssociationsView,
+        table: GenTableGenerateView,
     ) =
         table.indexes.map { index ->
             val columnNames = table.columns.filter { it.id in index.columnIds }.map { it.name }
@@ -249,7 +248,7 @@ abstract class TableDefineBuilder(
      */
     @Throws(ConvertEntityException::class)
     open fun associationsStringify(
-        table: GenTableAssociationsView
+        table: GenTableGenerateView
     ): List<String> {
         val list = mutableListOf<String>()
 

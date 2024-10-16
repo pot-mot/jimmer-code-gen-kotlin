@@ -2,7 +2,7 @@ package top.potmot.core.database.generate.impl.h2
 
 import top.potmot.core.database.generate.builder.TableDefineBuilder
 import top.potmot.core.database.meta.MappingTableMeta
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableGenerateView
 
 object H2TableDefineBuilder : TableDefineBuilder(
     H2IdentifierProcessor,
@@ -22,7 +22,7 @@ object H2TableDefineBuilder : TableDefineBuilder(
             null
         }
 
-    fun commentLines(table: GenTableAssociationsView): List<String> {
+    fun commentLines(table: GenTableGenerateView): List<String> {
         val list = mutableListOf<String>()
 
         createTableComment(table.name, table.comment)?.let { list += it }
@@ -51,7 +51,7 @@ object H2TableDefineBuilder : TableDefineBuilder(
         ) + "${createTableComment(meta.name, meta.comment)}"
     }
 
-    override fun columnStringify(column: GenTableAssociationsView.TargetOf_columns): String =
+    override fun columnStringify(column: GenTableGenerateView.TargetOf_columns): String =
         listOf(
             super.columnStringify(column),
             if (column.autoIncrement) " AUTO_INCREMENT" else ""

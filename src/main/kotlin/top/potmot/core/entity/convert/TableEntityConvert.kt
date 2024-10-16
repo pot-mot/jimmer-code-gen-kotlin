@@ -3,9 +3,9 @@ package top.potmot.core.entity.convert
 import top.potmot.context.getContextOrGlobal
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
-import top.potmot.entity.dto.ColumnTypeMeta
+import top.potmot.entity.dto.share.ColumnTypeMeta
 import top.potmot.entity.dto.GenEntityInput
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
 
 typealias TypeMapping = (column: ColumnTypeMeta) -> String
@@ -28,7 +28,7 @@ typealias TypeMapping = (column: ColumnTypeMeta) -> String
  * 最终将 associationProperty 中的数据填充到 baseEntity 中
  */
 @Throws(ConvertEntityException::class, ColumnTypeException::class)
-fun GenTableAssociationsView.toGenEntity(
+fun GenTableConvertView.toGenEntity(
     modelId: Long?,
     typeMappings: List<GenTypeMappingView>,
 ): GenEntityInput {
@@ -62,7 +62,7 @@ fun GenTableAssociationsView.toGenEntity(
  * 表到实体转换
  */
 private fun tableToEntity(
-    genTable: GenTableAssociationsView,
+    genTable: GenTableConvertView,
     modelId: Long?,
 ): GenEntityInput {
     val context = getContextOrGlobal()

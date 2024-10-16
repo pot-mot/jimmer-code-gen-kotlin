@@ -4,7 +4,9 @@ import top.potmot.entity.dto.share.ReferenceTable
 import top.potmot.entity.dto.share.ReferenceTablePkColumn
 import top.potmot.entity.dto.share.ReferenceColumn
 
-GenTableAssociationsView implements ReferenceTable {
+import top.potmot.entity.dto.share.ColumnTypeMeta
+
+GenTableGenerateView implements ReferenceTable {
     #allScalars
     logicalDelete
 
@@ -15,7 +17,113 @@ GenTableAssociationsView implements ReferenceTable {
         typeCode
     }
 
-    columns {
+    columns implements ColumnTypeMeta {
+        #allScalars
+        id(table)
+        id(enum)
+    }
+
+    indexes {
+        id
+        id(table)
+        name
+        uniqueIndex
+        columnIds
+    }
+
+    inAssociations {
+        #allScalars
+
+        sourceTable implements ReferenceTable {
+            id
+            name
+            comment
+            type
+            logicalDelete
+
+            pkColumns implements ReferenceTablePkColumn {
+                id
+                typeCode
+            }
+
+            inheritTables*
+        }
+
+        columnReferences {
+            sourceColumn implements ReferenceColumn {
+                id
+                name
+                comment
+                partOfPk
+                logicalDelete
+            }
+            targetColumn {
+                id
+            }
+        }
+    }
+
+    outAssociations {
+        #allScalars
+
+        targetTable implements ReferenceTable {
+            id
+            name
+            comment
+            type
+            logicalDelete
+
+            pkColumns implements ReferenceTablePkColumn {
+                id
+                typeCode
+            }
+
+            inheritTables*
+        }
+
+        columnReferences {
+            sourceColumn {
+                id
+            }
+            targetColumn implements ReferenceColumn {
+                id
+                name
+                comment
+                partOfPk
+                logicalDelete
+            }
+        }
+    }
+
+    superTables*
+    inheritTables implements ReferenceTable {
+        id
+        name
+        comment
+        type
+        logicalDelete
+
+        pkColumns implements ReferenceTablePkColumn {
+            id
+            typeCode
+        }
+
+        inheritTables*
+    }
+}
+
+GenTableConvertView implements ReferenceTable {
+    #allScalars
+    logicalDelete
+
+    id(entity)
+
+    pkColumns implements ReferenceTablePkColumn {
+        id
+        typeCode
+    }
+
+    columns implements ColumnTypeMeta {
         #allScalars
         id(table)
         id(enum)

@@ -1,16 +1,16 @@
 package top.potmot.entity.extension
 
 import top.potmot.enumeration.TableType
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.dto.share.ReferenceTable
 
-fun GenTableAssociationsView.pkColumns(): List<GenTableAssociationsView.TargetOf_columns> =
+fun GenTableGenerateView.pkColumns(): List<GenTableGenerateView.TargetOf_columns> =
     columns.filter { it.partOfPk }
 
 /**
  * 获取全部上级表
  */
-fun GenTableAssociationsView.allSuperTables(): List<GenTableAssociationsView> {
+fun GenTableGenerateView.allSuperTables(): List<GenTableGenerateView> {
     val result = superTables ?: listOf()
     return result + result.flatMap { it.allSuperTables() }
 }

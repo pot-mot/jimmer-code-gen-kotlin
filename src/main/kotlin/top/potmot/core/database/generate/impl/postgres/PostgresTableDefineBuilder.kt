@@ -2,7 +2,7 @@ package top.potmot.core.database.generate.impl.postgres
 
 import top.potmot.core.database.generate.builder.TableDefineBuilder
 import top.potmot.core.database.meta.MappingTableMeta
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableGenerateView
 
 object PostgresTableDefineBuilder : TableDefineBuilder(
     PostgresIdentifierProcessor,
@@ -22,7 +22,7 @@ object PostgresTableDefineBuilder : TableDefineBuilder(
             null
         }
 
-    fun commentLines(table: GenTableAssociationsView): List<String> {
+    fun commentLines(table: GenTableGenerateView): List<String> {
         val list = mutableListOf<String>()
 
         createTableComment(table.name, table.comment)?.let { list += it }

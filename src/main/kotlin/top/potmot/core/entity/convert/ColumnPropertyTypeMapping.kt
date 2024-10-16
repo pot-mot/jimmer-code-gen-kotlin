@@ -5,7 +5,7 @@ import top.potmot.core.database.generate.columnType.getColumnTypeDefiner
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.error.ColumnTypeException
-import top.potmot.entity.dto.ColumnTypeMeta
+import top.potmot.entity.dto.share.ColumnTypeMeta
 import top.potmot.entity.dto.GenTypeMappingView
 import java.math.BigDecimal
 import java.sql.Types

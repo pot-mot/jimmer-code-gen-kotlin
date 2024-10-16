@@ -1,10 +1,9 @@
 package top.potmot.core.entity.convert
 
-import top.potmot.core.database.meta.getTypeMeta
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.entity.dto.GenPropertyInput
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableConvertView
 
 /**
  * 转换基本属性
@@ -12,7 +11,7 @@ import top.potmot.entity.dto.GenTableAssociationsView
  */
 @Throws(ConvertEntityException::class, ColumnTypeException::class)
 fun convertBaseProperties(
-    table: GenTableAssociationsView,
+    table: GenTableConvertView,
     typeMapping: TypeMapping,
 ) =
     table.columns.associate { column ->
@@ -26,7 +25,7 @@ fun convertBaseProperties(
 /**
  * 转换为基础属性
  */
-fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
+fun GenTableConvertView.TargetOf_columns.toBaseProperty(
     typeMapping: TypeMapping,
 ): GenPropertyInput {
     val column = this
@@ -35,7 +34,7 @@ fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
         columnId = column.id,
         name = snakeToLowerCamel(column.name),
         comment = column.comment.clearColumnComment(),
-        type = typeMapping(column.getTypeMeta()),
+        type = typeMapping(column),
         typeTableId = null,
         listType = false,
         typeNotNull = column.typeNotNull,
@@ -58,7 +57,7 @@ fun GenTableAssociationsView.TargetOf_columns.toBaseProperty(
 }
 
 private fun GenPropertyInput.toIdProperty(
-    column: GenTableAssociationsView.TargetOf_columns
+    column: GenTableConvertView.TargetOf_columns
 ) =
     copy(
         idProperty = true,

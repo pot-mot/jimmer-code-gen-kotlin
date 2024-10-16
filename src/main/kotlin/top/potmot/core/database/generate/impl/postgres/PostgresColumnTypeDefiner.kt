@@ -1,7 +1,7 @@
 package top.potmot.core.database.generate.impl.postgres
 
 import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
-import top.potmot.entity.dto.ColumnTypeMeta
+import top.potmot.entity.dto.share.ColumnTypeMeta
 import java.sql.Types
 
 // https://www.postgresql.org/docs/current/datatype.html

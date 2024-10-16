@@ -18,7 +18,7 @@ import top.potmot.error.ConvertEntityException
 import top.potmot.entity.GenPropertyDraft
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenPropertyInput
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.utils.string.toPlural
 
 /**
@@ -30,7 +30,7 @@ import top.potmot.utils.string.toPlural
  */
 @Throws(ConvertEntityException::class, ColumnTypeException::class)
 fun convertAssociationProperties(
-    table: GenTableAssociationsView,
+    table: GenTableConvertView,
     basePropertyMap: Map<Long, GenPropertyInput>,
     typeMapping: TypeMapping,
 ): Map<Long, ConvertPropertyMeta> {

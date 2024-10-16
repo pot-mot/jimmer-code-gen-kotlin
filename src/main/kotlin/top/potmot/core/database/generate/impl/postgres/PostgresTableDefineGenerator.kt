@@ -1,13 +1,13 @@
 package top.potmot.core.database.generate.impl.postgres
 
 import top.potmot.core.database.generate.TableDefineGenerator
-import top.potmot.entity.dto.GenTableAssociationsView
+import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
 object PostgresTableDefineGenerator : TableDefineGenerator() {
     override fun stringify(
-        tables: Collection<GenTableAssociationsView>,
+        tables: Collection<GenTableGenerateView>,
     ): String =
         PostgresTableDefineBuilder.let { builder ->
             buildString {

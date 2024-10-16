@@ -3,14 +3,3 @@ GenColumnView {
     id(table)
     id(enum)
 }
-
-
-ColumnTypeMeta {
-    typeCode
-    overwriteByRaw
-    rawType
-    typeNotNull
-    dataSize
-    numericPrecision
-    autoIncrement
-}
