@@ -41,7 +41,7 @@ abstract class ViewGenerator {
             "/components/${dir}/${form}.${getFileSuffix()}" to stringifyForm(entity),
             "/components/${dir}/${queryForm}.${getFileSuffix()}" to stringifyQueryForm(entity),
             "/pages/${dir}/${page}.${getFileSuffix()}" to stringifyPage(entity)
-        ) + entity.enums.flatMap { generateEnum(it) }
+        )
     }
 
     fun generateView(
@@ -50,4 +50,14 @@ abstract class ViewGenerator {
         entities
             .flatMap { generateView(it) }
             .distinct().sortedBy { it.first }
+
+    fun generateViewAndEnum(
+        entity: GenEntityPropertiesView,
+    ) =
+        generateView(entity) + entity.enums.flatMap { generateEnum(it) }
+
+    fun generateViewAndEnum(
+        entities: Collection<GenEntityPropertiesView>,
+    ) =
+        generateView(entities) + entities.flatMap { it.enums }.distinctBy { it.id }.flatMap { generateEnum(it) }
 }

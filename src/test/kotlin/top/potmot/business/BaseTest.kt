@@ -46,7 +46,7 @@ abstract class BaseTest {
 
         assertEquals(
             getViewResult(viewType).trim(),
-            viewType.getViewGenerator().generateView(entity).toString()
+            viewType.getViewGenerator().generateViewAndEnum(entity).toString()
         )
     }
 
