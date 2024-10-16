@@ -125,7 +125,7 @@ class GenerateService(
         context: GenConfig = getContextOrGlobal(),
         language: GenLanguage = context.language,
     ): List<Pair<String, String>> =
-        language.getEntityGenerator().generateEntityWithEnums(entities, withPath ?: false)
+        language.getEntityGenerator().generateEntity(entities, withPath ?: false)
 
     fun generateEnumsCode(
         enums: Collection<GenPropertyEnum>,

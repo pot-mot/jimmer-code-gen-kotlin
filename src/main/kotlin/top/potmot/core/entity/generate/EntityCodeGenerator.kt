@@ -1,6 +1,6 @@
 package top.potmot.core.entity.generate
 
-import top.potmot.core.entityExtension.filePath
+import top.potmot.core.utils.filePath
 import top.potmot.error.GenerateEntityException
 import top.potmot.entity.dto.GenEntityPropertiesView
 import top.potmot.entity.dto.GenPropertyEnum
@@ -25,19 +25,19 @@ abstract class EntityCodeGenerator {
     protected abstract fun stringify(enum: GenPropertyEnum): String
 
     @Throws(GenerateEntityException::class)
-    fun generateEntityWithEnums(
+    fun generateEntity(
         entity: GenEntityPropertiesView,
         withPath: Boolean = false
     ): Pair<String, String> =
         Pair(formatFileName(entity, withPath), stringify(entity))
 
     @Throws(GenerateEntityException::class)
-    fun generateEntityWithEnums(
+    fun generateEntity(
         entities: Collection<GenEntityPropertiesView>,
         withPath: Boolean = false
     ): List<Pair<String, String>> =
         entities
-            .map { generateEntityWithEnums(it, withPath) }
+            .map { generateEntity(it, withPath) }
             .distinct().sortedBy { it.first }
 
     fun generateEnum(

@@ -1,10 +1,10 @@
 package top.potmot.core.business.service.generate.impl.kotlin
 
 import top.potmot.core.business.service.generate.ServiceGenerator
-import top.potmot.core.entityExtension.dto
-import top.potmot.core.entityExtension.packages
-import top.potmot.core.entityExtension.permissionPrefix
-import top.potmot.core.entityExtension.requestPath
+import top.potmot.core.utils.dto
+import top.potmot.core.utils.packages
+import top.potmot.core.utils.permissionPrefix
+import top.potmot.core.utils.requestPath
 import top.potmot.entity.dto.GenEntityPropertiesView
 
 object KotlinServiceGenerator : ServiceGenerator() {

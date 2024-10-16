@@ -1,4 +1,4 @@
-package top.potmot.core.entityExtension
+package top.potmot.core.utils
 
 import top.potmot.entity.dto.GenEntityPropertiesView
 import top.potmot.entity.dto.GenPropertyEnum
@@ -12,8 +12,14 @@ val GenEntityPropertiesView.filePath
 val GenPropertyEnum.filePath
     get() = formatFilePath(packagePath)
 
+val GenPropertyEnum.constants
+    get() = "${name}_CONSTANTS"
+
 val GenEntityPropertiesView.idProperty
     get() = properties.first { it.idProperty }
+
+val GenEntityPropertiesView.enums
+    get() = properties.mapNotNull { it.enum }
 
 val GenEntityPropertiesView.noIdView
     get() = properties.count { it.idView } == 0 && properties.count { it.associationType != null } > 0
@@ -50,8 +56,9 @@ data class DtoNames(
 val GenEntityPropertiesView.dto
     get() = DtoNames(this)
 
-data class ComponentNames(
+data class EntityComponents(
     val entity: GenEntityPropertiesView,
+    val dir: String = entity.name.replaceFirstChar { it.lowercase() },
     val table: String = "${entity.name}Table",
     val form: String = "${entity.name}Form",
     val queryForm: String = "${entity.name}QueryForm",
@@ -59,4 +66,14 @@ data class ComponentNames(
 )
 
 val GenEntityPropertiesView.component
-    get() = ComponentNames(this)
+    get() = EntityComponents(this)
+
+data class EnumComponents(
+    val enum: GenPropertyEnum,
+    val dir: String = enum.name.replaceFirstChar { it.lowercase() },
+    val select: String = "${enum.name}Select",
+    val view: String = "${enum.name}View",
+)
+
+val GenPropertyEnum.component
+    get() = EnumComponents(this)

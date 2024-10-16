@@ -1,10 +1,13 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPuls
 
 import top.potmot.core.business.view.generate.ViewGenerator
-import top.potmot.core.entityExtension.component
-import top.potmot.core.entityExtension.dto
-import top.potmot.core.entityExtension.serviceName
+import top.potmot.core.utils.component
+import top.potmot.core.utils.constants
+import top.potmot.core.utils.dto
+import top.potmot.core.utils.enums
+import top.potmot.core.utils.serviceName
 import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenPropertyEnum
 
 object Vue3ElementPlusViewGenerator : ViewGenerator() {
     override fun getFileSuffix() = "vue"
@@ -55,7 +58,7 @@ const emits = defineEmits<{
 
         return """
 <script setup lang="ts">
-import type {${insertInput}, ${updateInput}} from "@/api/__generated/model/static";
+import type {${insertInput}, ${updateInput}} from "@/api/__generated/model/static"
 
 const formData = defineModel<${insertInput} | ${updateInput}>({
     required: true
@@ -93,16 +96,22 @@ const emits = defineEmits<{
     override fun stringifyQueryForm(entity: GenEntityPropertiesView): String {
         val spec = entity.dto.spec
 
-        val enums = entity.properties.mapNotNull { it.enum }
-        val enumConstants = enums.map { "${it.name}_CONSTANTS" }
+        val enums = entity.enums
+        val enumConstants = enums.map { it.constants }
 
         return """
 <script setup lang="ts">
-import type {${spec}, ${enums.joinToString(", ") { it.name }}} from "@/api/__generated/model/static";${
+import type {${spec}, ${enums.joinToString(", ") { it.name }}} from "@/api/__generated/model/static"${
     if (enumConstants.isNotEmpty()) {
-        "\nimport {${enumConstants.joinToString(", ")}} from \"@/api/__generated/model/static\";"
+        "\nimport {${enumConstants.joinToString(", ")}} from \"@/api/__generated/model/static\""
     } else {
         ""
+    }
+}
+${
+    enums.joinToString("\n") {
+        val (_, dir, select) = it.component
+        "import $select from \"@/components/$dir/$select\""
     }
 }
 
@@ -119,25 +128,17 @@ const emits = defineEmits<{
     <el-form>
         <el-row :gutter="20">
             ${
-                entity.properties.filter { !it.idProperty && it.associationType == null }.joinToString("\n") {
-                    if (it.enum != null) {
-                        """
+            entity.properties.filter { !it.idProperty && it.associationType == null }.joinToString("\n") {
+                if (it.enum != null) {
+                    """
             <el-col :span="8">
                 <el-form-item label="${it.comment}">
-                    <el-select
-                        placeholder="请选择${it.comment}"
-                        v-model="spec.${it.name}"
-                        clearable
-                        @change="emits('query')">
-                        <el-option 
-                            v-for="value in ${it.enum.name}_CONSTANTS" 
-                            :value="value"/>
-                    </el-select>
+                    <${it.enum.component.select} v-model="spec.${it.name}"/>
                 </el-form-item>
             </el-col>
                     """.trimEnd()
-                    } else {
-                        """
+                } else {
+                    """
             <el-col :span="8">
                 <el-form-item label="${it.comment}">
                     <el-input
@@ -148,9 +149,9 @@ const emits = defineEmits<{
                 </el-form-item>
             </el-col>
                     """.trimEnd()
-                    }
                 }
             }
+        }
     
             <el-button :icon="Search" type="primary" @click="emits('query')"/>
         </el-row>
@@ -160,11 +161,9 @@ const emits = defineEmits<{
     }
 
     override fun stringifyPage(entity: GenEntityPropertiesView): String {
-        val dir = entity.name.replaceFirstChar { it.lowercase() }
-
         val serviceName = entity.serviceName.replaceFirstChar { it.lowercase() }
 
-        val (_, table, form, queryForm) = entity.component
+        val (_, dir, table, form, queryForm) = entity.component
         val (_, listView, _, _, _, spec) = entity.dto
 
         return """
@@ -253,5 +252,54 @@ const handleDelete = async (ids: number[]) => {
     <$form />
 </template>
     """.trim()
+    }
+
+    override fun stringifyEnumSelect(enum: GenPropertyEnum): String {
+        val (_, dir, _, view) = enum.component
+
+        return """
+<script setup lang="ts">
+import {${enum.constants}} from "@/api/__generated/model/static"
+import type {${enum.name}} from "@/api/__generated/model/static"
+import $view from "@/components/$dir/$view"
+
+const data = defineModel<${enum.name}>({
+    required: true
+})
+</script>
+
+<template>
+    <el-select
+        placeholder="请选择${enum.comment}"
+        v-model="data"
+        clearable>
+        <el-option
+            v-for="value in ${enum.constants}" 
+            :value="value">
+            <$view :value="value"/>
+        </el-option>
+    </el-select>
+</template>
+        """.trim()
+    }
+
+    override fun stringifyEnumView(enum: GenPropertyEnum): String {
+        return """
+<script setup lang="ts">
+import type {${enum.name}} from "@/api/__generated/model/static"
+
+defineProps<{
+    value: ${enum.name}
+}>()
+</script>
+
+<template>
+${
+    enum.items.joinToString("\n") {
+    """    <el-text v-if="value === '${it.name}'">${it.comment}</el-text>"""
+    }
+}
+</template>
+        """.trim()
     }
 }

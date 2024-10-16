@@ -263,21 +263,21 @@ const val entityData = """
                         "id": 127,
                         "name": "MATCHED",
                         "mappedValue": "符合",
-                        "comment": "",
+                        "comment": "符合",
                         "remark": ""
                     },
                     {
                         "id": 128,
                         "name": "MISMATCHED",
                         "mappedValue": "不符合",
-                        "comment": "",
+                        "comment": "不符合",
                         "remark": ""
                     },
                     {
                         "id": 129,
                         "name": "PARTIAL_MATCHED",
                         "mappedValue": "部分符合",
-                        "comment": "",
+                        "comment": "部分符合",
                         "remark": ""
                     }
                 ]

@@ -1,7 +1,7 @@
 package top.potmot.core.business.dto.generate
 
-import top.potmot.core.entityExtension.dto
-import top.potmot.core.entityExtension.noIdView
+import top.potmot.core.utils.dto
+import top.potmot.core.utils.noIdView
 import top.potmot.entity.dto.GenEntityPropertiesView
 import top.potmot.enumeration.AssociationType
 import top.potmot.utils.string.toSingular

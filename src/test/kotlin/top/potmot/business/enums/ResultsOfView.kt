@@ -31,7 +31,7 @@ const emits = defineEmits<{
         </el-table-column>
     </el-table>
 </template>), (/components/conditionMatch/ConditionMatchForm.vue, <script setup lang="ts">
-import type {ConditionMatchInsertInput, ConditionMatchUpdateInput} from "@/api/__generated/model/static";
+import type {ConditionMatchInsertInput, ConditionMatchUpdateInput} from "@/api/__generated/model/static"
 
 const formData = defineModel<ConditionMatchInsertInput | ConditionMatchUpdateInput>({
     required: true
@@ -70,8 +70,9 @@ const emits = defineEmits<{
         </div>
     </el-form>
 </template>), (/components/conditionMatch/ConditionMatchQueryForm.vue, <script setup lang="ts">
-import type {ConditionMatchSpec, MatchStatus} from "@/api/__generated/model/static";
-import {MatchStatus_CONSTANTS} from "@/api/__generated/model/static";
+import type {ConditionMatchSpec, MatchStatus} from "@/api/__generated/model/static"
+import {MatchStatus_CONSTANTS} from "@/api/__generated/model/static"
+import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect"
 
 const spec = defineModel<ConditionMatchSpec>({
     required: true
@@ -88,15 +89,7 @@ const emits = defineEmits<{
             
             <el-col :span="8">
                 <el-form-item label="匹配状态">
-                    <el-select
-                        placeholder="请选择匹配状态"
-                        v-model="spec.status"
-                        clearable
-                        @change="emits('query')">
-                        <el-option 
-                            v-for="value in MatchStatus_CONSTANTS" 
-                            :value="value"/>
-                    </el-select>
+                    <MatchStatusSelect v-model="spec.status"/>
                 </el-form-item>
             </el-col>
 
@@ -206,5 +199,38 @@ const handleDelete = async (ids: number[]) => {
     </el-card>
     
     <ConditionMatchForm />
+</template>), (/components/matchStatus/MatchStatusSelect.vue, <script setup lang="ts">
+import {MatchStatus_CONSTANTS} from "@/api/__generated/model/static"
+import type {MatchStatus} from "@/api/__generated/model/static"
+import MatchStatusView from "@/components/matchStatus/MatchStatusView"
+
+const data = defineModel<MatchStatus>({
+    required: true
+})
+</script>
+
+<template>
+    <el-select
+        placeholder="请选择"
+        v-model="data"
+        clearable>
+        <el-option
+            v-for="value in MatchStatus_CONSTANTS" 
+            :value="value">
+            <MatchStatusView :value="value"/>
+        </el-option>
+    </el-select>
+</template>), (/components/matchStatus/MatchStatusView.vue, <script setup lang="ts">
+import type {MatchStatus} from "@/api/__generated/model/static"
+
+defineProps<{
+    value: MatchStatus
+}>()
+</script>
+
+<template>
+    <el-text v-if="value === 'MATCHED'">符合</el-text>
+    <el-text v-if="value === 'MISMATCHED'">不符合</el-text>
+    <el-text v-if="value === 'PARTIAL_MATCHED'">部分符合</el-text>
 </template>)]
 """

@@ -1,12 +1,12 @@
 package top.potmot.core.business.service.generate.impl.java
 
 import top.potmot.core.business.service.generate.ServiceGenerator
-import top.potmot.core.entityExtension.dto
-import top.potmot.core.entityExtension.idProperty
-import top.potmot.core.entityExtension.packages
-import top.potmot.core.entityExtension.permissionPrefix
-import top.potmot.core.entityExtension.requestPath
-import top.potmot.core.entityExtension.serviceName
+import top.potmot.core.utils.dto
+import top.potmot.core.utils.idProperty
+import top.potmot.core.utils.packages
+import top.potmot.core.utils.permissionPrefix
+import top.potmot.core.utils.requestPath
+import top.potmot.core.utils.serviceName
 import top.potmot.entity.dto.GenEntityPropertiesView
 
 object JavaServiceGenerator : ServiceGenerator() {
