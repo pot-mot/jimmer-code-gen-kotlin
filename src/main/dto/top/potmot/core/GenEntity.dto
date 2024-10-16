@@ -1,6 +1,9 @@
 export top.potmot.entity.GenEntity
 
-GenEntityPropertiesView {
+import top.potmot.entity.dto.share.GenerateEntity
+import top.potmot.entity.dto.share.GenerateEnum
+
+GenEntityGenerateView implements GenerateEntity {
     #allScalars
 
     table {
@@ -33,21 +36,51 @@ GenEntityPropertiesView {
             }
         }
 
-        enum {
+        enum implements GenerateEnum {
             id
             packagePath
             name
             comment
-            remark
-            enumType
+        }
+    }
+}
 
-            items {
+GenEntityBusinessView implements GenerateEntity {
+    #allScalars
+
+    table {
+        id
+        name
+        type
+    }
+
+    superEntities*
+
+    properties {
+        #allScalars
+        id(entity)
+
+        column {
+            id
+            name
+        }
+
+        typeTable {
+            id
+
+            entity {
                 id
                 name
-                mappedValue
                 comment
-                remark
+                packagePath
             }
+        }
+
+        enum implements GenerateEnum {
+            id
+            packagePath
+            name
+            comment
         }
     }
 }

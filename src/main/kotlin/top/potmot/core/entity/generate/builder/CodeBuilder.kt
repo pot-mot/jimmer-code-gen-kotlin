@@ -1,7 +1,7 @@
 package top.potmot.core.entity.generate.builder
 
 import top.potmot.core.entity.meta.judgeImportPathInDefaultPackage
-import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.utils.string.appendLines
 import top.potmot.utils.string.toBlockLines
 import kotlin.reflect.KClass
@@ -41,7 +41,7 @@ abstract class CodeBuilder {
     /**
      * 过滤不必要和不合理的 import
      */
-    open fun importItemsFilter(entity: GenEntityPropertiesView, importItems: List<String>): List<String> =
+    open fun importItemsFilter(entity: GenEntityGenerateView, importItems: List<String>): List<String> =
         importItems.filter { importItem ->
             // 非默认导入包下的 import
             !judgeImportPathInDefaultPackage(importItem)

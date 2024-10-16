@@ -7,11 +7,11 @@ import top.potmot.core.utils.packages
 import top.potmot.core.utils.permissionPrefix
 import top.potmot.core.utils.requestPath
 import top.potmot.core.utils.serviceName
-import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenEntityBusinessView
 
 object JavaServiceGenerator : ServiceGenerator() {
     override fun generateService(
-        entity: GenEntityPropertiesView,
+        entity: GenEntityBusinessView,
         withPath: Boolean
     ): Pair<String, String> {
         val serviceName = entity.serviceName

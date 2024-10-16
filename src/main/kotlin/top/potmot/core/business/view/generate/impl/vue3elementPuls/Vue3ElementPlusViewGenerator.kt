@@ -6,13 +6,13 @@ import top.potmot.core.utils.constants
 import top.potmot.core.utils.dto
 import top.potmot.core.utils.enums
 import top.potmot.core.utils.serviceName
-import top.potmot.entity.dto.GenEntityPropertiesView
-import top.potmot.entity.dto.GenPropertyEnum
+import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.entity.dto.GenEnumGenerateView
 
 object Vue3ElementPlusViewGenerator : ViewGenerator() {
     override fun getFileSuffix() = "vue"
 
-    override fun stringifyTable(entity: GenEntityPropertiesView): String {
+    override fun stringifyTable(entity: GenEntityBusinessView): String {
         val listView = entity.dto.listView
 
         return """
@@ -53,7 +53,7 @@ const emits = defineEmits<{
         """.trim()
     }
 
-    override fun stringifyForm(entity: GenEntityPropertiesView): String {
+    override fun stringifyForm(entity: GenEntityBusinessView): String {
         val (_, _, _, insertInput, updateInput) = entity.dto
 
         return """
@@ -93,7 +93,7 @@ const emits = defineEmits<{
         """.trim()
     }
 
-    override fun stringifyQueryForm(entity: GenEntityPropertiesView): String {
+    override fun stringifyQueryForm(entity: GenEntityBusinessView): String {
         val spec = entity.dto.spec
 
         val enums = entity.enums
@@ -160,7 +160,7 @@ const emits = defineEmits<{
         """.trim()
     }
 
-    override fun stringifyPage(entity: GenEntityPropertiesView): String {
+    override fun stringifyPage(entity: GenEntityBusinessView): String {
         val serviceName = entity.serviceName.replaceFirstChar { it.lowercase() }
 
         val (_, dir, table, form, queryForm) = entity.component
@@ -254,7 +254,7 @@ const handleDelete = async (ids: number[]) => {
     """.trim()
     }
 
-    override fun stringifyEnumSelect(enum: GenPropertyEnum): String {
+    override fun stringifyEnumSelect(enum: GenEnumGenerateView): String {
         val (_, dir, _, view) = enum.component
 
         return """
@@ -283,7 +283,7 @@ const data = defineModel<${enum.name}>({
         """.trim()
     }
 
-    override fun stringifyEnumView(enum: GenPropertyEnum): String {
+    override fun stringifyEnumView(enum: GenEnumGenerateView): String {
         return """
 <script setup lang="ts">
 import type {${enum.name}} from "@/api/__generated/model/static"

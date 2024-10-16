@@ -1,10 +1,10 @@
-package top.potmot.business.enums
+package top.potmot.business.single
 
 import top.potmot.business.BaseTest
 import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.ViewType
 
-class TestEnums : BaseTest() {
+class TestSingle : BaseTest() {
     override fun getTestEntityJson() = entityData
 
     override fun getDtoResult() = dtoResult

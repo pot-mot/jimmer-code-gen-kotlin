@@ -9,7 +9,7 @@ import top.potmot.core.business.dto.generate.DtoGenerator
 import top.potmot.core.business.service.generate.getServiceGenerator
 import top.potmot.core.business.view.generate.getViewGenerator
 import top.potmot.entity.GenEntity
-import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.ViewType
 import top.potmot.utils.json.commonObjectMapper
@@ -18,8 +18,8 @@ import top.potmot.utils.json.commonObjectMapper
 abstract class BaseTest {
     abstract fun getTestEntityJson(): String
 
-    private fun getTestEntity(): GenEntityPropertiesView =
-        GenEntityPropertiesView(
+    private fun getTestEntity(): GenEntityBusinessView =
+        GenEntityBusinessView(
             commonObjectMapper.readValue<GenEntity>(getTestEntityJson())
         )
 
@@ -46,7 +46,7 @@ abstract class BaseTest {
 
         assertEquals(
             getViewResult(viewType).trim(),
-            viewType.getViewGenerator().generateViewAndEnum(entity).toString()
+            viewType.getViewGenerator().generateView(entity).toString()
         )
     }
 

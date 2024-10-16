@@ -1,4 +1,4 @@
-package top.potmot.business.enums
+package top.potmot.business.single
 
 const val dtoResult = """
 (ConditionMatch.dto, export com.example.entity.ConditionMatch

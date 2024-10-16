@@ -28,8 +28,8 @@ import top.potmot.entity.GenTable
 import top.potmot.entity.by
 import top.potmot.entity.dto.GenConfig
 import top.potmot.entity.dto.GenConfigProperties
-import top.potmot.entity.dto.GenEntityPropertiesView
-import top.potmot.entity.dto.GenPropertyEnum
+import top.potmot.entity.dto.GenEntityGenerateView
+import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenTableAssociationsView
 import top.potmot.entity.id
 
@@ -120,7 +120,7 @@ class GenerateService(
 
     @Throws(GenerateEntityException::class)
     fun generateEntitiesCode(
-        entities: Collection<GenEntityPropertiesView>,
+        entities: Collection<GenEntityGenerateView>,
         withPath: Boolean?,
         context: GenConfig = getContextOrGlobal(),
         language: GenLanguage = context.language,
@@ -128,7 +128,7 @@ class GenerateService(
         language.getEntityGenerator().generateEntity(entities, withPath ?: false)
 
     fun generateEnumsCode(
-        enums: Collection<GenPropertyEnum>,
+        enums: Collection<GenEnumGenerateView>,
         withPath: Boolean?,
         context: GenConfig = getContextOrGlobal(),
         language: GenLanguage = context.language,
@@ -164,13 +164,13 @@ class GenerateService(
         if (ids.isEmpty()) emptyList()
         else createQuery(GenEntity::class) {
             where(table.id valueIn ids)
-            select(table.fetch(GenEntityPropertiesView::class))
+            select(table.fetch(GenEntityGenerateView::class))
         }.execute()
 
     private fun KSqlClient.getEnums(ids: List<Long>) =
         if (ids.isEmpty()) emptyList()
         else createQuery(GenEnum::class) {
             where(table.id valueIn ids)
-            select(table.fetch(GenPropertyEnum::class))
+            select(table.fetch(GenEnumGenerateView::class))
         }.execute()
 }

@@ -1,27 +1,26 @@
 package top.potmot.core.business.view.generate
 
 import top.potmot.core.utils.component
-import top.potmot.core.utils.enums
-import top.potmot.entity.dto.GenEntityPropertiesView
-import top.potmot.entity.dto.GenPropertyEnum
+import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.entity.dto.GenEnumGenerateView
 
 abstract class ViewGenerator {
     abstract fun getFileSuffix(): String
 
-    protected abstract fun stringifyTable(entity: GenEntityPropertiesView): String
+    protected abstract fun stringifyTable(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyForm(entity: GenEntityPropertiesView): String
+    protected abstract fun stringifyForm(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyQueryForm(entity: GenEntityPropertiesView): String
+    protected abstract fun stringifyQueryForm(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyPage(entity: GenEntityPropertiesView): String
+    protected abstract fun stringifyPage(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyEnumSelect(enum: GenPropertyEnum): String
+    protected abstract fun stringifyEnumSelect(enum: GenEnumGenerateView): String
 
-    protected abstract fun stringifyEnumView(enum: GenPropertyEnum): String
+    protected abstract fun stringifyEnumView(enum: GenEnumGenerateView): String
 
     fun generateEnum(
-        enum: GenPropertyEnum,
+        enum: GenEnumGenerateView,
     ): List<Pair<String, String>> {
         val (_, dir, select, view) = enum.component
 
@@ -32,7 +31,7 @@ abstract class ViewGenerator {
     }
 
     fun generateView(
-        entity: GenEntityPropertiesView,
+        entity: GenEntityBusinessView,
     ): List<Pair<String, String>> {
         val (_, dir, table, form, queryForm, page) = entity.component
 
@@ -45,19 +44,9 @@ abstract class ViewGenerator {
     }
 
     fun generateView(
-        entities: Collection<GenEntityPropertiesView>,
+        entities: Collection<GenEntityBusinessView>,
     ): List<Pair<String, String>> =
         entities
             .flatMap { generateView(it) }
             .distinct().sortedBy { it.first }
-
-    fun generateViewAndEnum(
-        entity: GenEntityPropertiesView,
-    ) =
-        generateView(entity) + entity.enums.flatMap { generateEnum(it) }
-
-    fun generateViewAndEnum(
-        entities: Collection<GenEntityPropertiesView>,
-    ) =
-        generateView(entities) + entities.flatMap { it.enums }.distinctBy { it.id }.flatMap { generateEnum(it) }
 }

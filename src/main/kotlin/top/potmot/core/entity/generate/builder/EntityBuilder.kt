@@ -21,7 +21,7 @@ import top.potmot.core.database.generate.identifier.IdentifierType
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
 import top.potmot.enumeration.TableType
-import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenPropertyView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
@@ -30,13 +30,13 @@ import java.util.*
 import kotlin.reflect.KClass
 
 abstract class EntityBuilder : CodeBuilder() {
-    abstract fun entityLine(entity: GenEntityPropertiesView): String
+    abstract fun entityLine(entity: GenEntityGenerateView): String
 
     abstract fun propertyLine(property: GenPropertyView): String
 
     fun String.quotationEscape(): String = replace("\"", "\\\"")
 
-    fun build(entity: GenEntityPropertiesView): String =
+    fun build(entity: GenEntityGenerateView): String =
         buildString {
             appendLine(packageLine(entity.packagePath))
 
@@ -59,7 +59,7 @@ abstract class EntityBuilder : CodeBuilder() {
             appendLine("}")
         }
 
-    open fun GenEntityPropertiesView.tableAnnotation(): String =
+    open fun GenEntityGenerateView.tableAnnotation(): String =
         buildString {
             val context = getContextOrGlobal()
             val identifiers = context.dataSourceType.getIdentifierProcessor()
@@ -92,7 +92,7 @@ abstract class EntityBuilder : CodeBuilder() {
         }
 
 
-    open fun blockComment(entity: GenEntityPropertiesView): String? =
+    open fun blockComment(entity: GenEntityGenerateView): String? =
         createBlockComment(
             entity.comment,
             entity.remark,
@@ -223,7 +223,7 @@ abstract class EntityBuilder : CodeBuilder() {
         return result
     }
 
-    open fun importClasses(entity: GenEntityPropertiesView): Set<KClass<*>> {
+    open fun importClasses(entity: GenEntityGenerateView): Set<KClass<*>> {
         val result = mutableSetOf<KClass<*>>()
 
         val context = getContextOrGlobal()
@@ -245,14 +245,14 @@ abstract class EntityBuilder : CodeBuilder() {
     open fun importItems(property: GenPropertyView): Set<String> =
         classesToLines(importClasses(property)) + property.fullType()
 
-    open fun importItems(entity: GenEntityPropertiesView): List<String> {
+    open fun importItems(entity: GenEntityGenerateView): List<String> {
         val imports = mutableListOf<String>()
         imports.addAll(classesToLines(importClasses(entity)))
         entity.properties.flatMapTo(imports) { importItems(it) }
         return imports.sorted().distinct().let { importItemsFilter(entity, it) }
     }
 
-    open fun annotationLines(entity: GenEntityPropertiesView): List<String> {
+    open fun annotationLines(entity: GenEntityGenerateView): List<String> {
         val list = mutableListOf<String>()
 
         val context = getContextOrGlobal()

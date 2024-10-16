@@ -1,4 +1,4 @@
-package top.potmot.business.enums
+package top.potmot.business.single
 
 const val kotlinResult = """
 (ConditionMatchService.kt, package com.example.service

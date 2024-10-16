@@ -1,4 +1,4 @@
-package top.potmot.business.enums
+package top.potmot.business.single
 
 const val entityData = """
 {
@@ -11,11 +11,7 @@ const val entityData = """
         "name": "condition_match",
         "type": "TABLE"
     },
-    "superEntities": [
-        {
-            "name": "BaseEntity"
-        }
-    ],
+    "superEntities": [],
     "name": "ConditionMatch",
     "comment": "条件匹配",
     "author": "potmot",
@@ -255,32 +251,7 @@ const val entityData = """
                 "id": 62,
                 "packagePath": "com.example.entity",
                 "name": "MatchStatus",
-                "comment": "",
-                "enumType": "NAME",
-                "remark": "",
-                "items": [
-                    {
-                        "id": 127,
-                        "name": "MATCHED",
-                        "mappedValue": "符合",
-                        "comment": "符合",
-                        "remark": ""
-                    },
-                    {
-                        "id": 128,
-                        "name": "MISMATCHED",
-                        "mappedValue": "不符合",
-                        "comment": "不符合",
-                        "remark": ""
-                    },
-                    {
-                        "id": 129,
-                        "name": "PARTIAL_MATCHED",
-                        "mappedValue": "部分符合",
-                        "comment": "部分符合",
-                        "remark": ""
-                    }
-                ]
+                "comment": ""
             }
         },
         {

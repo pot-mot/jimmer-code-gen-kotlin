@@ -9,7 +9,7 @@ import top.potmot.core.entity.generate.impl.java.JavaEntityCodeGenerator
 import top.potmot.core.entity.generate.impl.kotlin.KotlinEntityCodeGenerator
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
-import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenPropertyView
 import top.potmot.util.replaceSinceTimeComment
 import java.time.LocalDateTime
@@ -78,13 +78,13 @@ class EntityGenerateTest {
     )
 
 
-    private val baseTable = GenEntityPropertiesView.TargetOf_table(
+    private val baseTable = GenEntityGenerateView.TargetOf_table(
         id = 1,
         name = "table",
         type = TableType.TABLE
     )
 
-    private val baseEntity = GenEntityPropertiesView(
+    private val baseEntity = GenEntityGenerateView(
         id = 1,
         createdTime = LocalDateTime.now(),
         modifiedTime = LocalDateTime.now(),

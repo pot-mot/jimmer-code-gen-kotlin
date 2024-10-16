@@ -2,7 +2,7 @@ package top.potmot.core.entity.generate.impl.java
 
 import org.jetbrains.annotations.Nullable
 import top.potmot.core.entity.generate.builder.EntityBuilder
-import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenPropertyView
 import kotlin.reflect.KClass
 
@@ -11,7 +11,7 @@ object JavaEntityBuilder : EntityBuilder() {
 
     override fun importLine(item: String): String = "import ${item};"
 
-    override fun entityLine(entity: GenEntityPropertiesView): String =
+    override fun entityLine(entity: GenEntityGenerateView): String =
         buildString {
             append("public interface ${entity.name}")
 

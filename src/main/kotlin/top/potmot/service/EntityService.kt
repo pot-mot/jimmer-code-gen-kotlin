@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.enumeration.GenLanguage
 import top.potmot.entity.GenEntity
 import top.potmot.entity.dto.GenEntityCommonView
-import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.query.EntityQuery
 import top.potmot.entity.query.Query
 import top.potmot.entity.query.where
@@ -39,16 +39,16 @@ class EntityService(
      * 获取单个数据源
      */
     @GetMapping("/{id}")
-    fun get(@PathVariable id: Long): GenEntityPropertiesView? =
-        sqlClient.findById(GenEntityPropertiesView::class, id)
+    fun get(@PathVariable id: Long): GenEntityGenerateView? =
+        sqlClient.findById(GenEntityGenerateView::class, id)
 
     @GetMapping("/language")
     fun listLanguage(): List<GenLanguage> =
         GenLanguage.entries
 
     @PostMapping("/query")
-    fun query(@RequestBody query: EntityQuery): List<GenEntityPropertiesView> =
-        sqlClient.queryEntity(query, GenEntityPropertiesView::class)
+    fun query(@RequestBody query: EntityQuery): List<GenEntityGenerateView> =
+        sqlClient.queryEntity(query, GenEntityGenerateView::class)
 
     @DeleteMapping("/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =

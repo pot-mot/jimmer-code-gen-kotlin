@@ -2,8 +2,6 @@ package top.potmot.entity.dto
 
 typealias GenPropertyInput = GenEntityInput.TargetOf_properties
 
-typealias GenPropertyView = GenEntityPropertiesView.TargetOf_properties
+typealias GenPropertyView = GenEntityGenerateView.TargetOf_properties
 
-typealias GenPropertyEnum = GenEntityPropertiesView.TargetOf_properties.TargetOf_enum
-
-typealias GenPropertyEnumItem = GenEntityPropertiesView.TargetOf_properties.TargetOf_enum.TargetOf_items
+typealias GenEnumItemGenerateView = GenEnumGenerateView.TargetOf_items

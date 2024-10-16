@@ -1,0 +1,20 @@
+export top.potmot.entity.GenEnum
+
+import top.potmot.entity.dto.share.GenerateEnum
+
+GenEnumGenerateView implements GenerateEnum {
+    id
+    packagePath
+    name
+    comment
+    remark
+    enumType
+
+    items {
+        id
+        name
+        mappedValue
+        comment
+        remark
+    }
+}

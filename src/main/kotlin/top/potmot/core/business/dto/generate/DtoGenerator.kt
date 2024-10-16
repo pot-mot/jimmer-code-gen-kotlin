@@ -2,17 +2,17 @@ package top.potmot.core.business.dto.generate
 
 import top.potmot.core.utils.dto
 import top.potmot.core.utils.noIdView
-import top.potmot.entity.dto.GenEntityPropertiesView
+import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.enumeration.AssociationType
 import top.potmot.utils.string.toSingular
 
 object DtoGenerator {
     private fun formatFileName(
-        entity: GenEntityPropertiesView,
+        entity: GenEntityBusinessView,
     ): String =
         "${entity.name}.dto"
 
-    private fun GenEntityPropertiesView.propertyIds(): List<String> =
+    private fun GenEntityBusinessView.propertyIds(): List<String> =
         if (noIdView) {
             properties
                 .filter { it.associationType != null }
@@ -23,7 +23,7 @@ object DtoGenerator {
                 .map { it.name }
         }
 
-    private fun GenEntityPropertiesView.propertyIdsTargetOne(): List<String> =
+    private fun GenEntityBusinessView.propertyIdsTargetOne(): List<String> =
         if (noIdView) {
             properties
                 .filter { it.associationType == AssociationType.ONE_TO_ONE || it.associationType == AssociationType.MANY_TO_ONE }
@@ -36,7 +36,7 @@ object DtoGenerator {
         }
 
 
-    private fun generateListView(entity: GenEntityPropertiesView) = buildString {
+    private fun generateListView(entity: GenEntityBusinessView) = buildString {
         appendLine("${entity.dto.listView} {")
         appendLine("    #allScalars")
         entity.propertyIdsTargetOne().forEach {
@@ -45,7 +45,7 @@ object DtoGenerator {
         appendLine("}")
     }
 
-    private fun generateDetailView(entity: GenEntityPropertiesView) = buildString {
+    private fun generateDetailView(entity: GenEntityBusinessView) = buildString {
         appendLine("${entity.dto.detailView} {")
         appendLine("    #allScalars")
         entity.propertyIds().forEach {
@@ -54,7 +54,7 @@ object DtoGenerator {
         appendLine("}")
     }
 
-    private fun generateInsertInput(entity: GenEntityPropertiesView) = buildString {
+    private fun generateInsertInput(entity: GenEntityBusinessView) = buildString {
             val idProperty = entity.properties.first { it.idProperty }
             val idName = idProperty.name
 
@@ -67,7 +67,7 @@ object DtoGenerator {
             appendLine("}")
         }
 
-    private fun generateUpdateInput(entity: GenEntityPropertiesView) = buildString {
+    private fun generateUpdateInput(entity: GenEntityBusinessView) = buildString {
         val idProperty = entity.properties.first { it.idProperty }
         val idName = idProperty.name
 
@@ -80,7 +80,7 @@ object DtoGenerator {
         appendLine("}")
     }
 
-    private fun generateSpec(entity: GenEntityPropertiesView) = buildString {
+    private fun generateSpec(entity: GenEntityBusinessView) = buildString {
         appendLine("specification ${entity.dto.spec} {")
 
         entity.properties.forEach {
@@ -107,7 +107,7 @@ object DtoGenerator {
         appendLine("}")
     }
 
-    private fun stringify(entity: GenEntityPropertiesView): String {
+    private fun stringify(entity: GenEntityBusinessView): String {
         return """
 export ${entity.packagePath}.${entity.name}
 
@@ -120,12 +120,12 @@ ${generateSpec(entity)}
     }
 
     fun generateDto(
-        entity: GenEntityPropertiesView,
+        entity: GenEntityBusinessView,
     ): Pair<String, String> =
         Pair(formatFileName(entity), stringify(entity))
 
     fun generateDto(
-        entities: Collection<GenEntityPropertiesView>,
+        entities: Collection<GenEntityBusinessView>,
     ): List<Pair<String, String>> =
         entities
             .map { generateDto(it) }
