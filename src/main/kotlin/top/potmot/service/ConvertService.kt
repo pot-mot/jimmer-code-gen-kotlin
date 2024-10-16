@@ -4,7 +4,6 @@ import org.babyfish.jimmer.kt.merge
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
-import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.PostMapping
@@ -18,7 +17,6 @@ import top.potmot.entity.GenEntity
 import top.potmot.entity.GenModel
 import top.potmot.entity.GenTable
 import top.potmot.entity.GenTypeMapping
-import top.potmot.entity.by
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
@@ -62,15 +60,15 @@ class ConvertService(
                 }
 
                 tableEntityPairs.forEach { (table, entity) ->
-                    table.superTables?.map { it.id }?.let { superTableIds ->
-                        val superEntityIds = sqlClient.getEntityIds(superTableIds)
+                    val superTableIds = table.superTableIds
 
-                        if (superTableIds.size != superEntityIds.size)
-                            throw ConvertEntityException.superTable("SuperTableIds [${superTableIds}] can't match superEntityIds [${superEntityIds}]")
+                    val superEntityIds = sqlClient.getEntityIds(superTableIds)
 
-                        sqlClient.getAssociations(GenEntity::superEntities)
-                            .saveAll(listOf(entity.id), superEntityIds)
-                    }
+                    if (superTableIds.size != superEntityIds.size)
+                        throw ConvertEntityException.superTable("SuperTableIds [${superTableIds}] can't match superEntityIds [${superEntityIds}]")
+
+                    sqlClient.getAssociations(GenEntity::superEntities)
+                        .saveAll(listOf(entity.id), superEntityIds)
                 }
             }
         }
@@ -110,15 +108,8 @@ class ConvertService(
         if (ids.isEmpty()) emptyList()
         else createQuery(GenTable::class) {
             where(table.id valueIn ids)
-            select(table.fetch(oneDepthSuperTableFetcher))
-        }.execute().map {
-            GenTableConvertView(it)
-        }
-
-    private val oneDepthSuperTableFetcher =
-        newFetcher(GenTable::class).by(GenTableConvertView.METADATA.fetcher) {
-            `superTables*` { depth(1) }
-        }
+            select(table.fetch(GenTableConvertView::class))
+        }.execute()
 
     private fun KSqlClient.getEntityIds(tableIds: List<Long>): List<Long> =
         if (tableIds.isEmpty()) emptyList()

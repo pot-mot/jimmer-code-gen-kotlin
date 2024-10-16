@@ -112,29 +112,14 @@ GenTableGenerateView implements ReferenceTable {
     }
 }
 
-GenTableConvertView implements ReferenceTable {
+GenTableConvertView {
     #allScalars
-    logicalDelete
-
-    id(entity)
-
-    pkColumns implements ReferenceTablePkColumn {
-        id
-        typeCode
-    }
+    superTableIds
 
     columns implements ColumnTypeMeta {
         #allScalars
         id(table)
         id(enum)
-    }
-
-    indexes {
-        id
-        id(table)
-        name
-        uniqueIndex
-        columnIds
     }
 
     inAssociations {
@@ -199,21 +184,5 @@ GenTableConvertView implements ReferenceTable {
                 logicalDelete
             }
         }
-    }
-
-    superTables*
-    inheritTables implements ReferenceTable {
-        id
-        name
-        comment
-        type
-        logicalDelete
-
-        pkColumns implements ReferenceTablePkColumn {
-            id
-            typeCode
-        }
-
-        inheritTables*
     }
 }
