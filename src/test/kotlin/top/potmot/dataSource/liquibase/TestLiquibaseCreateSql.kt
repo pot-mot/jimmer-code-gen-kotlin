@@ -11,7 +11,7 @@ import top.potmot.dataSource.h2DataSource
 import top.potmot.dataSource.mysqlDataSource
 import top.potmot.dataSource.postgresDataSource
 import top.potmot.enumeration.TableType
-import top.potmot.entity.dto.GenTableModelInput
+import top.potmot.entity.dto.GenTableLiquibaseView
 import top.potmot.entity.extension.execute
 import top.potmot.utils.liquibase.createSql
 import java.sql.Types
@@ -143,7 +143,7 @@ COMMENT ON COLUMN "table"."Another Name" IS 'Another comment';
         assertEquals(0, deleteResults.filter { !it.success }.size)
     }
 
-    private val column1 = GenTableModelInput.TargetOf_columns(
+    private val column1 = GenTableLiquibaseView.TargetOf_columns(
         remark = "remark",
         orderKey = 2,
         name = "Name",
@@ -161,7 +161,7 @@ COMMENT ON COLUMN "table"."Another Name" IS 'Another comment';
         logicalDelete = false,
     )
 
-    private val column2 = GenTableModelInput.TargetOf_columns(
+    private val column2 = GenTableLiquibaseView.TargetOf_columns(
         remark = "Another remark",
         orderKey = 3,
         name = "Another Name",
@@ -179,7 +179,7 @@ COMMENT ON COLUMN "table"."Another Name" IS 'Another comment';
         logicalDelete = false,
     )
 
-    private val table = GenTableModelInput(
+    private val table = GenTableLiquibaseView(
         remark = "",
         name = "table",
         comment = "comment",

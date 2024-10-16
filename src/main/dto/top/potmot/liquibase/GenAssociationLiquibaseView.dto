@@ -1,0 +1,29 @@
+export top.potmot.entity.GenAssociation
+
+import top.potmot.entity.dto.share.ColumnTypeMeta
+
+GenAssociationLiquibaseView {
+    #allScalars(this)
+    -id
+
+    sourceTable {
+        #allScalars(this)
+        -id
+    }
+    targetTable {
+        #allScalars(this)
+        -id
+    }
+
+    columnReferences {
+        sourceColumn implements ColumnTypeMeta {
+            #allScalars(this)
+            -id
+        }
+
+        targetColumn implements ColumnTypeMeta {
+            #allScalars(this)
+            -id
+        }
+    }
+}

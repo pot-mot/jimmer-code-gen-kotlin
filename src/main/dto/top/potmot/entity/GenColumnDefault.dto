@@ -3,5 +3,5 @@ GenColumnDefaultView {
 }
 
 input GenColumnDefaultInput {
-    #allScalars(GenColumnDefault)
+    #allScalars(this)
 }

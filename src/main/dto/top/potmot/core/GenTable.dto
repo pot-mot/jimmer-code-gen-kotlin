@@ -10,8 +10,6 @@ GenTableGenerateView implements ReferenceTable {
     #allScalars
     logicalDelete
 
-    id(entity)
-
     pkColumns implements ReferenceTablePkColumn {
         id
         typeCode
@@ -19,13 +17,11 @@ GenTableGenerateView implements ReferenceTable {
 
     columns implements ColumnTypeMeta {
         #allScalars
-        id(table)
         id(enum)
     }
 
     indexes {
         id
-        id(table)
         name
         uniqueIndex
         columnIds
@@ -118,7 +114,6 @@ GenTableConvertView {
 
     columns implements ColumnTypeMeta {
         #allScalars
-        id(table)
         id(enum)
     }
 

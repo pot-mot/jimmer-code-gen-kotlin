@@ -4,14 +4,14 @@ GenEntityCommonView {
 }
 
 input GenEntityInput {
-    #allScalars(GenEntity)
+    #allScalars(this)
     -id
     id(model)
     id(table)
     id(superEntities) as superEntityIds
 
     properties {
-        #allScalars(GenProperty)
+        #allScalars(this)
         -id
         id(column)
         id(typeTable)

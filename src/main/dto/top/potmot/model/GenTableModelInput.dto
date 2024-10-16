@@ -1,0 +1,29 @@
+export top.potmot.entity.GenTable
+
+import top.potmot.entity.dto.share.ColumnTypeMeta
+
+input GenTableModelInput {
+    #allScalars(this)
+    -id
+    id(model)
+
+    superTables {
+        name
+    }
+
+    columns implements ColumnTypeMeta {
+        #allScalars(this)
+        -id
+        enum {
+            name
+        }
+    }
+
+    indexes {
+        #allScalars(this)
+        -id
+        columns {
+            name
+        }
+    }
+}

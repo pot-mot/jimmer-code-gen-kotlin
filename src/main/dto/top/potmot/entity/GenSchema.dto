@@ -4,13 +4,13 @@ GenSchemaView {
 }
 
 GenSchemaPreview {
-    #allScalars(GenSchema)
+    #allScalars(this)
     -id
     id(dataSource)
 }
 
 input GenSchemaInput {
-    #allScalars(GenSchema)
+    #allScalars(this)
     -id
-    dataSourceId
+    id(dataSource)
 }
