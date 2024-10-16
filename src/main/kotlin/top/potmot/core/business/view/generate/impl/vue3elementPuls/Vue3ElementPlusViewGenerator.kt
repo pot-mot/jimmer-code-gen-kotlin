@@ -1,11 +1,11 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPuls
 
 import top.potmot.core.business.view.generate.ViewGenerator
-import top.potmot.core.utils.component
-import top.potmot.core.utils.constants
-import top.potmot.core.utils.dto
-import top.potmot.core.utils.enums
-import top.potmot.core.utils.serviceName
+import top.potmot.core.business.utils.component
+import top.potmot.core.business.utils.constants
+import top.potmot.core.business.utils.dto
+import top.potmot.core.business.utils.enums
+import top.potmot.core.business.utils.serviceName
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
 

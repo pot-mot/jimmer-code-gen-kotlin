@@ -1,6 +1,6 @@
 package top.potmot.core.business.view.generate
 
-import top.potmot.core.utils.component
+import top.potmot.core.business.utils.component
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
 

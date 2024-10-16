@@ -1,15 +1,8 @@
-package top.potmot.core.utils
+package top.potmot.core.business.utils
 
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
-import top.potmot.entity.dto.share.GenerateItem
-
-private fun formatFilePath(packagePath: String): String =
-    packagePath.replace(".", "/") + "/"
-
-val GenerateItem.filePath
-    get() = formatFilePath(packagePath)
 
 val GenerateEnum.constants
     get() = "${name}_CONSTANTS"
