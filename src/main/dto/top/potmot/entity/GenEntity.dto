@@ -1,6 +1,15 @@
-GenEntityCommonView {
+GenEntityDetailView {
     #allScalars
+    id(model)
     id(table)
+    id(superEntities) as superEntityIds
+
+    properties {
+        #allScalars
+        id(column)
+        id(typeTable)
+        id(enum)
+    }
 }
 
 input GenEntityInput {

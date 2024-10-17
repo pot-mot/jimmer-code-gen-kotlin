@@ -3,8 +3,6 @@ package top.potmot.service
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.support.TransactionTemplate
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -13,8 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.enumeration.GenLanguage
 import top.potmot.entity.GenEntity
-import top.potmot.entity.dto.GenEntityCommonView
-import top.potmot.entity.dto.GenEntityGenerateView
+import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.query.EntityQuery
 import top.potmot.entity.query.Query
 import top.potmot.entity.query.where
@@ -24,37 +21,21 @@ import kotlin.reflect.KClass
 @RequestMapping("/entity")
 class EntityService(
     @Autowired val sqlClient: KSqlClient,
-    @Autowired val transactionTemplate: TransactionTemplate
 ) {
-    /**
-     * 列出所有数据源
-     */
-    @GetMapping
-    fun list(): List<GenEntityCommonView> =
-        sqlClient.createQuery(GenEntity::class) {
-            select(table.fetch(GenEntityCommonView::class))
-        }.execute()
-
     /**
      * 获取单个数据源
      */
     @GetMapping("/{id}")
-    fun get(@PathVariable id: Long): GenEntityGenerateView? =
-        sqlClient.findById(GenEntityGenerateView::class, id)
+    fun get(@PathVariable id: Long): GenEntityDetailView? =
+        sqlClient.findById(GenEntityDetailView::class, id)
 
     @GetMapping("/language")
     fun listLanguage(): List<GenLanguage> =
         GenLanguage.entries
 
     @PostMapping("/query")
-    fun query(@RequestBody query: EntityQuery): List<GenEntityGenerateView> =
-        sqlClient.queryEntity(query, GenEntityGenerateView::class)
-
-    @DeleteMapping("/{ids}")
-    fun delete(@PathVariable ids: List<Long>): Int =
-        transactionTemplate.execute {
-            sqlClient.deleteByIds(GenEntity::class, ids).affectedRowCount(GenEntity::class)
-        }!!
+    fun query(@RequestBody query: EntityQuery): List<GenEntityDetailView> =
+        sqlClient.queryEntity(query, GenEntityDetailView::class)
 
     private fun <T : View<GenEntity>> KSqlClient.queryEntity(query: Query<GenEntity>, viewClass: KClass<T>): List<T> =
         createQuery(GenEntity::class) {
