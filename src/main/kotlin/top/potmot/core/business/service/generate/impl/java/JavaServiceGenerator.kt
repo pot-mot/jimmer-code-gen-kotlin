@@ -33,6 +33,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.babyfish.jimmer.View;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.sql.kt.KSqlClient;
+import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -134,7 +135,7 @@ class $serviceName implements Tables {
     @SaCheckPermission("${entity.permissionPrefix}:update")
     @Transactional
     public $idType update(@RequestBody @NotNull $updateInput input) throws AuthorizeException {
-        return sqlClient.update(input).modifiedEntity.${idName};
+        return sqlClient.update(input, AssociatedSaveMode.REPLACE).modifiedEntity.${idName};
     }
 
     /**
