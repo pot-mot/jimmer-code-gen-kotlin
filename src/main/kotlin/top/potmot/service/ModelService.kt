@@ -1,6 +1,5 @@
 package top.potmot.service
 
-import org.babyfish.jimmer.kt.new
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
@@ -22,7 +21,6 @@ import top.potmot.core.model.load.toInputs
 import top.potmot.entity.GenModel
 import top.potmot.entity.GenTable
 import top.potmot.entity.GenTableIndex
-import top.potmot.entity.by
 import top.potmot.entity.createdTime
 import top.potmot.entity.dto.GenModelInput
 import top.potmot.entity.dto.GenModelSimpleView
@@ -117,11 +115,7 @@ class ModelService(
 
                 // 保存 associations
                 val associationInputs = associationModelInputs.map { it.toInput(savedTables) }
-                val modelWithAssociations = new(GenModel::class).by {
-                    this.id = savedModel.id
-                    this.associations = associationInputs.map { it.toEntity() }
-                }
-                sqlClient.update(modelWithAssociations).modifiedEntity
+                sqlClient.entities.saveEntities(associationInputs.map { it.toEntity { modelId = savedModel.id } })
             }
 
             savedModel.id
