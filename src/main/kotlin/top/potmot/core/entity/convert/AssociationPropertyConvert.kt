@@ -20,8 +20,8 @@ import top.potmot.entity.copy
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.utils.string.clearTableComment
-import top.potmot.utils.string.tableToEntityName
-import top.potmot.utils.string.tableToPropertyName
+import top.potmot.utils.string.tableNameToEntityName
+import top.potmot.utils.string.tableNameToPropertyName
 import top.potmot.utils.string.toPlural
 
 /**
@@ -92,7 +92,7 @@ fun convertAssociationProperties(
 
         val singularName =
             if (sourceProperty.idProperty)
-                tableToPropertyName(targetTable.name)
+                tableNameToPropertyName(targetTable.name)
             else
                 sourceProperty.name.removeLastId()
 
@@ -100,7 +100,7 @@ fun convertAssociationProperties(
         val associationProperty = sourceProperty.toEntity().copy {
             name = singularName
             comment = targetTable.comment.clearTableComment()
-            type = tableToEntityName(targetTable.name)
+            type = tableNameToEntityName(targetTable.name)
             typeTableId = targetTable.id
             idProperty = false
             idGenerationAnnotation = null
@@ -184,7 +184,7 @@ fun convertAssociationProperties(
 
         val singularName =
             if (targetProperty.idProperty)
-                tableToPropertyName(sourceTable.name)
+                tableNameToPropertyName(sourceTable.name)
             else
                 targetProperty.name.removeLastId()
 
@@ -192,7 +192,7 @@ fun convertAssociationProperties(
         val associationProperty = targetProperty.toEntity().copy {
             name = singularName
             comment = sourceTable.comment.clearTableComment()
-            type = tableToEntityName(sourceTable.name)
+            type = tableNameToEntityName(sourceTable.name)
             typeTableId = sourceTable.id
             idProperty = false
             idGenerationAnnotation = null
@@ -200,9 +200,9 @@ fun convertAssociationProperties(
 
             val mappedBy =
                 (if (sourceColumn.partOfPk)
-                    tableToPropertyName(targetTable.name)
+                    tableNameToPropertyName(targetTable.name)
                 else
-                    tableToPropertyName(sourceColumn.name).removeLastId())
+                    tableNameToPropertyName(sourceColumn.name).removeLastId())
                     .let {
                         if (association.type == MANY_TO_MANY) it.toPlural() else it
                     }

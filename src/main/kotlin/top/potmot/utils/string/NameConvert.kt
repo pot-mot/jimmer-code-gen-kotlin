@@ -70,13 +70,13 @@ fun String.clearTableComment(): String =
     this.removePrefixes(getContextOrGlobal().tableCommentPrefixes.splitTrim())
         .removeSuffixes(getContextOrGlobal().tableCommentSuffixes.splitTrim())
 
-fun tableToEntityName(tableName: String): String =
+fun tableNameToEntityName(tableName: String): String =
     snakeToUpperCamel(tableName.trimToLetterOrDigit().clearTableName())
 
-fun tableToPropertyName(tableName: String): String =
+fun tableNameToPropertyName(tableName: String): String =
     snakeToLowerCamel(tableName.trimToLetterOrDigit().clearTableName())
 
-fun entityToTableName(entityName: String): String =
+fun entityNameToTableName(entityName: String): String =
     camelToUpperSnake(entityName)
 
 /**
