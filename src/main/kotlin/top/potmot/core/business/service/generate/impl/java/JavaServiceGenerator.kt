@@ -8,6 +8,7 @@ import top.potmot.core.business.utils.permissionPrefix
 import top.potmot.core.business.utils.requestPath
 import top.potmot.core.business.utils.serviceName
 import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.utils.string.entityToTableName
 
 object JavaServiceGenerator : ServiceGenerator() {
     override fun generateService(
@@ -20,7 +21,7 @@ object JavaServiceGenerator : ServiceGenerator() {
         val (_, servicePackage,  _, exceptionPackage, dtoPackage) = entity.packages
         val (_, listView, detailView, insertInput, updateInput, spec) = entity.dto
 
-        val table = entity.table.name.uppercase() + "_TABLE"
+        val table = entityToTableName(entity.name) + "_TABLE"
 
         val idProperty = entity.idProperty
         val idName = idProperty.name

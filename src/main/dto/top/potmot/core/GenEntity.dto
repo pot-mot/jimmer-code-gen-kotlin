@@ -47,34 +47,15 @@ GenEntityGenerateView implements GenerateEntity {
 
 GenEntityBusinessView implements GenerateEntity {
     #allScalars
-
-    table {
-        id
-        name
-        type
-    }
+    id(table)
 
     superEntities*
 
     properties {
         #allScalars
         id(entity)
-
-        column {
-            id
-            name
-        }
-
-        typeTable {
-            id
-
-            entity {
-                id
-                name
-                comment
-                packagePath
-            }
-        }
+        id(column)
+        id(typeTable)
 
         enum implements GenerateEnum {
             id

@@ -4,6 +4,8 @@ import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
+import top.potmot.utils.string.clearColumnComment
+import top.potmot.utils.string.snakeToLowerCamel
 
 /**
  * 转换基本属性

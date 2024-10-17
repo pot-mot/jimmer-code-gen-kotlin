@@ -19,6 +19,9 @@ import top.potmot.entity.GenPropertyDraft
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
+import top.potmot.utils.string.clearTableComment
+import top.potmot.utils.string.tableToEntityName
+import top.potmot.utils.string.tableToPropertyName
 import top.potmot.utils.string.toPlural
 
 /**
@@ -89,7 +92,7 @@ fun convertAssociationProperties(
 
         val singularName =
             if (sourceProperty.idProperty)
-                snakeToLowerCamel(targetTable.name)
+                tableToPropertyName(targetTable.name)
             else
                 sourceProperty.name.removeLastId()
 
@@ -97,7 +100,7 @@ fun convertAssociationProperties(
         val associationProperty = sourceProperty.toEntity().copy {
             name = singularName
             comment = targetTable.comment.clearTableComment()
-            type = snakeToUpperCamel(targetTable.name)
+            type = tableToEntityName(targetTable.name)
             typeTableId = targetTable.id
             idProperty = false
             idGenerationAnnotation = null
@@ -181,7 +184,7 @@ fun convertAssociationProperties(
 
         val singularName =
             if (targetProperty.idProperty)
-                snakeToLowerCamel(sourceTable.name)
+                tableToPropertyName(sourceTable.name)
             else
                 targetProperty.name.removeLastId()
 
@@ -189,7 +192,7 @@ fun convertAssociationProperties(
         val associationProperty = targetProperty.toEntity().copy {
             name = singularName
             comment = sourceTable.comment.clearTableComment()
-            type = snakeToUpperCamel(sourceTable.name)
+            type = tableToEntityName(sourceTable.name)
             typeTableId = sourceTable.id
             idProperty = false
             idGenerationAnnotation = null
@@ -197,9 +200,9 @@ fun convertAssociationProperties(
 
             val mappedBy =
                 (if (sourceColumn.partOfPk)
-                    snakeToLowerCamel(targetTable.name)
+                    tableToPropertyName(targetTable.name)
                 else
-                    snakeToLowerCamel(sourceColumn.name).removeLastId())
+                    tableToPropertyName(sourceColumn.name).removeLastId())
                     .let {
                         if (association.type == MANY_TO_MANY) it.toPlural() else it
                     }

@@ -7,6 +7,8 @@ import top.potmot.entity.dto.share.ColumnTypeMeta
 import top.potmot.entity.dto.GenEntityInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
+import top.potmot.utils.string.clearTableComment
+import top.potmot.utils.string.tableToEntityName
 
 typealias TypeMapping = (column: ColumnTypeMeta) -> String
 
@@ -71,7 +73,7 @@ private fun tableToEntity(
         tableId = genTable.id,
         modelId = modelId,
         author = context.author,
-        name = snakeToUpperCamel(genTable.name),
+        name = tableToEntityName(genTable.name),
         comment = genTable.comment.clearTableComment(),
         remark = genTable.remark,
         packagePath = context.packagePath,

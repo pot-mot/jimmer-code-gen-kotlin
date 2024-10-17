@@ -1,8 +1,8 @@
 package top.potmot.core.database.meta
 
-import top.potmot.core.entity.convert.clearColumnName
-import top.potmot.core.entity.convert.clearTableComment
-import top.potmot.core.entity.convert.clearTableName
+import top.potmot.utils.string.clearColumnName
+import top.potmot.utils.string.clearTableComment
+import top.potmot.utils.string.clearTableName
 import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.dto.share.ColumnTypeMeta
 import java.time.LocalDateTime
