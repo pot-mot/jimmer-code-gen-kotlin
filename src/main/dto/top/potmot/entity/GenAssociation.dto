@@ -40,13 +40,13 @@ GenAssociationView {
 }
 
 input GenAssociationInput {
-    #allScalars(GenAssociation)
+    #allScalars(this)
 
     id(sourceTable)
     id(targetTable)
 
     columnReferences {
-        #allScalars(GenColumnReference)
+        #allScalars(this)
         id(sourceColumn)
         id(targetColumn)
     }

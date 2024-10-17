@@ -23,5 +23,5 @@ GenDataSourceSchemasView {
 }
 
 input GenDataSourceInput {
-    #allScalars(GenDataSource)
+    #allScalars(this)
 }

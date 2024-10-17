@@ -3,5 +3,5 @@ GenTypeMappingView {
 }
 
 input GenTypeMappingInput {
-    #allScalars(GenTypeMapping)
+    #allScalars(this)
 }

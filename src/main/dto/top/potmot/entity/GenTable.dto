@@ -28,14 +28,14 @@ GenTableColumnsView {
 }
 
 input GenTableInput {
-    #allScalars(GenTable)
+    #allScalars(this)
     -id
     id(model)
     id(schema)
     id(superTables) as superTableIds
 
     columns {
-        #allScalars(GenColumn)
+        #allScalars(this)
         -id
         id(enum)
     }

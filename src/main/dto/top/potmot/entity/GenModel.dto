@@ -7,27 +7,27 @@ GenModelView {
     #allScalars
 
     enums {
-        #allScalars(GenEnum)
+        #allScalars(this)
         -id
         id(model)
 
         items {
-            #allScalars(GenEnumItem)
+            #allScalars(this)
             -id
         }
     }
 }
 
 input GenModelInput {
-    #allScalars(GenModel)
+    #allScalars(this)
 
     enums {
-        #allScalars(GenEnum)
+        #allScalars(this)
         -id
         id(model)
 
         items {
-            #allScalars(GenEnumItem)
+            #allScalars(this)
             -id
         }
     }

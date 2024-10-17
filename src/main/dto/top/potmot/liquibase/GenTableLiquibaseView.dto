@@ -2,25 +2,17 @@ export top.potmot.entity.GenTable
 
 import top.potmot.entity.dto.share.ColumnTypeMeta
 
-input GenTableModelInput {
-    #allScalars(GenTable)
+GenTableLiquibaseView {
+    #allScalars(this)
     -id
-    id(model)
-
-    superTables {
-        name
-    }
 
     columns implements ColumnTypeMeta {
-        #allScalars(GenColumn)
+        #allScalars(this)
         -id
-        enum {
-            name
-        }
     }
 
     indexes {
-        #allScalars(GenTableIndex)
+        #allScalars(this)
         -id
         columns {
             name

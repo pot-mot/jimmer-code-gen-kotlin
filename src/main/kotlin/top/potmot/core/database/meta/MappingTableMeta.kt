@@ -3,7 +3,6 @@ package top.potmot.core.database.meta
 import top.potmot.core.entity.convert.clearColumnName
 import top.potmot.core.entity.convert.clearTableComment
 import top.potmot.core.entity.convert.clearTableName
-import top.potmot.entity.dto.GenAssociationModelInput
 import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.dto.share.ColumnTypeMeta
 import java.time.LocalDateTime
@@ -74,19 +73,6 @@ fun createMappingColumnName(
 ) =
     "${tableName.clearTableName()}_${columnName.clearColumnName()}"
 
-fun GenAssociationModelInput.toMappingTableMeta() =
-    // FIXME GenAssociationModelInput 实际上无法正常获得到 columnTypes
-    MappingTableMeta(
-        name = this.name,
-        sourceTableName = sourceTableName,
-        targetTableName = targetTableName,
-        sourceTableComment = "",
-        targetTableComment = "",
-        sourceColumnNames = columnReferences.map { it.sourceColumnName },
-        targetColumnNames = columnReferences.map { it.targetColumnName },
-        columnTypes = emptyList(),
-    )
-
 fun OutAssociationMeta<GenTableGenerateView, GenTableGenerateView.TargetOf_columns>.toMappingTableMeta() =
     MappingTableMeta(
         name = association.name,
@@ -104,7 +90,6 @@ private fun createMappingTableColumn(
     type: ColumnTypeMeta
 ) =
     GenTableGenerateView.TargetOf_columns(
-        id = 0,
         createdTime = LocalDateTime.now(),
         modifiedTime = LocalDateTime.now(),
         remark = "",
@@ -121,5 +106,4 @@ private fun createMappingTableColumn(
         businessKey = false,
         logicalDelete = false,
         comment = "",
-        tableId = 0,
     )
