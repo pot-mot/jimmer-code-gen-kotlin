@@ -18,6 +18,7 @@ import top.potmot.core.model.load.getGraphEntities
 import top.potmot.core.model.load.parseGraphData
 import top.potmot.core.model.load.toInput
 import top.potmot.core.model.load.toInputs
+import top.potmot.entity.GenAssociation
 import top.potmot.entity.GenModel
 import top.potmot.entity.GenTable
 import top.potmot.entity.GenTableIndex
@@ -103,8 +104,7 @@ class ModelService(
                     val columnNameIdMap = savedTable.columns.associate { it.name to it.id }
 
                     val indexInputs = indexes.map { it.toInput(savedTable.id, columnNameIdMap) }
-                    val savedIndexes =
-                        sqlClient.entities.saveInputs(indexInputs).simpleResults.map { it.modifiedEntity }
+                    val savedIndexes = sqlClient.entities.saveInputs(indexInputs).simpleResults.map { it.modifiedEntity }
 
                     // 移除遗留 indexes
                     sqlClient.createDelete(GenTableIndex::class) {
@@ -115,7 +115,13 @@ class ModelService(
 
                 // 保存 associations
                 val associationInputs = associationModelInputs.map { it.toInput(savedTables) }
-                sqlClient.entities.saveEntities(associationInputs.map { it.toEntity { modelId = savedModel.id } })
+                val savedAssociations = sqlClient.entities.saveEntities(associationInputs.map { it.toEntity { modelId = savedModel.id } }).simpleResults.map { it.modifiedEntity }
+
+                // 移除遗留 associations
+                sqlClient.createDelete(GenAssociation::class) {
+                    where(table.modelId eq savedModel.id)
+                    where(table.id valueNotIn savedAssociations.map { it.id })
+                }.execute()
             }
 
             savedModel.id
