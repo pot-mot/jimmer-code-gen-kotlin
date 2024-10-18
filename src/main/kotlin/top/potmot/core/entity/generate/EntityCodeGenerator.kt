@@ -8,16 +8,6 @@ import top.potmot.entity.dto.GenEnumGenerateView
 abstract class EntityCodeGenerator {
     abstract fun getFileSuffix(): String
 
-    private fun formatFileName(
-        entity: GenEntityGenerateView,
-    ): String =
-        "${entity.filePath}${entity.name}${getFileSuffix()}"
-
-    private fun formatFileName(
-        enum: GenEnumGenerateView,
-    ): String =
-        "${enum.filePath}${enum.name}${getFileSuffix()}"
-
     protected abstract fun stringify(entity: GenEntityGenerateView): String
 
     protected abstract fun stringify(enum: GenEnumGenerateView): String
@@ -26,7 +16,7 @@ abstract class EntityCodeGenerator {
     fun generateEntity(
         entity: GenEntityGenerateView,
     ): Pair<String, String> =
-        Pair(formatFileName(entity), stringify(entity))
+        "${entity.filePath}${entity.name}${getFileSuffix()}" to stringify(entity)
 
     @Throws(GenerateEntityException::class)
     fun generateEntity(
@@ -39,7 +29,7 @@ abstract class EntityCodeGenerator {
     fun generateEnum(
         enum: GenEnumGenerateView,
     ): Pair<String, String> =
-        Pair(formatFileName(enum), stringify(enum))
+        "${enum.filePath}${enum.name}${getFileSuffix()}" to stringify(enum)
 
     fun generateEnum(
         enums: Iterable<GenEnumGenerateView>,

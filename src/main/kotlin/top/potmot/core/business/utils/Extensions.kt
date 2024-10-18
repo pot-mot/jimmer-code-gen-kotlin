@@ -1,5 +1,6 @@
 package top.potmot.core.business.utils
 
+import top.potmot.core.utils.filePath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
@@ -26,6 +27,9 @@ data class Packages(
 
 val GenerateEntity.packages
     get() = Packages(this)
+
+val GenerateEntity.serviceFilePath
+    get() = filePath.replace("/entity/", "/service/")
 
 val GenerateEntity.requestPath
     get() = name.replaceFirstChar { it.lowercase() }

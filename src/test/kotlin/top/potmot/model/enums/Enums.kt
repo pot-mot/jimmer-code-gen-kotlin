@@ -3,7 +3,7 @@ package top.potmot.model.enums
 const val COMMON_ENUM = """
 {
     "remark": "",
-    "packagePath": "top.potmot",
+    "packagePath": "top.potmot.enum",
     "name": "EnumCommon",
     "comment": "",
     "enumType": null,
@@ -30,7 +30,7 @@ const val COMMON_ENUM = """
 const val ORDINAL_ENUM = """
 {
     "remark": "",
-    "packagePath": "top.potmot",
+    "packagePath": "top.potmot.enum",
     "name": "EnumOrdinal",
     "comment": "",
     "enumType": "ORDINAL",
@@ -57,7 +57,7 @@ const val ORDINAL_ENUM = """
 const val NAME_ENUM = """
 {
     "remark": "",
-    "packagePath": "top.potmot",
+    "packagePath": "top.potmot.enum",
     "name": "EnumName",
     "comment": "",
     "enumType": "NAME",

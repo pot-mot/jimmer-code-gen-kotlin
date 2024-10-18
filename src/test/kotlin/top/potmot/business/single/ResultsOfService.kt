@@ -1,7 +1,7 @@
 package top.potmot.business.single
 
 const val kotlinResult = """
-(com/example/entity/ConditionMatchService.kt, package com.example.service
+(com/example/service/ConditionMatchService.kt, package com.example.service
 
 import cn.dev33.satoken.annotation.SaCheckPermission
 import org.babyfish.jimmer.View
@@ -112,7 +112,7 @@ class ConditionMatchService(
 """
 
 const val javaResult = """
-(com/example/entity/ConditionMatchService.java, package com.example.service;
+(com/example/service/ConditionMatchService.java, package com.example.service;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.babyfish.jimmer.View;

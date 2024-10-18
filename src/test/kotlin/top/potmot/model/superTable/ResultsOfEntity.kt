@@ -1,7 +1,7 @@
 package top.potmot.model.superTable
 
 const val javaResult = """
-[(java/top/potmot/BaseEntity.java, package top.potmot;
+[(java/top/potmot/entity/BaseEntity.java, package top.potmot.entity;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.IdView;
@@ -48,7 +48,7 @@ public interface BaseEntity {
     @IdView("modifiedBy")
     int modifiedById();
 }
-), (java/top/potmot/BizProject.java, package top.potmot;
+), (java/top/potmot/entity/BizProject.java, package top.potmot.entity;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -95,7 +95,7 @@ public interface BizProject extends BaseEntity {
     @Column(name = "NAME")
     String name();
 }
-), (java/top/potmot/SysUser.java, package top.potmot;
+), (java/top/potmot/entity/SysUser.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -190,7 +190,7 @@ public interface SysUser extends BaseEntity {
 """
 
 const val kotlinResult = """
-[(kotlin/top/potmot/BaseEntity.kt, package top.potmot
+[(kotlin/top/potmot/entity/BaseEntity.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.IdView
@@ -237,7 +237,7 @@ interface BaseEntity {
     @IdView("modifiedBy")
     val modifiedById: Int
 }
-), (kotlin/top/potmot/BizProject.kt, package top.potmot
+), (kotlin/top/potmot/entity/BizProject.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -284,7 +284,7 @@ interface BizProject : BaseEntity {
     @Column(name = "NAME")
     val name: String
 }
-), (kotlin/top/potmot/SysUser.kt, package top.potmot
+), (kotlin/top/potmot/entity/SysUser.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity

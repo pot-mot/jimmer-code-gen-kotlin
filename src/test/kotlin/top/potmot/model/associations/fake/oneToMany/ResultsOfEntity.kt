@@ -1,7 +1,7 @@
 package top.potmot.model.associations.fake.oneToMany
 
 const val kotlinRealFkResult = """
-[(kotlin/top/potmot/Order.kt, package top.potmot
+[(kotlin/top/potmot/entity/Order.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -29,7 +29,7 @@ interface Order {
     @IdView("orderDetails")
     val orderDetailIds: List<Long>
 }
-), (kotlin/top/potmot/OrderDetail.kt, package top.potmot
+), (kotlin/top/potmot/entity/OrderDetail.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -68,7 +68,7 @@ interface OrderDetail {
 """
 
 const val kotlinFakeFkResult = """
-[(kotlin/top/potmot/Order.kt, package top.potmot
+[(kotlin/top/potmot/entity/Order.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -96,7 +96,7 @@ interface Order {
     @IdView("orderDetails")
     val orderDetailIds: List<Long>
 }
-), (kotlin/top/potmot/OrderDetail.kt, package top.potmot
+), (kotlin/top/potmot/entity/OrderDetail.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -133,7 +133,7 @@ interface OrderDetail {
 """
 
 const val javaRealFkResult = """
-[(java/top/potmot/Order.java, package top.potmot;
+[(java/top/potmot/entity/Order.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -162,7 +162,7 @@ public interface Order {
     @IdView("orderDetails")
     List<Long> orderDetailIds();
 }
-), (java/top/potmot/OrderDetail.java, package top.potmot;
+), (java/top/potmot/entity/OrderDetail.java, package top.potmot.entity;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -204,7 +204,7 @@ public interface OrderDetail {
 """
 
 const val javaFakeFkResult = """
-[(java/top/potmot/Order.java, package top.potmot;
+[(java/top/potmot/entity/Order.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -233,7 +233,7 @@ public interface Order {
     @IdView("orderDetails")
     List<Long> orderDetailIds();
 }
-), (java/top/potmot/OrderDetail.java, package top.potmot;
+), (java/top/potmot/entity/OrderDetail.java, package top.potmot.entity;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;

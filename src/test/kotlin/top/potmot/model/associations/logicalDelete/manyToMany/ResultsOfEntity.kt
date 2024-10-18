@@ -1,7 +1,7 @@
 package top.potmot.model.associations.logicalDelete.manyToMany
 
 const val javaRealFkResult = """
-[(java/top/potmot/Course.java, package top.potmot;
+[(java/top/potmot/entity/Course.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -41,7 +41,7 @@ public interface Course {
     @Column(name = "DELETE_FLAG")
     boolean deleteFlag();
 }
-), (java/top/potmot/Student.java, package top.potmot;
+), (java/top/potmot/entity/Student.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -79,7 +79,7 @@ public interface Student {
 """
 
 const val javaFakeFkResult = """
-[(java/top/potmot/Course.java, package top.potmot;
+[(java/top/potmot/entity/Course.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -125,7 +125,7 @@ public interface Course {
     @Column(name = "DELETE_FLAG")
     boolean deleteFlag();
 }
-), (java/top/potmot/Student.java, package top.potmot;
+), (java/top/potmot/entity/Student.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -163,7 +163,7 @@ public interface Student {
 """
 
 const val kotlinRealFkResult = """
-[(kotlin/top/potmot/Course.kt, package top.potmot
+[(kotlin/top/potmot/entity/Course.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -202,7 +202,7 @@ interface Course {
     @Column(name = "DELETE_FLAG")
     val deleteFlag: Boolean
 }
-), (kotlin/top/potmot/Student.kt, package top.potmot
+), (kotlin/top/potmot/entity/Student.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -239,7 +239,7 @@ interface Student {
 """
 
 const val kotlinFakeFkResult = """
-[(kotlin/top/potmot/Course.kt, package top.potmot
+[(kotlin/top/potmot/entity/Course.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -284,7 +284,7 @@ interface Course {
     @Column(name = "DELETE_FLAG")
     val deleteFlag: Boolean
 }
-), (kotlin/top/potmot/Student.kt, package top.potmot
+), (kotlin/top/potmot/entity/Student.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity

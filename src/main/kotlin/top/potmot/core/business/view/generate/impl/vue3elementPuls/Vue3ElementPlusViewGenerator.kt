@@ -176,9 +176,9 @@ import {sendMessage} from "@/utils/message.ts";
 import {deleteConfirm} from "@/utils/confirm.ts";
 import {useLoading} from "@/utils/loading.ts";
 import {useLegalPage} from "@/utils/legalPage.ts";
-import $table from "@/src/components/$dir/$table.vue"
-import $form from "@/src/components/$dir/$form.vue"
-import $queryForm from "@/src/components/$dir/$queryForm.vue"
+import $table from "@/components/$dir/$table.vue"
+import $form from "@/components/$dir/$form.vue"
+import $queryForm from "@/components/$dir/$queryForm.vue"
 
 const {isLoading, withLoading} = useLoading()
 

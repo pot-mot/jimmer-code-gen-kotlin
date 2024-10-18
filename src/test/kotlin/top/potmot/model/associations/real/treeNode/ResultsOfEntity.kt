@@ -1,7 +1,7 @@
 package top.potmot.model.associations.real.treeNode
 
 const val javaRealFkResult = """
-[(java/top/potmot/TreeNode.java, package top.potmot;
+[(java/top/potmot/entity/TreeNode.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -49,7 +49,7 @@ public interface TreeNode {
 """
 
 const val javaFakeFkResult = """
-[(java/top/potmot/TreeNode.java, package top.potmot;
+[(java/top/potmot/entity/TreeNode.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -99,7 +99,7 @@ public interface TreeNode {
 """
 
 const val kotlinRealFkResult = """
-[(kotlin/top/potmot/TreeNode.kt, package top.potmot
+[(kotlin/top/potmot/entity/TreeNode.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -143,7 +143,7 @@ interface TreeNode {
 """
 
 const val kotlinFakeFkResult = """
-[(kotlin/top/potmot/TreeNode.kt, package top.potmot
+[(kotlin/top/potmot/entity/TreeNode.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity

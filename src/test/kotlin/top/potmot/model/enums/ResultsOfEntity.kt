@@ -1,7 +1,7 @@
 package top.potmot.model.enums
 
 const val javaResult = """
-[(java/top/potmot/EnumCommon.java, package top.potmot;
+[(java/top/potmot/enum/EnumCommon.java, package top.potmot.enum;
 
 
 public enum EnumCommon {
@@ -9,7 +9,7 @@ public enum EnumCommon {
 
     item2,
 }
-), (java/top/potmot/EnumName.java, package top.potmot;
+), (java/top/potmot/enum/EnumName.java, package top.potmot.enum;
 
 import org.babyfish.jimmer.sql.EnumType;
 import org.babyfish.jimmer.sql.EnumItem;
@@ -22,7 +22,7 @@ public enum EnumName {
     @EnumItem(name = "item2")
     item2,
 }
-), (java/top/potmot/EnumOrdinal.java, package top.potmot;
+), (java/top/potmot/enum/EnumOrdinal.java, package top.potmot.enum;
 
 import org.babyfish.jimmer.sql.EnumType;
 import org.babyfish.jimmer.sql.EnumItem;
@@ -35,12 +35,15 @@ public enum EnumOrdinal {
     @EnumItem(ordinal = 1)
     item2,
 }
-), (java/top/potmot/EnumTable.java, package top.potmot;
+), (java/top/potmot/entity/EnumTable.java, package top.potmot.entity;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
 import org.babyfish.jimmer.sql.Table;
 import org.jetbrains.annotations.Nullable;
+import top.potmot.enum.EnumCommon;
+import top.potmot.enum.EnumName;
+import top.potmot.enum.EnumOrdinal;
 
 /**
  * @author 
@@ -62,7 +65,7 @@ public interface EnumTable {
 """
 
 const val kotlinResult = """
-[(kotlin/top/potmot/EnumCommon.kt, package top.potmot
+[(kotlin/top/potmot/enum/EnumCommon.kt, package top.potmot.enum
 
 
 enum class EnumCommon {
@@ -70,7 +73,7 @@ enum class EnumCommon {
 
     item2,
 }
-), (kotlin/top/potmot/EnumName.kt, package top.potmot
+), (kotlin/top/potmot/enum/EnumName.kt, package top.potmot.enum
 
 import org.babyfish.jimmer.sql.EnumType
 import org.babyfish.jimmer.sql.EnumItem
@@ -83,7 +86,7 @@ enum class EnumName {
     @EnumItem(name = "item2")
     item2,
 }
-), (kotlin/top/potmot/EnumOrdinal.kt, package top.potmot
+), (kotlin/top/potmot/enum/EnumOrdinal.kt, package top.potmot.enum
 
 import org.babyfish.jimmer.sql.EnumType
 import org.babyfish.jimmer.sql.EnumItem
@@ -96,11 +99,14 @@ enum class EnumOrdinal {
     @EnumItem(ordinal = 1)
     item2,
 }
-), (kotlin/top/potmot/EnumTable.kt, package top.potmot
+), (kotlin/top/potmot/entity/EnumTable.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.Table
+import top.potmot.enum.EnumCommon
+import top.potmot.enum.EnumName
+import top.potmot.enum.EnumOrdinal
 
 /**
  * @author 

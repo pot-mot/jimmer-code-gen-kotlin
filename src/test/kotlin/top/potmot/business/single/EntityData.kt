@@ -69,7 +69,7 @@ const val entityData = """
                 "id": 751,
                 "entity": {
                     "id": 402,
-                    "packagePath": "com.example.entity",
+                    "packagePath": "com.example.enum",
                     "name": "SysUser",
                     "comment": "用户"
                 }
@@ -151,7 +151,7 @@ const val entityData = """
                 "id": 743,
                 "entity": {
                     "id": 387,
-                    "packagePath": "com.example.entity",
+                    "packagePath": "com.example.enum",
                     "name": "PolicyCondition",
                     "comment": "条件"
                 }
@@ -249,7 +249,7 @@ const val entityData = """
             "remark": "",
             "enum": {
                 "id": 62,
-                "packagePath": "com.example.entity",
+                "packagePath": "com.example.enum",
                 "name": "MatchStatus",
                 "comment": ""
             }

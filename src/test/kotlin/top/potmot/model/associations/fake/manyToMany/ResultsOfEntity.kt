@@ -1,7 +1,7 @@
 package top.potmot.model.associations.fake.manyToMany
 
 const val kotlinRealFkResult = """
-[(kotlin/top/potmot/Course.kt, package top.potmot
+[(kotlin/top/potmot/entity/Course.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -41,7 +41,7 @@ interface Course {
     @IdView("students")
     val studentIds: List<Long>
 }
-), (kotlin/top/potmot/Student.kt, package top.potmot
+), (kotlin/top/potmot/entity/Student.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -73,7 +73,7 @@ interface Student {
 """
 
 const val kotlinFakeFkResult = """
-[(kotlin/top/potmot/Course.kt, package top.potmot
+[(kotlin/top/potmot/entity/Course.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -107,7 +107,7 @@ interface Course {
     @IdView("students")
     val studentIds: List<Long>
 }
-), (kotlin/top/potmot/Student.kt, package top.potmot
+), (kotlin/top/potmot/entity/Student.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -139,7 +139,7 @@ interface Student {
 """
 
 const val javaRealFkResult = """
-[(java/top/potmot/Course.java, package top.potmot;
+[(java/top/potmot/entity/Course.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -180,7 +180,7 @@ public interface Course {
     @IdView("students")
     List<Long> studentIds();
 }
-), (java/top/potmot/Student.java, package top.potmot;
+), (java/top/potmot/entity/Student.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -213,7 +213,7 @@ public interface Student {
 """
 
 const val javaFakeFkResult = """
-[(java/top/potmot/Course.java, package top.potmot;
+[(java/top/potmot/entity/Course.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -248,7 +248,7 @@ public interface Course {
     @IdView("students")
     List<Long> studentIds();
 }
-), (java/top/potmot/Student.java, package top.potmot;
+), (java/top/potmot/entity/Student.java, package top.potmot.entity;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;

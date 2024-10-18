@@ -3,7 +3,7 @@ package top.potmot.business.enum
 const val enumJson = """
 {
     "id": 1,
-    "packagePath": "com.example",
+    "packagePath": "com.example.enum",
     "name": "EnumTest",
     "comment": "测试",
     "enumType": null,

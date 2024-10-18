@@ -1,7 +1,7 @@
 package top.potmot.model.associations.logicalDelete.oneToOne
 
 const val kotlinRealFkResult = """
-[(kotlin/top/potmot/User.kt, package top.potmot
+[(kotlin/top/potmot/entity/User.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -34,7 +34,7 @@ interface User {
     @Column(name = "DELETE_FLAG")
     val deleteFlag: Boolean
 }
-), (kotlin/top/potmot/UserDetail.kt, package top.potmot
+), (kotlin/top/potmot/entity/UserDetail.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -76,7 +76,7 @@ interface UserDetail {
 """
 
 const val kotlinFakeFkResult = """
-[(kotlin/top/potmot/User.kt, package top.potmot
+[(kotlin/top/potmot/entity/User.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -109,7 +109,7 @@ interface User {
     @Column(name = "DELETE_FLAG")
     val deleteFlag: Boolean
 }
-), (kotlin/top/potmot/UserDetail.kt, package top.potmot
+), (kotlin/top/potmot/entity/UserDetail.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -153,7 +153,7 @@ interface UserDetail {
 """
 
 const val javaRealFkResult = """
-[(java/top/potmot/User.java, package top.potmot;
+[(java/top/potmot/entity/User.java, package top.potmot.entity;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -189,7 +189,7 @@ public interface User {
     @Column(name = "DELETE_FLAG")
     boolean deleteFlag();
 }
-), (java/top/potmot/UserDetail.java, package top.potmot;
+), (java/top/potmot/entity/UserDetail.java, package top.potmot.entity;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -234,7 +234,7 @@ public interface UserDetail {
 """
 
 const val javaFakeFkResult = """
-[(java/top/potmot/User.java, package top.potmot;
+[(java/top/potmot/entity/User.java, package top.potmot.entity;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -270,7 +270,7 @@ public interface User {
     @Column(name = "DELETE_FLAG")
     boolean deleteFlag();
 }
-), (java/top/potmot/UserDetail.java, package top.potmot;
+), (java/top/potmot/entity/UserDetail.java, package top.potmot.entity;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;

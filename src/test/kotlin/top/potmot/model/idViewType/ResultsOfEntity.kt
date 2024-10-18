@@ -1,7 +1,7 @@
 package top.potmot.model.idViewType
 
 const val javaResult = """
-[(java/top/potmot/Source.java, package top.potmot;
+[(java/top/potmot/entity/Source.java, package top.potmot.entity;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -34,7 +34,7 @@ public interface Source {
     @IdView("target")
     int targetId();
 }
-), (java/top/potmot/Target.java, package top.potmot;
+), (java/top/potmot/entity/Target.java, package top.potmot.entity;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -69,7 +69,7 @@ public interface Target {
 """
 
 const val kotlinResult = """
-[(kotlin/top/potmot/Source.kt, package top.potmot
+[(kotlin/top/potmot/entity/Source.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -102,7 +102,7 @@ interface Source {
     @IdView("target")
     val targetId: Int
 }
-), (kotlin/top/potmot/Target.kt, package top.potmot
+), (kotlin/top/potmot/entity/Target.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity

@@ -1,7 +1,7 @@
 package top.potmot.business.single
 
 const val vue3ElementPlusResult = """
-[(/components/conditionMatch/ConditionMatchTable.vue, <script setup lang="ts">
+[(components/conditionMatch/ConditionMatchTable.vue, <script setup lang="ts">
 defineProps<{
     rows: Array<ConditionMatchListView>
 }>()
@@ -30,7 +30,7 @@ const emits = defineEmits<{
             </template>
         </el-table-column>
     </el-table>
-</template>), (/components/conditionMatch/ConditionMatchForm.vue, <script setup lang="ts">
+</template>), (components/conditionMatch/ConditionMatchForm.vue, <script setup lang="ts">
 import type {ConditionMatchInsertInput, ConditionMatchUpdateInput} from "@/api/__generated/model/static"
 
 const formData = defineModel<ConditionMatchInsertInput | ConditionMatchUpdateInput>({
@@ -69,7 +69,7 @@ const emits = defineEmits<{
             <el-button type="primary" @click="emits('submit')" v-text="提交"/>
         </div>
     </el-form>
-</template>), (/components/conditionMatch/ConditionMatchQueryForm.vue, <script setup lang="ts">
+</template>), (components/conditionMatch/ConditionMatchQueryForm.vue, <script setup lang="ts">
 import type {ConditionMatchSpec, MatchStatus} from "@/api/__generated/model/static"
 import {MatchStatus_CONSTANTS} from "@/api/__generated/model/static"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
@@ -116,7 +116,7 @@ const emits = defineEmits<{
             <el-button :icon="Search" type="primary" @click="emits('query')"/>
         </el-row>
     </el-form>
-</template>), (/pages/conditionMatch/ConditionMatchPage.vue, <script setup lang="ts">
+</template>), (pages/conditionMatch/ConditionMatchPage.vue, <script setup lang="ts">
 import {Check, Close, Delete, Search} from "@element-plus/icons-vue";
 import {ref} from "vue";
 import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView} from "@/api/__generated/model/static";
@@ -125,9 +125,9 @@ import {sendMessage} from "@/utils/message.ts";
 import {deleteConfirm} from "@/utils/confirm.ts";
 import {useLoading} from "@/utils/loading.ts";
 import {useLegalPage} from "@/utils/legalPage.ts";
-import ConditionMatchTable from "@/src/components/conditionMatch/ConditionMatchTable.vue"
-import ConditionMatchForm from "@/src/components/conditionMatch/ConditionMatchForm.vue"
-import ConditionMatchQueryForm from "@/src/components/conditionMatch/ConditionMatchQueryForm.vue"
+import ConditionMatchTable from "@/components/conditionMatch/ConditionMatchTable.vue"
+import ConditionMatchForm from "@/components/conditionMatch/ConditionMatchForm.vue"
+import ConditionMatchQueryForm from "@/components/conditionMatch/ConditionMatchQueryForm.vue"
 
 const {isLoading, withLoading} = useLoading()
 

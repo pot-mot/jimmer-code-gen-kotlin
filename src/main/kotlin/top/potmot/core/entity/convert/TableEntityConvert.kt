@@ -73,7 +73,7 @@ private fun tableToEntity(
         name = tableNameToEntityName(genTable.name),
         comment = genTable.comment.clearTableComment(),
         remark = genTable.remark,
-        packagePath = context.packagePath,
+        packagePath = "${context.packagePath}.entity",
         superEntityIds = emptyList(),
         properties = emptyList()
     )
