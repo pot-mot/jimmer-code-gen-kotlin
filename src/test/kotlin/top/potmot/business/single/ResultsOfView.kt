@@ -72,7 +72,7 @@ const emits = defineEmits<{
 </template>), (/components/conditionMatch/ConditionMatchQueryForm.vue, <script setup lang="ts">
 import type {ConditionMatchSpec, MatchStatus} from "@/api/__generated/model/static"
 import {MatchStatus_CONSTANTS} from "@/api/__generated/model/static"
-import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect"
+import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
 
 const spec = defineModel<ConditionMatchSpec>({
     required: true
@@ -121,13 +121,13 @@ import {Check, Close, Delete, Search} from "@element-plus/icons-vue";
 import {ref} from "vue";
 import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView} from "@/api/__generated/model/static";
 import {api} from "@/api";
-import {sendMessage} from "@/utils/message";
-import {deleteConfirm} from "@/utils/confirm";
-import {useLoading} from "@/utils/loading";
-import {useLegalPage} from "@/utils/legalPage";
-import ConditionMatchTable from "@/src/components/conditionMatch/ConditionMatchTable"
-import ConditionMatchForm from "@/src/components/conditionMatch/ConditionMatchForm"
-import ConditionMatchQueryForm from "@/src/components/conditionMatch/ConditionMatchQueryForm"
+import {sendMessage} from "@/utils/message.ts";
+import {deleteConfirm} from "@/utils/confirm.ts";
+import {useLoading} from "@/utils/loading.ts";
+import {useLegalPage} from "@/utils/legalPage.ts";
+import ConditionMatchTable from "@/src/components/conditionMatch/ConditionMatchTable.vue"
+import ConditionMatchForm from "@/src/components/conditionMatch/ConditionMatchForm.vue"
+import ConditionMatchQueryForm from "@/src/components/conditionMatch/ConditionMatchQueryForm.vue"
 
 const {isLoading, withLoading} = useLoading()
 

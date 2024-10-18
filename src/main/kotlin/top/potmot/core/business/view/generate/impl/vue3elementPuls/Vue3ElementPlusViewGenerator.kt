@@ -111,7 +111,7 @@ import type {${spec}, ${enums.joinToString(", ") { it.name }}} from "@/api/__gen
 ${
     enums.joinToString("\n") {
         val (_, dir, select) = it.component
-        "import $select from \"@/components/$dir/$select\""
+        """import $select from "@/components/$dir/$select.vue""""
     }
 }
 
@@ -172,13 +172,13 @@ import {Check, Close, Delete, Search} from "@element-plus/icons-vue";
 import {ref} from "vue";
 import type {Page, PageQuery, ${spec}, ${listView}} from "@/api/__generated/model/static";
 import {api} from "@/api";
-import {sendMessage} from "@/utils/message";
-import {deleteConfirm} from "@/utils/confirm";
-import {useLoading} from "@/utils/loading";
-import {useLegalPage} from "@/utils/legalPage";
-import $table from "@/src/components/$dir/$table"
-import $form from "@/src/components/$dir/$form"
-import $queryForm from "@/src/components/$dir/$queryForm"
+import {sendMessage} from "@/utils/message.ts";
+import {deleteConfirm} from "@/utils/confirm.ts";
+import {useLoading} from "@/utils/loading.ts";
+import {useLegalPage} from "@/utils/legalPage.ts";
+import $table from "@/src/components/$dir/$table.vue"
+import $form from "@/src/components/$dir/$form.vue"
+import $queryForm from "@/src/components/$dir/$queryForm.vue"
 
 const {isLoading, withLoading} = useLoading()
 
@@ -261,7 +261,7 @@ const handleDelete = async (ids: number[]) => {
 <script setup lang="ts">
 import {${enum.constants}} from "@/api/__generated/model/static"
 import type {${enum.name}} from "@/api/__generated/model/static"
-import $view from "@/components/$dir/$view"
+import $view from "@/components/$dir/$view.vue"
 
 const data = defineModel<${enum.name}>({
     required: true
