@@ -3,6 +3,8 @@ package top.potmot.service
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
+import org.babyfish.jimmer.sql.kt.ast.expression.ne
+import org.babyfish.jimmer.sql.kt.ast.query.KMutableRootQuery
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -26,9 +28,12 @@ import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.extension.merge
 import top.potmot.entity.id
 import top.potmot.entity.modelId
+import top.potmot.entity.table
+import top.potmot.entity.type
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.GenerateType
+import top.potmot.enumeration.TableType
 import top.potmot.enumeration.ViewType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.GenerateEntityException
@@ -57,7 +62,9 @@ class GenerateService(
 
             val tables by lazy { sqlClient.listTable(id) }
             val entityGenerateViews by lazy { sqlClient.listEntity<GenEntityGenerateView>(id) }
-            val entityBusinessViews by lazy { sqlClient.listEntity<GenEntityBusinessView>(id) }
+            val entityBusinessViews by lazy { sqlClient.listEntity<GenEntityBusinessView>(id) {
+                where(table.table.type ne TableType.SUPER_TABLE)
+            } }
             val enums by lazy { sqlClient.listEnum(id) }
 
             val typeSet = types.toSet()
@@ -159,9 +166,13 @@ class GenerateService(
             select(table.fetch(GenTableGenerateView::class))
         }.execute()
 
-    private inline fun <reified V : View<GenEntity>> KSqlClient.listEntity(modelId: Long) =
+    private inline fun <reified V : View<GenEntity>> KSqlClient.listEntity(
+        modelId: Long,
+        crossinline block: KMutableRootQuery<GenEntity>.() -> Unit = {}
+    ) =
         createQuery(GenEntity::class) {
             where(table.modelId eq modelId)
+            block()
             select(table.fetch(V::class))
         }.execute()
 
