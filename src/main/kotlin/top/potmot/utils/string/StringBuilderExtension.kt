@@ -1,6 +1,6 @@
 package top.potmot.utils.string
 
-fun StringBuilder.appendLines(lines: Collection<String>, produce: (line: String) -> String = { it }) {
+fun StringBuilder.appendLines(lines: Iterable<String>, produce: (line: String) -> String = { it }) {
     lines.forEach {
         appendLine(produce(it))
     }

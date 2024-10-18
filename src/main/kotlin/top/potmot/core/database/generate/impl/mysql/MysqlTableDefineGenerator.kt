@@ -7,7 +7,7 @@ import top.potmot.utils.string.appendLines
 
 object MysqlTableDefineGenerator : TableDefineGenerator() {
     override fun stringify(
-        tables: Collection<GenTableGenerateView>,
+        tables: Iterable<GenTableGenerateView>,
     ): String =
         MysqlTableDefineBuilder.let { builder ->
             buildString {

@@ -2,7 +2,7 @@ package top.potmot.utils.string
 
 import top.potmot.constant.SEPARATOR
 
-fun String.startsWithAny(prefixes: Collection<String>): String? {
+fun String.startsWithAny(prefixes: Iterable<String>): String? {
     for (prefix in prefixes) {
         if (startsWith(prefix)) {
             return prefix

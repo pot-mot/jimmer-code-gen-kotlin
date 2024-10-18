@@ -7,7 +7,7 @@ import top.potmot.utils.string.appendLines
 
 object H2TableDefineGenerator : TableDefineGenerator() {
     override fun stringify(
-        tables: Collection<GenTableGenerateView>
+        tables: Iterable<GenTableGenerateView>
     ): String =
         H2TableDefineBuilder.let { builder ->
             buildString {

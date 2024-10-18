@@ -33,7 +33,7 @@ abstract class EntityCodeGenerator {
 
     @Throws(GenerateEntityException::class)
     fun generateEntity(
-        entities: Collection<GenEntityGenerateView>,
+        entities: Iterable<GenEntityGenerateView>,
         withPath: Boolean = false
     ): List<Pair<String, String>> =
         entities
@@ -47,7 +47,7 @@ abstract class EntityCodeGenerator {
         Pair(formatFileName(enum, withPath), stringify(enum))
 
     fun generateEnum(
-        enums: Collection<GenEnumGenerateView>,
+        enums: Iterable<GenEnumGenerateView>,
         withPath: Boolean = false
     ): List<Pair<String, String>> =
         enums

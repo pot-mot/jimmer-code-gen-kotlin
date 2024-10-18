@@ -11,12 +11,12 @@ abstract class TableDefineGenerator {
         "$name.sql"
 
     protected abstract fun stringify(
-        tables: Collection<GenTableGenerateView>,
+        tables: Iterable<GenTableGenerateView>,
     ): String
 
     @Throws(ColumnTypeException::class, GenerateTableDefineException::class)
     fun generate(
-        tables: Collection<GenTableGenerateView>,
+        tables: Iterable<GenTableGenerateView>,
         withSingleTable: Boolean = true
     ): List<Pair<String, String>> {
         val fullTables = tables

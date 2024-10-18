@@ -7,7 +7,7 @@ import top.potmot.utils.string.appendLines
 
 object PostgresTableDefineGenerator : TableDefineGenerator() {
     override fun stringify(
-        tables: Collection<GenTableGenerateView>,
+        tables: Iterable<GenTableGenerateView>,
     ): String =
         PostgresTableDefineBuilder.let { builder ->
             buildString {

@@ -30,6 +30,13 @@ abstract class ViewGenerator {
             "/components/${dir}/${view}.${getFileSuffix()}" to stringifyEnumView(enum),
         )
     }
+    
+    fun generateEnum(
+        enums: Iterable<GenEnumGenerateView>
+    ): List<Pair<String, String>> =
+        enums
+            .flatMap { generateEnum(it) }
+            .distinct().sortedBy { it.first }
 
     fun generateView(
         entity: GenEntityBusinessView,
@@ -47,7 +54,7 @@ abstract class ViewGenerator {
     }
 
     fun generateView(
-        entities: Collection<GenEntityBusinessView>,
+        entities: Iterable<GenEntityBusinessView>,
     ): List<Pair<String, String>> =
         entities
             .flatMap { generateView(it) }

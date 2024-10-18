@@ -20,7 +20,7 @@ abstract class ServiceGenerator {
     }
 
     fun generateService(
-        entities: Collection<GenEntityBusinessView>,
+        entities: Iterable<GenEntityBusinessView>,
         withPath: Boolean = false
     ): List<Pair<String, String>> =
         entities

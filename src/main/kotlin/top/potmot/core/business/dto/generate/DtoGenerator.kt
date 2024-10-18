@@ -125,7 +125,7 @@ ${generateSpec(entity)}
         Pair(formatFileName(entity), stringify(entity))
 
     fun generateDto(
-        entities: Collection<GenEntityBusinessView>,
+        entities: Iterable<GenEntityBusinessView>,
     ): List<Pair<String, String>> =
         entities
             .map { generateDto(it) }
