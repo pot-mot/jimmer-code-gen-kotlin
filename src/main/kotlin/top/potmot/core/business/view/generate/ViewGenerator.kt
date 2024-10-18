@@ -1,6 +1,7 @@
 package top.potmot.core.business.view.generate
 
 import top.potmot.core.business.utils.component
+import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
 
@@ -33,13 +34,15 @@ abstract class ViewGenerator {
     fun generateView(
         entity: GenEntityBusinessView,
     ): List<Pair<String, String>> {
-        val (_, dir, table, form, queryForm, page) = entity.component
+        val flatEntity = entity.toFlat()
+
+        val (_, dir, table, form, queryForm, page) = flatEntity.component
 
         return listOf(
-            "/components/${dir}/${table}.${getFileSuffix()}" to stringifyTable(entity),
-            "/components/${dir}/${form}.${getFileSuffix()}" to stringifyForm(entity),
-            "/components/${dir}/${queryForm}.${getFileSuffix()}" to stringifyQueryForm(entity),
-            "/pages/${dir}/${page}.${getFileSuffix()}" to stringifyPage(entity)
+            "/components/${dir}/${table}.${getFileSuffix()}" to stringifyTable(flatEntity),
+            "/components/${dir}/${form}.${getFileSuffix()}" to stringifyForm(flatEntity),
+            "/components/${dir}/${queryForm}.${getFileSuffix()}" to stringifyQueryForm(flatEntity),
+            "/pages/${dir}/${page}.${getFileSuffix()}" to stringifyPage(flatEntity)
         )
     }
 

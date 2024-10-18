@@ -1,15 +1,23 @@
 package top.potmot.core.business.service.generate
 
+import top.potmot.core.business.utils.serviceName
+import top.potmot.core.business.utils.toFlat
+import top.potmot.core.utils.filePath
 import top.potmot.entity.dto.GenEntityBusinessView
 
 abstract class ServiceGenerator {
-    protected fun formatFilePath(packagePath: String): String =
-        packagePath.replace(".", "/") + "/"
+    abstract fun getFileSuffix(): String
 
-    abstract fun generateService(
+    protected abstract fun stringifyService(entity: GenEntityBusinessView): String
+
+    fun generateService(
         entity: GenEntityBusinessView,
         withPath: Boolean = false
-    ): Pair<String, String>
+    ): Pair<String, String> {
+        val flatEntity = entity.toFlat()
+
+        return "${if (withPath) entity.filePath else ""}${entity.serviceName}${getFileSuffix()}" to stringifyService(flatEntity)
+    }
 
     fun generateService(
         entities: Collection<GenEntityBusinessView>,

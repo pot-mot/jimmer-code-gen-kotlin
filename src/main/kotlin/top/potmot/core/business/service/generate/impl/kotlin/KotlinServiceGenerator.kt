@@ -5,15 +5,16 @@ import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.packages
 import top.potmot.core.business.utils.permissionPrefix
 import top.potmot.core.business.utils.requestPath
+import top.potmot.core.business.utils.serviceName
 import top.potmot.entity.dto.GenEntityBusinessView
 
 object KotlinServiceGenerator : ServiceGenerator() {
-    override fun generateService(
+    override fun getFileSuffix() = ".kt"
+
+    override fun stringifyService(
         entity: GenEntityBusinessView,
-        withPath: Boolean
-    ): Pair<String, String> {
-        val serviceName = "${entity.name}Service"
-        val fileName = "${if (withPath) formatFilePath(entity.packagePath) else ""}$serviceName.kt"
+    ): String {
+        val serviceName = entity.serviceName
 
         val (_, servicePackage,  utilsPackage, exceptionPackage, dtoPackage) = entity.packages
         val (_, listView, detailView, insertInput, updateInput, spec) = entity.dto
@@ -22,7 +23,7 @@ object KotlinServiceGenerator : ServiceGenerator() {
         val idName = idProperty.name
         val idType = "${idProperty.type}${if (idProperty.typeNotNull) "" else "?"}"
 
-        return fileName to """
+        return """
 package $servicePackage
 
 import cn.dev33.satoken.annotation.SaCheckPermission

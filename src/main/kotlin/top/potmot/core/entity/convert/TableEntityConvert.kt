@@ -5,6 +5,7 @@ import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
 import top.potmot.entity.dto.share.ColumnTypeMeta
 import top.potmot.entity.dto.GenEntityInput
+import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
 import top.potmot.utils.string.clearTableComment
@@ -24,8 +25,6 @@ typealias TypeMapping = (column: ColumnTypeMeta) -> String
  *      基于列和基础属性转换出关联属性，并存储在List中
  *  handleDuplicateName(): List<Property>
  *      处理属性重名
- *  sortProperties(): List<Property>
- *      整理属性顺序
  *
  * 最终将 associationProperty 中的数据填充到 baseEntity 中
  */
@@ -51,12 +50,10 @@ fun GenTableConvertView.toGenEntity(
 
     val associationProperties = handleDuplicateName(
         propertiesMap
-    ).let {
-        sortProperties(it)
-    }
+    )
 
     return baseEntity.copy(
-        properties = associationProperties
+        properties = associationProperties.setOrderKey()
     )
 }
 
@@ -81,3 +78,10 @@ private fun tableToEntity(
         properties = emptyList()
     )
 }
+
+private fun List<GenPropertyInput>.setOrderKey() =
+    mapIndexed { index, property ->
+        property.copy(
+            orderKey = index.toLong()
+        )
+    }

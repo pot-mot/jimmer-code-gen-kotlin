@@ -111,7 +111,7 @@ const val entityData = """
                 "id": 392
             },
             "name": "userId",
-            "comment": "用户 ID 视图",
+            "comment": "用户 ID View",
             "type": "kotlin.Int",
             "typeTable": null,
             "listType": false,
@@ -193,7 +193,7 @@ const val entityData = """
                 "id": 392
             },
             "name": "conditionId",
-            "comment": "条件 ID 视图",
+            "comment": "条件 ID View",
             "type": "kotlin.Int",
             "typeTable": null,
             "listType": false,

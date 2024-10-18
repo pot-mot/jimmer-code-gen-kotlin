@@ -1,4 +1,4 @@
-package top.potmot.core.database.generate
+package top.potmot.core.database.generate.utils
 
 import top.potmot.constant.INHERIT_PLACEHOLDER
 import top.potmot.constant.SOURCE_INHERIT_PLACEHOLDER
@@ -7,7 +7,7 @@ import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.extension.allSuperTables
 import top.potmot.utils.string.replaceFirstOrAppend
 
-fun GenTableGenerateView.toFull(): GenTableGenerateView {
+fun GenTableGenerateView.toFlat(): GenTableGenerateView {
     val allSuperTables = allSuperTables()
 
     val tableName = this.name

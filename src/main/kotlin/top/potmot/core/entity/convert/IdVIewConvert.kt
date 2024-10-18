@@ -33,7 +33,7 @@ fun createIdViewProperty(
             keyProperty = false
 
             associationProperty.comment.takeIf { it.isNotBlank() }?.let {
-                comment = "$it ID 视图"
+                comment = "$it ID View"
             }
 
             if (associationProperty.listType) {

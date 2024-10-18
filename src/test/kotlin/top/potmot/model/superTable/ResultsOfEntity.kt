@@ -27,7 +27,7 @@ public interface BaseEntity {
     SysUser createdBy();
 
     /**
-     * 用户 ID 视图
+     * 用户 ID View
      */
     @IdView("createdBy")
     int createdById();
@@ -43,7 +43,7 @@ public interface BaseEntity {
     SysUser modifiedBy();
 
     /**
-     * 用户 ID 视图
+     * 用户 ID View
      */
     @IdView("modifiedBy")
     int modifiedById();
@@ -84,7 +84,7 @@ public interface BizProject extends BaseEntity {
     SysUser user();
 
     /**
-     * 用户 ID 视图
+     * 用户 ID View
      */
     @IdView("user")
     int userId();
@@ -127,7 +127,7 @@ public interface SysUser extends BaseEntity {
     List<BizProject> bizProjectsForUser();
 
     /**
-     * 项目 ID 视图 (MappedBy BizProject.user)
+     * 项目 ID View (MappedBy BizProject.user)
      */
     @IdView("bizProjectsForUser")
     List<Integer> bizProjectIdsForUser();
@@ -139,7 +139,7 @@ public interface SysUser extends BaseEntity {
     List<BizProject> bizProjectsForCreatedBy();
 
     /**
-     * 项目 ID 视图 (MappedBy BizProject.createdBy)
+     * 项目 ID View (MappedBy BizProject.createdBy)
      */
     @IdView("bizProjectsForCreatedBy")
     List<Integer> bizProjectIdsForCreatedBy();
@@ -151,7 +151,7 @@ public interface SysUser extends BaseEntity {
     List<BizProject> bizProjectsForModifiedBy();
 
     /**
-     * 项目 ID 视图 (MappedBy BizProject.modifiedBy)
+     * 项目 ID View (MappedBy BizProject.modifiedBy)
      */
     @IdView("bizProjectsForModifiedBy")
     List<Integer> bizProjectIdsForModifiedBy();
@@ -163,7 +163,7 @@ public interface SysUser extends BaseEntity {
     List<SysUser> sysUsersForCreatedBy();
 
     /**
-     * 用户 ID 视图 (MappedBy SysUser.createdBy)
+     * 用户 ID View (MappedBy SysUser.createdBy)
      */
     @IdView("sysUsersForCreatedBy")
     List<Integer> sysUserIdsForCreatedBy();
@@ -175,7 +175,7 @@ public interface SysUser extends BaseEntity {
     List<SysUser> sysUsersForModifiedBy();
 
     /**
-     * 用户 ID 视图 (MappedBy SysUser.modifiedBy)
+     * 用户 ID View (MappedBy SysUser.modifiedBy)
      */
     @IdView("sysUsersForModifiedBy")
     List<Integer> sysUserIdsForModifiedBy();
@@ -216,7 +216,7 @@ interface BaseEntity {
     val createdBy: SysUser
 
     /**
-     * 用户 ID 视图
+     * 用户 ID View
      */
     @IdView("createdBy")
     val createdById: Int
@@ -232,7 +232,7 @@ interface BaseEntity {
     val modifiedBy: SysUser
 
     /**
-     * 用户 ID 视图
+     * 用户 ID View
      */
     @IdView("modifiedBy")
     val modifiedById: Int
@@ -273,7 +273,7 @@ interface BizProject : BaseEntity {
     val user: SysUser
 
     /**
-     * 用户 ID 视图
+     * 用户 ID View
      */
     @IdView("user")
     val userId: Int
@@ -315,7 +315,7 @@ interface SysUser : BaseEntity {
     val bizProjectsForUser: List<BizProject>
 
     /**
-     * 项目 ID 视图 (MappedBy BizProject.user)
+     * 项目 ID View (MappedBy BizProject.user)
      */
     @IdView("bizProjectsForUser")
     val bizProjectIdsForUser: List<Int>
@@ -327,7 +327,7 @@ interface SysUser : BaseEntity {
     val bizProjectsForCreatedBy: List<BizProject>
 
     /**
-     * 项目 ID 视图 (MappedBy BizProject.createdBy)
+     * 项目 ID View (MappedBy BizProject.createdBy)
      */
     @IdView("bizProjectsForCreatedBy")
     val bizProjectIdsForCreatedBy: List<Int>
@@ -339,7 +339,7 @@ interface SysUser : BaseEntity {
     val bizProjectsForModifiedBy: List<BizProject>
 
     /**
-     * 项目 ID 视图 (MappedBy BizProject.modifiedBy)
+     * 项目 ID View (MappedBy BizProject.modifiedBy)
      */
     @IdView("bizProjectsForModifiedBy")
     val bizProjectIdsForModifiedBy: List<Int>
@@ -351,7 +351,7 @@ interface SysUser : BaseEntity {
     val sysUsersForCreatedBy: List<SysUser>
 
     /**
-     * 用户 ID 视图 (MappedBy SysUser.createdBy)
+     * 用户 ID View (MappedBy SysUser.createdBy)
      */
     @IdView("sysUsersForCreatedBy")
     val sysUserIdsForCreatedBy: List<Int>
@@ -363,7 +363,7 @@ interface SysUser : BaseEntity {
     val sysUsersForModifiedBy: List<SysUser>
 
     /**
-     * 用户 ID 视图 (MappedBy SysUser.modifiedBy)
+     * 用户 ID View (MappedBy SysUser.modifiedBy)
      */
     @IdView("sysUsersForModifiedBy")
     val sysUserIdsForModifiedBy: List<Int>

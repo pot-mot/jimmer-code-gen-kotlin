@@ -1,5 +1,6 @@
 package top.potmot.core.database.generate
 
+import top.potmot.core.database.generate.utils.toFlat
 import top.potmot.enumeration.TableType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.GenerateTableDefineException
@@ -20,7 +21,7 @@ abstract class TableDefineGenerator {
     ): List<Pair<String, String>> {
         val fullTables = tables
             .filter { it.type != TableType.SUPER_TABLE }
-            .map { it.toFull() }
+            .map { it.toFlat() }
 
         val result = listOf(
             formatFileName("all-tables") to stringify(fullTables)

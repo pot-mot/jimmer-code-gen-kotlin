@@ -11,12 +11,12 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.utils.string.entityNameToTableName
 
 object JavaServiceGenerator : ServiceGenerator() {
-    override fun generateService(
+    override fun getFileSuffix() = ".java"
+
+    override fun stringifyService(
         entity: GenEntityBusinessView,
-        withPath: Boolean
-    ): Pair<String, String> {
+    ): String {
         val serviceName = entity.serviceName
-        val fileName = "${if (withPath) formatFilePath(entity.packagePath) else ""}$serviceName.java"
 
         val (_, servicePackage,  _, exceptionPackage, dtoPackage) = entity.packages
         val (_, listView, detailView, insertInput, updateInput, spec) = entity.dto
@@ -27,7 +27,7 @@ object JavaServiceGenerator : ServiceGenerator() {
         val idName = idProperty.name
         val idType = "${if (idProperty.typeNotNull) "" else "@Nullable\n"}${idProperty.type}"
 
-        return fileName to """
+        return """
 package ${servicePackage};
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
