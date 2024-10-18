@@ -1,14 +1,13 @@
 package top.potmot.enumeration
 
-enum class GenerateType {
-    ALL,
+enum class GenerateTag {
     BackEnd,
-    DDL,
+    Table,
     Enum,
     Entity,
     Service,
-    DTO,
     FrontEnd,
-    EnumComponent,
+    DTO,
     View,
+    Component,
 }

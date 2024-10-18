@@ -25,6 +25,7 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenTableGenerateView
+import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.extension.merge
 import top.potmot.entity.id
 import top.potmot.entity.modelId
@@ -32,6 +33,7 @@ import top.potmot.entity.table
 import top.potmot.entity.type
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
+import top.potmot.enumeration.GenerateTag
 import top.potmot.enumeration.GenerateType
 import top.potmot.enumeration.TableType
 import top.potmot.enumeration.ViewType
@@ -51,52 +53,91 @@ class GenerateService(
         @RequestParam id: Long,
         @RequestParam types: List<GenerateType>,
         @RequestParam(required = false) properties: GenConfigProperties? = null,
-    ): List<Pair<String, String>> =
+    ): List<GenerateFile> =
         useContext(
             sqlClient.getModelProperties(id)?.merge(properties)
                 ?: throw GenerateException.modelNotFound("modelId $id")
         ) { context ->
-            val result = mutableListOf<Pair<String, String>>()
+            val result = mutableListOf<GenerateFile>()
 
             val languageDir by lazy { context.language.name.lowercase() }
 
             val tables by lazy { sqlClient.listTable(id) }
             val entityGenerateViews by lazy { sqlClient.listEntity<GenEntityGenerateView>(id) }
-            val entityBusinessViews by lazy { sqlClient.listEntity<GenEntityBusinessView>(id) {
-                where(table.table.type ne TableType.SUPER_TABLE)
-            } }
+            val entityBusinessViews by lazy {
+                sqlClient.listEntity<GenEntityBusinessView>(id) {
+                    where(table.table.type ne TableType.SUPER_TABLE)
+                }
+            }
             val enums by lazy { sqlClient.listEnum(id) }
 
             val typeSet = types.toSet()
             val containsAll = GenerateType.ALL in typeSet
+            val containsBackEnd = GenerateType.BackEnd in typeSet
+            val containsFrontEnd = GenerateType.FrontEnd in typeSet
 
-            if (containsAll || GenerateType.DDL in typeSet) {
+            if (containsAll || containsBackEnd || GenerateType.DDL in typeSet) {
                 result += generateTableDefine(tables, context.dataSourceType)
-                    .map { "ddl/${it.first}" to it.second }
+                    .map {
+                        GenerateFile(
+                            "ddl/${it.first}", it.second,
+                            listOf(GenerateTag.BackEnd, GenerateTag.Table)
+                        )
+                    }
             }
-            if (containsAll || GenerateType.Enum in typeSet) {
+            if (containsAll || containsBackEnd || GenerateType.Enum in typeSet) {
                 result += generateEnumCode(enums, context.language)
-                    .map { "${languageDir}/${it.first}" to it.second }
+                    .map {
+                        GenerateFile(
+                            "${languageDir}/${it.first}", it.second,
+                            listOf(GenerateTag.BackEnd, GenerateTag.Enum)
+                        )
+                    }
             }
-            if (containsAll || GenerateType.Entity in typeSet) {
+            if (containsAll || containsBackEnd || GenerateType.Entity in typeSet) {
                 result += generateEntityCode(entityGenerateViews, context.language)
-                    .map { "${languageDir}/${it.first}" to it.second }
+                    .map {
+                        GenerateFile(
+                            "${languageDir}/${it.first}", it.second,
+                            listOf(GenerateTag.BackEnd, GenerateTag.Entity)
+                        )
+                    }
             }
-            if (containsAll || GenerateType.Service in typeSet) {
+            if (containsAll || containsBackEnd || GenerateType.Service in typeSet) {
                 result += generateServiceCode(entityBusinessViews, context.language)
-                    .map { "${languageDir}/${it.first}" to it.second }
+                    .map {
+                        GenerateFile(
+                            "${languageDir}/${it.first}", it.second,
+                            listOf(GenerateTag.BackEnd, GenerateTag.Service)
+                        )
+                    }
             }
-            if (containsAll || GenerateType.DTO in typeSet) {
+            if (containsAll || containsBackEnd || GenerateType.DTO in typeSet) {
                 result += generateDto(entityBusinessViews)
-                    .map { "dto/${it.first}" to it.second }
+                    .map {
+                        GenerateFile(
+                            "dto/${it.first}", it.second,
+                            listOf(GenerateTag.BackEnd, GenerateTag.DTO)
+                        )
+                    }
             }
-            if (containsAll || GenerateType.EnumComponent in typeSet) {
+            if (containsAll || containsFrontEnd || GenerateType.EnumComponent in typeSet) {
                 result += generateEnumComponent(enums)
-                    .map { "view/src/${it.first}" to it.second }
+                    .map {
+                        GenerateFile(
+                            "view/src/${it.first}", it.second,
+                            listOf(GenerateTag.FrontEnd, GenerateTag.Enum, GenerateTag.Component)
+                        )
+                    }
             }
-            if (containsAll || GenerateType.View in typeSet) {
+            if (containsAll || containsFrontEnd || GenerateType.View in typeSet) {
                 result += generateView(entityBusinessViews)
-                    .map { "view/src/${it.first}" to it.second }
+                    .map {
+                        GenerateFile(
+                            "view/src/${it.first}", it.second,
+                            listOf(GenerateTag.FrontEnd, GenerateTag.View, GenerateTag.Component)
+                        )
+                    }
             }
 
             result
