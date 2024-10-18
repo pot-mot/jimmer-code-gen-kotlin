@@ -24,7 +24,7 @@ import top.potmot.util.replaceSinceTimeComment
  * 并实现 EntityResult、TableDefineResult 匹配特定属性集的输出
  */
 @ActiveProfiles("test", "h2", "hide-sql")
-abstract class BaseTest {
+abstract class AbstractModelTest {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     @Autowired

@@ -1,10 +1,10 @@
 package top.potmot.business.single
 
-import top.potmot.business.BaseTest
+import top.potmot.business.AbstractEntityTest
 import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.ViewType
 
-class TestSingle : BaseTest() {
+class TestSingle : AbstractEntityTest() {
     override fun getTestEntityJson() = entityData
 
     override fun getDtoResult() = dtoResult

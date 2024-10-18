@@ -15,7 +15,7 @@ import top.potmot.enumeration.ViewType
 import top.potmot.utils.json.commonObjectMapper
 
 
-abstract class BaseTest {
+abstract class AbstractEntityTest {
     abstract fun getTestEntityJson(): String
 
     private fun getTestEntity(): GenEntityBusinessView =

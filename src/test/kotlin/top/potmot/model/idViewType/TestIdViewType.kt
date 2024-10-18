@@ -2,14 +2,14 @@ package top.potmot.model.idViewType
 
 import org.springframework.boot.test.context.SpringBootTest
 import top.potmot.enumeration.GenLanguage
-import top.potmot.model.associations.AssociationsBaseTest
+import top.potmot.model.associations.AbstractAssociationsTest
 import top.potmot.model.createBaseModel
 import top.potmot.entity.dto.GenConfig
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.model.languageProperties
 
 @SpringBootTest
-class TestIdViewType : AssociationsBaseTest() {
+class TestIdViewType : AbstractAssociationsTest() {
     override fun getBaseModel() =
         createBaseModel(GRAPH_DATA)
 

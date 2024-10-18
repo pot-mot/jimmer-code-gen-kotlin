@@ -3,13 +3,13 @@ package top.potmot.model.associations.logicalDelete.manyToOne
 import org.springframework.boot.test.context.SpringBootTest
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
-import top.potmot.model.associations.AssociationsBaseTest
+import top.potmot.model.associations.AbstractAssociationsTest
 import top.potmot.model.associations.logicalDelete.MANY_TO_ONE
 import top.potmot.model.createBaseModel
 import top.potmot.entity.dto.GenConfig
 
 @SpringBootTest
-class TestManyToOneAssociations : AssociationsBaseTest() {
+class TestManyToOneAssociations : AbstractAssociationsTest() {
     override fun getBaseModel() =
         createBaseModel(MANY_TO_ONE)
 

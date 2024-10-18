@@ -3,13 +3,13 @@ package top.potmot.model.associations.logicalDelete.treeNode
 import org.springframework.boot.test.context.SpringBootTest
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
-import top.potmot.model.associations.AssociationsBaseTest
+import top.potmot.model.associations.AbstractAssociationsTest
 import top.potmot.model.createBaseModel
 import top.potmot.entity.dto.GenConfig
 import top.potmot.model.associations.logicalDelete.TREE_NODE
 
 @SpringBootTest
-class TestTreeNodeAssociations : AssociationsBaseTest() {
+class TestTreeNodeAssociations : AbstractAssociationsTest() {
     override fun getBaseModel() =
         createBaseModel(TREE_NODE)
 
