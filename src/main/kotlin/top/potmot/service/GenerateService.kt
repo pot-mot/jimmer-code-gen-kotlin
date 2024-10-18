@@ -141,7 +141,7 @@ class GenerateService(
             val enums = sqlClient.getEnums(model.enumIds)
 
             flatListOf(
-                generateServiceCode(entities, true).map { "kotlin/${it.first}" to it.second },
+                generateServiceCode(entities, true).map { "${getContextOrGlobal().language.name.lowercase()}/${it.first}" to it.second },
                 generateDto(entities).map { "dto/${it.first}" to it.second },
                 generateView(entities).map { "view/src/${it.first}" to it.second},
                 generateEnumView(enums).map { "view/src/${it.first}" to it.second}
