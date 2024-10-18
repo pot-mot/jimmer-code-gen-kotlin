@@ -26,8 +26,8 @@ abstract class ViewGenerator {
         val (_, dir, select, view) = enum.component
 
         return listOf(
-            "/components/${dir}/${select}.${getFileSuffix()}" to stringifyEnumSelect(enum),
-            "/components/${dir}/${view}.${getFileSuffix()}" to stringifyEnumView(enum),
+            "components/${dir}/${select}.${getFileSuffix()}" to stringifyEnumSelect(enum),
+            "components/${dir}/${view}.${getFileSuffix()}" to stringifyEnumView(enum),
         )
     }
     
@@ -46,10 +46,10 @@ abstract class ViewGenerator {
         val (_, dir, table, form, queryForm, page) = flatEntity.component
 
         return listOf(
-            "/components/${dir}/${table}.${getFileSuffix()}" to stringifyTable(flatEntity),
-            "/components/${dir}/${form}.${getFileSuffix()}" to stringifyForm(flatEntity),
-            "/components/${dir}/${queryForm}.${getFileSuffix()}" to stringifyQueryForm(flatEntity),
-            "/pages/${dir}/${page}.${getFileSuffix()}" to stringifyPage(flatEntity)
+            "components/${dir}/${table}.${getFileSuffix()}" to stringifyTable(flatEntity),
+            "components/${dir}/${form}.${getFileSuffix()}" to stringifyForm(flatEntity),
+            "components/${dir}/${queryForm}.${getFileSuffix()}" to stringifyQueryForm(flatEntity),
+            "pages/${dir}/${page}.${getFileSuffix()}" to stringifyPage(flatEntity)
         )
     }
 
