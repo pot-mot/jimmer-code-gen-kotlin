@@ -1,7 +1,7 @@
 package top.potmot.model.longNames
 
 const val javaUpperResult = """
-[(top/potmot/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.java, package top.potmot;
+[(java/top/potmot/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -29,7 +29,7 @@ public interface Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddd
 """
 
 const val javaLowerResult = """
-[(top/potmot/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.java, package top.potmot;
+[(java/top/potmot/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -56,7 +56,7 @@ public interface Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddd
 """
 
 const val kotlinUpperResult = """
-[(top/potmot/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.kt, package top.potmot
+[(kotlin/top/potmot/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -84,7 +84,7 @@ interface Sdaadsdassdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 """
 
 const val kotlinLowerResult = """
-[(top/potmot/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.kt, package top.potmot
+[(kotlin/top/potmot/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity

@@ -1,7 +1,7 @@
 package top.potmot.model.associations.logicalDelete.treeNode
 
 const val javaRealFkResult = """
-[(top/potmot/TreeNode.java, package top.potmot;
+[(java/top/potmot/TreeNode.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -54,7 +54,7 @@ public interface TreeNode {
 """
 
 const val javaFakeFkResult = """
-[(top/potmot/TreeNode.java, package top.potmot;
+[(java/top/potmot/TreeNode.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -109,7 +109,7 @@ public interface TreeNode {
 """
 
 const val kotlinRealFkResult = """
-[(top/potmot/TreeNode.kt, package top.potmot
+[(kotlin/top/potmot/TreeNode.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -158,7 +158,7 @@ interface TreeNode {
 """
 
 const val kotlinFakeFkResult = """
-[(top/potmot/TreeNode.kt, package top.potmot
+[(kotlin/top/potmot/TreeNode.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity

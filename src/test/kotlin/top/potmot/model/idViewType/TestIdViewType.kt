@@ -21,7 +21,7 @@ class TestIdViewType : AbstractAssociationsTest() {
 
     override fun getTableDefineResult(config: GenConfig) =
 """
-[(all-tables.sql, DROP TABLE IF EXISTS `SOURCE`;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS `SOURCE`;
 DROP TABLE IF EXISTS `TARGET`;
 
 CREATE TABLE `SOURCE` (
@@ -48,7 +48,7 @@ ALTER TABLE `SOURCE`
         FOREIGN KEY (`TARGET_ID`)
             REFERENCES `TARGET` (`ID`);
 
-), (source.sql, DROP TABLE IF EXISTS `SOURCE`;
+), (ddl/source.sql, DROP TABLE IF EXISTS `SOURCE`;
 
 CREATE TABLE `SOURCE` (
     `ID` BIGINT NOT NULL AUTO_INCREMENT,
@@ -65,7 +65,7 @@ ALTER TABLE `SOURCE`
         FOREIGN KEY (`TARGET_ID`)
             REFERENCES `TARGET` (`ID`);
 
-), (target.sql, DROP TABLE IF EXISTS `TARGET`;
+), (ddl/target.sql, DROP TABLE IF EXISTS `TARGET`;
 
 CREATE TABLE `TARGET` (
     `ID` INT NOT NULL AUTO_INCREMENT,

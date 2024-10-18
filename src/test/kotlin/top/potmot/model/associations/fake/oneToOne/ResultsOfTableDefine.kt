@@ -1,7 +1,7 @@
 package top.potmot.model.associations.fake.oneToOne
 
 const val mysqlResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS `USER_DETAIL`;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS `USER_DETAIL`;
 DROP TABLE IF EXISTS `USER`;
 
 CREATE TABLE `USER_DETAIL` (
@@ -28,7 +28,7 @@ CREATE TABLE `USER` (
 --         FOREIGN KEY (`USER_ID`)
 --             REFERENCES `USER` (`ID`);
 
-), (user.sql, DROP TABLE IF EXISTS `USER`;
+), (ddl/user.sql, DROP TABLE IF EXISTS `USER`;
 
 CREATE TABLE `USER` (
     `ID` BIGINT NOT NULL AUTO_INCREMENT,
@@ -39,7 +39,7 @@ CREATE TABLE `USER` (
   COMMENT = ''
   ROW_FORMAT = Dynamic;
 
-), (user_detail.sql, DROP TABLE IF EXISTS `USER_DETAIL`;
+), (ddl/user_detail.sql, DROP TABLE IF EXISTS `USER_DETAIL`;
 
 CREATE TABLE `USER_DETAIL` (
     `ID` BIGINT NOT NULL AUTO_INCREMENT,
@@ -60,7 +60,7 @@ CREATE TABLE `USER_DETAIL` (
 """
 
 const val postgresResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS "USER_DETAIL" CASCADE;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS "USER_DETAIL" CASCADE;
 DROP TABLE IF EXISTS "USER" CASCADE;
 
 CREATE TABLE "USER_DETAIL" (
@@ -79,14 +79,14 @@ CREATE TABLE "USER" (
 --         FOREIGN KEY ("USER_ID")
 --             REFERENCES "USER" ("ID");
 
-), (user.sql, DROP TABLE IF EXISTS "USER" CASCADE;
+), (ddl/user.sql, DROP TABLE IF EXISTS "USER" CASCADE;
 
 CREATE TABLE "USER" (
     "ID" BIGSERIAL NOT NULL,
     PRIMARY KEY ("ID")
 );
 
-), (user_detail.sql, DROP TABLE IF EXISTS "USER_DETAIL" CASCADE;
+), (ddl/user_detail.sql, DROP TABLE IF EXISTS "USER_DETAIL" CASCADE;
 
 CREATE TABLE "USER_DETAIL" (
     "ID" BIGSERIAL NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE "USER_DETAIL" (
 """
 
 const val h2Result = """
-[(all-tables.sql, DROP TABLE IF EXISTS `USER_DETAIL` CASCADE;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS `USER_DETAIL` CASCADE;
 DROP TABLE IF EXISTS `USER` CASCADE;
 
 CREATE TABLE `USER_DETAIL` (
@@ -122,14 +122,14 @@ CREATE TABLE `USER` (
 --         FOREIGN KEY (`USER_ID`)
 --             REFERENCES `USER` (`ID`);
 
-), (user.sql, DROP TABLE IF EXISTS `USER` CASCADE;
+), (ddl/user.sql, DROP TABLE IF EXISTS `USER` CASCADE;
 
 CREATE TABLE `USER` (
     `ID` BIGINT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (`ID`)
 );
 
-), (user_detail.sql, DROP TABLE IF EXISTS `USER_DETAIL` CASCADE;
+), (ddl/user_detail.sql, DROP TABLE IF EXISTS `USER_DETAIL` CASCADE;
 
 CREATE TABLE `USER_DETAIL` (
     `ID` BIGINT NOT NULL AUTO_INCREMENT,

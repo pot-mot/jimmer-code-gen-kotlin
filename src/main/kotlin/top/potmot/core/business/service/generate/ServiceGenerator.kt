@@ -12,18 +12,16 @@ abstract class ServiceGenerator {
 
     fun generateService(
         entity: GenEntityBusinessView,
-        withPath: Boolean = false
     ): Pair<String, String> {
         val flatEntity = entity.toFlat()
 
-        return "${if (withPath) entity.filePath else ""}${entity.serviceName}${getFileSuffix()}" to stringifyService(flatEntity)
+        return "${entity.filePath}${entity.serviceName}${getFileSuffix()}" to stringifyService(flatEntity)
     }
 
     fun generateService(
         entities: Iterable<GenEntityBusinessView>,
-        withPath: Boolean = false
     ): List<Pair<String, String>> =
         entities
-            .map { generateService(it, withPath) }
+            .map { generateService(it) }
             .distinct().sortedBy { it.first }
 }

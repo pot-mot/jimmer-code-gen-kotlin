@@ -1,7 +1,7 @@
 package top.potmot.model.longNames
 
 const val mysqlLowerResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3`;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3`;
 
 CREATE TABLE `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3` (
     `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3` BIGINT NOT NULL AUTO_INCREMENT,
@@ -16,7 +16,7 @@ CREATE TABLE `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3` 
 CREATE UNIQUE INDEX `uidx_first_column` ON `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3` (`sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_d409b7e82`);
 CREATE INDEX `idx_multi_columns` ON `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3` (`sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3`, `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_d409b7e82`);
 
-), (sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3`;
+), (ddl/sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3`;
 
 CREATE TABLE `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3` (
     `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b3` BIGINT NOT NULL AUTO_INCREMENT,
@@ -35,7 +35,7 @@ CREATE INDEX `idx_multi_columns` ON `sdaadsdassddddddddddddddddddddddddddddddddd
 """
 
 const val mysqlUpperResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3`;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3`;
 
 CREATE TABLE `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3` (
     `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3` BIGINT NOT NULL AUTO_INCREMENT,
@@ -50,7 +50,7 @@ CREATE TABLE `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3` 
 CREATE UNIQUE INDEX `UIDX_FIRST_COLUMN` ON `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3` (`SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_D409B7E82`);
 CREATE INDEX `IDX_MULTI_COLUMNS` ON `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3` (`SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3`, `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_D409B7E82`);
 
-), (sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3`;
+), (ddl/sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3`;
 
 CREATE TABLE `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3` (
     `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B3` BIGINT NOT NULL AUTO_INCREMENT,
@@ -69,7 +69,7 @@ CREATE INDEX `IDX_MULTI_COLUMNS` ON `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
 """
 
 const val postgresLowerResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b" CASCADE;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b" CASCADE;
 
 CREATE TABLE "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b" (
     "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b" BIGSERIAL NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b" (
 CREATE UNIQUE INDEX "uidx_first_column" ON "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b" ("sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_d409b7e8");
 CREATE INDEX "idx_multi_columns" ON "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b" ("sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b", "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_d409b7e8");
 
-), (sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b" CASCADE;
+), (ddl/sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b" CASCADE;
 
 CREATE TABLE "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b" (
     "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b" BIGSERIAL NOT NULL,
@@ -95,7 +95,7 @@ CREATE INDEX "idx_multi_columns" ON "sdaadsdassddddddddddddddddddddddddddddddddd
 """
 
 const val postgresUpperResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B" CASCADE;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B" CASCADE;
 
 CREATE TABLE "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B" (
     "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B" BIGSERIAL NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B" (
 CREATE UNIQUE INDEX "UIDX_FIRST_COLUMN" ON "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B" ("SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_D409B7E8");
 CREATE INDEX "IDX_MULTI_COLUMNS" ON "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B" ("SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B", "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_D409B7E8");
 
-), (sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B" CASCADE;
+), (ddl/sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B" CASCADE;
 
 CREATE TABLE "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B" (
     "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B" BIGSERIAL NOT NULL,
@@ -121,7 +121,7 @@ CREATE INDEX "IDX_MULTI_COLUMNS" ON "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
 """
 
 const val h2LowerCaseResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS `sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd` CASCADE;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS `sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd` CASCADE;
 
 CREATE TABLE `sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd` (
     `sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd` BIGINT NOT NULL AUTO_INCREMENT,
@@ -132,7 +132,7 @@ CREATE TABLE `sdaadsdassdddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 CREATE UNIQUE INDEX `uidx_first_column` ON `sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd` (`sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd1`);
 CREATE INDEX `idx_multi_columns` ON `sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd` (`sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd`, `sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd1`);
 
-), (sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS `sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd` CASCADE;
+), (ddl/sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS `sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd` CASCADE;
 
 CREATE TABLE `sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd` (
     `sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd` BIGINT NOT NULL AUTO_INCREMENT,
@@ -147,7 +147,7 @@ CREATE INDEX `idx_multi_columns` ON `sdaadsdassddddddddddddddddddddddddddddddddd
 """
 
 const val h2UpperCaseResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD` CASCADE;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD` CASCADE;
 
 CREATE TABLE `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD` (
     `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD` BIGINT NOT NULL AUTO_INCREMENT,
@@ -158,7 +158,7 @@ CREATE TABLE `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
 CREATE UNIQUE INDEX `UIDX_FIRST_COLUMN` ON `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD` (`SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD1`);
 CREATE INDEX `IDX_MULTI_COLUMNS` ON `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD` (`SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD`, `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD1`);
 
-), (sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD` CASCADE;
+), (ddl/sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.sql, DROP TABLE IF EXISTS `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD` CASCADE;
 
 CREATE TABLE `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD` (
     `SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD` BIGINT NOT NULL AUTO_INCREMENT,

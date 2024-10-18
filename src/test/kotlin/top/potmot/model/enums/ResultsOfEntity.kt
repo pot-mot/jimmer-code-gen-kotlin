@@ -1,7 +1,7 @@
 package top.potmot.model.enums
 
 const val javaResult = """
-[(top/potmot/EnumCommon.java, package top.potmot;
+[(java/top/potmot/EnumCommon.java, package top.potmot;
 
 
 public enum EnumCommon {
@@ -9,7 +9,7 @@ public enum EnumCommon {
 
     item2,
 }
-), (top/potmot/EnumName.java, package top.potmot;
+), (java/top/potmot/EnumName.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.EnumType;
 import org.babyfish.jimmer.sql.EnumItem;
@@ -22,7 +22,7 @@ public enum EnumName {
     @EnumItem(name = "item2")
     item2,
 }
-), (top/potmot/EnumOrdinal.java, package top.potmot;
+), (java/top/potmot/EnumOrdinal.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.EnumType;
 import org.babyfish.jimmer.sql.EnumItem;
@@ -35,7 +35,7 @@ public enum EnumOrdinal {
     @EnumItem(ordinal = 1)
     item2,
 }
-), (top/potmot/EnumTable.java, package top.potmot;
+), (java/top/potmot/EnumTable.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -62,7 +62,7 @@ public interface EnumTable {
 """
 
 const val kotlinResult = """
-[(top/potmot/EnumCommon.kt, package top.potmot
+[(kotlin/top/potmot/EnumCommon.kt, package top.potmot
 
 
 enum class EnumCommon {
@@ -70,7 +70,7 @@ enum class EnumCommon {
 
     item2,
 }
-), (top/potmot/EnumName.kt, package top.potmot
+), (kotlin/top/potmot/EnumName.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.EnumType
 import org.babyfish.jimmer.sql.EnumItem
@@ -83,7 +83,7 @@ enum class EnumName {
     @EnumItem(name = "item2")
     item2,
 }
-), (top/potmot/EnumOrdinal.kt, package top.potmot
+), (kotlin/top/potmot/EnumOrdinal.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.EnumType
 import org.babyfish.jimmer.sql.EnumItem
@@ -96,7 +96,7 @@ enum class EnumOrdinal {
     @EnumItem(ordinal = 1)
     item2,
 }
-), (top/potmot/EnumTable.kt, package top.potmot
+), (kotlin/top/potmot/EnumTable.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity

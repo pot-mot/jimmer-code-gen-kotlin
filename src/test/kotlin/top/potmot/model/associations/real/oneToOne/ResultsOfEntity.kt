@@ -1,7 +1,7 @@
 package top.potmot.model.associations.real.oneToOne
 
 const val kotlinRealFkResult = """
-[(top/potmot/User.kt, package top.potmot
+[(kotlin/top/potmot/User.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -29,7 +29,7 @@ interface User {
     @IdView("userDetail")
     val userDetailId: Long?
 }
-), (top/potmot/UserDetail.kt, package top.potmot
+), (kotlin/top/potmot/UserDetail.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -66,7 +66,7 @@ interface UserDetail {
 """
 
 const val kotlinFakeFkResult = """
-[(top/potmot/User.kt, package top.potmot
+[(kotlin/top/potmot/User.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -94,7 +94,7 @@ interface User {
     @IdView("userDetail")
     val userDetailId: Long?
 }
-), (top/potmot/UserDetail.kt, package top.potmot
+), (kotlin/top/potmot/UserDetail.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -133,7 +133,7 @@ interface UserDetail {
 """
 
 const val javaRealFkResult = """
-[(top/potmot/User.java, package top.potmot;
+[(java/top/potmot/User.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -164,7 +164,7 @@ public interface User {
     @Nullable
     Long userDetailId();
 }
-), (top/potmot/UserDetail.java, package top.potmot;
+), (java/top/potmot/UserDetail.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -201,7 +201,7 @@ public interface UserDetail {
 """
 
 const val javaFakeFkResult = """
-[(top/potmot/User.java, package top.potmot;
+[(java/top/potmot/User.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;
@@ -232,7 +232,7 @@ public interface User {
     @Nullable
     Long userDetailId();
 }
-), (top/potmot/UserDetail.java, package top.potmot;
+), (java/top/potmot/UserDetail.java, package top.potmot;
 
 import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.Entity;

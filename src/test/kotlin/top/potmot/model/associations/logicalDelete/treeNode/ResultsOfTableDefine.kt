@@ -1,7 +1,7 @@
 package top.potmot.model.associations.logicalDelete.treeNode
 
 const val mysqlResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS `TREE_NODE`;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS `TREE_NODE`;
 
 CREATE TABLE `TREE_NODE` (
     `ID` BIGINT NOT NULL AUTO_INCREMENT,
@@ -19,7 +19,7 @@ ALTER TABLE `TREE_NODE`
         FOREIGN KEY (`PARENT_ID`)
             REFERENCES `TREE_NODE` (`ID`);
 
-), (tree_node.sql, DROP TABLE IF EXISTS `TREE_NODE`;
+), (ddl/tree_node.sql, DROP TABLE IF EXISTS `TREE_NODE`;
 
 CREATE TABLE `TREE_NODE` (
     `ID` BIGINT NOT NULL AUTO_INCREMENT,
@@ -41,7 +41,7 @@ ALTER TABLE `TREE_NODE`
 """
 
 const val postgresResult = """
-[(all-tables.sql, DROP TABLE IF EXISTS "TREE_NODE" CASCADE;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS "TREE_NODE" CASCADE;
 
 CREATE TABLE "TREE_NODE" (
     "ID" BIGSERIAL NOT NULL,
@@ -55,7 +55,7 @@ ALTER TABLE "TREE_NODE"
         FOREIGN KEY ("PARENT_ID")
             REFERENCES "TREE_NODE" ("ID");
 
-), (tree_node.sql, DROP TABLE IF EXISTS "TREE_NODE" CASCADE;
+), (ddl/tree_node.sql, DROP TABLE IF EXISTS "TREE_NODE" CASCADE;
 
 CREATE TABLE "TREE_NODE" (
     "ID" BIGSERIAL NOT NULL,
@@ -73,7 +73,7 @@ ALTER TABLE "TREE_NODE"
 """
 
 const val h2Result = """
-[(all-tables.sql, DROP TABLE IF EXISTS `TREE_NODE` CASCADE;
+[(ddl/all-tables.sql, DROP TABLE IF EXISTS `TREE_NODE` CASCADE;
 
 CREATE TABLE `TREE_NODE` (
     `ID` BIGINT NOT NULL AUTO_INCREMENT,
@@ -87,7 +87,7 @@ ALTER TABLE `TREE_NODE`
         FOREIGN KEY (`PARENT_ID`)
             REFERENCES `TREE_NODE` (`ID`);
 
-), (tree_node.sql, DROP TABLE IF EXISTS `TREE_NODE` CASCADE;
+), (ddl/tree_node.sql, DROP TABLE IF EXISTS `TREE_NODE` CASCADE;
 
 CREATE TABLE `TREE_NODE` (
     `ID` BIGINT NOT NULL AUTO_INCREMENT,

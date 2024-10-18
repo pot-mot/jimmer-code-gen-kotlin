@@ -1,6 +1,5 @@
 package top.potmot.service
 
-import org.babyfish.jimmer.kt.merge
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
@@ -20,12 +19,14 @@ import top.potmot.entity.GenTypeMapping
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
+import top.potmot.entity.extension.merge
 import top.potmot.entity.id
 import top.potmot.entity.modelId
 import top.potmot.entity.orderKey
 import top.potmot.entity.tableId
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertEntityException
+import top.potmot.error.ConvertException
 
 @RestController
 @RequestMapping("/convert")
@@ -38,15 +39,15 @@ class ConvertService(
     fun convertTable(
         @RequestBody tableIds: List<Long>,
         @RequestParam(required = false) modelId: Long?,
-        @RequestParam(required = false) properties: GenConfigProperties?,
+        @RequestParam(required = false) properties: GenConfigProperties? = null,
     ): List<Long> {
         val result = mutableListOf<Long>()
 
         transactionTemplate.execute {
             useContext(properties) {
-                val tables = sqlClient.getTableViews(tableIds)
+                val tables = sqlClient.listTable(tableIds)
 
-                val typeMappings = sqlClient.getTypeMappings()
+                val typeMappings = sqlClient.listTypeMapping()
 
                 val tableEntityPairs = mutableListOf<Pair<GenTableConvertView, GenEntity>>()
 
@@ -62,7 +63,7 @@ class ConvertService(
                 tableEntityPairs.forEach { (table, entity) ->
                     val superTableIds = table.superTableIds
 
-                    val superEntityIds = sqlClient.getEntityIds(superTableIds)
+                    val superEntityIds = sqlClient.listEntityId(superTableIds)
 
                     if (superTableIds.size != superEntityIds.size)
                         throw ConvertEntityException.superTable("SuperTableIds [${superTableIds}] can't match superEntityIds [${superEntityIds}]")
@@ -77,20 +78,16 @@ class ConvertService(
     }
 
     @PostMapping("/model")
-    @Throws(ConvertEntityException::class, ColumnTypeException::class)
+    @Throws(ConvertException::class, ConvertEntityException::class, ColumnTypeException::class)
     fun convertModel(
         @RequestParam id: Long,
-        @RequestParam(required = false) properties: GenConfigProperties?,
-    ): List<Long> {
-        val currentProperties = sqlClient.getModelProperties(id)
-        val tableIds = sqlClient.getModelTableIds(id)
-
-        val mergedProperties = GenConfigProperties(
-            merge(currentProperties?.toEntity(), properties?.toEntity())
-        )
-
-        return convertTable(tableIds, id, mergedProperties)
-    }
+        @RequestParam(required = false) properties: GenConfigProperties? = null,
+    ): List<Long> = convertTable(
+        sqlClient.listTableId(id),
+        id,
+        sqlClient.getModelProperties(id)?.merge(properties)
+            ?: throw ConvertException.modelNotFound("modelId $id")
+    )
 
     private fun KSqlClient.getModelProperties(id: Long) =
         createQuery(GenModel::class) {
@@ -98,20 +95,20 @@ class ConvertService(
             select(table.fetch(GenConfigProperties::class))
         }.fetchOneOrNull()
 
-    private fun KSqlClient.getModelTableIds(modelId: Long) =
+    private fun KSqlClient.listTableId(modelId: Long) =
         createQuery(GenTable::class) {
             where(table.modelId eq modelId)
             select(table.id)
         }.execute()
 
-    private fun KSqlClient.getTableViews(ids: List<Long>): List<GenTableConvertView> =
+    private fun KSqlClient.listTable(ids: List<Long>): List<GenTableConvertView> =
         if (ids.isEmpty()) emptyList()
         else createQuery(GenTable::class) {
             where(table.id valueIn ids)
             select(table.fetch(GenTableConvertView::class))
         }.execute()
 
-    private fun KSqlClient.getEntityIds(tableIds: List<Long>): List<Long> =
+    private fun KSqlClient.listEntityId(tableIds: List<Long>): List<Long> =
         if (tableIds.isEmpty()) emptyList()
         else createQuery(GenEntity::class) {
             where(
@@ -120,7 +117,7 @@ class ConvertService(
             select(table.id)
         }.execute()
 
-    private fun KSqlClient.getTypeMappings(): List<GenTypeMappingView> =
+    private fun KSqlClient.listTypeMapping(): List<GenTypeMappingView> =
         createQuery(GenTypeMapping::class) {
             orderBy(table.orderKey)
             select(table.fetch(GenTypeMappingView::class))

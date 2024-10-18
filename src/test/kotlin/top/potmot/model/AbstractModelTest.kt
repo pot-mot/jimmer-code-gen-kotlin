@@ -12,6 +12,7 @@ import top.potmot.entity.GenModel
 import top.potmot.entity.dto.GenConfig
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenModelInput
+import top.potmot.enumeration.GenerateType
 import top.potmot.service.ConvertService
 import top.potmot.service.GenerateService
 import top.potmot.service.ModelService
@@ -57,7 +58,7 @@ abstract class AbstractModelTest {
 
         val id = modelService.save(model)
         convertService.convertModel(id, null)
-        val entityCodes = generateService.generateModelEntity(id, true)
+        val entityCodes = generateService.generateModel(id, listOf(GenerateType.Entity, GenerateType.Enum))
         val deleteResult = sqlClient.deleteById(GenModel::class, id)
 
         assertEquals(
@@ -81,7 +82,7 @@ abstract class AbstractModelTest {
         val config = GenConfig(entity)
 
         val id = modelService.save(model)
-        val tableDefineCodes = generateService.generateModelSql(id)
+        val tableDefineCodes = generateService.generateModel(id, listOf(GenerateType.DDL))
         val deleteResult = sqlClient.deleteById(GenModel::class, id)
 
         assertEquals(

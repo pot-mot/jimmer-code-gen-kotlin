@@ -5,30 +5,25 @@ import top.potmot.config.GlobalGenConfig
 import top.potmot.entity.dto.GenConfig
 import top.potmot.entity.dto.GenConfigProperties
 
-private val contextMap = mutableMapOf<Long, GenConfig>()
+private val contextLocal = ThreadLocal<GenConfig>()
 
-fun getContext(id: Long = Thread.currentThread().id) =
-    contextMap[id]
-
-fun getContextOrGlobal(id: Long = Thread.currentThread().id) =
-    contextMap[id] ?: GenConfig(GlobalGenConfig.toEntity())
-
-fun cleanContext(id: Long = Thread.currentThread().id) {
-    contextMap.remove(id)
-}
+fun getContextOrGlobal() =
+    contextLocal.get() ?: GenConfig(GlobalGenConfig.toEntity())
 
 fun <T> useContext(
     initProperties: GenConfigProperties? = GlobalGenConfig.toProperties(),
-    id: Long = Thread.currentThread().id,
-    block: () -> T
+    block: (context: GenConfig) -> T
 ): T {
-    val context = merge(
+    val merged = merge(
         GlobalGenConfig.toEntity(),
         initProperties?.toEntity()
     )
-    contextMap[id] = GenConfig(context)
-    val temp = block()
-    cleanContext(id)
+
+    val context = GenConfig(merged)
+
+    contextLocal.set(context)
+    val temp = block(context)
+    contextLocal.remove()
 
     return temp
 }

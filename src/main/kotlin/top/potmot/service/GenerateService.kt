@@ -3,152 +3,97 @@ package top.potmot.service
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
-import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
-import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.context.getContextOrGlobal
 import top.potmot.context.useContext
 import top.potmot.core.business.dto.generate.DtoGenerator
 import top.potmot.core.business.service.generate.getServiceGenerator
 import top.potmot.core.business.view.generate.getViewGenerator
 import top.potmot.core.database.generate.getTableDefineGenerator
 import top.potmot.core.entity.generate.getEntityGenerator
-import top.potmot.enumeration.DataSourceType
-import top.potmot.enumeration.GenLanguage
-import top.potmot.error.ColumnTypeException
-import top.potmot.error.ConvertEntityException
-import top.potmot.error.GenerateEntityException
-import top.potmot.error.GenerateTableDefineException
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenEnum
 import top.potmot.entity.GenModel
-import top.potmot.entity.GenModelFetcherDsl
 import top.potmot.entity.GenTable
-import top.potmot.entity.by
-import top.potmot.entity.dto.GenConfig
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenTableGenerateView
+import top.potmot.entity.extension.merge
 import top.potmot.entity.id
+import top.potmot.entity.modelId
+import top.potmot.enumeration.DataSourceType
+import top.potmot.enumeration.GenLanguage
+import top.potmot.enumeration.GenerateType
 import top.potmot.enumeration.ViewType
-import top.potmot.utils.list.flatListOf
+import top.potmot.error.ColumnTypeException
+import top.potmot.error.GenerateEntityException
+import top.potmot.error.GenerateException
+import top.potmot.error.GenerateTableDefineException
 
 @RestController
 @RequestMapping("/preview")
 class GenerateService(
     @Autowired val sqlClient: KSqlClient
 ) {
-    @GetMapping("/tableDefine")
-    @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
-    fun generateTableDefine(
-        @RequestParam tableIds: List<Long>,
-        @RequestParam(required = false) properties: GenConfigProperties?,
-    ): List<Pair<String, String>> =
-        useContext(properties) {
-            val tables = sqlClient.getTables(tableIds)
-            generateTableDefines(tables)
-        }
-
-    @GetMapping("/entity")
-    @Throws(GenerateEntityException::class)
-    fun generateEntity(
-        @RequestParam entityIds: List<Long>,
-        @RequestParam(required = false) withPath: Boolean?,
-        @RequestParam(required = false) properties: GenConfigProperties?,
-    ): List<Pair<String, String>> =
-        useContext(properties) {
-            val entities = sqlClient.getEntities<GenEntityGenerateView>(entityIds)
-            generateEntitiesCode(entities, withPath)
-        }
-
-    @GetMapping("/enum")
-    fun generateEnums(
-        @RequestParam enumIds: List<Long>,
-        @RequestParam(required = false) withPath: Boolean?,
-        @RequestParam(required = false) properties: GenConfigProperties?,
-    ): List<Pair<String, String>> =
-        useContext(properties) {
-            val enums = sqlClient.getEnums(enumIds)
-            generateEnumsCode(enums, withPath)
-        }
-
-    @PostMapping("/model/sql")
-    @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
-    fun generateModelSql(
+    @PostMapping("/model")
+    @Throws(GenerateException::class, GenerateEntityException::class, ColumnTypeException::class)
+    fun generateModel(
         @RequestParam id: Long,
-    ): List<Pair<String, String>> {
-        val model = sqlClient.getModel(id) {
-            allScalarFields()
-            tableIds()
-        } ?: return emptyList()
+        @RequestParam types: List<GenerateType>,
+        @RequestParam(required = false) properties: GenConfigProperties? = null,
+    ): List<Pair<String, String>> =
+        useContext(
+            sqlClient.getModelProperties(id)?.merge(properties)
+                ?: throw GenerateException.modelNotFound("modelId $id")
+        ) { context ->
+            val result = mutableListOf<Pair<String, String>>()
 
-        val properties = GenConfigProperties(model)
+            val languageDir by lazy { context.language.name.lowercase() }
 
-        return useContext(properties) {
-            val tables = sqlClient.getTables(model.tableIds)
-            generateTableDefines(tables, dataSourceType = model.dataSourceType)
+            val tables by lazy { sqlClient.listTable(id) }
+            val entityGenerateViews by lazy { sqlClient.listEntity<GenEntityGenerateView>(id) }
+            val entityBusinessViews by lazy { sqlClient.listEntity<GenEntityBusinessView>(id) }
+            val enums by lazy { sqlClient.listEnum(id) }
+
+            val typeSet = types.toSet()
+            val containsAll = GenerateType.ALL in typeSet
+
+            if (containsAll || GenerateType.DDL in typeSet) {
+                result += generateTableDefine(tables, context.dataSourceType)
+                    .map { "ddl/${it.first}" to it.second }
+            }
+            if (containsAll || GenerateType.Enum in typeSet) {
+                result += generateEnumCode(enums, context.language)
+                    .map { "${languageDir}/${it.first}" to it.second }
+            }
+            if (containsAll || GenerateType.Entity in typeSet) {
+                result += generateEntityCode(entityGenerateViews, context.language)
+                    .map { "${languageDir}/${it.first}" to it.second }
+            }
+            if (containsAll || GenerateType.Service in typeSet) {
+                result += generateServiceCode(entityBusinessViews, context.language)
+                    .map { "${languageDir}/${it.first}" to it.second }
+            }
+            if (containsAll || GenerateType.DTO in typeSet) {
+                result += generateDto(entityBusinessViews)
+                    .map { "dto/${it.first}" to it.second }
+            }
+            if (containsAll || GenerateType.EnumComponent in typeSet) {
+                result += generateEnumComponent(enums)
+                    .map { "view/src/${it.first}" to it.second }
+            }
+            if (containsAll || GenerateType.View in typeSet) {
+                result += generateView(entityBusinessViews)
+                    .map { "view/src/${it.first}" to it.second }
+            }
+
+            result
         }
-    }
-
-    @GetMapping("/model/entity")
-    @Throws(ConvertEntityException::class, ColumnTypeException::class, GenerateEntityException::class)
-    fun generateModelEntity(
-        @RequestParam id: Long,
-        @RequestParam(required = false) withPath: Boolean?
-    ): List<Pair<String, String>> {
-        val model = sqlClient.getModel(id) {
-            allScalarFields()
-            entities()
-            enumIds()
-        } ?: return emptyList()
-
-        val properties = GenConfigProperties(model)
-
-        return useContext(properties) {
-            val entities = sqlClient.getEntities<GenEntityGenerateView>(model.entityIds)
-            val enums = sqlClient.getEnums(model.enumIds)
-
-            flatListOf(
-                generateEntitiesCode(entities, withPath),
-                generateEnumsCode(enums, withPath)
-            )
-                .distinct().sortedBy { it.first }
-        }
-    }
-
-    @GetMapping("/model/business")
-    @Throws(ConvertEntityException::class, ColumnTypeException::class, GenerateEntityException::class)
-    fun generateModelBusiness(
-        @RequestParam id: Long,
-    ): List<Pair<String, String>> {
-        val model = sqlClient.getModel(id) {
-            allScalarFields()
-            entities()
-            enumIds()
-        } ?: return emptyList()
-
-        val properties = GenConfigProperties(model)
-
-        return useContext(properties) {
-            val entities = sqlClient.getEntities<GenEntityBusinessView>(model.entityIds)
-            val enums = sqlClient.getEnums(model.enumIds)
-
-            flatListOf(
-                generateServiceCode(entities, true).map { "${getContextOrGlobal().language.name.lowercase()}/${it.first}" to it.second },
-                generateDto(entities).map { "dto/${it.first}" to it.second },
-                generateView(entities).map { "view/src/${it.first}" to it.second},
-                generateEnumView(enums).map { "view/src/${it.first}" to it.second}
-            )
-                .distinct().sortedBy { it.first }
-        }
-    }
 
 
     /**
@@ -156,37 +101,30 @@ class GenerateService(
      */
 
     @Throws(GenerateEntityException::class)
-    fun generateEntitiesCode(
+    fun generateEntityCode(
         entities: Iterable<GenEntityGenerateView>,
-        withPath: Boolean?,
-        context: GenConfig = getContextOrGlobal(),
-        language: GenLanguage = context.language,
+        language: GenLanguage,
     ): List<Pair<String, String>> =
-        language.getEntityGenerator().generateEntity(entities, withPath ?: false)
+        language.getEntityGenerator().generateEntity(entities)
 
-    fun generateEnumsCode(
+    fun generateEnumCode(
         enums: Iterable<GenEnumGenerateView>,
-        withPath: Boolean?,
-        context: GenConfig = getContextOrGlobal(),
-        language: GenLanguage = context.language,
+        language: GenLanguage,
     ): List<Pair<String, String>> =
-        language.getEntityGenerator().generateEnum(enums, withPath ?: false)
+        language.getEntityGenerator().generateEnum(enums)
 
     @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
-    fun generateTableDefines(
+    fun generateTableDefine(
         tables: Iterable<GenTableGenerateView>,
-        context: GenConfig = getContextOrGlobal(),
-        dataSourceType: DataSourceType = context.dataSourceType,
+        dataSourceType: DataSourceType,
     ): List<Pair<String, String>> =
         dataSourceType.getTableDefineGenerator().generate(tables)
 
     fun generateServiceCode(
         entities: Iterable<GenEntityBusinessView>,
-        withPath: Boolean?,
-        context: GenConfig = getContextOrGlobal(),
-        language: GenLanguage = context.language,
+        language: GenLanguage,
     ): List<Pair<String, String>> =
-        language.getServiceGenerator().generateService(entities, withPath ?: false)
+        language.getServiceGenerator().generateService(entities)
 
     fun generateView(
         entities: Iterable<GenEntityBusinessView>,
@@ -194,7 +132,7 @@ class GenerateService(
     ): List<Pair<String, String>> =
         viewType.getViewGenerator().generateView(entities)
 
-    fun generateEnumView(
+    fun generateEnumComponent(
         enums: Iterable<GenEnumGenerateView>,
         viewType: ViewType = ViewType.VUE3_ELEMENT_PLUS
     ): List<Pair<String, String>> =
@@ -203,36 +141,33 @@ class GenerateService(
     fun generateDto(
         entities: Iterable<GenEntityBusinessView>
     ): List<Pair<String, String>> =
-       DtoGenerator.generateDto(entities)
+        DtoGenerator.generateDto(entities)
 
     /**
      * 基本查询
      */
 
-    private fun KSqlClient.getModel(id: Long, block: GenModelFetcherDsl.() -> Unit): GenModel? =
+    private fun KSqlClient.getModelProperties(id: Long) =
         createQuery(GenModel::class) {
             where(table.id eq id)
-            select(table.fetch(newFetcher(GenModel::class).by(block)))
-        }.execute().firstOrNull()
+            select(table.fetch(GenConfigProperties::class))
+        }.fetchOneOrNull()
 
-    private fun KSqlClient.getTables(ids: List<Long>) =
-        if (ids.isEmpty()) emptyList()
-        else createQuery(GenTable::class) {
-            where(table.id valueIn ids)
+    private fun KSqlClient.listTable(modelId: Long) =
+        createQuery(GenTable::class) {
+            where(table.modelId eq modelId)
             select(table.fetch(GenTableGenerateView::class))
         }.execute()
 
-    private inline fun <reified V : View<GenEntity>> KSqlClient.getEntities(ids: List<Long>) =
-        if (ids.isEmpty()) emptyList()
-        else createQuery(GenEntity::class) {
-            where(table.id valueIn ids)
+    private inline fun <reified V : View<GenEntity>> KSqlClient.listEntity(modelId: Long) =
+        createQuery(GenEntity::class) {
+            where(table.modelId eq modelId)
             select(table.fetch(V::class))
         }.execute()
 
-    private fun KSqlClient.getEnums(ids: List<Long>) =
-        if (ids.isEmpty()) emptyList()
-        else createQuery(GenEnum::class) {
-            where(table.id valueIn ids)
+    private fun KSqlClient.listEnum(modelId: Long) =
+        createQuery(GenEnum::class) {
+            where(table.modelId eq modelId)
             select(table.fetch(GenEnumGenerateView::class))
         }.execute()
 }

@@ -10,15 +10,13 @@ abstract class EntityCodeGenerator {
 
     private fun formatFileName(
         entity: GenEntityGenerateView,
-        withPath: Boolean
     ): String =
-        "${if (withPath) entity.filePath else ""}${entity.name}${getFileSuffix()}"
+        "${entity.filePath}${entity.name}${getFileSuffix()}"
 
     private fun formatFileName(
         enum: GenEnumGenerateView,
-        withPath: Boolean
     ): String =
-        "${if (withPath) enum.filePath else ""}${enum.name}${getFileSuffix()}"
+        "${enum.filePath}${enum.name}${getFileSuffix()}"
 
     protected abstract fun stringify(entity: GenEntityGenerateView): String
 
@@ -27,30 +25,26 @@ abstract class EntityCodeGenerator {
     @Throws(GenerateEntityException::class)
     fun generateEntity(
         entity: GenEntityGenerateView,
-        withPath: Boolean = false
     ): Pair<String, String> =
-        Pair(formatFileName(entity, withPath), stringify(entity))
+        Pair(formatFileName(entity), stringify(entity))
 
     @Throws(GenerateEntityException::class)
     fun generateEntity(
         entities: Iterable<GenEntityGenerateView>,
-        withPath: Boolean = false
     ): List<Pair<String, String>> =
         entities
-            .map { generateEntity(it, withPath) }
+            .map { generateEntity(it) }
             .distinct().sortedBy { it.first }
 
     fun generateEnum(
         enum: GenEnumGenerateView,
-        withPath: Boolean = false
     ): Pair<String, String> =
-        Pair(formatFileName(enum, withPath), stringify(enum))
+        Pair(formatFileName(enum), stringify(enum))
 
     fun generateEnum(
         enums: Iterable<GenEnumGenerateView>,
-        withPath: Boolean = false
     ): List<Pair<String, String>> =
         enums
-            .map { generateEnum(it, withPath) }
+            .map { generateEnum(it) }
             .distinct().sortedBy { it.first }
 }

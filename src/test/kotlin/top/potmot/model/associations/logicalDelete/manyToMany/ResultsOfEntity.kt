@@ -1,7 +1,7 @@
 package top.potmot.model.associations.logicalDelete.manyToMany
 
 const val javaRealFkResult = """
-[(top/potmot/Course.java, package top.potmot;
+[(java/top/potmot/Course.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -41,7 +41,7 @@ public interface Course {
     @Column(name = "DELETE_FLAG")
     boolean deleteFlag();
 }
-), (top/potmot/Student.java, package top.potmot;
+), (java/top/potmot/Student.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -79,7 +79,7 @@ public interface Student {
 """
 
 const val javaFakeFkResult = """
-[(top/potmot/Course.java, package top.potmot;
+[(java/top/potmot/Course.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -125,7 +125,7 @@ public interface Course {
     @Column(name = "DELETE_FLAG")
     boolean deleteFlag();
 }
-), (top/potmot/Student.java, package top.potmot;
+), (java/top/potmot/Student.java, package top.potmot;
 
 import java.util.List;
 import org.babyfish.jimmer.sql.Column;
@@ -163,7 +163,7 @@ public interface Student {
 """
 
 const val kotlinRealFkResult = """
-[(top/potmot/Course.kt, package top.potmot
+[(kotlin/top/potmot/Course.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -202,7 +202,7 @@ interface Course {
     @Column(name = "DELETE_FLAG")
     val deleteFlag: Boolean
 }
-), (top/potmot/Student.kt, package top.potmot
+), (kotlin/top/potmot/Student.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -239,7 +239,7 @@ interface Student {
 """
 
 const val kotlinFakeFkResult = """
-[(top/potmot/Course.kt, package top.potmot
+[(kotlin/top/potmot/Course.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -284,7 +284,7 @@ interface Course {
     @Column(name = "DELETE_FLAG")
     val deleteFlag: Boolean
 }
-), (top/potmot/Student.kt, package top.potmot
+), (kotlin/top/potmot/Student.kt, package top.potmot
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
