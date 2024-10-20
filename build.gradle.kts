@@ -9,16 +9,16 @@ plugins {
     idea
     id("org.springframework.boot") version "2.7.18"
     id("io.spring.dependency-management") version "1.1.4"
-    kotlin("jvm") version "1.9.21"
-    kotlin("plugin.spring") version "1.9.21"
-    id("com.google.devtools.ksp") version "1.9.21-1.0.15"
+    kotlin("jvm") version "1.9.24"
+    kotlin("plugin.spring") version "1.9.24"
+    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
 }
 
 group = "top.potmot"
 version = "0.1.4" // 2024-9-15
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.8.187"
+val jimmerVersion = "0.9.0"
 
 val mysqlVersion = "9.0.0"
 val postgresVersion = "42.7.3"
