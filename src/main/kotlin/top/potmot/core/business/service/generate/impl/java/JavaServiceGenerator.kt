@@ -1,7 +1,7 @@
 package top.potmot.core.business.service.generate.impl.java
 
 import top.potmot.core.business.service.generate.ServiceGenerator
-import top.potmot.core.business.utils.dto
+import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.packages
 import top.potmot.core.business.utils.permissionPrefix
@@ -19,7 +19,7 @@ object JavaServiceGenerator : ServiceGenerator() {
         val serviceName = entity.serviceName
 
         val (_, servicePackage,  _, exceptionPackage, dtoPackage) = entity.packages
-        val (_, listView, detailView, insertInput, updateInput, spec) = entity.dto
+        val (_, listView, detailView, insertInput, updateInput, spec) = entity.dtoNames
 
         val table = entityNameToTableName(entity.name) + "_TABLE"
 

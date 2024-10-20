@@ -1,9 +1,10 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPuls
 
 import top.potmot.core.business.view.generate.ViewGenerator
-import top.potmot.core.business.utils.component
+import top.potmot.core.business.utils.componentNames
 import top.potmot.core.business.utils.constants
-import top.potmot.core.business.utils.dto
+import top.potmot.core.business.utils.dtoNames
+import top.potmot.core.business.utils.enumConstants
 import top.potmot.core.business.utils.enums
 import top.potmot.core.business.utils.serviceName
 import top.potmot.entity.dto.GenEntityBusinessView
@@ -13,7 +14,7 @@ object Vue3ElementPlusViewGenerator : ViewGenerator() {
     override fun getFileSuffix() = "vue"
 
     override fun stringifyTable(entity: GenEntityBusinessView): String {
-        val listView = entity.dto.listView
+        val listView = entity.dtoNames.listView
 
         return """
 <script setup lang="ts">
@@ -54,7 +55,7 @@ const emits = defineEmits<{
     }
 
     override fun stringifyForm(entity: GenEntityBusinessView): String {
-        val (_, _, _, insertInput, updateInput) = entity.dto
+        val (_, _, _, insertInput, updateInput) = entity.dtoNames
 
         return """
 <script setup lang="ts">
@@ -94,10 +95,10 @@ const emits = defineEmits<{
     }
 
     override fun stringifyQueryForm(entity: GenEntityBusinessView): String {
-        val spec = entity.dto.spec
+        val spec = entity.dtoNames.spec
 
         val enums = entity.enums
-        val enumConstants = enums.map { it.constants }
+        val enumConstants = entity.enumConstants
 
         return """
 <script setup lang="ts">
@@ -110,7 +111,7 @@ import type {${spec}, ${enums.joinToString(", ") { it.name }}} from "@/api/__gen
 }
 ${
     enums.joinToString("\n") {
-        val (_, dir, select) = it.component
+        val (_, dir, select) = it.componentNames
         """import $select from "@/components/$dir/$select.vue""""
     }
 }
@@ -133,7 +134,7 @@ const emits = defineEmits<{
                     """
             <el-col :span="8">
                 <el-form-item label="${it.comment}">
-                    <${it.enum.component.select} v-model="spec.${it.name}"/>
+                    <${it.enum.componentNames.select} v-model="spec.${it.name}"/>
                 </el-form-item>
             </el-col>
                     """.trimEnd()
@@ -163,8 +164,8 @@ const emits = defineEmits<{
     override fun stringifyPage(entity: GenEntityBusinessView): String {
         val serviceName = entity.serviceName.replaceFirstChar { it.lowercase() }
 
-        val (_, dir, table, form, queryForm) = entity.component
-        val (_, listView, _, _, _, spec) = entity.dto
+        val (_, dir, table, form, queryForm) = entity.componentNames
+        val (_, listView, _, _, _, spec) = entity.dtoNames
 
         return """
 <script setup lang="ts">
@@ -255,7 +256,7 @@ const handleDelete = async (ids: number[]) => {
     }
 
     override fun stringifyEnumSelect(enum: GenEnumGenerateView): String {
-        val (_, dir, _, view) = enum.component
+        val (_, dir, _, view) = enum.componentNames
 
         return """
 <script setup lang="ts">

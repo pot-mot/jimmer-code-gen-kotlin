@@ -1,7 +1,7 @@
 package top.potmot.core.business.service.generate.impl.kotlin
 
 import top.potmot.core.business.service.generate.ServiceGenerator
-import top.potmot.core.business.utils.dto
+import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.packages
 import top.potmot.core.business.utils.permissionPrefix
 import top.potmot.core.business.utils.requestPath
@@ -17,7 +17,7 @@ object KotlinServiceGenerator : ServiceGenerator() {
         val serviceName = entity.serviceName
 
         val (_, servicePackage,  utilsPackage, exceptionPackage, dtoPackage) = entity.packages
-        val (_, listView, detailView, insertInput, updateInput, spec) = entity.dto
+        val (_, listView, detailView, insertInput, updateInput, spec) = entity.dtoNames
 
         val idProperty = entity.properties.first { it.idProperty }
         val idName = idProperty.name

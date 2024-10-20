@@ -4,9 +4,7 @@ import top.potmot.core.utils.filePath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
-
-val GenerateEnum.constants
-    get() = "${name}_CONSTANTS"
+import top.potmot.enumeration.AssociationType
 
 val GenEntityBusinessView.idProperty
     get() = properties.first { it.idProperty }
@@ -14,8 +12,23 @@ val GenEntityBusinessView.idProperty
 val GenEntityBusinessView.enums
     get() = properties.mapNotNull { it.enum }
 
-val GenEntityBusinessView.noIdView
+private val GenEntityBusinessView.noIdView
     get() = properties.count { it.idView } == 0 && properties.count { it.associationType != null } > 0
+
+val GenEntityBusinessView.associationProperties
+    get() = if (noIdView) properties.filter { it.associationType != null } else properties.filter { it.idView }
+
+private val targetOneAssociationType =
+    setOf(AssociationType.ONE_TO_ONE, AssociationType.MANY_TO_ONE)
+
+val GenEntityBusinessView.associationTargetOneProperties
+    get() = if (noIdView) properties.filter { it.associationType in targetOneAssociationType } else properties.filter { it.associationType in targetOneAssociationType && it.idView }
+
+val GenerateEnum.constants
+    get() = "${name}_CONSTANTS"
+
+val GenEntityBusinessView.enumConstants
+    get() = enums.map { it.constants }
 
 data class Packages(
     val entity: GenerateEntity,
@@ -49,10 +62,10 @@ data class DtoNames(
     val spec: String = "${entity.name}Spec"
 )
 
-val GenerateEntity.dto
+val GenerateEntity.dtoNames
     get() = DtoNames(this)
 
-data class EntityComponents(
+data class EntityComponentNames(
     val entity: GenerateEntity,
     val dir: String = entity.name.replaceFirstChar { it.lowercase() },
     val table: String = "${entity.name}Table",
@@ -61,15 +74,15 @@ data class EntityComponents(
     val page: String = "${entity.name}Page",
 )
 
-val GenerateEntity.component
-    get() = EntityComponents(this)
+val GenerateEntity.componentNames
+    get() = EntityComponentNames(this)
 
-data class EnumComponents(
+data class EnumComponentNames(
     val enum: GenerateEnum,
     val dir: String = enum.name.replaceFirstChar { it.lowercase() },
     val select: String = "${enum.name}Select",
     val view: String = "${enum.name}View",
 )
 
-val GenerateEnum.component
-    get() = EnumComponents(this)
+val GenerateEnum.componentNames
+    get() = EnumComponentNames(this)

@@ -1,6 +1,6 @@
 package top.potmot.core.business.view.generate
 
-import top.potmot.core.business.utils.component
+import top.potmot.core.business.utils.componentNames
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
@@ -23,7 +23,7 @@ abstract class ViewGenerator {
     fun generateEnum(
         enum: GenEnumGenerateView,
     ): List<Pair<String, String>> {
-        val (_, dir, select, view) = enum.component
+        val (_, dir, select, view) = enum.componentNames
 
         return listOf(
             "components/${dir}/${select}.${getFileSuffix()}" to stringifyEnumSelect(enum),
@@ -43,7 +43,7 @@ abstract class ViewGenerator {
     ): List<Pair<String, String>> {
         val flatEntity = entity.toFlat()
 
-        val (_, dir, table, form, queryForm, page) = flatEntity.component
+        val (_, dir, table, form, queryForm, page) = flatEntity.componentNames
 
         return listOf(
             "components/${dir}/${table}.${getFileSuffix()}" to stringifyTable(flatEntity),
