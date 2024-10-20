@@ -47,15 +47,22 @@ GenEntityGenerateView implements GenerateEntity {
 
 GenEntityBusinessView implements GenerateEntity {
     #allScalars
-    id(table)
+    idProperty {
+        #allScalars
+    }
 
     superEntities*
 
     properties {
         #allScalars
-        id(entity)
-        id(column)
-        id(typeTable)
+        flat(typeTable) {
+            entity as typeEntity {
+                name
+                idProperty {
+                    #allScalars
+                }
+            }
+        }
 
         enum implements GenerateEnum {
             id

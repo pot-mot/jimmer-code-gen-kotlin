@@ -102,3 +102,10 @@ fun String.isAllUpperCase(): Boolean =
 
 fun String.isAllLowerCase(): Boolean =
     all { it.isLowerCase() }
+
+fun String.trimBlankLine() =
+    lines()
+        .dropWhile { it.isBlank() }
+        .dropLastWhile { it.isBlank() }
+        .joinToString("\n")
+

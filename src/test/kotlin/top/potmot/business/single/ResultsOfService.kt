@@ -43,14 +43,14 @@ class ConditionMatchService(
     @GetMapping("/{id}")
     @SaCheckPermission("conditionMatch:get")
     @Throws(AuthorizeException::class)
-    fun get(@PathVariable id: kotlin.Int) = 
+    fun get(@PathVariable id: Int) = 
         sqlClient.findById(ConditionMatchDetailView::class, id)
     
     /**
      * 根据提供的查询参数列出条件匹配。
      *
      * @param spec 查询参数。
-     * @return 条件匹配列表。
+     * @return 条件匹配列表数据。
      */
     @PostMapping("/list")
     @SaCheckPermission("conditionMatch:list")
@@ -61,7 +61,7 @@ class ConditionMatchService(
     /**
      * 根据提供的查询参数分页查询条件匹配。
      *
-     * @param spec 查询参数。
+     * @param query 分页查询参数。
      * @return 条件匹配分页数据。
      */
     @PostMapping("/page")
@@ -106,7 +106,7 @@ class ConditionMatchService(
     @SaCheckPermission("conditionMatch:delete")
     @Transactional
     @Throws(AuthorizeException::class)
-    fun delete(@RequestParam ids: List<kotlin.Int>) = 
+    fun delete(@RequestParam ids: List<Int>) = 
         sqlClient.deleteByIds(ConditionMatch::class, ids).affectedRowCount(ConditionMatch::class)
 })
 """
@@ -161,7 +161,7 @@ class ConditionMatchService implements Tables {
     @GetMapping("/{id}")
     @SaCheckPermission("conditionMatch:get")
     @Nullable
-    public ConditionMatchDetailView get(@PathVariable kotlin.Int id) throws AuthorizeException { 
+    public ConditionMatchDetailView get(@PathVariable int id) throws AuthorizeException { 
         return sqlClient.findById(ConditionMatchDetailView.class, id);
     }
     
@@ -169,7 +169,7 @@ class ConditionMatchService implements Tables {
      * 根据提供的查询参数列出条件匹配。
      *
      * @param spec 查询参数。
-     * @return 条件匹配列表。
+     * @return 条件匹配列表数据。
      */
     @PostMapping("/list")
     @SaCheckPermission("conditionMatch:list")
@@ -184,13 +184,13 @@ class ConditionMatchService implements Tables {
     /**
      * 根据提供的查询参数列出条件匹配。
      *
-     * @param spec 查询参数。
-     * @return 条件匹配列表。
+     * @param query 分页查询参数。
+     * @return 条件匹配分页数据。
      */
-    @PostMapping("/list")
+    @PostMapping("/page")
     @SaCheckPermission("conditionMatch:list")
     @NotNull
-    public Page<@NotNull ConditionMatchListView> list(@RequestBody @NotNull PageQuery<ConditionMatchSpec> query) throws AuthorizeException {
+    public Page<@NotNull ConditionMatchListView> page(@RequestBody @NotNull PageQuery<ConditionMatchSpec> query) throws AuthorizeException {
         sqlClient.createQuery(CONDITION_MATCH_TABLE)
                 .where(query.getSpec())
                 .select(CONDITION_MATCH_TABLE.fetch(ConditionMatchListView.class))
@@ -206,7 +206,7 @@ class ConditionMatchService implements Tables {
     @PostMapping
     @SaCheckPermission("conditionMatch:insert")
     @Transactional
-    public kotlin.Int insert(@RequestBody @NotNull ConditionMatchInsertInput input) throws AuthorizeException {
+    public int insert(@RequestBody @NotNull ConditionMatchInsertInput input) throws AuthorizeException {
         return sqlClient.insert(input).modifiedEntity.id;
     }
 
@@ -219,7 +219,7 @@ class ConditionMatchService implements Tables {
     @PutMapping
     @SaCheckPermission("conditionMatch:update")
     @Transactional
-    public kotlin.Int update(@RequestBody @NotNull ConditionMatchUpdateInput input) throws AuthorizeException {
+    public int update(@RequestBody @NotNull ConditionMatchUpdateInput input) throws AuthorizeException {
         return sqlClient.update(input, AssociatedSaveMode.REPLACE).modifiedEntity.id;
     }
 
@@ -232,7 +232,7 @@ class ConditionMatchService implements Tables {
     @DeleteMapping
     @SaCheckPermission("conditionMatch:delete")
     @Transactional
-    public int delete(@RequestParam @NotNull List<kotlin.Int> ids) throws AuthorizeException {
+    public int delete(@RequestParam @NotNull List<Integer> ids) throws AuthorizeException {
         return sqlClient.deleteByIds(ConditionMatch.class, ids).affectedRowCount(ConditionMatch.class);
     }
 })

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 import top.potmot.entity.GenProperty
 import top.potmot.entity.entityId
 import top.potmot.entity.id
+import top.potmot.entity.idProperty
 import top.potmot.entity.logicalDelete
 
 @Component
@@ -23,9 +24,20 @@ class GenEntityLogicalDeleteResolver(
             groupBy(table.entityId)
             select(table.entityId, count(table.id))
         }.execute()
-            .associate {
-                it._1 to (it._2 > 0)
-            }
+            .associate { it._1 to (it._2 > 0) }
 
     override fun getDefaultValue(): Boolean = false
+}
+
+@Component
+class GenEntityIdPropertyResolver(
+    @Autowired val sqlClient: KSqlClient
+) : KTransientResolver<Long, Long> {
+    override fun resolve(ids: Collection<Long>): Map<Long, Long> =
+        sqlClient.createQuery(GenProperty::class) {
+            where(table.entityId valueIn ids)
+            where(table.idProperty eq true)
+            select(table.entityId, table.id)
+        }.execute()
+            .associate { it._1 to it._2 }
 }

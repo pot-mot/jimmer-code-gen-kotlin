@@ -6,9 +6,6 @@ import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
 import top.potmot.enumeration.AssociationType
 
-val GenEntityBusinessView.idProperty
-    get() = properties.first { it.idProperty }
-
 val GenEntityBusinessView.enums
     get() = properties.mapNotNull { it.enum }
 
@@ -16,19 +13,24 @@ private val GenEntityBusinessView.noIdView
     get() = properties.count { it.idView } == 0 && properties.count { it.associationType != null } > 0
 
 val GenEntityBusinessView.associationProperties
-    get() = if (noIdView) properties.filter { it.associationType != null } else properties.filter { it.idView }
+    get() =
+        if (noIdView)
+            properties.filter { it.associationType != null }
+        else
+            properties.filter { it.idView }
 
 private val targetOneAssociationType =
     setOf(AssociationType.ONE_TO_ONE, AssociationType.MANY_TO_ONE)
 
 val GenEntityBusinessView.associationTargetOneProperties
-    get() = if (noIdView) properties.filter { it.associationType in targetOneAssociationType } else properties.filter { it.associationType in targetOneAssociationType && it.idView }
+    get() =
+        if (noIdView)
+            properties.filter { it.associationType in targetOneAssociationType }
+        else
+            properties.filter { it.associationType in targetOneAssociationType && it.idView }
 
 val GenerateEnum.constants
     get() = "${name}_CONSTANTS"
-
-val GenEntityBusinessView.enumConstants
-    get() = enums.map { it.constants }
 
 data class Packages(
     val entity: GenerateEntity,
@@ -69,9 +71,12 @@ data class EntityComponentNames(
     val entity: GenerateEntity,
     val dir: String = entity.name.replaceFirstChar { it.lowercase() },
     val table: String = "${entity.name}Table",
-    val form: String = "${entity.name}Form",
+    val addForm: String = "${entity.name}AddForm",
+    val editForm: String = "${entity.name}EditForm",
     val queryForm: String = "${entity.name}QueryForm",
     val page: String = "${entity.name}Page",
+    val singleSelect: String = "${entity.name}SingleSelect",
+    val multiSelect: String = "${entity.name}MultiSelect",
 )
 
 val GenerateEntity.componentNames

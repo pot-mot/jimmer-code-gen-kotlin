@@ -32,7 +32,7 @@ defineProps<{
 
 <template>
     <el-text v-if="value === 'Item1'">选项1</el-text>
-    <el-text v-if="value === 'Item2'">选项2</el-text>
-    <el-text v-if="value === 'Item3'">选项3</el-text>
+    <el-text v-else-if="value === 'Item2'">选项2</el-text>
+    <el-text v-else-if="value === 'Item3'">选项3</el-text>
 </template>)]
 """

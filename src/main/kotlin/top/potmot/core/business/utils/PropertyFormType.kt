@@ -56,7 +56,7 @@ private val dateTimeType = setOf(
     Date::class.java.name
 )
 
-val GenEntityBusinessView.TargetOf_properties.componentType: PropertyFormType
+val GenEntityBusinessView.TargetOf_properties.formType: PropertyFormType
     get() =
         if (associationType != null) {
             PropertyFormType.ASSOCIATION

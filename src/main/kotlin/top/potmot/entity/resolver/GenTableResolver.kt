@@ -24,9 +24,7 @@ class GenTableLogicalDeleteResolver(
             groupBy(table.tableId)
             select(table.tableId, count(table.id))
         }.execute()
-            .associate {
-                it._1 to (it._2 > 0)
-            }
+            .associate { it._1 to (it._2 > 0) }
 
     override fun getDefaultValue(): Boolean = false
 }
@@ -41,7 +39,5 @@ class GenTablePkColumnsResolver(
             where(table.partOfPk eq true)
             select(table.tableId, table.id)
         }.execute()
-            .groupBy({it._1}) {
-                it._2
-            }
+            .groupBy({it._1}) { it._2 }
 }

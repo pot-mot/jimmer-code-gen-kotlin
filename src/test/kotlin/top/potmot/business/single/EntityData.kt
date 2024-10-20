@@ -16,6 +16,40 @@ const val entityData = """
     "comment": "条件匹配",
     "author": "potmot",
     "remark": "",
+    "idProperty": {
+        "createdTime": "2024-10-13T14:31:29.734295",
+        "modifiedTime": "2024-10-16T12:02:02.927149",
+        "id": 1379,
+        "column": {
+            "id": 1339,
+            "name": "id"
+        },
+        "entity": {
+            "id": 392
+        },
+        "name": "id",
+        "comment": "ID",
+        "type": "kotlin.Int",
+        "typeTable": null,
+        "listType": false,
+        "typeNotNull": true,
+        "idProperty": true,
+        "idGenerationAnnotation": "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+        "keyProperty": false,
+        "logicalDelete": false,
+        "idView": false,
+        "idViewTarget": null,
+        "associationType": null,
+        "mappedBy": null,
+        "inputNotNull": null,
+        "joinColumnMetas": null,
+        "joinTableMeta": null,
+        "dissociateAnnotation": null,
+        "otherAnnotation": null,
+        "orderKey": 0,
+        "remark": "",
+        "enum": null
+    },
     "properties": [
         {
             "createdTime": "2024-10-13T14:31:29.734295",

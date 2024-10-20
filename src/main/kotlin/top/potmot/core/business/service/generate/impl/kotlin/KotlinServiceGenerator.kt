@@ -6,22 +6,26 @@ import top.potmot.core.business.utils.packages
 import top.potmot.core.business.utils.permissionPrefix
 import top.potmot.core.business.utils.requestPath
 import top.potmot.core.business.utils.serviceName
+import top.potmot.core.business.utils.typeStrToKotlinType
 import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.error.GenerateException
 
 object KotlinServiceGenerator : ServiceGenerator() {
     override fun getFileSuffix() = ".kt"
 
+    @Throws(GenerateException::class)
     override fun stringifyService(
         entity: GenEntityBusinessView,
     ): String {
         val serviceName = entity.serviceName
 
-        val (_, servicePackage,  utilsPackage, exceptionPackage, dtoPackage) = entity.packages
+        val (_, servicePackage, utilsPackage, exceptionPackage, dtoPackage) = entity.packages
         val (_, listView, detailView, insertInput, updateInput, spec) = entity.dtoNames
 
-        val idProperty = entity.properties.first { it.idProperty }
+        val idProperty = entity.idProperty
+            ?: throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
         val idName = idProperty.name
-        val idType = "${idProperty.type}${if (idProperty.typeNotNull) "" else "?"}"
+        val idType = typeStrToKotlinType(idProperty.type, idProperty.typeNotNull)
 
         return """
 package $servicePackage
@@ -73,7 +77,7 @@ class $serviceName(
      * 根据提供的查询参数列出${entity.comment}。
      *
      * @param spec 查询参数。
-     * @return ${entity.comment}列表。
+     * @return ${entity.comment}列表数据。
      */
     @PostMapping("/list")
     @SaCheckPermission("${entity.permissionPrefix}:list")
@@ -84,7 +88,7 @@ class $serviceName(
     /**
      * 根据提供的查询参数分页查询${entity.comment}。
      *
-     * @param spec 查询参数。
+     * @param query 分页查询参数。
      * @return ${entity.comment}分页数据。
      */
     @PostMapping("/page")

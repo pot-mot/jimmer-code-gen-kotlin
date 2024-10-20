@@ -17,6 +17,7 @@ import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import org.babyfish.jimmer.sql.Transient
 import top.potmot.entity.base.BaseEntity
+import top.potmot.entity.resolver.GenEntityIdPropertyResolver
 import top.potmot.entity.resolver.GenEntityLogicalDeleteResolver
 
 /**
@@ -133,5 +134,8 @@ interface GenEntity : BaseEntity {
      */
     @OneToMany(mappedBy = "entity", orderedProps = [OrderedProp("orderKey")])
     val properties: List<GenProperty>
+
+    @Transient(GenEntityIdPropertyResolver::class)
+    val idProperty: GenProperty?
 }
 

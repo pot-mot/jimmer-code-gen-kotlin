@@ -168,6 +168,7 @@ class GenerateService(
     ): List<Pair<String, String>> =
         dataSourceType.getTableDefineGenerator().generate(tables)
 
+    @Throws(GenerateException::class)
     fun generateServiceCode(
         entities: Iterable<GenEntityBusinessView>,
         language: GenLanguage,
