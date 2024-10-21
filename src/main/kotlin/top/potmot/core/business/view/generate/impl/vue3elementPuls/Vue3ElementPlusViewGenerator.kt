@@ -173,7 +173,7 @@ $propertyColumns
 <${it.enum!!.componentNames.select}
     $vModel
     clearable
-    @change="emits('query')
+    @change="emits('query')"
 />
 """
 
@@ -182,12 +182,12 @@ $propertyColumns
 <el-input-number
     v-model="${spec}.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }}”
     placeholder="请输入最小${it.comment}"
-    @change="emits('query')
+    @change="emits('query')"
 />
 <el-input-number
     v-model="${spec}.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }}”
     placeholder="请输入最大${it.comment}"
-    @change="emits('query')
+    @change="emits('query')"
 />
 """
 
@@ -199,7 +199,7 @@ $propertyColumns
     start-placeholder="初始${it.comment}"
     start-placeholder="结束${it.comment}"
     clearable
-    @change="emits('query')
+    @change="emits('query')"
 />
 """
 
@@ -212,7 +212,7 @@ $propertyColumns
     start-placeholder="结束${it.comment}"
     unlink-panels
     clearable
-    @change="emits('query')
+    @change="emits('query')"
 />
 """
 
@@ -225,7 +225,7 @@ $propertyColumns
     start-placeholder="结束${it.comment}"
     unlink-panels
     clearable
-    @change="emits('query')
+    @change="emits('query')"
 />
 """
 
@@ -237,7 +237,7 @@ $propertyColumns
     $vModel
     placeholder="请选择${it.comment}"
     clearable
-    @change="emits('query')>
+    @change="emits('query')">
   <el-option :value="true" label="是"/>
   <el-option :value="false" label="否"/>
 </el-select>
@@ -249,7 +249,7 @@ $propertyColumns
     $vModel
     placeholder="请输入${it.comment}"
     clearable
-    @change="emits('query')
+    @change="emits('query')"
 />
 """
                     }

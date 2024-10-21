@@ -195,7 +195,7 @@ const emits = defineEmits<{
                 <MatchStatusSelect
                     v-model="spec.status"
                     clearable
-                    @change="emits('query')
+                    @change="emits('query')"
                 />
             </el-form-item>
         </el-col>
@@ -209,7 +209,7 @@ const emits = defineEmits<{
                     start-placeholder="结束匹配日期"
                     unlink-panels
                     clearable
-                    @change="emits('query')
+                    @change="emits('query')"
                 />
             </el-form-item>
         </el-col>
@@ -220,7 +220,7 @@ const emits = defineEmits<{
                     v-model="spec.description"
                     placeholder="请输入结果描述"
                     clearable
-                    @change="emits('query')
+                    @change="emits('query')"
                 />
             </el-form-item>
         </el-col>
