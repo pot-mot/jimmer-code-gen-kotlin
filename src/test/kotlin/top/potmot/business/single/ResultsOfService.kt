@@ -26,6 +26,7 @@ import com.example.entity.dto.ConditionMatchUpdateInput
 import com.example.entity.dto.ConditionMatchSpec
 import com.example.entity.query.PageQuery
 import com.example.exception.AuthorizeException
+import com.example.utils.sqlClient.query
 import com.example.utils.sqlClient.queryPage
 
 @RestController

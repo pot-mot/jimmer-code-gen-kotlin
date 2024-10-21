@@ -56,6 +56,7 @@ import ${dtoPackage}.${updateInput}
 import ${dtoPackage}.${spec}
 import ${entity.packagePath}.query.PageQuery
 import ${exceptionPackage}.AuthorizeException
+import ${utilsPackage}.sqlClient.query
 import ${utilsPackage}.sqlClient.queryPage
 
 @RestController
