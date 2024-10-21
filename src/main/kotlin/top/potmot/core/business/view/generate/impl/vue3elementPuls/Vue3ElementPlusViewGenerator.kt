@@ -180,12 +180,12 @@ $propertyColumns
                 PropertyQueryType.NUMBER_RANGE ->
                     """
 <el-input-number
-    v-model="${spec}.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }}”
+    v-model="${spec}.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
     placeholder="请输入最小${it.comment}"
     @change="emits('query')"
 />
 <el-input-number
-    v-model="${spec}.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }}”
+    v-model="${spec}.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
     placeholder="请输入最大${it.comment}"
     @change="emits('query')"
 />
@@ -197,7 +197,7 @@ $propertyColumns
     $vModel
     is-range
     start-placeholder="初始${it.comment}"
-    start-placeholder="结束${it.comment}"
+    end-placeholder="结束${it.comment}"
     clearable
     @change="emits('query')"
 />
@@ -209,7 +209,7 @@ $propertyColumns
     $vModel
     type="daterange"
     start-placeholder="初始${it.comment}"
-    start-placeholder="结束${it.comment}"
+    end-placeholder="结束${it.comment}"
     unlink-panels
     clearable
     @change="emits('query')"
@@ -222,7 +222,7 @@ $propertyColumns
     $vModel
     type="datetimerange"
     start-placeholder="初始${it.comment}"
-    start-placeholder="结束${it.comment}"
+    end-placeholder="结束${it.comment}"
     unlink-panels
     clearable
     @change="emits('query')"
@@ -270,6 +270,7 @@ $propertyColumns
 
         return """
 <script setup lang="ts">
+import {Search} from "@element-plus/icons-vue"
 import type {${spec}} from "@/api/__generated/model/static"
 ${entity.enumSelectImports()}
 

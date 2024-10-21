@@ -175,6 +175,7 @@ const emits = defineEmits<{
         </div>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchQueryForm.vue, <script setup lang="ts">
+import {Search} from "@element-plus/icons-vue"
 import type {ConditionMatchSpec} from "@/api/__generated/model/static"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
 
@@ -206,7 +207,7 @@ const emits = defineEmits<{
                     v-model="spec.date"
                     type="datetimerange"
                     start-placeholder="初始匹配日期"
-                    start-placeholder="结束匹配日期"
+                    end-placeholder="结束匹配日期"
                     unlink-panels
                     clearable
                     @change="emits('query')"
