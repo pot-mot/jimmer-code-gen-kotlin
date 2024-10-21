@@ -5,6 +5,7 @@ import top.potmot.core.business.utils.associationProperties
 import top.potmot.core.business.utils.associationTargetOneProperties
 import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.queryType
+import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.utils.string.toSingular
 
@@ -120,8 +121,11 @@ ${generateSpec(entity)}
 
     fun generateDto(
         entity: GenEntityBusinessView,
-    ): Pair<String, String> =
-        Pair(formatFileName(entity), stringify(entity))
+    ): Pair<String, String> {
+        val flatEntity = entity.toFlat()
+
+        return Pair(formatFileName(flatEntity), stringify(flatEntity))
+    }
 
     fun generateDto(
         entities: Iterable<GenEntityBusinessView>,

@@ -412,10 +412,8 @@ const handleDelete = async (ids: number[]) => {
     </el-dialog>
 </template>), (components/conditionMatch/ConditionMatchSingleSelect.vue, <script setup lang="ts">
 import {ref, onMounted} from "vue"
-import {Check} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView} from "@/api/__generated/model/static"
 import {api} from "@/api"
-import {sendMessage} from "@/utils/message"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import ConditionMatchTable from "@/components/conditionMatch/ConditionMatchTable.vue"
@@ -450,29 +448,29 @@ const handleSelect = (item: ConditionMatchListView) => {
 </script>
 
 <template>
-    <el-form>
-        <ConditionMatchQueryForm :v-model="queryInfo.spec" @query="queryPage"/>
+    <el-form v-loading="isLoading">
+        <ConditionMatchQueryForm v-model="queryInfo.spec" @query="queryPage"/>
     
-        <ConditionMatchTable :rows="pageData.rows" :multi-select="false">
-            <template #operations="{row}">
-                <el-button type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'选择'"/>
-            </template>
-        </ConditionMatchTable>
-        
-        <el-pagination
-            v-model:current-page="queryInfo.pageIndex"
-            v-model:page-size="queryInfo.pageSize"
-            :page-sizes="[5, 10, 20]"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pageData.totalRowCount"
-        />
+        <template v-if="pageData">
+            <ConditionMatchTable :rows="pageData.rows" :multi-select="false">
+                <template #operations="{row}">
+                    <el-button type="warning" @click="handleSelect(row)" v-text="'选择'"/>
+                </template>
+            </ConditionMatchTable>
+            
+            <el-pagination
+                v-model:current-page="queryInfo.pageIndex"
+                v-model:page-size="queryInfo.pageSize"
+                :page-sizes="[5, 10, 20]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pageData.totalRowCount"
+            />
+        </template>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchMultiSelect.vue, <script setup lang="ts">
 import {ref, onMounted} from "vue"
-import {Check} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView} from "@/api/__generated/model/static"
 import {api} from "@/api"
-import {sendMessage} from "@/utils/message"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import ConditionMatchTable from "@/components/conditionMatch/ConditionMatchTable.vue"
@@ -498,43 +496,45 @@ onMounted(async () => {
 })
 
 const emits = defineEmits<{
-    (event: "submit", selection: Array<number>): void,
+    (event: "submit", selection: Array<ConditionMatchListView>): void,
     (event: "cancel"): void,
 }>()
 
 const selectMap = ref<Map<number, ConditionMatchListView>>(new Map)
 
 const handleSelect = (item: ConditionMatchListView) => {
-    selectIds.put(item.id, item)
+    selectMap.value.set(item.id, item)
 }
 
 const handleUnSelect = (item: ConditionMatchListView) => {
-    selectIds.remove(item.id)
+    selectMap.value.delete(item.id)
 }
 </script>
 
 <template>
-    <el-form>
-        <ConditionMatchQueryForm :v-model="queryInfo.spec" @query="queryPage"/>
+    <el-form v-loading="isLoading">
+        <ConditionMatchQueryForm v-model="queryInfo.spec" @query="queryPage"/>
     
-        <ConditionMatchTable :rows="pageData.rows" :multi-select="false">
-            <template #operations="{row}">
-                <el-button v-if="!selectIds.has(row.id)" type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'选择'"/>
-                <el-button v-else type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'取消'"/>
-            </template>
-        </ConditionMatchTable>
-        
-        <el-pagination
-            v-model:current-page="queryInfo.pageIndex"
-            v-model:page-size="queryInfo.pageSize"
-            :page-sizes="[5, 10, 20]"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pageData.totalRowCount"
-        />
+        <template v-if="pageData">
+            <ConditionMatchTable :rows="pageData.rows" :multi-select="false">
+                <template #operations="{row}">
+                    <el-button v-if="!selectMap.has(row.id)" type="warning" @click="handleSelect(row)" v-text="'选择'"/>
+                    <el-button v-else type="warning" @click="handleUnSelect(row)" v-text="'取消'"/>
+                </template>
+            </ConditionMatchTable>
+            
+            <el-pagination
+                v-model:current-page="queryInfo.pageIndex"
+                v-model:page-size="queryInfo.pageSize"
+                :page-sizes="[5, 10, 20]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pageData.totalRowCount"
+            />
+        </template>
         
         <div style="text-align: right;">
             <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
-            <el-button type="primary" @click="emits('submit', Arrays.from(selectMap.values()))" v-text="'提交'"/>
+            <el-button type="primary" @click="emits('submit', [...selectMap.values()])" v-text="'提交'"/>
         </div>
     </el-form>
 </template>)]

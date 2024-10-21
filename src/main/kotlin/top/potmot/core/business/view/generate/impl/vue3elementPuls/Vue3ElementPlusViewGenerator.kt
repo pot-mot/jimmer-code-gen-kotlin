@@ -668,10 +668,8 @@ const handleDelete = async (ids: ${idType}[]) => {
         return """
 <script setup lang="ts">
 import {ref, onMounted} from "vue"
-import {Check} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ${spec}, ${listView}} from "@/api/__generated/model/static"
 import {api} from "@/api"
-import {sendMessage} from "@/utils/message"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import $table from "@/components/$dir/$table.vue"
@@ -706,22 +704,24 @@ const handleSelect = (item: $listView) => {
 </script>
 
 <template>
-    <el-form>
-        <$queryForm :v-model="queryInfo.spec" @query="queryPage"/>
+    <el-form v-loading="isLoading">
+        <$queryForm v-model="queryInfo.spec" @query="queryPage"/>
     
-        <$table :rows="pageData.rows" :multi-select="false">
-            <template #operations="{row}">
-                <el-button type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'选择'"/>
-            </template>
-        </$table>
-        
-        <el-pagination
-            v-model:current-page="queryInfo.pageIndex"
-            v-model:page-size="queryInfo.pageSize"
-            :page-sizes="[5, 10, 20]"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pageData.totalRowCount"
-        />
+        <template v-if="pageData">
+            <$table :rows="pageData.rows" :multi-select="false">
+                <template #operations="{row}">
+                    <el-button type="warning" @click="handleSelect(row)" v-text="'选择'"/>
+                </template>
+            </$table>
+            
+            <el-pagination
+                v-model:current-page="queryInfo.pageIndex"
+                v-model:page-size="queryInfo.pageSize"
+                :page-sizes="[5, 10, 20]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pageData.totalRowCount"
+            />
+        </template>
     </el-form>
 </template>
 """.trim()
@@ -745,10 +745,8 @@ const handleSelect = (item: $listView) => {
         return """
 <script setup lang="ts">
 import {ref, onMounted} from "vue"
-import {Check} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ${spec}, ${listView}} from "@/api/__generated/model/static"
 import {api} from "@/api"
-import {sendMessage} from "@/utils/message"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import $table from "@/components/$dir/$table.vue"
@@ -774,43 +772,45 @@ onMounted(async () => {
 })
 
 const emits = defineEmits<{
-    (event: "submit", selection: Array<${idType}>): void,
+    (event: "submit", selection: Array<$listView>): void,
     (event: "cancel"): void,
 }>()
 
 const selectMap = ref<Map<${idType}, ${listView}>>(new Map)
 
 const handleSelect = (item: $listView) => {
-    selectIds.put(item.$idName, item)
+    selectMap.value.set(item.$idName, item)
 }
 
 const handleUnSelect = (item: $listView) => {
-    selectIds.remove(item.$idName)
+    selectMap.value.delete(item.$idName)
 }
 </script>
 
 <template>
-    <el-form>
-        <$queryForm :v-model="queryInfo.spec" @query="queryPage"/>
+    <el-form v-loading="isLoading">
+        <$queryForm v-model="queryInfo.spec" @query="queryPage"/>
     
-        <$table :rows="pageData.rows" :multi-select="false">
-            <template #operations="{row}">
-                <el-button v-if="!selectIds.has(row.${idName})" type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'选择'"/>
-                <el-button v-else type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'取消'"/>
-            </template>
-        </$table>
-        
-        <el-pagination
-            v-model:current-page="queryInfo.pageIndex"
-            v-model:page-size="queryInfo.pageSize"
-            :page-sizes="[5, 10, 20]"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pageData.totalRowCount"
-        />
+        <template v-if="pageData">
+            <$table :rows="pageData.rows" :multi-select="false">
+                <template #operations="{row}">
+                    <el-button v-if="!selectMap.has(row.${idName})" type="warning" @click="handleSelect(row)" v-text="'选择'"/>
+                    <el-button v-else type="warning" @click="handleUnSelect(row)" v-text="'取消'"/>
+                </template>
+            </$table>
+            
+            <el-pagination
+                v-model:current-page="queryInfo.pageIndex"
+                v-model:page-size="queryInfo.pageSize"
+                :page-sizes="[5, 10, 20]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pageData.totalRowCount"
+            />
+        </template>
         
         <div style="text-align: right;">
             <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
-            <el-button type="primary" @click="emits('submit', Arrays.from(selectMap.values()))" v-text="'提交'"/>
+            <el-button type="primary" @click="emits('submit', [...selectMap.values()])" v-text="'提交'"/>
         </div>
     </el-form>
 </template>
