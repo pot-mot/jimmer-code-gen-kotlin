@@ -52,6 +52,7 @@ class GenerateService(
     fun generateModel(
         @RequestParam id: Long,
         @RequestParam types: List<GenerateType>,
+        @RequestParam viewType: ViewType = ViewType.VUE3_ELEMENT_PLUS,
         @RequestParam(required = false) properties: GenConfigProperties? = null,
     ): List<GenerateFile> =
         useContext(
@@ -122,19 +123,19 @@ class GenerateService(
                     }
             }
             if (containsAll || containsFrontEnd || GenerateType.EnumComponent in typeSet) {
-                result += generateEnumComponent(enums)
+                result += generateEnumComponent(enums, viewType)
                     .map {
                         GenerateFile(
-                            "view/src/${it.first}", it.second,
+                            "${viewType.dir}/${it.first}", it.second,
                             listOf(GenerateTag.FrontEnd, GenerateTag.Enum, GenerateTag.Component)
                         )
                     }
             }
             if (containsAll || containsFrontEnd || GenerateType.View in typeSet) {
-                result += generateView(entityBusinessViews)
+                result += generateView(entityBusinessViews, viewType)
                     .map {
                         GenerateFile(
-                            "view/src/${it.first}", it.second,
+                            "${viewType.dir}/${it.first}", it.second,
                             listOf(GenerateTag.FrontEnd, GenerateTag.View, GenerateTag.Component)
                         )
                     }
@@ -177,13 +178,13 @@ class GenerateService(
 
     fun generateView(
         entities: Iterable<GenEntityBusinessView>,
-        viewType: ViewType = ViewType.VUE3_ELEMENT_PLUS
+        viewType: ViewType
     ): List<Pair<String, String>> =
         viewType.getViewGenerator().generateView(entities)
 
     fun generateEnumComponent(
         enums: Iterable<GenEnumGenerateView>,
-        viewType: ViewType = ViewType.VUE3_ELEMENT_PLUS
+        viewType: ViewType
     ): List<Pair<String, String>> =
         viewType.getViewGenerator().generateEnum(enums)
 

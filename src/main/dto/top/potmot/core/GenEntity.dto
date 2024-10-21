@@ -55,14 +55,6 @@ GenEntityBusinessView implements GenerateEntity {
 
     properties {
         #allScalars
-        flat(typeTable) {
-            entity as typeEntity {
-                name
-                idProperties {
-                    #allScalars
-                }
-            }
-        }
 
         enum implements GenerateEnum {
             id
