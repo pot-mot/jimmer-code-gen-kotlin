@@ -2,8 +2,8 @@ package top.potmot.business.enum
 
 const val vue3ElementPlusResult = """
 [(components/enumTest/EnumTestSelect.vue, <script setup lang="ts">
-import {EnumTest_CONSTANTS} from "@/api/__generated/model/static"
-import type {EnumTest} from "@/api/__generated/model/static"
+import {EnumTest_CONSTANTS} from "@/api/__generated/model/enums"
+import type {EnumTest} from "@/api/__generated/model/enums"
 import EnumTestView from "@/components/enumTest/EnumTestView.vue"
 
 const data = defineModel<EnumTest>({
@@ -23,7 +23,7 @@ const data = defineModel<EnumTest>({
         </el-option>
     </el-select>
 </template>), (components/enumTest/EnumTestView.vue, <script setup lang="ts">
-import type {EnumTest} from "@/api/__generated/model/static"
+import type {EnumTest} from "@/api/__generated/model/enums"
 
 defineProps<{
     value: EnumTest

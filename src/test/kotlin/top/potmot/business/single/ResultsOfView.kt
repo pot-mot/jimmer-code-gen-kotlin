@@ -78,7 +78,7 @@ const emits = defineEmits<{
         </el-form-item>
 
         <el-form-item label="匹配日期">
-            <el-data-picker
+            <el-date-picker
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
             />
@@ -92,8 +92,8 @@ const emits = defineEmits<{
         </el-form-item>
 
         <div style="text-align: right;">
-            <el-button type="info" @click="emits('cancel')" v-text="取消"/>
-            <el-button type="primary" @click="emits('submit', formData)" v-text="提交"/>
+            <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
+            <el-button type="primary" @click="emits('submit', formData)" v-text="'提交'"/>
         </div>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchEditForm.vue, <script setup lang="ts">
@@ -117,7 +117,7 @@ const emits = defineEmits<{
         </el-form-item>
 
         <el-form-item label="匹配日期">
-            <el-data-picker
+            <el-date-picker
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
             />
@@ -131,8 +131,8 @@ const emits = defineEmits<{
         </el-form-item>
 
         <div style="text-align: right;">
-            <el-button type="info" @click="emits('cancel')" v-text="取消"/>
-            <el-button type="primary" @click="emits('submit', formData)" v-text="提交"/>
+            <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
+            <el-button type="primary" @click="emits('submit', formData)" v-text="'提交'"/>
         </div>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchEditForm.vue, <script setup lang="ts">
@@ -156,7 +156,7 @@ const emits = defineEmits<{
         </el-form-item>
 
         <el-form-item label="匹配日期">
-            <el-data-picker
+            <el-date-picker
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
             />
@@ -170,8 +170,8 @@ const emits = defineEmits<{
         </el-form-item>
 
         <div style="text-align: right;">
-            <el-button type="info" @click="emits('cancel')" v-text="取消"/>
-            <el-button type="primary" @click="emits('submit', formData)" v-text="提交"/>
+            <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
+            <el-button type="primary" @click="emits('submit', formData)" v-text="'提交'"/>
         </div>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchQueryForm.vue, <script setup lang="ts">
@@ -203,7 +203,7 @@ const emits = defineEmits<{
 
         <el-col :span="8">
             <el-form-item label="匹配日期">
-                <el-data-picker
+                <el-date-picker
                     v-model="spec.date"
                     type="datetimerange"
                     start-placeholder="初始匹配日期"
@@ -360,15 +360,15 @@ const handleDelete = async (ids: number[]) => {
         <ConditionMatchQueryForm :v-model="queryInfo.spec" @query="queryPage"/>
         
         <div>
-            <el-button type="primary" :icon="Plus" @click="startAdd" v-text="新增">
-            <el-button type="danger" :icon="Delete" @click="handleDelete(selection.map(it => it.id))" v-text="批量删除">
+            <el-button type="primary" :icon="Plus" @click="startAdd" v-text="'新增'">
+            <el-button type="danger" :icon="Delete" @click="handleDelete(selection.map(it => it.id))" v-text="'批量删除'">
         </div>
 
         <template v-if="pageData">
             <ConditionMatchTable :rows="pageData.rows" @changeSelection="changeSelection">
                 <template #operations="{row}">
-                    <el-button type="warning" :icon="EditPen" @click="startEdit(row.id)" v-text="编辑"/>
-                    <el-button type="danger" :icon="Delete" @click="removePost([row.id])" v-text="删除"/>                
+                    <el-button type="warning" :icon="EditPen" @click="startEdit(row.id)" v-text="'编辑'"/>
+                    <el-button type="danger" :icon="Delete" @click="removePost([row.id])" v-text="'删除'"/>                
                 </template>
             </ConditionMatchTable>
 
@@ -434,7 +434,7 @@ const handleSelect = (item: ConditionMatchListView) => {
     
         <ConditionMatchTable :rows="pageData.rows" :multi-select="false">
             <template #operations="{row}">
-                <el-button type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="选择"/>
+                <el-button type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'选择'"/>
             </template>
         </ConditionMatchTable>
         
@@ -498,8 +498,8 @@ const handleUnSelect = (item: ConditionMatchListView) => {
     
         <ConditionMatchTable :rows="pageData.rows" :multi-select="false">
             <template #operations="{row}">
-                <el-button v-if="!selectIds.has(row.id)" type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="选择"/>
-                <el-button v-else type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="取消"/>
+                <el-button v-if="!selectIds.has(row.id)" type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'选择'"/>
+                <el-button v-else type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'取消'"/>
             </template>
         </ConditionMatchTable>
         
@@ -512,8 +512,8 @@ const handleUnSelect = (item: ConditionMatchListView) => {
         />
         
         <div style="text-align: right;">
-            <el-button type="info" @click="emits('cancel')" v-text="取消"/>
-            <el-button type="primary" @click="emits('submit', Arrays.from(selectMap.values()))" v-text="提交"/>
+            <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
+            <el-button type="primary" @click="emits('submit', Arrays.from(selectMap.values()))" v-text="'提交'"/>
         </div>
     </el-form>
 </template>)]
