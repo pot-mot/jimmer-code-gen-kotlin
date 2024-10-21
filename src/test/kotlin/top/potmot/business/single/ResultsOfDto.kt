@@ -31,8 +31,8 @@ input ConditionMatchUpdateInput {
 
 specification ConditionMatchSpec {
     eq(id)
-    associationIdEq(user)
-    associationIdEq(condition)
+    associatedIdEq(user)
+    associatedIdEq(condition)
     eq(status)
     le(date)
     ge(date)

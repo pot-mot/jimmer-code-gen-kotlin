@@ -90,9 +90,9 @@ object DtoGenerator {
                 PropertyQueryType.LIKE ->
                     listOf("like/i(${name})")
                 PropertyQueryType.ASSOCIATION_EQ ->
-                    listOf("associationIdEq(${name})")
+                    listOf("associatedIdEq(${name})")
                 PropertyQueryType.ASSOCIATION_IN ->
-                    listOf("associationIdIn(${name}) as ${name.toSingular()}Ids")
+                    listOf("associatedIdIn(${name}) as ${name.toSingular()}Ids")
             }
 
     private fun generateSpec(entity: GenEntityBusinessView) = buildString {
