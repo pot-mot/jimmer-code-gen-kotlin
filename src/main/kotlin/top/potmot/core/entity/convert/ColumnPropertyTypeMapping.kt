@@ -9,7 +9,9 @@ import top.potmot.entity.dto.share.ColumnTypeMeta
 import top.potmot.entity.dto.GenTypeMappingView
 import java.math.BigDecimal
 import java.sql.Types
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
@@ -29,7 +31,9 @@ private fun jdbcTypeToJavaType(jdbcType: Int, typeNotNull: Boolean = true): Clas
         Types.FLOAT, Types.DOUBLE -> if (typeNotNull) Double::class.java else Double::class.javaObjectType
         Types.DECIMAL, Types.NUMERIC -> BigDecimal::class.java
         Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR, Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR, Types.CLOB, Types.NCLOB, Types.SQLXML, Types.DATALINK -> String::class.java
-        Types.DATE, Types.TIME, Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> LocalDateTime::class.java
+        Types.DATE -> LocalDate::class.java
+        Types.TIME, Types.TIME_WITH_TIMEZONE -> LocalTime::class.java
+        Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> LocalDateTime::class.java
         Types.BLOB, Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> ByteArray::class.java
         else -> null
     }
@@ -51,7 +55,9 @@ private fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
         Types.FLOAT, Types.DOUBLE -> Double::class
         Types.DECIMAL, Types.NUMERIC -> BigDecimal::class
         Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR, Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR, Types.CLOB, Types.NCLOB, Types.SQLXML, Types.DATALINK -> String::class
-        Types.DATE, Types.TIME, Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> LocalDateTime::class
+        Types.DATE -> LocalDate::class
+        Types.TIME, Types.TIME_WITH_TIMEZONE -> LocalTime::class
+        Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> LocalDateTime::class
         Types.BLOB, Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> ByteArray::class
         else -> null
     }

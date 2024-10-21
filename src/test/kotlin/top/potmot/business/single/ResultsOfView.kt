@@ -56,9 +56,8 @@ const handleChangeSelection = (selection: Array<ConditionMatchListView>) => {
 </template>), (components/conditionMatch/DefaultConditionMatchAddInput.ts, import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
 
 export default <ConditionMatchInsertInput> {
-    id: 0,
     status: "",
-    date: undefined,
+    date: "",
     description: "",
     userId: 0,
     conditionId: 0,

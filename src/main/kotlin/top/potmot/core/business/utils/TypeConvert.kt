@@ -1,5 +1,12 @@
 package top.potmot.core.business.utils
 
+import java.math.BigDecimal
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.Date
+
 fun typeStrToJavaType(typeStr: String, typeNotNull: Boolean) =
     when (typeStr) {
         String::class.qualifiedName, String::class.java.name -> "String"
@@ -40,13 +47,19 @@ fun typeStrToKotlinType(typeStr: String, typeNotNull: Boolean) =
 
 fun typeStrToTypeScriptType(typeStr: String, typeNotNull: Boolean) =
     when (typeStr) {
-        String::class.qualifiedName -> if (typeNotNull) "string" else "string | undefined"
+        String::class.qualifiedName,
+        Date::class.qualifiedName,
+        Instant::class.qualifiedName,
+        LocalDate::class.qualifiedName,
+        LocalTime::class.qualifiedName,
+        LocalDateTime::class.qualifiedName -> if (typeNotNull) "string" else "string | undefined"
         String::class.java.name -> "string | undefined"
 
         Int::class.qualifiedName, "int",
         Long::class.qualifiedName, "long",
         Float::class.qualifiedName, "float",
-        Double::class.qualifiedName, "double" -> if (typeNotNull) "number" else "number | undefined"
+        Double::class.qualifiedName, "double",
+        BigDecimal::class.java.name -> if (typeNotNull) "number" else "number | undefined"
 
         Int::class.java.name,
         Long::class.java.name,
@@ -61,13 +74,19 @@ fun typeStrToTypeScriptType(typeStr: String, typeNotNull: Boolean) =
 
 fun typeStrToTypeScriptDefault(typeStr: String, typeNotNull: Boolean) =
     when (typeStr) {
-        String::class.qualifiedName -> if (typeNotNull) "\"\"" else "undefined"
+        String::class.qualifiedName,
+        Date::class.qualifiedName,
+        Instant::class.qualifiedName,
+        LocalDate::class.qualifiedName,
+        LocalTime::class.qualifiedName,
+        LocalDateTime::class.qualifiedName -> if (typeNotNull) "\"\"" else "undefined"
         String::class.java.name -> "undefined"
 
         Int::class.qualifiedName, "int",
         Long::class.qualifiedName, "long",
         Float::class.qualifiedName, "float",
-        Double::class.qualifiedName, "double" -> if (typeNotNull) "0" else "undefined"
+        Double::class.qualifiedName, "double",
+        BigDecimal::class.java.name -> if (typeNotNull) "0" else "undefined"
 
         Int::class.java.name,
         Long::class.java.name,
