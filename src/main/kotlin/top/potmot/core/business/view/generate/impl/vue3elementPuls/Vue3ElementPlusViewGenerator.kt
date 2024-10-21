@@ -27,8 +27,8 @@ object Vue3ElementPlusViewGenerator : ViewGenerator() {
 
         return """
 <script setup lang="ts">
-import {${enum.constants}} from "@/api/__generated/model/static"
-import type {${enum.name}} from "@/api/__generated/model/static"
+import {${enum.constants}} from "@/api/__generated/model/enums"
+import type {${enum.name}} from "@/api/__generated/model/enums"
 import $view from "@/components/$dir/$view.vue"
 
 const data = defineModel<${enum.name}>({
@@ -64,7 +64,7 @@ const data = defineModel<${enum.name}>({
 
         return """
 <script setup lang="ts">
-import type {${enum.name}} from "@/api/__generated/model/static"
+import type {${enum.name}} from "@/api/__generated/model/enums"
 
 defineProps<{
     value: ${enum.name}
@@ -205,7 +205,7 @@ $propertyColumns
 
                 PropertyQueryType.DATE_RANGE ->
                     """
-<el-data-picker
+<el-date-picker
     $vModel
     type="daterange"
     start-placeholder="初始${it.comment}"
@@ -218,7 +218,7 @@ $propertyColumns
 
                 PropertyQueryType.DATETIME_RANGE ->
                     """
-<el-data-picker
+<el-date-picker
     $vModel
     type="datetimerange"
     start-placeholder="初始${it.comment}"
@@ -348,7 +348,7 @@ $associationPropertyWithDefault
 
                 PropertyFormType.DATE ->
                     """
-<el-data-picker
+<el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
 />
@@ -356,7 +356,7 @@ $associationPropertyWithDefault
 
                 PropertyFormType.DATETIME ->
                     """
-<el-data-picker
+<el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
 />
@@ -402,8 +402,8 @@ const emits = defineEmits<{
     <el-form :model="formData">
 ${entity.formItems()}
         <div style="text-align: right;">
-            <el-button type="info" @click="emits('cancel')" v-text="取消"/>
-            <el-button type="primary" @click="emits('submit', formData)" v-text="提交"/>
+            <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
+            <el-button type="primary" @click="emits('submit', formData)" v-text="'提交'"/>
         </div>
     </el-form>
 </template>
@@ -432,8 +432,8 @@ const emits = defineEmits<{
     <el-form :model="formData">
 ${entity.formItems()}
         <div style="text-align: right;">
-            <el-button type="info" @click="emits('cancel')" v-text="取消"/>
-            <el-button type="primary" @click="emits('submit', formData)" v-text="提交"/>
+            <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
+            <el-button type="primary" @click="emits('submit', formData)" v-text="'提交'"/>
         </div>
     </el-form>
 </template>
@@ -587,15 +587,15 @@ const handleDelete = async (ids: ${idType}[]) => {
         <$queryForm :v-model="queryInfo.spec" @query="queryPage"/>
         
         <div>
-            <el-button type="primary" :icon="Plus" @click="startAdd" v-text="新增">
-            <el-button type="danger" :icon="Delete" @click="handleDelete(selection.map(it => it.${idName}))" v-text="批量删除">
+            <el-button type="primary" :icon="Plus" @click="startAdd" v-text="'新增'">
+            <el-button type="danger" :icon="Delete" @click="handleDelete(selection.map(it => it.${idName}))" v-text="'批量删除'">
         </div>
 
         <template v-if="pageData">
             <$table :rows="pageData.rows" @changeSelection="changeSelection">
                 <template #operations="{row}">
-                    <el-button type="warning" :icon="EditPen" @click="startEdit(row.${idName})" v-text="编辑"/>
-                    <el-button type="danger" :icon="Delete" @click="removePost([row.${idName}])" v-text="删除"/>                
+                    <el-button type="warning" :icon="EditPen" @click="startEdit(row.${idName})" v-text="'编辑'"/>
+                    <el-button type="danger" :icon="Delete" @click="removePost([row.${idName}])" v-text="'删除'"/>                
                 </template>
             </$table>
 
@@ -672,7 +672,7 @@ const handleSelect = (item: $listView) => {
     
         <$table :rows="pageData.rows" :multi-select="false">
             <template #operations="{row}">
-                <el-button type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="选择"/>
+                <el-button type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'选择'"/>
             </template>
         </$table>
         
@@ -756,8 +756,8 @@ const handleUnSelect = (item: $listView) => {
     
         <$table :rows="pageData.rows" :multi-select="false">
             <template #operations="{row}">
-                <el-button v-if="!selectIds.has(row.${idName})" type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="选择"/>
-                <el-button v-else type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="取消"/>
+                <el-button v-if="!selectIds.has(row.${idName})" type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'选择'"/>
+                <el-button v-else type="warning" :icon="EditPen" @click="handleSelect(row)" v-text="'取消'"/>
             </template>
         </$table>
         
@@ -770,8 +770,8 @@ const handleUnSelect = (item: $listView) => {
         />
         
         <div style="text-align: right;">
-            <el-button type="info" @click="emits('cancel')" v-text="取消"/>
-            <el-button type="primary" @click="emits('submit', Arrays.from(selectMap.values()))" v-text="提交"/>
+            <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
+            <el-button type="primary" @click="emits('submit', Arrays.from(selectMap.values()))" v-text="'提交'"/>
         </div>
     </el-form>
 </template>
