@@ -17,6 +17,7 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.appendBlock
+import top.potmot.utils.string.toSingular
 import top.potmot.utils.string.trimBlankLine
 
 object Vue3ElementPlusViewGenerator : ViewGenerator() {
@@ -93,6 +94,8 @@ $itemTexts
             else
                 entity.idProperties[0]
 
+        val idName = idProperty.name
+
         val propertyColumns = buildString {
             entity.properties.filter { !it.idProperty && it.associationType == null }.forEach {
                 appendBlock(
@@ -137,14 +140,18 @@ const slots = defineSlots<{
 }>()
 
 const emits = defineEmits<{
-    (event: "changeSelection"): void,
+    (event: "changeSelection", selection: Array<${listView}>): void,
 }>()
+
+const handleChangeSelection = (selection: Array<${listView}>) => {
+    emits("changeSelection", selection)
+}
 </script>
 
 <template>
     <el-table 
-    :data="rows" border stripe row-key="id"
-    @selection-change="emits('changeSelection')">
+        :data="rows" border stripe row-key="$idName"
+        @selection-change="handleChangeSelection">
         <el-table-column v-if="idColumn" label="${idProperty.comment}" prop="${idProperty.name}"/>
         <el-table-column v-if="indexColumn" type="index"/>
         <el-table-column v-if="multiSelect" type="selection"/>
@@ -318,7 +325,7 @@ ${entity.queryFormItems()}
                     }
                 } else {
                     if (it.listType) {
-                        "    ${it.name}Ids: [],"
+                        "    ${it.name.toSingular()}Ids: [],"
                     } else {
                         val typeIdProperties = it.typeEntity?.idProperties
                             ?: throw GenerateException.entityNotFound("entityName: ${it.typeEntity?.name}")
@@ -440,12 +447,20 @@ ${entity.formItems()}
 
         return """
 <script setup lang="ts">
+import {ref, watch} from "vue"
 import type {${updateInput}} from "@/api/__generated/model/static"
+import {cloneDeep} from "lodash"
 ${entity.enumSelectImports()}
 
-defineProps<{
-    formData: $updateInput
+const props = defineProps<{
+    data: $updateInput
 }>()
+
+const formData = ref<${updateInput}>(cloneDeep(props.data))
+
+watch(() => props.data, (data) => {
+    formData.value = data
+})
 
 const emits = defineEmits<{
     (event: "submit", updateInput: ${updateInput}): void,
@@ -518,9 +533,9 @@ onMounted(async () => {
 
 const get${entity.name} = withLoading((id: $idType) => api.${serviceName}.get({id}))
 
-const add${entity.name} = withLoading((body: $insertInput) => api.${serviceName}.insert(body))
+const add${entity.name} = withLoading((body: $insertInput) => api.${serviceName}.insert({body}))
 
-const edit${entity.name} = withLoading((body: $updateInput) => api.${serviceName}.update(body))
+const edit${entity.name} = withLoading((body: $updateInput) => api.${serviceName}.update({body}))
 
 const delete${entity.name} = withLoading((ids: Array<$idType>) => api.${serviceName}.delete({ids}))
 
@@ -608,7 +623,7 @@ const handleDelete = async (ids: ${idType}[]) => {
     </el-breadcrumb>
 
     <el-card v-loading="isLoading">
-        <$queryForm :v-model="queryInfo.spec" @query="queryPage"/>
+        <$queryForm v-model="queryInfo.spec" @query="queryPage"/>
         
         <div>
             <el-button type="primary" :icon="Plus" @click="startAdd" v-text="'新增'"/>

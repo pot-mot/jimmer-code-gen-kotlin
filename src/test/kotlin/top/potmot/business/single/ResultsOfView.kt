@@ -24,14 +24,18 @@ const slots = defineSlots<{
 }>()
 
 const emits = defineEmits<{
-    (event: "changeSelection"): void,
+    (event: "changeSelection", selection: Array<ConditionMatchListView>): void,
 }>()
+
+const handleChangeSelection = (selection: Array<ConditionMatchListView>) => {
+    emits("changeSelection", selection)
+}
 </script>
 
 <template>
     <el-table 
-    :data="rows" border stripe row-key="id"
-    @selection-change="emits('changeSelection')">
+        :data="rows" border stripe row-key="id"
+        @selection-change="handleChangeSelection">
         <el-table-column v-if="idColumn" label="ID" prop="id"/>
         <el-table-column v-if="indexColumn" type="index"/>
         <el-table-column v-if="multiSelect" type="selection"/>
@@ -99,12 +103,20 @@ const emits = defineEmits<{
         </div>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchEditForm.vue, <script setup lang="ts">
+import {ref, watch} from "vue"
 import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
+import {cloneDeep} from "lodash"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
 
-defineProps<{
-    formData: ConditionMatchUpdateInput
+const props = defineProps<{
+    data: ConditionMatchUpdateInput
 }>()
+
+const formData = ref<ConditionMatchUpdateInput>(cloneDeep(props.data))
+
+watch(() => props.data, (data) => {
+    formData.value = data
+})
 
 const emits = defineEmits<{
     (event: "submit", updateInput: ConditionMatchUpdateInput): void,
@@ -138,12 +150,20 @@ const emits = defineEmits<{
         </div>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchEditForm.vue, <script setup lang="ts">
+import {ref, watch} from "vue"
 import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
+import {cloneDeep} from "lodash"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
 
-defineProps<{
-    formData: ConditionMatchUpdateInput
+const props = defineProps<{
+    data: ConditionMatchUpdateInput
 }>()
+
+const formData = ref<ConditionMatchUpdateInput>(cloneDeep(props.data))
+
+watch(() => props.data, (data) => {
+    formData.value = data
+})
 
 const emits = defineEmits<{
     (event: "submit", updateInput: ConditionMatchUpdateInput): void,
@@ -268,9 +288,9 @@ onMounted(async () => {
 
 const getConditionMatch = withLoading((id: number) => api.conditionMatchService.get({id}))
 
-const addConditionMatch = withLoading((body: ConditionMatchInsertInput) => api.conditionMatchService.insert(body))
+const addConditionMatch = withLoading((body: ConditionMatchInsertInput) => api.conditionMatchService.insert({body}))
 
-const editConditionMatch = withLoading((body: ConditionMatchUpdateInput) => api.conditionMatchService.update(body))
+const editConditionMatch = withLoading((body: ConditionMatchUpdateInput) => api.conditionMatchService.update({body}))
 
 const deleteConditionMatch = withLoading((ids: Array<number>) => api.conditionMatchService.delete({ids}))
 
@@ -358,7 +378,7 @@ const handleDelete = async (ids: number[]) => {
     </el-breadcrumb>
 
     <el-card v-loading="isLoading">
-        <ConditionMatchQueryForm :v-model="queryInfo.spec" @query="queryPage"/>
+        <ConditionMatchQueryForm v-model="queryInfo.spec" @query="queryPage"/>
         
         <div>
             <el-button type="primary" :icon="Plus" @click="startAdd" v-text="'新增'"/>
