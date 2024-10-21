@@ -1,6 +1,5 @@
 package top.potmot.core.business.service.generate.impl.java
 
-import kotlin.jvm.Throws
 import top.potmot.core.business.service.generate.ServiceGenerator
 import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.packages
@@ -21,13 +20,16 @@ object JavaServiceGenerator : ServiceGenerator() {
     ): String {
         val serviceName = entity.serviceName
 
-        val (_, servicePackage,  _, exceptionPackage, dtoPackage) = entity.packages
+        val (_, servicePackage, _, exceptionPackage, dtoPackage) = entity.packages
         val (_, listView, detailView, insertInput, updateInput, spec) = entity.dtoNames
 
         val table = entityNameToTableName(entity.name) + "_TABLE"
 
-        val idProperty = entity.idProperty
-            ?: throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+        val idProperty =
+            if (entity.idProperties.size != 1)
+                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+            else
+                entity.idProperties[0]
         val idName = idProperty.name
         val idType = typeStrToJavaType(idProperty.type, idProperty.typeNotNull)
 
@@ -152,7 +154,12 @@ class $serviceName implements Tables {
     @DeleteMapping
     @SaCheckPermission("${entity.permissionPrefix}:delete")
     @Transactional
-    public int delete(@RequestParam @NotNull List<${typeStrToJavaType(idProperty.type, false)}> ids) throws AuthorizeException {
+    public int delete(@RequestParam @NotNull List<${
+            typeStrToJavaType(
+                idProperty.type,
+                false
+            )
+        }> ids) throws AuthorizeException {
         return sqlClient.deleteByIds(${entity.name}.class, ids).affectedRowCount(${entity.name}.class);
     }
 }

@@ -22,8 +22,11 @@ object KotlinServiceGenerator : ServiceGenerator() {
         val (_, servicePackage, utilsPackage, exceptionPackage, dtoPackage) = entity.packages
         val (_, listView, detailView, insertInput, updateInput, spec) = entity.dtoNames
 
-        val idProperty = entity.idProperty
-            ?: throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+        val idProperty =
+            if (entity.idProperties.size != 1)
+                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+            else
+                entity.idProperties[0]
         val idName = idProperty.name
         val idType = typeStrToKotlinType(idProperty.type, idProperty.typeNotNull)
 

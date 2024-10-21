@@ -47,7 +47,7 @@ GenEntityGenerateView implements GenerateEntity {
 
 GenEntityBusinessView implements GenerateEntity {
     #allScalars
-    idProperty {
+    idProperties {
         #allScalars
     }
 
@@ -58,7 +58,7 @@ GenEntityBusinessView implements GenerateEntity {
         flat(typeTable) {
             entity as typeEntity {
                 name
-                idProperty {
+                idProperties {
                     #allScalars
                 }
             }

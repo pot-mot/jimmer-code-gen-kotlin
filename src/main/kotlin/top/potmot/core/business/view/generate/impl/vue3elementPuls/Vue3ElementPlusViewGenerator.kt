@@ -87,8 +87,11 @@ $itemTexts
             """import $view from "@/components/$dir/$view.vue""""
         }
 
-        val idProperty = entity.idProperty
-            ?: throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+        val idProperty =
+            if (entity.idProperties.size != 1)
+                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+            else
+                entity.idProperties[0]
 
         val propertyColumns = buildString {
             entity.properties.filter { !it.idProperty && it.associationType == null }.forEach {
@@ -443,8 +446,11 @@ ${entity.formItems()}
 
         val serviceName = entity.serviceName.replaceFirstChar { it.lowercase() }
 
-        val idProperty = entity.idProperty
-            ?: throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+        val idProperty =
+            if (entity.idProperties.size != 1)
+                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+            else
+                entity.idProperties[0]
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
 
@@ -688,8 +694,11 @@ const handleSelect = (item: $listView) => {
 
         val serviceName = entity.serviceName.replaceFirstChar { it.lowercase() }
 
-        val idProperty = entity.idProperty
-            ?: throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+        val idProperty =
+            if (entity.idProperties.size != 1)
+                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+            else
+                entity.idProperties[0]
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
 

@@ -30,14 +30,14 @@ class GenEntityLogicalDeleteResolver(
 }
 
 @Component
-class GenEntityIdPropertyResolver(
+class GenEntityIdPropertiesResolver(
     @Autowired val sqlClient: KSqlClient
-) : KTransientResolver<Long, Long> {
-    override fun resolve(ids: Collection<Long>): Map<Long, Long> =
+) : KTransientResolver<Long, List<Long>> {
+    override fun resolve(ids: Collection<Long>): Map<Long, List<Long>> =
         sqlClient.createQuery(GenProperty::class) {
             where(table.entityId valueIn ids)
             where(table.idProperty eq true)
             select(table.entityId, table.id)
         }.execute()
-            .associate { it._1 to it._2 }
+            .groupBy({it._1}) { it._2 }
 }
