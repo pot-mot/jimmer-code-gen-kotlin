@@ -15,8 +15,8 @@ object DtoGenerator {
     ): String =
         "${entity.name}.dto"
 
-    private fun GenEntityBusinessView.propertyIds(): List<String> =
-        associationProperties.map {
+    private fun GenEntityBusinessView.propertyIds(onlyThis: Boolean): List<String> =
+        associationProperties.filter { if (onlyThis) it.entityId == id else true }.map {
             if (it.idView) {
                 it.name
             } else {
@@ -24,8 +24,8 @@ object DtoGenerator {
             }
         }
 
-    private fun GenEntityBusinessView.propertyIdsTargetOne(): List<String> =
-        associationTargetOneProperties.map {
+    private fun GenEntityBusinessView.propertyIdsTargetOne(onlyThis: Boolean): List<String> =
+        associationTargetOneProperties.filter { if (onlyThis) it.entityId == id else true }.map {
             if (it.idView) {
                 it.name
             } else {
@@ -36,7 +36,7 @@ object DtoGenerator {
     private fun generateListView(entity: GenEntityBusinessView) = buildString {
         appendLine("${entity.dtoNames.listView} {")
         appendLine("    #allScalars")
-        entity.propertyIdsTargetOne().forEach {
+        entity.propertyIdsTargetOne(onlyThis = true).forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -45,24 +45,24 @@ object DtoGenerator {
     private fun generateDetailView(entity: GenEntityBusinessView) = buildString {
         appendLine("${entity.dtoNames.detailView} {")
         appendLine("    #allScalars")
-        entity.propertyIds().forEach {
+        entity.propertyIds(onlyThis = false).forEach {
             appendLine("    $it")
         }
         appendLine("}")
     }
 
     private fun generateInsertInput(entity: GenEntityBusinessView) = buildString {
-            val idProperty = entity.properties.first { it.idProperty }
-            val idName = idProperty.name
+        val idProperty = entity.properties.first { it.idProperty }
+        val idName = idProperty.name
 
-            appendLine("input ${entity.dtoNames.insertInput} {")
-            appendLine("    #allScalars(this)")
-            appendLine("    -${idName}")
-            entity.propertyIds().forEach {
-                appendLine("    $it")
-            }
-            appendLine("}")
+        appendLine("input ${entity.dtoNames.insertInput} {")
+        appendLine("    #allScalars(this)")
+        appendLine("    -${idName}")
+        entity.propertyIds(onlyThis = true).forEach {
+            appendLine("    $it")
         }
+        appendLine("}")
+    }
 
     private fun generateUpdateInput(entity: GenEntityBusinessView) = buildString {
         val idProperty = entity.properties.first { it.idProperty }
@@ -71,7 +71,7 @@ object DtoGenerator {
         appendLine("input ${entity.dtoNames.updateInput} {")
         appendLine("    #allScalars(this)")
         appendLine("    ${idName}!")
-        entity.propertyIds().forEach {
+        entity.propertyIds(onlyThis = true).forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -79,19 +79,23 @@ object DtoGenerator {
 
     private val GenEntityBusinessView.TargetOf_properties.specExpression
         get() =
-            when(queryType) {
+            when (queryType) {
                 PropertyQueryType.EQ,
                 PropertyQueryType.ENUM_SELECT ->
                     listOf("eq(${name})")
+
                 PropertyQueryType.DATE_RANGE,
                 PropertyQueryType.TIME_RANGE,
                 PropertyQueryType.DATETIME_RANGE,
                 PropertyQueryType.NUMBER_RANGE ->
                     listOf("le(${name})", "ge(${name})")
+
                 PropertyQueryType.LIKE ->
                     listOf("like/i(${name})")
+
                 PropertyQueryType.ASSOCIATION_EQ ->
                     listOf("associatedIdEq(${name})")
+
                 PropertyQueryType.ASSOCIATION_IN ->
                     listOf("associatedIdIn(${name}) as ${name.toSingular()}Ids")
             }

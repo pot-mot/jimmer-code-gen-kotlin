@@ -307,7 +307,7 @@ ${entity.queryFormItems()}
         val insertInput = entity.dtoNames.insertInput
 
         val basePropertyWithDefault =
-            entity.properties.filter { it.associationType == null && it.id != entity.id }.joinToString("\n") {
+            entity.properties.filter { it.associationType == null && it.entityId == entity.id }.joinToString("\n") {
                 if (it.listType) {
                     "    ${it.name}: [],"
                 } else {
@@ -316,7 +316,7 @@ ${entity.queryFormItems()}
             }
 
         val associationPropertyWithDefault =
-            entity.associationProperties.filter { it.id != entity.id }.joinToString("\n") {
+            entity.associationProperties.filter { it.entityId == entity.id }.joinToString("\n") {
                 if (it.idView) {
                     if (it.listType) {
                         "    ${it.name}: [],"
