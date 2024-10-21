@@ -28,11 +28,11 @@ GenEntityGenerateView implements GenerateEntity {
         typeTable {
             id
 
-            entity {
+            entity implements GenerateEntity {
                 id
+                packagePath
                 name
                 comment
-                packagePath
             }
         }
 
@@ -55,6 +55,21 @@ GenEntityBusinessView implements GenerateEntity {
 
     properties {
         #allScalars
+        id(entity)
+        flat(typeTable) {
+            entity as typeEntity implements GenerateEntity {
+                id
+                packagePath
+                name
+                comment
+                idProperties {
+                    id
+                    name
+                    type
+                    typeNotNull
+                }
+            }
+        }
 
         enum implements GenerateEnum {
             id

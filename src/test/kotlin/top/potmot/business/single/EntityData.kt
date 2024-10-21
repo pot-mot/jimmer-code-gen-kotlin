@@ -102,12 +102,19 @@ const val entityData = """
             "comment": "用户",
             "type": "SysUser",
             "typeTable": {
-                "id": 751,
                 "entity": {
                     "id": 402,
                     "packagePath": "com.example.enum",
                     "name": "SysUser",
-                    "comment": "用户"
+                    "comment": "用户",
+                    "idProperties": [
+                        {
+                            "id": 387,
+                            "name": "id",
+                            "type": "kotlin.Int",
+                            "typeNotNull": true
+                        }
+                    ]
                 }
             },
             "listType": false,
@@ -184,12 +191,19 @@ const val entityData = """
             "comment": "条件",
             "type": "PolicyCondition",
             "typeTable": {
-                "id": 743,
                 "entity": {
                     "id": 387,
                     "packagePath": "com.example.enum",
                     "name": "PolicyCondition",
-                    "comment": "条件"
+                    "comment": "条件",
+                    "idProperties": [
+                        {
+                            "id": 387,
+                            "name": "id",
+                            "type": "kotlin.Int",
+                            "typeNotNull": true
+                        }
+                    ]
                 }
             },
             "listType": false,

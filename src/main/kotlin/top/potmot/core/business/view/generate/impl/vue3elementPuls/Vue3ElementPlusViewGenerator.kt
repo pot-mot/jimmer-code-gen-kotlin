@@ -115,6 +115,7 @@ $itemTexts
 
         return """
 <script setup lang="ts">
+import type {${listView}} from "@/api/__generated/model/static"
 $enumImports
 
 withDefaults(
@@ -132,7 +133,7 @@ withDefaults(
 )
 
 const slots = defineSlots<{
-	default(props: {row: ${listView}, index: number}): any,
+	operations(props: {row: ${listView}, index: number}): any,
 }>()
 
 const emits = defineEmits<{
@@ -150,7 +151,7 @@ const emits = defineEmits<{
 $propertyColumns        
         <el-table-column label="操作" width="330px">
             <template #default="scope">
-                <slot name="operations" row="scope.row" :index="scope.${'$'}index" />
+                <slot name="operations" :row="scope.row as $listView" :index="scope.${'$'}index" />
             </template>
         </el-table-column>
     </el-table>
@@ -255,7 +256,7 @@ $propertyColumns
                     }
 
             }.trimBlankLine()
-        }.map { (property, component) ->
+        }.joinToString("\n") { (property, component) ->
             buildString {
                 appendLine("""        <el-col :span="8">""")
                 appendLine("""            <el-form-item label="${property.comment}">""")
@@ -263,7 +264,7 @@ $propertyColumns
                 appendLine("            </el-form-item>")
                 appendLine("        </el-col>")
             }
-        }.joinToString("\n")
+        }
 
     override fun stringifyQueryForm(entity: GenEntityBusinessView): String {
         val spec = entity.dtoNames.spec
@@ -294,20 +295,43 @@ ${entity.queryFormItems()}
         """.trim()
     }
 
+    @Throws(GenerateException::class)
     override fun stringifyDefaultAddInput(entity: GenEntityBusinessView): String {
         val insertInput = entity.dtoNames.insertInput
 
-        val basePropertyWithDefault = entity.properties.filter { it.associationType == null }.joinToString("\n") {
-            "    ${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
-        }
-
-        val associationPropertyWithDefault = entity.associationProperties.joinToString("\n") {
-            if (it.idView) {
-                "    ${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
-            } else {
-                "    ${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
+        val basePropertyWithDefault =
+            entity.properties.filter { it.associationType == null && it.id != entity.id }.joinToString("\n") {
+                if (it.listType) {
+                    "    ${it.name}: [],"
+                } else {
+                    "    ${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
+                }
             }
-        }
+
+        val associationPropertyWithDefault =
+            entity.associationProperties.filter { it.id != entity.id }.joinToString("\n") {
+                if (it.idView) {
+                    if (it.listType) {
+                        "    ${it.name}: [],"
+                    } else {
+                        "    ${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
+                    }
+                } else {
+                    if (it.listType) {
+                        "    ${it.name}Ids: [],"
+                    } else {
+                        val typeIdProperties = it.typeEntity?.idProperties
+                            ?: throw GenerateException.entityNotFound("entityName: ${it.typeEntity?.name}")
+
+                        val typeIdProperty =
+                            if (typeIdProperties.size != 1)
+                                throw GenerateException.idPropertyNotFound("entityName: ${it.typeEntity.name}")
+                            else
+                                typeIdProperties[0]
+                        "    ${it.name}Id: ${typeStrToTypeScriptDefault(typeIdProperty.type, typeIdProperty.typeNotNull)},"
+                    }
+                }
+            }
 
         return """
 import type {${insertInput}} from "@/api/__generated/model/static"
@@ -320,7 +344,7 @@ $associationPropertyWithDefault
     }
 
     private fun GenEntityBusinessView.formItems(formData: String = "formData") =
-        properties.filter { !it.idProperty && it.associationType == null }.map {
+        properties.filter { !it.idProperty && it.associationType == null && it.entityId == id }.map {
             val vModel = """v-model="${formData}.${it.name}""""
 
             it to when (it.formType) {
@@ -370,13 +394,13 @@ $associationPropertyWithDefault
 />
 """
             }.trimBlankLine()
-        }.map { (property, component) ->
+        }.joinToString("\n") { (property, component) ->
             buildString {
                 appendLine("""        <el-form-item label="${property.comment}">""")
                 appendBlock(component) { "            $it" }
                 appendLine("        </el-form-item>")
             }
-        }.joinToString("\n")
+        }
 
     override fun stringifyAddForm(entity: GenEntityBusinessView): String {
         val dir = entity.componentNames.dir
@@ -387,7 +411,8 @@ $associationPropertyWithDefault
 <script setup lang="ts">
 import {ref} from "vue"
 import type {${insertInput}} from "@/api/__generated/model/static"
-import defaultInput from "@/components/${dir}/${defaultAddInput}.ts"
+import defaultInput from "@/components/${dir}/${defaultAddInput}"
+import {cloneDeep} from "lodash"
 ${entity.enumSelectImports()}
 
 const formData = ref<${insertInput}>(cloneDeep(defaultInput))
@@ -458,13 +483,13 @@ ${entity.formItems()}
         return """
 <script setup lang="ts">
 import {ref, onMounted} from "vue"
-import {Check, Close, Plus, EditPen, Delete, Search} from "@element-plus/icons-vue"
+import {Plus, EditPen, Delete} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ${spec}, ${listView}, ${insertInput}, ${updateInput}} from "@/api/__generated/model/static"
 import {api} from "@/api"
-import {sendMessage} from "@/utils/message.ts"
-import {deleteConfirm} from "@/utils/confirm.ts"
-import {useLoading} from "@/utils/loading.ts"
-import {useLegalPage} from "@/utils/legalPage.ts"
+import {sendMessage} from "@/utils/message"
+import {deleteConfirm} from "@/utils/confirm"
+import {useLoading} from "@/utils/loading"
+import {useLegalPage} from "@/utils/legalPage"
 import $table from "@/components/$dir/$table.vue"
 import $addForm from "@/components/$dir/$addForm.vue"
 import $editForm from "@/components/$dir/$editForm.vue"
@@ -491,18 +516,18 @@ onMounted(async () => {
     await queryPage()
 })
 
-const get${entity.name} = withLoading(api.${serviceName}.get)
+const get${entity.name} = withLoading((id: $idType) => api.${serviceName}.get({id}))
 
-const add${entity.name} = withLoading(api.${serviceName}.insert)
+const add${entity.name} = withLoading((body: $insertInput) => api.${serviceName}.insert(body))
 
-const edit${entity.name} = withLoading(api.${serviceName}.update)
+const edit${entity.name} = withLoading((body: $updateInput) => api.${serviceName}.update(body))
 
-const delete${entity.name} = withLoading(api.${serviceName}.delete)
+const delete${entity.name} = withLoading((ids: Array<$idType>) => api.${serviceName}.delete({ids}))
 
 // 多选
 const selection = ref<${listView}[]>([])
 
-const handleSelectionChange = (item: ${listView}[]) => {
+const changeSelection = (item: ${listView}[]) => {
     selection.value = item
 }
 
@@ -527,7 +552,6 @@ const submitAdd = async (insertInput: ${insertInput}) => {
 
 const cancelAdd = () => {
     addDialogVisible.value = false
-    addInput.value = undefined
 }
 
 // 修改
@@ -546,7 +570,7 @@ const startEdit = async (id: ${idType}) => {
 
 const submitEdit = async (updateInput: ${updateInput}) => {
     try {
-        await update${entity.name}(updateInput)
+        await edit${entity.name}(updateInput)
         await queryPage()
         editDialogVisible.value = false
         
@@ -587,15 +611,15 @@ const handleDelete = async (ids: ${idType}[]) => {
         <$queryForm :v-model="queryInfo.spec" @query="queryPage"/>
         
         <div>
-            <el-button type="primary" :icon="Plus" @click="startAdd" v-text="'新增'">
-            <el-button type="danger" :icon="Delete" @click="handleDelete(selection.map(it => it.${idName}))" v-text="'批量删除'">
+            <el-button type="primary" :icon="Plus" @click="startAdd" v-text="'新增'"/>
+            <el-button type="danger" :icon="Delete" @click="handleDelete(selection.map(it => it.${idName}))" v-text="'批量删除'"/>
         </div>
 
         <template v-if="pageData">
             <$table :rows="pageData.rows" @changeSelection="changeSelection">
                 <template #operations="{row}">
                     <el-button type="warning" :icon="EditPen" @click="startEdit(row.${idName})" v-text="'编辑'"/>
-                    <el-button type="danger" :icon="Delete" @click="removePost([row.${idName}])" v-text="'删除'"/>                
+                    <el-button type="danger" :icon="Delete" @click="handleDelete([row.${idName}])" v-text="'删除'"/>                
                 </template>
             </$table>
 
@@ -632,9 +656,9 @@ import {ref, onMounted} from "vue"
 import {Check} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ${spec}, ${listView}} from "@/api/__generated/model/static"
 import {api} from "@/api"
-import {sendMessage} from "@/utils/message.ts"
-import {useLoading} from "@/utils/loading.ts"
-import {useLegalPage} from "@/utils/legalPage.ts"
+import {sendMessage} from "@/utils/message"
+import {useLoading} from "@/utils/loading"
+import {useLegalPage} from "@/utils/legalPage"
 import $table from "@/components/$dir/$table.vue"
 
 const {isLoading, withLoading} = useLoading()
@@ -709,9 +733,9 @@ import {ref, onMounted} from "vue"
 import {Check} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ${spec}, ${listView}} from "@/api/__generated/model/static"
 import {api} from "@/api"
-import {sendMessage} from "@/utils/message.ts"
-import {useLoading} from "@/utils/loading.ts"
-import {useLegalPage} from "@/utils/legalPage.ts"
+import {sendMessage} from "@/utils/message"
+import {useLoading} from "@/utils/loading"
+import {useLegalPage} from "@/utils/legalPage"
 import $table from "@/components/$dir/$table.vue"
 
 const {isLoading, withLoading} = useLoading()

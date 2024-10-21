@@ -2,6 +2,7 @@ package top.potmot.business.single
 
 const val vue3ElementPlusResult = """
 [(components/conditionMatch/ConditionMatchTable.vue, <script setup lang="ts">
+import type {ConditionMatchListView} from "@/api/__generated/model/static"
 import MatchStatusView from "@/components/matchStatus/MatchStatusView.vue"
 
 withDefaults(
@@ -19,7 +20,7 @@ withDefaults(
 )
 
 const slots = defineSlots<{
-	default(props: {row: ConditionMatchListView, index: number}): any,
+	operations(props: {row: ConditionMatchListView, index: number}): any,
 }>()
 
 const emits = defineEmits<{
@@ -44,7 +45,7 @@ const emits = defineEmits<{
         
         <el-table-column label="操作" width="330px">
             <template #default="scope">
-                <slot name="operations" row="scope.row" :index="scope.${'$'}index" />
+                <slot name="operations" :row="scope.row as ConditionMatchListView" :index="scope.${'$'}index" />
             </template>
         </el-table-column>
     </el-table>
@@ -60,7 +61,8 @@ export default <ConditionMatchInsertInput> {
 } ), (components/conditionMatch/ConditionMatchAddForm.vue, <script setup lang="ts">
 import {ref} from "vue"
 import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
-import defaultInput from "@/components/conditionMatch/DefaultConditionMatchAddInput.ts"
+import defaultInput from "@/components/conditionMatch/DefaultConditionMatchAddInput"
+import {cloneDeep} from "lodash"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
 
 const formData = ref<ConditionMatchInsertInput>(cloneDeep(defaultInput))
@@ -231,13 +233,13 @@ const emits = defineEmits<{
     </el-form>
 </template>), (pages/conditionMatch/ConditionMatchPage.vue, <script setup lang="ts">
 import {ref, onMounted} from "vue"
-import {Check, Close, Plus, EditPen, Delete, Search} from "@element-plus/icons-vue"
+import {Plus, EditPen, Delete} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView, ConditionMatchInsertInput, ConditionMatchUpdateInput} from "@/api/__generated/model/static"
 import {api} from "@/api"
-import {sendMessage} from "@/utils/message.ts"
-import {deleteConfirm} from "@/utils/confirm.ts"
-import {useLoading} from "@/utils/loading.ts"
-import {useLegalPage} from "@/utils/legalPage.ts"
+import {sendMessage} from "@/utils/message"
+import {deleteConfirm} from "@/utils/confirm"
+import {useLoading} from "@/utils/loading"
+import {useLegalPage} from "@/utils/legalPage"
 import ConditionMatchTable from "@/components/conditionMatch/ConditionMatchTable.vue"
 import ConditionMatchAddForm from "@/components/conditionMatch/ConditionMatchAddForm.vue"
 import ConditionMatchEditForm from "@/components/conditionMatch/ConditionMatchEditForm.vue"
@@ -264,18 +266,18 @@ onMounted(async () => {
     await queryPage()
 })
 
-const getConditionMatch = withLoading(api.conditionMatchService.get)
+const getConditionMatch = withLoading((id: number) => api.conditionMatchService.get({id}))
 
-const addConditionMatch = withLoading(api.conditionMatchService.insert)
+const addConditionMatch = withLoading((body: ConditionMatchInsertInput) => api.conditionMatchService.insert(body))
 
-const editConditionMatch = withLoading(api.conditionMatchService.update)
+const editConditionMatch = withLoading((body: ConditionMatchUpdateInput) => api.conditionMatchService.update(body))
 
-const deleteConditionMatch = withLoading(api.conditionMatchService.delete)
+const deleteConditionMatch = withLoading((ids: Array<number>) => api.conditionMatchService.delete({ids}))
 
 // 多选
 const selection = ref<ConditionMatchListView[]>([])
 
-const handleSelectionChange = (item: ConditionMatchListView[]) => {
+const changeSelection = (item: ConditionMatchListView[]) => {
     selection.value = item
 }
 
@@ -300,7 +302,6 @@ const submitAdd = async (insertInput: ConditionMatchInsertInput) => {
 
 const cancelAdd = () => {
     addDialogVisible.value = false
-    addInput.value = undefined
 }
 
 // 修改
@@ -319,7 +320,7 @@ const startEdit = async (id: number) => {
 
 const submitEdit = async (updateInput: ConditionMatchUpdateInput) => {
     try {
-        await updateConditionMatch(updateInput)
+        await editConditionMatch(updateInput)
         await queryPage()
         editDialogVisible.value = false
         
@@ -360,15 +361,15 @@ const handleDelete = async (ids: number[]) => {
         <ConditionMatchQueryForm :v-model="queryInfo.spec" @query="queryPage"/>
         
         <div>
-            <el-button type="primary" :icon="Plus" @click="startAdd" v-text="'新增'">
-            <el-button type="danger" :icon="Delete" @click="handleDelete(selection.map(it => it.id))" v-text="'批量删除'">
+            <el-button type="primary" :icon="Plus" @click="startAdd" v-text="'新增'"/>
+            <el-button type="danger" :icon="Delete" @click="handleDelete(selection.map(it => it.id))" v-text="'批量删除'"/>
         </div>
 
         <template v-if="pageData">
             <ConditionMatchTable :rows="pageData.rows" @changeSelection="changeSelection">
                 <template #operations="{row}">
                     <el-button type="warning" :icon="EditPen" @click="startEdit(row.id)" v-text="'编辑'"/>
-                    <el-button type="danger" :icon="Delete" @click="removePost([row.id])" v-text="'删除'"/>                
+                    <el-button type="danger" :icon="Delete" @click="handleDelete([row.id])" v-text="'删除'"/>                
                 </template>
             </ConditionMatchTable>
 
@@ -394,9 +395,9 @@ import {ref, onMounted} from "vue"
 import {Check} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView} from "@/api/__generated/model/static"
 import {api} from "@/api"
-import {sendMessage} from "@/utils/message.ts"
-import {useLoading} from "@/utils/loading.ts"
-import {useLegalPage} from "@/utils/legalPage.ts"
+import {sendMessage} from "@/utils/message"
+import {useLoading} from "@/utils/loading"
+import {useLegalPage} from "@/utils/legalPage"
 import ConditionMatchTable from "@/components/conditionMatch/ConditionMatchTable.vue"
 
 const {isLoading, withLoading} = useLoading()
@@ -451,9 +452,9 @@ import {ref, onMounted} from "vue"
 import {Check} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView} from "@/api/__generated/model/static"
 import {api} from "@/api"
-import {sendMessage} from "@/utils/message.ts"
-import {useLoading} from "@/utils/loading.ts"
-import {useLegalPage} from "@/utils/legalPage.ts"
+import {sendMessage} from "@/utils/message"
+import {useLoading} from "@/utils/loading"
+import {useLegalPage} from "@/utils/legalPage"
 import ConditionMatchTable from "@/components/conditionMatch/ConditionMatchTable.vue"
 
 const {isLoading, withLoading} = useLoading()
