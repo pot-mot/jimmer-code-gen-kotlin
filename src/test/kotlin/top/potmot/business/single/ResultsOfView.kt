@@ -63,11 +63,14 @@ export default <ConditionMatchInsertInput> {
     conditionId: 0,
 }), (components/conditionMatch/ConditionMatchAddForm.vue, <script setup lang="ts">
 import {ref} from "vue"
+import type { FormInstance } from "element-plus"
+import {cloneDeep} from "lodash"
 import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
 import defaultInput from "@/components/conditionMatch/DefaultConditionMatchAddInput"
 import rules from "@/rules/conditionMatch/ConditionMatchAddFormRules"
-import {cloneDeep} from "lodash"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
+
+const formRef = ref<FormInstance>()
 
 const formData = ref<ConditionMatchInsertInput>(cloneDeep(defaultInput))
 
@@ -113,9 +116,9 @@ const handleSubmit = () => {
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchEditForm.vue, <script setup lang="ts">
 import {ref, watch} from "vue"
-import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
+import type { FormInstance } from "element-plus"
 import {cloneDeep} from "lodash"
-import type { FormInstance } from 'element-plus'
+import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
 import rules from "@/rules/conditionMatch/ConditionMatchEditFormRules"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
 
@@ -173,9 +176,9 @@ const handleSubmit = () => {
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchEditForm.vue, <script setup lang="ts">
 import {ref, watch} from "vue"
-import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
+import type { FormInstance } from "element-plus"
 import {cloneDeep} from "lodash"
-import type { FormInstance } from 'element-plus'
+import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
 import rules from "@/rules/conditionMatch/ConditionMatchEditFormRules"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
 

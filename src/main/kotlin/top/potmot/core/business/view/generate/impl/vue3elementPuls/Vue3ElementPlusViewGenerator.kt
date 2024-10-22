@@ -563,11 +563,14 @@ $propertyRules
         return """
 <script setup lang="ts">
 import {ref} from "vue"
+import type { FormInstance } from "element-plus"
+import {cloneDeep} from "lodash"
 import type {${insertInput}} from "@/api/__generated/model/static"
 import defaultInput from "@/components/${dir}/${defaultAddInput}"
 import rules from "@/rules/${ruleDir}/${addFormRules}"
-import {cloneDeep} from "lodash"
 ${entity.enumSelectImports()}
+
+const formRef = ref<FormInstance>()
 
 const formData = ref<${insertInput}>(cloneDeep(defaultInput))
 
@@ -634,9 +637,9 @@ $propertyRules
         return """
 <script setup lang="ts">
 import {ref, watch} from "vue"
-import type {${updateInput}} from "@/api/__generated/model/static"
+import type { FormInstance } from "element-plus"
 import {cloneDeep} from "lodash"
-import type { FormInstance } from 'element-plus'
+import type {${updateInput}} from "@/api/__generated/model/static"
 import rules from "@/rules/${ruleDir}/${editFormRules}"
 ${entity.enumSelectImports()}
 
