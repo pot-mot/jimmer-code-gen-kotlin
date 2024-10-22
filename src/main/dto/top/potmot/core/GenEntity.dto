@@ -76,6 +76,12 @@ GenEntityBusinessView implements GenerateEntity {
             packagePath
             name
             comment
+
+            defaultItems {
+                id
+                name
+                comment
+            }
         }
     }
 }

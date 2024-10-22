@@ -56,7 +56,7 @@ const handleChangeSelection = (selection: Array<ConditionMatchListView>) => {
 </template>), (components/conditionMatch/DefaultConditionMatchAddInput.ts, import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
 
 export default <ConditionMatchInsertInput> {
-    status: "",
+    status: "EQ",
     date: "",
     description: "",
     userId: 0,
@@ -235,6 +235,7 @@ const handleSubmit = () => {
         </div>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchQueryForm.vue, <script setup lang="ts">
+import {computed} from "vue"
 import {Search} from "@element-plus/icons-vue"
 import type {ConditionMatchSpec} from "@/api/__generated/model/static"
 import MatchStatusNullableSelect from "@/components/matchStatus/MatchStatusNullableSelect.vue"
@@ -246,6 +247,19 @@ const spec = defineModel<ConditionMatchSpec>({
 const emits = defineEmits<{
     (event: "query"): void,
 }>()
+
+const dateRange = computed<[string | undefined, string | undefined]>({
+    get() {
+        return [
+            spec.value.minDate,
+            spec.value.maxDate,
+       ]
+    },
+    set(range: [string | undefined, string | undefined]) {
+        spec.value.minDate = range[0]
+        spec.value.maxDate = range[1]
+    }
+})
 </script>
 
 <template>
@@ -263,14 +277,13 @@ const emits = defineEmits<{
         <el-col :span="8">
             <el-form-item prop="date" label="匹配日期">
                 <el-date-picker
-                    v-model="spec.date"
+                    v-model="dateRange"
                     type="datetimerange"
                     start-placeholder="初始匹配日期"
                     end-placeholder="结束匹配日期"
                     unlink-panels
                     clearable
-                    :empty-values="[undefined]"
-                    :value-on-clear="undefined"
+                    @clear="dateRange = [undefined, undefined]"
                     @change="emits('query')"
                 />
             </el-form-item>

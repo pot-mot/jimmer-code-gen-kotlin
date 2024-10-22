@@ -210,6 +210,7 @@ $propertyColumns
     private fun GenEntityBusinessView.queryFormItems(spec: String = "spec") =
         properties.filter { !it.idProperty && it.associationType == null }.map {
             val vModel = """v-model="${spec}.${it.name}""""
+            val rangeVModel = """v-model="${it.name}Range""""
 
             it to when (it.queryType) {
                 PropertyQueryType.ENUM_SELECT ->
@@ -239,13 +240,13 @@ $propertyColumns
                 PropertyQueryType.TIME_RANGE ->
                     """
 <el-time-picker
-    $vModel
+    $rangeVModel
     is-range
     start-placeholder="初始${it.comment}"
     end-placeholder="结束${it.comment}"
+    unlink-panels
     clearable
-    :empty-values="[undefined]"
-    :value-on-clear="undefined"
+    @clear="${it.name}Range = [undefined, undefined]"
     @change="emits('query')"
 />
 """
@@ -253,14 +254,13 @@ $propertyColumns
                 PropertyQueryType.DATE_RANGE ->
                     """
 <el-date-picker
-    $vModel
+    $rangeVModel
     type="daterange"
     start-placeholder="初始${it.comment}"
     end-placeholder="结束${it.comment}"
     unlink-panels
     clearable
-    :empty-values="[undefined]"
-    :value-on-clear="undefined"
+    @clear="${it.name}Range = [undefined, undefined]"
     @change="emits('query')"
 />
 """
@@ -268,14 +268,13 @@ $propertyColumns
                 PropertyQueryType.DATETIME_RANGE ->
                     """
 <el-date-picker
-    $vModel
+    $rangeVModel
     type="datetimerange"
     start-placeholder="初始${it.comment}"
     end-placeholder="结束${it.comment}"
     unlink-panels
     clearable
-    :empty-values="[undefined]"
-    :value-on-clear="undefined"
+    @clear="${it.name}Range = [undefined, undefined]"
     @change="emits('query')"
 />
 """
@@ -288,8 +287,7 @@ $propertyColumns
     $vModel
     placeholder="请选择${it.comment}"
     clearable
-    :empty-values="[undefined]"
-    :value-on-clear="undefined"
+    @clear="spec.${it.name} = undefined"
     @change="emits('query')">
     <el-option :value="true" label="是"/>
     <el-option :value="false" label="否"/>
@@ -321,8 +319,34 @@ $propertyColumns
     override fun stringifyQueryForm(entity: GenEntityBusinessView): String {
         val spec = entity.dtoNames.spec
 
+        val rangeComputed = entity.properties.mapNotNull {
+            when (it.queryType) {
+                PropertyQueryType.DATE_RANGE,
+                PropertyQueryType.TIME_RANGE,
+                PropertyQueryType.DATETIME_RANGE ->
+                    """
+const ${it.name}Range = computed<[string | undefined, string | undefined]>({
+    get() {
+        return [
+            spec.value.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }},
+            spec.value.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }},
+       ]
+    },
+    set(range: [string | undefined, string | undefined]) {
+        spec.value.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }} = range[0]
+        spec.value.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }} = range[1]
+    }
+})
+                    """.trimBlankLine()
+
+                else -> null
+            }
+        }
+
+        val importComputed = if (rangeComputed.isNotEmpty()) "\nimport {computed} from \"vue\"" else ""
+
         return """
-<script setup lang="ts">
+<script setup lang="ts">${importComputed}
 import {Search} from "@element-plus/icons-vue"
 import type {${spec}} from "@/api/__generated/model/static"
 ${entity.enumSelectImports(forceNullable = true)}
@@ -334,6 +358,8 @@ const spec = defineModel<${spec}>({
 const emits = defineEmits<{
     (event: "query"): void,
 }>()
+
+${rangeComputed.joinToString("\n")}
 </script>
 
 <template>
@@ -361,6 +387,11 @@ ${entity.queryFormItems()}
             .map {
                 if (it.listType) {
                     "${it.name}: [],"
+                } else if (it.enum != null) {
+                    if (it.enum.defaultItems.size != 1)
+                        throw GenerateException.defaultItemNotFound("enumName: ${it.enum.name}")
+
+                    "${it.name}: \"${it.enum.defaultItems[0].name}\","
                 } else {
                     "${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
                 }
@@ -417,9 +448,7 @@ ${entity.queryFormItems()}
 <el-select 
     $vModel
     placeholder="请选择${it.comment}"
-    clearable
-    :empty-values="[undefined]"
-    :value-on-clear="undefined">
+    clearable>
     <el-option :value="true" label="是"/>
     <el-option :value="false" label="否"/>
 </el-select>
