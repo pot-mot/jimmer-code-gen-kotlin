@@ -86,6 +86,7 @@ const emits = defineEmits<{
             <el-date-picker
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
+                type="datetime"
             />
         </el-form-item>
 
@@ -93,6 +94,7 @@ const emits = defineEmits<{
             <el-input
                 v-model="formData.description"
                 placeholder="请输入结果描述"
+                clearable
             />
         </el-form-item>
 
@@ -133,6 +135,7 @@ const emits = defineEmits<{
             <el-date-picker
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
+                type="datetime"
             />
         </el-form-item>
 
@@ -140,6 +143,7 @@ const emits = defineEmits<{
             <el-input
                 v-model="formData.description"
                 placeholder="请输入结果描述"
+                clearable
             />
         </el-form-item>
 
@@ -180,6 +184,7 @@ const emits = defineEmits<{
             <el-date-picker
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
+                type="datetime"
             />
         </el-form-item>
 
@@ -187,6 +192,7 @@ const emits = defineEmits<{
             <el-input
                 v-model="formData.description"
                 placeholder="请输入结果描述"
+                clearable
             />
         </el-form-item>
 
@@ -198,7 +204,7 @@ const emits = defineEmits<{
 </template>), (components/conditionMatch/ConditionMatchQueryForm.vue, <script setup lang="ts">
 import {Search} from "@element-plus/icons-vue"
 import type {ConditionMatchSpec} from "@/api/__generated/model/static"
-import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
+import MatchStatusNullableSelect from "@/components/matchStatus/MatchStatusNullableSelect.vue"
 
 const spec = defineModel<ConditionMatchSpec>({
     required: true
@@ -214,9 +220,8 @@ const emits = defineEmits<{
         <el-row :gutter="20">
         <el-col :span="8">
             <el-form-item label="匹配状态">
-                <MatchStatusSelect
+                <MatchStatusNullableSelect
                     v-model="spec.status"
-                    clearable
                     @change="emits('query')"
                 />
             </el-form-item>
@@ -231,6 +236,8 @@ const emits = defineEmits<{
                     end-placeholder="结束匹配日期"
                     unlink-panels
                     clearable
+                    :empty-values="[undefined]"
+                    :value-on-clear="undefined"
                     @change="emits('query')"
                 />
             </el-form-item>

@@ -196,14 +196,15 @@ $propertyColumns
         """.trim()
     }
 
-    private fun GenEntityBusinessView.enumSelectImports() = properties.filter { it.enum != null }.joinToString("\n") {
-        val (_, dir, select, nullableSelect) = it.enum!!.componentNames
-        if (it.typeNotNull) {
-            """import $select from "@/components/$dir/$select.vue""""
-        } else {
-            """import $nullableSelect from "@/components/$dir/$nullableSelect.vue""""
+    private fun GenEntityBusinessView.enumSelectImports(forceNullable: Boolean = false) =
+        properties.filter { it.enum != null }.joinToString("\n") {
+            val (_, dir, select, nullableSelect) = it.enum!!.componentNames
+            if (forceNullable || !it.typeNotNull) {
+                """import $nullableSelect from "@/components/$dir/$nullableSelect.vue""""
+            } else {
+                """import $select from "@/components/$dir/$select.vue""""
+            }
         }
-    }
 
     private fun GenEntityBusinessView.queryFormItems(spec: String = "spec") =
         properties.filter { !it.idProperty && it.associationType == null }.map {
@@ -212,9 +213,8 @@ $propertyColumns
             it to when (it.queryType) {
                 PropertyQueryType.ENUM_SELECT ->
                     """
-<${if (it.typeNotNull) it.enum!!.componentNames.select else it.enum!!.componentNames.nullableSelect}
+<${it.enum!!.componentNames.nullableSelect}
     $vModel
-    clearable
     @change="emits('query')"
 />
 """
@@ -224,11 +224,13 @@ $propertyColumns
 <el-input-number
     v-model="${spec}.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
     placeholder="请输入最小${it.comment}"
+    :value-on-clear="null"
     @change="emits('query')"
 />
 <el-input-number
     v-model="${spec}.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
     placeholder="请输入最大${it.comment}"
+    :value-on-clear="null"
     @change="emits('query')"
 />
 """
@@ -241,6 +243,8 @@ $propertyColumns
     start-placeholder="初始${it.comment}"
     end-placeholder="结束${it.comment}"
     clearable
+    :empty-values="[undefined]"
+    :value-on-clear="undefined"
     @change="emits('query')"
 />
 """
@@ -254,6 +258,8 @@ $propertyColumns
     end-placeholder="结束${it.comment}"
     unlink-panels
     clearable
+    :empty-values="[undefined]"
+    :value-on-clear="undefined"
     @change="emits('query')"
 />
 """
@@ -267,6 +273,8 @@ $propertyColumns
     end-placeholder="结束${it.comment}"
     unlink-panels
     clearable
+    :empty-values="[undefined]"
+    :value-on-clear="undefined"
     @change="emits('query')"
 />
 """
@@ -279,9 +287,11 @@ $propertyColumns
     $vModel
     placeholder="请选择${it.comment}"
     clearable
+    :empty-values="[undefined]"
+    :value-on-clear="undefined"
     @change="emits('query')">
-  <el-option :value="true" label="是"/>
-  <el-option :value="false" label="否"/>
+    <el-option :value="true" label="是"/>
+    <el-option :value="false" label="否"/>
 </el-select>
 """
 
@@ -314,7 +324,7 @@ $propertyColumns
 <script setup lang="ts">
 import {Search} from "@element-plus/icons-vue"
 import type {${spec}} from "@/api/__generated/model/static"
-${entity.enumSelectImports()}
+${entity.enumSelectImports(forceNullable = true)}
 
 const spec = defineModel<${spec}>({
     required: true
@@ -341,13 +351,14 @@ ${entity.queryFormItems()}
         val insertInput = entity.dtoNames.insertInput
 
         val basePropertyWithDefault =
-            entity.properties.filter { !it.idProperty && it.associationType == null && it.entityId == entity.id }.joinToString("\n") {
-                if (it.listType) {
-                    "    ${it.name}: [],"
-                } else {
-                    "    ${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
+            entity.properties.filter { !it.idProperty && it.associationType == null && it.entityId == entity.id }
+                .joinToString("\n") {
+                    if (it.listType) {
+                        "    ${it.name}: [],"
+                    } else {
+                        "    ${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
+                    }
                 }
-            }
 
         val associationPropertyWithDefault =
             entity.associationProperties.filter { it.entityId == entity.id }.joinToString("\n") {
@@ -369,7 +380,12 @@ ${entity.queryFormItems()}
                                 throw GenerateException.idPropertyNotFound("entityName: ${it.typeEntity.name}")
                             else
                                 typeIdProperties[0]
-                        "    ${it.name}Id: ${typeStrToTypeScriptDefault(typeIdProperty.type, typeIdProperty.typeNotNull)},"
+                        "    ${it.name}Id: ${
+                            typeStrToTypeScriptDefault(
+                                typeIdProperty.type,
+                                typeIdProperty.typeNotNull
+                            )
+                        },"
                     }
                 }
             }
@@ -396,34 +412,81 @@ $associationPropertyWithDefault
                     "<el-switch $vModel/>"
 
                 PropertyFormType.NUMBER ->
-                    """
+                    if (it.typeNotNull)
+                        """
 <el-input-number
     $vModel
     placeholder="请输入${it.comment}"
 />
 """
+                    else
+                        """
+<el-input-number
+    $vModel
+    placeholder="请输入${it.comment}"
+    :value-on-clear="null"
+/>
+"""
 
                 PropertyFormType.TIME ->
-                    """
+                    if (it.typeNotNull)
+                        """
 <el-time-picker
     $vModel
     placeholder="请选择${it.comment}"
 />
 """
+                    else
+                        """
+<el-time-picker
+    $vModel
+    placeholder="请选择${it.comment}"
+    clearable
+    :empty-values="[undefined]"
+    :value-on-clear="undefined"
+/>
+"""
+
 
                 PropertyFormType.DATE ->
-                    """
+                    if (it.typeNotNull)
+                        """
 <el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
+    type="date"
+/>
+"""
+                    else
+                        """
+<el-date-picker
+    $vModel
+    placeholder="请选择${it.comment}"
+    type="date"
+    clearable
+    :empty-values="[undefined]"
+    :value-on-clear="undefined"
 />
 """
 
                 PropertyFormType.DATETIME ->
-                    """
+                    if (it.typeNotNull)
+                        """
 <el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
+    type="datetime"
+/>
+"""
+                    else
+                        """
+<el-date-picker
+    $vModel
+    placeholder="请选择${it.comment}"
+    type="datetime"
+    clearable
+    :empty-values="[undefined]"
+    :value-on-clear="undefined"
 />
 """
 
@@ -432,6 +495,7 @@ $associationPropertyWithDefault
 <el-input
     $vModel
     placeholder="请输入${it.comment}"
+    clearable
 />
 """
             }.trimBlankLine()
