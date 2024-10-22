@@ -86,6 +86,7 @@ data class EnumComponentNames(
     val enum: GenerateEnum,
     val dir: String = enum.name.replaceFirstChar { it.lowercase() },
     val select: String = "${enum.name}Select",
+    val nullableSelect: String = "${enum.name}NullableSelect",
     val view: String = "${enum.name}View",
 )
 

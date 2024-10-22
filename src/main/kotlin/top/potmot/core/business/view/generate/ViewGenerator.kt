@@ -12,6 +12,8 @@ abstract class ViewGenerator {
 
     protected abstract fun stringifyEnumSelect(enum: GenEnumGenerateView): String
 
+    protected abstract fun stringifyEnumNullableSelect(enum: GenEnumGenerateView): String
+
     protected abstract fun stringifyQueryForm(entity: GenEntityBusinessView): String
 
     protected abstract fun stringifyTable(entity: GenEntityBusinessView): String
@@ -34,10 +36,11 @@ abstract class ViewGenerator {
         enum: GenEnumGenerateView,
     ): List<Pair<String, String>> {
         val suffix = getFileSuffix()
-        val (_, dir, select, view) = enum.componentNames
+        val (_, dir, select, nullableSelect, view) = enum.componentNames
 
         return listOf(
             "components/${dir}/${select}.$suffix" to stringifyEnumSelect(enum),
+            "components/${dir}/${nullableSelect}.$suffix" to stringifyEnumNullableSelect(enum),
             "components/${dir}/${view}.$suffix" to stringifyEnumView(enum),
         )
     }

@@ -24,7 +24,7 @@ object Vue3ElementPlusViewGenerator : ViewGenerator() {
     override fun getFileSuffix() = "vue"
 
     override fun stringifyEnumSelect(enum: GenEnumGenerateView): String {
-        val (_, dir, _, view) = enum.componentNames
+        val (_, dir, _, _, view) = enum.componentNames
 
         return """
 <script setup lang="ts">
@@ -39,9 +39,39 @@ const data = defineModel<${enum.name}>({
 
 <template>
     <el-select
-        placeholder="请选择${enum.comment}"
         v-model="data"
-        clearable>
+        placeholder="请选择${enum.comment}">
+        <el-option
+            v-for="value in ${enum.constants}" 
+            :value="value">
+            <$view :value="value"/>
+        </el-option>
+    </el-select>
+</template>
+""".trim()
+    }
+
+    override fun stringifyEnumNullableSelect(enum: GenEnumGenerateView): String {
+        val (_, dir, _, _, view) = enum.componentNames
+
+        return """
+<script setup lang="ts">
+import {${enum.constants}} from "@/api/__generated/model/enums"
+import type {${enum.name}} from "@/api/__generated/model/enums"
+import $view from "@/components/$dir/$view.vue"
+
+const data = defineModel<${enum.name} | undefined>({
+    required: true
+})
+</script>
+
+<template>
+    <el-select
+        v-model="data"
+        placeholder="请选择${enum.comment}"
+        clearable
+        :empty-values="[undefined]"
+        :value-on-clear="undefined">
         <el-option
             v-for="value in ${enum.constants}" 
             :value="value">
@@ -84,7 +114,7 @@ $itemTexts
 
         val enums = entity.enums
         val enumImports = enums.joinToString("\n") {
-            val (_, dir, _, view) = it.componentNames
+            val (_, dir, _, _, view) = it.componentNames
             """import $view from "@/components/$dir/$view.vue""""
         }
 
@@ -166,9 +196,13 @@ $propertyColumns
         """.trim()
     }
 
-    private fun GenEntityBusinessView.enumSelectImports() = enums.joinToString("\n") {
-        val (_, dir, select) = it.componentNames
-        """import $select from "@/components/$dir/$select.vue""""
+    private fun GenEntityBusinessView.enumSelectImports() = properties.filter { it.enum != null }.joinToString("\n") {
+        val (_, dir, select, nullableSelect) = it.enum!!.componentNames
+        if (it.typeNotNull) {
+            """import $select from "@/components/$dir/$select.vue""""
+        } else {
+            """import $nullableSelect from "@/components/$dir/$nullableSelect.vue""""
+        }
     }
 
     private fun GenEntityBusinessView.queryFormItems(spec: String = "spec") =
@@ -178,7 +212,7 @@ $propertyColumns
             it to when (it.queryType) {
                 PropertyQueryType.ENUM_SELECT ->
                     """
-<${it.enum!!.componentNames.select}
+<${if (it.typeNotNull) it.enum!!.componentNames.select else it.enum!!.componentNames.nullableSelect}
     $vModel
     clearable
     @change="emits('query')"
@@ -356,7 +390,7 @@ $associationPropertyWithDefault
 
             it to when (it.formType) {
                 PropertyFormType.ENUM ->
-                    "<${it.enum!!.componentNames.select} $vModel/>"
+                    "<${if (it.typeNotNull) it.enum!!.componentNames.select else it.enum!!.componentNames.nullableSelect} $vModel/>"
 
                 PropertyFormType.SWITCH ->
                     "<el-switch $vModel/>"

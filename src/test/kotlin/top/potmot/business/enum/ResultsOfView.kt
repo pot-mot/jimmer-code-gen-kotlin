@@ -13,9 +13,31 @@ const data = defineModel<EnumTest>({
 
 <template>
     <el-select
-        placeholder="请选择测试"
         v-model="data"
-        clearable>
+        placeholder="请选择测试">
+        <el-option
+            v-for="value in EnumTest_CONSTANTS" 
+            :value="value">
+            <EnumTestView :value="value"/>
+        </el-option>
+    </el-select>
+</template>), (components/enumTest/EnumTestNullableSelect.vue, <script setup lang="ts">
+import {EnumTest_CONSTANTS} from "@/api/__generated/model/enums"
+import type {EnumTest} from "@/api/__generated/model/enums"
+import EnumTestView from "@/components/enumTest/EnumTestView.vue"
+
+const data = defineModel<EnumTest | undefined>({
+    required: true
+})
+</script>
+
+<template>
+    <el-select
+        v-model="data"
+        placeholder="请选择测试"
+        clearable
+        :empty-values="[undefined]"
+        :value-on-clear="undefined">
         <el-option
             v-for="value in EnumTest_CONSTANTS" 
             :value="value">
