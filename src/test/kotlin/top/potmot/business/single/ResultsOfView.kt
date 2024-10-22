@@ -65,6 +65,7 @@ export default <ConditionMatchInsertInput> {
 import {ref} from "vue"
 import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
 import defaultInput from "@/components/conditionMatch/DefaultConditionMatchAddInput"
+import rules from "@/rules/conditionMatch/ConditionMatchAddFormRules"
 import {cloneDeep} from "lodash"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
 
@@ -74,15 +75,22 @@ const emits = defineEmits<{
     (event: "submit", insertInput: ConditionMatchInsertInput): void,
     (event: "cancel"): void,
 }>()
+
+const handleSubmit = () => {
+    formRef.value?.validate(valid => {
+        if (valid)
+            emits('submit', formData.value)    
+    })
+}
 </script>
 
 <template>
-    <el-form :model="formData">
-        <el-form-item label="匹配状态">
+    <el-form ref="formRef" :rules="rules" :model="formData" inline-message>
+        <el-form-item prop="status" label="匹配状态" required>
             <MatchStatusSelect v-model="formData.status"/>
         </el-form-item>
 
-        <el-form-item label="匹配日期">
+        <el-form-item prop="date" label="匹配日期" required>
             <el-date-picker
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
@@ -90,7 +98,7 @@ const emits = defineEmits<{
             />
         </el-form-item>
 
-        <el-form-item label="结果描述">
+        <el-form-item prop="description" label="结果描述" required>
             <el-input
                 v-model="formData.description"
                 placeholder="请输入结果描述"
@@ -100,18 +108,22 @@ const emits = defineEmits<{
 
         <div style="text-align: right;">
             <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
-            <el-button type="primary" @click="emits('submit', formData)" v-text="'提交'"/>
+            <el-button type="primary" @click="handleSubmit" v-text="'提交'"/>
         </div>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchEditForm.vue, <script setup lang="ts">
 import {ref, watch} from "vue"
 import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
 import {cloneDeep} from "lodash"
+import type { FormInstance } from 'element-plus'
+import rules from "@/rules/conditionMatch/ConditionMatchEditFormRules"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
 
 const props = defineProps<{
     data: ConditionMatchUpdateInput
 }>()
+
+const formRef = ref<FormInstance>()
 
 const formData = ref<ConditionMatchUpdateInput>(cloneDeep(props.data))
 
@@ -123,15 +135,22 @@ const emits = defineEmits<{
     (event: "submit", updateInput: ConditionMatchUpdateInput): void,
     (event: "cancel"): void,
 }>()
+
+const handleSubmit = () => {
+    formRef.value?.validate(valid => {
+        if (valid)
+            emits('submit', formData.value)    
+    })
+}
 </script>
 
 <template>
-    <el-form :model="formData">
-        <el-form-item label="匹配状态">
+    <el-form ref="formRef" :rules="rules" :model="formData" inline-message>
+        <el-form-item prop="status" label="匹配状态" required>
             <MatchStatusSelect v-model="formData.status"/>
         </el-form-item>
 
-        <el-form-item label="匹配日期">
+        <el-form-item prop="date" label="匹配日期" required>
             <el-date-picker
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
@@ -139,7 +158,7 @@ const emits = defineEmits<{
             />
         </el-form-item>
 
-        <el-form-item label="结果描述">
+        <el-form-item prop="description" label="结果描述" required>
             <el-input
                 v-model="formData.description"
                 placeholder="请输入结果描述"
@@ -149,18 +168,22 @@ const emits = defineEmits<{
 
         <div style="text-align: right;">
             <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
-            <el-button type="primary" @click="emits('submit', formData)" v-text="'提交'"/>
+            <el-button type="primary" @click="handleSubmit" v-text="'提交'"/>
         </div>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchEditForm.vue, <script setup lang="ts">
 import {ref, watch} from "vue"
 import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
 import {cloneDeep} from "lodash"
+import type { FormInstance } from 'element-plus'
+import rules from "@/rules/conditionMatch/ConditionMatchEditFormRules"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
 
 const props = defineProps<{
     data: ConditionMatchUpdateInput
 }>()
+
+const formRef = ref<FormInstance>()
 
 const formData = ref<ConditionMatchUpdateInput>(cloneDeep(props.data))
 
@@ -172,15 +195,22 @@ const emits = defineEmits<{
     (event: "submit", updateInput: ConditionMatchUpdateInput): void,
     (event: "cancel"): void,
 }>()
+
+const handleSubmit = () => {
+    formRef.value?.validate(valid => {
+        if (valid)
+            emits('submit', formData.value)    
+    })
+}
 </script>
 
 <template>
-    <el-form :model="formData">
-        <el-form-item label="匹配状态">
+    <el-form ref="formRef" :rules="rules" :model="formData" inline-message>
+        <el-form-item prop="status" label="匹配状态" required>
             <MatchStatusSelect v-model="formData.status"/>
         </el-form-item>
 
-        <el-form-item label="匹配日期">
+        <el-form-item prop="date" label="匹配日期" required>
             <el-date-picker
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
@@ -188,7 +218,7 @@ const emits = defineEmits<{
             />
         </el-form-item>
 
-        <el-form-item label="结果描述">
+        <el-form-item prop="description" label="结果描述" required>
             <el-input
                 v-model="formData.description"
                 placeholder="请输入结果描述"
@@ -198,7 +228,7 @@ const emits = defineEmits<{
 
         <div style="text-align: right;">
             <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
-            <el-button type="primary" @click="emits('submit', formData)" v-text="'提交'"/>
+            <el-button type="primary" @click="handleSubmit" v-text="'提交'"/>
         </div>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchQueryForm.vue, <script setup lang="ts">
@@ -219,7 +249,7 @@ const emits = defineEmits<{
     <el-form>
         <el-row :gutter="20">
         <el-col :span="8">
-            <el-form-item label="匹配状态">
+            <el-form-item prop="status" label="匹配状态">
                 <MatchStatusNullableSelect
                     v-model="spec.status"
                     @change="emits('query')"
@@ -228,7 +258,7 @@ const emits = defineEmits<{
         </el-col>
 
         <el-col :span="8">
-            <el-form-item label="匹配日期">
+            <el-form-item prop="date" label="匹配日期">
                 <el-date-picker
                     v-model="spec.date"
                     type="datetimerange"
@@ -244,7 +274,7 @@ const emits = defineEmits<{
         </el-col>
 
         <el-col :span="8">
-            <el-form-item label="结果描述">
+            <el-form-item prop="description" label="结果描述">
                 <el-input
                     v-model="spec.description"
                     placeholder="请输入结果描述"
@@ -543,5 +573,33 @@ const handleUnSelect = (item: ConditionMatchListView) => {
             <el-button type="primary" @click="emits('submit', [...selectMap.values()])" v-text="'提交'"/>
         </div>
     </el-form>
-</template>)]
+</template>), (rules/conditionMatch/ConditionMatchAddFormRules.ts, import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
+import type { FormRules } from 'element-plus'
+
+export default <FormRules<ConditionMatchInsertInput>> {
+    status: [
+        {required: true, message: '匹配状态不能为空', trigger: 'blur'},
+    ],
+    date: [
+        {required: true, message: '匹配日期不能为空', trigger: 'blur'},
+    ],
+    description: [
+        {required: true, message: '结果描述不能为空', trigger: 'blur'},
+    ],
+
+}), (rules/conditionMatch/ConditionMatchEditFormRules.ts, import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
+import type { FormRules } from 'element-plus'
+
+export default <FormRules<ConditionMatchUpdateInput>> {
+    status: [
+        {required: true, message: '匹配状态不能为空', trigger: 'blur'},
+    ],
+    date: [
+        {required: true, message: '匹配日期不能为空', trigger: 'blur'},
+    ],
+    description: [
+        {required: true, message: '结果描述不能为空', trigger: 'blur'},
+    ],
+
+})]
 """
