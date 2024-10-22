@@ -222,13 +222,13 @@ $propertyColumns
                 PropertyQueryType.NUMBER_RANGE ->
                     """
 <el-input-number
-    v-model="${spec}.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
+    v-model.number="${spec}.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
     placeholder="请输入最小${it.comment}"
     :value-on-clear="null"
     @change="emits('query')"
 />
 <el-input-number
-    v-model="${spec}.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
+    v-model.number="${spec}.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
     placeholder="请输入最大${it.comment}"
     :value-on-clear="null"
     @change="emits('query')"
@@ -310,7 +310,7 @@ $propertyColumns
         }.joinToString("\n") { (property, component) ->
             buildString {
                 appendLine("""        <el-col :span="8">""")
-                appendLine("""            <el-form-item label="${property.comment}">""")
+                appendLine("""            <el-form-item prop="${property.name}" label="${property.comment}">""")
                 appendBlock(component) { "                $it" }
                 appendLine("            </el-form-item>")
                 appendLine("        </el-col>")
@@ -413,20 +413,33 @@ ${entity.queryFormItems()}
                     "<${if (it.typeNotNull) it.enum!!.componentNames.select else it.enum!!.componentNames.nullableSelect} $vModel/>"
 
                 PropertyFormType.SWITCH ->
-                    "<el-switch $vModel/>"
+                    if (it.typeNotNull)
+"<el-switch $vModel/>"
+                    else
+                        """
+<el-select 
+    $vModel
+    placeholder="请选择${it.comment}"
+    clearable
+    :empty-values="[undefined]"
+    :value-on-clear="undefined">
+    <el-option :value="true" label="是"/>
+    <el-option :value="false" label="否"/>
+</el-select>
+"""
 
                 PropertyFormType.NUMBER ->
                     if (it.typeNotNull)
                         """
 <el-input-number
-    $vModel
+    v-model.number="${formData}.${it.name}"
     placeholder="请输入${it.comment}"
 />
 """
                     else
                         """
 <el-input-number
-    $vModel
+    v-model.number="${formData}.${it.name}"
     placeholder="请输入${it.comment}"
     :value-on-clear="null"
 />
@@ -505,7 +518,9 @@ ${entity.queryFormItems()}
             }.trimBlankLine()
         }.joinToString("\n") { (property, component) ->
             buildString {
-                appendLine("""        <el-form-item label="${property.comment}">""")
+                val required = if (property.typeNotNull) " required" else ""
+
+                appendLine("""        <el-form-item prop="${property.name}" label="${property.comment}"$required>""")
                 appendBlock(component) { "            $it" }
                 appendLine("        </el-form-item>")
             }
@@ -533,7 +548,7 @@ const emits = defineEmits<{
 </script>
 
 <template>
-    <el-form :model="formData">
+    <el-form :model="formData" inline-message>
 ${entity.formItems()}
         <div style="text-align: right;">
             <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
@@ -575,7 +590,7 @@ const emits = defineEmits<{
 </script>
 
 <template>
-    <el-form :model="formData">
+    <el-form :model="formData" inline-message>
 ${entity.formItems()}
         <div style="text-align: right;">
             <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
