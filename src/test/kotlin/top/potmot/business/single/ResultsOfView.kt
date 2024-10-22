@@ -469,6 +469,7 @@ import {api} from "@/api"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import ConditionMatchTable from "@/components/conditionMatch/ConditionMatchTable.vue"
+import ConditionMatchQueryForm from "@/components/conditionMatch/ConditionMatchQueryForm.vue"
 
 const {isLoading, withLoading} = useLoading()
 
@@ -526,6 +527,7 @@ import {api} from "@/api"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import ConditionMatchTable from "@/components/conditionMatch/ConditionMatchTable.vue"
+import ConditionMatchQueryForm from "@/components/conditionMatch/ConditionMatchQueryForm.vue"
 
 const {isLoading, withLoading} = useLoading()
 

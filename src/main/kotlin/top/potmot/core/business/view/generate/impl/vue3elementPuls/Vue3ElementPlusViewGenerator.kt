@@ -902,6 +902,7 @@ import {api} from "@/api"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import $table from "@/components/$dir/$table.vue"
+import $queryForm from "@/components/$dir/$queryForm.vue"
 
 const {isLoading, withLoading} = useLoading()
 
@@ -979,6 +980,7 @@ import {api} from "@/api"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import $table from "@/components/$dir/$table.vue"
+import $queryForm from "@/components/$dir/$queryForm.vue"
 
 const {isLoading, withLoading} = useLoading()
 
