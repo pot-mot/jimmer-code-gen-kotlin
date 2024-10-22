@@ -347,30 +347,38 @@ ${entity.queryFormItems()}
     }
 
     @Throws(GenerateException::class)
-    override fun stringifyDefaultAddInput(entity: GenEntityBusinessView): String {
+    override fun stringifyDefaultAddInput(entity: GenEntityBusinessView) = buildString {
         val insertInput = entity.dtoNames.insertInput
 
-        val basePropertyWithDefault =
-            entity.properties.filter { !it.idProperty && it.associationType == null && it.entityId == entity.id }
-                .joinToString("\n") {
-                    if (it.listType) {
-                        "    ${it.name}: [],"
-                    } else {
-                        "    ${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
-                    }
-                }
+        appendLine("""import type {${insertInput}} from "@/api/__generated/model/static"""")
+        appendLine()
 
-        val associationPropertyWithDefault =
-            entity.associationProperties.filter { it.entityId == entity.id }.joinToString("\n") {
+        appendLine("export default <${insertInput}> {")
+
+        entity.properties
+            .filter { !it.idProperty && it.associationType == null && it.entityId == entity.id }
+            .map {
+                if (it.listType) {
+                    "${it.name}: [],"
+                } else {
+                    "${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
+                }
+            }.forEach {
+                appendLine("    $it")
+            }
+
+        entity.associationProperties
+            .filter { it.entityId == entity.id }
+            .map {
                 if (it.idView) {
                     if (it.listType) {
-                        "    ${it.name}: [],"
+                        "${it.name}: [],"
                     } else {
-                        "    ${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
+                        "${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
                     }
                 } else {
                     if (it.listType) {
-                        "    ${it.name.toSingular()}Ids: [],"
+                        "${it.name.toSingular()}Ids: [],"
                     } else {
                         val typeIdProperties = it.typeEntity?.idProperties
                             ?: throw GenerateException.entityNotFound("entityName: ${it.typeEntity?.name}")
@@ -380,24 +388,20 @@ ${entity.queryFormItems()}
                                 throw GenerateException.idPropertyNotFound("entityName: ${it.typeEntity.name}")
                             else
                                 typeIdProperties[0]
-                        "    ${it.name}Id: ${
-                            typeStrToTypeScriptDefault(
-                                typeIdProperty.type,
-                                typeIdProperty.typeNotNull
-                            )
-                        },"
+
+                        val type = typeStrToTypeScriptDefault(typeIdProperty.type, typeIdProperty.typeNotNull)
+                        "${it.name}Id: $type,"
                     }
                 }
+            }.forEach {
+                appendLine("    $it")
             }
 
-        return """
-import type {${insertInput}} from "@/api/__generated/model/static"
+        append("}")
+    }
 
-export default <${insertInput}> {
-$basePropertyWithDefault
-$associationPropertyWithDefault
-} 
-        """.trimBlankLine()
+    override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
+        TODO("Not yet implemented")
     }
 
     private fun GenEntityBusinessView.formItems(formData: String = "formData") =
@@ -538,6 +542,10 @@ ${entity.formItems()}
     </el-form>
 </template>
         """.trim()
+    }
+
+    override fun stringifyEditFormRules(entity: GenEntityBusinessView): String {
+        TODO("Not yet implemented")
     }
 
     override fun stringifyEditForm(entity: GenEntityBusinessView): String {

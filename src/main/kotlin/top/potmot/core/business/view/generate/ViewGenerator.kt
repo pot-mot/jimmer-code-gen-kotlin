@@ -22,7 +22,11 @@ abstract class ViewGenerator {
 
     protected abstract fun stringifyDefaultAddInput(entity: GenEntityBusinessView): String
 
+    protected abstract fun stringifyAddFormRules(entity: GenEntityBusinessView): String
+
     protected abstract fun stringifyAddForm(entity: GenEntityBusinessView): String
+
+    protected abstract fun stringifyEditFormRules(entity: GenEntityBusinessView): String
 
     protected abstract fun stringifyEditForm(entity: GenEntityBusinessView): String
 

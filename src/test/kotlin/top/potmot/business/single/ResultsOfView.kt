@@ -61,7 +61,7 @@ export default <ConditionMatchInsertInput> {
     description: "",
     userId: 0,
     conditionId: 0,
-} ), (components/conditionMatch/ConditionMatchAddForm.vue, <script setup lang="ts">
+}), (components/conditionMatch/ConditionMatchAddForm.vue, <script setup lang="ts">
 import {ref} from "vue"
 import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
 import defaultInput from "@/components/conditionMatch/DefaultConditionMatchAddInput"
