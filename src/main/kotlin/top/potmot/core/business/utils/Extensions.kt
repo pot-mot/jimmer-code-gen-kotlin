@@ -82,6 +82,17 @@ data class EntityComponentNames(
 val GenerateEntity.componentNames
     get() = EntityComponentNames(this)
 
+data class EntityRulesNames(
+    val entity: GenerateEntity,
+    val ruleDir: String = entity.name.replaceFirstChar { it.lowercase() },
+    val addFormRules: String = "${entity.name}AddFormRules",
+    val editFormRules: String = "${entity.name}EditFormRules",
+)
+
+val GenerateEntity.ruleNames
+    get() = EntityRulesNames(this)
+
+
 data class EnumComponentNames(
     val enum: GenerateEnum,
     val dir: String = enum.name.replaceFirstChar { it.lowercase() },

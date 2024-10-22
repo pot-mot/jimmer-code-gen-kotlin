@@ -9,6 +9,7 @@ import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.enums
 import top.potmot.core.business.utils.formType
 import top.potmot.core.business.utils.queryType
+import top.potmot.core.business.utils.ruleNames
 import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.typeStrToTypeScriptDefault
 import top.potmot.core.business.utils.typeStrToTypeScriptType
@@ -400,10 +401,6 @@ ${entity.queryFormItems()}
         append("}")
     }
 
-    override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
-        TODO("Not yet implemented")
-    }
-
     private fun GenEntityBusinessView.formItems(formData: String = "formData") =
         properties.filter { !it.idProperty && it.associationType == null && it.entityId == id }.map {
             val vModel = """v-model="${formData}.${it.name}""""
@@ -414,7 +411,7 @@ ${entity.queryFormItems()}
 
                 PropertyFormType.SWITCH ->
                     if (it.typeNotNull)
-"<el-switch $vModel/>"
+                        "<el-switch $vModel/>"
                     else
                         """
 <el-select 
@@ -526,16 +523,49 @@ ${entity.queryFormItems()}
             }
         }
 
+    override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
+        val (_, _, _, insertInput) = entity.dtoNames
+
+        val propertyRules = entity.properties
+            .filter { !it.idProperty && it.associationType == null && it.entityId == entity.id }
+            .joinToString("") {
+                val items = mutableListOf<String>()
+
+                if (it.typeNotNull) {
+                    items += "{required: true, message: '${it.comment}不能为空', trigger: 'blur'}"
+                }
+
+                buildString {
+                    append("    ${it.name}: [")
+                    items.forEach {item ->
+                        append("\n        $item,")
+                    }
+                    append("\n    ],\n")
+                }
+            }
+
+        return """
+import type {${insertInput}} from "@/api/__generated/model/static"
+import type { FormRules } from 'element-plus'
+
+export default <FormRules<${insertInput}>> {
+$propertyRules
+}
+        """.trimBlankLine()
+    }
+
     override fun stringifyAddForm(entity: GenEntityBusinessView): String {
         val dir = entity.componentNames.dir
         val defaultAddInput = entity.defaultAddInput()
         val (_, _, _, insertInput) = entity.dtoNames
+        val (_, ruleDir, addFormRules) = entity.ruleNames
 
         return """
 <script setup lang="ts">
 import {ref} from "vue"
 import type {${insertInput}} from "@/api/__generated/model/static"
 import defaultInput from "@/components/${dir}/${defaultAddInput}"
+import rules from "@/rules/${ruleDir}/${addFormRules}"
 import {cloneDeep} from "lodash"
 ${entity.enumSelectImports()}
 
@@ -545,14 +575,21 @@ const emits = defineEmits<{
     (event: "submit", insertInput: ${insertInput}): void,
     (event: "cancel"): void,
 }>()
+
+const handleSubmit = () => {
+    formRef.value?.validate(valid => {
+        if (valid)
+            emits('submit', formData.value)    
+    })
+}
 </script>
 
 <template>
-    <el-form :model="formData" inline-message>
+    <el-form ref="formRef" :rules="rules" :model="formData" inline-message>
 ${entity.formItems()}
         <div style="text-align: right;">
             <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
-            <el-button type="primary" @click="emits('submit', formData)" v-text="'提交'"/>
+            <el-button type="primary" @click="handleSubmit" v-text="'提交'"/>
         </div>
     </el-form>
 </template>
@@ -560,22 +597,54 @@ ${entity.formItems()}
     }
 
     override fun stringifyEditFormRules(entity: GenEntityBusinessView): String {
-        TODO("Not yet implemented")
+        val (_, _, _, _, updateInput) = entity.dtoNames
+
+        val propertyRules = entity.properties
+            .filter { !it.idProperty && it.associationType == null && it.entityId == entity.id }
+            .joinToString("") {
+                val items = mutableListOf<String>()
+
+                if (it.typeNotNull) {
+                    items += "{required: true, message: '${it.comment}不能为空', trigger: 'blur'}"
+                }
+
+                buildString {
+                    append("    ${it.name}: [")
+                    items.forEach {item ->
+                        append("\n        $item,")
+                    }
+                    append("\n    ],\n")
+                }
+            }
+
+        return """
+import type {${updateInput}} from "@/api/__generated/model/static"
+import type { FormRules } from 'element-plus'
+
+export default <FormRules<${updateInput}>> {
+$propertyRules
+}
+        """.trimBlankLine()
     }
 
     override fun stringifyEditForm(entity: GenEntityBusinessView): String {
         val (_, _, _, _, updateInput) = entity.dtoNames
+        val (_, ruleDir, _, editFormRules) = entity.ruleNames
 
         return """
 <script setup lang="ts">
 import {ref, watch} from "vue"
 import type {${updateInput}} from "@/api/__generated/model/static"
 import {cloneDeep} from "lodash"
+import type { FormInstance } from 'element-plus'
+import rules from "@/rules/${ruleDir}/${editFormRules}"
 ${entity.enumSelectImports()}
 
 const props = defineProps<{
     data: $updateInput
 }>()
+
+const formRef = ref<FormInstance>()
 
 const formData = ref<${updateInput}>(cloneDeep(props.data))
 
@@ -587,14 +656,21 @@ const emits = defineEmits<{
     (event: "submit", updateInput: ${updateInput}): void,
     (event: "cancel"): void,
 }>()
+
+const handleSubmit = () => {
+    formRef.value?.validate(valid => {
+        if (valid)
+            emits('submit', formData.value)    
+    })
+}
 </script>
 
 <template>
-    <el-form :model="formData" inline-message>
+    <el-form ref="formRef" :rules="rules" :model="formData" inline-message>
 ${entity.formItems()}
         <div style="text-align: right;">
             <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
-            <el-button type="primary" @click="emits('submit', formData)" v-text="'提交'"/>
+            <el-button type="primary" @click="handleSubmit" v-text="'提交'"/>
         </div>
     </el-form>
 </template>

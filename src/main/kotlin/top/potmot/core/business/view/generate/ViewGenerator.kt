@@ -1,6 +1,7 @@
 package top.potmot.core.business.view.generate
 
 import top.potmot.core.business.utils.componentNames
+import top.potmot.core.business.utils.ruleNames
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
@@ -64,6 +65,7 @@ abstract class ViewGenerator {
         val suffix = getFileSuffix()
         val (_, dir, table, addForm, editForm, queryForm, page, singleSelect, multiSelect) = flatEntity.componentNames
         val defaultAddInput = flatEntity.defaultAddInput()
+        val (_, ruleDir, addFormRules, editFormRules) = entity.ruleNames
 
         return listOf(
             "components/${dir}/${table}.$suffix" to stringifyTable(flatEntity),
@@ -75,6 +77,8 @@ abstract class ViewGenerator {
             "pages/${dir}/${page}.$suffix" to stringifyPage(flatEntity),
             "components/${dir}/${singleSelect}.$suffix" to stringifySingleSelect(flatEntity),
             "components/${dir}/${multiSelect}.$suffix" to stringifyMultiSelect(flatEntity),
+            "rules/${ruleDir}/${addFormRules}.ts" to stringifyAddFormRules(flatEntity),
+            "rules/${ruleDir}/${editFormRules}.ts" to stringifyEditFormRules(flatEntity),
         )
     }
 
