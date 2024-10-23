@@ -155,9 +155,9 @@ $enumImports
 withDefaults(
     defineProps<{
         rows: Array<$listView>,
-        idColumn: boolean,
-        indexColumn: boolean,
-        multiSelect: boolean,
+        idColumn?: boolean | undefined,
+        indexColumn?: boolean | undefined,
+        multiSelect?: boolean | undefined,
     }>(),
     {
         idColumn: false,
