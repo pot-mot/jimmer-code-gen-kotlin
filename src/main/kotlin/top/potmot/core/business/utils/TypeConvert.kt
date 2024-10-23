@@ -79,22 +79,22 @@ fun typeStrToTypeScriptDefault(typeStr: String, typeNotNull: Boolean) =
         Instant::class.qualifiedName,
         LocalDate::class.qualifiedName,
         LocalTime::class.qualifiedName,
-        LocalDateTime::class.qualifiedName -> if (typeNotNull) "\"\"" else "undefined"
-        String::class.java.name -> "undefined"
+        LocalDateTime::class.qualifiedName,
+        String::class.java.name -> if (typeNotNull) "\"\"" else "undefined"
 
         Int::class.qualifiedName, "int",
         Long::class.qualifiedName, "long",
         Float::class.qualifiedName, "float",
         Double::class.qualifiedName, "double",
-        BigDecimal::class.java.name -> if (typeNotNull) "0" else "undefined"
-
+        BigDecimal::class.java.name,
         Int::class.java.name,
         Long::class.java.name,
         Float::class.java.name,
-        Double::class.java.name -> "undefined"
+        Double::class.java.name -> if (typeNotNull) "0" else "undefined"
 
-        Boolean::class.qualifiedName, "boolean" -> if (typeNotNull) "false" else "undefined"
-        Boolean::class.java.name -> "undefined"
+        Boolean::class.qualifiedName,
+        "boolean",
+        Boolean::class.java.name -> if (typeNotNull) "false" else "undefined"
 
         else -> "undefined"
     }
