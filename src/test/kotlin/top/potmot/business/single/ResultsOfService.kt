@@ -116,11 +116,9 @@ const val javaResult = """
 (com/example/service/ConditionMatchService.java, package com.example.service;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import org.babyfish.jimmer.View;
 import org.babyfish.jimmer.Page;
-import org.babyfish.jimmer.sql.kt.KSqlClient;
+import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
