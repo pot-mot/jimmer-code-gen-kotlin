@@ -190,10 +190,10 @@ class ConditionMatchService implements Tables {
     @SaCheckPermission("conditionMatch:list")
     @NotNull
     public Page<@NotNull ConditionMatchListView> page(@RequestBody @NotNull PageQuery<ConditionMatchSpec> query) throws AuthorizeException {
-        sqlClient.createQuery(CONDITION_MATCH_TABLE)
+        return sqlClient.createQuery(CONDITION_MATCH_TABLE)
                 .where(query.getSpec())
                 .select(CONDITION_MATCH_TABLE.fetch(ConditionMatchListView.class))
-                .fetchPage(query.getPageIndex(), query.getPageSize());
+                .fetchPage(query.getPageIndex() - 1, query.getPageSize());
     }
 
     /**
@@ -206,7 +206,7 @@ class ConditionMatchService implements Tables {
     @SaCheckPermission("conditionMatch:insert")
     @Transactional
     public int insert(@RequestBody @NotNull ConditionMatchInsertInput input) throws AuthorizeException {
-        return sqlClient.insert(input).modifiedEntity.id;
+        return sqlClient.insert(input).getModifiedEntity.id();
     }
 
     /**
@@ -219,7 +219,7 @@ class ConditionMatchService implements Tables {
     @SaCheckPermission("conditionMatch:update")
     @Transactional
     public int update(@RequestBody @NotNull ConditionMatchUpdateInput input) throws AuthorizeException {
-        return sqlClient.update(input, AssociatedSaveMode.REPLACE).modifiedEntity.id;
+        return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity.id();
     }
 
     /**
@@ -232,7 +232,7 @@ class ConditionMatchService implements Tables {
     @SaCheckPermission("conditionMatch:delete")
     @Transactional
     public int delete(@RequestParam @NotNull List<Integer> ids) throws AuthorizeException {
-        return sqlClient.deleteByIds(ConditionMatch.class, ids).affectedRowCount(ConditionMatch.class);
+        return sqlClient.deleteByIds(ConditionMatch.class, ids).getAffectedRowCount(ConditionMatch.class);
     }
 })
 """

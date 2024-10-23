@@ -111,10 +111,10 @@ class $serviceName implements Tables {
     @SaCheckPermission("${entity.permissionPrefix}:list")
     @NotNull
     public Page<@NotNull ${listView}> page(@RequestBody @NotNull PageQuery<${spec}> query) throws AuthorizeException {
-        sqlClient.createQuery(${table})
+        return sqlClient.createQuery(${table})
                 .where(query.getSpec())
                 .select(${table}.fetch(${listView}.class))
-                .fetchPage(query.getPageIndex(), query.getPageSize());
+                .fetchPage(query.getPageIndex() - 1, query.getPageSize());
     }
 
     /**
@@ -127,7 +127,7 @@ class $serviceName implements Tables {
     @SaCheckPermission("${entity.permissionPrefix}:insert")
     @Transactional
     public $idType insert(@RequestBody @NotNull $insertInput input) throws AuthorizeException {
-        return sqlClient.insert(input).modifiedEntity.${idName};
+        return sqlClient.insert(input).getModifiedEntity.${idName}();
     }
 
     /**
@@ -140,7 +140,7 @@ class $serviceName implements Tables {
     @SaCheckPermission("${entity.permissionPrefix}:update")
     @Transactional
     public $idType update(@RequestBody @NotNull $updateInput input) throws AuthorizeException {
-        return sqlClient.update(input, AssociatedSaveMode.REPLACE).modifiedEntity.${idName};
+        return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity.${idName}();
     }
 
     /**
@@ -158,7 +158,7 @@ class $serviceName implements Tables {
                 false
             )
         }> ids) throws AuthorizeException {
-        return sqlClient.deleteByIds(${entity.name}.class, ids).affectedRowCount(${entity.name}.class);
+        return sqlClient.deleteByIds(${entity.name}.class, ids).getAffectedRowCount(${entity.name}.class);
     }
 }
     """.trim()
