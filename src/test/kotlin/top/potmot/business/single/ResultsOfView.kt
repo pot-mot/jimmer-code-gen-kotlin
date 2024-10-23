@@ -8,9 +8,9 @@ import MatchStatusView from "@/components/matchStatus/MatchStatusView.vue"
 withDefaults(
     defineProps<{
         rows: Array<ConditionMatchListView>,
-        idColumn: boolean,
-        indexColumn: boolean,
-        multiSelect: boolean,
+        idColumn?: boolean | undefined,
+        indexColumn?: boolean | undefined,
+        multiSelect?: boolean | undefined,
     }>(),
     {
         idColumn: false,
