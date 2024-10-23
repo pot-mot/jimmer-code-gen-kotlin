@@ -206,7 +206,7 @@ class ConditionMatchService implements Tables {
     @SaCheckPermission("conditionMatch:insert")
     @Transactional
     public int insert(@RequestBody @NotNull ConditionMatchInsertInput input) throws AuthorizeException {
-        return sqlClient.insert(input).getModifiedEntity.id();
+        return sqlClient.insert(input).getModifiedEntity().id();
     }
 
     /**
@@ -219,7 +219,7 @@ class ConditionMatchService implements Tables {
     @SaCheckPermission("conditionMatch:update")
     @Transactional
     public int update(@RequestBody @NotNull ConditionMatchUpdateInput input) throws AuthorizeException {
-        return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity.id();
+        return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity().id();
     }
 
     /**

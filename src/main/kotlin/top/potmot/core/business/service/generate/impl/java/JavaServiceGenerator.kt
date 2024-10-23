@@ -127,7 +127,7 @@ class $serviceName implements Tables {
     @SaCheckPermission("${entity.permissionPrefix}:insert")
     @Transactional
     public $idType insert(@RequestBody @NotNull $insertInput input) throws AuthorizeException {
-        return sqlClient.insert(input).getModifiedEntity.${idName}();
+        return sqlClient.insert(input).getModifiedEntity().${idName}();
     }
 
     /**
@@ -140,7 +140,7 @@ class $serviceName implements Tables {
     @SaCheckPermission("${entity.permissionPrefix}:update")
     @Transactional
     public $idType update(@RequestBody @NotNull $updateInput input) throws AuthorizeException {
-        return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity.${idName}();
+        return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity().${idName}();
     }
 
     /**
