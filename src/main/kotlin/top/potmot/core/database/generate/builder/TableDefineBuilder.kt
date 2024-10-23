@@ -259,10 +259,17 @@ abstract class TableDefineBuilder(
 
             val fkMeta = outAssociation.toFkMeta()
 
-            val mappingTableMeta = outAssociation.toMappingTableMeta()
-
             when (association.type) {
-                ONE_TO_ONE, MANY_TO_ONE -> {
+                ONE_TO_ONE -> {
+                    createFkConstraint(
+                        if (outAssociation.sourceColumns.all { it.partOfPk }) fkMeta.reversed() else fkMeta,
+                        fake = association.fake,
+                    ).let {
+                        list += it
+                    }
+                }
+
+                MANY_TO_ONE -> {
                     createFkConstraint(
                         fkMeta,
                         fake = association.fake,
@@ -282,7 +289,7 @@ abstract class TableDefineBuilder(
 
                 MANY_TO_MANY -> {
                     createMappingTable(
-                        mappingTableMeta,
+                        outAssociation.toMappingTableMeta(),
                         fake = association.fake
                     ).let {
                         list += it
