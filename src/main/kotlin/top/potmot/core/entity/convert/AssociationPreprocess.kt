@@ -10,24 +10,52 @@ import top.potmot.enumeration.AssociationType
 /**
  * 将所有 OneToMany 恢复为 ManyToOne
  */
-fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.processOneToMany(): TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns> {
+fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.reverseOneToMany(): TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns> {
     val newOutAssociations = mutableListOf<OutAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
-
     val newInAssociations = mutableListOf<InAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
 
     outAssociations.forEach {
-        if (it.association.type != AssociationType.ONE_TO_MANY) {
-            newOutAssociations += it
-        } else {
+        if (it.association.type == AssociationType.ONE_TO_MANY) {
             newInAssociations += it.reversed()
+        } else {
+            newOutAssociations += it
         }
     }
 
     inAssociations.forEach {
-        if (it.association.type != AssociationType.ONE_TO_MANY) {
-            newInAssociations += it
-        } else {
+        if (it.association.type == AssociationType.ONE_TO_MANY) {
             newOutAssociations += it.reversed()
+        } else {
+            newInAssociations += it
+        }
+    }
+
+    return TableAssociationMeta(
+        newOutAssociations,
+        newInAssociations
+    )
+}
+
+/**
+ * 将所有反向 OneToOne 恢复为正向 OneToOne
+ */
+fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.reverseReversedOneToOne(): TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns> {
+    val newOutAssociations = mutableListOf<OutAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
+    val newInAssociations = mutableListOf<InAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
+
+    outAssociations.forEach {
+        if (it.association.type == AssociationType.ONE_TO_ONE && it.sourceColumns.all { it.partOfPk }) {
+            newInAssociations += it.reversed()
+        } else {
+            newOutAssociations += it
+        }
+    }
+
+    inAssociations.forEach {
+        if (it.association.type == AssociationType.ONE_TO_ONE && it.sourceColumns.all { it.partOfPk }) {
+            newOutAssociations += it.reversed()
+        } else {
+            newInAssociations += it
         }
     }
 

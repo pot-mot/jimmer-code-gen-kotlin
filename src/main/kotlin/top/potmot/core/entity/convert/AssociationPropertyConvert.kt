@@ -46,7 +46,8 @@ fun convertAssociationProperties(
         inAssociations,
     ) = table
         .getAssociations()
-        .processOneToMany()
+        .reverseOneToMany()
+        .reverseReversedOneToOne()
         .aggregateOtherSideLeafTableAssociations()
 
     val propertiesMap =
