@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.context.useContext
 import top.potmot.core.business.dto.generate.DtoGenerator
+import top.potmot.core.business.permission.generate.PermissionGenerator
+import top.potmot.core.business.route.generate.DynamicRouteGenerator
 import top.potmot.core.business.service.generate.getServiceGenerator
 import top.potmot.core.business.view.generate.getViewGenerator
 import top.potmot.core.database.generate.getTableDefineGenerator
@@ -119,6 +121,24 @@ class GenerateService(
                         GenerateFile(
                             "dto/${it.first}", it.second,
                             listOf(GenerateTag.BackEnd, GenerateTag.DTO)
+                        )
+                    }
+            }
+            if (containsAll || containsBackEnd || GenerateType.Permission in typeSet) {
+                result += PermissionGenerator.generate(entityBusinessViews)
+                    .map {
+                        GenerateFile(
+                            "sql/${it.first}", it.second,
+                            listOf(GenerateTag.BackEnd, GenerateTag.Permission)
+                        )
+                    }
+            }
+            if (containsAll || containsBackEnd || GenerateType.Route in typeSet) {
+                result += DynamicRouteGenerator.generate(entityBusinessViews)
+                    .map {
+                        GenerateFile(
+                            "sql/${it.first}", it.second,
+                            listOf(GenerateTag.BackEnd, GenerateTag.Route)
                         )
                     }
             }

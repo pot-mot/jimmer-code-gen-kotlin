@@ -10,4 +10,6 @@ enum class GenerateTag {
     DTO,
     View,
     Component,
+    Permission,
+    Route,
 }

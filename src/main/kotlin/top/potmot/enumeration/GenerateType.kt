@@ -11,4 +11,6 @@ enum class GenerateType {
     FrontEnd,
     EnumComponent,
     View,
+    Permission,
+    Route,
 }
