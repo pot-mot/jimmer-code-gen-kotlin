@@ -877,11 +877,11 @@ const handleDelete = async (ids: ${idType}[]) => {
         </template>
     </el-card>
     
-    <el-dialog v-model="addDialogVisible">
+    <el-dialog v-model="addDialogVisible" destroy-on-close>
         <$addForm @submit="submitAdd" @cancel="cancelAdd"/>
     </el-dialog>
     
-    <el-dialog v-model="editDialogVisible">
+    <el-dialog v-model="editDialogVisible" destroy-on-close>
         <$editForm v-if="updateInput !== undefined" :data="updateInput" @submit="submitEdit" @cancel="cancelEdit"/>
     </el-dialog>
 </template>
