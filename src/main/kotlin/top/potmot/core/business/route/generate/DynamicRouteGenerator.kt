@@ -13,8 +13,8 @@ object DynamicRouteGenerator {
             "menu/${lowerName}.sql" to
                     """
 INSERT INTO SYS_MENU 
-(PARENT_ID, NAME, PATH, ICON, LABEL, COMPONENT, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME) 
-VALUES (NULL, '${page}', '/${page}', 'List', '${it.comment}管理', 'pages/${dir}/${page}.vue', 1, now(), 1, now());
+(PARENT_ID, NAME, PATH, ICON, LABEL, COMPONENT, ORDER_KEY, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME) 
+VALUES (NULL, '${page}', '/${page}', 'List', '${it.comment}管理', 'pages/${dir}/${page}.vue', 1, 1, now(), 1, now());
 
 INSERT INTO SYS_PERMISSION_SYS_MENU_MAPPING
 SELECT SYS_PERMISSION.ID, SYS_MENU.ID FROM SYS_PERMISSION, SYS_MENU
