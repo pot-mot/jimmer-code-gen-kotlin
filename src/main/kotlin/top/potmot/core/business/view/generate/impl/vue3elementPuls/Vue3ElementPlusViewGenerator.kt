@@ -226,13 +226,13 @@ $propertyColumns
 <el-input-number
     v-model.number="${spec}.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
     placeholder="请输入最小${it.comment}"
-    :value-on-clear="null"
+    :value-on-clear="undefined"
     @change="emits('query')"
 />
 <el-input-number
     v-model.number="${spec}.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
     placeholder="请输入最大${it.comment}"
-    :value-on-clear="null"
+    :value-on-clear="undefined"
     @change="emits('query')"
 />
 """
@@ -246,7 +246,6 @@ $propertyColumns
     end-placeholder="结束${it.comment}"
     unlink-panels
     clearable
-    @clear="${it.name}Range = [undefined, undefined]"
     @change="emits('query')"
 />
 """
@@ -260,7 +259,6 @@ $propertyColumns
     end-placeholder="结束${it.comment}"
     unlink-panels
     clearable
-    @clear="${it.name}Range = [undefined, undefined]"
     @change="emits('query')"
 />
 """
@@ -274,7 +272,6 @@ $propertyColumns
     end-placeholder="结束${it.comment}"
     unlink-panels
     clearable
-    @clear="${it.name}Range = [undefined, undefined]"
     @change="emits('query')"
 />
 """
@@ -287,7 +284,6 @@ $propertyColumns
     $vModel
     placeholder="请选择${it.comment}"
     clearable
-    @clear="spec.${it.name} = undefined"
     @change="emits('query')">
     <el-option :value="true" label="是"/>
     <el-option :value="false" label="否"/>
@@ -308,11 +304,11 @@ $propertyColumns
             }.trimBlankLine()
         }.joinToString("\n") { (property, component) ->
             buildString {
-                appendLine("""        <el-col :span="8">""")
-                appendLine("""            <el-form-item prop="${property.name}" label="${property.comment}">""")
-                appendBlock(component) { "                $it" }
-                appendLine("            </el-form-item>")
-                appendLine("        </el-col>")
+                appendLine("""            <el-col :span="8">""")
+                appendLine("""                <el-form-item prop="${property.name}" label="${property.comment}">""")
+                appendBlock(component) { "                    $it" }
+                appendLine("                </el-form-item>")
+                appendLine("            </el-col>")
             }
         }
 
@@ -332,9 +328,9 @@ const ${it.name}Range = computed<[string | undefined, string | undefined]>({
             spec.value.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }},
        ]
     },
-    set(range: [string | undefined, string | undefined]) {
-        spec.value.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }} = range[0]
-        spec.value.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }} = range[1]
+    set(range: [string | undefined, string | undefined] | null) {
+        spec.value.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }} = range?.[0]
+        spec.value.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }} = range?.[1]
     }
 })
                     """.trimBlankLine()
@@ -467,7 +463,7 @@ ${entity.queryFormItems()}
 <el-input-number
     v-model.number="${formData}.${it.name}"
     placeholder="请输入${it.comment}"
-    :value-on-clear="null"
+    :value-on-clear="undefined"
 />
 """
 

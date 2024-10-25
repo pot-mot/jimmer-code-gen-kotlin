@@ -255,9 +255,9 @@ const dateRange = computed<[string | undefined, string | undefined]>({
             spec.value.maxDate,
        ]
     },
-    set(range: [string | undefined, string | undefined]) {
-        spec.value.minDate = range[0]
-        spec.value.maxDate = range[1]
+    set(range: [string | undefined, string | undefined] | null) {
+        spec.value.minDate = range?.[0]
+        spec.value.maxDate = range?.[1]
     }
 })
 </script>
@@ -265,40 +265,39 @@ const dateRange = computed<[string | undefined, string | undefined]>({
 <template>
     <el-form>
         <el-row :gutter="20">
-        <el-col :span="8">
-            <el-form-item prop="status" label="匹配状态">
-                <MatchStatusNullableSelect
-                    v-model="spec.status"
-                    @change="emits('query')"
-                />
-            </el-form-item>
-        </el-col>
+            <el-col :span="8">
+                <el-form-item prop="status" label="匹配状态">
+                    <MatchStatusNullableSelect
+                        v-model="spec.status"
+                        @change="emits('query')"
+                    />
+                </el-form-item>
+            </el-col>
 
-        <el-col :span="8">
-            <el-form-item prop="date" label="匹配日期">
-                <el-date-picker
-                    v-model="dateRange"
-                    type="datetimerange"
-                    start-placeholder="初始匹配日期"
-                    end-placeholder="结束匹配日期"
-                    unlink-panels
-                    clearable
-                    @clear="dateRange = [undefined, undefined]"
-                    @change="emits('query')"
-                />
-            </el-form-item>
-        </el-col>
+            <el-col :span="8">
+                <el-form-item prop="date" label="匹配日期">
+                    <el-date-picker
+                        v-model="dateRange"
+                        type="datetimerange"
+                        start-placeholder="初始匹配日期"
+                        end-placeholder="结束匹配日期"
+                        unlink-panels
+                        clearable
+                        @change="emits('query')"
+                    />
+                </el-form-item>
+            </el-col>
 
-        <el-col :span="8">
-            <el-form-item prop="description" label="结果描述">
-                <el-input
-                    v-model="spec.description"
-                    placeholder="请输入结果描述"
-                    clearable
-                    @change="emits('query')"
-                />
-            </el-form-item>
-        </el-col>
+            <el-col :span="8">
+                <el-form-item prop="description" label="结果描述">
+                    <el-input
+                        v-model="spec.description"
+                        placeholder="请输入结果描述"
+                        clearable
+                        @change="emits('query')"
+                    />
+                </el-form-item>
+            </el-col>
 
             <el-button :icon="Search" type="primary" @click="emits('query')"/>
         </el-row>
