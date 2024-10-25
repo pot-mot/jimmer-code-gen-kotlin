@@ -726,7 +726,7 @@ ${entity.formItems()}
 
         return """
 <script setup lang="ts">
-import {ref, onMounted} from "vue"
+import {ref} from "vue"
 import {Plus, EditPen, Delete} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ${spec}, ${listView}, ${insertInput}, ${updateInput}} from "@/api/__generated/model/static"
 import {api} from "@/api"
@@ -755,10 +755,6 @@ const {queryPage} = useLegalPage(
     queryInfo,
     withLoading(api.${serviceName}.page)
 )
-
-onMounted(async () => {
-    await queryPage()
-})
 
 const get${entity.name} = withLoading((id: $idType) => api.${serviceName}.get({id}))
 
@@ -896,7 +892,7 @@ const handleDelete = async (ids: ${idType}[]) => {
 
         return """
 <script setup lang="ts">
-import {ref, onMounted} from "vue"
+import {ref} from "vue"
 import type {Page, PageQuery, ${spec}, ${listView}} from "@/api/__generated/model/static"
 import {api} from "@/api"
 import {useLoading} from "@/utils/loading"
@@ -919,10 +915,6 @@ const {queryPage} = useLegalPage(
     queryInfo,
     withLoading(api.${serviceName}.page)
 )
-
-onMounted(async () => {
-    await queryPage()
-})
 
 const emits = defineEmits<{
     (event: "select", item: $listView): void,
@@ -974,7 +966,7 @@ const handleSelect = (item: $listView) => {
 
         return """
 <script setup lang="ts">
-import {ref, onMounted} from "vue"
+import {ref} from "vue"
 import type {Page, PageQuery, ${spec}, ${listView}} from "@/api/__generated/model/static"
 import {api} from "@/api"
 import {useLoading} from "@/utils/loading"
@@ -997,10 +989,6 @@ const {queryPage} = useLegalPage(
     queryInfo,
     withLoading(api.${serviceName}.page)
 )
-
-onMounted(async () => {
-    await queryPage()
-})
 
 const emits = defineEmits<{
     (event: "submit", selection: Array<$listView>): void,

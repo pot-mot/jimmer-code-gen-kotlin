@@ -304,7 +304,7 @@ const dateRange = computed<[string | undefined, string | undefined]>({
         </el-row>
     </el-form>
 </template>), (pages/conditionMatch/ConditionMatchPage.vue, <script setup lang="ts">
-import {ref, onMounted} from "vue"
+import {ref} from "vue"
 import {Plus, EditPen, Delete} from "@element-plus/icons-vue"
 import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView, ConditionMatchInsertInput, ConditionMatchUpdateInput} from "@/api/__generated/model/static"
 import {api} from "@/api"
@@ -333,10 +333,6 @@ const {queryPage} = useLegalPage(
     queryInfo,
     withLoading(api.conditionMatchService.page)
 )
-
-onMounted(async () => {
-    await queryPage()
-})
 
 const getConditionMatch = withLoading((id: number) => api.conditionMatchService.get({id}))
 
@@ -463,7 +459,7 @@ const handleDelete = async (ids: number[]) => {
         <ConditionMatchEditForm v-if="updateInput !== undefined" :data="updateInput" @submit="submitEdit" @cancel="cancelEdit"/>
     </el-dialog>
 </template>), (components/conditionMatch/ConditionMatchSingleSelect.vue, <script setup lang="ts">
-import {ref, onMounted} from "vue"
+import {ref} from "vue"
 import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView} from "@/api/__generated/model/static"
 import {api} from "@/api"
 import {useLoading} from "@/utils/loading"
@@ -486,10 +482,6 @@ const {queryPage} = useLegalPage(
     queryInfo,
     withLoading(api.conditionMatchService.page)
 )
-
-onMounted(async () => {
-    await queryPage()
-})
 
 const emits = defineEmits<{
     (event: "select", item: ConditionMatchListView): void,
@@ -521,7 +513,7 @@ const handleSelect = (item: ConditionMatchListView) => {
         </template>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchMultiSelect.vue, <script setup lang="ts">
-import {ref, onMounted} from "vue"
+import {ref} from "vue"
 import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView} from "@/api/__generated/model/static"
 import {api} from "@/api"
 import {useLoading} from "@/utils/loading"
@@ -544,10 +536,6 @@ const {queryPage} = useLegalPage(
     queryInfo,
     withLoading(api.conditionMatchService.page)
 )
-
-onMounted(async () => {
-    await queryPage()
-})
 
 const emits = defineEmits<{
     (event: "submit", selection: Array<ConditionMatchListView>): void,
