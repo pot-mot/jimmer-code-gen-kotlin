@@ -77,6 +77,9 @@ data class EntityComponentNames(
     val page: String = "${entity.name}Page",
     val singleSelect: String = "${entity.name}SingleSelect",
     val multiSelect: String = "${entity.name}MultiSelect",
+    val idSelect: String = "${entity.name}IdSelect",
+    val idMultiSelect: String = "${entity.name}IdMultiSelect",
+    val editTable: String = "${entity.name}EditTable",
 )
 
 val GenerateEntity.componentNames
@@ -87,6 +90,7 @@ data class EntityRulesNames(
     val ruleDir: String = entity.name.replaceFirstChar { it.lowercase() },
     val addFormRules: String = "${entity.name}AddFormRules",
     val editFormRules: String = "${entity.name}EditFormRules",
+    val editTableRules: String = "${entity.name}EditTableRules",
 )
 
 val GenerateEntity.ruleNames

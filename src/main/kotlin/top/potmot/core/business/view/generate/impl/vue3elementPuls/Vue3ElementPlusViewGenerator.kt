@@ -16,6 +16,7 @@ import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.ViewGenerator
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
+import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.toSingular
@@ -428,8 +429,21 @@ ${entity.queryFormItems()}
         append("}")
     }
 
-    private fun GenEntityBusinessView.formItems(formData: String = "formData") =
-        properties.filter { !it.idProperty && it.associationType == null && it.entityId == id }.map {
+    private fun GenEntityBusinessView.formItems(
+        formData: String = "formData",
+        block: (property: GenEntityBusinessView.TargetOf_properties, component: String) -> String = { property, component ->
+            buildString {
+                val required = if (property.typeNotNull) " required" else ""
+
+                appendLine("""        <el-form-item prop="${property.name}" label="${property.comment}"$required>""")
+                appendBlock(component) { "            $it" }
+                appendLine("        </el-form-item>")
+            }
+        }
+    ) =
+        properties
+            .filter { !it.idProperty && it.associationType == null && it.entityId == id }
+            .map {
             val vModel = """v-model="${formData}.${it.name}""""
 
             it to when (it.formType) {
@@ -538,13 +552,23 @@ ${entity.queryFormItems()}
 />
 """
             }.trimBlankLine()
-        }.joinToString("\n") { (property, component) ->
-            buildString {
-                val required = if (property.typeNotNull) " required" else ""
+        }
+            .joinToString("\n") { block(it.first, it.second) }
 
-                appendLine("""        <el-form-item prop="${property.name}" label="${property.comment}"$required>""")
-                appendBlock(component) { "            $it" }
-                appendLine("        </el-form-item>")
+    private fun List<GenEntityBusinessView.TargetOf_properties>.toRules() =
+        joinToString("") {
+            val items = mutableListOf<String>()
+
+            if (it.typeNotNull) {
+                items += "{required: true, message: '${it.comment}不能为空', trigger: 'blur'}"
+            }
+
+            buildString {
+                append("    ${it.name}: [")
+                items.forEach { item ->
+                    append("\n        $item,")
+                }
+                append("\n    ],\n")
             }
         }
 
@@ -553,25 +577,11 @@ ${entity.queryFormItems()}
 
         val propertyRules = entity.properties
             .filter { !it.idProperty && it.associationType == null && it.entityId == entity.id }
-            .joinToString("") {
-                val items = mutableListOf<String>()
-
-                if (it.typeNotNull) {
-                    items += "{required: true, message: '${it.comment}不能为空', trigger: 'blur'}"
-                }
-
-                buildString {
-                    append("    ${it.name}: [")
-                    items.forEach {item ->
-                        append("\n        $item,")
-                    }
-                    append("\n    ],\n")
-                }
-            }
+            .toRules()
 
         return """
 import type {${insertInput}} from "@/api/__generated/model/static"
-import type { FormRules } from 'element-plus'
+import type {FormRules} from 'element-plus'
 
 export default <FormRules<${insertInput}>> {
 $propertyRules
@@ -628,26 +638,12 @@ ${entity.formItems()}
         val (_, _, _, _, updateInput) = entity.dtoNames
 
         val propertyRules = entity.properties
-            .filter { !it.idProperty && it.associationType == null && it.entityId == entity.id }
-            .joinToString("") {
-                val items = mutableListOf<String>()
-
-                if (it.typeNotNull) {
-                    items += "{required: true, message: '${it.comment}不能为空', trigger: 'blur'}"
-                }
-
-                buildString {
-                    append("    ${it.name}: [")
-                    items.forEach {item ->
-                        append("\n        $item,")
-                    }
-                    append("\n    ],\n")
-                }
-            }
+            .filter { it.associationType == null && it.entityId == entity.id }
+            .toRules()
 
         return """
 import type {${updateInput}} from "@/api/__generated/model/static"
-import type { FormRules } from 'element-plus'
+import type {FormRules} from 'element-plus'
 
 export default <FormRules<${updateInput}>> {
 $propertyRules
@@ -703,6 +699,135 @@ ${entity.formItems()}
     </el-form>
 </template>
         """.trim()
+    }
+
+    private val GenerateEntity.editTableType
+        get() = dtoNames.insertInput
+
+    override fun stringifyEditTableRules(entity: GenEntityBusinessView): String {
+        val editTableType = entity.editTableType
+
+        val propertyRules = entity.properties
+            .filter { !it.idProperty && it.associationType == null && it.entityId == entity.id }
+            .toRules()
+
+        return """
+import type {${editTableType}} from "@/api/__generated/model/static"
+import type {FormRules} from 'element-plus'
+
+export default <FormRules<${editTableType}>> {
+$propertyRules
+}
+        """.trimBlankLine()
+    }
+
+    private const val ROW_INDEX = "${'$'}index"
+
+    override fun stringifyEditTable(entity: GenEntityBusinessView): String {
+        val lowerName = entity.name.replaceFirstChar { c -> c.lowercase() }
+        val editTableType = entity.editTableType
+        val defaultAddInput = entity.defaultAddInput()
+        val rules = entity.ruleNames.editTableRules
+
+        val tableColumns = entity.formItems("row") {property, component ->
+            val indent = "            "
+
+            buildString {
+                appendLine("""$indent<el-table-column label="${property.comment}" prop="${property.name}">""")
+                appendLine("""$indent    <template #default="{$ROW_INDEX, row}">""")
+                appendLine("""$indent        <el-form-item :prop="[$ROW_INDEX, '${property.name}']" :rules="rules.${property.name}">""")
+                appendBlock(component) {"""$indent        $it"""}
+                appendLine("""$indent        </el-form-item>""")
+                appendLine("""$indent    </template>""")
+                appendLine("""$indent</el-table-column>""")
+            }
+        }
+
+        return """
+<script setup lang="ts">
+import {ref} from "vue"
+import {deleteConfirm} from "@/utils/confirm"
+import {cloneDeep} from "lodash"
+import $defaultAddInput from "@/components/$lowerName/$defaultAddInput"
+import type {$editTableType} from "@/api/__generated/model/static"
+import type {FormInstance} from "element-plus"
+import {Delete, Plus} from "@element-plus/icons-vue"
+import rules from "@/rules/$lowerName/$rules"
+import type {EditTableExpose} from "@/components/EditTable/EditTableExpose"
+
+const formRef = ref<FormInstance | undefined>()
+
+defineExpose<EditTableExpose>({formRef})
+
+const rows = defineModel<$editTableType[]>({
+    required: true
+})
+
+withDefaults(
+    defineProps<{
+        idColumn?: boolean | undefined,
+        indexColumn?: boolean | undefined,
+        multiSelect?: boolean | undefined,
+    }>(),
+    {
+        idColumn: false,
+        indexColumn: false,
+        multiSelect: true,
+    }
+)
+
+// 多选
+const selection = ref<$editTableType[]>([])
+
+const changeSelection = (item: $editTableType[]) => {
+    selection.value = item
+}
+
+// 新增
+const handleAdd = () => {
+    rows.value.push(cloneDeep($defaultAddInput))
+}
+
+// 删除
+const handleBatchDelete = async () => {
+    const result = await deleteConfirm('这些${entity.comment}')
+    if (!result) return
+    rows.value = rows.value.filter(it => !selection.value.includes(it))
+}
+
+const handleSingleDelete = async (index: number) => {
+    const result = await deleteConfirm('该${entity.comment}')
+    if (!result) return
+    rows.value = rows.value.filter((_, i) => i !== index)
+}
+</script>
+
+<template>
+    <el-form ref="formRef" :rules="rules" :model="rows" inline-message>
+        <el-divider content-position="center">${entity.comment}信息</el-divider> 
+        <el-row :gutter="10" class="mb8">
+            <el-col :span="1.5">
+                <el-button type="primary" :icon="Plus" @click="handleAdd" v-text="'添加'"/>
+            </el-col>
+            <el-col :span="1.5">
+                <el-button type="danger" :icon="Delete" @click="handleBatchDelete" v-text="'删除'" :disabled="selection.length === 0"/>
+            </el-col>
+        </el-row>
+        <el-table :data="rows" border stripe row-key="id" @selection-change="changeSelection">
+            <el-table-column v-if="idColumn" label="ID" prop="id" fixed/>
+            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column v-if="multiSelect" type="selection" fixed/>
+$tableColumns
+            <el-table-column label="操作" fixed="right">
+                <template #default="{$ROW_INDEX}">
+                    <el-button type="danger" :icon="Delete" @click="handleSingleDelete($ROW_INDEX)"/>
+                </template>
+            </el-table-column>
+        </el-table>
+    </el-form>
+</template>
+
+        """.trimBlankLine()
     }
 
     @Throws(GenerateException::class)
@@ -1030,5 +1155,107 @@ const handleUnSelect = (item: $listView) => {
     </el-form>
 </template>
 """.trim()
+    }
+
+    private val GenEntityBusinessView.selectOptionLabelType: String?
+        get() {
+            val nameSet = properties
+                .filter { !it.idProperty && it.associationType == null && it.entityId == id }
+                .map { it.name }.toSet()
+
+            if ("name" in nameSet) {
+                return "name"
+            } else if ("title" in nameSet) {
+                return "title"
+            } else if ("label" in nameSet) {
+                return "label"
+            }
+
+            return null
+        }
+
+    override fun stringifyIdSelect(entity: GenEntityBusinessView): String {
+        val idProperty =
+            if (entity.idProperties.size != 1)
+                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+            else
+                entity.idProperties[0]
+        val idName = idProperty.name
+        val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
+
+        val listView = entity.dtoNames.listView
+
+        val label = entity.selectOptionLabelType ?: idName
+
+        return """
+<script setup lang="ts">
+import type {$listView} from "@/api/__generated/model/static"
+
+const modelValue = defineModel<$idType>({
+    required: true
+})
+
+defineProps<{
+    options: Array<$listView>
+}>()
+</script>
+
+<template>
+    <el-select
+        v-model="modelValue"
+        filterable
+        clearable
+        placeholder="请选择${entity.comment}">
+        <el-option
+            v-for="option in options"
+            :key="option.$idName"
+            :label="option.$label"
+            :value="option.$idName"/>
+    </el-select>
+</template>
+        """.trimBlankLine()
+    }
+
+    override fun stringifyIdMultiSelect(entity: GenEntityBusinessView): String {
+        val idProperty =
+            if (entity.idProperties.size != 1)
+                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
+            else
+                entity.idProperties[0]
+        val idName = idProperty.name
+        val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
+
+        val listView = entity.dtoNames.listView
+
+        val label = entity.selectOptionLabelType ?: idName
+
+        return """
+<script setup lang="ts">
+import type {$listView} from "@/api/__generated/model/static"
+
+const modelValue = defineModel<$idType[]>({
+    required: true
+})
+
+defineProps<{
+    options: Array<$listView>
+}>()
+</script>
+
+<template>
+    <el-select
+        v-model="modelValue"
+        multiple
+        filterable
+        clearable
+        placeholder="请选择${entity.comment}">
+        <el-option
+            v-for="option in options"
+            :key="option.$idName"
+            :label="option.$label"
+            :value="option.$idName"/>
+    </el-select>
+</template>
+        """.trimBlankLine()
     }
 }

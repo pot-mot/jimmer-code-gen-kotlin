@@ -31,11 +31,19 @@ abstract class ViewGenerator {
 
     protected abstract fun stringifyEditForm(entity: GenEntityBusinessView): String
 
+    protected abstract fun stringifyEditTableRules(entity: GenEntityBusinessView): String
+
+    protected abstract fun stringifyEditTable(entity: GenEntityBusinessView): String
+
     protected abstract fun stringifyPage(entity: GenEntityBusinessView): String
 
     protected abstract fun stringifySingleSelect(entity: GenEntityBusinessView): String
 
     protected abstract fun stringifyMultiSelect(entity: GenEntityBusinessView): String
+
+    protected abstract fun stringifyIdSelect(entity: GenEntityBusinessView): String
+
+    protected abstract fun stringifyIdMultiSelect(entity: GenEntityBusinessView): String
 
     fun generateEnum(
         enum: GenEnumGenerateView,
@@ -63,22 +71,25 @@ abstract class ViewGenerator {
         val flatEntity = entity.toFlat()
 
         val suffix = getFileSuffix()
-        val (_, dir, table, addForm, editForm, queryForm, page, singleSelect, multiSelect) = flatEntity.componentNames
+        val (_, dir, table, addForm, editForm, queryForm, page, singleSelect, multiSelect, idSelect, idMultiSelect, editTable) = flatEntity.componentNames
         val defaultAddInput = flatEntity.defaultAddInput()
-        val (_, ruleDir, addFormRules, editFormRules) = entity.ruleNames
+        val (_, ruleDir, addFormRules, editFormRules, editTableRules) = entity.ruleNames
 
         return listOf(
             "components/${dir}/${table}.$suffix" to stringifyTable(flatEntity),
             "components/${dir}/${defaultAddInput}.ts" to stringifyDefaultAddInput(flatEntity),
             "components/${dir}/${addForm}.$suffix" to stringifyAddForm(flatEntity),
             "components/${dir}/${editForm}.$suffix" to stringifyEditForm(flatEntity),
-            "components/${dir}/${editForm}.$suffix" to stringifyEditForm(flatEntity),
+            "components/${dir}/${editTable}.$suffix" to stringifyEditTable(flatEntity),
             "components/${dir}/${queryForm}.$suffix" to stringifyQueryForm(flatEntity),
             "pages/${dir}/${page}.$suffix" to stringifyPage(flatEntity),
             "components/${dir}/${singleSelect}.$suffix" to stringifySingleSelect(flatEntity),
             "components/${dir}/${multiSelect}.$suffix" to stringifyMultiSelect(flatEntity),
+            "components/${dir}/${idSelect}.$suffix" to stringifyIdSelect(flatEntity),
+            "components/${dir}/${idMultiSelect}.$suffix" to stringifyIdMultiSelect(flatEntity),
             "rules/${ruleDir}/${addFormRules}.ts" to stringifyAddFormRules(flatEntity),
             "rules/${ruleDir}/${editFormRules}.ts" to stringifyEditFormRules(flatEntity),
+            "rules/${ruleDir}/${editTableRules}.ts" to stringifyEditTableRules(flatEntity),
         )
     }
 

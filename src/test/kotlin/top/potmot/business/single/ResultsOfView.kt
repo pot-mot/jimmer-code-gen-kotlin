@@ -1,5 +1,7 @@
 package top.potmot.business.single
 
+const val index = """${'$'}index"""
+
 const val vue3ElementPlusResult = """
 [(components/conditionMatch/ConditionMatchTable.vue, <script setup lang="ts">
 import type {ConditionMatchListView} from "@/api/__generated/model/static"
@@ -49,7 +51,7 @@ const handleChangeSelection = (selection: Array<ConditionMatchListView>) => {
         
         <el-table-column label="操作" width="330px">
             <template #default="scope">
-                <slot name="operations" :row="scope.row as ConditionMatchListView" :index="scope.${'$'}index" />
+                <slot name="operations" :row="scope.row as ConditionMatchListView" :index="scope.$index" />
             </template>
         </el-table-column>
     </el-table>
@@ -174,65 +176,117 @@ const handleSubmit = () => {
             <el-button type="primary" @click="handleSubmit" v-text="'提交'"/>
         </div>
     </el-form>
-</template>), (components/conditionMatch/ConditionMatchEditForm.vue, <script setup lang="ts">
-import {ref, watch} from "vue"
-import type { FormInstance } from "element-plus"
+</template>), (components/conditionMatch/ConditionMatchEditTable.vue, <script setup lang="ts">
+import {ref} from "vue"
+import {deleteConfirm} from "@/utils/confirm"
 import {cloneDeep} from "lodash"
-import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
-import rules from "@/rules/conditionMatch/ConditionMatchEditFormRules"
-import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
+import DefaultConditionMatchAddInput from "@/components/conditionMatch/DefaultConditionMatchAddInput"
+import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
+import type {FormInstance} from "element-plus"
+import {Delete, Plus} from "@element-plus/icons-vue"
+import rules from "@/rules/conditionMatch/ConditionMatchEditTableRules"
+import type {EditTableExpose} from "@/components/EditTable/EditTableExpose"
 
-const props = defineProps<{
-    data: ConditionMatchUpdateInput
-}>()
+const formRef = ref<FormInstance | undefined>()
 
-const formRef = ref<FormInstance>()
+defineExpose<EditTableExpose>({formRef})
 
-const formData = ref<ConditionMatchUpdateInput>(cloneDeep(props.data))
-
-watch(() => props.data, (data) => {
-    formData.value = data
+const rows = defineModel<ConditionMatchInsertInput[]>({
+    required: true
 })
 
-const emits = defineEmits<{
-    (event: "submit", updateInput: ConditionMatchUpdateInput): void,
-    (event: "cancel"): void,
-}>()
+withDefaults(
+    defineProps<{
+        idColumn?: boolean | undefined,
+        indexColumn?: boolean | undefined,
+        multiSelect?: boolean | undefined,
+    }>(),
+    {
+        idColumn: false,
+        indexColumn: false,
+        multiSelect: true,
+    }
+)
 
-const handleSubmit = () => {
-    formRef.value?.validate(valid => {
-        if (valid)
-            emits('submit', formData.value)    
-    })
+// 多选
+const selection = ref<ConditionMatchInsertInput[]>([])
+
+const changeSelection = (item: ConditionMatchInsertInput[]) => {
+    selection.value = item
+}
+
+// 新增
+const handleAdd = () => {
+    rows.value.push(cloneDeep(DefaultConditionMatchAddInput))
+}
+
+// 删除
+const handleBatchDelete = async () => {
+    const result = await deleteConfirm('这些条件匹配')
+    if (!result) return
+    rows.value = rows.value.filter(it => !selection.value.includes(it))
+}
+
+const handleSingleDelete = async (index: number) => {
+    const result = await deleteConfirm('该条件匹配')
+    if (!result) return
+    rows.value = rows.value.filter((_, i) => i !== index)
 }
 </script>
 
 <template>
-    <el-form ref="formRef" :rules="rules" :model="formData" inline-message>
-        <el-form-item prop="status" label="匹配状态" required>
-            <MatchStatusSelect v-model="formData.status"/>
-        </el-form-item>
+    <el-form ref="formRef" :rules="rules" :model="rows" inline-message>
+        <el-divider content-position="center">条件匹配信息</el-divider> 
+        <el-row :gutter="10" class="mb8">
+            <el-col :span="1.5">
+                <el-button type="primary" :icon="Plus" @click="handleAdd" v-text="'添加'"/>
+            </el-col>
+            <el-col :span="1.5">
+                <el-button type="danger" :icon="Delete" @click="handleBatchDelete" v-text="'删除'" :disabled="selection.length === 0"/>
+            </el-col>
+        </el-row>
+        <el-table :data="rows" border stripe row-key="id" @selection-change="changeSelection">
+            <el-table-column v-if="idColumn" label="ID" prop="id" fixed/>
+            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column v-if="multiSelect" type="selection" fixed/>
+            <el-table-column label="匹配状态" prop="status">
+                <template #default="{$index, row}">
+                    <el-form-item :prop="[$index, 'status']" :rules="rules.status">
+                    <MatchStatusSelect v-model="row.status"/>
+                    </el-form-item>
+                </template>
+            </el-table-column>
 
-        <el-form-item prop="date" label="匹配日期" required>
-            <el-date-picker
-                v-model="formData.date"
-                placeholder="请选择匹配日期"
-                type="datetime"
-            />
-        </el-form-item>
+            <el-table-column label="匹配日期" prop="date">
+                <template #default="{$index, row}">
+                    <el-form-item :prop="[$index, 'date']" :rules="rules.date">
+                    <el-date-picker
+                        v-model="row.date"
+                        placeholder="请选择匹配日期"
+                        type="datetime"
+                    />
+                    </el-form-item>
+                </template>
+            </el-table-column>
 
-        <el-form-item prop="description" label="结果描述" required>
-            <el-input
-                v-model="formData.description"
-                placeholder="请输入结果描述"
-                clearable
-            />
-        </el-form-item>
+            <el-table-column label="结果描述" prop="description">
+                <template #default="{$index, row}">
+                    <el-form-item :prop="[$index, 'description']" :rules="rules.description">
+                    <el-input
+                        v-model="row.description"
+                        placeholder="请输入结果描述"
+                        clearable
+                    />
+                    </el-form-item>
+                </template>
+            </el-table-column>
 
-        <div style="text-align: right;">
-            <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
-            <el-button type="primary" @click="handleSubmit" v-text="'提交'"/>
-        </div>
+            <el-table-column label="操作" fixed="right">
+                <template #default="{$index}">
+                    <el-button type="danger" :icon="Delete" @click="handleSingleDelete($index)"/>
+                </template>
+            </el-table-column>
+        </el-table>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchQueryForm.vue, <script setup lang="ts">
 import {computed} from "vue"
@@ -578,8 +632,57 @@ const handleUnSelect = (item: ConditionMatchListView) => {
             <el-button type="primary" @click="emits('submit', [...selectMap.values()])" v-text="'提交'"/>
         </div>
     </el-form>
+</template>), (components/conditionMatch/ConditionMatchIdSelect.vue, <script setup lang="ts">
+import type {ConditionMatchListView} from "@/api/__generated/model/static"
+
+const modelValue = defineModel<number>({
+    required: true
+})
+
+defineProps<{
+    options: Array<ConditionMatchListView>
+}>()
+</script>
+
+<template>
+    <el-select
+        v-model="modelValue"
+        filterable
+        clearable
+        placeholder="请选择条件匹配">
+        <el-option
+            v-for="option in options"
+            :key="option.id"
+            :label="option.id"
+            :value="option.id"/>
+    </el-select>
+</template>), (components/conditionMatch/ConditionMatchIdMultiSelect.vue, <script setup lang="ts">
+import type {ConditionMatchListView} from "@/api/__generated/model/static"
+
+const modelValue = defineModel<number[]>({
+    required: true
+})
+
+defineProps<{
+    options: Array<ConditionMatchListView>
+}>()
+</script>
+
+<template>
+    <el-select
+        v-model="modelValue"
+        multiple
+        filterable
+        clearable
+        placeholder="请选择条件匹配">
+        <el-option
+            v-for="option in options"
+            :key="option.id"
+            :label="option.id"
+            :value="option.id"/>
+    </el-select>
 </template>), (rules/conditionMatch/ConditionMatchAddFormRules.ts, import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
-import type { FormRules } from 'element-plus'
+import type {FormRules} from 'element-plus'
 
 export default <FormRules<ConditionMatchInsertInput>> {
     status: [
@@ -593,9 +696,26 @@ export default <FormRules<ConditionMatchInsertInput>> {
     ],
 
 }), (rules/conditionMatch/ConditionMatchEditFormRules.ts, import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
-import type { FormRules } from 'element-plus'
+import type {FormRules} from 'element-plus'
 
 export default <FormRules<ConditionMatchUpdateInput>> {
+    id: [
+        {required: true, message: 'ID不能为空', trigger: 'blur'},
+    ],
+    status: [
+        {required: true, message: '匹配状态不能为空', trigger: 'blur'},
+    ],
+    date: [
+        {required: true, message: '匹配日期不能为空', trigger: 'blur'},
+    ],
+    description: [
+        {required: true, message: '结果描述不能为空', trigger: 'blur'},
+    ],
+
+}), (rules/conditionMatch/ConditionMatchEditTableRules.ts, import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
+import type {FormRules} from 'element-plus'
+
+export default <FormRules<ConditionMatchInsertInput>> {
     status: [
         {required: true, message: '匹配状态不能为空', trigger: 'blur'},
     ],
