@@ -12,6 +12,9 @@ val GenEntityBusinessView.enums
 private val GenEntityBusinessView.noIdView
     get() = properties.count { it.idView } == 0 && properties.count { it.associationType != null } > 0
 
+val GenEntityBusinessView.baseProperties
+    get() = properties.filter { it.associationType == null }
+
 val GenEntityBusinessView.associationProperties
     get() =
         if (noIdView)

@@ -58,7 +58,7 @@ object DtoGenerator {
         appendLine("input ${entity.dtoNames.insertInput} {")
         appendLine("    #allScalars(this)")
         appendLine("    -${idName}")
-        entity.propertyIds(onlyThis = true).forEach {
+        entity.propertyIdsTargetOne(onlyThis = true).forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -71,7 +71,7 @@ object DtoGenerator {
         appendLine("input ${entity.dtoNames.updateInput} {")
         appendLine("    #allScalars(this)")
         appendLine("    ${idName}!")
-        entity.propertyIds(onlyThis = true).forEach {
+        entity.propertyIdsTargetOne(onlyThis = true).forEach {
             appendLine("    $it")
         }
         appendLine("}")
