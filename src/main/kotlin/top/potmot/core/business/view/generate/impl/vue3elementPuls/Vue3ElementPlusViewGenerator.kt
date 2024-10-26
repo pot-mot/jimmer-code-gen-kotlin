@@ -2,7 +2,6 @@ package top.potmot.core.business.view.generate.impl.vue3elementPuls
 
 import top.potmot.core.business.utils.PropertyFormType
 import top.potmot.core.business.utils.PropertyQueryType
-import top.potmot.core.business.utils.associationProperties
 import top.potmot.core.business.utils.associationTargetOneProperties
 import top.potmot.core.business.utils.baseProperties
 import top.potmot.core.business.utils.componentNames
@@ -381,8 +380,8 @@ ${entity.queryFormItems()}
 
         appendLine("export default <${insertInput}> {")
 
-        (entity.baseProperties + entity.associationTargetOneProperties)
-            .filter { !it.idProperty && it.associationType == null && it.entityId == entity.id }
+        entity.baseProperties
+            .filter { !it.idProperty && it.entityId == entity.id }
             .map {
                 if (it.listType) {
                     "${it.name}: [],"
@@ -398,7 +397,7 @@ ${entity.queryFormItems()}
                 appendLine("    $it")
             }
 
-        entity.associationProperties
+        entity.associationTargetOneProperties
             .filter { it.entityId == entity.id }
             .map {
                 if (it.idView) {
