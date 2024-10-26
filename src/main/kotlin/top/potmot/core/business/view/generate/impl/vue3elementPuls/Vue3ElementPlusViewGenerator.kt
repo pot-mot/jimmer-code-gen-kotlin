@@ -973,7 +973,8 @@ const handleDelete = async (ids: ${idType}[]) => {
         
         <div>
             <el-button type="primary" :icon="Plus" @click="startAdd" v-text="'新增'"/>
-            <el-button type="danger" :icon="Delete" @click="handleDelete(selection.map(it => it.${idName}))" v-text="'批量删除'"/>
+            <el-button type="danger" :icon="Delete" @click="handleDelete(selection.map(it => it.${idName}))" 
+                       v-text="'删除'" :disabled="selection.length === 0"/>
         </div>
 
         <template v-if="pageData">
