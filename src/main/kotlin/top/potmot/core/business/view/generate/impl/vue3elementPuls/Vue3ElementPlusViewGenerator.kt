@@ -1194,7 +1194,7 @@ const handleUnSelect = (item: $listView) => {
 <script setup lang="ts">
 import type {$listView} from "@/api/__generated/model/static"
 
-const modelValue = defineModel<$idType>({
+const modelValue = defineModel<$idType | undefined>({
     required: true
 })
 

@@ -636,7 +636,7 @@ const handleUnSelect = (item: ConditionMatchListView) => {
 </template>), (components/conditionMatch/ConditionMatchIdSelect.vue, <script setup lang="ts">
 import type {ConditionMatchListView} from "@/api/__generated/model/static"
 
-const modelValue = defineModel<number>({
+const modelValue = defineModel<number | undefined>({
     required: true
 })
 
