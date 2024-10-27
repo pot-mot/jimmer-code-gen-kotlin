@@ -672,12 +672,20 @@ ${entity.queryFormItems()}
 
                     if (it.column != null) {
                         if (it.column.dataSize != 0L) {
-                            if (formType in listOf(PropertyFormType.INT, PropertyFormType.FLOAT)) {
-                                val max = it.inputNumberMax
-                                items += "{min: 1, max: ${max}, message: '${it.comment}需要在1-${max}之间', trigger: 'blur'}"
-                            } else if (formType == PropertyFormType.INPUT) {
-                                val max = it.column.dataSize
-                                items += "{min: 1, max: ${max}, message: '${it.comment}长度需要在1-${max}之间', trigger: 'blur'}"
+                            when (formType) {
+                                PropertyFormType.INT -> {
+                                    val max = it.inputNumberMax
+                                    items += "{type: 'integer', min: 1, max: ${max}, message: '${it.comment}需要在1-${max}之间', trigger: 'blur'}"
+                                }
+                                PropertyFormType.FLOAT -> {
+                                    val max = it.inputNumberMax
+                                    items += "{type: 'float', min: 1, max: ${max}, message: '${it.comment}需要在1-${max}之间', trigger: 'blur'}"
+                                }
+                                PropertyFormType.INPUT -> {
+                                    val max = it.column.dataSize
+                                    items += "{type: 'string', min: 1, max: ${max}, message: '${it.comment}长度需要在1-${max}之间', trigger: 'blur'}"
+                                }
+                                else -> Unit
                             }
                         }
                     }
