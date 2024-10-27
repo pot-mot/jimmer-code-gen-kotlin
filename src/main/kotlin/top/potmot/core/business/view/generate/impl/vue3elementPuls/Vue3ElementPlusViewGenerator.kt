@@ -1,5 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPuls
 
+import kotlin.math.min
 import top.potmot.core.business.utils.PropertyFormType
 import top.potmot.core.business.utils.PropertyQueryType
 import top.potmot.core.business.utils.associationTargetOneProperties
@@ -209,12 +210,14 @@ $propertyColumns
             }
         }
 
+    private const val MAX_NUMBER_SIZE = 15L
+
     private val GenEntityBusinessView.TargetOf_properties.inputNumberMax
         get() = buildString {
             if (column == null)
                 append('0')
             else {
-                for (i in 1..(column.dataSize - column.numericPrecision)) {
+                for (i in 1..min(column.dataSize - column.numericPrecision, MAX_NUMBER_SIZE)) {
                     append('9')
                 }
             }
