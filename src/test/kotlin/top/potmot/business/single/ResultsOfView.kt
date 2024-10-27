@@ -764,8 +764,8 @@ export default <FormRules<ConditionMatchInsertInput>> {
     ],
     money: [
         {required: true, message: '金额不能为空', trigger: 'blur'},
-        {type: 'float', message: '金额必须是数字', trigger: 'blur'},
-        {type: 'float', min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
+        {type: 'number', message: '金额必须是数字', trigger: 'blur'},
+        {type: 'number', min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
     ],
     description: [
         {required: true, message: '结果描述不能为空', trigger: 'blur'},
@@ -790,8 +790,8 @@ export default <FormRules<ConditionMatchUpdateInput>> {
     ],
     money: [
         {required: true, message: '金额不能为空', trigger: 'blur'},
-        {type: 'float', message: '金额必须是数字', trigger: 'blur'},
-        {type: 'float', min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
+        {type: 'number', message: '金额必须是数字', trigger: 'blur'},
+        {type: 'number', min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
     ],
     description: [
         {required: true, message: '结果描述不能为空', trigger: 'blur'},
@@ -811,8 +811,8 @@ export default <FormRules<ConditionMatchInsertInput>> {
     ],
     money: [
         {required: true, message: '金额不能为空', trigger: 'blur'},
-        {type: 'float', message: '金额必须是数字', trigger: 'blur'},
-        {type: 'float', min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
+        {type: 'number', message: '金额必须是数字', trigger: 'blur'},
+        {type: 'number', min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
     ],
     description: [
         {required: true, message: '结果描述不能为空', trigger: 'blur'},

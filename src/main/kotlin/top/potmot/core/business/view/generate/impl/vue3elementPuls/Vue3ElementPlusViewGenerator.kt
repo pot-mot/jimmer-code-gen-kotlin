@@ -665,7 +665,7 @@ ${entity.queryFormItems()}
                             items += "{type: 'integer', message: '${it.comment}必须是整数', trigger: 'blur'}"
 
                         PropertyFormType.FLOAT ->
-                            items += "{type: 'float', message: '${it.comment}必须是数字', trigger: 'blur'}"
+                            items += "{type: 'number', message: '${it.comment}必须是数字', trigger: 'blur'}"
 
                         PropertyFormType.TIME,
                         PropertyFormType.DATE,
@@ -688,7 +688,7 @@ ${entity.queryFormItems()}
                                 }
                                 PropertyFormType.FLOAT -> {
                                     val max = it.inputNumberMax
-                                    items += "{type: 'float', min: 1, max: ${max}, message: '${it.comment}需要在1-${max}之间', trigger: 'blur'}"
+                                    items += "{type: 'number', min: 1, max: ${max}, message: '${it.comment}需要在1-${max}之间', trigger: 'blur'}"
                                 }
                                 PropertyFormType.INPUT -> {
                                     val max = it.column.dataSize
