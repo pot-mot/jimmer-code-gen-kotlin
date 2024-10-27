@@ -56,6 +56,12 @@ GenEntityBusinessView implements GenerateEntity {
     properties {
         #allScalars
         id(entity)
+
+        column {
+            dataSize
+            numericPrecision
+        }
+
         flat(typeTable) {
             entity as typeEntity implements GenerateEntity {
                 id

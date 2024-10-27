@@ -209,6 +209,26 @@ $propertyColumns
             }
         }
 
+    private val GenEntityBusinessView.TargetOf_properties.inputNumberMax
+        get() = buildString {
+            if (column == null)
+                append('0')
+            else {
+                for (i in 1..(column.dataSize - column.numericPrecision)) {
+                    append('9')
+                }
+            }
+        }
+
+    private val GenEntityBusinessView.TargetOf_properties.inputMaxLength
+        get() = buildString {
+            if (column != null) {
+                append(" maxlength=\"")
+                append(column.dataSize)
+                append("\"")
+            }
+        }
+
     private fun GenEntityBusinessView.queryFormItems(spec: String = "spec") =
         properties.filter { !it.idProperty && it.associationType == null }.map {
             val vModel = """v-model="${spec}.${it.name}""""
@@ -223,17 +243,45 @@ $propertyColumns
 />
 """
 
-                PropertyQueryType.NUMBER_RANGE ->
+                PropertyQueryType.INT_RANGE ->
                     """
 <el-input-number
     v-model.number="${spec}.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
     placeholder="请输入最小${it.comment}"
+    :precision="0"
+    :min="0"
+    :max="${it.inputNumberMax}"
     :value-on-clear="undefined"
     @change="emits('query')"
 />
 <el-input-number
     v-model.number="${spec}.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
     placeholder="请输入最大${it.comment}"
+    :precision="0"
+    :min="0"
+    :max="${it.inputNumberMax}"
+    :value-on-clear="undefined"
+    @change="emits('query')"
+/>
+"""
+
+                PropertyQueryType.FLOAT_RANGE ->
+                    """
+<el-input-number
+    v-model.number="${spec}.min${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
+    placeholder="请输入最小${it.comment}"
+    :precision="${it.column?.numericPrecision ?: 0}" 
+    :min="0"
+    :max="${it.inputNumberMax}"
+    :value-on-clear="undefined"
+    @change="emits('query')"
+/>
+<el-input-number
+    v-model.number="${spec}.max${it.name.replaceFirstChar { c -> c.uppercaseChar() }}"
+    placeholder="请输入最大${it.comment}"
+    :precision="${it.column?.numericPrecision ?: 0}" 
+    :min="0"
+    :max="${it.inputNumberMax}"
     :value-on-clear="undefined"
     @change="emits('query')"
 />
@@ -295,7 +343,7 @@ $propertyColumns
                         else ->
                             """
 <el-input
-    $vModel
+    $vModel${it.inputMaxLength}
     placeholder="请输入${it.comment}"
     clearable
     @change="emits('query')"
@@ -321,7 +369,8 @@ $propertyColumns
             when (it.queryType) {
                 PropertyQueryType.DATE_RANGE,
                 PropertyQueryType.TIME_RANGE,
-                PropertyQueryType.DATETIME_RANGE ->
+                PropertyQueryType.DATETIME_RANGE,
+                ->
                     """
 const ${it.name}Range = computed<[string | undefined, string | undefined]>({
     get() {
@@ -440,22 +489,22 @@ ${entity.queryFormItems()}
                 appendBlock(component) { "            $it" }
                 appendLine("        </el-form-item>")
             }
-        }
+        },
     ) =
         properties
             .filter { !it.idProperty && it.associationType == null && it.entityId == id }
             .map {
-            val vModel = """v-model="${formData}.${it.name}""""
+                val vModel = """v-model="${formData}.${it.name}""""
 
-            it to when (it.formType) {
-                PropertyFormType.ENUM ->
-                    "<${if (it.typeNotNull) it.enum!!.componentNames.select else it.enum!!.componentNames.nullableSelect} $vModel/>"
+                it to when (it.formType) {
+                    PropertyFormType.ENUM ->
+                        "<${if (it.typeNotNull) it.enum!!.componentNames.select else it.enum!!.componentNames.nullableSelect} $vModel/>"
 
-                PropertyFormType.SWITCH ->
-                    if (it.typeNotNull)
-                        "<el-switch $vModel/>"
-                    else
-                        """
+                    PropertyFormType.SWITCH ->
+                        if (it.typeNotNull)
+                            "<el-switch $vModel/>"
+                        else
+                            """
 <el-select 
     $vModel
     placeholder="请选择${it.comment}"
@@ -465,33 +514,63 @@ ${entity.queryFormItems()}
 </el-select>
 """
 
-                PropertyFormType.NUMBER ->
-                    if (it.typeNotNull)
-                        """
+                    PropertyFormType.INT ->
+                        if (it.typeNotNull)
+                            """
 <el-input-number
     v-model.number="${formData}.${it.name}"
     placeholder="请输入${it.comment}"
+    :precision="0" 
+    :min="0"
+    :max="${it.inputNumberMax}"
 />
 """
-                    else
-                        """
+                        else
+                            """
 <el-input-number
     v-model.number="${formData}.${it.name}"
     placeholder="请输入${it.comment}"
+    :precision="0" 
+    :min="0"
+    :max="${it.inputNumberMax}"
     :value-on-clear="undefined"
 />
 """
 
-                PropertyFormType.TIME ->
-                    if (it.typeNotNull)
-                        """
+                    PropertyFormType.FLOAT ->
+                        if (it.typeNotNull)
+                            """
+<el-input-number
+    v-model.number="${formData}.${it.name}"
+    placeholder="请输入${it.comment}"
+    :precision="${it.column?.numericPrecision}" 
+    :min="0"
+    :max="${it.inputNumberMax}"
+/>
+"""
+                        else
+                            """
+<el-input-number
+    v-model.number="${formData}.${it.name}"
+    placeholder="请输入${it.comment}"
+    :precision="${it.column?.numericPrecision}" 
+    :min="0"
+    :max="${it.inputNumberMax}"
+    :value-on-clear="undefined"
+/>
+"""
+
+
+                    PropertyFormType.TIME ->
+                        if (it.typeNotNull)
+                            """
 <el-time-picker
     $vModel
     placeholder="请选择${it.comment}"
 />
 """
-                    else
-                        """
+                        else
+                            """
 <el-time-picker
     $vModel
     placeholder="请选择${it.comment}"
@@ -502,17 +581,17 @@ ${entity.queryFormItems()}
 """
 
 
-                PropertyFormType.DATE ->
-                    if (it.typeNotNull)
-                        """
+                    PropertyFormType.DATE ->
+                        if (it.typeNotNull)
+                            """
 <el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
     type="date"
 />
 """
-                    else
-                        """
+                        else
+                            """
 <el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
@@ -523,17 +602,17 @@ ${entity.queryFormItems()}
 />
 """
 
-                PropertyFormType.DATETIME ->
-                    if (it.typeNotNull)
-                        """
+                    PropertyFormType.DATETIME ->
+                        if (it.typeNotNull)
+                            """
 <el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
     type="datetime"
 />
 """
-                    else
-                        """
+                        else
+                            """
 <el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
@@ -544,16 +623,16 @@ ${entity.queryFormItems()}
 />
 """
 
-                else ->
-                    """
+                    else ->
+                        """
 <el-input
-    $vModel
+    $vModel${it.inputMaxLength}
     placeholder="请输入${it.comment}"
     clearable
 />
 """
-            }.trimBlankLine()
-        }
+                }.trimBlankLine()
+            }
             .joinToString("\n") { block(it.first, it.second) }
 
     private fun List<GenEntityBusinessView.TargetOf_properties>.toRules() =
@@ -562,6 +641,47 @@ ${entity.queryFormItems()}
 
             if (it.typeNotNull) {
                 items += "{required: true, message: '${it.comment}不能为空', trigger: 'blur'}"
+            }
+
+            if (it.listType) {
+                items += "{type: 'array', message: '${it.comment}必须是列表', trigger: 'blur'}"
+            } else {
+                if (it.enum != null) {
+                    // TODO 添加枚举型约束
+                } else {
+                    val formType = it.formType
+
+                    when (formType) {
+                        PropertyFormType.INT ->
+                            items += "{type: 'integer', message: '${it.comment}必须是整数', trigger: 'blur'}"
+
+                        PropertyFormType.FLOAT ->
+                            items += "{type: 'float', message: '${it.comment}必须是数字', trigger: 'blur'}"
+
+                        PropertyFormType.TIME,
+                        PropertyFormType.DATE,
+                        PropertyFormType.DATETIME,
+                        ->
+                            items += "{type: 'date', message: '${it.comment}必须是日期', trigger: 'blur'}"
+
+                        PropertyFormType.SWITCH ->
+                            items += "{type: 'boolean', message: '${it.comment}必须是对错', trigger: 'blur'"
+
+                        else -> Unit
+                    }
+
+                    if (it.column != null) {
+                        if (it.column.dataSize != 0L) {
+                            if (formType in listOf(PropertyFormType.INT, PropertyFormType.FLOAT)) {
+                                val max = it.inputNumberMax
+                                items += "{min: 1, max: ${max}, message: '${it.comment}需要在1-${max}之间', trigger: 'blur'}"
+                            } else if (formType == PropertyFormType.INPUT) {
+                                val max = it.column.dataSize
+                                items += "{min: 1, max: ${max}, message: '${it.comment}长度需要在1-${max}之间', trigger: 'blur'}"
+                            }
+                        }
+                    }
+                }
             }
 
             buildString {
@@ -618,7 +738,7 @@ const emits = defineEmits<{
 const handleSubmit = () => {
     formRef.value?.validate(valid => {
         if (valid)
-            emits('submit', formData.value)    
+            emits('submit', formData.value)
     })
 }
 </script>
@@ -730,14 +850,14 @@ $propertyRules
         val defaultAddInput = entity.defaultAddInput()
         val rules = entity.ruleNames.editTableRules
 
-        val tableColumns = entity.formItems("row") {property, component ->
+        val tableColumns = entity.formItems("row") { property, component ->
             val indent = "            "
 
             buildString {
                 appendLine("""$indent<el-table-column label="${property.comment}" prop="${property.name}">""")
                 appendLine("""$indent    <template #default="{$ROW_INDEX, row}">""")
                 appendLine("""$indent        <el-form-item :prop="[$ROW_INDEX, '${property.name}']" :rules="rules.${property.name}">""")
-                appendBlock(component) {"""$indent        $it"""}
+                appendBlock(component) { """$indent        $it""" }
                 appendLine("""$indent        </el-form-item>""")
                 appendLine("""$indent    </template>""")
                 appendLine("""$indent</el-table-column>""")
@@ -1191,15 +1311,22 @@ const handleUnSelect = (item: $listView) => {
 
         return """
 <script setup lang="ts">
+import {watch} from "vue"
 import type {$listView} from "@/api/__generated/model/static"
 
 const modelValue = defineModel<$idType | undefined>({
     required: true
 })
 
-defineProps<{
+const props = defineProps<{
     options: Array<$listView>
 }>()
+
+watch(() => [modelValue.value, props.options], () => {
+    if (!(props.options.map(it => it.id) as Array<number | undefined>).includes(modelValue.value)) {
+        modelValue.value = undefined
+    }
+}, {immediate: true})
 </script>
 
 <template>

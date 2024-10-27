@@ -23,7 +23,9 @@ const val entityData = """
             "id": 1379,
             "column": {
                 "id": 1339,
-                "name": "id"
+                "name": "id",
+                "dataSize": 10,
+                "numericPrecision": 0
             },
             "entity": {
                 "id": 392
@@ -59,7 +61,9 @@ const val entityData = """
             "id": 1379,
             "column": {
                 "id": 1339,
-                "name": "id"
+                "name": "id",
+                "dataSize": 10,
+                "numericPrecision": 0
             },
             "entity": {
                 "id": 392
@@ -93,7 +97,9 @@ const val entityData = """
             "id": 1447,
             "column": {
                 "id": 1340,
-                "name": "user_id"
+                "name": "user_id",
+                "dataSize": 10,
+                "numericPrecision": 0
             },
             "entity": {
                 "id": 392
@@ -148,7 +154,9 @@ const val entityData = """
             "id": 1380,
             "column": {
                 "id": 1340,
-                "name": "user_id"
+                "name": "user_id",
+                "dataSize": 10,
+                "numericPrecision": 0
             },
             "entity": {
                 "id": 392
@@ -182,7 +190,9 @@ const val entityData = """
             "id": 1449,
             "column": {
                 "id": 1342,
-                "name": "condition_id"
+                "name": "condition_id",
+                "dataSize": 10,
+                "numericPrecision": 0
             },
             "entity": {
                 "id": 392
@@ -237,7 +247,9 @@ const val entityData = """
             "id": 1382,
             "column": {
                 "id": 1342,
-                "name": "condition_id"
+                "name": "condition_id",
+                "dataSize": 10,
+                "numericPrecision": 0
             },
             "entity": {
                 "id": 392
@@ -271,7 +283,9 @@ const val entityData = """
             "id": 1512,
             "column": {
                 "id": 1424,
-                "name": "status"
+                "name": "status",
+                "dataSize": 255,
+                "numericPrecision": 0
             },
             "entity": {
                 "id": 392
@@ -317,7 +331,9 @@ const val entityData = """
             "id": 1450,
             "column": {
                 "id": 1416,
-                "name": "date"
+                "name": "date",
+                "dataSize": 0,
+                "numericPrecision": 0
             },
             "entity": {
                 "id": 392
@@ -346,12 +362,50 @@ const val entityData = """
             "enum": null
         },
         {
+            "createdTime": "2024-10-13T14:50:14.592448",
+            "modifiedTime": "2024-10-16T12:02:02.927149",
+            "id": 1450,
+            "column": {
+                "id": 1416,
+                "name": "money",
+                "dataSize": 7,
+                "numericPrecision": 2
+            },
+            "entity": {
+                "id": 392
+            },
+            "name": "money",
+            "comment": "金额",
+            "type": "java.math.BigDecimal",
+            "typeTable": null,
+            "listType": false,
+            "typeNotNull": true,
+            "idProperty": false,
+            "idGenerationAnnotation": null,
+            "keyProperty": false,
+            "logicalDelete": false,
+            "idView": false,
+            "idViewTarget": null,
+            "associationType": null,
+            "mappedBy": null,
+            "inputNotNull": null,
+            "joinColumnMetas": null,
+            "joinTableMeta": null,
+            "dissociateAnnotation": null,
+            "otherAnnotation": null,
+            "orderKey": 7,
+            "remark": "",
+            "enum": null
+        },
+        {
             "createdTime": "2024-10-14T20:45:27.365278",
             "modifiedTime": "2024-10-16T12:02:02.927149",
             "id": 1768,
             "column": {
                 "id": 1472,
-                "name": "description"
+                "name": "description",
+                "dataSize": 255,
+                "numericPrecision": 0
             },
             "entity": {
                 "id": 392
@@ -375,7 +429,7 @@ const val entityData = """
             "joinTableMeta": null,
             "dissociateAnnotation": null,
             "otherAnnotation": null,
-            "orderKey": 7,
+            "orderKey": 8,
             "remark": "",
             "enum": null
         }

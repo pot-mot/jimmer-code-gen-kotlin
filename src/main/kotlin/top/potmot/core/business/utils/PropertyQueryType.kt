@@ -11,7 +11,8 @@ import top.potmot.enumeration.AssociationType
 enum class PropertyQueryType {
     EQ,
     LIKE,
-    NUMBER_RANGE,
+    INT_RANGE,
+    FLOAT_RANGE,
     TIME_RANGE,
     DATE_RANGE,
     DATETIME_RANGE,
@@ -20,7 +21,16 @@ enum class PropertyQueryType {
     ASSOCIATION_IN,
 }
 
-private val numberRangeType = setOf(
+private val intRangeType = setOf(
+    Int::class.qualifiedName,
+    "int",
+    Int::class.java.name,
+    Long::class.qualifiedName,
+    "long",
+    Long::class.java.name,
+)
+
+private val floatRangeType = setOf(
     BigDecimal::class.java.name,
 
     Float::class.qualifiedName,
@@ -64,7 +74,8 @@ val GenEntityBusinessView.TargetOf_properties.queryType: PropertyQueryType
         } else {
             when(type) {
                 in likeType -> PropertyQueryType.LIKE
-                in numberRangeType -> PropertyQueryType.NUMBER_RANGE
+                in intRangeType -> PropertyQueryType.INT_RANGE
+                in floatRangeType -> PropertyQueryType.FLOAT_RANGE
                 in timeRangeType -> PropertyQueryType.TIME_RANGE
                 in dateRangeType -> PropertyQueryType.DATE_RANGE
                 in dateTimeRangeType -> PropertyQueryType.DATETIME_RANGE

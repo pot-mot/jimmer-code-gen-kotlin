@@ -36,6 +36,8 @@ specification ConditionMatchSpec {
     eq(status)
     le(date)
     ge(date)
+    le(money)
+    ge(money)
     like/i(description)
 })
 """

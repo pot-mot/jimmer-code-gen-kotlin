@@ -47,6 +47,7 @@ const handleChangeSelection = (selection: Array<ConditionMatchListView>) => {
             </template>
         </el-table-column>
         <el-table-column label="匹配日期" prop="date"/>
+        <el-table-column label="金额" prop="money"/>
         <el-table-column label="结果描述" prop="description"/>
         
         <el-table-column label="操作" width="330px">
@@ -60,6 +61,7 @@ const handleChangeSelection = (selection: Array<ConditionMatchListView>) => {
 export default <ConditionMatchInsertInput> {
     status: "EQ",
     date: "",
+    money: 0,
     description: "",
     userId: 0,
     conditionId: 0,
@@ -84,7 +86,7 @@ const emits = defineEmits<{
 const handleSubmit = () => {
     formRef.value?.validate(valid => {
         if (valid)
-            emits('submit', formData.value)    
+            emits('submit', formData.value)
     })
 }
 </script>
@@ -103,9 +105,19 @@ const handleSubmit = () => {
             />
         </el-form-item>
 
+        <el-form-item prop="money" label="金额" required>
+            <el-input-number
+                v-model.number="formData.money"
+                placeholder="请输入金额"
+                :precision="2" 
+                :min="0"
+                :max="99999"
+            />
+        </el-form-item>
+
         <el-form-item prop="description" label="结果描述" required>
             <el-input
-                v-model="formData.description"
+                v-model="formData.description" maxlength="255"
                 placeholder="请输入结果描述"
                 clearable
             />
@@ -163,9 +175,19 @@ const handleSubmit = () => {
             />
         </el-form-item>
 
+        <el-form-item prop="money" label="金额" required>
+            <el-input-number
+                v-model.number="formData.money"
+                placeholder="请输入金额"
+                :precision="2" 
+                :min="0"
+                :max="99999"
+            />
+        </el-form-item>
+
         <el-form-item prop="description" label="结果描述" required>
             <el-input
-                v-model="formData.description"
+                v-model="formData.description" maxlength="255"
                 placeholder="请输入结果描述"
                 clearable
             />
@@ -269,11 +291,25 @@ const handleSingleDelete = async (index: number) => {
                 </template>
             </el-table-column>
 
+            <el-table-column label="金额" prop="money">
+                <template #default="{$index, row}">
+                    <el-form-item :prop="[$index, 'money']" :rules="rules.money">
+                    <el-input-number
+                        v-model.number="row.money"
+                        placeholder="请输入金额"
+                        :precision="2" 
+                        :min="0"
+                        :max="99999"
+                    />
+                    </el-form-item>
+                </template>
+            </el-table-column>
+
             <el-table-column label="结果描述" prop="description">
                 <template #default="{$index, row}">
                     <el-form-item :prop="[$index, 'description']" :rules="rules.description">
                     <el-input
-                        v-model="row.description"
+                        v-model="row.description" maxlength="255"
                         placeholder="请输入结果描述"
                         clearable
                     />
@@ -343,9 +379,32 @@ const dateRange = computed<[string | undefined, string | undefined]>({
             </el-col>
 
             <el-col :span="8">
+                <el-form-item prop="money" label="金额">
+                    <el-input-number
+                        v-model.number="spec.minMoney"
+                        placeholder="请输入最小金额"
+                        :precision="2" 
+                        :min="0"
+                        :max="99999"
+                        :value-on-clear="undefined"
+                        @change="emits('query')"
+                    />
+                    <el-input-number
+                        v-model.number="spec.maxMoney"
+                        placeholder="请输入最大金额"
+                        :precision="2" 
+                        :min="0"
+                        :max="99999"
+                        :value-on-clear="undefined"
+                        @change="emits('query')"
+                    />
+                </el-form-item>
+            </el-col>
+
+            <el-col :span="8">
                 <el-form-item prop="description" label="结果描述">
                     <el-input
-                        v-model="spec.description"
+                        v-model="spec.description" maxlength="255"
                         placeholder="请输入结果描述"
                         clearable
                         @change="emits('query')"
@@ -634,15 +693,22 @@ const handleUnSelect = (item: ConditionMatchListView) => {
         </div>
     </el-form>
 </template>), (components/conditionMatch/ConditionMatchIdSelect.vue, <script setup lang="ts">
+import {watch} from "vue"
 import type {ConditionMatchListView} from "@/api/__generated/model/static"
 
 const modelValue = defineModel<number | undefined>({
     required: true
 })
 
-defineProps<{
+const props = defineProps<{
     options: Array<ConditionMatchListView>
 }>()
+
+watch(() => [modelValue.value, props.options], () => {
+    if (!(props.options.map(it => it.id) as Array<number | undefined>).includes(modelValue.value)) {
+        modelValue.value = undefined
+    }
+}, {immediate: true})
 </script>
 
 <template>
@@ -694,9 +760,16 @@ export default <FormRules<ConditionMatchInsertInput>> {
     ],
     date: [
         {required: true, message: '匹配日期不能为空', trigger: 'blur'},
+        {type: 'date', message: '匹配日期必须是日期', trigger: 'blur'},
+    ],
+    money: [
+        {required: true, message: '金额不能为空', trigger: 'blur'},
+        {type: 'float', message: '金额必须是数字', trigger: 'blur'},
+        {min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
     ],
     description: [
         {required: true, message: '结果描述不能为空', trigger: 'blur'},
+        {min: 1, max: 255, message: '结果描述长度需要在1-255之间', trigger: 'blur'},
     ],
 
 }), (rules/conditionMatch/ConditionMatchEditFormRules.ts, import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
@@ -705,15 +778,24 @@ import type {FormRules} from 'element-plus'
 export default <FormRules<ConditionMatchUpdateInput>> {
     id: [
         {required: true, message: 'ID不能为空', trigger: 'blur'},
+        {type: 'integer', message: 'ID必须是整数', trigger: 'blur'},
+        {min: 1, max: 9999999999, message: 'ID需要在1-9999999999之间', trigger: 'blur'},
     ],
     status: [
         {required: true, message: '匹配状态不能为空', trigger: 'blur'},
     ],
     date: [
         {required: true, message: '匹配日期不能为空', trigger: 'blur'},
+        {type: 'date', message: '匹配日期必须是日期', trigger: 'blur'},
+    ],
+    money: [
+        {required: true, message: '金额不能为空', trigger: 'blur'},
+        {type: 'float', message: '金额必须是数字', trigger: 'blur'},
+        {min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
     ],
     description: [
         {required: true, message: '结果描述不能为空', trigger: 'blur'},
+        {min: 1, max: 255, message: '结果描述长度需要在1-255之间', trigger: 'blur'},
     ],
 
 }), (rules/conditionMatch/ConditionMatchEditTableRules.ts, import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
@@ -725,9 +807,16 @@ export default <FormRules<ConditionMatchInsertInput>> {
     ],
     date: [
         {required: true, message: '匹配日期不能为空', trigger: 'blur'},
+        {type: 'date', message: '匹配日期必须是日期', trigger: 'blur'},
+    ],
+    money: [
+        {required: true, message: '金额不能为空', trigger: 'blur'},
+        {type: 'float', message: '金额必须是数字', trigger: 'blur'},
+        {min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
     ],
     description: [
         {required: true, message: '结果描述不能为空', trigger: 'blur'},
+        {min: 1, max: 255, message: '结果描述长度需要在1-255之间', trigger: 'blur'},
     ],
 
 })]

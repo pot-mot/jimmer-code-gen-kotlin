@@ -11,7 +11,8 @@ import top.potmot.entity.dto.GenEntityBusinessView
 enum class PropertyFormType {
     INPUT,
     SWITCH,
-    NUMBER,
+    INT,
+    FLOAT,
     TIME,
     DATE,
     DATETIME,
@@ -19,15 +20,18 @@ enum class PropertyFormType {
     ASSOCIATION,
 }
 
-private val numberType = setOf(
-    BigDecimal::class.java.name,
-
+private val intType = setOf(
     Int::class.qualifiedName,
     "int",
     Int::class.java.name,
     Long::class.qualifiedName,
     "long",
     Long::class.java.name,
+)
+
+private val floatType = setOf(
+    BigDecimal::class.java.name,
+
     Float::class.qualifiedName,
     "float",
     Float::class.java.name,
@@ -64,7 +68,8 @@ val GenEntityBusinessView.TargetOf_properties.formType: PropertyFormType
             PropertyFormType.ENUM
         } else {
             when (type) {
-                in numberType -> PropertyFormType.NUMBER
+                in intType -> PropertyFormType.INT
+                in floatType -> PropertyFormType.FLOAT
                 in switchType -> PropertyFormType.SWITCH
                 in dateType -> PropertyFormType.DATE
                 in timeType -> PropertyFormType.TIME

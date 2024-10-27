@@ -79,7 +79,10 @@ object DtoGenerator {
 
     private val GenEntityBusinessView.TargetOf_properties.specExpression
         get() =
-            when (queryType) {
+            if (idProperty)
+                listOf("eq(${name})")
+
+            else when (queryType) {
                 PropertyQueryType.EQ,
                 PropertyQueryType.ENUM_SELECT ->
                     listOf("eq(${name})")
@@ -87,7 +90,8 @@ object DtoGenerator {
                 PropertyQueryType.DATE_RANGE,
                 PropertyQueryType.TIME_RANGE,
                 PropertyQueryType.DATETIME_RANGE,
-                PropertyQueryType.NUMBER_RANGE ->
+                PropertyQueryType.INT_RANGE,
+                PropertyQueryType.FLOAT_RANGE ->
                     listOf("le(${name})", "ge(${name})")
 
                 PropertyQueryType.LIKE ->
