@@ -50,6 +50,9 @@ const data = defineModel<${enum.name}>({
             :value="value">
             <$view :value="value"/>
         </el-option>
+        <template #label>
+            <$view :value="data"/>
+        </template>
     </el-select>
 </template>
 """.trim()
@@ -81,6 +84,9 @@ const data = defineModel<${enum.name} | undefined>({
             :value="value">
             <$view :value="value"/>
         </el-option>
+        <template #label>
+            <$view v-if="data" :value="data"/>
+        </template>
     </el-select>
 </template>
 """.trim()

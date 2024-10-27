@@ -20,6 +20,9 @@ const data = defineModel<EnumTest>({
             :value="value">
             <EnumTestView :value="value"/>
         </el-option>
+        <template #label>
+            <EnumTestView :value="data"/>
+        </template>
     </el-select>
 </template>), (components/enumTest/EnumTestNullableSelect.vue, <script setup lang="ts">
 import {EnumTest_CONSTANTS} from "@/api/__generated/model/enums"
@@ -43,6 +46,9 @@ const data = defineModel<EnumTest | undefined>({
             :value="value">
             <EnumTestView :value="value"/>
         </el-option>
+        <template #label>
+            <EnumTestView v-if="data" :value="data"/>
+        </template>
     </el-select>
 </template>), (components/enumTest/EnumTestView.vue, <script setup lang="ts">
 import type {EnumTest} from "@/api/__generated/model/enums"
