@@ -743,7 +743,6 @@ defineProps<{
         clearable
         collapse-tags
         collapse-tags-tooltip
-        :max-collapse-tags="4"
         placeholder="请选择条件匹配">
         <el-option
             v-for="option in options"
