@@ -5,6 +5,8 @@ import top.potmot.core.business.utils.ruleNames
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
+import top.potmot.entity.dto.GenerateFile
+import top.potmot.enumeration.GenerateTag
 
 abstract class ViewGenerator {
     abstract fun getFileSuffix(): String
@@ -47,27 +49,39 @@ abstract class ViewGenerator {
 
     fun generateEnum(
         enum: GenEnumGenerateView,
-    ): List<Pair<String, String>> {
+    ): List<GenerateFile> {
         val suffix = getFileSuffix()
         val (_, dir, select, nullableSelect, view) = enum.componentNames
 
         return listOf(
-            "components/${dir}/${select}.$suffix" to stringifyEnumSelect(enum),
-            "components/${dir}/${nullableSelect}.$suffix" to stringifyEnumNullableSelect(enum),
-            "components/${dir}/${view}.$suffix" to stringifyEnumView(enum),
+            GenerateFile(
+                "components/${dir}/${view}.$suffix",
+                stringifyEnumView(enum),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumView),
+            ),
+            GenerateFile(
+                "components/${dir}/${select}.ts",
+                stringifyEnumSelect(enum),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumSelect),
+            ),
+            GenerateFile(
+                "components/${dir}/${nullableSelect}.$suffix",
+                stringifyEnumNullableSelect(enum),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumNullableSelect),
+            )
         )
     }
     
     fun generateEnum(
-        enums: Iterable<GenEnumGenerateView>
-    ): List<Pair<String, String>> =
+        enums: Iterable<GenEnumGenerateView>,
+    ): List<GenerateFile> =
         enums
             .flatMap { generateEnum(it) }
-            .distinct().sortedBy { it.first }
+            .distinct().sortedBy { it.path }
 
     fun generateView(
         entity: GenEntityBusinessView,
-    ): List<Pair<String, String>> {
+    ): List<GenerateFile> {
         val flatEntity = entity.toFlat()
 
         val suffix = getFileSuffix()
@@ -76,27 +90,83 @@ abstract class ViewGenerator {
         val (_, ruleDir, addFormRules, editFormRules, editTableRules) = entity.ruleNames
 
         return listOf(
-            "components/${dir}/${table}.$suffix" to stringifyTable(flatEntity),
-            "components/${dir}/${defaultAddInput}.ts" to stringifyDefaultAddInput(flatEntity),
-            "components/${dir}/${addForm}.$suffix" to stringifyAddForm(flatEntity),
-            "components/${dir}/${editForm}.$suffix" to stringifyEditForm(flatEntity),
-            "components/${dir}/${editTable}.$suffix" to stringifyEditTable(flatEntity),
-            "components/${dir}/${queryForm}.$suffix" to stringifyQueryForm(flatEntity),
-            "pages/${dir}/${page}.$suffix" to stringifyPage(flatEntity),
-            "components/${dir}/${singleSelect}.$suffix" to stringifySingleSelect(flatEntity),
-            "components/${dir}/${multiSelect}.$suffix" to stringifyMultiSelect(flatEntity),
-            "components/${dir}/${idSelect}.$suffix" to stringifyIdSelect(flatEntity),
-            "components/${dir}/${idMultiSelect}.$suffix" to stringifyIdMultiSelect(flatEntity),
-            "rules/${ruleDir}/${addFormRules}.ts" to stringifyAddFormRules(flatEntity),
-            "rules/${ruleDir}/${editFormRules}.ts" to stringifyEditFormRules(flatEntity),
-            "rules/${ruleDir}/${editTableRules}.ts" to stringifyEditTableRules(flatEntity),
+            GenerateFile(
+                "components/${dir}/${table}.$suffix",
+                stringifyTable(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Table),
+            ),
+            GenerateFile(
+                "components/${dir}/${defaultAddInput}.ts",
+                stringifyDefaultAddInput(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.DefaultAddInput),
+            ),
+            GenerateFile(
+                "components/${dir}/${addForm}.$suffix",
+                stringifyAddForm(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.AddForm),
+            ),
+            GenerateFile(
+                "components/${dir}/${editForm}.$suffix",
+                stringifyEditForm(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EditForm),
+            ),
+            GenerateFile(
+                "components/${dir}/${editTable}.$suffix",
+                stringifyEditTable(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EditTable),
+            ),
+            GenerateFile(
+                "components/${dir}/${queryForm}.$suffix",
+                stringifyQueryForm(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.QueryForm),
+            ),
+            GenerateFile(
+                "pages/${dir}/${page}.$suffix",
+                stringifyPage(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Page),
+            ),
+            GenerateFile(
+                "components/${dir}/${singleSelect}.$suffix",
+                stringifySingleSelect(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EntitySelect),
+            ),
+            GenerateFile(
+                "components/${dir}/${multiSelect}.$suffix",
+                stringifyMultiSelect(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EntityMultiSelect),
+            ),
+            GenerateFile(
+                "components/${dir}/${idSelect}.$suffix",
+                stringifyIdSelect(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.IdSelect),
+            ),
+            GenerateFile(
+                "components/${dir}/${idMultiSelect}.$suffix",
+                stringifyIdMultiSelect(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.IdMultiSelect),
+            ),
+            GenerateFile(
+                "rules/${ruleDir}/${addFormRules}.ts",
+                stringifyAddFormRules(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.AddFormRules, GenerateTag.AddForm),
+            ),
+            GenerateFile(
+                "rules/${ruleDir}/${editFormRules}.ts",
+                stringifyEditFormRules(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditFormRules, GenerateTag.EditForm),
+            ),
+            GenerateFile(
+                "rules/${ruleDir}/${editTableRules}.ts",
+                stringifyEditTableRules(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditTableRules, GenerateTag.EditTable),
+            ),
         )
     }
 
     fun generateView(
         entities: Iterable<GenEntityBusinessView>,
-    ): List<Pair<String, String>> =
+    ): List<GenerateFile> =
         entities
             .flatMap { generateView(it) }
-            .distinct().sortedBy { it.first }
+            .distinct().sortedBy { it.path }
 }

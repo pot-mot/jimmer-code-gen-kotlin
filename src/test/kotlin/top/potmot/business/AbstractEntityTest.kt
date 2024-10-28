@@ -46,7 +46,7 @@ abstract class AbstractEntityTest {
 
         assertEquals(
             getViewResult(viewType).trim(),
-            viewType.getViewGenerator().generateView(entity).toString()
+            viewType.getViewGenerator().generateView(entity).map { it.path to it.content }.toString()
         )
     }
 

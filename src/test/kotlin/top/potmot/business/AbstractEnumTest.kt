@@ -28,7 +28,7 @@ abstract class AbstractEnumTest {
 
         assertEquals(
             getViewResult(viewType).trim(),
-            viewType.getViewGenerator().generateEnum(enum).toString()
+            viewType.getViewGenerator().generateEnum(enum).map { it.path to it.content }.toString()
         )
     }
 

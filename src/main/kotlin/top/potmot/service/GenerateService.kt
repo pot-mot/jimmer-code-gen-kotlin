@@ -144,21 +144,9 @@ class GenerateService(
             }
             if (containsAll || containsFrontEnd || GenerateType.EnumComponent in typeSet) {
                 result += generateEnumComponent(enums, viewType)
-                    .map {
-                        GenerateFile(
-                            "${viewType.dir}/${it.first}", it.second,
-                            listOf(GenerateTag.FrontEnd, GenerateTag.Enum, GenerateTag.Component)
-                        )
-                    }
             }
             if (containsAll || containsFrontEnd || GenerateType.View in typeSet) {
                 result += generateView(entityBusinessViews, viewType)
-                    .map {
-                        GenerateFile(
-                            "${viewType.dir}/${it.first}", it.second,
-                            listOf(GenerateTag.FrontEnd, GenerateTag.View, GenerateTag.Component)
-                        )
-                    }
             }
 
             result
@@ -198,14 +186,14 @@ class GenerateService(
 
     fun generateView(
         entities: Iterable<GenEntityBusinessView>,
-        viewType: ViewType
-    ): List<Pair<String, String>> =
+        viewType: ViewType,
+    ): List<GenerateFile> =
         viewType.getViewGenerator().generateView(entities)
 
     fun generateEnumComponent(
         enums: Iterable<GenEnumGenerateView>,
-        viewType: ViewType
-    ): List<Pair<String, String>> =
+        viewType: ViewType,
+    ): List<GenerateFile> =
         viewType.getViewGenerator().generateEnum(enums)
 
     fun generateDto(
