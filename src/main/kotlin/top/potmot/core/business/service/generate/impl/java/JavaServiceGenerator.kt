@@ -65,7 +65,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/${entity.requestPath}")
-class $serviceName implements Tables {
+public class $serviceName implements Tables {
     private final JSqlClient sqlClient;
 
     public $serviceName(JSqlClient sqlClient) {

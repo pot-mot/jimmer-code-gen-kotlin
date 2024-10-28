@@ -144,7 +144,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/conditionMatch")
-class ConditionMatchService implements Tables {
+public class ConditionMatchService implements Tables {
     private final JSqlClient sqlClient;
 
     public ConditionMatchService(JSqlClient sqlClient) {
