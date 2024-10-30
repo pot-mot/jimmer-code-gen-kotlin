@@ -19,6 +19,7 @@ import top.potmot.entity.GenPropertyDraft
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
+import top.potmot.utils.string.clearTableComment
 import top.potmot.utils.string.tableNameToEntityName
 import top.potmot.utils.string.tableNameToPropertyName
 import top.potmot.utils.string.toPlural
@@ -99,6 +100,9 @@ fun convertAssociationProperties(
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = sourceProperty.toEntity().copy {
             name = singularName
+            if (comment.isBlank()) {
+                comment = targetTable.comment.clearTableComment()
+            }
             type = tableNameToEntityName(targetTable.name)
             typeTableId = targetTable.id
             idProperty = false
@@ -190,6 +194,9 @@ fun convertAssociationProperties(
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = targetProperty.toEntity().copy {
             name = singularName
+            if (comment.isBlank()) {
+                comment = sourceTable.comment.clearTableComment()
+            }
             type = tableNameToEntityName(sourceTable.name)
             typeTableId = sourceTable.id
             idProperty = false
