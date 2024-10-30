@@ -1142,12 +1142,28 @@ const handleDelete = async (ids: ${idType}[]) => {
         </template>
     </el-card>
     
-    <el-dialog v-model="addDialogVisible" destroy-on-close>
-        <$addForm @submit="submitAdd" @cancel="cancelAdd"/>
+    <el-dialog
+        v-model="addDialogVisible"
+        destroy-on-close
+        :close-on-click-modal="false"
+    >
+        <$addForm 
+            @submit="submitAdd"
+            @cancel="cancelAdd"
+        />
     </el-dialog>
     
-    <el-dialog v-model="editDialogVisible" destroy-on-close>
-        <$editForm v-if="updateInput !== undefined" :data="updateInput" @submit="submitEdit" @cancel="cancelEdit"/>
+    <el-dialog
+        v-model="editDialogVisible"
+        destroy-on-close
+        :close-on-click-modal="false"
+    >
+        <$editForm
+            v-if="updateInput !== undefined"
+            :data="updateInput"
+            @submit="submitEdit"
+            @cancel="cancelEdit"
+        />
     </el-dialog>
 </template>
     """.trim()

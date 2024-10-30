@@ -568,12 +568,28 @@ const handleDelete = async (ids: number[]) => {
         </template>
     </el-card>
     
-    <el-dialog v-model="addDialogVisible" destroy-on-close>
-        <ConditionMatchAddForm @submit="submitAdd" @cancel="cancelAdd"/>
+    <el-dialog
+        v-model="addDialogVisible"
+        destroy-on-close
+        :close-on-click-modal="false"
+    >
+        <ConditionMatchAddForm 
+            @submit="submitAdd"
+            @cancel="cancelAdd"
+        />
     </el-dialog>
     
-    <el-dialog v-model="editDialogVisible" destroy-on-close>
-        <ConditionMatchEditForm v-if="updateInput !== undefined" :data="updateInput" @submit="submitEdit" @cancel="cancelEdit"/>
+    <el-dialog
+        v-model="editDialogVisible"
+        destroy-on-close
+        :close-on-click-modal="false"
+    >
+        <ConditionMatchEditForm
+            v-if="updateInput !== undefined"
+            :data="updateInput"
+            @submit="submitEdit"
+            @cancel="cancelEdit"
+        />
     </el-dialog>
 </template>), (components/conditionMatch/ConditionMatchSingleSelect.vue, <script setup lang="ts">
 import {ref} from "vue"
