@@ -300,6 +300,7 @@ $propertyColumns
                     """
 <el-time-picker
     $rangeVModel
+    value-format="HH:mm:ss"
     is-range
     start-placeholder="初始${it.comment}"
     end-placeholder="结束${it.comment}"
@@ -314,6 +315,7 @@ $propertyColumns
 <el-date-picker
     $rangeVModel
     type="daterange"
+    value-format="YYYY-MM-DD"
     start-placeholder="初始${it.comment}"
     end-placeholder="结束${it.comment}"
     unlink-panels
@@ -327,6 +329,7 @@ $propertyColumns
 <el-date-picker
     $rangeVModel
     type="datetimerange"
+    value-format="YYYY-MM-DDTHH:mm:ss"
     start-placeholder="初始${it.comment}"
     end-placeholder="结束${it.comment}"
     unlink-panels
@@ -576,6 +579,7 @@ ${entity.queryFormItems()}
 <el-time-picker
     $vModel
     placeholder="请选择${it.comment}"
+    value-format="HH:mm:ss"
 />
 """
                         else
@@ -583,6 +587,7 @@ ${entity.queryFormItems()}
 <el-time-picker
     $vModel
     placeholder="请选择${it.comment}"
+    value-format="HH:mm:ss"
     clearable
     :empty-values="[undefined]"
     :value-on-clear="undefined"
@@ -597,6 +602,7 @@ ${entity.queryFormItems()}
     $vModel
     placeholder="请选择${it.comment}"
     type="date"
+    value-format="YYYY-MM-DD"
 />
 """
                         else
@@ -605,6 +611,7 @@ ${entity.queryFormItems()}
     $vModel
     placeholder="请选择${it.comment}"
     type="date"
+    value-format="YYYY-MM-DD"
     clearable
     :empty-values="[undefined]"
     :value-on-clear="undefined"
@@ -618,6 +625,7 @@ ${entity.queryFormItems()}
     $vModel
     placeholder="请选择${it.comment}"
     type="datetime"
+    value-format="YYYY-MM-DDTHH:mm:ss"
 />
 """
                         else
@@ -626,6 +634,7 @@ ${entity.queryFormItems()}
     $vModel
     placeholder="请选择${it.comment}"
     type="datetime"
+    value-format="YYYY-MM-DDTHH:mm:ss"
     clearable
     :empty-values="[undefined]"
     :value-on-clear="undefined"

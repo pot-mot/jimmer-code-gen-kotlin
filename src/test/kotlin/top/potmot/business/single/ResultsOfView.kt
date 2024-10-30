@@ -102,6 +102,7 @@ const handleSubmit = () => {
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
                 type="datetime"
+                value-format="YYYY-MM-DDTHH:mm:ss"
             />
         </el-form-item>
 
@@ -172,6 +173,7 @@ const handleSubmit = () => {
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
                 type="datetime"
+                value-format="YYYY-MM-DDTHH:mm:ss"
             />
         </el-form-item>
 
@@ -286,6 +288,7 @@ const handleSingleDelete = async (index: number) => {
                         v-model="row.date"
                         placeholder="请选择匹配日期"
                         type="datetime"
+                        value-format="YYYY-MM-DDTHH:mm:ss"
                     />
                     </el-form-item>
                 </template>
@@ -369,6 +372,7 @@ const dateRange = computed<[string | undefined, string | undefined]>({
                     <el-date-picker
                         v-model="dateRange"
                         type="datetimerange"
+                        value-format="YYYY-MM-DDTHH:mm:ss"
                         start-placeholder="初始匹配日期"
                         end-placeholder="结束匹配日期"
                         unlink-panels
