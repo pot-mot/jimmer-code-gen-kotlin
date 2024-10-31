@@ -10,11 +10,11 @@ import java.util.Date
 fun typeStrToJavaType(typeStr: String, typeNotNull: Boolean) =
     when (typeStr) {
         String::class.qualifiedName, String::class.java.name -> "String"
-        Int::class.qualifiedName, Int::class.java.name -> if (typeNotNull) "int" else "Integer"
-        Long::class.qualifiedName, Long::class.java.name -> if (typeNotNull) "long" else "Long"
-        Float::class.qualifiedName, Float::class.java.name -> if (typeNotNull) "float" else "Float"
-        Double::class.qualifiedName, Double::class.java.name -> if (typeNotNull) "double" else "Double"
-        Boolean::class.qualifiedName, Boolean::class.java.name -> if (typeNotNull) "boolean" else "Boolean"
+        Int::class.qualifiedName, "java.lang.Integer" -> if (typeNotNull) "int" else "Integer"
+        Long::class.qualifiedName, "java.lang.Long" -> if (typeNotNull) "long" else "Long"
+        Float::class.qualifiedName, "java.lang.Float" -> if (typeNotNull) "float" else "Float"
+        Double::class.qualifiedName, "java.lang.Double" -> if (typeNotNull) "double" else "Double"
+        Boolean::class.qualifiedName, "java.lang.Boolean" -> if (typeNotNull) "boolean" else "Boolean"
         else -> typeStr.substringAfterLast(".")
     }
 
@@ -24,19 +24,19 @@ fun typeStrToKotlinType(typeStr: String, typeNotNull: Boolean) =
         String::class.java.name -> "String?"
         Int::class.qualifiedName -> if (typeNotNull) "Int" else "Int?"
         "int" -> "Int"
-        Int::class.java.name -> "Int?"
+        "java.lang.Integer" -> "Int?"
         Long::class.qualifiedName -> if (typeNotNull) "Long" else "Long?"
         "long" -> "Long"
-        Long::class.java.name -> "Long?"
+        "java.lang.Long" -> "Long?"
         Float::class.qualifiedName -> if (typeNotNull) "Float" else "Float?"
         "float" -> "Float"
-        Float::class.java.name -> "Float?"
+        "java.lang.Float" -> "Float?"
         Double::class.qualifiedName -> if (typeNotNull) "Double" else "Double?"
         "double" -> "Double"
-        Double::class.java.name -> "Double?"
+        "java.lang.Double" -> "Double?"
         Boolean::class.qualifiedName -> if (typeNotNull) "Boolean" else "Boolean?"
         "boolean" -> "Boolean"
-        Boolean::class.java.name -> "Boolean?"
+        "java.lang.Boolean" -> "Boolean?"
         else -> typeStr.substringAfterLast(".")
     }
 
@@ -56,13 +56,13 @@ fun typeStrToTypeScriptType(typeStr: String, typeNotNull: Boolean) =
         Double::class.qualifiedName, "double",
         BigDecimal::class.java.name -> if (typeNotNull) "number" else "number | undefined"
 
-        Int::class.java.name,
-        Long::class.java.name,
-        Float::class.java.name,
-        Double::class.java.name -> "number | undefined"
+        "java.lang.Integer",
+        "java.lang.Long",
+        "java.lang.Float",
+        "java.lang.Double" -> "number | undefined"
 
         Boolean::class.qualifiedName, "boolean" -> if (typeNotNull) "boolean" else "boolean | undefined"
-        Boolean::class.java.name -> "boolean | undefined"
+        "java.lang.Boolean" -> "boolean | undefined"
 
         else -> typeStr.substringAfterLast(".")
     }
@@ -82,14 +82,14 @@ fun typeStrToTypeScriptDefault(typeStr: String, typeNotNull: Boolean) =
         Float::class.qualifiedName, "float",
         Double::class.qualifiedName, "double",
         BigDecimal::class.java.name,
-        Int::class.java.name,
-        Long::class.java.name,
-        Float::class.java.name,
-        Double::class.java.name -> if (typeNotNull) "0" else "undefined"
+        "java.lang.Integer",
+        "java.lang.Long",
+        "java.lang.Float",
+        "java.lang.Double" -> if (typeNotNull) "0" else "undefined"
 
         Boolean::class.qualifiedName,
         "boolean",
-        Boolean::class.java.name -> if (typeNotNull) "false" else "undefined"
+        "java.lang.Boolean" -> if (typeNotNull) "false" else "undefined"
 
         else -> "undefined"
     }

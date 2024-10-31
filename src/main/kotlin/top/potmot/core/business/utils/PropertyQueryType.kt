@@ -24,10 +24,10 @@ enum class PropertyQueryType {
 private val intRangeType = setOf(
     Int::class.qualifiedName,
     "int",
-    Int::class.java.name,
+    "java.lang.Integer",
     Long::class.qualifiedName,
     "long",
-    Long::class.java.name,
+    "java.lang.Long",
 )
 
 private val floatRangeType = setOf(
@@ -35,10 +35,10 @@ private val floatRangeType = setOf(
 
     Float::class.qualifiedName,
     "float",
-    Float::class.java.name,
+    "java.lang.Float",
     Double::class.qualifiedName,
     "double",
-    Double::class.java.name,
+    "java.lang.Double",
 )
 
 private val likeType = setOf(

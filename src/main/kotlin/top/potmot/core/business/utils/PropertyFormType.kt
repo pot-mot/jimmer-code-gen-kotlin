@@ -23,10 +23,10 @@ enum class PropertyFormType {
 private val intType = setOf(
     Int::class.qualifiedName,
     "int",
-    Int::class.java.name,
+    "java.lang.Integer",
     Long::class.qualifiedName,
     "long",
-    Long::class.java.name,
+    "java.lang.Long",
 )
 
 private val floatType = setOf(
@@ -34,16 +34,16 @@ private val floatType = setOf(
 
     Float::class.qualifiedName,
     "float",
-    Float::class.java.name,
+    "java.lang.Float",
     Double::class.qualifiedName,
     "double",
-    Double::class.java.name,
+    "java.lang.Double",
 )
 
 private val switchType = setOf(
     Boolean::class.qualifiedName,
     "boolean",
-    Boolean::class.java.name,
+    "java.lang.Boolean",
 )
 
 private val timeType = setOf(

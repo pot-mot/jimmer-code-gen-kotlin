@@ -495,9 +495,7 @@ ${entity.queryFormItems()}
         formData: String = "formData",
         block: (property: GenEntityBusinessView.TargetOf_properties, component: String) -> String = { property, component ->
             buildString {
-                val required = if (property.typeNotNull) " required" else ""
-
-                appendLine("""        <el-form-item prop="${property.name}" label="${property.comment}"$required>""")
+                appendLine("""        <el-form-item prop="${property.name}" label="${property.comment}">""")
                 appendBlock(component) { "            $it" }
                 appendLine("        </el-form-item>")
             }

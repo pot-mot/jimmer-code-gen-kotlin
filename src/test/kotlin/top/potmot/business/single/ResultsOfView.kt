@@ -93,11 +93,11 @@ const handleSubmit = () => {
 
 <template>
     <el-form ref="formRef" :rules="rules" :model="formData" inline-message>
-        <el-form-item prop="status" label="匹配状态" required>
+        <el-form-item prop="status" label="匹配状态">
             <MatchStatusSelect v-model="formData.status"/>
         </el-form-item>
 
-        <el-form-item prop="date" label="匹配日期" required>
+        <el-form-item prop="date" label="匹配日期">
             <el-date-picker
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
@@ -106,7 +106,7 @@ const handleSubmit = () => {
             />
         </el-form-item>
 
-        <el-form-item prop="money" label="金额" required>
+        <el-form-item prop="money" label="金额">
             <el-input-number
                 v-model.number="formData.money"
                 placeholder="请输入金额"
@@ -116,7 +116,7 @@ const handleSubmit = () => {
             />
         </el-form-item>
 
-        <el-form-item prop="description" label="结果描述" required>
+        <el-form-item prop="description" label="结果描述">
             <el-input
                 v-model="formData.description" maxlength="255"
                 placeholder="请输入结果描述"
@@ -164,11 +164,11 @@ const handleSubmit = () => {
 
 <template>
     <el-form ref="formRef" :rules="rules" :model="formData" inline-message>
-        <el-form-item prop="status" label="匹配状态" required>
+        <el-form-item prop="status" label="匹配状态">
             <MatchStatusSelect v-model="formData.status"/>
         </el-form-item>
 
-        <el-form-item prop="date" label="匹配日期" required>
+        <el-form-item prop="date" label="匹配日期">
             <el-date-picker
                 v-model="formData.date"
                 placeholder="请选择匹配日期"
@@ -177,7 +177,7 @@ const handleSubmit = () => {
             />
         </el-form-item>
 
-        <el-form-item prop="money" label="金额" required>
+        <el-form-item prop="money" label="金额">
             <el-input-number
                 v-model.number="formData.money"
                 placeholder="请输入金额"
@@ -187,7 +187,7 @@ const handleSubmit = () => {
             />
         </el-form-item>
 
-        <el-form-item prop="description" label="结果描述" required>
+        <el-form-item prop="description" label="结果描述">
             <el-input
                 v-model="formData.description" maxlength="255"
                 placeholder="请输入结果描述"
