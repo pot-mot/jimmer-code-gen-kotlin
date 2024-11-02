@@ -60,7 +60,7 @@ abstract class ViewGenerator {
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumView),
             ),
             GenerateFile(
-                "components/${dir}/${select}.ts",
+                "components/${dir}/${select}.$suffix",
                 stringifyEnumSelect(enum),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumSelect),
             ),

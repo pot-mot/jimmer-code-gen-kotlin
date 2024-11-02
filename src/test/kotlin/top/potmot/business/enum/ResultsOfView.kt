@@ -13,7 +13,7 @@ defineProps<{
     <el-text v-if="value === 'Item1'">选项1</el-text>
     <el-text v-else-if="value === 'Item2'">选项2</el-text>
     <el-text v-else-if="value === 'Item3'">选项3</el-text>
-</template>), (components/enumTest/EnumTestSelect.ts, <script setup lang="ts">
+</template>), (components/enumTest/EnumTestSelect.vue, <script setup lang="ts">
 import {EnumTest_CONSTANTS} from "@/api/__generated/model/enums"
 import type {EnumTest} from "@/api/__generated/model/enums"
 import EnumTestView from "@/components/enumTest/EnumTestView.vue"
