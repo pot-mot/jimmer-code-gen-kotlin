@@ -4,7 +4,7 @@ import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
 import top.potmot.entity.dto.share.ColumnTypeMeta
 import java.sql.Types
 
-// https://www.mysqlzh.com/doc/106.html
+// https://mysql.net.cn/doc/refman/8.0/en/data-types.html
 object MysqlColumnTypeDefiner : ColumnTypeDefiner {
     override fun needDataSize(typeCode: Int): Boolean =
         when (typeCode) {
@@ -75,9 +75,9 @@ object MysqlColumnTypeDefiner : ColumnTypeDefiner {
 
             Types.DATE -> "DATE"
 
-            Types.TIME_WITH_TIMEZONE, Types.TIMESTAMP_WITH_TIMEZONE -> "TIMESTAMP"
+            Types.TIME, Types.TIME_WITH_TIMEZONE -> "TIME"
 
-            Types.TIME, Types.TIMESTAMP -> "DATETIME"
+            Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> "TIMESTAMP"
 
             else -> typeMeta.rawType
         }

@@ -784,11 +784,11 @@ export default <FormRules<ConditionMatchInsertInput>> {
     money: [
         {required: true, message: '金额不能为空', trigger: 'blur'},
         {type: 'number', message: '金额必须是数字', trigger: 'blur'},
-        {type: 'number', min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
+        {type: 'number', min: 0, max: 99999, message: '金额需要在0-99999之间', trigger: 'blur'},
     ],
     description: [
         {required: true, message: '结果描述不能为空', trigger: 'blur'},
-        {type: 'string', min: 1, max: 255, message: '结果描述长度需要在1-255之间', trigger: 'blur'},
+        {type: 'string', min: 0, max: 255, message: '结果描述长度需要在0-255之间', trigger: 'blur'},
     ],
 
 }), (rules/conditionMatch/ConditionMatchEditFormRules.ts, import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
@@ -798,7 +798,7 @@ export default <FormRules<ConditionMatchUpdateInput>> {
     id: [
         {required: true, message: 'ID不能为空', trigger: 'blur'},
         {type: 'integer', message: 'ID必须是整数', trigger: 'blur'},
-        {type: 'integer', min: 1, max: 9999999999, message: 'ID需要在1-9999999999之间', trigger: 'blur'},
+        {type: 'integer', min: 0, max: 9999999999, message: 'ID需要在0-9999999999之间', trigger: 'blur'},
     ],
     status: [
         {required: true, message: '匹配状态不能为空', trigger: 'blur'},
@@ -810,11 +810,11 @@ export default <FormRules<ConditionMatchUpdateInput>> {
     money: [
         {required: true, message: '金额不能为空', trigger: 'blur'},
         {type: 'number', message: '金额必须是数字', trigger: 'blur'},
-        {type: 'number', min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
+        {type: 'number', min: 0, max: 99999, message: '金额需要在0-99999之间', trigger: 'blur'},
     ],
     description: [
         {required: true, message: '结果描述不能为空', trigger: 'blur'},
-        {type: 'string', min: 1, max: 255, message: '结果描述长度需要在1-255之间', trigger: 'blur'},
+        {type: 'string', min: 0, max: 255, message: '结果描述长度需要在0-255之间', trigger: 'blur'},
     ],
 
 }), (rules/conditionMatch/ConditionMatchEditTableRules.ts, import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
@@ -831,11 +831,11 @@ export default <FormRules<ConditionMatchInsertInput>> {
     money: [
         {required: true, message: '金额不能为空', trigger: 'blur'},
         {type: 'number', message: '金额必须是数字', trigger: 'blur'},
-        {type: 'number', min: 1, max: 99999, message: '金额需要在1-99999之间', trigger: 'blur'},
+        {type: 'number', min: 0, max: 99999, message: '金额需要在0-99999之间', trigger: 'blur'},
     ],
     description: [
         {required: true, message: '结果描述不能为空', trigger: 'blur'},
-        {type: 'string', min: 1, max: 255, message: '结果描述长度需要在1-255之间', trigger: 'blur'},
+        {type: 'string', min: 0, max: 255, message: '结果描述长度需要在0-255之间', trigger: 'blur'},
     ],
 
 })]

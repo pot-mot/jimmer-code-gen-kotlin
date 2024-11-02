@@ -674,7 +674,9 @@ ${entity.queryFormItems()}
                         PropertyFormType.FLOAT ->
                             items += "{type: 'number', message: '${it.comment}必须是数字', trigger: 'blur'}"
 
-                        PropertyFormType.TIME,
+                        PropertyFormType.TIME ->
+                            items += "{pattern: /[0-9]{2}:[0-9]{2}:[0-9]{2}/, message: '${it.comment}必须是时间', trigger: 'blur'}"
+
                         PropertyFormType.DATE,
                         PropertyFormType.DATETIME,
                         ->
@@ -691,15 +693,15 @@ ${entity.queryFormItems()}
                             when (formType) {
                                 PropertyFormType.INT -> {
                                     val max = it.inputNumberMax
-                                    items += "{type: 'integer', min: 1, max: ${max}, message: '${it.comment}需要在1-${max}之间', trigger: 'blur'}"
+                                    items += "{type: 'integer', min: 0, max: ${max}, message: '${it.comment}需要在0-${max}之间', trigger: 'blur'}"
                                 }
                                 PropertyFormType.FLOAT -> {
                                     val max = it.inputNumberMax
-                                    items += "{type: 'number', min: 1, max: ${max}, message: '${it.comment}需要在1-${max}之间', trigger: 'blur'}"
+                                    items += "{type: 'number', min: 0, max: ${max}, message: '${it.comment}需要在0-${max}之间', trigger: 'blur'}"
                                 }
                                 PropertyFormType.INPUT -> {
                                     val max = it.column.dataSize
-                                    items += "{type: 'string', min: 1, max: ${max}, message: '${it.comment}长度需要在1-${max}之间', trigger: 'blur'}"
+                                    items += "{type: 'string', min: 0, max: ${max}, message: '${it.comment}长度需要在0-${max}之间', trigger: 'blur'}"
                                 }
                                 else -> Unit
                             }
