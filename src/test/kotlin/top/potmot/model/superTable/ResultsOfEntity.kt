@@ -17,7 +17,7 @@ import org.babyfish.jimmer.sql.MappedSuperclass;
 @MappedSuperclass
 public interface BaseEntity {
     /**
-     * 用户
+     * 创建者
      */
     @ManyToOne
     @JoinColumn(
@@ -27,13 +27,13 @@ public interface BaseEntity {
     SysUser createdBy();
 
     /**
-     * 用户 ID View
+     * 创建者 ID View
      */
     @IdView("createdBy")
     int createdById();
 
     /**
-     * 用户
+     * 修改者
      */
     @ManyToOne
     @JoinColumn(
@@ -43,7 +43,7 @@ public interface BaseEntity {
     SysUser modifiedBy();
 
     /**
-     * 用户 ID View
+     * 修改者 ID View
      */
     @IdView("modifiedBy")
     int modifiedById();
@@ -206,7 +206,7 @@ import org.babyfish.jimmer.sql.MappedSuperclass
 @MappedSuperclass
 interface BaseEntity {
     /**
-     * 用户
+     * 创建者
      */
     @ManyToOne
     @JoinColumn(
@@ -216,13 +216,13 @@ interface BaseEntity {
     val createdBy: SysUser
 
     /**
-     * 用户 ID View
+     * 创建者 ID View
      */
     @IdView("createdBy")
     val createdById: Int
 
     /**
-     * 用户
+     * 修改者
      */
     @ManyToOne
     @JoinColumn(
@@ -232,7 +232,7 @@ interface BaseEntity {
     val modifiedBy: SysUser
 
     /**
-     * 用户 ID View
+     * 修改者 ID View
      */
     @IdView("modifiedBy")
     val modifiedById: Int

@@ -130,7 +130,7 @@ const val GRAPH_DATA = """
                             {
                                 "orderKey": 1,
                                 "name": "created_by",
-                                "comment": "",
+                                "comment": "创建者",
                                 "typeCode": 4,
                                 "overwriteByRaw": false,
                                 "rawType": "INTEGER",
@@ -146,7 +146,7 @@ const val GRAPH_DATA = """
                             {
                                 "orderKey": 2,
                                 "name": "modified_by",
-                                "comment": "",
+                                "comment": "修改者",
                                 "typeCode": 4,
                                 "overwriteByRaw": false,
                                 "rawType": "INTEGER",
