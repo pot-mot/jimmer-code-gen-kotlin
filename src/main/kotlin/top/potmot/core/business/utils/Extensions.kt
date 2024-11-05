@@ -15,17 +15,10 @@ private val GenEntityBusinessView.noIdView
 val GenEntityBusinessView.baseProperties
     get() = properties.filter { it.associationType == null }
 
-val GenEntityBusinessView.associationProperties
-    get() =
-        if (noIdView)
-            properties.filter { it.associationType != null }
-        else
-            properties.filter { it.idView }
-
 private val targetOneAssociationType =
     setOf(AssociationType.ONE_TO_ONE, AssociationType.MANY_TO_ONE)
 
-val GenEntityBusinessView.associationTargetOneProperties
+val GenEntityBusinessView.targetOneProperties
     get() =
         if (noIdView)
             properties.filter { it.associationType in targetOneAssociationType }

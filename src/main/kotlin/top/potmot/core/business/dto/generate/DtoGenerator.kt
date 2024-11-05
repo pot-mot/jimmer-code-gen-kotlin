@@ -1,8 +1,7 @@
 package top.potmot.core.business.dto.generate
 
 import top.potmot.core.business.utils.PropertyQueryType
-import top.potmot.core.business.utils.associationProperties
-import top.potmot.core.business.utils.associationTargetOneProperties
+import top.potmot.core.business.utils.targetOneProperties
 import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.utils.toFlat
@@ -15,17 +14,8 @@ object DtoGenerator {
     ): String =
         "${entity.name}.dto"
 
-    private fun GenEntityBusinessView.propertyIds(onlyThis: Boolean): List<String> =
-        associationProperties.filter { if (onlyThis) it.entityId == id else true }.map {
-            if (it.idView) {
-                it.name
-            } else {
-                "id(${it.name})"
-            }
-        }
-
-    private fun GenEntityBusinessView.propertyIdsTargetOne(onlyThis: Boolean): List<String> =
-        associationTargetOneProperties.filter { if (onlyThis) it.entityId == id else true }.map {
+    private fun GenEntityBusinessView.targetOneId(onlyThis: Boolean): List<String> =
+        targetOneProperties.filter { if (onlyThis) it.entityId == id else true }.map {
             if (it.idView) {
                 it.name
             } else {
@@ -36,7 +26,7 @@ object DtoGenerator {
     private fun generateListView(entity: GenEntityBusinessView) = buildString {
         appendLine("${entity.dtoNames.listView} {")
         appendLine("    #allScalars")
-        entity.propertyIdsTargetOne(onlyThis = true).forEach {
+        entity.targetOneId(onlyThis = true).forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -45,7 +35,7 @@ object DtoGenerator {
     private fun generateDetailView(entity: GenEntityBusinessView) = buildString {
         appendLine("${entity.dtoNames.detailView} {")
         appendLine("    #allScalars")
-        entity.propertyIds(onlyThis = false).forEach {
+        entity.targetOneId(onlyThis = false).forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -58,7 +48,7 @@ object DtoGenerator {
         appendLine("input ${entity.dtoNames.insertInput} {")
         appendLine("    #allScalars(this)")
         appendLine("    -${idName}")
-        entity.propertyIdsTargetOne(onlyThis = true).forEach {
+        entity.targetOneId(onlyThis = true).forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -71,7 +61,7 @@ object DtoGenerator {
         appendLine("input ${entity.dtoNames.updateInput} {")
         appendLine("    #allScalars(this)")
         appendLine("    ${idName}!")
-        entity.propertyIdsTargetOne(onlyThis = true).forEach {
+        entity.targetOneId(onlyThis = true).forEach {
             appendLine("    $it")
         }
         appendLine("}")
