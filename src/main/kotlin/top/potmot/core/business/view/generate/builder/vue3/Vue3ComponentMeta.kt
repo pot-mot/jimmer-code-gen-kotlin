@@ -55,33 +55,95 @@ data class Vue3Slot(
 data class Vue3PropBind(
     val name: String,
     val value: String? = null,
+    val isLiteral: Boolean = false,
 )
+
+fun String?.toPropBind(
+    name: String,
+    isLiteral: Boolean = false
+) = if (this != null) Vue3PropBind(name, this, isLiteral) else null
+
+fun Int?.toPropBind(
+    name: String,
+) = if (this != null) Vue3PropBind(name, this.toString()) else null
+
+fun Double?.toPropBind(
+    name: String,
+) = if (this != null) Vue3PropBind(name, this.toString()) else null
+
+fun Boolean.toPropBind(
+    name: String,
+    default: Boolean = false,
+) =
+    if (!default) {
+        if (this)
+            Vue3PropBind(name, isLiteral = true)
+        else
+            null
+    } else {
+        if (!this)
+            Vue3PropBind(name, value = "false")
+        else
+            null
+    }
+
 
 data class Vue3EventBind(
     val event: String,
     val fn: String,
 )
 
-data class Vue3Directive(
-    val name: String,
-    val value: String
-)
+sealed interface Vue3Directive
 
-data class Vue3ModelBind(
+data class VModel(
     val value: String,
     val propName: String? = null,
     val modifier: List<String> = emptyList(),
+): Vue3Directive
+
+data class VIf(
+    val expression: String
+): Vue3Directive
+
+data class VShow(
+    val expression: String
+): Vue3Directive
+
+data class VFor(
+    val item: String,
+    val list: String,
+    val withIndex: Boolean = false
+): Vue3Directive
+
+open class Vue3TemplateElementAttributes(
+    open val directives: Iterable<Vue3Directive> = emptyList(),
+    open val props: Iterable<Vue3PropBind> = emptyList(),
+    open val events: Iterable<Vue3EventBind> = emptyList(),
+    open val children: Collection<Vue3TemplateElement> = emptyList(),
 )
 
-data class TemplateElement(
+data class Vue3TemplateElement(
     val tag: String,
     val content: String? = null,
-    val directive: Iterable<Vue3Directive> = emptyList(),
-    val models: Iterable<Vue3ModelBind> = emptyList(),
-    val props: Iterable<Vue3PropBind> = emptyList(),
-    val events: Iterable<Vue3EventBind> = emptyList(),
-    val children: Collection<TemplateElement> = emptyList(),
-)
+    override val directives: Iterable<Vue3Directive> = emptyList(),
+    override val props: Iterable<Vue3PropBind> = emptyList(),
+    override val events: Iterable<Vue3EventBind> = emptyList(),
+    override val children: Collection<Vue3TemplateElement> = emptyList(),
+): Vue3TemplateElementAttributes(
+    directives = directives,
+    props = props,
+    events = events,
+    children = children,
+) {
+    fun merge(vararg attributes: Vue3TemplateElementAttributes) = Vue3TemplateElement(
+        tag = tag,
+        content = content,
+        directives = directives + attributes.flatMap { it.directives },
+        props = props + attributes.flatMap { it.props },
+        events = events + attributes.flatMap { it.events },
+        children = children + attributes.flatMap { it.children },
+    )
+}
 
 sealed interface CodeItem
 
@@ -127,7 +189,7 @@ data class Vue3ComponentPart(
     val emits: Iterable<Vue3Emit> = emptyList(),
     val slots: Iterable<Vue3Slot> = emptyList(),
     val script: Iterable<CodeItem> = emptyList(),
-    val template: Iterable<TemplateElement> = emptyList(),
+    val template: Iterable<Vue3TemplateElement> = emptyList(),
     val style: Iterable<StyleClass> = emptyList(),
 )
 

@@ -8,44 +8,44 @@ import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 
-abstract class ViewGenerator {
-    abstract fun getFileSuffix(): String
+interface ViewGenerator {
+    fun getFileSuffix(): String
 
-    protected abstract fun stringifyEnumView(enum: GenEnumGenerateView): String
+    fun stringifyEnumView(enum: GenEnumGenerateView): String
 
-    protected abstract fun stringifyEnumSelect(enum: GenEnumGenerateView): String
+    fun stringifyEnumSelect(enum: GenEnumGenerateView): String
 
-    protected abstract fun stringifyEnumNullableSelect(enum: GenEnumGenerateView): String
+    fun stringifyEnumNullableSelect(enum: GenEnumGenerateView): String
 
-    protected abstract fun stringifyQueryForm(entity: GenEntityBusinessView): String
+    fun stringifyQueryForm(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyTable(entity: GenEntityBusinessView): String
+    fun stringifyTable(entity: GenEntityBusinessView): String
 
-    protected fun GenEntityBusinessView.defaultAddInput() = "Default${name}AddInput"
+    fun GenEntityBusinessView.defaultAddInput() = "Default${name}AddInput"
 
-    protected abstract fun stringifyDefaultAddInput(entity: GenEntityBusinessView): String
+    fun stringifyDefaultAddInput(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyAddFormRules(entity: GenEntityBusinessView): String
+    fun stringifyAddFormRules(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyAddForm(entity: GenEntityBusinessView): String
+    fun stringifyAddForm(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyEditFormRules(entity: GenEntityBusinessView): String
+    fun stringifyEditFormRules(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyEditForm(entity: GenEntityBusinessView): String
+    fun stringifyEditForm(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyEditTableRules(entity: GenEntityBusinessView): String
+    fun stringifyEditTableRules(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyEditTable(entity: GenEntityBusinessView): String
+    fun stringifyEditTable(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyPage(entity: GenEntityBusinessView): String
+    fun stringifyPage(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifySingleSelect(entity: GenEntityBusinessView): String
+    fun stringifySingleSelect(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyMultiSelect(entity: GenEntityBusinessView): String
+    fun stringifyMultiSelect(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyIdSelect(entity: GenEntityBusinessView): String
+    fun stringifyIdSelect(entity: GenEntityBusinessView): String
 
-    protected abstract fun stringifyIdMultiSelect(entity: GenEntityBusinessView): String
+    fun stringifyIdMultiSelect(entity: GenEntityBusinessView): String
 
     fun generateEnum(
         enum: GenEnumGenerateView,

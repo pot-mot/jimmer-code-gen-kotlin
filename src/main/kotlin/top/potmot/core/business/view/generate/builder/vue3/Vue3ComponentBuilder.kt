@@ -128,18 +128,28 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
             }
         }
 
-    fun Iterable<TemplateElement>.stringifyElements(currentIndent: String = ""): String =
+    fun Iterable<Vue3TemplateElement>.stringifyElements(currentIndent: String = ""): String =
         joinToString("\n") { element ->
-            val models = element.models.map { model ->
-                "v-model${if (model.propName == null) "" else ":${model.propName}"}${
-                    if (model.modifier.isEmpty()) "" else "." + model.modifier.joinToString(
-                        "."
-                    )
-                }=\"${model.value}\""
+            val directives = element.directives.map { directive ->
+                when(directive) {
+                    is VModel -> {
+                        "v-model${if (directive.propName == null) "" else ":${directive.propName}"}${
+                            if (directive.modifier.isEmpty()) "" else "." + directive.modifier.joinToString(
+                                "."
+                            )
+                        }=\"${directive.value}\""
+                    }
+                    is VIf -> "v-if=\"${directive.expression}\""
+                    is VShow -> "v-show=\"${directive.expression}\""
+                    is VFor -> {
+                        val item = if (directive.withIndex) "(${directive.item}, index)" else directive.item
+                        "v-for=\"$item in ${directive.list}\""
+                    }
+                }
             }
 
             val props = element.props.map { prop ->
-                if (prop.value == null) prop.name else "${prop.name}=\"${prop.value}\""
+                if (prop.value == null) prop.name else "${if (prop.isLiteral) "" else ":"}${prop.name}=\"${prop.value}\""
             }
 
             val events = element.events.map { event ->
@@ -147,7 +157,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
             }
 
             val attributes = listOf(
-                models,
+                directives,
                 props,
                 events
             ).flatten()
@@ -175,7 +185,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
                 }
             } else {
                 val childrenStr = children.stringifyElements(currentIndent + indent)
-                "$tagStart>\n$childrenStr\n</${element.tag}>"
+                "$tagStart>\n$childrenStr\n$currentIndent</${element.tag}>"
             }
         }
 

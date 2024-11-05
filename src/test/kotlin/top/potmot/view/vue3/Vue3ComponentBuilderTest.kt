@@ -1,4 +1,4 @@
-package top.potmot.view
+package top.potmot.view.vue3
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -7,7 +7,7 @@ import top.potmot.core.business.view.generate.builder.vue3.CommonBlock
 import top.potmot.core.business.view.generate.builder.vue3.CommonImport
 import top.potmot.core.business.view.generate.builder.vue3.ConstVariable
 import top.potmot.core.business.view.generate.builder.vue3.DefaultImport
-import top.potmot.core.business.view.generate.builder.vue3.TemplateElement
+import top.potmot.core.business.view.generate.builder.vue3.Vue3TemplateElement
 import top.potmot.core.business.view.generate.builder.vue3.LetVariable
 import top.potmot.core.business.view.generate.builder.vue3.StyleClass
 import top.potmot.core.business.view.generate.builder.vue3.TsFunction
@@ -18,7 +18,7 @@ import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentPart
 import top.potmot.core.business.view.generate.builder.vue3.Vue3Emit
 import top.potmot.core.business.view.generate.builder.vue3.Vue3EmitArg
 import top.potmot.core.business.view.generate.builder.vue3.Vue3EventBind
-import top.potmot.core.business.view.generate.builder.vue3.Vue3ModelBind
+import top.potmot.core.business.view.generate.builder.vue3.VModel
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ModelProp
 import top.potmot.core.business.view.generate.builder.vue3.Vue3Prop
 import top.potmot.core.business.view.generate.builder.vue3.Vue3PropBind
@@ -168,15 +168,15 @@ console.log('Hello, World!');
     @Test
     fun `test stringifyElements`() {
         val elements = listOf(
-            TemplateElement("div", models = listOf(Vue3ModelBind("model1")), props = listOf(Vue3PropBind("class", "container"))),
-            TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick"))),
-            TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick")), children = listOf(
-                TemplateElement("span", "Click Me!")
+            Vue3TemplateElement("div", directives = listOf(VModel("model1")), props = listOf(Vue3PropBind("class", "container", isLiteral = true))),
+            Vue3TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick"))),
+            Vue3TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick")), children = listOf(
+                Vue3TemplateElement("span", "Click Me!")
             ))
         )
 
         val expected = """
-<div 
+<div
     v-model="model1"
     class="container"
 />
@@ -247,8 +247,8 @@ console.log('Hello, World!');
                 CommonBlock("console.log('Hello, World!');")
             ),
             template = listOf(
-                TemplateElement("div", models = listOf(Vue3ModelBind("model1")), props = listOf(Vue3PropBind("class", "container"))),
-                TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick")))
+                Vue3TemplateElement("div", directives = listOf(VModel("model1")), props = listOf(Vue3PropBind("class", "container", isLiteral = true))),
+                Vue3TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick")))
             ),
             style = listOf(
                 StyleClass(".container", mapOf("display" to "flex", "justify-content" to "center")),
