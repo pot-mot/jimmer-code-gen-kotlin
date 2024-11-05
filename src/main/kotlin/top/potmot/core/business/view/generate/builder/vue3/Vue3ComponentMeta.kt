@@ -80,7 +80,7 @@ data class TemplateElement(
     val models: Iterable<Vue3ModelBind> = emptyList(),
     val props: Iterable<Vue3PropBind> = emptyList(),
     val events: Iterable<Vue3EventBind> = emptyList(),
-    val children: () -> List<TemplateElement> = { emptyList() },
+    val children: Collection<TemplateElement> = emptyList(),
 )
 
 sealed interface CodeItem

@@ -152,9 +152,18 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
                 events
             ).flatten()
                 .inlineOrWarp("")
-                .let { if (it.isNotBlank()) " $it" else "" }
+                .let {
+                    if (it.isNotBlank()) {
+                        val lines = it.split("\n")
+                        if (lines.size > 1) {
+                            lines.joinToString("\n$currentIndent") { line -> line }
+                        } else {
+                            " $it"
+                        }
+                    } else ""
+                }
 
-            val children = element.children()
+            val children = element.children
 
             val tagStart = "$currentIndent<${element.tag}$attributes"
 
@@ -171,7 +180,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         }
 
     fun Iterable<StyleClass>.stringifyStyleClass(): String =
-        joinToString("\n") { styleClass ->
+        joinToString("\n\n") { styleClass ->
             val properties = styleClass.properties.entries.map { (key, value) ->
                 "$key: $value;"
             }.inlineOrWarp("")
@@ -210,7 +219,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         appendLine()
         appendLine("<template>")
 
-        val stringifyElements = vueComponentPart.template.stringifyElements()
+        val stringifyElements = vueComponentPart.template.stringifyElements(indent)
         appendBlock(stringifyElements)
 
         appendLine("</template>")

@@ -83,21 +83,21 @@ class Vue3ComponentBuilderTest {
     @Test
     fun `test stringifyProps`() {
         val props = listOf(
-            Vue3Prop("prop1", "string", true, null),
+            Vue3Prop("prop1", "string"),
             Vue3Prop("prop2", "number", false, "0"),
             Vue3Prop("prop3", "boolean", false, "false")
         )
 
         val expected = """
-               withDefaults(defineProps<{
-                   prop1: string,
-                   prop2?: number | undefined,
-                   prop3?: boolean | undefined
-               }>(), {
-                   prop2: 0,
-                   prop3: false
-               })
-           """.trimIndent()
+withDefaults(defineProps<{
+    prop1: string,
+    prop2?: number | undefined,
+    prop3?: boolean | undefined
+}>(), {
+    prop2: 0,
+    prop3: false
+})
+           """.trimBlankLine()
 
         builder.apply {
             assertEquals(expected, props.stringifyProps())
@@ -112,11 +112,11 @@ class Vue3ComponentBuilderTest {
         )
 
         val expected = """
-               defineEmits<{
-                   (event: "event1", arg1: string): void,
-                   (event: "event2", arg2: number): void
-               }>()
-           """.trimIndent()
+defineEmits<{
+    (event: "event1", arg1: string): void,
+    (event: "event2", arg2: number): void
+}>()
+           """.trimBlankLine()
 
         builder.apply {
             assertEquals(expected, emits.stringifyEmits())
@@ -131,11 +131,11 @@ class Vue3ComponentBuilderTest {
         )
 
         val expected = """
-               defineSlots<{
-                   slot1(props: {prop1: string}): any,
-                   slot2(props: {prop2: number}): any
-               }>()
-           """.trimIndent()
+defineSlots<{
+    slot1(props: {prop1: string}): any,
+    slot2(props: {prop2: number}): any
+}>()
+           """.trimBlankLine()
 
         builder.apply {
             assertEquals(expected, slots.stringifySlots())
@@ -152,13 +152,13 @@ class Vue3ComponentBuilderTest {
         )
 
         val expected = """
-               const const1: string = "value1";
-               let let1: number = 0;
-               const func1 = (arg1: string): void => {
-                   console.log(arg1);
-               }
-               console.log('Hello, World!');
-           """.trimIndent()
+const const1: string = "value1";
+let let1: number = 0;
+const func1 = (arg1: string): void => {
+    console.log(arg1);
+}
+console.log('Hello, World!');
+           """.trimBlankLine()
 
         builder.apply {
             assertEquals(expected, codeBlocks.stringifyCodes())
@@ -170,9 +170,9 @@ class Vue3ComponentBuilderTest {
         val elements = listOf(
             TemplateElement("div", models = listOf(Vue3ModelBind("model1")), props = listOf(Vue3PropBind("class", "container"))),
             TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick"))),
-            TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick"))) {
-                listOf(TemplateElement("span", "Click Me!"))
-            }
+            TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick")), children = listOf(
+                TemplateElement("span", "Click Me!")
+            ))
         )
 
         val expected = """
@@ -199,15 +199,16 @@ class Vue3ComponentBuilderTest {
         )
 
         val expected = """
-               .container {
-                   display: flex;
-                   justify-content: center;
-               }
-               .button {
-                   background-color: blue;
-                   color: white;
-               }
-           """.trimIndent()
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+.button {
+    background-color: blue;
+    color: white;
+}
+           """.trimBlankLine()
 
         builder.apply {
             assertEquals(expected, styleClasses.stringifyStyleClass())
@@ -292,11 +293,11 @@ console.log('Hello, World!');
 </script>
 
 <template>
-<div 
-    v-model="model1"
-    class="container"
-/>
-<button @click="handleClick"/>
+    <div
+        v-model="model1"
+        class="container"
+    />
+    <button @click="handleClick"/>
 </template>
 
 <style scoped>
@@ -304,14 +305,14 @@ console.log('Hello, World!');
     display: flex;
     justify-content: center;
 }
+
 .button {
     background-color: blue;
     color: white;
 }
 </style>
-
         """.trimBlankLine()
 
-        assertEquals(expected, builder.build(vueComponentPart))
+        assertEquals(expected, builder.build(vueComponentPart).trim())
     }
 }
