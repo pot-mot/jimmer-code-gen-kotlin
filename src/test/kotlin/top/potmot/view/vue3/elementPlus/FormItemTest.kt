@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
 import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
+import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
 import java.time.LocalDateTime
 
 class FormItemTest : FormItem {
@@ -123,6 +125,213 @@ class FormItemTest : FormItem {
 </el-select>
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.Boolean", typeNotNull = false).result,
+        )
+    }
+
+    @Test
+    fun `test int` () {
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="0"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Int").result,
+        )
+
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="0"
+    :value-on-clear="undefined"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Int", typeNotNull = false).result,
+        )
+
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="0"
+    :min="0"
+    :max="999999999"
+    :value-on-clear="0"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9)).result,
+        )
+
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="0"
+    :min="0"
+    :max="999999999"
+    :value-on-clear="undefined"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Int", typeNotNull = false, column = TargetOf_column(dataSize = 9)).result,
+        )
+
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="0"
+    :min="0"
+    :max="9999999999"
+    :value-on-clear="0"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 10)).result,
+        )
+
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="0"
+    :min="0"
+    :max="999999999999"
+    :value-on-clear="0"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 12)).result,
+        )
+
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="0"
+    :min="0"
+    :max="999999999999999"
+    :value-on-clear="0"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 20)).result,
+        )
+    }
+
+    @Test
+    fun `test float` () {
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Float").result,
+        )
+
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="2"
+    :min="0.00"
+    :max="99999999.99"
+    :value-on-clear="0.00"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Float", column = TargetOf_column(dataSize = 10, numericPrecision = 2)).result,
+        )
+
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="2"
+    :min="0.00"
+    :max="99999999.99"
+    :value-on-clear="undefined"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Float", typeNotNull = false, column = TargetOf_column(dataSize = 10, numericPrecision = 2)).result,
+        )
+    }
+
+    @Test
+    fun `test double` () {
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Double").result,
+        )
+
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="2"
+    :min="0.00"
+    :max="99999999.99"
+    :value-on-clear="0.00"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Double", column = TargetOf_column(dataSize = 10, numericPrecision = 2)).result,
+        )
+    }
+
+    @Test
+    fun `test decimal` () {
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "java.math.BigDecimal").result,
+        )
+
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="2"
+    :min="0.00"
+    :max="99999999.99"
+    :value-on-clear="0.00"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "java.math.BigDecimal", column = TargetOf_column(dataSize = 10, numericPrecision = 2)).result,
+        )
+    }
+
+    @Test
+    fun `test enum` () {
+        assertEquals(
+            """
+<EnumSelect
+    v-model="formData.name"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.String", enum = TargetOf_enum(
+                packagePath = "",
+                name = "Enum",
+                comment = "comment"
+            )).result,
         )
     }
 

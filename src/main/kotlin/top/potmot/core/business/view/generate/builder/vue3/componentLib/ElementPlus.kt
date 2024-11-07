@@ -6,6 +6,8 @@ import top.potmot.core.business.view.generate.builder.vue3.VFor
 import top.potmot.core.business.view.generate.builder.vue3.VModel
 import top.potmot.core.business.view.generate.builder.vue3.slotTemplate
 import top.potmot.core.business.view.generate.builder.vue3.toPropBind
+import top.potmot.utils.number.format
+import top.potmot.utils.number.formatIfDouble
 
 interface ElementPlus {
     enum class Type {
@@ -50,7 +52,7 @@ interface ElementPlus {
         modelValue: String = "modelValue",
         comment: String = "",
         placeholder: (comment: String) -> String? = { "请输入$it" },
-        precision: Long? = null,
+        precision: Int? = null,
         min: Double? = null,
         max: Double? = null,
         valueOnClear: String? = "undefined",
@@ -63,9 +65,9 @@ interface ElementPlus {
         props = listOfNotNull(
             placeholder(comment).toPropBind("placeholder", true),
             precision.toPropBind("precision"),
-            min.toPropBind("min"),
-            max.toPropBind("max"),
-            valueOnClear.toPropBind("value-on-clear"),
+            min.toPropBind("min") { format(precision) },
+            max.toPropBind("max") { format(precision) },
+            formatIfDouble(valueOnClear, precision).toPropBind("value-on-clear"),
             disabled.toPropBind("disabled"),
         )
     )

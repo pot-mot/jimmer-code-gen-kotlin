@@ -90,7 +90,7 @@ interface FormItem {
                             precision = 0,
                             min = numberMin,
                             max = numberMax,
-                            valueOnClear = numberMin.toString(),
+                            valueOnClear = numberMin?.toString(),
                             disabled = disabled,
                         )
                     else
@@ -110,17 +110,17 @@ interface FormItem {
                         inputNumber(
                             modelValue,
                             comment = comment,
-                            precision = numberPrecision ?: 0,
+                            precision = numberPrecision,
                             min = numberMin,
                             max = numberMax,
-                            valueOnClear = numberMin.toString(),
+                            valueOnClear = numberMin?.toString(),
                             disabled = disabled,
                         )
                     else
                         inputNumber(
                             modelValue,
                             comment = comment,
-                            precision = numberPrecision ?: 0,
+                            precision = numberPrecision,
                             min = numberMin,
                             max = numberMax,
                             disabled = disabled,

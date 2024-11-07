@@ -68,15 +68,18 @@ fun String?.toPropBind(
 
 fun Int?.toPropBind(
     name: String,
-) = if (this != null) PropBind(name, this.toString()) else null
+    format: Int.() -> String = { toString() }
+) = if (this != null) PropBind(name, this.format()) else null
 
 fun Long?.toPropBind(
     name: String,
-) = if (this != null) PropBind(name, this.toString()) else null
+    format: Long.() -> String = { toString() }
+) = if (this != null) PropBind(name, this.format()) else null
 
 fun Double?.toPropBind(
     name: String,
-) = if (this != null) PropBind(name, this.toString()) else null
+    format: Double.() -> String = { toString() }
+) = if (this != null) PropBind(name, this.format()) else null
 
 fun Boolean.toPropBind(
     name: String,

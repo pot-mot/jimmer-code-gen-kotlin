@@ -54,9 +54,9 @@ class NumberRangeTest {
     @Test
     fun `test numberMax when column is not null and within range`() {
         val property = baseProperty.copy(
-            column = TargetOf_column(dataSize = 20, numericPrecision = 10)
+            column = TargetOf_column(dataSize = 20, numericPrecision = 2)
         )
-        assertEquals(9999999999.0, property.numberMax)
+        assertEquals(999999999999999.99, property.numberMax)
     }
 
     @Test
@@ -64,7 +64,7 @@ class NumberRangeTest {
         val property = baseProperty.copy(
             column = TargetOf_column(dataSize = 30, numericPrecision = 10)
         )
-        assertEquals(999999999999999.0, property.numberMax)
+        assertEquals(999999999999999.9999999999, property.numberMax)
     }
 
     @Test
