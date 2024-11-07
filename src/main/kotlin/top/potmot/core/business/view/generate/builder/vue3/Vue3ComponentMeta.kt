@@ -35,14 +35,14 @@ data class ModelProp(
     val required: Boolean = true,
 )
 
-data class EmitArg(
+data class EventArg(
     val name: String,
     val type: String,
 )
 
-data class Emit(
+data class Event(
     val event: String,
-    val args: List<EmitArg>,
+    val args: Iterable<EventArg> = emptyList(),
 )
 
 data class SlotProp(
@@ -52,7 +52,7 @@ data class SlotProp(
 
 data class Slot(
     val name: String,
-    val props: List<SlotProp>,
+    val props: Iterable<SlotProp>,
 )
 
 data class PropBind(
@@ -104,7 +104,7 @@ sealed interface Directive
 data class VModel(
     val value: String,
     val propName: String? = null,
-    val modifier: List<String> = emptyList(),
+    val modifier: Collection<String> = emptyList(),
 ) : Directive
 
 data class VIf(
@@ -201,7 +201,7 @@ data class Component(
     val imports: Iterable<ImportItem> = emptyList(),
     val models: Iterable<ModelProp> = emptyList(),
     val props: Iterable<Prop> = emptyList(),
-    val emits: Iterable<Emit> = emptyList(),
+    val emits: Iterable<Event> = emptyList(),
     val slots: Iterable<Slot> = emptyList(),
     val script: Iterable<CodeItem> = emptyList(),
     val template: Iterable<Element> = emptyList(),

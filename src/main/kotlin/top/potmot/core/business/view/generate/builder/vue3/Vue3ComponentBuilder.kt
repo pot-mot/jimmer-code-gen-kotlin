@@ -2,7 +2,7 @@ package top.potmot.core.business.view.generate.builder.vue3
 
 import top.potmot.core.business.view.generate.builder.style.StyleClass
 import top.potmot.core.business.view.generate.builder.typescript.CodeItem
-import top.potmot.core.business.view.generate.builder.typescript.CommonBlock
+import top.potmot.core.business.view.generate.builder.typescript.CodeBlock
 import top.potmot.core.business.view.generate.builder.typescript.ConstVariable
 import top.potmot.core.business.view.generate.builder.typescript.Function
 import top.potmot.core.business.view.generate.builder.typescript.LetVariable
@@ -90,7 +90,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
     private fun Component.needEmitsDeclare(): Boolean =
         copy(props = emptyList()).toString().contains("emits")
 
-    fun Iterable<Emit>.stringifyEmits(): String {
+    fun Iterable<Event>.stringifyEmits(): String {
         val emits = map { emit ->
             val args = emit.args.map { arg ->
                 "${arg.name}: ${arg.type}"
@@ -116,20 +116,24 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         joinToString("\n") { item ->
             when (item) {
                 is ConstVariable ->
-                    "const ${item.name}${if (item.type != null) ": ${item.type}" else ""} = ${item.value};"
+                    "const ${item.name}${if (item.type != null) ": ${item.type}" else ""} = ${item.value}"
 
                 is LetVariable ->
-                    "let ${item.name}${if (item.type != null) ": ${item.type}" else ""} = ${item.value};"
+                    "let ${item.name}${if (item.type != null) ": ${item.type}" else ""} = ${item.value}"
 
                 is Function -> {
                     val args = item.args.map { arg ->
                         "${arg.name}${if (arg.required) "" else "?"}: ${arg.type}${if (arg.defaultValue != null) " = ${arg.defaultValue}" else ""}"
                     }.inlineOrWarp()
-                    val body = item.body.replace("\n", "\n$indent")
-                    "const ${item.name} = (${args}): ${if (item.returnType != null) "${item.returnType}" else "void"} => {\n$indent$body\n}"
+                    val body = item.body.stringifyCodes().replace("\n", "\n$indent")
+                    "const ${item.name} = ${if (item.async) "async " else ""}(${args}): ${
+                        if (item.returnType != null) {
+                            if (item.async) "Promise<${item.returnType}>" else item.returnType
+                        } else "void"
+                    } => {\n$indent$body\n}"
                 }
 
-                is CommonBlock ->
+                is CodeBlock ->
                     item.content
             }
         }
@@ -137,7 +141,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
     fun Iterable<Element>.stringifyElements(currentIndent: String = ""): String =
         joinToString("\n") { element ->
             val directives = element.directives.map { directive ->
-                when(directive) {
+                when (directive) {
                     is VModel -> {
                         "v-model${if (directive.propName == null) "" else ":${directive.propName}"}${
                             if (directive.modifier.isEmpty()) "" else "." + directive.modifier.joinToString(
@@ -145,6 +149,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
                             )
                         }=\"${directive.value}\""
                     }
+
                     is VIf -> "v-${if (directive.isElse) "else-if" else "if"}=\"${directive.expression}\""
                     is VElse -> "v-else"
                     is VShow -> "v-show=\"${directive.expression}\""

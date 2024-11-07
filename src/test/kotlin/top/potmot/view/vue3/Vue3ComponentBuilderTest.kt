@@ -3,7 +3,7 @@ package top.potmot.view.vue3
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import top.potmot.core.business.view.generate.builder.typescript.CommonBlock
+import top.potmot.core.business.view.generate.builder.typescript.CodeBlock
 import top.potmot.core.business.view.generate.builder.vue3.Import
 import top.potmot.core.business.view.generate.builder.typescript.ConstVariable
 import top.potmot.core.business.view.generate.builder.vue3.ImportDefault
@@ -15,8 +15,8 @@ import top.potmot.core.business.view.generate.builder.typescript.FunctionArg
 import top.potmot.core.business.view.generate.builder.vue3.ImportType
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.builder.vue3.Component
-import top.potmot.core.business.view.generate.builder.vue3.Emit
-import top.potmot.core.business.view.generate.builder.vue3.EmitArg
+import top.potmot.core.business.view.generate.builder.vue3.Event
+import top.potmot.core.business.view.generate.builder.vue3.EventArg
 import top.potmot.core.business.view.generate.builder.vue3.EventBind
 import top.potmot.core.business.view.generate.builder.vue3.VModel
 import top.potmot.core.business.view.generate.builder.vue3.ModelProp
@@ -107,8 +107,8 @@ withDefaults(defineProps<{
     @Test
     fun `test stringifyEmits`() {
         val emits = listOf(
-            Emit("event1", listOf(EmitArg("arg1", "string"))),
-            Emit("event2", listOf(EmitArg("arg2", "number")))
+            Event("event1", listOf(EventArg("arg1", "string"))),
+            Event("event2", listOf(EventArg("arg2", "number")))
         )
 
         val expected = """
@@ -147,17 +147,17 @@ defineSlots<{
         val codeBlocks = listOf(
             ConstVariable("const1", "string", "\"value1\""),
             LetVariable("let1", "number", "0"),
-            Function("func1", listOf(FunctionArg("arg1", "string")), "void", "console.log(arg1);"),
-            CommonBlock("console.log('Hello, World!');")
+            Function(false, "func1", listOf(FunctionArg("arg1", "string")), null, listOf(CodeBlock("console.log(arg1)"))),
+            CodeBlock("console.log('Hello, World!')")
         )
 
         val expected = """
-const const1: string = "value1";
-let let1: number = 0;
+const const1: string = "value1"
+let let1: number = 0
 const func1 = (arg1: string): void => {
-    console.log(arg1);
+    console.log(arg1)
 }
-console.log('Hello, World!');
+console.log('Hello, World!')
            """.trimBlankLine()
 
         builder.apply {
@@ -233,8 +233,8 @@ console.log('Hello, World!');
                 Prop("prop3", "boolean", false, "false")
             ),
             emits = listOf(
-                Emit("event1", listOf(EmitArg("arg1", "string"))),
-                Emit("event2", listOf(EmitArg("arg2", "number")))
+                Event("event1", listOf(EventArg("arg1", "string"))),
+                Event("event2", listOf(EventArg("arg2", "number")))
             ),
             slots = listOf(
                 Slot("slot1", listOf(SlotProp("prop1", "string"))),
@@ -243,8 +243,8 @@ console.log('Hello, World!');
             script = listOf(
                 ConstVariable("const1", "string", "\"value1\""),
                 LetVariable("let1", "number", "0"),
-                Function("func1", listOf(FunctionArg("arg1", "string")), "void", "console.log(arg1);"),
-                CommonBlock("console.log('Hello, World!');")
+                Function(true, "func1", listOf(FunctionArg("arg1", "string")), "boolean", listOf(CodeBlock("return false"))),
+                CodeBlock("console.log('Hello, World!')")
             ),
             template = listOf(
                 Element("div", directives = listOf(VModel("model1")), props = listOf(PropBind("class", "container", isLiteral = true))),
@@ -284,12 +284,12 @@ defineSlots<{
     slot2(props: {prop2: number}): any
 }>()
 
-const const1: string = "value1";
-let let1: number = 0;
-const func1 = (arg1: string): void => {
-    console.log(arg1);
+const const1: string = "value1"
+let let1: number = 0
+const func1 = async (arg1: string): Promise<boolean> => {
+    return false
 }
-console.log('Hello, World!');
+console.log('Hello, World!')
 </script>
 
 <template>
