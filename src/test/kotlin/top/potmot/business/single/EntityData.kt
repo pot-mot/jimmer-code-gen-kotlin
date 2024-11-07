@@ -316,11 +316,26 @@ const val entityData = """
                 "packagePath": "com.example.enum",
                 "name": "MatchStatus",
                 "comment": "",
+                "enumType": "NAME",
                 "defaultItems": [
                     {
                         "id": 62,
                         "name": "EQ",
                         "comment": ""
+                    }
+                ],
+                "items": [
+                    {
+                        "id": 62,
+                        "name": "EQ",
+                        "comment": "",
+                        "mappedValue": "EQ"
+                    },
+                    {
+                        "id": 63,
+                        "name": "NE",
+                        "comment": "",
+                        "mappedValue": "NE"
                     }
                 ]
             }
