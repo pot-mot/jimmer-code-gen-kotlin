@@ -316,7 +316,7 @@ class ElementPlusTest : ElementPlus {
         val result = form(
             model = "testModel",
             rules = "testRules",
-            items = items
+            content = items
         )
 
         builder.apply {

@@ -89,6 +89,7 @@ interface ElementPlus {
         placeholder: (comment: String) -> String? = { "请选择$it" },
         clearable: Boolean = true,
         disabled: Boolean = false,
+        multiple: Boolean = false,
         content: Collection<Element> = listOf(),
     ) = Element(
         "el-select",
@@ -98,7 +99,10 @@ interface ElementPlus {
         props = listOfNotNull(
             placeholder(comment).toPropBind("placeholder", isLiteral = true),
             clearable.toPropBind("clearable"),
-            disabled.toPropBind("disabled")
+            disabled.toPropBind("disabled"),
+            multiple.toPropBind("multiple"),
+            multiple.toPropBind("collapse-tags"),
+            multiple.toPropBind("collapse-tags-tooltip"),
         ),
         children = content,
     )
@@ -106,12 +110,13 @@ interface ElementPlus {
     fun option(
         value: String,
         label: String? = null,
+        labelIsLiteral: Boolean = false,
         content: Collection<Element> = emptyList(),
     ) = Element(
         "el-option",
         props = listOfNotNull(
             PropBind("value", value),
-            label.toPropBind("label"),
+            label.toPropBind("label", isLiteral = labelIsLiteral),
         )
     )
 
@@ -126,7 +131,7 @@ interface ElementPlus {
     ) = option(
         value(option),
         label(option),
-        content,
+        content = content,
     ).merge {
         directives += VFor(option, options, withIndex)
         key(option).toPropBind("key")?.let { props.add(0, it) }
@@ -285,15 +290,17 @@ interface ElementPlus {
 
     fun form(
         model: String,
-        rules: String,
-        items: Collection<Element>,
+        ref: String? = null,
+        rules: String? = null,
+        content: Collection<Element>,
     ) = Element(
         "el-form",
-        props = listOf(
+        props = listOfNotNull(
             PropBind("model", model),
-            PropBind("rules", rules),
+            ref.toPropBind("ref", true),
+            rules.toPropBind("rules"),
         ),
-        children = items
+        children = content
     )
 
     fun tableColumn(
