@@ -17,8 +17,8 @@ enum class PropertyQueryType {
     DATE_RANGE,
     DATETIME_RANGE,
     ENUM_SELECT,
-    ASSOCIATION_EQ,
-    ASSOCIATION_IN,
+    ASSOCIATION_ID_EQ,
+    ASSOCIATION_ID_IN,
 }
 
 private val intRangeType = setOf(
@@ -64,10 +64,10 @@ val GenEntityBusinessView.TargetOf_properties.queryType: PropertyQueryType
         if (associationType != null) {
             when (associationType) {
                 AssociationType.MANY_TO_ONE, AssociationType.ONE_TO_ONE ->
-                    PropertyQueryType.ASSOCIATION_EQ
+                    PropertyQueryType.ASSOCIATION_ID_EQ
 
                 AssociationType.ONE_TO_MANY, AssociationType.MANY_TO_MANY ->
-                    PropertyQueryType.ASSOCIATION_IN
+                    PropertyQueryType.ASSOCIATION_ID_IN
             }
         } else if (enum != null) {
             PropertyQueryType.ENUM_SELECT

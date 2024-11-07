@@ -87,10 +87,10 @@ object DtoGenerator {
                 PropertyQueryType.LIKE ->
                     listOf("like/i(${name})")
 
-                PropertyQueryType.ASSOCIATION_EQ ->
+                PropertyQueryType.ASSOCIATION_ID_EQ ->
                     listOf("associatedIdEq(${name})")
 
-                PropertyQueryType.ASSOCIATION_IN ->
+                PropertyQueryType.ASSOCIATION_ID_IN ->
                     listOf("associatedIdIn(${name}) as ${name.toSingular()}Ids")
             }
 
