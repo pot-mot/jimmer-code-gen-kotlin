@@ -17,7 +17,7 @@ interface ElementPlus {
     }
 
     fun Type?.toPropBind() =
-        if (this != null) PropBind("type", this.name.lowercase()) else null
+        if (this != null) PropBind("type", this.name.lowercase(), isLiteral = true) else null
 
     fun text(
         content: String,

@@ -2,15 +2,15 @@ package top.potmot.view.vue3.elementPlus
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
-import top.potmot.core.business.view.generate.builder.vue3.PropBind
 import top.potmot.core.business.view.generate.builder.vue3.Element
+import top.potmot.core.business.view.generate.builder.vue3.PropBind
+import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
 import top.potmot.utils.string.trimBlankLine
 
 class ElementPlusTest : ElementPlus {
     private val builder = Vue3ComponentBuilder()
-    
+
     @Test
     fun testInput() {
         val result = input(
@@ -413,6 +413,200 @@ class ElementPlusTest : ElementPlus {
 </el-dialog>
                 """.trimBlankLine(),
                 listOf(result).stringifyElements()
+            )
+        }
+    }
+
+    @Test
+    fun testText() {
+        val element = text("Hello, World!")
+        builder.apply {
+            assertEquals(
+                """
+<el-text>Hello, World!</el-text>
+                """.trimIndent(),
+                listOf(element).stringifyElements()
+            )
+        }
+
+        val elementWithType = text("Hello, World!", type = ElementPlus.Type.PRIMARY)
+        builder.apply {
+            assertEquals(
+                """
+<el-text type="primary">Hello, World!</el-text>
+                """.trimIndent(),
+                listOf(elementWithType).stringifyElements()
+            )
+        }
+    }
+
+    @Test
+    fun testCol() {
+        val element = col(content = listOf(text("Content")))
+        builder.apply {
+            assertEquals(
+                """
+<el-col :span="24">
+    <el-text>Content</el-text>
+</el-col>
+                """.trimIndent(),
+                listOf(element).stringifyElements()
+            )
+        }
+
+        val elementWithOffset = col(span = 12, offset = 3, content = listOf(text("Content")))
+        builder.apply {
+            assertEquals(
+                """
+<el-col
+    :span="12"
+    :offset="3"
+>
+    <el-text>Content</el-text>
+</el-col>
+                """.trimIndent(),
+                listOf(elementWithOffset).stringifyElements()
+            )
+        }
+    }
+
+    @Test
+    fun testRow() {
+        val element = row(content = listOf(col(content = listOf(text("Content")))))
+        builder.apply {
+            assertEquals(
+                """
+<el-row>
+    <el-col :span="24">
+        <el-text>Content</el-text>
+    </el-col>
+</el-row>
+                """.trimIndent(),
+                listOf(element).stringifyElements()
+            )
+        }
+
+        val elementWithGutter = row(gutter = 10, content = listOf(col(content = listOf(text("Content")))))
+        builder.apply {
+            assertEquals(
+                """
+<el-row :gutter="10">
+    <el-col :span="24">
+        <el-text>Content</el-text>
+    </el-col>
+</el-row>
+                """.trimIndent(),
+                listOf(elementWithGutter).stringifyElements()
+            )
+        }
+    }
+
+    @Test
+    fun testButton() {
+        val element = button(content = "Click Me")
+        builder.apply {
+            assertEquals(
+                """
+<el-button>Click Me</el-button>
+                """.trimIndent(),
+                listOf(element).stringifyElements()
+            )
+        }
+
+        val elementWithDisabled = button(content = "Click Me", disabled = true)
+        builder.apply {
+            assertEquals(
+                """
+<el-button disabled>Click Me</el-button>
+                """.trimIndent(),
+                listOf(elementWithDisabled).stringifyElements()
+            )
+        }
+
+        val elementWithType = button(content = "Click Me", type = ElementPlus.Type.WARNING)
+        builder.apply {
+            assertEquals(
+                """
+<el-button type="warning">Click Me</el-button>
+                """.trimIndent(),
+                listOf(elementWithType).stringifyElements()
+            )
+        }
+
+        val elementWithIcon = button(content = "Click Me", icon = "Search")
+        builder.apply {
+            assertEquals(
+                """
+<el-button :icon="Search">Click Me</el-button>
+                """.trimIndent(),
+                listOf(elementWithIcon).stringifyElements()
+            )
+        }
+
+        val elementWithPlain = button(content = "Click Me", plain = true)
+        builder.apply {
+            assertEquals(
+                """
+<el-button plain>Click Me</el-button>
+                """.trimIndent(),
+                listOf(elementWithPlain).stringifyElements()
+            )
+        }
+
+        val elementWithLink = button(content = "Click Me", link = true)
+        builder.apply {
+            assertEquals(
+                """
+<el-button link>Click Me</el-button>
+                """.trimIndent(),
+                listOf(elementWithLink).stringifyElements()
+            )
+        }
+
+        val elementWithRound = button(content = "Click Me", round = true)
+        builder.apply {
+            assertEquals(
+                """
+<el-button round>Click Me</el-button>
+                """.trimIndent(),
+                listOf(elementWithRound).stringifyElements()
+            )
+        }
+
+        val elementWithCircle = button(content = "Click Me", circle = true)
+        builder.apply {
+            assertEquals(
+                """
+<el-button circle>Click Me</el-button>
+                """.trimIndent(),
+                listOf(elementWithCircle).stringifyElements()
+            )
+        }
+
+        val elementWithAllProps = button(
+            content = "Click Me",
+            disabled = true,
+            type = ElementPlus.Type.INFO,
+            icon = "Search",
+            plain = true,
+            link = true,
+            round = true,
+            circle = true
+        )
+        builder.apply {
+            assertEquals(
+                """
+<el-button
+    type="info"
+    :icon="Search"
+    plain
+    link
+    round
+    circle
+    disabled
+>Click Me</el-button>
+                """.trimIndent(),
+                listOf(elementWithAllProps).stringifyElements()
             )
         }
     }
