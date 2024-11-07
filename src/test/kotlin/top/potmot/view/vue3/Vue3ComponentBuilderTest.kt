@@ -3,27 +3,27 @@ package top.potmot.view.vue3
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import top.potmot.core.business.view.generate.builder.vue3.CommonBlock
-import top.potmot.core.business.view.generate.builder.vue3.CommonImport
-import top.potmot.core.business.view.generate.builder.vue3.ConstVariable
-import top.potmot.core.business.view.generate.builder.vue3.DefaultImport
-import top.potmot.core.business.view.generate.builder.vue3.Vue3TemplateElement
-import top.potmot.core.business.view.generate.builder.vue3.LetVariable
-import top.potmot.core.business.view.generate.builder.vue3.StyleClass
-import top.potmot.core.business.view.generate.builder.vue3.TsFunction
-import top.potmot.core.business.view.generate.builder.vue3.TsFunctionArg
-import top.potmot.core.business.view.generate.builder.vue3.TypeOnlyImport
+import top.potmot.core.business.view.generate.builder.typescript.CommonBlock
+import top.potmot.core.business.view.generate.builder.vue3.Import
+import top.potmot.core.business.view.generate.builder.typescript.ConstVariable
+import top.potmot.core.business.view.generate.builder.vue3.ImportDefault
+import top.potmot.core.business.view.generate.builder.vue3.Element
+import top.potmot.core.business.view.generate.builder.typescript.LetVariable
+import top.potmot.core.business.view.generate.builder.style.StyleClass
+import top.potmot.core.business.view.generate.builder.typescript.Function
+import top.potmot.core.business.view.generate.builder.typescript.FunctionArg
+import top.potmot.core.business.view.generate.builder.vue3.ImportType
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
-import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentPart
-import top.potmot.core.business.view.generate.builder.vue3.Vue3Emit
-import top.potmot.core.business.view.generate.builder.vue3.Vue3EmitArg
-import top.potmot.core.business.view.generate.builder.vue3.Vue3EventBind
+import top.potmot.core.business.view.generate.builder.vue3.Component
+import top.potmot.core.business.view.generate.builder.vue3.Emit
+import top.potmot.core.business.view.generate.builder.vue3.EmitArg
+import top.potmot.core.business.view.generate.builder.vue3.EventBind
 import top.potmot.core.business.view.generate.builder.vue3.VModel
-import top.potmot.core.business.view.generate.builder.vue3.Vue3ModelProp
-import top.potmot.core.business.view.generate.builder.vue3.Vue3Prop
-import top.potmot.core.business.view.generate.builder.vue3.Vue3PropBind
-import top.potmot.core.business.view.generate.builder.vue3.Vue3Slot
-import top.potmot.core.business.view.generate.builder.vue3.Vue3SlotProp
+import top.potmot.core.business.view.generate.builder.vue3.ModelProp
+import top.potmot.core.business.view.generate.builder.vue3.Prop
+import top.potmot.core.business.view.generate.builder.vue3.PropBind
+import top.potmot.core.business.view.generate.builder.vue3.Slot
+import top.potmot.core.business.view.generate.builder.vue3.SlotProp
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.trimBlankLine
 
@@ -33,9 +33,9 @@ class Vue3ComponentBuilderTest {
     @Test
     fun `test stringifyImports with common and type only imports`() {
         val importItems = listOf(
-            CommonImport("path1", listOf("item1", "item2")),
-            TypeOnlyImport("path1", listOf("ItemType1", "ItemType2")),
-            DefaultImport("path2", "defaultItem")
+            Import("path1", listOf("item1", "item2")),
+            ImportType("path1", listOf("ItemType1", "ItemType2")),
+            ImportDefault("path2", "defaultItem")
         )
 
         val expected = listOf(
@@ -52,8 +52,8 @@ class Vue3ComponentBuilderTest {
     @Test
     fun `test stringifyImports with multiple default imports for the same path should throw exception`() {
         val importItems = listOf(
-            DefaultImport("path1", "defaultItem1"),
-            DefaultImport("path1", "defaultItem2")
+            ImportDefault("path1", "defaultItem1"),
+            ImportDefault("path1", "defaultItem2")
         )
 
         builder.apply {
@@ -66,8 +66,8 @@ class Vue3ComponentBuilderTest {
     @Test
     fun `test stringifyModels`() {
         val models = listOf(
-            Vue3ModelProp("model1", "string", true),
-            Vue3ModelProp("model2", "number", false)
+            ModelProp("model1", "string", true),
+            ModelProp("model2", "number", false)
         )
 
         val expected = listOf(
@@ -83,9 +83,9 @@ class Vue3ComponentBuilderTest {
     @Test
     fun `test stringifyProps`() {
         val props = listOf(
-            Vue3Prop("prop1", "string"),
-            Vue3Prop("prop2", "number", false, "0"),
-            Vue3Prop("prop3", "boolean", false, "false")
+            Prop("prop1", "string"),
+            Prop("prop2", "number", false, "0"),
+            Prop("prop3", "boolean", false, "false")
         )
 
         val expected = """
@@ -107,8 +107,8 @@ withDefaults(defineProps<{
     @Test
     fun `test stringifyEmits`() {
         val emits = listOf(
-            Vue3Emit("event1", listOf(Vue3EmitArg("arg1", "string"))),
-            Vue3Emit("event2", listOf(Vue3EmitArg("arg2", "number")))
+            Emit("event1", listOf(EmitArg("arg1", "string"))),
+            Emit("event2", listOf(EmitArg("arg2", "number")))
         )
 
         val expected = """
@@ -126,8 +126,8 @@ defineEmits<{
     @Test
     fun `test stringifySlots`() {
         val slots = listOf(
-            Vue3Slot("slot1", listOf(Vue3SlotProp("prop1", "string"))),
-            Vue3Slot("slot2", listOf(Vue3SlotProp("prop2", "number")))
+            Slot("slot1", listOf(SlotProp("prop1", "string"))),
+            Slot("slot2", listOf(SlotProp("prop2", "number")))
         )
 
         val expected = """
@@ -147,7 +147,7 @@ defineSlots<{
         val codeBlocks = listOf(
             ConstVariable("const1", "string", "\"value1\""),
             LetVariable("let1", "number", "0"),
-            TsFunction("func1", listOf(TsFunctionArg("arg1", "string")), "void", "console.log(arg1);"),
+            Function("func1", listOf(FunctionArg("arg1", "string")), "void", "console.log(arg1);"),
             CommonBlock("console.log('Hello, World!');")
         )
 
@@ -168,10 +168,10 @@ console.log('Hello, World!');
     @Test
     fun `test stringifyElements`() {
         val elements = listOf(
-            Vue3TemplateElement("div", directives = listOf(VModel("model1")), props = listOf(Vue3PropBind("class", "container", isLiteral = true))),
-            Vue3TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick"))),
-            Vue3TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick")), children = listOf(
-                Vue3TemplateElement("span", "Click Me!")
+            Element("div", directives = listOf(VModel("model1")), props = listOf(PropBind("class", "container", isLiteral = true))),
+            Element("button", events = listOf(EventBind("click", "handleClick"))),
+            Element("button", events = listOf(EventBind("click", "handleClick")), children = listOf(
+                Element("span", "Click Me!")
             ))
         )
 
@@ -217,38 +217,38 @@ console.log('Hello, World!');
 
     @Test
     fun `test build complete Vue component`() {
-        val vueComponentPart = Vue3ComponentPart(
-            importItems = listOf(
-                CommonImport("path1", listOf("item1", "item2")),
-                TypeOnlyImport("path1", listOf("ItemType1", "ItemType2")),
-                DefaultImport("path2", "defaultItem")
+        val vueComponentPart = Component(
+            imports = listOf(
+                Import("path1", listOf("item1", "item2")),
+                ImportType("path1", listOf("ItemType1", "ItemType2")),
+                ImportDefault("path2", "defaultItem")
             ),
             models = listOf(
-                Vue3ModelProp("model1", "string", true),
-                Vue3ModelProp("model2", "number", false)
+                ModelProp("model1", "string", true),
+                ModelProp("model2", "number", false)
             ),
             props = listOf(
-                Vue3Prop("prop1", "string", true, null),
-                Vue3Prop("prop2", "number", false, "0"),
-                Vue3Prop("prop3", "boolean", false, "false")
+                Prop("prop1", "string", true, null),
+                Prop("prop2", "number", false, "0"),
+                Prop("prop3", "boolean", false, "false")
             ),
             emits = listOf(
-                Vue3Emit("event1", listOf(Vue3EmitArg("arg1", "string"))),
-                Vue3Emit("event2", listOf(Vue3EmitArg("arg2", "number")))
+                Emit("event1", listOf(EmitArg("arg1", "string"))),
+                Emit("event2", listOf(EmitArg("arg2", "number")))
             ),
             slots = listOf(
-                Vue3Slot("slot1", listOf(Vue3SlotProp("prop1", "string"))),
-                Vue3Slot("slot2", listOf(Vue3SlotProp("prop2", "number")))
+                Slot("slot1", listOf(SlotProp("prop1", "string"))),
+                Slot("slot2", listOf(SlotProp("prop2", "number")))
             ),
             script = listOf(
                 ConstVariable("const1", "string", "\"value1\""),
                 LetVariable("let1", "number", "0"),
-                TsFunction("func1", listOf(TsFunctionArg("arg1", "string")), "void", "console.log(arg1);"),
+                Function("func1", listOf(FunctionArg("arg1", "string")), "void", "console.log(arg1);"),
                 CommonBlock("console.log('Hello, World!');")
             ),
             template = listOf(
-                Vue3TemplateElement("div", directives = listOf(VModel("model1")), props = listOf(Vue3PropBind("class", "container", isLiteral = true))),
-                Vue3TemplateElement("button", events = listOf(Vue3EventBind("click", "handleClick")))
+                Element("div", directives = listOf(VModel("model1")), props = listOf(PropBind("class", "container", isLiteral = true))),
+                Element("button", events = listOf(EventBind("click", "handleClick")))
             ),
             style = listOf(
                 StyleClass(".container", mapOf("display" to "flex", "justify-content" to "center")),

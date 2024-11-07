@@ -1,5 +1,11 @@
 package top.potmot.core.business.view.generate.builder.vue3
 
+import top.potmot.core.business.view.generate.builder.style.StyleClass
+import top.potmot.core.business.view.generate.builder.typescript.CodeItem
+import top.potmot.core.business.view.generate.builder.typescript.CommonBlock
+import top.potmot.core.business.view.generate.builder.typescript.ConstVariable
+import top.potmot.core.business.view.generate.builder.typescript.Function
+import top.potmot.core.business.view.generate.builder.typescript.LetVariable
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
@@ -27,9 +33,9 @@ class Vue3ComponentBuilder(
 
             imports.forEach { importItem ->
                 when (importItem) {
-                    is CommonImport -> commonImports.addAll(importItem.items)
-                    is TypeOnlyImport -> typeOnlyImports.addAll(importItem.items)
-                    is DefaultImport -> defaultImports.add(importItem.item)
+                    is Import -> commonImports.addAll(importItem.items)
+                    is ImportType -> typeOnlyImports.addAll(importItem.items)
+                    is ImportDefault -> defaultImports.add(importItem.item)
                 }
             }
 
@@ -50,7 +56,7 @@ class Vue3ComponentBuilder(
             importStatements
         }.flatten()
 
-    fun Iterable<Vue3ModelProp>.stringifyModels() =
+    fun Iterable<ModelProp>.stringifyModels() =
         map {
             """
 const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
@@ -58,10 +64,10 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         }
 
 
-    private fun Vue3ComponentPart.needPropsDeclare(): Boolean =
+    private fun Component.needPropsDeclare(): Boolean =
         copy(props = emptyList()).toString().contains("props")
 
-    fun Iterable<Vue3Prop>.stringifyProps(): String {
+    fun Iterable<Prop>.stringifyProps(): String {
         val props = map { prop ->
             val required = if (prop.required) "" else "?"
             val type = if (prop.required) prop.type else "${prop.type} | undefined"
@@ -81,10 +87,10 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         return defineProps
     }
 
-    private fun Vue3ComponentPart.needEmitsDeclare(): Boolean =
+    private fun Component.needEmitsDeclare(): Boolean =
         copy(props = emptyList()).toString().contains("emits")
 
-    fun Iterable<Vue3Emit>.stringifyEmits(): String {
+    fun Iterable<Emit>.stringifyEmits(): String {
         val emits = map { emit ->
             val args = emit.args.map { arg ->
                 "${arg.name}: ${arg.type}"
@@ -95,7 +101,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         return "defineEmits<{${emits}}>()"
     }
 
-    fun Iterable<Vue3Slot>.stringifySlots(): String {
+    fun Iterable<Slot>.stringifySlots(): String {
         val slots = map { slot ->
             val props = slot.props.map { prop ->
                 "${prop.name}: ${prop.type}"
@@ -115,7 +121,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
                 is LetVariable ->
                     "let ${item.name}${if (item.type != null) ": ${item.type}" else ""} = ${item.value};"
 
-                is TsFunction -> {
+                is Function -> {
                     val args = item.args.map { arg ->
                         "${arg.name}${if (arg.required) "" else "?"}: ${arg.type}${if (arg.defaultValue != null) " = ${arg.defaultValue}" else ""}"
                     }.inlineOrWarp()
@@ -128,7 +134,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
             }
         }
 
-    fun Iterable<Vue3TemplateElement>.stringifyElements(currentIndent: String = ""): String =
+    fun Iterable<Element>.stringifyElements(currentIndent: String = ""): String =
         joinToString("\n") { element ->
             val directives = element.directives.map { directive ->
                 when(directive) {
@@ -139,7 +145,8 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
                             )
                         }=\"${directive.value}\""
                     }
-                    is VIf -> "v-if=\"${directive.expression}\""
+                    is VIf -> "v-${if (directive.isElse) "else-if" else "if"}=\"${directive.expression}\""
+                    is VElse -> "v-else"
                     is VShow -> "v-show=\"${directive.expression}\""
                     is VFor -> {
                         val item = if (directive.withIndex) "(${directive.item}, index)" else directive.item
@@ -197,10 +204,10 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
             "${styleClass.selector} {$properties}"
         }
 
-    fun build(vueComponentPart: Vue3ComponentPart) = buildString {
+    fun build(vueComponentPart: Component) = buildString {
         appendLine("<script setup lang=\"ts\">")
 
-        val stringifyImports = vueComponentPart.importItems.stringifyImports()
+        val stringifyImports = vueComponentPart.imports.stringifyImports()
         appendLines(stringifyImports)
         if (stringifyImports.isNotEmpty()) appendLine()
 

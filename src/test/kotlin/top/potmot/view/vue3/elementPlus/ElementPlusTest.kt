@@ -3,8 +3,8 @@ package top.potmot.view.vue3.elementPlus
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
-import top.potmot.core.business.view.generate.builder.vue3.Vue3PropBind
-import top.potmot.core.business.view.generate.builder.vue3.Vue3TemplateElement
+import top.potmot.core.business.view.generate.builder.vue3.PropBind
+import top.potmot.core.business.view.generate.builder.vue3.Element
 import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
 import top.potmot.utils.string.trimBlankLine
 
@@ -99,9 +99,9 @@ class ElementPlusTest : ElementPlus {
 
     @Test
     fun testOption() {
-        val result = option(
+        val result = options(
             options = "testOptions",
-            item = "testItem",
+            option = "testItem",
             key = { "$it.key" },
             value = { "$it.value" },
             label = { "$it.label" }
@@ -288,7 +288,8 @@ class ElementPlusTest : ElementPlus {
         val result = formItem(
             prop = "testProp",
             label = "testLabel",
-            rule = "testRule"
+            rule = "testRule",
+            content = listOf(Element("div", content = "表单项"))
         )
 
         builder.apply {
@@ -298,7 +299,9 @@ class ElementPlusTest : ElementPlus {
     prop="testProp"
     label="testLabel"
     :rule="testRule"
-/>
+>
+    <div>表单项</div>
+</el-form-item>
                 """.trimBlankLine(),
                 listOf(result).stringifyElements()
             )
@@ -308,7 +311,7 @@ class ElementPlusTest : ElementPlus {
     @Test
     fun testForm() {
         val items = listOf(
-            Vue3TemplateElement("el-form-item", props = listOf(Vue3PropBind("prop", "testProp")))
+            Element("el-form-item", props = listOf(PropBind("prop", "testProp")))
         )
         val result = form(
             model = "testModel",
@@ -334,7 +337,7 @@ class ElementPlusTest : ElementPlus {
     @Test
     fun testTableColumn() {
         val content = listOf(
-            Vue3TemplateElement("div", props = listOf(Vue3PropBind("class", "testClass", isLiteral = true)))
+            Element("div", props = listOf(PropBind("class", "testClass", isLiteral = true)))
         )
         val result = tableColumn(
             prop = "testProp",
@@ -362,7 +365,7 @@ class ElementPlusTest : ElementPlus {
     @Test
     fun testTable() {
         val columns = listOf(
-            Vue3TemplateElement("el-table-column", props = listOf(Vue3PropBind("prop", "testProp")))
+            Element("el-table-column", props = listOf(PropBind("prop", "testProp")))
         )
         val result = table(
             data = "testData",
@@ -389,7 +392,7 @@ class ElementPlusTest : ElementPlus {
     @Test
     fun testDialog() {
         val content = listOf(
-            Vue3TemplateElement("div", props = listOf(Vue3PropBind("class", "testClass", isLiteral = true)))
+            Element("div", props = listOf(PropBind("class", "testClass", isLiteral = true)))
         )
         val result = dialog(
             modelValue = "testModel",

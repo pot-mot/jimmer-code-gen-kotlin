@@ -1,25 +1,48 @@
 package top.potmot.core.business.view.generate.builder.vue3.componentLib
 
+import top.potmot.core.business.view.generate.builder.vue3.Element
+import top.potmot.core.business.view.generate.builder.vue3.PropBind
 import top.potmot.core.business.view.generate.builder.vue3.VFor
 import top.potmot.core.business.view.generate.builder.vue3.VModel
-import top.potmot.core.business.view.generate.builder.vue3.Vue3PropBind
-import top.potmot.core.business.view.generate.builder.vue3.Vue3TemplateElement
+import top.potmot.core.business.view.generate.builder.vue3.slotTemplate
 import top.potmot.core.business.view.generate.builder.vue3.toPropBind
 
 interface ElementPlus {
+    enum class Type {
+        PRIMARY,
+        SUCCESS,
+        INFO,
+        WARNING,
+        DANGER
+    }
+
+    fun Type?.toPropBind() =
+        if (this != null) PropBind("type", this.name.lowercase()) else null
+
+    fun text(
+        content: String,
+        type: Type? = null,
+    ) = Element(
+        "el-text",
+        props = listOfNotNull(type.toPropBind()),
+        content = content
+    )
+
     fun input(
         modelValue: String = "modelValue",
         comment: String = "",
         placeholder: (comment: String) -> String? = { "请输入$it" },
         clearable: Boolean = true,
-    ) = Vue3TemplateElement(
+        disabled: Boolean = false,
+    ) = Element(
         "el-input",
         directives = listOf(
             VModel(modelValue)
         ),
         props = listOfNotNull(
             placeholder(comment).toPropBind("placeholder", true),
-            clearable.toPropBind("clearable")
+            clearable.toPropBind("clearable"),
+            disabled.toPropBind("disabled"),
         )
     )
 
@@ -27,11 +50,12 @@ interface ElementPlus {
         modelValue: String = "modelValue",
         comment: String = "",
         placeholder: (comment: String) -> String? = { "请输入$it" },
-        precision: Int? = null,
+        precision: Long? = null,
         min: Double? = null,
         max: Double? = null,
         valueOnClear: String? = "undefined",
-    ) = Vue3TemplateElement(
+        disabled: Boolean = false,
+    ) = Element(
         "el-input-number",
         directives = listOf(
             VModel(modelValue, modifier = listOf("number"))
@@ -42,16 +66,21 @@ interface ElementPlus {
             min.toPropBind("min"),
             max.toPropBind("max"),
             valueOnClear.toPropBind("value-on-clear"),
+            disabled.toPropBind("disabled"),
         )
     )
 
     fun switch(
         modelValue: String = "modelValue",
-    ) = Vue3TemplateElement(
+        disabled: Boolean = false,
+    ) = Element(
         "el-switch",
         directives = listOf(
             VModel(modelValue)
         ),
+        props = listOfNotNull(
+            disabled.toPropBind("disabled"),
+        )
     )
 
     fun select(
@@ -59,7 +88,9 @@ interface ElementPlus {
         comment: String = "",
         placeholder: (comment: String) -> String? = { "请选择$it" },
         clearable: Boolean = true,
-    ) = Vue3TemplateElement(
+        disabled: Boolean = false,
+        content: Collection<Element> = listOf(),
+    ) = Element(
         "el-select",
         directives = listOf(
             VModel(modelValue)
@@ -67,27 +98,39 @@ interface ElementPlus {
         props = listOfNotNull(
             placeholder(comment).toPropBind("placeholder", isLiteral = true),
             clearable.toPropBind("clearable"),
+            disabled.toPropBind("disabled")
         ),
+        children = content,
     )
 
     fun option(
-        options: String,
-        item: String,
-        withIndex: Boolean = false,
-        key: (item: String) -> String = { "$it.value" },
-        value: (item: String) -> String = { "$it.value" },
-        label: (item: String) -> String = { "$it.label" },
-    ) = Vue3TemplateElement(
+        value: String,
+        label: String? = null,
+        content: Collection<Element> = emptyList(),
+    ) = Element(
         "el-option",
-        directives = listOf(
-            VFor(item, options, withIndex)
-        ),
-        props = listOf(
-            Vue3PropBind("key", key(item)),
-            Vue3PropBind("value", value(item)),
-            Vue3PropBind("label", label(item))
+        props = listOfNotNull(
+            PropBind("value", value),
+            label.toPropBind("label"),
         )
     )
+
+    fun options(
+        options: String,
+        option: String,
+        withIndex: Boolean = false,
+        key: (option: String) -> String? = { null },
+        value: (option: String) -> String = { "$it.value" },
+        label: (option: String) -> String? = { "$it.label" },
+        content: Collection<Element> = emptyList(),
+    ) = option(
+        value(option),
+        label(option),
+        content,
+    ).merge {
+        directives += VFor(option, options, withIndex)
+        key(option).toPropBind("key")?.let { props.add(0, it) }
+    }
 
     fun timePicker(
         modelValue: String = "modelValue",
@@ -95,7 +138,8 @@ interface ElementPlus {
         comment: String = "时间",
         placeholder: (comment: String) -> String? = { "请选择$it" },
         clearable: Boolean = true,
-    ) = Vue3TemplateElement(
+        disabled: Boolean = false,
+    ) = Element(
         "el-time-picker",
         directives = listOf(
             VModel(modelValue)
@@ -104,6 +148,7 @@ interface ElementPlus {
             valueFormat.toPropBind("value-format", true),
             placeholder(comment).toPropBind("placeholder", true),
             clearable.toPropBind("clearable"),
+            disabled.toPropBind("disabled"),
         )
     )
 
@@ -113,16 +158,18 @@ interface ElementPlus {
         comment: String = "日期",
         placeholder: (comment: String) -> String? = { "请选择$it" },
         clearable: Boolean = true,
-    ) = Vue3TemplateElement(
+        disabled: Boolean = false,
+    ) = Element(
         "el-date-picker",
         directives = listOf(
             VModel(modelValue)
         ),
         props = listOfNotNull(
-            Vue3PropBind("type", "date", true),
+            PropBind("type", "date", true),
             valueFormat.toPropBind("value-format", true),
             placeholder(comment).toPropBind("placeholder", true),
             clearable.toPropBind("clearable"),
+            disabled.toPropBind("disabled"),
         )
     )
 
@@ -132,16 +179,18 @@ interface ElementPlus {
         comment: String = "日期时间",
         placeholder: (comment: String) -> String? = { "请选择$it" },
         clearable: Boolean = true,
-    ) = Vue3TemplateElement(
+        disabled: Boolean = false,
+    ) = Element(
         "el-date-picker",
         directives = listOf(
             VModel(modelValue)
         ),
         props = listOfNotNull(
-            Vue3PropBind("type", "datetime", true),
+            PropBind("type", "datetime", true),
             valueFormat.toPropBind("value-format", true),
             placeholder(comment).toPropBind("placeholder", true),
             clearable.toPropBind("clearable"),
+            disabled.toPropBind("disabled"),
         )
     )
 
@@ -152,18 +201,20 @@ interface ElementPlus {
         startPlaceholder: (comment: String) -> String? = { "请选择开始$it" },
         endPlaceholder: (comment: String) -> String? = { "请选择结束$it" },
         clearable: Boolean = true,
-    ) = Vue3TemplateElement(
+        disabled: Boolean = false,
+    ) = Element(
         "el-time-picker",
         directives = listOf(
             VModel(modelValue)
         ),
         props = listOfNotNull(
             valueFormat.toPropBind("value-format", true),
-            Vue3PropBind("is-range", isLiteral = true),
-            Vue3PropBind("unlink-panels", isLiteral = true),
+            PropBind("is-range", isLiteral = true),
+            PropBind("unlink-panels", isLiteral = true),
             startPlaceholder(comment).toPropBind("start-placeholder", true),
             endPlaceholder(comment).toPropBind("end-placeholder", true),
             clearable.toPropBind("clearable"),
+            disabled.toPropBind("disabled"),
         )
     )
 
@@ -174,19 +225,21 @@ interface ElementPlus {
         startPlaceholder: (comment: String) -> String? = { "请选择开始$it" },
         endPlaceholder: (comment: String) -> String? = { "请选择结束$it" },
         clearable: Boolean = true,
-    ) = Vue3TemplateElement(
+        disabled: Boolean = false,
+    ) = Element(
         "el-date-picker",
         directives = listOf(
             VModel(modelValue)
         ),
         props = listOfNotNull(
-            Vue3PropBind("type", "date", true),
+            PropBind("type", "date", true),
             valueFormat.toPropBind("value-format", true),
-            Vue3PropBind("is-range", isLiteral = true),
-            Vue3PropBind("unlink-panels", isLiteral = true),
+            PropBind("is-range", isLiteral = true),
+            PropBind("unlink-panels", isLiteral = true),
             startPlaceholder(comment).toPropBind("start-placeholder", true),
             endPlaceholder(comment).toPropBind("end-placeholder", true),
             clearable.toPropBind("clearable"),
+            disabled.toPropBind("disabled"),
         )
     )
 
@@ -197,19 +250,21 @@ interface ElementPlus {
         startPlaceholder: (comment: String) -> String? = { "请选择开始$it" },
         endPlaceholder: (comment: String) -> String? = { "请选择结束$it" },
         clearable: Boolean = true,
-    ) = Vue3TemplateElement(
+        disabled: Boolean = false,
+    ) = Element(
         "el-date-picker",
         directives = listOf(
             VModel(modelValue)
         ),
         props = listOfNotNull(
-            Vue3PropBind("type", "datetime", true),
+            PropBind("type", "datetime", true),
             valueFormat.toPropBind("value-format", true),
-            Vue3PropBind("is-range", isLiteral = true),
-            Vue3PropBind("unlink-panels", isLiteral = true),
+            PropBind("is-range", isLiteral = true),
+            PropBind("unlink-panels", isLiteral = true),
             startPlaceholder(comment).toPropBind("start-placeholder", true),
             endPlaceholder(comment).toPropBind("end-placeholder", true),
             clearable.toPropBind("clearable"),
+            disabled.toPropBind("disabled"),
         )
     )
 
@@ -217,24 +272,26 @@ interface ElementPlus {
         prop: String,
         label: String,
         rule: String? = null,
-    ) = Vue3TemplateElement(
+        content: Collection<Element>,
+    ) = Element(
         "el-form-item",
         props = listOfNotNull(
-            Vue3PropBind("prop", prop, isLiteral = true),
-            Vue3PropBind("label", label, isLiteral = true),
+            PropBind("prop", prop, isLiteral = true),
+            PropBind("label", label, isLiteral = true),
             rule.toPropBind("rule"),
-        )
+        ),
+        children = content,
     )
 
     fun form(
         model: String,
         rules: String,
-        items: Collection<Vue3TemplateElement>,
-    ) = Vue3TemplateElement(
+        items: Collection<Element>,
+    ) = Element(
         "el-form",
         props = listOf(
-            Vue3PropBind("model", model),
-            Vue3PropBind("rules", rules),
+            PropBind("model", model),
+            PropBind("rules", rules),
         ),
         children = items
     )
@@ -242,22 +299,19 @@ interface ElementPlus {
     fun tableColumn(
         prop: String,
         label: String,
-        content: Collection<Vue3TemplateElement>,
-    ) = Vue3TemplateElement(
+        content: Collection<Element> = emptyList(),
+    ) = Element(
         "el-table-column",
         props = listOf(
-            Vue3PropBind("prop", prop, isLiteral = true),
-            Vue3PropBind("label", label, isLiteral = true),
+            PropBind("prop", prop, isLiteral = true),
+            PropBind("label", label, isLiteral = true),
         ),
         children = listOfNotNull(
             if (content.isEmpty())
                 null
-            else Vue3TemplateElement(
-                "template",
-                props = listOf(
-                    Vue3PropBind("#default", "scope", isLiteral = true),
-                ),
-                children = content,
+            else slotTemplate(
+                propScope = "scope",
+                content = content,
             )
         )
     )
@@ -266,11 +320,11 @@ interface ElementPlus {
         data: String,
         border: Boolean = true,
         stripe: Boolean = true,
-        columns: Collection<Vue3TemplateElement>,
-    ) = Vue3TemplateElement(
+        columns: Collection<Element>,
+    ) = Element(
         "el-table",
         props = listOfNotNull(
-            Vue3PropBind("data", data),
+            PropBind("data", data),
             border.toPropBind("border"),
             stripe.toPropBind("stripe"),
         ),
@@ -281,8 +335,8 @@ interface ElementPlus {
         modelValue: String,
         destroyOnClose: Boolean = true,
         closeOnClickModal: Boolean = false,
-        content: Collection<Vue3TemplateElement>,
-    ) = Vue3TemplateElement(
+        content: Collection<Element>,
+    ) = Element(
         "el-dialog",
         directives = listOf(
             VModel(modelValue),
@@ -292,5 +346,52 @@ interface ElementPlus {
             closeOnClickModal.toPropBind("close-on-click-modal", default = true),
         ),
         children = content
+    )
+
+    fun col(
+        span: Int = 24,
+        offset: Int? = null,
+        content: Collection<Element>,
+    ) = Element(
+        "el-col",
+        props = listOfNotNull(
+            span.toPropBind("span"),
+            offset.toPropBind("offset"),
+        ),
+        children = content
+    )
+
+    fun row(
+        gutter: Int? = null,
+        content: Collection<Element>,
+    ) = Element(
+        "el-row",
+        props = listOfNotNull(
+            gutter.toPropBind("gutter"),
+        ),
+        children = content
+    )
+
+    fun button(
+        content: String? = null,
+        disabled: Boolean = false,
+        type: Type? = null,
+        icon: String? = null,
+        plain: Boolean = false,
+        link: Boolean = false,
+        round: Boolean = false,
+        circle: Boolean = false,
+    ) = Element(
+        "el-button",
+        props = listOfNotNull(
+            type.toPropBind(),
+            icon.toPropBind("icon"),
+            plain.toPropBind("plain"),
+            link.toPropBind("link"),
+            round.toPropBind("round"),
+            circle.toPropBind("circle"),
+            disabled.toPropBind("disabled"),
+        ),
+        content = content
     )
 }
