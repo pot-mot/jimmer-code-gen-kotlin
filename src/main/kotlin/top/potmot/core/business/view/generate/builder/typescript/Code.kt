@@ -22,12 +22,13 @@ data class FunctionArg(
 )
 
 data class Function(
+    var async: Boolean = false,
     val name: String,
     val args: Iterable<FunctionArg> = emptyList(),
     val returnType: String? = null,
-    val body: String,
+    val body: Collection<CodeItem>,
 ) : CodeItem
 
-data class CommonBlock(
+data class CodeBlock(
     val content: String
 ) : CodeItem
