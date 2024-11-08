@@ -29,7 +29,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         }
 
     private fun Component.needPropsDeclare(): Boolean =
-        copy(props = emptyList()).toString().contains("props")
+        copy(props = emptyList()).toString().replace("props=[]", "").contains("props")
 
     fun Iterable<Prop>.stringifyProps(): String {
         val props = map { prop ->
@@ -52,7 +52,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
     }
 
     private fun Component.needEmitsDeclare(): Boolean =
-        copy(props = emptyList()).toString().contains("emits")
+        copy(emits = emptyList()).toString().replace("emits=[]", "").contains("emits")
 
     fun Iterable<Event>.stringifyEmits(): String {
         val emits = map { emit ->
@@ -158,22 +158,30 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         appendLines(stringifyModels)
         if (stringifyModels.isNotEmpty()) appendLine()
 
-        val stringifyProps = vueComponentPart.props.stringifyProps()
-        if (vueComponentPart.needPropsDeclare()) append("const props = ")
-        appendBlock(stringifyProps)
-        if (stringifyProps.isNotEmpty()) appendLine()
+        if (vueComponentPart.props.isNotEmpty()) {
+            val stringifyProps = vueComponentPart.props.stringifyProps()
+            if (vueComponentPart.needPropsDeclare()) append("const props = ")
+            appendBlock(stringifyProps)
+            if (stringifyProps.isNotEmpty()) appendLine()
+        }
 
-        val stringifyEmits = vueComponentPart.emits.stringifyEmits()
-        if (vueComponentPart.needEmitsDeclare()) append("const emits = ")
-        appendBlock(stringifyEmits)
-        if (stringifyEmits.isNotEmpty()) appendLine()
+        if (vueComponentPart.emits.isNotEmpty()) {
+            val stringifyEmits = vueComponentPart.emits.stringifyEmits()
+            if (vueComponentPart.needEmitsDeclare()) append("const emits = ")
+            appendBlock(stringifyEmits)
+            if (stringifyEmits.isNotEmpty()) appendLine()
+        }
 
-        val stringifySlots = vueComponentPart.slots.stringifySlots()
-        appendBlock(stringifySlots)
-        if (stringifySlots.isNotEmpty()) appendLine()
+        if (vueComponentPart.slots.isNotEmpty()) {
+            val stringifySlots = vueComponentPart.slots.stringifySlots()
+            appendBlock(stringifySlots)
+            if (stringifySlots.isNotEmpty()) appendLine()
+        }
 
-        val stringifyCodes = vueComponentPart.script.stringifyCodes()
-        appendBlock(stringifyCodes)
+        if (vueComponentPart.script.isNotEmpty()) {
+            val stringifyCodes = vueComponentPart.script.stringifyCodes()
+            appendBlock(stringifyCodes)
+        }
 
         appendLine("</script>")
         appendLine()
@@ -183,12 +191,15 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         appendBlock(stringifyElements)
 
         appendLine("</template>")
-        appendLine()
-        appendLine("<style scoped>")
 
-        val stringifyClasses = vueComponentPart.style.stringifyStyleClass()
-        appendLine(stringifyClasses)
+        if (vueComponentPart.style.isNotEmpty()) {
+            appendLine()
+            appendLine("<style scoped>")
 
-        appendLine("</style>")
+            val stringifyClasses = vueComponentPart.style.stringifyStyleClass()
+            appendLine(stringifyClasses)
+
+            appendLine("</style>")
+        }
     }
 }

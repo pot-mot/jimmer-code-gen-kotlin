@@ -27,9 +27,9 @@ interface TypeScriptBuilder {
 
     fun Iterable<ImportItem>.stringifyImports(): List<String> =
         groupBy { it.path }.map { (path, imports) ->
-            val commonImports = mutableListOf<String>()
-            val typeOnlyImports = mutableListOf<String>()
-            val defaultImports = mutableListOf<String>()
+            val commonImports = mutableSetOf<String>()
+            val typeOnlyImports = mutableSetOf<String>()
+            val defaultImports = mutableSetOf<String>()
 
             imports.forEach { importItem ->
                 when (importItem) {
@@ -45,13 +45,13 @@ interface TypeScriptBuilder {
             val importStatements = mutableListOf<String>()
 
             if (commonImports.isNotEmpty())
-                importStatements.add("import { ${commonImports.inlineOrWarp()} } from \"$path\"")
+                importStatements.add("import {${commonImports.toList().inlineOrWarp()}} from \"$path\"")
 
             if (typeOnlyImports.isNotEmpty())
-                importStatements.add("import type { ${typeOnlyImports.inlineOrWarp()} } from \"$path\"")
+                importStatements.add("import type {${typeOnlyImports.toList().inlineOrWarp()}} from \"$path\"")
 
             if (defaultImports.isNotEmpty())
-                importStatements.add("import ${defaultImports[0]} from \"$path\"")
+                importStatements.add("import ${defaultImports.toList()[0]} from \"$path\"")
 
             importStatements
         }.flatten()

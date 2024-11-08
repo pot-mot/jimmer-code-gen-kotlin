@@ -115,14 +115,12 @@ open class ElementAttributes(
     open val events: Iterable<EventBind> = emptyList(),
     open val children: Collection<Element> = emptyList(),
 ) {
-    // 创建一个 Builder 类
     class Builder(
         var directives: MutableList<Directive> = mutableListOf(),
         var props: MutableList<PropBind> = mutableListOf(),
         var events: MutableList<EventBind> = mutableListOf(),
         var children: MutableList<Element> = mutableListOf()
     ) {
-        // 构建最终的 Element 对象
         fun build() = ElementAttributes(
             directives = directives,
             props = props,
@@ -145,9 +143,9 @@ data class Element(
     events = events,
     children = children,
 ) {
-
     fun merge(block: Builder.() -> Unit): Element {
-        val builder = Builder(directives.toMutableList(), props.toMutableList(), events.toMutableList(), children.toMutableList())
+        val builder =
+            Builder(directives.toMutableList(), props.toMutableList(), events.toMutableList(), children.toMutableList())
         builder.block()
         return Element(
             tag = tag,
@@ -183,23 +181,47 @@ fun slotTemplate(
 )
 
 data class Component(
-    val imports: Iterable<ImportItem> = emptyList(),
-    val models: Iterable<ModelProp> = emptyList(),
-    val props: Iterable<Prop> = emptyList(),
-    val emits: Iterable<Event> = emptyList(),
-    val slots: Iterable<Slot> = emptyList(),
-    val script: Iterable<CodeItem> = emptyList(),
+    val imports: Collection<ImportItem> = emptyList(),
+    val models: Collection<ModelProp> = emptyList(),
+    val props: Collection<Prop> = emptyList(),
+    val emits: Collection<Event> = emptyList(),
+    val slots: Collection<Slot> = emptyList(),
+    val script: Collection<CodeItem> = emptyList(),
     val template: Iterable<Element> = emptyList(),
-    val style: Iterable<StyleClass> = emptyList(),
-)
+    val style: Collection<StyleClass> = emptyList(),
+) {
+    class Builder(
+        var imports: MutableList<ImportItem> = mutableListOf(),
+        var models: MutableList<ModelProp> = mutableListOf(),
+        var props: MutableList<Prop> = mutableListOf(),
+        var emits: MutableList<Event> = mutableListOf(),
+        var slots: MutableList<Slot> = mutableListOf(),
+        var script: MutableList<CodeItem> = mutableListOf(),
+        var template: MutableList<Element> = mutableListOf(),
+        var style: MutableList<StyleClass> = mutableListOf(),
+    ) {
+        fun build() = Component(
+            imports = imports,
+            models = models,
+            props = props,
+            emits = emits,
+            slots = slots,
+            script = script,
+            template = template,
+            style = style
+        )
+    }
 
-fun Iterable<Component>.merge() = Component(
-    imports = flatMap { it.imports },
-    models = flatMap { it.models },
-    props = flatMap { it.props },
-    emits = flatMap { it.emits },
-    slots = flatMap { it.slots },
-    script = flatMap { it.script },
-    template = flatMap { it.template },
-    style = flatMap { it.style },
-)
+    fun merge(vararg builders: Builder): Component {
+        return Component(
+            imports = imports + builders.flatMap { it.imports },
+            models = models + builders.flatMap { it.models },
+            props = props + builders.flatMap { it.props },
+            emits = emits + builders.flatMap { it.emits },
+            slots = slots + builders.flatMap { it.slots },
+            script = script + builders.flatMap { it.script },
+            template = template + builders.flatMap { it.template },
+            style = style + builders.flatMap { it.style }
+        )
+    }
+}
