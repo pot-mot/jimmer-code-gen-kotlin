@@ -119,7 +119,8 @@ interface ElementPlus {
         props = listOfNotNull(
             PropBind("value", value),
             label.toPropBind("label", isLiteral = labelIsLiteral),
-        )
+        ),
+        children = content
     )
 
     fun options(
