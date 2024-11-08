@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.addForm
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
 import top.potmot.core.business.utils.defaultItems
 import top.potmot.core.business.utils.typeStrToTypeScriptDefault
