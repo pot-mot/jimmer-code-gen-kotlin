@@ -9,10 +9,10 @@ import top.potmot.core.business.view.generate.meta.typescript.LetVariable
 import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.Event
-import top.potmot.core.business.view.generate.meta.vue3.Import
-import top.potmot.core.business.view.generate.meta.vue3.ImportDefault
-import top.potmot.core.business.view.generate.meta.vue3.ImportItem
-import top.potmot.core.business.view.generate.meta.vue3.ImportType
+import top.potmot.core.business.view.generate.meta.typescript.Import
+import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
+import top.potmot.core.business.view.generate.meta.typescript.ImportItem
+import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.meta.vue3.Slot
