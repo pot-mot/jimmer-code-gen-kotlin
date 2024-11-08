@@ -21,9 +21,15 @@ interface ViewGenerator {
 
     fun stringifyTable(entity: GenEntityBusinessView): String
 
-    fun GenEntityBusinessView.defaultAddInput() = "Default${name}AddInput"
+    val GenEntityBusinessView.addFormDataType
+        get() = "${name}AddInput"
 
-    fun stringifyDefaultAddInput(entity: GenEntityBusinessView): String
+    fun stringifyAddFormDataType(entity: GenEntityBusinessView): String
+
+    val GenEntityBusinessView.defaultAddFormData
+        get() = "Default${name}AddFormData"
+
+    fun stringifyDefaultAddFormData(entity: GenEntityBusinessView): String
 
     fun stringifyAddFormRules(entity: GenEntityBusinessView): String
 
@@ -86,7 +92,8 @@ interface ViewGenerator {
 
         val suffix = getFileSuffix()
         val (_, dir, table, addForm, editForm, queryForm, page, singleSelect, multiSelect, idSelect, idMultiSelect, editTable) = flatEntity.componentNames
-        val defaultAddInput = flatEntity.defaultAddInput()
+        val addFormDataType = flatEntity.addFormDataType
+        val defaultAddFormData = flatEntity.defaultAddFormData
         val (_, ruleDir, addFormRules, editFormRules, editTableRules) = entity.ruleNames
 
         return listOf(
@@ -96,9 +103,14 @@ interface ViewGenerator {
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Table),
             ),
             GenerateFile(
-                "components/${dir}/${defaultAddInput}.ts",
-                stringifyDefaultAddInput(flatEntity),
-                listOf(GenerateTag.FrontEnd, GenerateTag.DefaultAddInput),
+                "components/${dir}/${addFormDataType}.d.ts",
+                stringifyAddFormDataType(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.AddFormDataType),
+            ),
+            GenerateFile(
+                "components/${dir}/${defaultAddFormData}.ts",
+                stringifyDefaultAddFormData(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.DefaultAddFormData),
             ),
             GenerateFile(
                 "components/${dir}/${addForm}.$suffix",
