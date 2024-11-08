@@ -25,7 +25,7 @@ class QueryFormItemTest : QueryFormItem {
     private val builder = Vue3ComponentBuilder()
 
     private val GenEntityBusinessView.TargetOf_properties.result: String
-        get() = createQueryFormItem(spec).children.let {
+        get() = createQueryFormItem(spec).let {
             var result: String
             builder.apply {
                 result = it.stringifyElements()
@@ -41,7 +41,6 @@ class QueryFormItemTest : QueryFormItem {
     v-model="spec.name"
     placeholder="请输入comment"
     clearable
-    @change="emits('query')"
 />
             """.trimIndent(),
             baseProperty.result,
@@ -60,7 +59,6 @@ class QueryFormItemTest : QueryFormItem {
     start-placeholder="请选择开始comment"
     end-placeholder="请选择结束comment"
     clearable
-    @change="emits('query')"
 />
             """.trimIndent(),
             baseProperty.copy(type = "java.time.LocalTime").result,
@@ -80,7 +78,6 @@ class QueryFormItemTest : QueryFormItem {
     start-placeholder="请选择开始comment"
     end-placeholder="请选择结束comment"
     clearable
-    @change="emits('query')"
 />
             """.trimIndent(),
             baseProperty.copy(type = "java.time.LocalDate").result,
@@ -100,7 +97,6 @@ class QueryFormItemTest : QueryFormItem {
     start-placeholder="请选择开始comment"
     end-placeholder="请选择结束comment"
     clearable
-    @change="emits('query')"
 />
             """.trimIndent(),
             baseProperty.copy(type = "java.time.LocalDateTime").result,
@@ -115,7 +111,6 @@ class QueryFormItemTest : QueryFormItem {
     v-model="spec.name"
     placeholder="请选择comment"
     clearable
-    @change="emits('query')"
 >
     <el-option
         :value="false"
@@ -140,14 +135,12 @@ class QueryFormItemTest : QueryFormItem {
     placeholder="请输入最小comment"
     :precision="0"
     :value-on-clear="undefined"
-    @change="emits('query')"
 />
 <el-input-number
     v-model.number="spec.maxName"
     placeholder="请输入最大comment"
     :precision="0"
     :value-on-clear="undefined"
-    @change="emits('query')"
 />
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.Int").result,
@@ -160,14 +153,12 @@ class QueryFormItemTest : QueryFormItem {
     placeholder="请输入最小comment"
     :precision="0"
     :value-on-clear="undefined"
-    @change="emits('query')"
 />
 <el-input-number
     v-model.number="spec.maxName"
     placeholder="请输入最大comment"
     :precision="0"
     :value-on-clear="undefined"
-    @change="emits('query')"
 />
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.Int", typeNotNull = false).result,
@@ -182,7 +173,6 @@ class QueryFormItemTest : QueryFormItem {
     :min="0"
     :max="999999999"
     :value-on-clear="undefined"
-    @change="emits('query')"
 />
 <el-input-number
     v-model.number="spec.maxName"
@@ -191,7 +181,6 @@ class QueryFormItemTest : QueryFormItem {
     :min="0"
     :max="999999999"
     :value-on-clear="undefined"
-    @change="emits('query')"
 />
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9)).result,
@@ -207,14 +196,12 @@ class QueryFormItemTest : QueryFormItem {
     placeholder="请输入最小comment"
     :precision="0"
     :value-on-clear="undefined"
-    @change="emits('query')"
 />
 <el-input-number
     v-model.number="spec.maxName"
     placeholder="请输入最大comment"
     :precision="0"
     :value-on-clear="undefined"
-    @change="emits('query')"
 />
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.Float").result,
@@ -229,7 +216,6 @@ class QueryFormItemTest : QueryFormItem {
     :min="0.00"
     :max="99999999.99"
     :value-on-clear="undefined"
-    @change="emits('query')"
 />
 <el-input-number
     v-model.number="spec.maxName"
@@ -238,7 +224,6 @@ class QueryFormItemTest : QueryFormItem {
     :min="0.00"
     :max="99999999.99"
     :value-on-clear="undefined"
-    @change="emits('query')"
 />
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.Float", column = TargetOf_column(dataSize = 10, numericPrecision = 2)).result,
@@ -249,10 +234,7 @@ class QueryFormItemTest : QueryFormItem {
     fun `test enum` () {
         assertEquals(
             """
-<EnumNullableSelect
-    v-model="spec.name"
-    @change="emits('query')"
-/>
+<EnumNullableSelect v-model="spec.name"/>
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.String", enum = TargetOf_enum(
                 packagePath = "",

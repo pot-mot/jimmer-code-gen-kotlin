@@ -9,11 +9,9 @@ import top.potmot.core.business.view.generate.meta.rules.numberMax
 import top.potmot.core.business.view.generate.meta.rules.numberMin
 import top.potmot.core.business.view.generate.meta.rules.numberPrecision
 import top.potmot.core.business.view.generate.meta.vue3.Element
-import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.dateTimePickerRange
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.input
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.inputNumber
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.option
@@ -21,10 +19,8 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.timePickerRange
 import top.potmot.entity.dto.GenEntityBusinessView
 
-private val queryOnChange = EventBind("change", "emits('query')")
-
 interface QueryFormItem {
-    fun GenEntityBusinessView.TargetOf_properties.createQueryFormItem(spec: String): Element {
+    fun GenEntityBusinessView.TargetOf_properties.createQueryFormItem(spec: String): List<Element> {
         val modelValue = "$spec.${name}"
         val rangeModelValue = "${name}Range"
         val minModelValue = "$spec.min${name.replaceFirstChar { c -> c.uppercaseChar() }}"
@@ -32,7 +28,7 @@ interface QueryFormItem {
         val numberMin = numberMin
         val numberMax = numberMax
 
-        val elements = when (queryType) {
+        return when (queryType) {
             PropertyQueryType.ASSOCIATION_ID_EQ ->
                 listOf(
                     Element(
@@ -140,15 +136,5 @@ interface QueryFormItem {
                         )
                 }
         }
-
-        return formItem(
-            prop = name,
-            label = comment,
-            content = elements.map {
-                it.merge {
-                    events += listOf(queryOnChange)
-                }
-            }
-        )
     }
 }

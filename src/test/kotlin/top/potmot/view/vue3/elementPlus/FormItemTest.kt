@@ -27,7 +27,7 @@ class FormItemTest : FormItem {
     private val builder = Vue3ComponentBuilder()
 
     private val GenEntityBusinessView.TargetOf_properties.result: String
-        get() = createFormItem(formData, disabled).children.let {
+        get() = createFormItem(formData, disabled).let {
             var result: String
             builder.apply {
                 result = it.stringifyElements()

@@ -11,7 +11,6 @@ import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.toPropBind
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.dateTimePicker
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.input
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.inputNumber
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.option
@@ -24,12 +23,12 @@ interface FormItem {
     fun GenEntityBusinessView.TargetOf_properties.createFormItem(
         formData: String,
         disabled: Boolean = false,
-    ): Element {
+    ): List<Element> {
         val modelValue = "$formData.${name}"
         val numberMin = numberMin
         val numberMax = numberMax
 
-        val elements = when (formType) {
+        return when (formType) {
             PropertyFormType.ASSOCIATION_ID ->
                 listOf(
                     Element(
@@ -189,11 +188,5 @@ interface FormItem {
                     )
                 )
         }
-
-        return formItem(
-            prop = name,
-            label = comment,
-            content = elements
-        )
     }
 }
