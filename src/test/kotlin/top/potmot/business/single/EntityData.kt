@@ -317,25 +317,20 @@ const val entityData = """
                 "name": "MatchStatus",
                 "comment": "",
                 "enumType": "NAME",
-                "defaultItems": [
-                    {
-                        "id": 62,
-                        "name": "EQ",
-                        "comment": ""
-                    }
-                ],
                 "items": [
                     {
                         "id": 62,
                         "name": "EQ",
                         "comment": "",
-                        "mappedValue": "EQ"
+                        "mappedValue": "EQ",
+                        "orderKey": 0
                     },
                     {
                         "id": 63,
                         "name": "NE",
                         "comment": "",
-                        "mappedValue": "NE"
+                        "mappedValue": "NE",
+                        "orderKey": 1
                     }
                 ]
             }

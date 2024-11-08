@@ -103,3 +103,6 @@ data class EnumComponentNames(
 
 val GenerateEnum.componentNames
     get() = EnumComponentNames(this)
+
+val GenEntityBusinessView.TargetOf_properties.TargetOf_enum.defaultItems
+    get() = items.filter { it.orderKey == 0L }

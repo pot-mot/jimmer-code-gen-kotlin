@@ -12,10 +12,8 @@ import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
-import org.babyfish.jimmer.sql.Transient
 import top.potmot.enumeration.EnumType
 import top.potmot.entity.base.BaseEntity
-import top.potmot.entity.resolver.GenEnumDefaultItemsResolver
 
 /**
  * 生成枚举
@@ -84,10 +82,4 @@ interface GenEnum : BaseEntity {
      */
     @IdView("items")
     val itemIds: List<Long>
-
-    /**
-     * 默认枚举元素
-     */
-    @Transient(GenEnumDefaultItemsResolver::class)
-    val defaultItems: List<GenEnumItem>
 }

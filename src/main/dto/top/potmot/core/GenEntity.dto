@@ -82,19 +82,12 @@ GenEntityBusinessView implements GenerateEntity {
             packagePath
             name
             comment
-            enumType
-
-            defaultItems {
-                id
-                name
-                comment
-            }
 
             items {
                 id
                 name
                 comment
-                mappedValue
+                orderKey
             }
         }
     }

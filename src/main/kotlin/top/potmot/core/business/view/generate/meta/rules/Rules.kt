@@ -3,7 +3,6 @@ package top.potmot.core.business.view.generate.meta.rules
 import top.potmot.core.business.utils.PropertyFormType
 import top.potmot.core.business.utils.formType
 import top.potmot.entity.dto.GenEntityBusinessView
-import top.potmot.enumeration.EnumType
 
 sealed interface Rule {
     fun stringify(): String
@@ -153,13 +152,7 @@ val GenEntityBusinessView.TargetOf_properties.rules: List<Rule>
             rules += ArrayRule(comment)
         } else {
             if (enum != null) {
-                val items = when (enum.enumType) {
-                    EnumType.ORDINAL -> enum.items.map { it.mappedValue }
-                    EnumType.NAME -> enum.items.map { "\"${it.mappedValue}\"" }
-                    null -> enum.items.map { "\"${it.name}\"" }
-                }
-
-                rules += EnumRule(comment, items)
+                rules += EnumRule(comment, enum.items.map { "\"${it.name}\"" })
             } else {
                 val formType = formType
 
