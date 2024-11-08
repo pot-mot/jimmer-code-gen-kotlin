@@ -2,9 +2,9 @@ package top.potmot.view.rules
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.core.business.view.generate.builder.rules.numberMax
-import top.potmot.core.business.view.generate.builder.rules.numberMin
-import top.potmot.core.business.view.generate.builder.rules.numberPrecision
+import top.potmot.core.business.view.generate.meta.rules.numberMax
+import top.potmot.core.business.view.generate.meta.rules.numberMin
+import top.potmot.core.business.view.generate.meta.rules.numberPrecision
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import java.time.LocalDateTime

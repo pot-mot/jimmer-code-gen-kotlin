@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.builder.typescript
+package top.potmot.core.business.view.generate.meta.typescript
 
 sealed interface CodeItem
 

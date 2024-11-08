@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.builder.style
+package top.potmot.core.business.view.generate.meta.style
 
 data class StyleClass(
     val selector: String,

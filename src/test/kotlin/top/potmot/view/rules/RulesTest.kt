@@ -1,19 +1,19 @@
 package top.potmot.view.rules
 
-import top.potmot.core.business.view.generate.builder.rules.RequiredRule
+import top.potmot.core.business.view.generate.meta.rules.RequiredRule
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.core.business.view.generate.builder.rules.ArrayRule
-import top.potmot.core.business.view.generate.builder.rules.BooleanRule
-import top.potmot.core.business.view.generate.builder.rules.DateRule
-import top.potmot.core.business.view.generate.builder.rules.EnumRule
-import top.potmot.core.business.view.generate.builder.rules.IntRule
-import top.potmot.core.business.view.generate.builder.rules.IntSizeRule
-import top.potmot.core.business.view.generate.builder.rules.NumberRule
-import top.potmot.core.business.view.generate.builder.rules.NumberSizeRule
-import top.potmot.core.business.view.generate.builder.rules.PatternRule
-import top.potmot.core.business.view.generate.builder.rules.StringLengthRule
+import top.potmot.core.business.view.generate.meta.rules.ArrayRule
+import top.potmot.core.business.view.generate.meta.rules.BooleanRule
+import top.potmot.core.business.view.generate.meta.rules.DateRule
+import top.potmot.core.business.view.generate.meta.rules.EnumRule
+import top.potmot.core.business.view.generate.meta.rules.IntRule
+import top.potmot.core.business.view.generate.meta.rules.IntSizeRule
+import top.potmot.core.business.view.generate.meta.rules.NumberRule
+import top.potmot.core.business.view.generate.meta.rules.NumberSizeRule
+import top.potmot.core.business.view.generate.meta.rules.PatternRule
+import top.potmot.core.business.view.generate.meta.rules.StringLengthRule
 
 class RulesTest {
     @Test

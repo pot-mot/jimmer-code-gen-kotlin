@@ -1,7 +1,7 @@
-package top.potmot.core.business.view.generate.builder.vue3
+package top.potmot.core.business.view.generate.meta.vue3
 
-import top.potmot.core.business.view.generate.builder.style.StyleClass
-import top.potmot.core.business.view.generate.builder.typescript.CodeItem
+import top.potmot.core.business.view.generate.meta.style.StyleClass
+import top.potmot.core.business.view.generate.meta.typescript.CodeItem
 
 sealed class ImportItem(
     open val path: String

@@ -1,11 +1,11 @@
 package top.potmot.core.business.view.generate.builder.vue3.componentLib
 
-import top.potmot.core.business.view.generate.builder.vue3.Element
-import top.potmot.core.business.view.generate.builder.vue3.PropBind
-import top.potmot.core.business.view.generate.builder.vue3.VFor
-import top.potmot.core.business.view.generate.builder.vue3.VModel
-import top.potmot.core.business.view.generate.builder.vue3.slotTemplate
-import top.potmot.core.business.view.generate.builder.vue3.toPropBind
+import top.potmot.core.business.view.generate.meta.vue3.Element
+import top.potmot.core.business.view.generate.meta.vue3.PropBind
+import top.potmot.core.business.view.generate.meta.vue3.VFor
+import top.potmot.core.business.view.generate.meta.vue3.VModel
+import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
+import top.potmot.core.business.view.generate.meta.vue3.toPropBind
 import top.potmot.utils.number.format
 import top.potmot.utils.number.formatIfDouble
 

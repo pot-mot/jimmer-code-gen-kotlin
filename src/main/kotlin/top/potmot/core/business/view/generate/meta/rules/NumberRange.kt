@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.builder.rules
+package top.potmot.core.business.view.generate.meta.rules
 
 import top.potmot.entity.dto.GenEntityBusinessView
 

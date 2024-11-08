@@ -2,8 +2,8 @@ package top.potmot.view.vue3.elementPlus
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.core.business.view.generate.builder.vue3.Element
-import top.potmot.core.business.view.generate.builder.vue3.PropBind
+import top.potmot.core.business.view.generate.meta.vue3.Element
+import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
 import top.potmot.utils.string.trimBlankLine
