@@ -109,7 +109,7 @@ data class VFor(
     val withIndex: Boolean = false
 ) : Directive
 
-open class ElementAttributes(
+open class TagElementAttributes(
     open val directives: Iterable<Directive> = emptyList(),
     open val props: Iterable<PropBind> = emptyList(),
     open val events: Iterable<EventBind> = emptyList(),
@@ -121,7 +121,7 @@ open class ElementAttributes(
         var events: MutableList<EventBind> = mutableListOf(),
         var children: MutableList<Element> = mutableListOf()
     ) {
-        fun build() = ElementAttributes(
+        fun build() = TagElementAttributes(
             directives = directives,
             props = props,
             events = events,
@@ -130,26 +130,34 @@ open class ElementAttributes(
     }
 }
 
-data class Element(
+sealed interface Element
+
+data class TextElement(
+    val text: String,
+): Element
+
+data class ExpressionElement(
+    val expression: String,
+): Element
+
+data class TagElement(
     val tag: String,
-    val content: String? = null,
     override val directives: Iterable<Directive> = emptyList(),
     override val props: Iterable<PropBind> = emptyList(),
     override val events: Iterable<EventBind> = emptyList(),
     override val children: Collection<Element> = emptyList(),
-) : ElementAttributes(
+) : TagElementAttributes(
     directives = directives,
     props = props,
     events = events,
     children = children,
-) {
-    fun merge(block: Builder.() -> Unit): Element {
+), Element {
+    fun merge(block: Builder.() -> Unit): TagElement {
         val builder =
             Builder(directives.toMutableList(), props.toMutableList(), events.toMutableList(), children.toMutableList())
         builder.block()
-        return Element(
+        return TagElement(
             tag = tag,
-            content = content,
             directives = builder.directives,
             props = builder.props,
             events = builder.events,
@@ -162,8 +170,8 @@ fun slotTemplate(
     name: String = "default",
     propScope: String? = null,
     props: Collection<String>? = null,
-    content: Collection<Element> = emptyList(),
-) = Element(
+    content: Collection<TagElement> = emptyList(),
+) = TagElement(
     "template",
     props = listOf(
         PropBind(

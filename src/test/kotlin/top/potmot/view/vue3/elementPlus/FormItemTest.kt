@@ -100,9 +100,7 @@ class FormItemTest : FormItem {
     fun `test switch` () {
         assertEquals(
             """
-<el-switch
-    v-model="formData.name"
-/>
+<el-switch v-model="formData.name"/>
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.Boolean").result,
         )
@@ -111,17 +109,12 @@ class FormItemTest : FormItem {
             """
 <el-select
     v-model="formData.name"
-    placeholder="请选择"
+    placeholder="请选择comment"
     clearable
+    :value-on-clear="undefined"
 >
-    <el-option
-        :value="true"
-        label="是"
-    />
-    <el-option
-        :value="false"
-        label="否"
-    />
+    <el-option :value="true" label="是"/>
+    <el-option :value="false" label="否"/>
 </el-select>
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.Boolean", typeNotNull = false).result,
@@ -323,9 +316,7 @@ class FormItemTest : FormItem {
     fun `test enum` () {
         assertEquals(
             """
-<EnumSelect
-    v-model="formData.name"
-/>
+<EnumSelect v-model="formData.name"/>
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.String", enum = TargetOf_enum(
                 packagePath = "",

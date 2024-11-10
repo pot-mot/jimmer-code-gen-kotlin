@@ -8,7 +8,7 @@ import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.view.generate.meta.rules.numberMax
 import top.potmot.core.business.view.generate.meta.rules.numberMin
 import top.potmot.core.business.view.generate.meta.rules.numberPrecision
-import top.potmot.core.business.view.generate.meta.vue3.Element
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.dateTimePickerRange
@@ -20,7 +20,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.entity.dto.GenEntityBusinessView
 
 interface QueryFormItem {
-    fun GenEntityBusinessView.TargetOf_properties.createQueryFormItem(spec: String): List<Element> {
+    fun GenEntityBusinessView.TargetOf_properties.createQueryFormItem(spec: String): List<TagElement> {
         val modelValue = "$spec.${name}"
         val rangeModelValue = "${name}Range"
         val minModelValue = "$spec.min${name.replaceFirstChar { c -> c.uppercaseChar() }}"
@@ -31,7 +31,7 @@ interface QueryFormItem {
         return when (queryType) {
             PropertyQueryType.ASSOCIATION_ID_EQ ->
                 listOf(
-                    Element(
+                    TagElement(
                         typeEntity!!.componentNames.idSelect,
                         directives = listOf(VModel(modelValue)),
                     )
@@ -39,7 +39,7 @@ interface QueryFormItem {
 
             PropertyQueryType.ASSOCIATION_ID_IN ->
                 listOf(
-                    Element(
+                    TagElement(
                         typeEntity!!.componentNames.idMultiSelect,
                         directives = listOf(VModel(modelValue)),
                     )
@@ -47,7 +47,7 @@ interface QueryFormItem {
 
             PropertyQueryType.ENUM_SELECT ->
                 listOf(
-                    Element(
+                    TagElement(
                         enum!!.componentNames.nullableSelect,
                         directives = listOf(VModel(modelValue)),
                     )

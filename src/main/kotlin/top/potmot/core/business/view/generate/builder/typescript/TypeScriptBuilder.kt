@@ -15,7 +15,11 @@ interface TypeScriptBuilder {
     val indent: String
     val wrapThreshold: Int
 
-    fun List<String>.inlineOrWarp(separator: String = ","): String {
+    fun Iterable<String>.wrapLines(separator: String = ","): String {
+        return "\n" + joinToString("$separator\n") { "$indent$it" } + "\n"
+    }
+
+    fun Iterable<String>.inlineOrWarpLines(separator: String = ","): String {
         val inline = joinToString("$separator ")
 
         return if (inline.length > wrapThreshold) {
@@ -45,10 +49,10 @@ interface TypeScriptBuilder {
             val importStatements = mutableListOf<String>()
 
             if (commonImports.isNotEmpty())
-                importStatements.add("import {${commonImports.toList().inlineOrWarp()}} from \"$path\"")
+                importStatements.add("import {${commonImports.toList().inlineOrWarpLines()}} from \"$path\"")
 
             if (typeOnlyImports.isNotEmpty())
-                importStatements.add("import type {${typeOnlyImports.toList().inlineOrWarp()}} from \"$path\"")
+                importStatements.add("import type {${typeOnlyImports.toList().inlineOrWarpLines()}} from \"$path\"")
 
             if (defaultImports.isNotEmpty())
                 importStatements.add("import ${defaultImports.toList()[0]} from \"$path\"")
@@ -68,7 +72,7 @@ interface TypeScriptBuilder {
                 is Function -> {
                     val args = item.args.map { arg ->
                         "${arg.name}${if (arg.required) "" else "?"}: ${arg.type}${if (arg.defaultValue != null) " = ${arg.defaultValue}" else ""}"
-                    }.inlineOrWarp()
+                    }.inlineOrWarpLines()
                     val body = item.body.stringifyCodes().replace("\n", "\n$indent")
                     "const ${item.name} = ${if (item.async) "async " else ""}(${args}): ${
                         if (item.returnType != null) {

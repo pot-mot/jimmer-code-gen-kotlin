@@ -6,7 +6,7 @@ import top.potmot.core.business.utils.formType
 import top.potmot.core.business.view.generate.meta.rules.numberMax
 import top.potmot.core.business.view.generate.meta.rules.numberMin
 import top.potmot.core.business.view.generate.meta.rules.numberPrecision
-import top.potmot.core.business.view.generate.meta.vue3.Element
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.toPropBind
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePicker
@@ -23,7 +23,7 @@ interface FormItem {
     fun GenEntityBusinessView.TargetOf_properties.createFormItem(
         formData: String,
         disabled: Boolean = false,
-    ): List<Element> {
+    ): List<TagElement> {
         val modelValue = "$formData.${name}"
         val numberMin = numberMin
         val numberMax = numberMax
@@ -31,7 +31,7 @@ interface FormItem {
         return when (formType) {
             PropertyFormType.ASSOCIATION_ID ->
                 listOf(
-                    Element(
+                    TagElement(
                         typeEntity!!.componentNames.idSelect,
                         directives = listOf(VModel(modelValue)),
                         props = listOfNotNull(
@@ -42,7 +42,7 @@ interface FormItem {
 
             PropertyFormType.ASSOCIATION_LIST ->
                 listOf(
-                    Element(
+                    TagElement(
                         typeEntity!!.componentNames.idMultiSelect,
                         directives = listOf(VModel(modelValue)),
                         props = listOfNotNull(
@@ -53,7 +53,7 @@ interface FormItem {
 
             PropertyFormType.ENUM ->
                 listOf(
-                    Element(
+                    TagElement(
                         if (typeNotNull) enum!!.componentNames.select else enum!!.componentNames.nullableSelect,
                         directives = listOf(VModel(modelValue)),
                         props = listOfNotNull(
@@ -72,6 +72,7 @@ interface FormItem {
                     else
                         select(
                             modelValue,
+                            comment = comment,
                             disabled = disabled,
                             content = listOf(
                                 option("true", "是", true),

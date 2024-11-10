@@ -1,7 +1,9 @@
 package top.potmot.core.business.view.generate.builder.vue3.componentLib
 
 import top.potmot.core.business.view.generate.meta.vue3.Element
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
+import top.potmot.core.business.view.generate.meta.vue3.TextElement
 import top.potmot.core.business.view.generate.meta.vue3.VFor
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
@@ -24,10 +26,18 @@ interface ElementPlus {
     fun text(
         content: String,
         type: Type? = null,
-    ) = Element(
+    ) = text(
+        listOf(TextElement(content)),
+        type,
+    )
+
+    fun text(
+        content: Collection<Element>,
+        type: Type? = null,
+    ) = TagElement(
         "el-text",
         props = listOfNotNull(type.toPropBind()),
-        content = content
+        children = content,
     )
 
     fun input(
@@ -36,7 +46,7 @@ interface ElementPlus {
         placeholder: (comment: String) -> String? = { "请输入$it" },
         clearable: Boolean = true,
         disabled: Boolean = false,
-    ) = Element(
+    ) = TagElement(
         "el-input",
         directives = listOf(
             VModel(modelValue)
@@ -57,7 +67,7 @@ interface ElementPlus {
         max: Double? = null,
         valueOnClear: String? = "undefined",
         disabled: Boolean = false,
-    ) = Element(
+    ) = TagElement(
         "el-input-number",
         directives = listOf(
             VModel(modelValue, modifier = listOf("number"))
@@ -75,7 +85,7 @@ interface ElementPlus {
     fun switch(
         modelValue: String = "modelValue",
         disabled: Boolean = false,
-    ) = Element(
+    ) = TagElement(
         "el-switch",
         directives = listOf(
             VModel(modelValue)
@@ -90,10 +100,11 @@ interface ElementPlus {
         comment: String = "",
         placeholder: (comment: String) -> String? = { "请选择$it" },
         clearable: Boolean = true,
+        valueOnClear: String? = "undefined",
         disabled: Boolean = false,
         multiple: Boolean = false,
-        content: Collection<Element> = listOf(),
-    ) = Element(
+        content: Collection<TagElement> = listOf(),
+    ) = TagElement(
         "el-select",
         directives = listOf(
             VModel(modelValue)
@@ -101,6 +112,7 @@ interface ElementPlus {
         props = listOfNotNull(
             placeholder(comment).toPropBind("placeholder", isLiteral = true),
             clearable.toPropBind("clearable"),
+            valueOnClear.toPropBind("value-on-clear"),
             disabled.toPropBind("disabled"),
             multiple.toPropBind("multiple"),
             multiple.toPropBind("collapse-tags"),
@@ -113,8 +125,8 @@ interface ElementPlus {
         value: String,
         label: String? = null,
         labelIsLiteral: Boolean = false,
-        content: Collection<Element> = emptyList(),
-    ) = Element(
+        content: Collection<TagElement> = emptyList(),
+    ) = TagElement(
         "el-option",
         props = listOfNotNull(
             PropBind("value", value),
@@ -130,7 +142,7 @@ interface ElementPlus {
         key: (option: String) -> String? = { null },
         value: (option: String) -> String = { "$it.value" },
         label: (option: String) -> String? = { "$it.label" },
-        content: Collection<Element> = emptyList(),
+        content: Collection<TagElement> = emptyList(),
     ) = option(
         value(option),
         label(option),
@@ -147,7 +159,7 @@ interface ElementPlus {
         placeholder: (comment: String) -> String? = { "请选择$it" },
         clearable: Boolean = true,
         disabled: Boolean = false,
-    ) = Element(
+    ) = TagElement(
         "el-time-picker",
         directives = listOf(
             VModel(modelValue)
@@ -167,7 +179,7 @@ interface ElementPlus {
         placeholder: (comment: String) -> String? = { "请选择$it" },
         clearable: Boolean = true,
         disabled: Boolean = false,
-    ) = Element(
+    ) = TagElement(
         "el-date-picker",
         directives = listOf(
             VModel(modelValue)
@@ -188,7 +200,7 @@ interface ElementPlus {
         placeholder: (comment: String) -> String? = { "请选择$it" },
         clearable: Boolean = true,
         disabled: Boolean = false,
-    ) = Element(
+    ) = TagElement(
         "el-date-picker",
         directives = listOf(
             VModel(modelValue)
@@ -210,7 +222,7 @@ interface ElementPlus {
         endPlaceholder: (comment: String) -> String? = { "请选择结束$it" },
         clearable: Boolean = true,
         disabled: Boolean = false,
-    ) = Element(
+    ) = TagElement(
         "el-time-picker",
         directives = listOf(
             VModel(modelValue)
@@ -234,7 +246,7 @@ interface ElementPlus {
         endPlaceholder: (comment: String) -> String? = { "请选择结束$it" },
         clearable: Boolean = true,
         disabled: Boolean = false,
-    ) = Element(
+    ) = TagElement(
         "el-date-picker",
         directives = listOf(
             VModel(modelValue)
@@ -259,7 +271,7 @@ interface ElementPlus {
         endPlaceholder: (comment: String) -> String? = { "请选择结束$it" },
         clearable: Boolean = true,
         disabled: Boolean = false,
-    ) = Element(
+    ) = TagElement(
         "el-date-picker",
         directives = listOf(
             VModel(modelValue)
@@ -280,8 +292,8 @@ interface ElementPlus {
         prop: String,
         label: String,
         rule: String? = null,
-        content: Collection<Element>,
-    ) = Element(
+        content: Collection<TagElement>,
+    ) = TagElement(
         "el-form-item",
         props = listOfNotNull(
             PropBind("prop", prop, isLiteral = true),
@@ -295,8 +307,8 @@ interface ElementPlus {
         model: String,
         ref: String? = null,
         rules: String? = null,
-        content: Collection<Element>,
-    ) = Element(
+        content: Collection<TagElement>,
+    ) = TagElement(
         "el-form",
         props = listOfNotNull(
             PropBind("model", model),
@@ -309,8 +321,8 @@ interface ElementPlus {
     fun tableColumn(
         prop: String,
         label: String,
-        content: Collection<Element> = emptyList(),
-    ) = Element(
+        content: Collection<TagElement> = emptyList(),
+    ) = TagElement(
         "el-table-column",
         props = listOf(
             PropBind("prop", prop, isLiteral = true),
@@ -330,8 +342,8 @@ interface ElementPlus {
         data: String,
         border: Boolean = true,
         stripe: Boolean = true,
-        columns: Collection<Element>,
-    ) = Element(
+        columns: Collection<TagElement>,
+    ) = TagElement(
         "el-table",
         props = listOfNotNull(
             PropBind("data", data),
@@ -345,8 +357,8 @@ interface ElementPlus {
         modelValue: String,
         destroyOnClose: Boolean = true,
         closeOnClickModal: Boolean = false,
-        content: Collection<Element>,
-    ) = Element(
+        content: Collection<TagElement>,
+    ) = TagElement(
         "el-dialog",
         directives = listOf(
             VModel(modelValue),
@@ -361,8 +373,8 @@ interface ElementPlus {
     fun col(
         span: Int = 24,
         offset: Int? = null,
-        content: Collection<Element>,
-    ) = Element(
+        content: Collection<TagElement>,
+    ) = TagElement(
         "el-col",
         props = listOfNotNull(
             span.toPropBind("span"),
@@ -373,8 +385,8 @@ interface ElementPlus {
 
     fun row(
         gutter: Int? = null,
-        content: Collection<Element>,
-    ) = Element(
+        content: Collection<TagElement>,
+    ) = TagElement(
         "el-row",
         props = listOfNotNull(
             gutter.toPropBind("gutter"),
@@ -383,7 +395,7 @@ interface ElementPlus {
     )
 
     fun button(
-        content: String? = null,
+        content: String,
         disabled: Boolean = false,
         type: Type? = null,
         icon: String? = null,
@@ -391,7 +403,27 @@ interface ElementPlus {
         link: Boolean = false,
         round: Boolean = false,
         circle: Boolean = false,
-    ) = Element(
+    ) = button(
+        content = listOf(TextElement(content)),
+        disabled = disabled,
+        type = type,
+        icon = icon,
+        plain = plain,
+        link = link,
+        round = round,
+        circle = circle,
+    )
+
+    fun button(
+        content: Collection<Element> = emptyList(),
+        disabled: Boolean = false,
+        type: Type? = null,
+        icon: String? = null,
+        plain: Boolean = false,
+        link: Boolean = false,
+        round: Boolean = false,
+        circle: Boolean = false,
+    ) = TagElement(
         "el-button",
         props = listOfNotNull(
             type.toPropBind(),
@@ -402,6 +434,6 @@ interface ElementPlus {
             circle.toPropBind("circle"),
             disabled.toPropBind("disabled"),
         ),
-        content = content
+        children = content
     )
 }

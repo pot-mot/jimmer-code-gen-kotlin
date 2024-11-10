@@ -2,10 +2,11 @@ package top.potmot.view.vue3.elementPlus
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.core.business.view.generate.meta.vue3.Element
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
+import top.potmot.core.business.view.generate.meta.vue3.TextElement
 import top.potmot.utils.string.trimBlankLine
 
 class ElementPlusTest : ElementPlus {
@@ -90,6 +91,7 @@ class ElementPlusTest : ElementPlus {
     v-model="testModel"
     placeholder="testPlaceholder"
     clearable
+    :value-on-clear="undefined"
 />
                 """.trimBlankLine(),
                 listOf(result).stringifyElements()
@@ -289,7 +291,11 @@ class ElementPlusTest : ElementPlus {
             prop = "testProp",
             label = "testLabel",
             rule = "testRule",
-            content = listOf(Element("div", content = "表单项"))
+            content = listOf(
+                TagElement("div", children = listOf(
+                    TextElement("表单项")
+                ))
+            )
         )
 
         builder.apply {
@@ -311,7 +317,7 @@ class ElementPlusTest : ElementPlus {
     @Test
     fun testForm() {
         val items = listOf(
-            Element("el-form-item", props = listOf(PropBind("prop", "testProp")))
+            TagElement("el-form-item", props = listOf(PropBind("prop", "testProp")))
         )
         val result = form(
             model = "testModel",
@@ -322,10 +328,7 @@ class ElementPlusTest : ElementPlus {
         builder.apply {
             assertEquals(
                 """
-<el-form
-    :model="testModel"
-    :rules="testRules"
->
+<el-form :model="testModel" :rules="testRules">
     <el-form-item :prop="testProp"/>
 </el-form>
                 """.trimBlankLine(),
@@ -337,7 +340,7 @@ class ElementPlusTest : ElementPlus {
     @Test
     fun testTableColumn() {
         val content = listOf(
-            Element("div", props = listOf(PropBind("class", "testClass", isLiteral = true)))
+            TagElement("div", props = listOf(PropBind("class", "testClass", isLiteral = true)))
         )
         val result = tableColumn(
             prop = "testProp",
@@ -348,10 +351,7 @@ class ElementPlusTest : ElementPlus {
         builder.apply {
             assertEquals(
                 """
-<el-table-column
-    prop="testProp"
-    label="testLabel"
->
+<el-table-column prop="testProp" label="testLabel">
     <template #default="scope">
         <div class="testClass"/>
     </template>
@@ -365,7 +365,7 @@ class ElementPlusTest : ElementPlus {
     @Test
     fun testTable() {
         val columns = listOf(
-            Element("el-table-column", props = listOf(PropBind("prop", "testProp")))
+            TagElement("el-table-column", props = listOf(PropBind("prop", "testProp")))
         )
         val result = table(
             data = "testData",
@@ -377,10 +377,7 @@ class ElementPlusTest : ElementPlus {
         builder.apply {
             assertEquals(
                 """
-<el-table
-    :data="testData"
-    border
->
+<el-table :data="testData" border>
     <el-table-column :prop="testProp"/>
 </el-table>
                 """.trimBlankLine(),
@@ -392,7 +389,7 @@ class ElementPlusTest : ElementPlus {
     @Test
     fun testDialog() {
         val content = listOf(
-            Element("div", props = listOf(PropBind("class", "testClass", isLiteral = true)))
+            TagElement("div", props = listOf(PropBind("class", "testClass", isLiteral = true)))
         )
         val result = dialog(
             modelValue = "testModel",
@@ -433,7 +430,9 @@ class ElementPlusTest : ElementPlus {
         builder.apply {
             assertEquals(
                 """
-<el-text type="primary">Hello, World!</el-text>
+<el-text type="primary">
+    Hello, World!
+</el-text>
                 """.trimIndent(),
                 listOf(elementWithType).stringifyElements()
             )
@@ -458,10 +457,7 @@ class ElementPlusTest : ElementPlus {
         builder.apply {
             assertEquals(
                 """
-<el-col
-    :span="12"
-    :offset="3"
->
+<el-col :span="12" :offset="3">
     <el-text>Content</el-text>
 </el-col>
                 """.trimIndent(),
@@ -517,7 +513,9 @@ class ElementPlusTest : ElementPlus {
         builder.apply {
             assertEquals(
                 """
-<el-button disabled>Click Me</el-button>
+<el-button disabled>
+    Click Me
+</el-button>
                 """.trimIndent(),
                 listOf(elementWithDisabled).stringifyElements()
             )
@@ -527,7 +525,9 @@ class ElementPlusTest : ElementPlus {
         builder.apply {
             assertEquals(
                 """
-<el-button type="warning">Click Me</el-button>
+<el-button type="warning">
+    Click Me
+</el-button>
                 """.trimIndent(),
                 listOf(elementWithType).stringifyElements()
             )
@@ -537,7 +537,9 @@ class ElementPlusTest : ElementPlus {
         builder.apply {
             assertEquals(
                 """
-<el-button :icon="Search">Click Me</el-button>
+<el-button :icon="Search">
+    Click Me
+</el-button>
                 """.trimIndent(),
                 listOf(elementWithIcon).stringifyElements()
             )
@@ -604,7 +606,9 @@ class ElementPlusTest : ElementPlus {
     round
     circle
     disabled
->Click Me</el-button>
+>
+    Click Me
+</el-button>
                 """.trimIndent(),
                 listOf(elementWithAllProps).stringifyElements()
             )

@@ -7,7 +7,7 @@ import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
-import top.potmot.core.business.view.generate.meta.vue3.Element
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.typescript.LetVariable
 import top.potmot.core.business.view.generate.meta.style.StyleClass
 import top.potmot.core.business.view.generate.meta.typescript.Function
@@ -24,6 +24,7 @@ import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.Slot
 import top.potmot.core.business.view.generate.meta.vue3.SlotProp
+import top.potmot.core.business.view.generate.meta.vue3.TextElement
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.trimBlankLine
 
@@ -39,8 +40,8 @@ class Vue3ComponentBuilderTest {
         )
 
         val expected = listOf(
-            "import { item1, item2 } from \"path1\"",
-            "import type { ItemType1, ItemType2 } from \"path1\"",
+            "import {item1, item2} from \"path1\"",
+            "import type {ItemType1, ItemType2} from \"path1\"",
             "import defaultItem from \"path2\""
         )
 
@@ -168,18 +169,15 @@ console.log('Hello, World!')
     @Test
     fun `test stringifyElements`() {
         val elements = listOf(
-            Element("div", directives = listOf(VModel("model1")), props = listOf(PropBind("class", "container", isLiteral = true))),
-            Element("button", events = listOf(EventBind("click", "handleClick"))),
-            Element("button", events = listOf(EventBind("click", "handleClick")), children = listOf(
-                Element("span", "Click Me!")
+            TagElement("input", directives = listOf(VModel("model1")), props = listOf(PropBind("class", "container", isLiteral = true))),
+            TagElement("button", events = listOf(EventBind("click", "handleClick"))),
+            TagElement("button", events = listOf(EventBind("click", "handleClick")), children = listOf(
+                TagElement("span", children = listOf(TextElement("Click Me!")))
             ))
         )
 
         val expected = """
-<div
-    v-model="model1"
-    class="container"
-/>
+<input v-model="model1" class="container"/>
 <button @click="handleClick"/>
 <button @click="handleClick">
     <span>Click Me!</span>
@@ -247,8 +245,8 @@ console.log('Hello, World!')
                 CodeBlock("console.log('Hello, World!')")
             ),
             template = listOf(
-                Element("div", directives = listOf(VModel("model1")), props = listOf(PropBind("class", "container", isLiteral = true))),
-                Element("button", events = listOf(EventBind("click", "handleClick")))
+                TagElement("div", directives = listOf(VModel("model1")), props = listOf(PropBind("class", "container", isLiteral = true))),
+                TagElement("button", events = listOf(EventBind("click", "handleClick")))
             ),
             style = listOf(
                 StyleClass(".container", mapOf("display" to "flex", "justify-content" to "center")),
@@ -258,8 +256,8 @@ console.log('Hello, World!')
 
         val expected = """
 <script setup lang="ts">
-import { item1, item2 } from "path1"
-import type { ItemType1, ItemType2 } from "path1"
+import {item1, item2} from "path1"
+import type {ItemType1, ItemType2} from "path1"
 import defaultItem from "path2"
 
 const model1 = defineModels<string>({required: true})
@@ -274,7 +272,7 @@ const props = withDefaults(defineProps<{
     prop3: false
 })
 
-const emits = defineEmits<{
+defineEmits<{
     (event: "event1", arg1: string): void,
     (event: "event2", arg2: number): void
 }>()
@@ -293,10 +291,7 @@ console.log('Hello, World!')
 </script>
 
 <template>
-    <div
-        v-model="model1"
-        class="container"
-    />
+    <div v-model="model1" class="container"/>
     <button @click="handleClick"/>
 </template>
 

@@ -111,15 +111,10 @@ class QueryFormItemTest : QueryFormItem {
     v-model="spec.name"
     placeholder="请选择comment"
     clearable
+    :value-on-clear="undefined"
 >
-    <el-option
-        :value="false"
-        :label="否"
-    />
-    <el-option
-        :value="true"
-        :label="是"
-    />
+    <el-option :value="false" :label="否"/>
+    <el-option :value="true" :label="是"/>
 </el-select>
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.Boolean").result,

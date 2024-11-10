@@ -7,19 +7,16 @@ const val vue3ElementPlusResult = """
 import type {ConditionMatchListView} from "@/api/__generated/model/static"
 import MatchStatusView from "@/components/matchStatus/MatchStatusView.vue"
 
-withDefaults(
-    defineProps<{
-        rows: Array<ConditionMatchListView>,
-        idColumn?: boolean | undefined,
-        indexColumn?: boolean | undefined,
-        multiSelect?: boolean | undefined,
-    }>(),
-    {
-        idColumn: false,
-        indexColumn: true,
-        multiSelect: true,
-    }
-)
+withDefaults(defineProps<{
+    rows: Array<ConditionMatchListView>,
+    idColumn?: boolean | undefined,
+    indexColumn?: boolean | undefined,
+    multiSelect?: boolean | undefined,
+}>(), {
+    idColumn: false,
+    indexColumn: true,
+    multiSelect: true,
+})
 
 const slots = defineSlots<{
 	operations(props: {row: ConditionMatchListView, index: number}): any,
@@ -78,6 +75,11 @@ const formRef = ref<FormInstance>()
 
 const formData = ref<ConditionMatchInsertInput>(cloneDeep(defaultInput))
 
+defineProps<{
+    sysUserOptions: Array<SysUserOptionView>,
+    policyConditionOptions: Array<PolicyConditionOptionView>,
+}>()
+
 const emits = defineEmits<{
     (event: "submit", insertInput: ConditionMatchInsertInput): void,
     (event: "cancel"): void,
@@ -123,6 +125,14 @@ const handleSubmit = () => {
                 clearable
             />
         </el-form-item>
+        
+        <el-form-item prop="user" label="用户" required>
+            <SysUserIdSelect v-model="formData.userId" :options="sysUserOptions"/>
+        </el-form-item>
+
+        <el-form-item prop="condition" label="条件" required>
+            <PolicyConditionIdSelect v-model="formData.conditionId" :options="policyConditionOptions"/>
+        </el-form-item>
 
         <div style="text-align: right;">
             <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
@@ -138,7 +148,9 @@ import rules from "@/rules/conditionMatch/ConditionMatchEditFormRules"
 import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
 
 const props = defineProps<{
-    data: ConditionMatchUpdateInput
+    data: ConditionMatchUpdateInput,
+    sysUserOptions: Array<SysUserOptionView>,
+    policyConditionOptions: Array<PolicyConditionOptionView>,
 }>()
 
 const formRef = ref<FormInstance>()
@@ -194,6 +206,14 @@ const handleSubmit = () => {
                 clearable
             />
         </el-form-item>
+        
+        <el-form-item prop="user" label="用户" required>
+            <SysUserIdSelect v-model="formData.userId" :options="sysUserOptions"/>
+        </el-form-item>
+
+        <el-form-item prop="condition" label="条件" required>
+            <PolicyConditionIdSelect v-model="formData.conditionId" :options="policyConditionOptions"/>
+        </el-form-item>
 
         <div style="text-align: right;">
             <el-button type="info" @click="emits('cancel')" v-text="'取消'"/>
@@ -219,12 +239,13 @@ const rows = defineModel<ConditionMatchInsertInput[]>({
     required: true
 })
 
-withDefaults(
-    defineProps<{
-        idColumn?: boolean | undefined,
-        indexColumn?: boolean | undefined,
-        multiSelect?: boolean | undefined,
-    }>(),
+withDefaults(defineProps<{
+    idColumn?: boolean | undefined,
+    indexColumn?: boolean | undefined,
+    multiSelect?: boolean | undefined,
+    sysUserOptions: Array<SysUserOptionView>,
+    policyConditionOptions: Array<PolicyConditionOptionView>,
+}>(),
     {
         idColumn: false,
         indexColumn: false,
@@ -276,7 +297,7 @@ const handleSingleDelete = async (index: number) => {
             <el-table-column label="匹配状态" prop="status">
                 <template #default="{$index, row}">
                     <el-form-item :prop="[$index, 'status']" :rules="rules.status">
-                    <MatchStatusSelect v-model="row.status"/>
+                        <MatchStatusSelect v-model="row.status"/>
                     </el-form-item>
                 </template>
             </el-table-column>
@@ -297,13 +318,13 @@ const handleSingleDelete = async (index: number) => {
             <el-table-column label="金额" prop="money">
                 <template #default="{$index, row}">
                     <el-form-item :prop="[$index, 'money']" :rules="rules.money">
-                    <el-input-number
-                        v-model.number="row.money"
-                        placeholder="请输入金额"
-                        :precision="2" 
-                        :min="0"
-                        :max="99999"
-                    />
+                        <el-input-number
+                            v-model.number="row.money"
+                            placeholder="请输入金额"
+                            :precision="2" 
+                            :min="0"
+                            :max="99999"
+                        />
                     </el-form-item>
                 </template>
             </el-table-column>
@@ -311,11 +332,27 @@ const handleSingleDelete = async (index: number) => {
             <el-table-column label="结果描述" prop="description">
                 <template #default="{$index, row}">
                     <el-form-item :prop="[$index, 'description']" :rules="rules.description">
-                    <el-input
-                        v-model="row.description" maxlength="255"
-                        placeholder="请输入结果描述"
-                        clearable
-                    />
+                        <el-input
+                            v-model="row.description" maxlength="255"
+                            placeholder="请输入结果描述"
+                            clearable
+                        />
+                    </el-form-item>
+                </template>
+            </el-table-column>
+            
+            <el-table-column label="用户" prop="conditionId">
+                <template #default="{$index, row}">
+                    <el-form-item :prop="[$index, 'userId']" required>
+                        <SysUserIdSelect v-model="formData.userId" :options="sysUserOptions"/>
+                    </el-form-item>
+                </template>
+            </el-table-column>
+            
+            <el-table-column label="条件" prop="conditionId">
+                <template #default="{$index, row}">
+                    <el-form-item :prop="[$index, 'conditionId']" required>
+                        <PolicyConditionIdSelect v-model="formData.conditionId" :options="policyConditionOptions"/>
                     </el-form-item>
                 </template>
             </el-table-column>
@@ -336,6 +373,11 @@ import MatchStatusNullableSelect from "@/components/matchStatus/MatchStatusNulla
 const spec = defineModel<ConditionMatchSpec>({
     required: true
 })
+
+defineProps<{
+    sysUserOptions: Array<SysUserOptionView>,
+    policyConditionOptions: Array<PolicyConditionOptionView>,
+}>()
 
 const emits = defineEmits<{
     (event: "query"): void,
@@ -420,9 +462,9 @@ const dateRange = computed<[string | undefined, string | undefined]>({
         </el-row>
     </el-form>
 </template>), (pages/conditionMatch/ConditionMatchPage.vue, <script setup lang="ts">
-import {ref} from "vue"
+import {onMounted, ref} from "vue"
 import {Plus, EditPen, Delete} from "@element-plus/icons-vue"
-import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView, ConditionMatchInsertInput, ConditionMatchUpdateInput} from "@/api/__generated/model/static"
+import type {Page, PageQuery, ConditionMatchSpec, ConditionMatchListView, ConditionMatchInsertInput, ConditionMatchUpdateInput, SysUserOptionView, PolicyConditionOptionView} from "@/api/__generated/model/static"
 import {api} from "@/api"
 import {sendMessage} from "@/utils/message"
 import {deleteConfirm} from "@/utils/confirm"
@@ -464,6 +506,18 @@ const selection = ref<ConditionMatchListView[]>([])
 const changeSelection = (item: ConditionMatchListView[]) => {
     selection.value = item
 }
+
+// 用户选择
+const sysUserOptions = ref<Array<SysUserOptionView>>([])
+onMounted(async () => {
+    sysUserOptions.value = await api.sysUserService.listOptions()
+})
+
+// 匹配类型选择
+const policyConditionOptions = ref<Array<PolicyConditionOptionView>>([])
+onMounted(async () => {
+    policyConditionOptions.value = await api.policyConditionService.listOptions()
+})
 
 // 新增
 const addDialogVisible = ref(false)
@@ -573,7 +627,9 @@ const handleDelete = async (ids: number[]) => {
         destroy-on-close
         :close-on-click-modal="false"
     >
-        <ConditionMatchAddForm 
+        <ConditionMatchAddForm
+            :sysUserOptions="sysUserOptions"
+            :policyConditionOptions="policyConditionOptions"
             @submit="submitAdd"
             @cancel="cancelAdd"
         />
@@ -587,6 +643,8 @@ const handleDelete = async (ids: number[]) => {
         <ConditionMatchEditForm
             v-if="updateInput !== undefined"
             :data="updateInput"
+            :sysUserOptions="sysUserOptions"
+            :policyConditionOptions="policyConditionOptions"
             @submit="submitEdit"
             @cancel="cancelEdit"
         />

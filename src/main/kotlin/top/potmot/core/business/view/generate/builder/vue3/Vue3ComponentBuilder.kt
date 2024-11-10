@@ -5,9 +5,12 @@ import top.potmot.core.business.view.generate.meta.style.StyleClass
 import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.Event
+import top.potmot.core.business.view.generate.meta.vue3.ExpressionElement
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.meta.vue3.Slot
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
+import top.potmot.core.business.view.generate.meta.vue3.TextElement
 import top.potmot.core.business.view.generate.meta.vue3.VElse
 import top.potmot.core.business.view.generate.meta.vue3.VFor
 import top.potmot.core.business.view.generate.meta.vue3.VIf
@@ -19,7 +22,7 @@ import top.potmot.utils.string.trimBlankLine
 
 class Vue3ComponentBuilder(
     override val indent: String = "    ",
-    override val wrapThreshold: Int = 20,
+    override val wrapThreshold: Int = 40,
 ) : TypeScriptBuilder {
     fun Iterable<ModelProp>.stringifyModels() =
         map {
@@ -36,7 +39,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
             val required = if (prop.required) "" else "?"
             val type = if (prop.required) prop.type else "${prop.type} | undefined"
             "${prop.name}$required: $type"
-        }.inlineOrWarp()
+        }.inlineOrWarpLines()
 
         val defineProps = if (any { it.defaultValue != null }) {
             "withDefaults(defineProps<{$props}>(), {\n${
@@ -58,9 +61,9 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         val emits = map { emit ->
             val args = emit.args.map { arg ->
                 "${arg.name}: ${arg.type}"
-            }.inlineOrWarp()
+            }.inlineOrWarpLines()
             "(event: \"${emit.event}\", ${args}): void"
-        }.inlineOrWarp()
+        }.inlineOrWarpLines()
 
         return "defineEmits<{${emits}}>()"
     }
@@ -69,73 +72,101 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         val slots = map { slot ->
             val props = slot.props.map { prop ->
                 "${prop.name}: ${prop.type}"
-            }.inlineOrWarp()
+            }.inlineOrWarpLines()
             "${slot.name}(props: {${props}}): any"
-        }.inlineOrWarp()
+        }.inlineOrWarpLines()
 
         return "defineSlots<{${slots}}>()"
     }
 
     fun Iterable<Element>.stringifyElements(currentIndent: String = ""): String =
         joinToString("\n") { element ->
-            val directives = element.directives.map { directive ->
-                when (directive) {
-                    is VModel -> {
-                        "v-model${if (directive.propName == null) "" else ":${directive.propName}"}${
-                            if (directive.modifier.isEmpty()) "" else "." + directive.modifier.joinToString(
-                                "."
-                            )
-                        }=\"${directive.value}\""
-                    }
-
-                    is VIf -> "v-${if (directive.isElse) "else-if" else "if"}=\"${directive.expression}\""
-                    is VElse -> "v-else"
-                    is VShow -> "v-show=\"${directive.expression}\""
-                    is VFor -> {
-                        val item = if (directive.withIndex) "(${directive.item}, index)" else directive.item
-                        "v-for=\"$item in ${directive.list}\""
-                    }
+            when (element) {
+                is TextElement -> {
+                    "$currentIndent${element.text}"
                 }
-            }
 
-            val props = element.props.map { prop ->
-                if (prop.value == null) prop.name else "${if (prop.isLiteral) "" else ":"}${prop.name}=\"${prop.value}\""
-            }
+                is ExpressionElement -> {
+                    "$currentIndent{{ ${element.expression} }}"
+                }
 
-            val events = element.events.map { event ->
-                "@${event.event}=\"${event.fn}\""
-            }
+                is TagElement -> {
+                    val directives = element.directives.map { directive ->
+                        when (directive) {
+                            is VModel -> {
+                                "v-model${if (directive.propName == null) "" else ":${directive.propName}"}${
+                                    if (directive.modifier.isEmpty()) "" else "." + directive.modifier.joinToString(
+                                        "."
+                                    )
+                                }=\"${directive.value}\""
+                            }
 
-            val attributes = listOf(
-                directives,
-                props,
-                events
-            ).flatten()
-                .inlineOrWarp("")
-                .let {
-                    if (it.isNotBlank()) {
-                        val lines = it.split("\n")
-                        if (lines.size > 1) {
-                            lines.joinToString("\n$currentIndent") { line -> line }
-                        } else {
-                            " $it"
+                            is VIf -> "v-${if (directive.isElse) "else-if" else "if"}=\"${directive.expression}\""
+                            is VElse -> "v-else"
+                            is VShow -> "v-show=\"${directive.expression}\""
+                            is VFor -> {
+                                val item = if (directive.withIndex) "(${directive.item}, index)" else directive.item
+                                "v-for=\"$item in ${directive.list}\""
+                            }
                         }
-                    } else ""
+                    }
+
+                    val props = element.props.map { prop ->
+                        if (prop.value == null) prop.name else "${if (prop.isLiteral) "" else ":"}${prop.name}=\"${prop.value}\""
+                    }
+
+                    val events = element.events.map { event ->
+                        "@${event.event}=\"${event.fn}\""
+                    }
+
+                    val attributes = listOf(
+                        directives,
+                        props,
+                        events
+                    ).flatten()
+                        .inlineOrWarpLines("")
+                        .let {
+                            if (it.isNotBlank()) {
+                                val lines = it.split("\n")
+                                if (lines.size > 1) {
+                                    lines.joinToString("\n$currentIndent") { line -> line }
+                                } else {
+                                    " $it"
+                                }
+                            } else ""
+                        }
+
+                    val children = element.children.toList()
+
+                    val tagStart = "<${element.tag}$attributes"
+                    val tagEnd = "</${element.tag}>"
+
+                    if (children.isEmpty()) {
+                        "$currentIndent$tagStart/>"
+                    } else {
+                        if (children.size == 1) {
+                            val child = children[0]
+                            if (child is TextElement) {
+                                val result = "$tagStart>${child.text}$tagEnd"
+                                if (result.length < wrapThreshold) {
+                                    return@joinToString "$currentIndent$result"
+                                }
+                            } else if (child is ExpressionElement) {
+                                val result = "$tagStart>{{ ${child.expression} }}$tagEnd"
+                                if (result.length < wrapThreshold) {
+                                    return@joinToString "$currentIndent$result"
+                                }
+                            }
+                        }
+
+                        val childrenStr = children.stringifyElements(currentIndent + indent)
+                        buildString {
+                            appendLine("$currentIndent$tagStart>")
+                            appendLine(childrenStr)
+                            append("$currentIndent$tagEnd")
+                        }
+                    }
                 }
-
-            val children = element.children
-
-            val tagStart = "$currentIndent<${element.tag}$attributes"
-
-            if (children.isEmpty()) {
-                if (element.content.isNullOrEmpty()) {
-                    "$tagStart/>"
-                } else {
-                    "$tagStart>${element.content}</${element.tag}>"
-                }
-            } else {
-                val childrenStr = children.stringifyElements(currentIndent + indent)
-                "$tagStart>\n$childrenStr\n$currentIndent</${element.tag}>"
             }
         }
 
@@ -143,7 +174,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         joinToString("\n\n") { styleClass ->
             val properties = styleClass.properties.entries.map { (key, value) ->
                 "$key: $value;"
-            }.inlineOrWarp("")
+            }.wrapLines("")
             "${styleClass.selector} {$properties}"
         }
 
