@@ -21,10 +21,11 @@ import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
-import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.Slot
 import top.potmot.core.business.view.generate.meta.vue3.SlotProp
 import top.potmot.core.business.view.generate.meta.vue3.TextElement
+import top.potmot.core.business.view.generate.meta.vue3.classProp
+import top.potmot.core.business.view.generate.meta.vue3.styleProp
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.trimBlankLine
 
@@ -169,7 +170,7 @@ console.log('Hello, World!')
     @Test
     fun `test stringifyElements`() {
         val elements = listOf(
-            TagElement("input", directives = listOf(VModel("model1")), props = listOf(PropBind("class", "container", isLiteral = true))),
+            TagElement("input", directives = listOf(VModel("model1")), props = listOf(classProp("container"))),
             TagElement("button", events = listOf(EventBind("click", "handleClick"))),
             TagElement("button", events = listOf(EventBind("click", "handleClick")), children = listOf(
                 TagElement("span", children = listOf(TextElement("Click Me!")))
@@ -245,7 +246,9 @@ console.log('Hello, World!')
                 CodeBlock("console.log('Hello, World!')")
             ),
             template = listOf(
-                TagElement("div", directives = listOf(VModel("model1")), props = listOf(PropBind("class", "container", isLiteral = true))),
+                TagElement("div", props = listOf(classProp("container"), styleProp("color" to "red")), children = listOf(
+                    TagElement("input", directives = listOf(VModel("model1")))
+                )),
                 TagElement("button", events = listOf(EventBind("click", "handleClick")))
             ),
             style = listOf(
@@ -291,7 +294,9 @@ console.log('Hello, World!')
 </script>
 
 <template>
-    <div v-model="model1" class="container"/>
+    <div class="container" style="color: red;">
+        <input v-model="model1"/>
+    </div>
     <button @click="handleClick"/>
 </template>
 

@@ -63,6 +63,20 @@ fun Double?.toPropBind(
     format: Double.() -> String = { toString() }
 ) = if (this != null) PropBind(name, this.format()) else null
 
+fun classProp(classNames: Iterable<String>) = PropBind(
+    "class", classNames.joinToString(" "), isLiteral = true
+)
+
+fun classProp(vararg className: String) =
+    classProp(className.toList())
+
+fun styleProp(style: Map<String, String>) = PropBind(
+    "style", style.map { (k, v) -> "$k: $v;" }.joinToString(""), isLiteral = true
+)
+
+fun styleProp(vararg style: Pair<String, String>) =
+    styleProp(mapOf(*style))
+
 fun Boolean.toPropBind(
     name: String,
     default: Boolean = false,
