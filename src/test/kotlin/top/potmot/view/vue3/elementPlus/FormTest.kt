@@ -80,7 +80,7 @@ const handleCancel = (): void => {
         ref="formRef"
         :rules="rules"
     >
-        
+
         <slot
             name="operations"
             :handleSubmit="handleSubmit"
@@ -159,7 +159,7 @@ const handleCancel = (): void => {
         ref="formRef"
         :rules="rules"
     >
-        
+
         <slot
             name="operations"
             :handleSubmit="handleSubmit"
@@ -206,6 +206,7 @@ import type {EntitySubTableType} from "@/api/__generated/model/static"
 import {cloneDeep} from "lodash"
 import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
+import {Plus, Delete} from "@element-plus/icons-vue"
 
 const formData = defineModels<Array<EntitySubTableType>>({required: true})
 
@@ -273,8 +274,27 @@ const handleSingleDelete = async (index: number): Promise<void> => {
         ref="formRef"
         :rules="rules"
     >
+        <div>
+            <el-button
+                type="primary"
+                :icon="Plus"
+                @click="handleAdd"
+            >
+                新增
+            </el-button>
+            <el-button
+                type="danger"
+                :icon="Delete"
+                :disabled="selection.length === 0"
+                @click="handleBatchDelete"
+            >
+                删除
+            </el-button>
+        </div>
+
         <el-table
             :data="formData"
+            row-key="id"
             border
             stripe
             @selection-change="handleSelectionChange"
@@ -301,7 +321,7 @@ const handleSingleDelete = async (index: number): Promise<void> => {
                 </template>
             </el-table-column>
         </el-table>
-        
+
         <slot
             name="operations"
             :handleSubmit="handleSubmit"

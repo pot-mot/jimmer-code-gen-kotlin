@@ -354,6 +354,7 @@ interface ElementPlus {
 
     fun table(
         data: String,
+        rowKey: String,
         border: Boolean = true,
         stripe: Boolean = true,
         columns: Collection<Element>,
@@ -361,6 +362,7 @@ interface ElementPlus {
         "el-table",
         props = listOfNotNull(
             PropBind("data", data),
+            PropBind("row-key", rowKey, isLiteral = true),
             border.toPropBind("border"),
             stripe.toPropBind("stripe"),
         ),

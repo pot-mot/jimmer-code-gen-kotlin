@@ -308,7 +308,8 @@ fun editTable(
         ImportType(typePath, listOf(type)),
         Import("lodash", listOf("cloneDeep")),
         Import(defaultPath, listOf(default)),
-        Import(useRulesPath, listOf(useRules))
+        Import(useRulesPath, listOf(useRules)),
+        Import("@element-plus/icons-vue", listOf("Plus", "Delete")),
     ),
     models = listOf(
         ModelProp(formData, "Array<$type>"),
@@ -375,8 +376,30 @@ fun editTable(
             ref = formRef,
             rules = "rules",
             content = listOf(
+                TagElement(
+                    "div",
+                    children = listOf(
+                        button(
+                            content = "新增",
+                            type = ElementPlus.Type.PRIMARY,
+                            icon = "Plus"
+                        ).merge {
+                            events += EventBind("click", "handleAdd")
+                        },
+                        button(
+                            content = "删除",
+                            type = ElementPlus.Type.DANGER,
+                            icon = "Delete"
+                        ).merge {
+                            events += EventBind("click", "handleBatchDelete")
+                            props += PropBind("disabled", "selection.length === 0")
+                        }
+                    )
+                ),
+                emptyLineElement,
                 table(
                     data = formData,
+                    rowKey = idPropertyName,
                     columns = tableUtilColumns(idPropertyName) + content.map { (property, elements) ->
                         tableColumn(
                             prop = property.name,

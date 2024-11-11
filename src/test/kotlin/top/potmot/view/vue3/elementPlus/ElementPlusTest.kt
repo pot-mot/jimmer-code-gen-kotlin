@@ -369,6 +369,7 @@ class ElementPlusTest : ElementPlus {
         )
         val result = table(
             data = "testData",
+            rowKey = "id",
             border = true,
             stripe = false,
             columns = columns
@@ -377,7 +378,7 @@ class ElementPlusTest : ElementPlus {
         builder.apply {
             assertEquals(
                 """
-<el-table :data="testData" border>
+<el-table :data="testData" row-key="id" border>
     <el-table-column :prop="testProp"/>
 </el-table>
                 """.trimBlankLine(),

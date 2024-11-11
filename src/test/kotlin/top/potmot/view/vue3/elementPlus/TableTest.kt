@@ -43,6 +43,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
 <template>
     <el-table
         :data="rows"
+        row-key="id"
         border
         stripe
         @selection-change="handleSelectionChange"

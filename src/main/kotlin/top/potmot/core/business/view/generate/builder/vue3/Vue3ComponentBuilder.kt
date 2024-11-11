@@ -88,7 +88,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         joinToString("\n") { element ->
             when (element) {
                 is TextElement -> {
-                    "$currentIndent${element.text}"
+                    if (element.text.isBlank()) "" else "$currentIndent${element.text}"
                 }
 
                 is ExpressionElement -> {
@@ -152,7 +152,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
                         if (children.size == 1) {
                             val child = children[0]
                             if (child is TextElement) {
-                                val result = "$tagStart>${child.text}$tagEnd"
+                                val result = if (child.text.isBlank()) "$tagStart/>" else "$tagStart>${child.text}$tagEnd"
                                 if (result.length < wrapThreshold) {
                                     return@joinToString "$currentIndent$result"
                                 }

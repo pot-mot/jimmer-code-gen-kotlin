@@ -100,6 +100,7 @@ fun viewTable(
     template = listOf(
         table(
             data = data,
+            rowKey = idPropertyName,
             columns = tableUtilColumns(idPropertyName) + content.map { (property, elements) ->
                 tableColumn(
                     property.name,
