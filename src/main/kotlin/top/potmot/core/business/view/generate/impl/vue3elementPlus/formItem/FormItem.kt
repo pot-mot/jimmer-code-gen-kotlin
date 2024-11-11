@@ -14,6 +14,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.meta.rules.numberMax
 import top.potmot.core.business.view.generate.meta.rules.numberMin
 import top.potmot.core.business.view.generate.meta.rules.numberPrecision
+import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.toPropBind
@@ -23,7 +24,7 @@ interface FormItem {
     fun GenEntityBusinessView.TargetOf_properties.createFormItem(
         formData: String,
         disabled: Boolean = false,
-    ): List<TagElement> {
+    ): List<Element> {
         val modelValue = "$formData.${name}"
         val numberMin = numberMin
         val numberMax = numberMax

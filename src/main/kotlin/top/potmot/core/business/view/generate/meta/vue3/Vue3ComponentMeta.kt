@@ -185,7 +185,7 @@ data class TagElement(
 fun slotElement(
     name: String,
     props: Iterable<String> = emptyList(),
-    content: Collection<TagElement> = emptyList(),
+    content: Collection<Element> = emptyList(),
 ) = TagElement(
     "slot",
     props = listOf(PropBind("name", name, isLiteral = true)) + props.map { PropBind(it, it) },
@@ -196,7 +196,7 @@ fun slotTemplate(
     name: String = "default",
     propScope: String? = null,
     props: Collection<String>? = null,
-    content: Collection<TagElement> = emptyList(),
+    content: Collection<Element> = emptyList(),
 ) = TagElement(
     "template",
     props = listOf(

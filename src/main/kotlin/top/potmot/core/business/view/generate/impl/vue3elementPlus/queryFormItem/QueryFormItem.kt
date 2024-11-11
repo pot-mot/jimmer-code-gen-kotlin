@@ -17,10 +17,11 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.option
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.timePickerRange
+import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.entity.dto.GenEntityBusinessView
 
 interface QueryFormItem {
-    fun GenEntityBusinessView.TargetOf_properties.createQueryFormItem(spec: String): List<TagElement> {
+    fun GenEntityBusinessView.TargetOf_properties.createQueryFormItem(spec: String): List<Element> {
         val modelValue = "$spec.${name}"
         val rangeModelValue = "${name}Range"
         val minModelValue = "$spec.min${name.replaceFirstChar { c -> c.uppercaseChar() }}"

@@ -103,7 +103,7 @@ interface ElementPlus {
         valueOnClear: String? = "undefined",
         disabled: Boolean = false,
         multiple: Boolean = false,
-        content: Collection<TagElement> = listOf(),
+        content: Collection<Element> = listOf(),
     ) = TagElement(
         "el-select",
         directives = listOf(
@@ -125,7 +125,7 @@ interface ElementPlus {
         value: String,
         label: String? = null,
         labelIsLiteral: Boolean = false,
-        content: Collection<TagElement> = emptyList(),
+        content: Collection<Element> = emptyList(),
     ) = TagElement(
         "el-option",
         props = listOfNotNull(
@@ -142,7 +142,7 @@ interface ElementPlus {
         key: (option: String) -> String? = { null },
         value: (option: String) -> String = { "$it.value" },
         label: (option: String) -> String? = { "$it.label" },
-        content: Collection<TagElement> = emptyList(),
+        content: Collection<Element> = emptyList(),
     ) = option(
         value(option),
         label(option),
@@ -292,7 +292,7 @@ interface ElementPlus {
         prop: String,
         label: String,
         rule: String? = null,
-        content: Collection<TagElement>,
+        content: Collection<Element>,
     ) = TagElement(
         "el-form-item",
         props = listOfNotNull(
@@ -333,7 +333,7 @@ interface ElementPlus {
         label: String? = null,
         type: String? = null,
         fixed: TableColumnFixed? = null,
-        content: Collection<TagElement> = emptyList(),
+        content: Collection<Element> = emptyList(),
     ) = TagElement(
         "el-table-column",
         props = listOfNotNull(
@@ -356,7 +356,7 @@ interface ElementPlus {
         data: String,
         border: Boolean = true,
         stripe: Boolean = true,
-        columns: Collection<TagElement>,
+        columns: Collection<Element>,
     ) = TagElement(
         "el-table",
         props = listOfNotNull(
@@ -371,7 +371,7 @@ interface ElementPlus {
         modelValue: String,
         destroyOnClose: Boolean = true,
         closeOnClickModal: Boolean = false,
-        content: Collection<TagElement>,
+        content: Collection<Element>,
     ) = TagElement(
         "el-dialog",
         directives = listOf(
@@ -387,7 +387,7 @@ interface ElementPlus {
     fun col(
         span: Int = 24,
         offset: Int? = null,
-        content: Collection<TagElement>,
+        content: Collection<Element>,
     ) = TagElement(
         "el-col",
         props = listOfNotNull(
@@ -399,7 +399,7 @@ interface ElementPlus {
 
     fun row(
         gutter: Int? = null,
-        content: Collection<TagElement>,
+        content: Collection<Element>,
     ) = TagElement(
         "el-row",
         props = listOfNotNull(

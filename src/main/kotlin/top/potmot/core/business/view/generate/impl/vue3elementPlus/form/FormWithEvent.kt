@@ -15,6 +15,7 @@ import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.typescript.commentLine
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.Event
 import top.potmot.core.business.view.generate.meta.vue3.EventArg
 import top.potmot.core.business.view.generate.meta.vue3.EventBind
@@ -157,7 +158,7 @@ fun addForm(
     indent: String,
     subValidateItems: Iterable<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
-    content: Map<GenEntityBusinessView.TargetOf_properties, List<TagElement>>,
+    content: Map<GenEntityBusinessView.TargetOf_properties, List<Element>>,
 ) = Component(
     imports = listOf(
         Import("vue", listOf("ref")),
@@ -227,7 +228,7 @@ fun editForm(
     indent: String,
     subValidateItems: Iterable<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
-    content: Map<GenEntityBusinessView.TargetOf_properties, List<TagElement>>,
+    content: Map<GenEntityBusinessView.TargetOf_properties, List<Element>>,
 ) = Component(
     imports = listOf(
         Import("vue", listOf("ref")),
@@ -300,7 +301,7 @@ fun editTable(
     indent: String,
     subValidateItems: Iterable<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
-    content: Map<GenEntityBusinessView.TargetOf_properties, List<TagElement>>,
+    content: Map<GenEntityBusinessView.TargetOf_properties, List<Element>>,
 ) = Component(
     imports = listOf(
         Import("vue", listOf("ref")),
