@@ -19,6 +19,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.addForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.queryForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.rules.Vue3RulesBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
@@ -29,7 +30,6 @@ import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.vue3.Component
-import top.potmot.core.business.view.generate.meta.vue3.Event
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
@@ -150,65 +150,40 @@ object Vue3ElementPlusViewGenerator :
     private fun createOptionQuery(
         selectOption: SelectOption,
         serviceName: String,
-    ) = Component.Builder(
-        imports = mutableListOf(
-            ImportType("vue", listOf("Ref")),
-            ImportType(staticPath, listOf(selectOption.type)),
-            Import("vue", listOf("onBeforeMount")),
-            Import("@/api", listOf("api")),
-        ),
-        script = mutableListOf(
-            selectOption.toVariable(),
-            CodeBlock(buildString {
-                appendLine("onBeforeMount(async () => {")
-                appendLine("${builder.indent}${selectOption.name}.value = await api.$serviceName.list({body: {}})")
-                appendLine("})")
-            })
-        )
+    ) = mutableListOf(
+        ImportType("vue", listOf("Ref")),
+        ImportType(staticPath, listOf(selectOption.type)),
+        Import("vue", listOf("onBeforeMount")),
+        Import("@/api", listOf("api")),
+    ) to mutableListOf(
+        selectOption.toVariable(),
+        CodeBlock(buildString {
+            appendLine("onBeforeMount(async () => {")
+            appendLine("${builder.indent}${selectOption.name}.value = await api.$serviceName.list({body: {}})")
+            appendLine("})")
+        })
     )
 
     private val GenEntityBusinessView.optionQueries
         get() = selectOptions.map { createOptionQuery(it, apiServiceName) }
 
 
-    private fun createOptionProp(
-        selectOption: SelectOption,
-    ) = Component.Builder(
-        imports = mutableListOf(
-            ImportType(staticPath, listOf(selectOption.type))
-        ),
-        props = mutableListOf(
-            selectOption.toProp()
-        )
-    )
-
-    private val GenEntityBusinessView.optionProps
-        get() = selectOptions.map { createOptionProp(it) }
+    private val GenEntityBusinessView.queryProperties
+        get() = properties.filter {
+            !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
+        }
 
     override fun stringifyQueryForm(entity: GenEntityBusinessView): String {
         val spec = "spec"
 
-        val cols = entity.properties
-            .map {
-                col(span = 8, content = listOf(it.createQueryFormItem(spec)).flatten())
-            }
-
         return builder.build(
-            Component(
-                models = listOf(
-                    ModelProp(spec, entity.dtoNames.spec)
-                ),
-                emits = listOf(
-                    Event("query")
-                ),
-                template = listOf(
-                    form(
-                        model = spec,
-                        content = listOf(
-                            row(gutter = 20, content = cols)
-                        )
-                    )
-                )
+            queryForm(
+                spec = spec,
+                specType = entity.dtoNames.spec,
+                specTypePath = staticPath,
+                selectOptions = entity.selectOptions,
+                content = entity.queryProperties
+                    .associateWith { it.createQueryFormItem(spec) }
             )
         )
     }
@@ -286,8 +261,6 @@ object Vue3ElementPlusViewGenerator :
                 selectOptions = entity.selectOptions,
                 content = entity.addFormProperties
                     .associateWith { it.createFormItem(formData) }
-            ).merge(
-                *entity.optionProps.toTypedArray()
             )
         )
     }
@@ -316,8 +289,6 @@ object Vue3ElementPlusViewGenerator :
                 content = entity.editFormProperties
                     .filter { !it.idProperty }
                     .associateWith { it.createFormItem(formData) }
-            ).merge(
-                *entity.optionProps.toTypedArray(),
             )
         )
     }
@@ -350,8 +321,6 @@ object Vue3ElementPlusViewGenerator :
                 comment = entity.comment,
                 content = entity.editTableProperties
                     .associateWith { it.createFormItem(rows) }
-            ).merge(
-                *entity.optionProps.toTypedArray(),
             )
         )
     }
@@ -360,13 +329,18 @@ object Vue3ElementPlusViewGenerator :
         val (_, dir, table, addForm, editForm, queryForm) = entity.componentNames
         val (_, listView, _, insertInput, updateInput, spec) = entity.dtoNames
 
+        val optionQueries = entity.optionQueries
+
         return builder.build(
             Component(
                 imports = listOf(
                     Import("vue", listOf("ref")),
                     ImportType(staticPath, listOf("Page", "PageQuery", listView, insertInput, updateInput, spec))
+                ) + optionQueries.flatMap { it.first },
+                script = optionQueries.flatMap { it.second },
+                template = listOf(
 
-                ),
+                )
             )
         )
     }

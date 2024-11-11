@@ -28,7 +28,10 @@ const props = withDefaults(defineProps<{
 })
 
 const emits = defineEmits<{
-    (event: "selectionChange", selection: Array<EntityListView>): void
+    (
+        event: "selectionChange",
+        selection: Array<EntityListView>
+    ): void
 }>()
 
 defineSlots<{

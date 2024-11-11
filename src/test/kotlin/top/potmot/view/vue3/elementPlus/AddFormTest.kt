@@ -43,8 +43,11 @@ import {useRules} from "@/rules/entity"
 const props = defineProps<{formData: EntityAddFormDataType}>()
 
 const emits = defineEmits<{
-    (event: "submit", formData: EntityInsertInput): void,
-    (event: "cancel", ): void
+    (
+        event: "submit",
+        formData: EntityInsertInput
+    ): void,
+    (event: "cancel"): void
 }>()
 
 defineSlots<{
@@ -135,8 +138,11 @@ import type {SubFormExpose} from "@/components/form/SubFormExpose"
 const props = defineProps<{formData: EntityAddFormDataType}>()
 
 const emits = defineEmits<{
-    (event: "submit", formData: EntityInsertInput): void,
-    (event: "cancel", ): void
+    (
+        event: "submit",
+        formData: EntityInsertInput
+    ): void,
+    (event: "cancel"): void
 }>()
 
 defineSlots<{
@@ -238,8 +244,11 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-    (event: "submit", formData: EntityInsertInput): void,
-    (event: "cancel", ): void
+    (
+        event: "submit",
+        formData: EntityInsertInput
+    ): void,
+    (event: "cancel"): void
 }>()
 
 defineSlots<{

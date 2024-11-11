@@ -34,7 +34,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
     private fun Component.needPropsDeclare(): Boolean =
         copy(props = emptyList()).toString().replace("props=[]", "").contains("props")
 
-    fun Iterable<Prop>.stringifyProps(): String {
+    fun Iterable<Prop>.stringifyProps(currentIndent: String = indent): String {
         val props = map { prop ->
             val required = if (prop.required) "" else "?"
             val type = if (prop.required) prop.type else "${prop.type} | undefined"
@@ -44,7 +44,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         val defineProps = if (any { it.defaultValue != null }) {
             "withDefaults(defineProps<{$props}>(), {\n${
                 filter { it.defaultValue != null }.joinToString(",\n") {
-                    "$indent${it.name}: ${it.defaultValue}"
+                    "$currentIndent${it.name}: ${it.defaultValue}"
                 }
             }\n})"
         } else {
@@ -57,12 +57,15 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
     private fun Component.needEmitsDeclare(): Boolean =
         copy(emits = emptyList()).toString().replace("emits=[]", "").contains("emits")
 
-    fun Iterable<Event>.stringifyEmits(): String {
+    fun Iterable<Event>.stringifyEmits(currentIndent: String = indent): String {
         val emits = map { emit ->
-            val args = emit.args.map { arg ->
-                "${arg.name}: ${arg.type}"
-            }.inlineOrWarpLines()
-            "(event: \"${emit.event}\", ${args}): void"
+            val args = (
+                    listOf("event" to "\"${emit.event}\"") +
+                            emit.args.map { it.name to it.type }
+                    ).map {
+                    "${it.first}: ${it.second}"
+                }.inlineOrWarpLines().replace("\n", "\n$currentIndent")
+            "(${args}): void"
         }.inlineOrWarpLines()
 
         return "defineEmits<{${emits}}>()"
@@ -152,7 +155,8 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
                         if (children.size == 1) {
                             val child = children[0]
                             if (child is TextElement) {
-                                val result = if (child.text.isBlank()) "$tagStart/>" else "$tagStart>${child.text}$tagEnd"
+                                val result =
+                                    if (child.text.isBlank()) "$tagStart/>" else "$tagStart>${child.text}$tagEnd"
                                 if (result.length < wrapThreshold) {
                                     return@joinToString "$currentIndent$result"
                                 }

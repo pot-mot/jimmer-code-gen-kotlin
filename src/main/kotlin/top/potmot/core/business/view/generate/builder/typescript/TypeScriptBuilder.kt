@@ -19,11 +19,11 @@ interface TypeScriptBuilder {
         return "\n" + joinToString("$separator\n") { "$indent$it" } + "\n"
     }
 
-    fun Iterable<String>.inlineOrWarpLines(separator: String = ","): String {
+    fun Iterable<String>.inlineOrWarpLines(separator: String = ",", currentIndent: String = indent, currentWrapThreshold: Int = wrapThreshold): String {
         val inline = joinToString("$separator ")
 
-        return if (inline.length > wrapThreshold) {
-            "\n" + joinToString("$separator\n") { "$indent$it" } + "\n"
+        return if (inline.length > currentWrapThreshold) {
+            "\n" + joinToString("$separator\n") { "$currentIndent$it" } + "\n"
         } else {
             inline
         }
