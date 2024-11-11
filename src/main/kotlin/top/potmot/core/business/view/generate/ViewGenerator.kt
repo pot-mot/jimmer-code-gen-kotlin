@@ -22,12 +22,12 @@ interface ViewGenerator {
     fun stringifyTable(entity: GenEntityBusinessView): String
 
     val GenEntityBusinessView.addFormDataType
-        get() = "${name}AddInput"
+        get() = "${name}AddFormDataType"
 
     fun stringifyAddFormDataType(entity: GenEntityBusinessView): String
 
     val GenEntityBusinessView.defaultAddFormData
-        get() = "Default${name}AddFormData"
+        get() = "default${name}AddFormData"
 
     fun stringifyDefaultAddFormData(entity: GenEntityBusinessView): String
 

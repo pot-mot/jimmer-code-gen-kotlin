@@ -1,18 +1,19 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPuls
+package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
 import kotlin.math.min
 import top.potmot.core.business.utils.PropertyFormType
 import top.potmot.core.business.utils.PropertyQueryType
-import top.potmot.core.business.utils.associationTargetOneProperties
 import top.potmot.core.business.utils.baseProperties
 import top.potmot.core.business.utils.componentNames
 import top.potmot.core.business.utils.constants
+import top.potmot.core.business.utils.defaultItems
 import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.enums
 import top.potmot.core.business.utils.formType
 import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.utils.ruleNames
 import top.potmot.core.business.utils.serviceName
+import top.potmot.core.business.utils.targetOneProperties
 import top.potmot.core.business.utils.typeStrToTypeScriptDefault
 import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.ViewGenerator
@@ -24,7 +25,7 @@ import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.toSingular
 import top.potmot.utils.string.trimBlankLine
 
-object Vue3ElementPlusViewGenerator : ViewGenerator() {
+object Vue3ElementPlusViewGenerator1 : ViewGenerator {
     override fun getFileSuffix() = "vue"
 
     override fun stringifyEnumSelect(enum: GenEnumGenerateView): String {
@@ -204,6 +205,10 @@ $propertyColumns
     </el-table>
 </template>
         """.trim()
+    }
+
+    override fun stringifyAddFormDataType(entity: GenEntityBusinessView): String {
+        return ""
     }
 
     private fun GenEntityBusinessView.enumSelectImports(forceNullable: Boolean = false) =
@@ -433,7 +438,7 @@ ${entity.queryFormItems()}
     }
 
     @Throws(GenerateException::class)
-    override fun stringifyDefaultAddInput(entity: GenEntityBusinessView) = buildString {
+    override fun stringifyDefaultAddFormData(entity: GenEntityBusinessView) = buildString {
         val insertInput = entity.dtoNames.insertInput
 
         appendLine("""import type {${insertInput}} from "@/api/__generated/model/static"""")
@@ -458,7 +463,7 @@ ${entity.queryFormItems()}
                 appendLine("    $it")
             }
 
-        entity.associationTargetOneProperties
+        entity.targetOneProperties
             .filter { it.entityId == entity.id }
             .map {
                 if (it.idView) {
@@ -491,6 +496,7 @@ ${entity.queryFormItems()}
         append("}")
     }
 
+    @Throws(GenerateException::class)
     private fun GenEntityBusinessView.formItems(
         formData: String = "formData",
         block: (property: GenEntityBusinessView.TargetOf_properties, component: String) -> String = { property, component ->
@@ -501,20 +507,21 @@ ${entity.queryFormItems()}
             }
         },
     ) =
-        properties
-            .filter { !it.idProperty && it.associationType == null && it.entityId == id }
-            .map {
-                val vModel = """v-model="${formData}.${it.name}""""
+        listOf(
+            baseProperties
+                .filter { !it.idProperty && it.entityId == id }
+                .map {
+                    val vModel = """v-model="${formData}.${it.name}""""
 
-                it to when (it.formType) {
-                    PropertyFormType.ENUM ->
-                        "<${if (it.typeNotNull) it.enum!!.componentNames.select else it.enum!!.componentNames.nullableSelect} $vModel/>"
+                    it to when (it.formType) {
+                        PropertyFormType.ENUM ->
+                            "<${if (it.typeNotNull) it.enum!!.componentNames.select else it.enum!!.componentNames.nullableSelect} $vModel/>"
 
-                    PropertyFormType.SWITCH ->
-                        if (it.typeNotNull)
-                            "<el-switch $vModel/>"
-                        else
-                            """
+                        PropertyFormType.SWITCH ->
+                            if (it.typeNotNull)
+                                "<el-switch $vModel/>"
+                            else
+                                """
 <el-select 
     $vModel
     placeholder="请选择${it.comment}"
@@ -524,9 +531,9 @@ ${entity.queryFormItems()}
 </el-select>
 """
 
-                    PropertyFormType.INT ->
-                        if (it.typeNotNull)
-                            """
+                        PropertyFormType.INT ->
+                            if (it.typeNotNull)
+                                """
 <el-input-number
     v-model.number="${formData}.${it.name}"
     placeholder="请输入${it.comment}"
@@ -535,8 +542,8 @@ ${entity.queryFormItems()}
     :max="${it.inputNumberMax}"
 />
 """
-                        else
-                            """
+                            else
+                                """
 <el-input-number
     v-model.number="${formData}.${it.name}"
     placeholder="请输入${it.comment}"
@@ -547,9 +554,9 @@ ${entity.queryFormItems()}
 />
 """
 
-                    PropertyFormType.FLOAT ->
-                        if (it.typeNotNull)
-                            """
+                        PropertyFormType.FLOAT ->
+                            if (it.typeNotNull)
+                                """
 <el-input-number
     v-model.number="${formData}.${it.name}"
     placeholder="请输入${it.comment}"
@@ -558,8 +565,8 @@ ${entity.queryFormItems()}
     :max="${it.inputNumberMax}"
 />
 """
-                        else
-                            """
+                            else
+                                """
 <el-input-number
     v-model.number="${formData}.${it.name}"
     placeholder="请输入${it.comment}"
@@ -571,17 +578,17 @@ ${entity.queryFormItems()}
 """
 
 
-                    PropertyFormType.TIME ->
-                        if (it.typeNotNull)
-                            """
+                        PropertyFormType.TIME ->
+                            if (it.typeNotNull)
+                                """
 <el-time-picker
     $vModel
     placeholder="请选择${it.comment}"
     value-format="HH:mm:ss"
 />
 """
-                        else
-                            """
+                            else
+                                """
 <el-time-picker
     $vModel
     placeholder="请选择${it.comment}"
@@ -593,9 +600,9 @@ ${entity.queryFormItems()}
 """
 
 
-                    PropertyFormType.DATE ->
-                        if (it.typeNotNull)
-                            """
+                        PropertyFormType.DATE ->
+                            if (it.typeNotNull)
+                                """
 <el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
@@ -603,8 +610,8 @@ ${entity.queryFormItems()}
     value-format="YYYY-MM-DD"
 />
 """
-                        else
-                            """
+                            else
+                                """
 <el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
@@ -616,9 +623,9 @@ ${entity.queryFormItems()}
 />
 """
 
-                    PropertyFormType.DATETIME ->
-                        if (it.typeNotNull)
-                            """
+                        PropertyFormType.DATETIME ->
+                            if (it.typeNotNull)
+                                """
 <el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
@@ -626,8 +633,8 @@ ${entity.queryFormItems()}
     value-format="YYYY-MM-DDTHH:mm:ss"
 />
 """
-                        else
-                            """
+                            else
+                                """
 <el-date-picker
     $vModel
     placeholder="请选择${it.comment}"
@@ -639,16 +646,34 @@ ${entity.queryFormItems()}
 />
 """
 
-                    else ->
-                        """
+                        else ->
+                            """
 <el-input
     $vModel${it.inputMaxLength}
     placeholder="请输入${it.comment}"
     clearable
 />
 """
-                }.trimBlankLine()
-            }
+                    }.trimBlankLine()
+                },
+            properties
+                .filter { it.associationType != null && !it.idView && it.entityId == id }
+                .map {
+                    val vModel = """v-model="${formData}.${it.name}Id""""
+
+                    val typeEntity = it.typeEntity
+                        ?: throw GenerateException.entityNotFound("typeEntity for propertyName: ${it.name}")
+
+                    val idSelect = typeEntity.componentNames.idSelect
+
+                    val options = typeEntity.name.replaceFirstChar { c -> c.lowercase() } + "Options"
+
+                    it to """
+<${idSelect} $vModel :options="$options"/>
+                """.trimBlankLine()
+                }
+        )
+            .flatten()
             .joinToString("\n") { block(it.first, it.second) }
 
     private fun List<GenEntityBusinessView.TargetOf_properties>.toRules() =
@@ -695,14 +720,17 @@ ${entity.queryFormItems()}
                                     val max = it.inputNumberMax
                                     items += "{type: 'integer', min: 0, max: ${max}, message: '${it.comment}需要在0-${max}之间', trigger: 'blur'}"
                                 }
+
                                 PropertyFormType.FLOAT -> {
                                     val max = it.inputNumberMax
                                     items += "{type: 'number', min: 0, max: ${max}, message: '${it.comment}需要在0-${max}之间', trigger: 'blur'}"
                                 }
+
                                 PropertyFormType.INPUT -> {
                                     val max = it.column.dataSize
                                     items += "{type: 'string', min: 0, max: ${max}, message: '${it.comment}长度需要在0-${max}之间', trigger: 'blur'}"
                                 }
+
                                 else -> Unit
                             }
                         }
@@ -738,7 +766,7 @@ $propertyRules
 
     override fun stringifyAddForm(entity: GenEntityBusinessView): String {
         val dir = entity.componentNames.dir
-        val defaultAddInput = entity.defaultAddInput()
+        val defaultAddFormData = entity.defaultAddFormData
         val (_, _, _, insertInput) = entity.dtoNames
         val (_, ruleDir, addFormRules) = entity.ruleNames
 
@@ -748,7 +776,7 @@ import {ref} from "vue"
 import type { FormInstance } from "element-plus"
 import {cloneDeep} from "lodash"
 import type {${insertInput}} from "@/api/__generated/model/static"
-import defaultInput from "@/components/${dir}/${defaultAddInput}"
+import defaultInput from "@/components/${dir}/${defaultAddFormData}"
 import rules from "@/rules/${ruleDir}/${addFormRules}"
 ${entity.enumSelectImports()}
 
@@ -873,7 +901,7 @@ $propertyRules
     override fun stringifyEditTable(entity: GenEntityBusinessView): String {
         val lowerName = entity.name.replaceFirstChar { c -> c.lowercase() }
         val editTableType = entity.editTableType
-        val defaultAddInput = entity.defaultAddInput()
+        val defaultAddFormData = entity.defaultAddFormData
         val rules = entity.ruleNames.editTableRules
 
         val tableColumns = entity.formItems("row") { property, component ->
@@ -895,7 +923,7 @@ $propertyRules
 import {ref} from "vue"
 import {deleteConfirm} from "@/utils/confirm"
 import {cloneDeep} from "lodash"
-import $defaultAddInput from "@/components/$lowerName/$defaultAddInput"
+import $defaultAddFormData from "@/components/$lowerName/$defaultAddFormData"
 import type {$editTableType} from "@/api/__generated/model/static"
 import type {FormInstance} from "element-plus"
 import {Delete, Plus} from "@element-plus/icons-vue"
@@ -932,7 +960,7 @@ const changeSelection = (item: $editTableType[]) => {
 
 // 新增
 const handleAdd = () => {
-    rows.value.push(cloneDeep($defaultAddInput))
+    rows.value.push(cloneDeep($defaultAddFormData))
 }
 
 // 删除

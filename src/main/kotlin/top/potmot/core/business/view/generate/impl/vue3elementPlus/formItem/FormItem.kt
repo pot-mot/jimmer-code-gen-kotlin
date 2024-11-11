@@ -3,12 +3,6 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem
 import top.potmot.core.business.utils.PropertyFormType
 import top.potmot.core.business.utils.componentNames
 import top.potmot.core.business.utils.formType
-import top.potmot.core.business.view.generate.meta.rules.numberMax
-import top.potmot.core.business.view.generate.meta.rules.numberMin
-import top.potmot.core.business.view.generate.meta.rules.numberPrecision
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.core.business.view.generate.meta.vue3.VModel
-import top.potmot.core.business.view.generate.meta.vue3.toPropBind
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.dateTimePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.input
@@ -17,6 +11,12 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.switch
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.timePicker
+import top.potmot.core.business.view.generate.meta.rules.numberMax
+import top.potmot.core.business.view.generate.meta.rules.numberMin
+import top.potmot.core.business.view.generate.meta.rules.numberPrecision
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
+import top.potmot.core.business.view.generate.meta.vue3.VModel
+import top.potmot.core.business.view.generate.meta.vue3.toPropBind
 import top.potmot.entity.dto.GenEntityBusinessView
 
 interface FormItem {
@@ -30,36 +30,42 @@ interface FormItem {
 
         return when (formType) {
             PropertyFormType.ASSOCIATION_ID ->
-                listOf(
-                    TagElement(
-                        typeEntity!!.componentNames.idSelect,
-                        directives = listOf(VModel(modelValue)),
-                        props = listOfNotNull(
-                            disabled.toPropBind("disabled")
-                        ),
-                    )
+                listOfNotNull(
+                    typeEntity?.let {
+                        TagElement(
+                            it.componentNames.idSelect,
+                            directives = listOf(VModel(modelValue)),
+                            props = listOfNotNull(
+                                disabled.toPropBind("disabled")
+                            ),
+                        )
+                    }
                 )
 
             PropertyFormType.ASSOCIATION_LIST ->
-                listOf(
-                    TagElement(
-                        typeEntity!!.componentNames.idMultiSelect,
-                        directives = listOf(VModel(modelValue)),
-                        props = listOfNotNull(
-                            disabled.toPropBind("disabled")
-                        ),
-                    )
+                listOfNotNull(
+                    typeEntity?.let {
+                        TagElement(
+                            it.componentNames.idMultiSelect,
+                            directives = listOf(VModel(modelValue)),
+                            props = listOfNotNull(
+                                disabled.toPropBind("disabled")
+                            ),
+                        )
+                    }
                 )
 
             PropertyFormType.ENUM ->
-                listOf(
-                    TagElement(
-                        if (typeNotNull) enum!!.componentNames.select else enum!!.componentNames.nullableSelect,
-                        directives = listOf(VModel(modelValue)),
-                        props = listOfNotNull(
-                            disabled.toPropBind("disabled")
-                        ),
-                    )
+                listOfNotNull(
+                    enum?.let {
+                        TagElement(
+                            if (typeNotNull) it.componentNames.select else it.componentNames.nullableSelect,
+                            directives = listOf(VModel(modelValue)),
+                            props = listOfNotNull(
+                                disabled.toPropBind("disabled")
+                            ),
+                        )
+                    }
                 )
 
             PropertyFormType.SWITCH ->

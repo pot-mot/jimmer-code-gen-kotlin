@@ -32,3 +32,15 @@ data class Function(
 data class CodeBlock(
     val content: String
 ) : CodeItem
+
+val emptyLineCode = CodeBlock("")
+
+fun commentLine(comment: String) = CodeBlock("/* $comment */")
+
+fun commentBlock(vararg comment: String) = CodeBlock(buildString {
+    appendLine("/**")
+    comment.forEach {
+        appendLine(" * $it")
+    }
+    append(" */")
+})

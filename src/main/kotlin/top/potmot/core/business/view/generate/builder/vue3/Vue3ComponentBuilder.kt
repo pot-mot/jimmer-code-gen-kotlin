@@ -70,9 +70,14 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
 
     fun Iterable<Slot>.stringifySlots(): String {
         val slots = map { slot ->
-            val props = slot.props.map { prop ->
+            var props = slot.props.map { prop ->
                 "${prop.name}: ${prop.type}"
             }.inlineOrWarpLines()
+
+            if (props.length > wrapThreshold) {
+                props = props.replace("\n", "\n$indent")
+            }
+
             "${slot.name}(props: {${props}}): any"
         }.inlineOrWarpLines()
 

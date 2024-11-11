@@ -150,6 +150,8 @@ data class TextElement(
     val text: String,
 ): Element
 
+val emptyLineElement = TextElement("")
+
 data class ExpressionElement(
     val expression: String,
 ): Element
@@ -179,6 +181,16 @@ data class TagElement(
         )
     }
 }
+
+fun slotElement(
+    name: String,
+    props: Iterable<String> = emptyList(),
+    content: Collection<TagElement> = emptyList(),
+) = TagElement(
+    "slot",
+    props = listOf(PropBind("name", name, isLiteral = true)) + props.map { PropBind(it, it) },
+    children = content
+)
 
 fun slotTemplate(
     name: String = "default",

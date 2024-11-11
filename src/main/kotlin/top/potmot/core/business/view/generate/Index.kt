@@ -1,6 +1,6 @@
 package top.potmot.core.business.view.generate
 
-import top.potmot.core.business.view.generate.impl.vue3elementPuls.Vue3ElementPlusViewGenerator
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.enumeration.ViewType
 
 fun ViewType.getViewGenerator(): ViewGenerator =

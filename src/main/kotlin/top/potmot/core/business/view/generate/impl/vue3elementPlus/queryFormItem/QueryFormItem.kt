@@ -30,27 +30,33 @@ interface QueryFormItem {
 
         return when (queryType) {
             PropertyQueryType.ASSOCIATION_ID_EQ ->
-                listOf(
-                    TagElement(
-                        typeEntity!!.componentNames.idSelect,
-                        directives = listOf(VModel(modelValue)),
-                    )
+                listOfNotNull(
+                    typeEntity?.let {
+                        TagElement(
+                            it.componentNames.idSelect,
+                            directives = listOf(VModel(modelValue)),
+                        )
+                    }
                 )
 
             PropertyQueryType.ASSOCIATION_ID_IN ->
-                listOf(
-                    TagElement(
-                        typeEntity!!.componentNames.idMultiSelect,
-                        directives = listOf(VModel(modelValue)),
-                    )
+                listOfNotNull(
+                    typeEntity?.let {
+                        TagElement(
+                            it.componentNames.idMultiSelect,
+                            directives = listOf(VModel(modelValue)),
+                        )
+                    }
                 )
 
             PropertyQueryType.ENUM_SELECT ->
-                listOf(
-                    TagElement(
-                        enum!!.componentNames.nullableSelect,
-                        directives = listOf(VModel(modelValue)),
-                    )
+                listOfNotNull(
+                    enum?.let {
+                        TagElement(
+                            it.componentNames.nullableSelect,
+                            directives = listOf(VModel(modelValue)),
+                        )
+                    }
                 )
 
             PropertyQueryType.INT_RANGE ->

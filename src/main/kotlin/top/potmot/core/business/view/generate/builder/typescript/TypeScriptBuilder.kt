@@ -73,12 +73,13 @@ interface TypeScriptBuilder {
                     val args = item.args.map { arg ->
                         "${arg.name}${if (arg.required) "" else "?"}: ${arg.type}${if (arg.defaultValue != null) " = ${arg.defaultValue}" else ""}"
                     }.inlineOrWarpLines()
+
+                    val returnType = (item.returnType ?: "void").let {
+                        if (item.async) "Promise<$it>" else it
+                    }
+
                     val body = item.body.stringifyCodes().replace("\n", "\n$indent")
-                    "const ${item.name} = ${if (item.async) "async " else ""}(${args}): ${
-                        if (item.returnType != null) {
-                            if (item.async) "Promise<${item.returnType}>" else item.returnType
-                        } else "void"
-                    } => {\n$indent$body\n}"
+                    "const ${item.name} = ${if (item.async) "async " else ""}(${args}): $returnType => {\n$indent$body\n}"
                 }
 
                 is CodeBlock ->

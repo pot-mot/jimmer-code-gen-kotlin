@@ -307,7 +307,7 @@ interface ElementPlus {
         model: String,
         ref: String? = null,
         rules: String? = null,
-        content: Collection<TagElement>,
+        content: Collection<Element>,
     ) = TagElement(
         "el-form",
         props = listOfNotNull(
@@ -318,15 +318,29 @@ interface ElementPlus {
         children = content
     )
 
+    enum class TableColumnFixed {
+        LEFT, RIGHT;
+
+        fun toPropBind() = PropBind(
+            "fixed",
+            value = if (this == LEFT) null else "right",
+            isLiteral = true,
+        )
+    }
+
     fun tableColumn(
-        prop: String,
-        label: String,
+        prop: String? = null,
+        label: String? = null,
+        type: String? = null,
+        fixed: TableColumnFixed? = null,
         content: Collection<TagElement> = emptyList(),
     ) = TagElement(
         "el-table-column",
-        props = listOf(
-            PropBind("prop", prop, isLiteral = true),
-            PropBind("label", label, isLiteral = true),
+        props = listOfNotNull(
+            prop.toPropBind("prop", isLiteral = true),
+            label.toPropBind("label", isLiteral = true),
+            type.toPropBind("type", isLiteral = true),
+            fixed?.toPropBind()
         ),
         children = listOfNotNull(
             if (content.isEmpty())
