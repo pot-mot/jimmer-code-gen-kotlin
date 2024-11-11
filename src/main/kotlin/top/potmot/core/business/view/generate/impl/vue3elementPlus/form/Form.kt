@@ -1,6 +1,7 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
 import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
+import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.button
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.formItem
@@ -41,21 +42,29 @@ data class SubValidateItem(
     val componentName: String,
     val ref: String = componentName.replaceFirstChar { it.lowercase() } + "Ref",
     val type: String = "SubFormExpose",
+    val typePath: String = "$componentPath/form/SubFormExpose",
     val validateVariable: String = componentName.replaceFirstChar { it.lowercase() } + "Valid",
 ) {
     fun toRef() =
         ConstVariable(ref, null, "ref<$type>()")
+
+    fun toImport() =
+        ImportType(typePath, listOf(type))
 }
 
 data class SelectOption(
     val name: String,
     val type: String,
+    val typePath: String = staticPath,
 ) {
+    fun toImport() =
+        ImportType(typePath, listOf(type))
+
     fun toProp() =
-        Prop(name, type)
+        Prop(name, "Array<$type>")
 
     fun toVariable() =
-        ConstVariable(name, null, "ref<$type>()")
+        ConstVariable(name, null, "ref<Array<$type>>()")
 }
 
 private val submitEvent = { formData: String, formDataType: String ->
@@ -171,7 +180,7 @@ fun addForm(
         Import("lodash", listOf("cloneDeep")),
         Import(defaultPath, listOf(default)),
         Import(useRulesPath, listOf(useRules)),
-    ),
+    ) + subValidateItems.map { it.toImport() } + selectOptions.map { it.toImport() },
     props = listOf(
         Prop(
             formData, type,
@@ -203,17 +212,16 @@ fun addForm(
             model = formData,
             ref = formRef,
             rules = "rules",
-            content = listOf(
-                *content.map { (property, elements) ->
-                    formItem(
-                        property.name,
-                        property.comment,
-                        content = elements
-                    )
-                }.toTypedArray(),
+            content = content.map { (property, elements) ->
+                formItem(
+                    property.name,
+                    property.comment,
+                    content = elements
+                )
+            } + listOf(
                 emptyLineElement,
                 operationsSlotElement,
-            ),
+            )
         )
     )
 )
@@ -238,7 +246,7 @@ fun editForm(
         ImportType("$staticPath/form/EditFormExpose", listOf("EditFormExpose")),
         ImportType(typePath, listOf(type)),
         Import(useRulesPath, listOf(useRules))
-    ),
+    ) + subValidateItems.map { it.toImport() } + selectOptions.map { it.toImport() },
     models = listOf(
         ModelProp(formData, type),
     ),
@@ -268,16 +276,15 @@ fun editForm(
             model = formData,
             ref = formRef,
             rules = "rules",
-            content = listOf(
-                *content.map { (property, elements) ->
-                    formItem(
-                        property.name,
-                        property.comment,
-                        content = elements
-                    ).merge {
-                        events += listOf(queryOnChange)
-                    }
-                }.toTypedArray(),
+            content = content.map { (property, elements) ->
+                formItem(
+                    property.name,
+                    property.comment,
+                    content = elements
+                ).merge {
+                    events += listOf(queryOnChange)
+                }
+            } + listOf(
                 emptyLineElement,
                 operationsSlotElement,
             ),
@@ -310,7 +317,7 @@ fun editTable(
         Import(defaultPath, listOf(default)),
         Import(useRulesPath, listOf(useRules)),
         Import("@element-plus/icons-vue", listOf("Plus", "Delete")),
-    ),
+    ) + subValidateItems.map { it.toImport() } + selectOptions.map { it.toImport() },
     models = listOf(
         ModelProp(formData, "Array<$type>"),
     ),
