@@ -9,9 +9,10 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
+import top.potmot.core.business.view.generate.meta.typescript.FunctionArg
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
-import top.potmot.core.business.view.generate.meta.typescript.commentBlock
+import top.potmot.core.business.view.generate.meta.typescript.commentLine
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.core.business.view.generate.meta.vue3.Event
@@ -188,10 +189,10 @@ fun addForm(
         ConstVariable("rules", null, "$useRules($formData)"),
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
-        commentBlock("提交"),
+        commentLine("提交"),
         handleSubmit(formData, formRef, subValidateItems, indent),
         emptyLineCode,
-        commentBlock("取消"),
+        commentLine("取消"),
         handleCancel(),
     ),
     template = listOf(
@@ -253,10 +254,10 @@ fun editForm(
         ConstVariable("rules", null, "$useRules($formData)"),
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
-        commentBlock("提交"),
+        commentLine("提交"),
         handleSubmit(formData, formRef, subValidateItems, indent),
         emptyLineCode,
-        commentBlock("取消"),
+        commentLine("取消"),
         handleCancel(),
     ),
     template = listOf(
@@ -288,8 +289,11 @@ private const val selectionColumn = "selectionColumn"
 fun editTable(
     type: String,
     typePath: String,
+    default: String,
+    defaultPath: String,
     useRules: String,
     useRulesPath: String,
+    comment: String,
     idPropertyName: String,
     formData: String = "formData",
     formRef: String = "formRef",
@@ -303,6 +307,8 @@ fun editTable(
         ImportType("element-plus", listOf("FormInstance")),
         ImportType("$staticPath/form/AddFormExpose", listOf("AddFormExpose")),
         ImportType(typePath, listOf(type)),
+        Import("lodash", listOf("cloneDeep")),
+        Import(defaultPath, listOf(default)),
         Import(useRulesPath, listOf(useRules))
     ),
     models = listOf(
@@ -322,40 +328,56 @@ fun editTable(
         ConstVariable("rules", null, "$useRules($formData)"),
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
-        commentBlock("提交"),
+        commentLine("提交"),
         handleSubmit(formData, formRef, subValidateItems, indent),
         emptyLineCode,
-        commentBlock("取消"),
+        commentLine("取消"),
         handleCancel(),
         emptyLineCode,
-        CodeBlock(
-            """
-// 多选
-const selection = ref<Array<InWarehouseInsertInput_TargetOf_details>>([])
-
-const changeSelection = (item: Array<InWarehouseInsertInput_TargetOf_details>) => {
-    selection.value = item
-}
-
-// 新增
-const handleAdd = () => {
-    rows.value.push(cloneDeep(DefaultInWarehouseDetailAddInput))
-}
-
-// 删除
-const handleBatchDelete = async () => {
-    const result = await deleteConfirm('这些入库明细')
-    if (!result) return
-    rows.value = rows.value.filter(it => !selection.value.includes(it))
-}
-
-const handleSingleDelete = async (index: number) => {
-    const result = await deleteConfirm('该入库明细')
-    if (!result) return
-    rows.value = rows.value.filter((_, i) => i !== index)
-}
-        """.trimIndent()
-        )
+        commentLine("多选"),
+        ConstVariable("selection", null, "ref<Array<$type>>([])"),
+        emptyLineCode,
+        Function(
+            name = "changeSelection",
+            args = listOf(
+                FunctionArg("item", "Array<$type>")
+            ),
+            body = listOf(
+                CodeBlock("selection.value = item")
+            )
+        ),
+        emptyLineCode,
+        commentLine("新增"),
+        Function(
+            name = "handleAdd",
+            body = listOf(
+                CodeBlock("$formData.value.push(cloneDeep($default))")
+            )
+        ),
+        emptyLineCode,
+        commentLine("删除"),
+        Function(
+            async = true,
+            name = "handleBatchDelete",
+            body = listOf(
+                ConstVariable("result", null, "await deleteConfirm(\"这些$comment\")"),
+                CodeBlock("if (!result) return"),
+                CodeBlock("$formData.value = $formData.value.filter(it => !selection.value.includes(it))"),
+            )
+        ),
+        emptyLineCode,
+        Function(
+            async = true,
+            name = "handleSingleDelete",
+            args = listOf(
+                FunctionArg("index", "number")
+            ),
+            body = listOf(
+                ConstVariable("result", null, "await deleteConfirm(\"该$comment\")"),
+                CodeBlock("if (!result) return"),
+                CodeBlock("$formData.value = $formData.value.filter((_, i) => i !== index)"),
+            )
+        ),
     ),
     template = listOf(
         form(

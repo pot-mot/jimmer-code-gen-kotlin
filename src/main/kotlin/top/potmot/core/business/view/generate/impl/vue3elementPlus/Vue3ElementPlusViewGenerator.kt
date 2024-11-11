@@ -333,9 +333,12 @@ object Vue3ElementPlusViewGenerator :
                 type = entity.addFormDataType,
                 typePath = staticPath,
                 useRules = "useRules",
+                default = entity.defaultAddFormData,
+                defaultPath = componentPath + "/" + entity.name.replaceFirstChar { it.lowercase() } + "/" + entity.defaultAddFormData,
                 useRulesPath = rulePath + "/" + entity.ruleNames.editTableRules,
                 indent = builder.indent,
                 idPropertyName = entity.idProperties.first().name,
+                comment = entity.comment,
                 content = entity.editTableProperties
                     .associateWith { it.createFormItem(formData) }
             ).merge(

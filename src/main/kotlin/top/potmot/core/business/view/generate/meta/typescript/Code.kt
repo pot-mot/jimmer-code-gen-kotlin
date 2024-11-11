@@ -35,7 +35,7 @@ data class CodeBlock(
 
 val emptyLineCode = CodeBlock("")
 
-fun commentLine(comment: String) = CodeBlock("/* $comment */")
+fun commentLine(comment: String) = CodeBlock("// $comment")
 
 fun commentBlock(vararg comment: String) = CodeBlock(buildString {
     appendLine("/**")

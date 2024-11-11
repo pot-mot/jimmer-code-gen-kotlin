@@ -58,18 +58,14 @@ const formData = ref<EntityAddFormDataType>(cloneDeep(defaultEntityAddFormData))
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
-/**
- * 提交
- */
+// 提交
 const handleSubmit = async (): Promise<void> => {
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
     if (formValid)
         emits("submit", formData.value)
 }
 
-/**
- * 取消
- */
+// 取消
 const handleCancel = (): void => {
     emits("cancel")
 }
@@ -141,18 +137,14 @@ defineSlots<{
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
-/**
- * 提交
- */
+// 提交
 const handleSubmit = async (): Promise<void> => {
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
     if (formValid)
         emits("submit", formData.value)
 }
 
-/**
- * 取消
- */
+// 取消
 const handleCancel = (): void => {
     emits("cancel")
 }
@@ -191,10 +183,13 @@ const handleCancel = (): void => {
         val component = editTable(
             "EntitySubTableType",
             "@/api/__generated/model/static",
+            "defaultEntityAddFormData",
+            "@/component/entity/defaultEntityAddFormData",
             "useRules",
             "@/rules/entity",
             indent = "    ",
             idPropertyName = "id",
+            comment = "comment",
             content = mapOf()
         )
 
@@ -205,6 +200,8 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
 import type {EntitySubTableType} from "@/api/__generated/model/static"
+import {cloneDeep} from "lodash"
+import {defaultEntityAddFormData} from "@/component/entity/defaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 
 const formData = defineModels<Array<EntitySubTableType>>({required: true})
@@ -229,45 +226,41 @@ defineSlots<{
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
-/**
- * 提交
- */
+// 提交
 const handleSubmit = async (): Promise<void> => {
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
     if (formValid)
         emits("submit", formData.value)
 }
 
-/**
- * 取消
- */
+// 取消
 const handleCancel = (): void => {
     emits("cancel")
 }
 
 // 多选
-const selection = ref<Array<InWarehouseInsertInput_TargetOf_details>>([])
+const selection = ref<Array<EntitySubTableType>>([])
 
-const changeSelection = (item: Array<InWarehouseInsertInput_TargetOf_details>) => {
+const changeSelection = (item: Array<EntitySubTableType>): void => {
     selection.value = item
 }
 
 // 新增
-const handleAdd = () => {
-    rows.value.push(cloneDeep(DefaultInWarehouseDetailAddInput))
+const handleAdd = (): void => {
+    formData.value.push(cloneDeep(defaultEntityAddFormData))
 }
 
 // 删除
-const handleBatchDelete = async () => {
-    const result = await deleteConfirm('这些入库明细')
+const handleBatchDelete = async (): Promise<void> => {
+    const result = await deleteConfirm("这些comment")
     if (!result) return
-    rows.value = rows.value.filter(it => !selection.value.includes(it))
+    formData.value = formData.value.filter(it => !selection.value.includes(it))
 }
 
-const handleSingleDelete = async (index: number) => {
-    const result = await deleteConfirm('该入库明细')
+const handleSingleDelete = async (index: number): Promise<void> => {
+    const result = await deleteConfirm("该comment")
     if (!result) return
-    rows.value = rows.value.filter((_, i) => i !== index)
+    formData.value = formData.value.filter((_, i) => i !== index)
 }
 </script>
 
