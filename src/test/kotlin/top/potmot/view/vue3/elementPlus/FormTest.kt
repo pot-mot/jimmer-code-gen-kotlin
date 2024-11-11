@@ -3,9 +3,12 @@ package top.potmot.view.vue3.elementPlus
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
+import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.addForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTable
+import top.potmot.core.business.view.generate.rulePath
+import top.potmot.core.business.view.generate.staticPath
 
 class FormTest {
     private val builder = Vue3ComponentBuilder()
@@ -16,13 +19,13 @@ class FormTest {
     fun `test addForm`() {
         val component = addForm(
             "EntityInsertInput",
-            "@/api/__generated/model/static",
+            staticPath,
             "EntityAddFormDataType",
-            "@/component/entity/EntityAddFormDataType",
+            "$componentPath/entity/EntityAddFormDataType",
             "defaultEntityAddFormData",
-            "@/component/entity/defaultEntityAddFormData",
+            "$componentPath/entity/defaultEntityAddFormData",
             "useRules",
-            "@/rules/entity",
+            "$rulePath/entity",
             indent = "    ",
             content = mapOf()
         )
@@ -34,9 +37,9 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
-import type {EntityAddFormDataType} from "@/component/entity/EntityAddFormDataType"
+import type {EntityAddFormDataType} from "@/components/entity/EntityAddFormDataType"
 import {cloneDeep} from "lodash"
-import {defaultEntityAddFormData} from "@/component/entity/defaultEntityAddFormData"
+import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 
 const props = defineProps<{formData: EntityAddFormDataType}>()
@@ -104,9 +107,9 @@ const handleCancel = (): void => {
     fun `test editForm`() {
         val component = editForm(
             "EntityUpdateInput",
-            "@/api/__generated/model/static",
+            staticPath,
             "useRules",
-            "@/rules/entity",
+            "$rulePath/entity",
             indent = "    ",
             content = mapOf()
         )
@@ -182,11 +185,11 @@ const handleCancel = (): void => {
     fun `test editTable`() {
         val component = editTable(
             "EntitySubTableType",
-            "@/api/__generated/model/static",
+            staticPath,
             "defaultEntityAddFormData",
-            "@/component/entity/defaultEntityAddFormData",
+            "$componentPath/entity/defaultEntityAddFormData",
             "useRules",
-            "@/rules/entity",
+            "$rulePath/entity",
             indent = "    ",
             idPropertyName = "id",
             comment = "comment",
@@ -201,7 +204,7 @@ import type {FormInstance} from "element-plus"
 import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
 import type {EntitySubTableType} from "@/api/__generated/model/static"
 import {cloneDeep} from "lodash"
-import {defaultEntityAddFormData} from "@/component/entity/defaultEntityAddFormData"
+import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 
 const formData = defineModels<Array<EntitySubTableType>>({required: true})
@@ -209,11 +212,11 @@ const formData = defineModels<Array<EntitySubTableType>>({required: true})
 const props = withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
-    selectionColumn?: boolean | undefined
+    multiSelect?: boolean | undefined
 }>(), {
     idColumn: false,
     indexColumn: false,
-    selectionColumn: true
+    multiSelect: true
 })
 
 defineSlots<{
@@ -241,8 +244,8 @@ const handleCancel = (): void => {
 // 多选
 const selection = ref<Array<EntitySubTableType>>([])
 
-const changeSelection = (item: Array<EntitySubTableType>): void => {
-    selection.value = item
+const handleSelectionChange = (newSelection: Array<EntitySubTableType>): void => {
+    selection.value = newSelection
 }
 
 // 新增
@@ -270,7 +273,12 @@ const handleSingleDelete = async (index: number): Promise<void> => {
         ref="formRef"
         :rules="rules"
     >
-        <el-table :data="formData" border stripe>
+        <el-table
+            :data="formData"
+            border
+            stripe
+            @selection-change="handleSelectionChange"
+        >
             <el-table-column
                 v-if="idColumn"
                 prop="id"
@@ -279,19 +287,17 @@ const handleSingleDelete = async (index: number): Promise<void> => {
             />
             <el-table-column v-if="indexColumn" type="index" fixed/>
             <el-table-column
-                v-if="selectionColumn"
+                v-if="multiSelect"
                 type="selection"
                 fixed
             />
             <el-table-column label="操作" fixed="right">
                 <template #default="scope">
-                    <template #default="{,}">
-                        <el-button
-                            type="danger"
-                            :icon="Delete"
-                            @click="handleSingleDelete($index)"
-                        />
-                    </template>
+                    <el-button
+                        type="danger"
+                        :icon="Delete"
+                        @click="handleSingleDelete(scope.$index)"
+                    />
                 </template>
             </el-table-column>
         </el-table>

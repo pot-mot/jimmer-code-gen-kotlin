@@ -21,17 +21,19 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTabl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.rules.Vue3RulesBuilder
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
 import top.potmot.core.business.view.generate.meta.rules.rules
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.vue3.Component
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.Event
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
 import top.potmot.core.business.view.generate.rulePath
@@ -43,6 +45,7 @@ import top.potmot.entity.dto.share.GenerateEntity
 object Vue3ElementPlusViewGenerator :
     ViewGenerator,
     ElementPlus,
+    TableColumn,
     FormItem,
     QueryFormItem,
     AddFormDefault,
@@ -210,17 +213,23 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
+
+    private val GenEntityBusinessView.tableProperties
+        get() = properties.filter {
+            !it.idProperty && it.associationType == null
+        }
+
     override fun stringifyTable(entity: GenEntityBusinessView): String {
+        val rows = "rows"
+
         return builder.build(
-            Component(
-                template = listOf(
-                    table(
-                        data = "rows",
-                        columns = entity.properties.map {
-                            tableColumn(it.name, it.comment)
-                        },
-                    )
-                )
+            viewTable(
+                data = rows,
+                type = entity.dtoNames.listView,
+                typePath = entity.dtoNames.listView,
+                idPropertyName = entity.idProperties[0].name,
+                content = entity.tableProperties
+                    .associateWith { it.createTableColumn() }
             )
         )
     }
@@ -325,11 +334,11 @@ object Vue3ElementPlusViewGenerator :
     }
 
     override fun stringifyEditTable(entity: GenEntityBusinessView): String {
-        val formData = "formData"
+        val rows = "rows"
 
         return builder.build(
             editTable(
-                formData = formData,
+                formData = rows,
                 type = entity.addFormDataType,
                 typePath = staticPath,
                 useRules = "useRules",
@@ -340,7 +349,7 @@ object Vue3ElementPlusViewGenerator :
                 idPropertyName = entity.idProperties.first().name,
                 comment = entity.comment,
                 content = entity.editTableProperties
-                    .associateWith { it.createFormItem(formData) }
+                    .associateWith { it.createFormItem(rows) }
             ).merge(
                 *entity.optionProps.toTypedArray(),
             )
@@ -362,19 +371,19 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
-    override fun stringifySingleSelect(entity: GenEntityBusinessView): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun stringifyMultiSelect(entity: GenEntityBusinessView): String {
-        TODO("Not yet implemented")
-    }
-
     override fun stringifyIdSelect(entity: GenEntityBusinessView): String {
-        TODO("Not yet implemented")
+        return ""
     }
 
     override fun stringifyIdMultiSelect(entity: GenEntityBusinessView): String {
-        TODO("Not yet implemented")
+        return ""
+    }
+
+    override fun stringifySingleSelect(entity: GenEntityBusinessView): String {
+        return ""
+    }
+
+    override fun stringifyMultiSelect(entity: GenEntityBusinessView): String {
+        return ""
     }
 }

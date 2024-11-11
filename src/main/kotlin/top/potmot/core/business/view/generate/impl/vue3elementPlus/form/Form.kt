@@ -6,6 +6,9 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.tableColumn
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.operationsColumn
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilColumns
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilProps
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
@@ -21,13 +24,12 @@ import top.potmot.core.business.view.generate.meta.vue3.EventArg
 import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
+import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.Slot
 import top.potmot.core.business.view.generate.meta.vue3.SlotProp
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
 import top.potmot.core.business.view.generate.meta.vue3.slotElement
-import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
 import top.potmot.core.business.view.generate.meta.vue3.styleProp
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.entity.dto.GenEntityBusinessView
@@ -125,8 +127,8 @@ private val operationsSlot = Slot(
 private val operationsSlotElement = slotElement(
     "operations",
     props = listOf(
-        handleSubmitFnName,
-        handleCancelFnName,
+        PropBind(handleSubmitFnName, handleSubmitFnName),
+        PropBind(handleCancelFnName, handleCancelFnName),
     ),
     content = listOf(
         TagElement(
@@ -283,10 +285,6 @@ fun editForm(
     )
 )
 
-private const val idColumn = "idColumn"
-private const val indexColumn = "indexColumn"
-private const val selectionColumn = "selectionColumn"
-
 fun editTable(
     type: String,
     typePath: String,
@@ -315,10 +313,7 @@ fun editTable(
     models = listOf(
         ModelProp(formData, "Array<$type>"),
     ),
-    props = listOf(
-        Prop(idColumn, "boolean", false, "false"),
-        Prop(indexColumn, "boolean", false, "false"),
-        Prop(selectionColumn, "boolean", false, "true"),
+    props = tableUtilProps(showIndex = false) + listOf(
         *selectOptions.map { it.toProp() }.toTypedArray(),
     ),
     slots = listOf(
@@ -339,21 +334,15 @@ fun editTable(
         ConstVariable("selection", null, "ref<Array<$type>>([])"),
         emptyLineCode,
         Function(
-            name = "changeSelection",
-            args = listOf(
-                FunctionArg("item", "Array<$type>")
-            ),
-            body = listOf(
-                CodeBlock("selection.value = item")
-            )
+            name = "handleSelectionChange",
+            args = listOf(FunctionArg("newSelection", "Array<$type>")),
+            body = listOf(CodeBlock("selection.value = newSelection"))
         ),
         emptyLineCode,
         commentLine("新增"),
         Function(
             name = "handleAdd",
-            body = listOf(
-                CodeBlock("$formData.value.push(cloneDeep($default))")
-            )
+            body = listOf(CodeBlock("$formData.value.push(cloneDeep($default))"))
         ),
         emptyLineCode,
         commentLine("删除"),
@@ -388,61 +377,32 @@ fun editTable(
             content = listOf(
                 table(
                     data = formData,
-                    columns =
-                    listOf(
+                    columns = tableUtilColumns(idPropertyName) + content.map { (property, elements) ->
                         tableColumn(
-                            label = "ID",
-                            prop = idPropertyName,
-                            fixed = ElementPlus.TableColumnFixed.LEFT,
-                        ).merge {
-                            directives += VIf(idColumn)
-                        },
-                        tableColumn(
-                            type = "index",
-                            fixed = ElementPlus.TableColumnFixed.LEFT,
-                        ).merge {
-                            directives += VIf(indexColumn)
-                        },
-                        tableColumn(
-                            type = "selection",
-                            fixed = ElementPlus.TableColumnFixed.LEFT,
-                        ).merge {
-                            directives += VIf(selectionColumn)
-                        },
-                    ) + content.map { (property, elements) ->
-                        tableColumn(
-                            property.name,
-                            property.comment,
+                            prop = property.name,
+                            label = property.comment,
                             content = listOf(
                                 formItem(
-                                    property.name,
-                                    property.comment,
+                                    prop = "[scope.${'$'}index, '${property.name}']",
+                                    label = property.comment,
                                     "rules.${property.name}",
                                     content = elements
                                 )
                             )
                         )
-                    } + listOf(
-                        tableColumn(
-                            label = "操作",
-                            fixed = ElementPlus.TableColumnFixed.RIGHT,
-                            content = listOf(
-                                slotTemplate(
-                                    name = "default",
-                                    props = listOf("${'$'}index"),
-                                    content = listOf(
-                                        button(
-                                            icon = "Delete",
-                                            type = ElementPlus.Type.DANGER,
-                                        ).merge {
-                                            events += EventBind("click", "handleSingleDelete(${'$'}index)")
-                                        }
-                                    )
-                                )
-                            )
+                    } + operationsColumn(
+                        listOf(
+                            button(
+                                icon = "Delete",
+                                type = ElementPlus.Type.DANGER,
+                            ).merge {
+                                events += EventBind("click", "handleSingleDelete(scope.${'$'}index)")
+                            }
                         )
                     )
-                ),
+                ).merge {
+                    events += EventBind("selection-change", "handleSelectionChange")
+                },
                 emptyLineElement,
                 operationsSlotElement,
             ),

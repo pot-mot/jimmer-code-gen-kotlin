@@ -184,11 +184,11 @@ data class TagElement(
 
 fun slotElement(
     name: String,
-    props: Iterable<String> = emptyList(),
+    props: Iterable<PropBind> = emptyList(),
     content: Collection<Element> = emptyList(),
 ) = TagElement(
     "slot",
-    props = listOf(PropBind("name", name, isLiteral = true)) + props.map { PropBind(it, it) },
+    props = listOf(PropBind("name", name, isLiteral = true)) + props,
     children = content
 )
 
