@@ -1,5 +1,6 @@
 package top.potmot.view.vue3.elementPlus
 
+import java.time.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
@@ -7,7 +8,8 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.Form
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
-import java.time.LocalDateTime
+import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity
+import top.potmot.enumeration.AssociationType
 
 class FormItemTest : FormItem {
     private val formData = "formData"
@@ -65,7 +67,7 @@ class FormItemTest : FormItem {
     }
 
     @Test
-    fun `test date` () {
+    fun `test date`() {
         assertEquals(
             """
 <el-date-picker
@@ -81,7 +83,7 @@ class FormItemTest : FormItem {
     }
 
     @Test
-    fun `test datetime` () {
+    fun `test datetime`() {
         assertEquals(
             """
 <el-date-picker
@@ -97,7 +99,7 @@ class FormItemTest : FormItem {
     }
 
     @Test
-    fun `test switch` () {
+    fun `test switch`() {
         assertEquals(
             """
 <el-switch v-model="formData.name"/>
@@ -122,7 +124,7 @@ class FormItemTest : FormItem {
     }
 
     @Test
-    fun `test int` () {
+    fun `test int`() {
         assertEquals(
             """
 <el-input-number
@@ -218,7 +220,7 @@ class FormItemTest : FormItem {
     }
 
     @Test
-    fun `test float` () {
+    fun `test float`() {
         assertEquals(
             """
 <el-input-number
@@ -240,7 +242,10 @@ class FormItemTest : FormItem {
     :value-on-clear="0.00"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Float", column = TargetOf_column(dataSize = 10, numericPrecision = 2)).result,
+            baseProperty.copy(
+                type = "kotlin.Float",
+                column = TargetOf_column(dataSize = 10, numericPrecision = 2)
+            ).result,
         )
 
         assertEquals(
@@ -254,12 +259,16 @@ class FormItemTest : FormItem {
     :value-on-clear="undefined"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Float", typeNotNull = false, column = TargetOf_column(dataSize = 10, numericPrecision = 2)).result,
+            baseProperty.copy(
+                type = "kotlin.Float",
+                typeNotNull = false,
+                column = TargetOf_column(dataSize = 10, numericPrecision = 2)
+            ).result,
         )
     }
 
     @Test
-    fun `test double` () {
+    fun `test double`() {
         assertEquals(
             """
 <el-input-number
@@ -281,12 +290,15 @@ class FormItemTest : FormItem {
     :value-on-clear="0.00"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Double", column = TargetOf_column(dataSize = 10, numericPrecision = 2)).result,
+            baseProperty.copy(
+                type = "kotlin.Double",
+                column = TargetOf_column(dataSize = 10, numericPrecision = 2)
+            ).result,
         )
     }
 
     @Test
-    fun `test decimal` () {
+    fun `test decimal`() {
         assertEquals(
             """
 <el-input-number
@@ -308,22 +320,85 @@ class FormItemTest : FormItem {
     :value-on-clear="0.00"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "java.math.BigDecimal", column = TargetOf_column(dataSize = 10, numericPrecision = 2)).result,
+            baseProperty.copy(
+                type = "java.math.BigDecimal",
+                column = TargetOf_column(dataSize = 10, numericPrecision = 2)
+            ).result,
         )
     }
 
     @Test
-    fun `test enum` () {
+    fun `test enum`() {
         assertEquals(
             """
 <EnumSelect v-model="formData.name"/>
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.String", enum = TargetOf_enum(
-                packagePath = "",
-                name = "Enum",
-                comment = "comment"
-            )).result,
+            baseProperty.copy(
+                type = "kotlin.String", enum = TargetOf_enum(
+                    packagePath = "",
+                    name = "Enum",
+                    comment = "comment"
+                )
+            ).result,
         )
     }
 
+    @Test
+    fun `test to one association`() {
+        val expect = "<EntityIdSelect v-model=\"formData.name\"/>"
+
+        val manyToOneProperty = baseProperty.copy(
+            type = "kotlin.Int",
+            associationType = AssociationType.MANY_TO_ONE,
+            typeEntity = TargetOf_typeEntity(
+                packagePath = "",
+                name = "Entity",
+                comment = "comment"
+            )
+        )
+
+        assertEquals(
+            expect,
+            manyToOneProperty.result,
+        )
+
+        val oneToOneProperty = manyToOneProperty.copy(
+            associationType = AssociationType.ONE_TO_ONE,
+        )
+
+        assertEquals(
+            expect,
+            oneToOneProperty.result,
+        )
+    }
+
+    @Test
+    fun `test to many association`() {
+        val expect = "<EntityIdMultiSelect v-model=\"formData.name\"/>"
+
+        val manyToManyProperty = baseProperty.copy(
+            type = "kotlin.Int",
+            associationType = AssociationType.MANY_TO_MANY,
+            listType = true,
+            typeEntity = TargetOf_typeEntity(
+                packagePath = "",
+                name = "Entity",
+                comment = "comment"
+            )
+        )
+
+        assertEquals(
+            expect,
+            manyToManyProperty.result,
+        )
+
+        val oneToOneProperty = manyToManyProperty.copy(
+            associationType = AssociationType.ONE_TO_MANY,
+        )
+
+        assertEquals(
+            expect,
+            oneToOneProperty.result,
+        )
+    }
 }

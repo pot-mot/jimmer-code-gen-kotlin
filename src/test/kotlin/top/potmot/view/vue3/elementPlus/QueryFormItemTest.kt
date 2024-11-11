@@ -8,6 +8,8 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
 import java.time.LocalDateTime
+import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity
+import top.potmot.enumeration.AssociationType
 
 class QueryFormItemTest : QueryFormItem {
     private val spec = "spec"
@@ -237,6 +239,65 @@ class QueryFormItemTest : QueryFormItem {
                 comment = "comment"
             )
             ).result,
+        )
+    }
+
+    @Test
+    fun `test to one association`() {
+        val expect = "<EntityIdSelect v-model=\"spec.name\"/>"
+
+        val manyToOneProperty = baseProperty.copy(
+            type = "kotlin.Int",
+            associationType = AssociationType.MANY_TO_ONE,
+            typeEntity = TargetOf_typeEntity(
+                packagePath = "",
+                name = "Entity",
+                comment = "comment"
+            )
+        )
+
+        assertEquals(
+            expect,
+            manyToOneProperty.result,
+        )
+
+        val oneToOneProperty = manyToOneProperty.copy(
+            associationType = AssociationType.ONE_TO_ONE,
+        )
+
+        assertEquals(
+            expect,
+            oneToOneProperty.result,
+        )
+    }
+
+    @Test
+    fun `test to many association`() {
+        val expect = "<EntityIdMultiSelect v-model=\"spec.name\"/>"
+
+        val manyToManyProperty = baseProperty.copy(
+            type = "kotlin.Int",
+            associationType = AssociationType.MANY_TO_MANY,
+            listType = true,
+            typeEntity = TargetOf_typeEntity(
+                packagePath = "",
+                name = "Entity",
+                comment = "comment"
+            )
+        )
+
+        assertEquals(
+            expect,
+            manyToManyProperty.result,
+        )
+
+        val oneToOneProperty = manyToManyProperty.copy(
+            associationType = AssociationType.ONE_TO_MANY,
+        )
+
+        assertEquals(
+            expect,
+            oneToOneProperty.result,
         )
     }
 }
