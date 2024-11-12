@@ -30,7 +30,8 @@ class QueryFormItemTest : QueryFormItem {
         get() = createQueryFormItem(spec).let {
             var result: String
             builder.apply {
-                result = it.elements.stringifyElements()
+                result =
+                    (it.imports.stringifyImports() + it.elements.stringifyElements()).joinToString("\n")
             }
             result
         }
@@ -231,6 +232,7 @@ class QueryFormItemTest : QueryFormItem {
     fun `test enum` () {
         assertEquals(
             """
+import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
 <EnumNullableSelect v-model="spec.name"/>
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.String", enum = TargetOf_enum(
@@ -244,7 +246,10 @@ class QueryFormItemTest : QueryFormItem {
 
     @Test
     fun `test to one association`() {
-        val expect = "<EntityIdSelect v-model=\"spec.name\"/>"
+        val expect = """
+import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
+<EntityIdSelect v-model="spec.name"/>
+        """.trimIndent()
 
         val manyToOneProperty = baseProperty.copy(
             type = "kotlin.Int",
@@ -273,7 +278,10 @@ class QueryFormItemTest : QueryFormItem {
 
     @Test
     fun `test to many association`() {
-        val expect = "<EntityIdMultiSelect v-model=\"spec.name\"/>"
+        val expect = """
+import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
+<EntityIdMultiSelect v-model="spec.name"/>
+        """.trimIndent()
 
         val manyToManyProperty = baseProperty.copy(
             type = "kotlin.Int",

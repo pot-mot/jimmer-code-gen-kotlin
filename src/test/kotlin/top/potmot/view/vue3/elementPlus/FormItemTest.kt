@@ -32,7 +32,8 @@ class FormItemTest : FormItem {
         get() = createFormItem(formData, disabled).let {
             var result: String
             builder.apply {
-                result = it.elements.stringifyElements()
+                result =
+                    (it.imports.stringifyImports() + it.elements.stringifyElements()).joinToString("\n")
             }
             result
         }
@@ -331,6 +332,7 @@ class FormItemTest : FormItem {
     fun `test enum`() {
         assertEquals(
             """
+import EnumSelect from "@/components/enum/EnumSelect.vue"
 <EnumSelect v-model="formData.name"/>
             """.trimIndent(),
             baseProperty.copy(
@@ -341,11 +343,15 @@ class FormItemTest : FormItem {
                 )
             ).result,
         )
+
     }
 
     @Test
     fun `test to one association`() {
-        val expect = "<EntityIdSelect v-model=\"formData.name\"/>"
+        val expect = """
+import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
+<EntityIdSelect v-model="formData.name"/>
+        """.trimIndent()
 
         val manyToOneProperty = baseProperty.copy(
             type = "kotlin.Int",
@@ -374,7 +380,10 @@ class FormItemTest : FormItem {
 
     @Test
     fun `test to many association`() {
-        val expect = "<EntityIdMultiSelect v-model=\"formData.name\"/>"
+        val expect = """
+import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
+<EntityIdMultiSelect v-model="formData.name"/>
+        """.trimIndent()
 
         val manyToManyProperty = baseProperty.copy(
             type = "kotlin.Int",

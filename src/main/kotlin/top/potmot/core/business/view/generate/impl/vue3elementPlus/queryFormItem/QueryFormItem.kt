@@ -36,7 +36,9 @@ interface QueryFormItem {
                 if (typeEntity == null) {
                     FormItemData()
                 } else {
-                    val componentName = typeEntity.componentNames.idSelect
+                    val components = typeEntity.componentNames
+                    val dir = components.dir
+                    val componentName = components.idSelect
                     FormItemData(
                         elements = listOf(
                             TagElement(
@@ -46,7 +48,7 @@ interface QueryFormItem {
                         ),
                         imports = listOf(
                             ImportDefault(
-                                componentPath + "/" + typeEntity.name.replaceFirstChar { it.lowercase() } + "/" + componentName + ".vue",
+                                "$componentPath/$dir/$componentName.vue",
                                 componentName,
                             )
                         )
@@ -57,7 +59,9 @@ interface QueryFormItem {
                 if (typeEntity == null) {
                     FormItemData()
                 } else {
-                    val componentName = typeEntity.componentNames.idMultiSelect
+                    val components = typeEntity.componentNames
+                    val dir = components.dir
+                    val componentName = components.idMultiSelect
                     FormItemData(
                         elements = listOf(
                             TagElement(
@@ -67,7 +71,7 @@ interface QueryFormItem {
                         ),
                         imports = listOf(
                             ImportDefault(
-                                componentPath + "/" + typeEntity.name.replaceFirstChar { it.lowercase() } + "/" + componentName + ".vue",
+                                "$componentPath/$dir/$componentName.vue",
                                 componentName,
                             )
                         )
@@ -78,7 +82,9 @@ interface QueryFormItem {
                 if (enum == null) {
                     FormItemData()
                 } else {
-                    val componentName = enum.componentNames.nullableSelect
+                    val components = enum.componentNames
+                    val dir = components.dir
+                    val componentName = components.nullableSelect
 
                     FormItemData(
                         elements = listOf(
@@ -89,7 +95,7 @@ interface QueryFormItem {
                         ),
                         imports = listOf(
                             ImportDefault(
-                                componentPath + "/" + enum.name.replaceFirstChar { it.lowercase() } + "/" + componentName + ".vue",
+                                "$componentPath/$dir/$componentName.vue",
                                 componentName,
                             )
                         )
