@@ -32,7 +32,7 @@ class FormItemTest : FormItem {
         get() = createFormItem(formData, disabled).let {
             var result: String
             builder.apply {
-                result = it.stringifyElements()
+                result = it.elements.stringifyElements()
             }
             result
         }

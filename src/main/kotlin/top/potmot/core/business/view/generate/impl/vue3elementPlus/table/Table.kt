@@ -3,6 +3,7 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.table
 import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.tableColumn
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumnData
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Function
 import top.potmot.core.business.view.generate.meta.typescript.FunctionArg
@@ -67,11 +68,11 @@ fun viewTable(
     type: String,
     typePath: String,
     idPropertyName: String,
-    content: Map<GenEntityBusinessView.TargetOf_properties, List<Element>>,
+    content: Map<GenEntityBusinessView.TargetOf_properties, TableColumnData>,
 ) = Component(
     imports = listOf(
         ImportType(typePath, listOf(type)),
-    ),
+    ) + content.values.flatMap { it.imports },
     props = listOf(
         Prop(data, "Array<$type>"),
     ) + tableUtilProps(),
@@ -101,11 +102,11 @@ fun viewTable(
         table(
             data = data,
             rowKey = idPropertyName,
-            columns = tableUtilColumns(idPropertyName) + content.map { (property, elements) ->
+            columns = tableUtilColumns(idPropertyName) + content.map { (property, tableColumnData) ->
                 tableColumn(
                     property.name,
                     property.comment,
-                    content = elements
+                    content = tableColumnData.elements
                 )
             } + operationsColumn(
                 listOf(

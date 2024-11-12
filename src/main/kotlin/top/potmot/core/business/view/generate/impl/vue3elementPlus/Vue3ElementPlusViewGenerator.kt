@@ -5,8 +5,6 @@ import top.potmot.core.business.utils.constants
 import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.ruleNames
 import top.potmot.core.business.utils.serviceName
-import top.potmot.core.business.utils.targetOneAssociationType
-import top.potmot.core.business.utils.targetOneProperties
 import top.potmot.core.business.view.generate.ViewGenerator
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
@@ -19,6 +17,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.addForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
+import top.potmot.core.business.view.generate.builder.property.ViewProperties
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.queryForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.rules.Vue3RulesBuilder
@@ -45,6 +44,7 @@ import top.potmot.entity.dto.share.GenerateEntity
 object Vue3ElementPlusViewGenerator :
     ViewGenerator,
     ElementPlus,
+    ViewProperties,
     TableColumn,
     FormItem,
     QueryFormItem,
@@ -137,7 +137,7 @@ object Vue3ElementPlusViewGenerator :
         builder.build(createEnumSelectVue(enum, nullable = true))
 
     private val GenEntityBusinessView.selectOptions
-        get() = targetOneProperties.mapNotNull {
+        get() = selectProperties.mapNotNull {
             if (it.typeEntity == null)
                 null
             else
@@ -167,12 +167,6 @@ object Vue3ElementPlusViewGenerator :
     private val GenEntityBusinessView.optionQueries
         get() = selectOptions.map { createOptionQuery(it, apiServiceName) }
 
-
-    private val GenEntityBusinessView.queryProperties
-        get() = properties.filter {
-            !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
-        }
-
     override fun stringifyQueryForm(entity: GenEntityBusinessView): String {
         val spec = "spec"
 
@@ -188,12 +182,6 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
-
-    private val GenEntityBusinessView.tableProperties
-        get() = properties.filter {
-            !it.idProperty && it.associationType == null
-        }
-
     override fun stringifyTable(entity: GenEntityBusinessView): String {
         val rows = "rows"
 
@@ -201,18 +189,13 @@ object Vue3ElementPlusViewGenerator :
             viewTable(
                 data = rows,
                 type = entity.dtoNames.listView,
-                typePath = entity.dtoNames.listView,
+                typePath = staticPath,
                 idPropertyName = entity.idProperties[0].name,
                 content = entity.tableProperties
                     .associateWith { it.createTableColumn() }
             )
         )
     }
-
-    private val GenEntityBusinessView.addFormProperties
-        get() = properties.filter {
-            !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
-        }
 
     override fun stringifyAddFormDataType(entity: GenEntityBusinessView): String {
         val context = entity.addFormProperties.associateWith { it.addFormType }
@@ -265,11 +248,6 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
-    private val GenEntityBusinessView.editFormProperties
-        get() = properties.filter {
-            it.associationType == null || it.associationType in targetOneAssociationType
-        }
-
     override fun stringifyEditFormRules(entity: GenEntityBusinessView): String {
         val rules = entity.editFormProperties.associate { it.name to it.rules }
         return rulesBuilder.createFormRules("useRules", "formData", entity.dtoNames.updateInput, rules)
@@ -292,12 +270,6 @@ object Vue3ElementPlusViewGenerator :
             )
         )
     }
-
-    private
-    val GenEntityBusinessView.editTableProperties
-        get() = properties.filter {
-            !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
-        }
 
     override fun stringifyEditTableRules(entity: GenEntityBusinessView): String {
         val rules = entity.editTableProperties.associate { it.name to it.rules }

@@ -18,7 +18,7 @@ enum class PropertyFormType {
     DATETIME,
     ENUM,
     ASSOCIATION_ID,
-    ASSOCIATION_LIST,
+    ASSOCIATION_ID_LIST,
 }
 
 private val intType = setOf(
@@ -65,7 +65,7 @@ val GenEntityBusinessView.TargetOf_properties.formType: PropertyFormType
     get() =
         if (associationType != null) {
             if (listType) {
-                PropertyFormType.ASSOCIATION_LIST
+                PropertyFormType.ASSOCIATION_ID_LIST
             } else {
                 PropertyFormType.ASSOCIATION_ID
             }

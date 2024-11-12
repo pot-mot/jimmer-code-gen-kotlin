@@ -5,6 +5,7 @@ import top.potmot.core.business.utils.PropertyQueryType
 import top.potmot.core.business.utils.componentNames
 import top.potmot.core.business.utils.formType
 import top.potmot.core.business.utils.queryType
+import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.meta.rules.numberMax
 import top.potmot.core.business.view.generate.meta.rules.numberMin
 import top.potmot.core.business.view.generate.meta.rules.numberPrecision
@@ -17,11 +18,12 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.option
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.timePickerRange
-import top.potmot.core.business.view.generate.meta.vue3.Element
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
+import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.entity.dto.GenEntityBusinessView
 
 interface QueryFormItem {
-    fun GenEntityBusinessView.TargetOf_properties.createQueryFormItem(spec: String): List<Element> {
+    fun GenEntityBusinessView.TargetOf_properties.createQueryFormItem(spec: String): FormItemData {
         val modelValue = "$spec.${name}"
         val rangeModelValue = "${name}Range"
         val minModelValue = "$spec.min${name.replaceFirstChar { c -> c.uppercaseChar() }}"
@@ -31,37 +33,71 @@ interface QueryFormItem {
 
         return when (queryType) {
             PropertyQueryType.ASSOCIATION_ID_EQ ->
-                listOfNotNull(
-                    typeEntity?.let {
-                        TagElement(
-                            it.componentNames.idSelect,
-                            directives = listOf(VModel(modelValue)),
+                if (typeEntity == null) {
+                    FormItemData()
+                } else {
+                    val componentName = typeEntity.componentNames.idSelect
+                    FormItemData(
+                        elements = listOf(
+                            TagElement(
+                                componentName,
+                                directives = listOf(VModel(modelValue)),
+                            )
+                        ),
+                        imports = listOf(
+                            ImportDefault(
+                                componentPath + "/" + typeEntity.name.replaceFirstChar { it.lowercase() } + "/" + componentName + ".vue",
+                                componentName,
+                            )
                         )
-                    }
-                )
+                    )
+                }
 
             PropertyQueryType.ASSOCIATION_ID_IN ->
-                listOfNotNull(
-                    typeEntity?.let {
-                        TagElement(
-                            it.componentNames.idMultiSelect,
-                            directives = listOf(VModel(modelValue)),
+                if (typeEntity == null) {
+                    FormItemData()
+                } else {
+                    val componentName = typeEntity.componentNames.idMultiSelect
+                    FormItemData(
+                        elements = listOf(
+                            TagElement(
+                                componentName,
+                                directives = listOf(VModel(modelValue)),
+                            )
+                        ),
+                        imports = listOf(
+                            ImportDefault(
+                                componentPath + "/" + typeEntity.name.replaceFirstChar { it.lowercase() } + "/" + componentName + ".vue",
+                                componentName,
+                            )
                         )
-                    }
-                )
+                    )
+                }
 
             PropertyQueryType.ENUM_SELECT ->
-                listOfNotNull(
-                    enum?.let {
-                        TagElement(
-                            it.componentNames.nullableSelect,
-                            directives = listOf(VModel(modelValue)),
+                if (enum == null) {
+                    FormItemData()
+                } else {
+                    val componentName = enum.componentNames.nullableSelect
+
+                    FormItemData(
+                        elements = listOf(
+                            TagElement(
+                                componentName,
+                                directives = listOf(VModel(modelValue)),
+                            )
+                        ),
+                        imports = listOf(
+                            ImportDefault(
+                                componentPath + "/" + enum.name.replaceFirstChar { it.lowercase() } + "/" + componentName + ".vue",
+                                componentName,
+                            )
                         )
-                    }
-                )
+                    )
+                }
 
             PropertyQueryType.INT_RANGE ->
-                listOf(
+                FormItemData(
                     inputNumber(
                         minModelValue,
                         comment = "最小$comment",
@@ -79,7 +115,7 @@ interface QueryFormItem {
                 )
 
             PropertyQueryType.FLOAT_RANGE ->
-                listOf(
+                FormItemData(
                     inputNumber(
                         minModelValue,
                         comment = "最小$comment",
@@ -97,7 +133,7 @@ interface QueryFormItem {
                 )
 
             PropertyQueryType.TIME_RANGE ->
-                listOf(
+                FormItemData(
                     timePickerRange(
                         rangeModelValue,
                         comment = comment,
@@ -105,7 +141,7 @@ interface QueryFormItem {
                 )
 
             PropertyQueryType.DATE_RANGE ->
-                listOf(
+                FormItemData(
                     datePickerRange(
                         rangeModelValue,
                         comment = comment,
@@ -113,7 +149,7 @@ interface QueryFormItem {
                 )
 
             PropertyQueryType.DATETIME_RANGE ->
-                listOf(
+                FormItemData(
                     dateTimePickerRange(
                         rangeModelValue,
                         comment = comment,
@@ -123,7 +159,7 @@ interface QueryFormItem {
             else ->
                 when (formType) {
                     PropertyFormType.SWITCH ->
-                        listOf(
+                        FormItemData(
                             select(
                                 modelValue,
                                 comment = comment,
@@ -135,7 +171,7 @@ interface QueryFormItem {
                         )
 
                     else ->
-                        listOf(
+                        FormItemData(
                             input(
                                 modelValue,
                                 comment = comment,

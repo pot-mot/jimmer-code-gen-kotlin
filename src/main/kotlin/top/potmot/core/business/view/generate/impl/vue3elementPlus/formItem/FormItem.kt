@@ -3,6 +3,7 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem
 import top.potmot.core.business.utils.PropertyFormType
 import top.potmot.core.business.utils.componentNames
 import top.potmot.core.business.utils.formType
+import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.dateTimePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.input
@@ -14,7 +15,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.meta.rules.numberMax
 import top.potmot.core.business.view.generate.meta.rules.numberMin
 import top.potmot.core.business.view.generate.meta.rules.numberPrecision
-import top.potmot.core.business.view.generate.meta.vue3.Element
+import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.toPropBind
@@ -24,53 +25,89 @@ interface FormItem {
     fun GenEntityBusinessView.TargetOf_properties.createFormItem(
         formData: String,
         disabled: Boolean = false,
-    ): List<Element> {
+    ): FormItemData {
         val modelValue = "$formData.${name}"
         val numberMin = numberMin
         val numberMax = numberMax
 
         return when (formType) {
             PropertyFormType.ASSOCIATION_ID ->
-                listOfNotNull(
-                    typeEntity?.let {
-                        TagElement(
-                            it.componentNames.idSelect,
-                            directives = listOf(VModel(modelValue)),
-                            props = listOfNotNull(
-                                disabled.toPropBind("disabled")
-                            ),
+                if (typeEntity == null) {
+                    FormItemData()
+                } else {
+                    val componentName = typeEntity.componentNames.idSelect
+                    FormItemData(
+                        elements = listOf(
+                            TagElement(
+                                componentName,
+                                directives = listOf(VModel(modelValue)),
+                                props = listOfNotNull(
+                                    disabled.toPropBind("disabled")
+                                ),
+                            )
+                        ),
+                        imports = listOf(
+                            ImportDefault(
+                                componentPath + "/" + typeEntity.name.replaceFirstChar { it.lowercase() } + "/" + componentName + ".vue",
+                                componentName,
+                            )
                         )
-                    }
-                )
+                    )
+                }
 
-            PropertyFormType.ASSOCIATION_LIST ->
-                listOfNotNull(
-                    typeEntity?.let {
-                        TagElement(
-                            it.componentNames.idMultiSelect,
-                            directives = listOf(VModel(modelValue)),
-                            props = listOfNotNull(
-                                disabled.toPropBind("disabled")
-                            ),
+            PropertyFormType.ASSOCIATION_ID_LIST ->
+                if (typeEntity == null) {
+                    FormItemData()
+                } else {
+                    val componentName = typeEntity.componentNames.idMultiSelect
+                    FormItemData(
+                        elements = listOf(
+                            TagElement(
+                                componentName,
+                                directives = listOf(VModel(modelValue)),
+                                props = listOfNotNull(
+                                    disabled.toPropBind("disabled")
+                                ),
+                            )
+                        ),
+                        imports = listOf(
+                            ImportDefault(
+                                componentPath + "/" + typeEntity.name.replaceFirstChar { it.lowercase() } + "/" + componentName + ".vue",
+                                componentName,
+                            )
                         )
-                    }
-                )
+                    )
+                }
 
             PropertyFormType.ENUM ->
-                listOfNotNull(
-                    enum?.let {
-                        TagElement(
-                            if (typeNotNull) it.componentNames.select else it.componentNames.nullableSelect,
-                            directives = listOf(VModel(modelValue)),
-                            props = listOfNotNull(
-                                disabled.toPropBind("disabled")
-                            ),
+                if (enum == null) {
+                    FormItemData()
+                } else {
+                    val componentNames = enum.componentNames
+                    val componentName = if (typeNotNull) componentNames.select else componentNames.nullableSelect
+
+                    FormItemData(
+                        elements = listOf(
+                            TagElement(
+                                componentName,
+                                directives = listOf(VModel(modelValue)),
+                                props = listOfNotNull(
+                                    disabled.toPropBind("disabled")
+                                ),
+                            )
+                        ),
+                        imports = listOf(
+                            ImportDefault(
+                                componentPath + "/" + enum.name.replaceFirstChar { it.lowercase() } + "/" + componentName + ".vue",
+                                componentName,
+                            )
                         )
-                    }
-                )
+                    )
+                }
+
 
             PropertyFormType.SWITCH ->
-                listOf(
+                FormItemData(
                     if (typeNotNull)
                         switch(
                             modelValue,
@@ -89,7 +126,7 @@ interface FormItem {
                 )
 
             PropertyFormType.INT ->
-                listOf(
+                FormItemData(
                     if (typeNotNull)
                         inputNumber(
                             modelValue,
@@ -112,7 +149,7 @@ interface FormItem {
                 )
 
             PropertyFormType.FLOAT ->
-                listOf(
+                FormItemData(
                     if (typeNotNull)
                         inputNumber(
                             modelValue,
@@ -136,7 +173,7 @@ interface FormItem {
 
 
             PropertyFormType.TIME ->
-                listOf(
+                FormItemData(
                     if (typeNotNull)
                         timePicker(
                             modelValue,
@@ -153,7 +190,7 @@ interface FormItem {
                 )
 
             PropertyFormType.DATE ->
-                listOf(
+                FormItemData(
                     if (typeNotNull)
                         datePicker(
                             modelValue,
@@ -170,7 +207,7 @@ interface FormItem {
                 )
 
             PropertyFormType.DATETIME ->
-                listOf(
+                FormItemData(
                     if (typeNotNull)
                         dateTimePicker(
                             modelValue,
@@ -187,7 +224,7 @@ interface FormItem {
                 )
 
             else ->
-                listOf(
+                FormItemData(
                     input(
                         modelValue,
                         comment = comment,

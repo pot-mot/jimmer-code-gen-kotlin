@@ -6,6 +6,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.row
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SelectOption
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
@@ -34,12 +35,14 @@ fun queryForm(
     specType: String,
     specTypePath: String,
     selectOptions: Iterable<SelectOption> = emptyList(),
-    content: Map<GenEntityBusinessView.TargetOf_properties, List<Element>>,
+    content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
 ) = Component(
     imports = listOf(
         Import("@element-plus/icons-vue", listOf("Search")),
         ImportType(specTypePath, listOf(specType)),
-    ) + selectOptions.map { it.toImport() },
+    )
+            + content.values.flatMap { it.imports }
+            + selectOptions.map { it.toImport() },
     models = listOf(
         ModelProp(spec, specType)
     ),
@@ -53,8 +56,8 @@ fun queryForm(
             content = listOf(
                 row(
                     gutter = 20,
-                    content = content.map { (property, elements) ->
-                        createCol(property, elements)
+                    content = content.map { (property, formItemData) ->
+                        createCol(property, formItemData.elements)
                     } + button(
                         content = "查询",
                         type = ElementPlus.Type.PRIMARY,

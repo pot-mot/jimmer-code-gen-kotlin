@@ -10,13 +10,33 @@ import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_
 
 class TableColumnTest : TableColumn {
     private val baseProperty = GenEntityBusinessView.TargetOf_properties(
-        createdTime = LocalDateTime.now(),
-        modifiedTime = LocalDateTime.now(),
+        id = 0,
         name = "name",
         comment = "comment",
-        type = "type",
         remark = "remark",
-        typeNotNull = true,
+        type = "kotlin.String",
+        listType = false,
+        typeNotNull = false,
+        idProperty = false,
+        idGenerationAnnotation = null,
+        keyProperty = false,
+        logicalDelete = false,
+        idView = false,
+        idViewTarget = null,
+        associationType = null,
+        mappedBy = null,
+        inputNotNull = null,
+        joinColumnMetas = null,
+        joinTableMeta = null,
+        dissociateAnnotation = null,
+        otherAnnotation = null,
+        orderKey = 0,
+        entityId = 0,
+        column = null,
+        enum = null,
+        typeEntity = null,
+        createdTime = LocalDateTime.now(),
+        modifiedTime = LocalDateTime.now(),
     )
 
     private val builder = Vue3ComponentBuilder()
@@ -25,7 +45,7 @@ class TableColumnTest : TableColumn {
         get() = createTableColumn().let {
             var result: String
             builder.apply {
-                result = it.stringifyElements()
+                result = it.elements.stringifyElements()
             }
             result
         }

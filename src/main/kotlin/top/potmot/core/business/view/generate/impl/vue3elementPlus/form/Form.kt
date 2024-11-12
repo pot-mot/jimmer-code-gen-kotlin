@@ -7,6 +7,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.tableColumn
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.operationsColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilColumns
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilProps
@@ -19,7 +20,6 @@ import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.typescript.commentLine
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.vue3.Component
-import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.Event
 import top.potmot.core.business.view.generate.meta.vue3.EventArg
 import top.potmot.core.business.view.generate.meta.vue3.EventBind
@@ -169,7 +169,7 @@ fun addForm(
     indent: String,
     subValidateItems: Iterable<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
-    content: Map<GenEntityBusinessView.TargetOf_properties, List<Element>>,
+    content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
 ) = Component(
     imports = listOf(
         Import("vue", listOf("ref")),
@@ -180,7 +180,10 @@ fun addForm(
         Import("lodash", listOf("cloneDeep")),
         Import(defaultPath, listOf(default)),
         Import(useRulesPath, listOf(useRules)),
-    ) + subValidateItems.map { it.toImport() } + selectOptions.map { it.toImport() },
+    )
+            + content.values.flatMap { it.imports }
+            + subValidateItems.map { it.toImport() }
+            + selectOptions.map { it.toImport() },
     props = listOf(
         *selectOptions.map { it.toProp() }.toTypedArray(),
     ),
@@ -209,11 +212,11 @@ fun addForm(
             model = formData,
             ref = formRef,
             rules = "rules",
-            content = content.map { (property, elements) ->
+            content = content.map { (property, formItemData) ->
                 formItem(
                     property.name,
                     property.comment,
-                    content = elements
+                    content = formItemData.elements
                 )
             } + listOf(
                 emptyLineElement,
@@ -235,7 +238,7 @@ fun editForm(
     indent: String,
     subValidateItems: Iterable<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
-    content: Map<GenEntityBusinessView.TargetOf_properties, List<Element>>,
+    content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
 ) = Component(
     imports = listOf(
         Import("vue", listOf("ref")),
@@ -243,7 +246,10 @@ fun editForm(
         ImportType("$staticPath/form/EditFormExpose", listOf("EditFormExpose")),
         ImportType(typePath, listOf(type)),
         Import(useRulesPath, listOf(useRules))
-    ) + subValidateItems.map { it.toImport() } + selectOptions.map { it.toImport() },
+    )
+            + content.values.flatMap { it.imports }
+            + subValidateItems.map { it.toImport() }
+            + selectOptions.map { it.toImport() },
     models = listOf(
         ModelProp(formData, type),
     ),
@@ -273,11 +279,11 @@ fun editForm(
             model = formData,
             ref = formRef,
             rules = "rules",
-            content = content.map { (property, elements) ->
+            content = content.map { (property, formItemData) ->
                 formItem(
                     property.name,
                     property.comment,
-                    content = elements
+                    content = formItemData.elements
                 ).merge {
                     events += listOf(queryOnChange)
                 }
@@ -303,7 +309,7 @@ fun editTable(
     indent: String,
     subValidateItems: Iterable<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
-    content: Map<GenEntityBusinessView.TargetOf_properties, List<Element>>,
+    content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
 ) = Component(
     imports = listOf(
         Import("vue", listOf("ref")),
@@ -314,7 +320,10 @@ fun editTable(
         Import(defaultPath, listOf(default)),
         Import(useRulesPath, listOf(useRules)),
         Import("@element-plus/icons-vue", listOf("Plus", "Delete")),
-    ) + subValidateItems.map { it.toImport() } + selectOptions.map { it.toImport() },
+    )
+            + content.values.flatMap { it.imports }
+            + subValidateItems.map { it.toImport() }
+            + selectOptions.map { it.toImport() },
     models = listOf(
         ModelProp(formData, "Array<$type>"),
     ),
@@ -404,7 +413,7 @@ fun editTable(
                 table(
                     data = formData,
                     rowKey = idPropertyName,
-                    columns = tableUtilColumns(idPropertyName) + content.map { (property, elements) ->
+                    columns = tableUtilColumns(idPropertyName) + content.map { (property, formItemData) ->
                         tableColumn(
                             prop = property.name,
                             label = property.comment,
@@ -413,7 +422,7 @@ fun editTable(
                                     prop = "[scope.${'$'}index, '${property.name}']",
                                     label = property.comment,
                                     "rules.${property.name}",
-                                    content = elements
+                                    content = formItemData.elements
                                 )
                             )
                         )

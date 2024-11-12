@@ -283,16 +283,20 @@ data class Component(
         )
     }
 
-    fun merge(vararg builders: Builder): Component {
-        return Component(
-            imports = imports + builders.flatMap { it.imports },
-            models = models + builders.flatMap { it.models },
-            props = props + builders.flatMap { it.props },
-            emits = emits + builders.flatMap { it.emits },
-            slots = slots + builders.flatMap { it.slots },
-            script = script + builders.flatMap { it.script },
-            template = template + builders.flatMap { it.template },
-            style = style + builders.flatMap { it.style }
+    fun merge(block: Builder.() -> Unit): Component {
+        val builder = Builder(
+            imports.toMutableList(),
+            models.toMutableList(),
+            props.toMutableList(),
+            emits.toMutableList(),
+            slots.toMutableList(),
+            script.toMutableList(),
+            template.toMutableList(),
+            style.toMutableList()
         )
+
+        builder.block()
+
+        return builder.build()
     }
 }
