@@ -15,6 +15,10 @@ ConditionMatchDetailView {
     conditionId
 }
 
+ConditionMatchOptionView {
+    id
+}
+
 input ConditionMatchInsertInput {
     #allScalars(this)
     -id

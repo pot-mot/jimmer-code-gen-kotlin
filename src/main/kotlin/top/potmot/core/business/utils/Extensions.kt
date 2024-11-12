@@ -5,6 +5,7 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
 import top.potmot.enumeration.AssociationType
+import top.potmot.error.GenerateException
 
 val GenEntityBusinessView.enums
     get() = properties.mapNotNull { it.enum }
@@ -33,7 +34,7 @@ data class Packages(
     val servicePackage: String = entity.packagePath.replaceAfterLast(".", "service"),
     val utilsPackage: String = entity.packagePath.replaceAfterLast(".", "utils"),
     val exceptionPackage: String = entity.packagePath.replaceAfterLast(".", "exception"),
-    val dtoPackage: String = "${entity.packagePath}.dto"
+    val dtoPackage: String = "${entity.packagePath}.dto",
 )
 
 val GenerateEntity.packages
@@ -57,7 +58,8 @@ data class DtoNames(
     val detailView: String = "${entity.name}DetailView",
     val insertInput: String = "${entity.name}InsertInput",
     val updateInput: String = "${entity.name}UpdateInput",
-    val spec: String = "${entity.name}Spec"
+    val spec: String = "${entity.name}Spec",
+    val optionView: String = "${entity.name}OptionView",
 )
 
 val GenerateEntity.dtoNames
@@ -106,3 +108,36 @@ val GenerateEnum.componentNames
 
 val GenEntityBusinessView.TargetOf_properties.TargetOf_enum.defaultItems
     get() = items.filter { it.orderKey == 0L }
+
+val alternativeSelectOptionLabel = setOf(
+    "name",
+    "label",
+    "title",
+)
+
+val GenEntityBusinessView.idProperty
+    get() =
+        if (idProperties.size != 1)
+            throw GenerateException.idPropertyNotFound("entityName: $name")
+        else
+            idProperties[0]
+
+val GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity.idProperty
+    get() =
+        if (idProperties.size != 1)
+            throw GenerateException.idPropertyNotFound("entityName: $name")
+        else
+            idProperties[0]
+
+val GenEntityBusinessView.selectOptionLabel: String?
+    get() {
+        val propertyNames = properties
+            .filter { !it.idProperty && it.associationType == null && it.entityId == id }
+            .map { it.name }.toSet()
+
+        for (item in alternativeSelectOptionLabel) {
+            if (item in propertyNames) return item
+        }
+
+        return null
+    }

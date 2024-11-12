@@ -248,7 +248,10 @@ import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
     fun `test to one association`() {
         val expect = """
 import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
-<EntityIdSelect v-model="spec.name"/>
+<EntityIdSelect
+    v-model="spec.name"
+    :options="nameOptions"
+/>
         """.trimIndent()
 
         val manyToOneProperty = baseProperty.copy(
@@ -280,7 +283,10 @@ import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
     fun `test to many association`() {
         val expect = """
 import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
-<EntityIdMultiSelect v-model="spec.name"/>
+<EntityIdMultiSelect
+    v-model="spec.name"
+    :options="nameOptions"
+/>
         """.trimIndent()
 
         val manyToManyProperty = baseProperty.copy(

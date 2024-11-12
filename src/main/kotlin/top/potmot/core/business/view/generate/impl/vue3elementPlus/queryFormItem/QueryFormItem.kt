@@ -20,6 +20,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.timePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
+import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.entity.dto.GenEntityBusinessView
 
 interface QueryFormItem {
@@ -44,6 +45,9 @@ interface QueryFormItem {
                             TagElement(
                                 componentName,
                                 directives = listOf(VModel(modelValue)),
+                                props = listOf(
+                                    PropBind("options", "${name}Options"),
+                                )
                             )
                         ),
                         imports = listOf(
@@ -67,6 +71,9 @@ interface QueryFormItem {
                             TagElement(
                                 componentName,
                                 directives = listOf(VModel(modelValue)),
+                                props = listOf(
+                                    PropBind("options", "${name}Options"),
+                                )
                             )
                         ),
                         imports = listOf(
@@ -169,6 +176,7 @@ interface QueryFormItem {
                             select(
                                 modelValue,
                                 comment = comment,
+                                filterable = false,
                                 content = listOf(
                                     option("false", "否"),
                                     option("true", "是"),

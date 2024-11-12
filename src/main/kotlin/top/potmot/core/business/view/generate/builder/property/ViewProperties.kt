@@ -1,5 +1,6 @@
 package top.potmot.core.business.view.generate.builder.property
 
+import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.targetOneAssociationType
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
@@ -49,7 +50,7 @@ interface ViewProperties {
                     producedProperties.add(
                         property.copy(
                             name = "${property.name.toSingular()}Ids",
-                            type = property.typeEntity.idProperties[0].type,
+                            type = property.typeEntity.idProperty.type,
                             idView = true,
                         )
                     )
@@ -57,7 +58,7 @@ interface ViewProperties {
                     producedProperties.add(
                         property.copy(
                             name = "${property.name}Id",
-                            type = property.typeEntity.idProperties[0].type,
+                            type = property.typeEntity.idProperty.type,
                             idView = true,
                         )
                     )

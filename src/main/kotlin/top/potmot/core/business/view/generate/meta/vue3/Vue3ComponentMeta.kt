@@ -19,6 +19,8 @@ data class ModelProp(
     val name: String,
     val type: String,
     val required: Boolean = true,
+    val defaultValue: String? = null,
+    val modifier: Collection<String> = emptyList(),
 )
 
 data class EventArg(

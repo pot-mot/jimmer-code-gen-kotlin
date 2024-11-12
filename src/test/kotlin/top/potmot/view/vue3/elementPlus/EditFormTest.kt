@@ -32,7 +32,9 @@ import type {EditFormExpose} from "@/api/__generated/model/static/form/EditFormE
 import type {EntityUpdateInput} from "@/api/__generated/model/static"
 import {useRules} from "@/rules/entity"
 
-const formData = defineModels<EntityUpdateInput>({required: true})
+const formData = defineModel<EntityUpdateInput>({
+    required: true
+})
 
 const emits = defineEmits<{
     (
@@ -118,7 +120,9 @@ import type {EntityUpdateInput} from "@/api/__generated/model/static"
 import {useRules} from "@/rules/entity"
 import type {SubFormExpose} from "@/components/form/SubFormExpose"
 
-const formData = defineModels<EntityUpdateInput>({required: true})
+const formData = defineModel<EntityUpdateInput>({
+    required: true
+})
 
 const emits = defineEmits<{
     (
@@ -211,7 +215,9 @@ import type {
 } from "@/api/__generated/model/static"
 import {useRules} from "@/rules/entity"
 
-const formData = defineModels<EntityUpdateInput>({required: true})
+const formData = defineModel<EntityUpdateInput>({
+    required: true
+})
 
 defineProps<{
     CustomerOptions: Array<CustomerOptionView>,

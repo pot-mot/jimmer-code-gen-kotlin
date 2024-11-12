@@ -72,13 +72,24 @@ class Vue3ComponentBuilderTest {
             ModelProp("model2", "number", false)
         )
 
-        val expected = listOf(
-            "const model1 = defineModels<string>({required: true})",
-            "const model2 = defineModels<number>({required: false})"
-        ).map { it.trimBlankLine() }
+        val expected = """
+        const model1 = defineModel<string>(
+            "model1",
+            {
+                required: true
+            }
+        )
+
+        const model2 = defineModel<number>(
+            "model2",
+            {
+                required: false
+            }
+        )
+        """.trimIndent()
 
         builder.apply {
-            assertEquals(expected, models.stringifyModels())
+            assertEquals(expected, models.stringifyModels().trim())
         }
     }
 
@@ -263,8 +274,19 @@ import {item1, item2} from "path1"
 import type {ItemType1, ItemType2} from "path1"
 import defaultItem from "path2"
 
-const model1 = defineModels<string>({required: true})
-const model2 = defineModels<number>({required: false})
+const model1 = defineModel<string>(
+    "model1",
+    {
+        required: true
+    }
+)
+
+const model2 = defineModel<number>(
+    "model2",
+    {
+        required: false
+    }
+)
 
 withDefaults(defineProps<{
     prop1: string,

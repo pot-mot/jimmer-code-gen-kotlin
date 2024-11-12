@@ -24,6 +24,7 @@ import com.example.entity.dto.ConditionMatchDetailView
 import com.example.entity.dto.ConditionMatchInsertInput
 import com.example.entity.dto.ConditionMatchUpdateInput
 import com.example.entity.dto.ConditionMatchSpec
+import com.example.entity.dto.ConditionMatchOptionView
 import com.example.entity.query.PageQuery
 import com.example.exception.AuthorizeException
 import com.example.utils.sqlClient.query
@@ -70,6 +71,18 @@ class ConditionMatchService(
     @Throws(AuthorizeException::class)
     fun page(@RequestBody query: PageQuery<ConditionMatchSpec>) = 
         sqlClient.queryPage(ConditionMatchListView::class, query)
+    
+    /**
+     * 根据提供的查询参数列出条件匹配选项。
+     *
+     * @param spec 查询参数。
+     * @return 条件匹配列表数据。
+     */
+    @PostMapping("/list/options")
+    @SaCheckPermission("conditionMatch:select")
+    @Throws(AuthorizeException::class)
+    fun listOptions(@RequestBody spec: ConditionMatchSpec) = 
+        sqlClient.query(ConditionMatchOptionView::class, spec)
 
     /**
      * 插入新的条件匹配。
@@ -136,6 +149,7 @@ import com.example.entity.dto.ConditionMatchDetailView;
 import com.example.entity.dto.ConditionMatchInsertInput;
 import com.example.entity.dto.ConditionMatchUpdateInput;
 import com.example.entity.dto.ConditionMatchSpec;
+import com.example.entity.dto.ConditionMatchOptionView;
 import com.example.entity.query.PageQuery;
 import com.example.exception.AuthorizeException;
 import org.jetbrains.annotations.NotNull;
@@ -194,6 +208,22 @@ public class ConditionMatchService implements Tables {
                 .where(query.getSpec())
                 .select(CONDITION_MATCH_TABLE.fetch(ConditionMatchListView.class))
                 .fetchPage(query.getPageIndex() - 1, query.getPageSize());
+    }
+    
+    /**
+     * 根据提供的查询参数列出条件匹配选项。
+     *
+     * @param spec 查询参数。
+     * @return 条件匹配列表数据。
+     */
+    @PostMapping("/list/options")
+    @SaCheckPermission("conditionMatch:select")
+    @NotNull
+    public List<@NotNull ConditionMatchOptionView> listOptions(@RequestBody @NotNull ConditionMatchSpec spec) throws AuthorizeException {
+        return sqlClient.createQuery(CONDITION_MATCH_TABLE)
+                .where(spec)
+                .select(CONDITION_MATCH_TABLE.fetch(ConditionMatchOptionView.class))
+                .execute();
     }
 
     /**

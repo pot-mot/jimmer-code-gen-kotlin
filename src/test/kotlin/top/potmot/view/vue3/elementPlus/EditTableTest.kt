@@ -42,7 +42,9 @@ import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddForm
 import {useRules} from "@/rules/entity"
 import {Plus, Delete} from "@element-plus/icons-vue"
 
-const formData = defineModels<Array<EntitySubTableType>>({required: true})
+const formData = defineModel<Array<EntitySubTableType>>({
+    required: true
+})
 
 withDefaults(defineProps<{
     idColumn?: boolean | undefined,
@@ -209,7 +211,9 @@ import {useRules} from "@/rules/entity"
 import {Plus, Delete} from "@element-plus/icons-vue"
 import type {SubFormExpose} from "@/components/form/SubFormExpose"
 
-const formData = defineModels<Array<EntitySubTableType>>({required: true})
+const formData = defineModel<Array<EntitySubTableType>>({
+    required: true
+})
 
 withDefaults(defineProps<{
     idColumn?: boolean | undefined,
@@ -383,7 +387,9 @@ import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddForm
 import {useRules} from "@/rules/entity"
 import {Plus, Delete} from "@element-plus/icons-vue"
 
-const formData = defineModels<Array<EntitySubTableType>>({required: true})
+const formData = defineModel<Array<EntitySubTableType>>({
+    required: true
+})
 
 withDefaults(defineProps<{
     idColumn?: boolean | undefined,

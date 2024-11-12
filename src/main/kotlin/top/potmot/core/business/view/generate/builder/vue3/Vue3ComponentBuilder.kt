@@ -18,18 +18,39 @@ import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.VShow
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
-import top.potmot.utils.string.trimBlankLine
 
 class Vue3ComponentBuilder(
     override val indent: String = "    ",
     override val wrapThreshold: Int = 40,
 ) : TypeScriptBuilder {
-    fun Iterable<ModelProp>.stringifyModels() =
-        map {
-            """
-const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
-            """.trimBlankLine()
+    fun Collection<ModelProp>.stringifyModels(currentIndent: String = indent): String {
+        val withName = size > 1
+        val withNameIndent = if (withName) currentIndent else ""
+
+        return joinToString("\n") {
+            val withModifier = it.modifier.isNotEmpty()
+
+            val type = if (withModifier) "${it.type}, ${it.modifier.joinToString(" | ")}" else it.type
+            val variable = if (withModifier) "[${it.name}, ${it.name}Modifier]" else it.name
+
+            val data = buildString {
+                if (withName) {
+                    appendLine("\n${currentIndent}\"${it.name}\",")
+                }
+                append("$withNameIndent{")
+                appendLine("\n$withNameIndent${currentIndent}required: ${it.required}")
+                if (it.defaultValue != null) {
+                    appendLine(",\n$withNameIndent${currentIndent}default: ${it.defaultValue}")
+                }
+                append("$withNameIndent}")
+                if (withName) {
+                    append("\n")
+                }
+            }
+
+            "const $variable = defineModel<$type>($data)\n"
         }
+    }
 
     private fun Component.needPropsDeclare(): Boolean =
         refContextContent.contains("props")
@@ -195,7 +216,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         if (stringifyImports.isNotEmpty()) appendLine()
 
         val stringifyModels = vueComponentPart.models.stringifyModels()
-        appendLines(stringifyModels)
+        append(stringifyModels)
         if (stringifyModels.isNotEmpty()) appendLine()
 
         if (vueComponentPart.props.isNotEmpty()) {

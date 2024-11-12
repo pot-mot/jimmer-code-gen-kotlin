@@ -3,9 +3,13 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus
 import top.potmot.core.business.utils.componentNames
 import top.potmot.core.business.utils.constants
 import top.potmot.core.business.utils.dtoNames
+import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.ruleNames
+import top.potmot.core.business.utils.selectOptionLabel
 import top.potmot.core.business.utils.serviceName
+import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.ViewGenerator
+import top.potmot.core.business.view.generate.builder.property.ViewProperties
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
 import top.potmot.core.business.view.generate.componentPath
@@ -17,7 +21,6 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.addForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
-import top.potmot.core.business.view.generate.builder.property.ViewProperties
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.queryForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.rules.Vue3RulesBuilder
@@ -143,7 +146,7 @@ object Vue3ElementPlusViewGenerator :
             else
                 SelectOption(
                     it.name + "Options",
-                    it.typeEntity.dtoNames.listView,
+                    it.typeEntity.dtoNames.optionView,
                 )
         }
 
@@ -159,7 +162,7 @@ object Vue3ElementPlusViewGenerator :
         selectOption.toVariable(),
         CodeBlock(buildString {
             appendLine("onBeforeMount(async () => {")
-            appendLine("${builder.indent}${selectOption.name}.value = await api.$serviceName.list({body: {}})")
+            appendLine("${builder.indent}${selectOption.name}.value = await api.$serviceName.listOptions({body: {}})")
             appendLine("})")
         })
     )
@@ -190,7 +193,7 @@ object Vue3ElementPlusViewGenerator :
                 data = rows,
                 type = entity.dtoNames.listView,
                 typePath = staticPath,
-                idPropertyName = entity.idProperties[0].name,
+                idPropertyName = entity.idProperty.name,
                 content = entity.tableProperties
                     .associateWith { it.createTableColumn() }
             )
@@ -297,6 +300,100 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
+    private fun createIdSelect(entity: GenEntityBusinessView, multiple: Boolean): Component {
+        val idProperty = entity.idProperty
+        val idName = idProperty.name
+        val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
+
+        val optionView = entity.dtoNames.optionView
+
+        val label = entity.selectOptionLabel ?: idName
+
+        val modelValue = "modelValue"
+        val options = "options"
+        val option = "option"
+
+        val modelValueType = if (multiple) "Array<$idType>" else "$idType | undefined"
+
+        val keepModelValueLegal =
+            if (!multiple)
+                CodeBlock(
+                    """
+                    watch(() => [$modelValue.value, props.${options}], () => {
+                        if (!(props.${options}.map(it => it.$idName) as Array<$idType | undefined>).includes($modelValue.value)) {
+                            $modelValue.value = undefined
+                        }
+                    }, {immediate: true})
+                    """.trimIndent()
+                )
+            else
+                CodeBlock(
+                    """
+                    watch(() => [$modelValue.value, props.${options}], () => {
+                        const newModelValue: Array<$idType> = []
+                        
+                        for (const item of $modelValue.value) {
+                            if (props.${options}.map(it => it.$idName).includes(item)) {
+                                newModelValue.push(item)
+                            }
+                        }
+                        if ($modelValue.value.length != newModelValue.length)
+                            $modelValue.value = newModelValue
+                    }, {immediate: true})
+                    """.trimIndent()
+                )
+
+        return Component(
+            imports = listOf(
+                Import("vue", listOf("watch")),
+                ImportType(staticPath, listOf(optionView))
+            ),
+            models = listOf(
+                ModelProp(modelValue, modelValueType)
+            ),
+            props = listOf(
+                Prop(options, "Array<$optionView>")
+            ),
+            script = listOf(
+                keepModelValueLegal
+            ),
+            template = listOf(
+                select(
+                    modelValue = modelValue,
+                    comment = entity.comment,
+                    filterable = true,
+                    clearable = true,
+                    multiple = multiple,
+                    content = listOf(
+                        options(
+                            options = options,
+                            option = option,
+                            key = { "$it.$idName" },
+                            value = { "$it.$idName" },
+                            label = { "$it.$label" },
+                        )
+                    )
+                )
+            )
+        )
+    }
+
+    override fun stringifyIdSelect(entity: GenEntityBusinessView) = builder.build(
+        createIdSelect(entity, false)
+    )
+
+    override fun stringifyIdMultiSelect(entity: GenEntityBusinessView) = builder.build(
+        createIdSelect(entity, true)
+    )
+
+    override fun stringifySingleSelect(entity: GenEntityBusinessView): String {
+        return ""
+    }
+
+    override fun stringifyMultiSelect(entity: GenEntityBusinessView): String {
+        return ""
+    }
+
     override fun stringifyPage(entity: GenEntityBusinessView): String {
         val (_, dir, table, addForm, editForm, queryForm) = entity.componentNames
         val (_, listView, _, insertInput, updateInput, spec) = entity.dtoNames
@@ -315,21 +412,5 @@ object Vue3ElementPlusViewGenerator :
                 )
             )
         )
-    }
-
-    override fun stringifyIdSelect(entity: GenEntityBusinessView): String {
-        return ""
-    }
-
-    override fun stringifyIdMultiSelect(entity: GenEntityBusinessView): String {
-        return ""
-    }
-
-    override fun stringifySingleSelect(entity: GenEntityBusinessView): String {
-        return ""
-    }
-
-    override fun stringifyMultiSelect(entity: GenEntityBusinessView): String {
-        return ""
     }
 }

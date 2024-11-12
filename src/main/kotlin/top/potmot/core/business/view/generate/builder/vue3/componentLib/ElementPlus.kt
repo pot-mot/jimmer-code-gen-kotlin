@@ -99,10 +99,11 @@ interface ElementPlus {
         modelValue: String = "modelValue",
         comment: String = "",
         placeholder: (comment: String) -> String? = { "请选择$it" },
+        filterable: Boolean = true,
         clearable: Boolean = true,
-        valueOnClear: String? = "undefined",
         disabled: Boolean = false,
         multiple: Boolean = false,
+        valueOnClear: String? = "undefined",
         content: Collection<Element> = listOf(),
     ) = TagElement(
         "el-select",
@@ -111,6 +112,7 @@ interface ElementPlus {
         ),
         props = listOfNotNull(
             placeholder(comment).toPropBind("placeholder", isLiteral = true),
+            filterable.toPropBind("filterable"),
             clearable.toPropBind("clearable"),
             valueOnClear.toPropBind("value-on-clear"),
             disabled.toPropBind("disabled"),
@@ -290,14 +292,16 @@ interface ElementPlus {
 
     fun formItem(
         prop: String,
+        propIsLiteral: Boolean = true,
         label: String,
+        labelIsLiteral: Boolean = true,
         rule: String? = null,
         content: Collection<Element>,
     ) = TagElement(
         "el-form-item",
         props = listOfNotNull(
-            PropBind("prop", prop, isLiteral = true),
-            PropBind("label", label, isLiteral = true),
+            PropBind("prop", prop, isLiteral = propIsLiteral),
+            PropBind("label", label, isLiteral = labelIsLiteral),
             rule.toPropBind("rule"),
         ),
         children = content,

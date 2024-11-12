@@ -3,7 +3,9 @@ package top.potmot.core.business.dto.generate
 import top.potmot.core.business.utils.PropertyQueryType
 import top.potmot.core.business.utils.targetOneProperties
 import top.potmot.core.business.utils.dtoNames
+import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.queryType
+import top.potmot.core.business.utils.selectOptionLabel
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.utils.string.toSingular
@@ -32,6 +34,17 @@ object DtoGenerator {
         appendLine("}")
     }
 
+    private fun generateOptionView(entity: GenEntityBusinessView) = buildString {
+        val idProperty = entity.idProperty
+        val idName = idProperty.name
+        val label = entity.selectOptionLabel
+
+        appendLine("${entity.dtoNames.optionView} {")
+        appendLine("    $idName")
+        label?.let { appendLine("   $it") }
+        appendLine("}")
+    }
+
     private fun generateDetailView(entity: GenEntityBusinessView) = buildString {
         appendLine("${entity.dtoNames.detailView} {")
         appendLine("    #allScalars")
@@ -42,7 +55,7 @@ object DtoGenerator {
     }
 
     private fun generateInsertInput(entity: GenEntityBusinessView) = buildString {
-        val idProperty = entity.properties.first { it.idProperty }
+        val idProperty = entity.idProperty
         val idName = idProperty.name
 
         appendLine("input ${entity.dtoNames.insertInput} {")
@@ -55,7 +68,7 @@ object DtoGenerator {
     }
 
     private fun generateUpdateInput(entity: GenEntityBusinessView) = buildString {
-        val idProperty = entity.properties.first { it.idProperty }
+        val idProperty = entity.idProperty
         val idName = idProperty.name
 
         appendLine("input ${entity.dtoNames.updateInput} {")
@@ -111,6 +124,7 @@ export ${entity.packagePath}.${entity.name}
 
 ${generateListView(entity)}
 ${generateDetailView(entity)}
+${generateOptionView(entity)}
 ${generateInsertInput(entity)}
 ${generateUpdateInput(entity)}
 ${generateSpec(entity)}

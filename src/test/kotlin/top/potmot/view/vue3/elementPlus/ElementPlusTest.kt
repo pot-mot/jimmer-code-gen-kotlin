@@ -90,6 +90,7 @@ class ElementPlusTest : ElementPlus {
 <el-select
     v-model="testModel"
     placeholder="testPlaceholder"
+    filterable
     clearable
     :value-on-clear="undefined"
 />

@@ -10,6 +10,7 @@ import top.potmot.core.business.utils.defaultItems
 import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.enums
 import top.potmot.core.business.utils.formType
+import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.utils.ruleNames
 import top.potmot.core.business.utils.serviceName
@@ -129,11 +130,7 @@ $itemTexts
             """import $view from "@/components/$dir/$view.vue""""
         }
 
-        val idProperty =
-            if (entity.idProperties.size != 1)
-                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
-            else
-                entity.idProperties[0]
+        val idProperty = entity.idProperty
 
         val idName = idProperty.name
 
@@ -1012,11 +1009,7 @@ $tableColumns
 
         val serviceName = entity.serviceName.replaceFirstChar { it.lowercase() }
 
-        val idProperty =
-            if (entity.idProperties.size != 1)
-                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
-            else
-                entity.idProperties[0]
+        val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
 
@@ -1269,11 +1262,7 @@ const handleSelect = (item: $listView) => {
 
         val serviceName = entity.serviceName.replaceFirstChar { it.lowercase() }
 
-        val idProperty =
-            if (entity.idProperties.size != 1)
-                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
-            else
-                entity.idProperties[0]
+        val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
 
@@ -1367,11 +1356,7 @@ const handleUnSelect = (item: $listView) => {
         }
 
     override fun stringifyIdSelect(entity: GenEntityBusinessView): String {
-        val idProperty =
-            if (entity.idProperties.size != 1)
-                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
-            else
-                entity.idProperties[0]
+        val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
 
@@ -1416,11 +1401,7 @@ watch(() => [modelValue.value, props.options], () => {
     }
 
     override fun stringifyIdMultiSelect(entity: GenEntityBusinessView): String {
-        val idProperty =
-            if (entity.idProperties.size != 1)
-                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
-            else
-                entity.idProperties[0]
+        val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
 

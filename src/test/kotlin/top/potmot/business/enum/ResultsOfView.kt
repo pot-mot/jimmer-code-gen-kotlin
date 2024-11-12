@@ -24,12 +24,18 @@ import {EnumTest_CONSTANTS} from "@/api/__generated/model/enums"
 import type {EnumTest} from "@/api/__generated/model/enums"
 import EnumTestView from "@/components/enumTest/EnumTestView.vue"
 
-const modelValue = defineModels<EnumTest>({required: true})
+const modelValue = defineModel<EnumTest>({
+    required: true
+})
 
 </script>
 
 <template>
-    <el-select v-model="modelValue" placeholder="请选择">
+    <el-select
+        v-model="modelValue"
+        placeholder="请选择"
+        filterable
+    >
         <el-option
             v-for="option in EnumTest_CONSTANTS"
             :value="option.value"
@@ -46,7 +52,9 @@ import {EnumTest_CONSTANTS} from "@/api/__generated/model/enums"
 import type {EnumTest} from "@/api/__generated/model/enums"
 import EnumTestView from "@/components/enumTest/EnumTestView.vue"
 
-const modelValue = defineModels<EnumTest | undefined>({required: true})
+const modelValue = defineModel<EnumTest | undefined>({
+    required: true
+})
 
 </script>
 
@@ -54,6 +62,7 @@ const modelValue = defineModels<EnumTest | undefined>({required: true})
     <el-select
         v-model="modelValue"
         placeholder="请选择"
+        filterable
         clearable
         :value-on-clear="undefined"
     >

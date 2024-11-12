@@ -2,6 +2,7 @@ package top.potmot.core.business.service.generate.impl.kotlin
 
 import top.potmot.core.business.service.generate.ServiceGenerator
 import top.potmot.core.business.utils.dtoNames
+import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.packages
 import top.potmot.core.business.utils.permissionPrefix
 import top.potmot.core.business.utils.requestPath
@@ -20,13 +21,9 @@ object KotlinServiceGenerator : ServiceGenerator() {
         val serviceName = entity.serviceName
 
         val (_, servicePackage, utilsPackage, exceptionPackage, dtoPackage) = entity.packages
-        val (_, listView, detailView, insertInput, updateInput, spec) = entity.dtoNames
+        val (_, listView, detailView, insertInput, updateInput, spec, optionView) = entity.dtoNames
 
-        val idProperty =
-            if (entity.idProperties.size != 1)
-                throw GenerateException.idPropertyNotFound("entityName: ${entity.name}")
-            else
-                entity.idProperties[0]
+        val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToKotlinType(idProperty.type, idProperty.typeNotNull)
 
@@ -54,6 +51,7 @@ import ${dtoPackage}.${detailView}
 import ${dtoPackage}.${insertInput}
 import ${dtoPackage}.${updateInput}
 import ${dtoPackage}.${spec}
+import ${dtoPackage}.${optionView}
 import ${entity.packagePath}.query.PageQuery
 import ${exceptionPackage}.AuthorizeException
 import ${utilsPackage}.sqlClient.query
@@ -100,6 +98,18 @@ class $serviceName(
     @Throws(AuthorizeException::class)
     fun page(@RequestBody query: PageQuery<${spec}>) = 
         sqlClient.queryPage(${listView}::class, query)
+    
+    /**
+     * 根据提供的查询参数列出${entity.comment}选项。
+     *
+     * @param spec 查询参数。
+     * @return ${entity.comment}列表数据。
+     */
+    @PostMapping("/list/options")
+    @SaCheckPermission("${entity.permissionPrefix}:select")
+    @Throws(AuthorizeException::class)
+    fun listOptions(@RequestBody spec: ${spec}) = 
+        sqlClient.query(${optionView}::class, spec)
 
     /**
      * 插入新的${entity.comment}。

@@ -16,6 +16,7 @@ import top.potmot.core.business.view.generate.meta.rules.numberMax
 import top.potmot.core.business.view.generate.meta.rules.numberMin
 import top.potmot.core.business.view.generate.meta.rules.numberPrecision
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
+import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.toPropBind
@@ -44,6 +45,7 @@ interface FormItem {
                                 componentName,
                                 directives = listOf(VModel(modelValue)),
                                 props = listOfNotNull(
+                                    PropBind("options", "${name}Options"),
                                     disabled.toPropBind("disabled")
                                 ),
                             )
@@ -70,6 +72,7 @@ interface FormItem {
                                 componentName,
                                 directives = listOf(VModel(modelValue)),
                                 props = listOfNotNull(
+                                    PropBind("options", "${name}Options"),
                                     disabled.toPropBind("disabled")
                                 ),
                             )
@@ -122,6 +125,7 @@ interface FormItem {
                         select(
                             modelValue,
                             comment = comment,
+                            filterable = false,
                             disabled = disabled,
                             content = listOf(
                                 option("true", "是", true),

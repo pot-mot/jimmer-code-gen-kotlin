@@ -214,8 +214,8 @@ fun addForm(
             rules = "rules",
             content = content.map { (property, formItemData) ->
                 formItem(
-                    property.name,
-                    property.comment,
+                    prop = property.name,
+                    label = property.comment,
                     content = formItemData.elements
                 )
             } + listOf(
@@ -281,8 +281,8 @@ fun editForm(
             rules = "rules",
             content = content.map { (property, formItemData) ->
                 formItem(
-                    property.name,
-                    property.comment,
+                    prop = property.name,
+                    label = property.comment,
                     content = formItemData.elements
                 ).merge {
                     events += listOf(queryOnChange)
@@ -420,8 +420,9 @@ fun editTable(
                             content = listOf(
                                 formItem(
                                     prop = "[scope.${'$'}index, '${property.name}']",
+                                    propIsLiteral = false,
                                     label = property.comment,
-                                    "rules.${property.name}",
+                                    rule = "rules.${property.name}",
                                     content = formItemData.elements
                                 )
                             )

@@ -350,7 +350,10 @@ import EnumSelect from "@/components/enum/EnumSelect.vue"
     fun `test to one association`() {
         val expect = """
 import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
-<EntityIdSelect v-model="formData.name"/>
+<EntityIdSelect
+    v-model="formData.name"
+    :options="nameOptions"
+/>
         """.trimIndent()
 
         val manyToOneProperty = baseProperty.copy(
@@ -382,7 +385,10 @@ import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
     fun `test to many association`() {
         val expect = """
 import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
-<EntityIdMultiSelect v-model="formData.name"/>
+<EntityIdMultiSelect
+    v-model="formData.name"
+    :options="nameOptions"
+/>
         """.trimIndent()
 
         val manyToManyProperty = baseProperty.copy(

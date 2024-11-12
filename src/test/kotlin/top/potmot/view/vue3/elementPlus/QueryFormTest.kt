@@ -25,7 +25,9 @@ class QueryFormTest {
 import {Search} from "@element-plus/icons-vue"
 import type {EntitySpecification} from "@/api/__generated/model/static"
 
-const spec = defineModels<EntitySpecification>({required: true})
+const spec = defineModel<EntitySpecification>({
+    required: true
+})
 
 const emits = defineEmits<{
     (
@@ -77,7 +79,9 @@ import type {
     TypeOptionView
 } from "@/api/__generated/model/static"
 
-const spec = defineModels<EntitySpecification>({required: true})
+const spec = defineModel<EntitySpecification>({
+    required: true
+})
 
 defineProps<{
     CustomerOptions: Array<CustomerOptionView>,
