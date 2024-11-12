@@ -16,7 +16,7 @@ class TableTest {
 <script setup lang="ts">
 import type {EntityListView} from "@/api/__generated/model/static"
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     rows: Array<EntityListView>,
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,

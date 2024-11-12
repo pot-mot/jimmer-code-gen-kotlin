@@ -213,7 +213,7 @@ import {useRules} from "@/rules/entity"
 
 const formData = defineModels<EntityUpdateInput>({required: true})
 
-const props = defineProps<{
+defineProps<{
     CustomerOptions: Array<CustomerOptionView>,
     TypeOptions: Array<TypeOptionView>
 }>()

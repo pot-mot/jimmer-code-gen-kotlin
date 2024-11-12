@@ -44,7 +44,7 @@ import {Plus, Delete} from "@element-plus/icons-vue"
 
 const formData = defineModels<Array<EntitySubTableType>>({required: true})
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined
@@ -211,7 +211,7 @@ import type {SubFormExpose} from "@/components/form/SubFormExpose"
 
 const formData = defineModels<Array<EntitySubTableType>>({required: true})
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined
@@ -385,7 +385,7 @@ import {Plus, Delete} from "@element-plus/icons-vue"
 
 const formData = defineModels<Array<EntitySubTableType>>({required: true})
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined,

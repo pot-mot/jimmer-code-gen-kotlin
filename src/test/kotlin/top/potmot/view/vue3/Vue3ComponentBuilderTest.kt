@@ -266,7 +266,7 @@ import defaultItem from "path2"
 const model1 = defineModels<string>({required: true})
 const model2 = defineModels<number>({required: false})
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     prop1: string,
     prop2?: number | undefined,
     prop3?: boolean | undefined

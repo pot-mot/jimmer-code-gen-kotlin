@@ -79,7 +79,7 @@ import type {
 
 const spec = defineModels<EntitySpecification>({required: true})
 
-const props = defineProps<{
+defineProps<{
     CustomerOptions: Array<CustomerOptionView>,
     TypeOptions: Array<TypeOptionView>
 }>()

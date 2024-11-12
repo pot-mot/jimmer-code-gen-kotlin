@@ -215,11 +215,11 @@ object Vue3ElementPlusViewGenerator :
         }
 
     override fun stringifyAddFormDataType(entity: GenEntityBusinessView): String {
-        val properties = entity.addFormProperties.map { it.addFormType }
+        val context = entity.addFormProperties.associateWith { it.addFormType }
         return buildString {
             appendLine("export type ${entity.addFormDataType} = {")
-            properties.forEach {
-                appendLine("${builder.indent}$it,")
+            context.forEach { (property, type) ->
+                appendLine("${builder.indent}${property.name}: $type")
             }
             appendLine("}")
         }

@@ -182,9 +182,6 @@ fun addForm(
         Import(useRulesPath, listOf(useRules)),
     ) + subValidateItems.map { it.toImport() } + selectOptions.map { it.toImport() },
     props = listOf(
-        Prop(
-            formData, type,
-        ),
         *selectOptions.map { it.toProp() }.toTypedArray(),
     ),
     emits = listOf(

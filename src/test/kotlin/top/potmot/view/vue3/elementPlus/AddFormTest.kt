@@ -40,8 +40,6 @@ import {cloneDeep} from "lodash"
 import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 
-const props = defineProps<{formData: EntityAddFormDataType}>()
-
 const emits = defineEmits<{
     (
         event: "submit",
@@ -134,8 +132,6 @@ import {cloneDeep} from "lodash"
 import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 import type {SubFormExpose} from "@/components/form/SubFormExpose"
-
-const props = defineProps<{formData: EntityAddFormDataType}>()
 
 const emits = defineEmits<{
     (
@@ -237,8 +233,7 @@ import {cloneDeep} from "lodash"
 import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 
-const props = defineProps<{
-    formData: EntityAddFormDataType,
+defineProps<{
     CustomerOptions: Array<CustomerOptionView>,
     TypeOptions: Array<TypeOptionView>
 }>()
