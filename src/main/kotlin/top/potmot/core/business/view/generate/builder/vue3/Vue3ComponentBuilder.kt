@@ -32,7 +32,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
         }
 
     private fun Component.needPropsDeclare(): Boolean =
-        copy(props = emptyList()).toString().replace("props=[]", "").contains("props")
+        refContextContent.contains("props")
 
     fun Iterable<Prop>.stringifyProps(currentIndent: String = indent): String {
         val props = map { prop ->
@@ -55,7 +55,7 @@ const ${it.name} = defineModels<${it.type}>({required: ${it.required}})
     }
 
     private fun Component.needEmitsDeclare(): Boolean =
-        copy(emits = emptyList()).toString().replace("emits=[]", "").contains("emits")
+        refContextContent.contains("emits")
 
     fun Iterable<Event>.stringifyEmits(currentIndent: String = indent): String {
         val emits = map { emit ->

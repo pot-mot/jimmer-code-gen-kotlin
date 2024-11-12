@@ -1,8 +1,12 @@
 package top.potmot.core.business.view.generate.meta.vue3
 
 import top.potmot.core.business.view.generate.meta.style.StyleClass
+import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.CodeItem
+import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
+import top.potmot.core.business.view.generate.meta.typescript.Function
 import top.potmot.core.business.view.generate.meta.typescript.ImportItem
+import top.potmot.core.business.view.generate.meta.typescript.LetVariable
 
 data class Prop(
     val name: String,
@@ -148,13 +152,13 @@ sealed interface Element
 
 data class TextElement(
     val text: String,
-): Element
+) : Element
 
 val emptyLineElement = TextElement("")
 
 data class ExpressionElement(
     val expression: String,
-): Element
+) : Element
 
 data class TagElement(
     val tag: String,
@@ -214,6 +218,35 @@ fun slotTemplate(
     children = content
 )
 
+private fun CodeItem.getRefContextContent(): String =
+    when (this) {
+        is CodeBlock -> content
+        is Function -> body.joinToString("\n") {
+            it.getRefContextContent()
+        }
+
+        is ConstVariable -> value
+        is LetVariable -> value
+    }
+
+private fun Directive.getRefContextContent(): String =
+    when (this) {
+        is VIf -> expression
+        is VShow -> expression
+        else -> ""
+    }
+
+private fun Element.getRefContextContent(): String =
+    when (this) {
+        is ExpressionElement -> expression
+        is TagElement ->
+            props.mapNotNull { it.value }.joinToString() +
+                    events.joinToString { it.fn } +
+                    directives.joinToString { it.getRefContextContent() } +
+                    children.joinToString { it.getRefContextContent() }
+        else -> ""
+    }
+
 data class Component(
     val imports: Collection<ImportItem> = emptyList(),
     val models: Collection<ModelProp> = emptyList(),
@@ -223,6 +256,10 @@ data class Component(
     val script: Collection<CodeItem> = emptyList(),
     val template: Iterable<Element> = emptyList(),
     val style: Collection<StyleClass> = emptyList(),
+
+    val refContextContent: String =
+        script.joinToString { it.getRefContextContent() } +
+                template.joinToString { it.getRefContextContent() }
 ) {
     class Builder(
         var imports: MutableList<ImportItem> = mutableListOf(),

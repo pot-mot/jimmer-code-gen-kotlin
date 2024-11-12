@@ -226,13 +226,13 @@ object Vue3ElementPlusViewGenerator :
     }
 
     override fun stringifyDefaultAddFormData(entity: GenEntityBusinessView): String {
-        val properties = entity.addFormProperties.map { it.addFormDefault }
+        val content = entity.addFormProperties.associateWith { it.addFormDefault }
         return buildString {
             appendLine("import type {${entity.addFormDataType}} from \"./${entity.addFormDataType}\"")
 
             appendLine("export const ${entity.defaultAddFormData} = {")
-            properties.forEach {
-                appendLine("${builder.indent}$it,")
+            content.forEach { (property, default) ->
+                appendLine("${builder.indent}${property.name}: $default,")
             }
             appendLine("}")
         }
