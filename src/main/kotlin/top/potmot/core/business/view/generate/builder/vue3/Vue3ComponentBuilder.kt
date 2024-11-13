@@ -56,13 +56,15 @@ class Vue3ComponentBuilder(
         refContextContent.contains("props")
 
     fun Iterable<Prop>.stringifyProps(currentIndent: String = indent): String {
+        val withDefaults = any { it.defaultValue != null }
+
         val props = map { prop ->
             val required = if (prop.required) "" else "?"
             val type = if (prop.required) prop.type else "${prop.type} | undefined"
             "${prop.name}$required: $type"
-        }.inlineOrWarpLines()
+        }.inlineOrWarpLines(currentWrapThreshold = wrapThreshold - "withDefaults(".length)
 
-        val defineProps = if (any { it.defaultValue != null }) {
+        val defineProps = if (withDefaults) {
             "withDefaults(defineProps<{$props}>(), {\n${
                 filter { it.defaultValue != null }.joinToString(",\n") {
                     "$currentIndent${it.name}: ${it.defaultValue}"

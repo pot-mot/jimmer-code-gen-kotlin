@@ -46,14 +46,16 @@ const formData = defineModel<Array<EntitySubTableType>>({
     required: true
 })
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
-    multiSelect?: boolean | undefined
+    multiSelect?: boolean | undefined,
+    submitLoading?: boolean | undefined
 }>(), {
     idColumn: false,
     indexColumn: false,
-    multiSelect: true
+    multiSelect: true,
+    submitLoading: false
 })
 
 defineSlots<{
@@ -68,7 +70,10 @@ const rules = useRules(formData)
 
 // 提交
 const handleSubmit = async (): Promise<void> => {
+    if (props.submitLoading) return
+    
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
+    
     if (formValid)
         emits("submit", formData.value)
 }
@@ -167,7 +172,11 @@ const handleSingleDelete = async (index: number): Promise<void> => {
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
-                <el-button type="primary" @click="handleSubmit">
+                <el-button
+                    type="primary"
+                    :loading="submitLoading"
+                    @click="handleSubmit"
+                >
                     提交
                 </el-button>
             </div>
@@ -215,14 +224,16 @@ const formData = defineModel<Array<EntitySubTableType>>({
     required: true
 })
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
-    multiSelect?: boolean | undefined
+    multiSelect?: boolean | undefined,
+    submitLoading?: boolean | undefined
 }>(), {
     idColumn: false,
     indexColumn: false,
-    multiSelect: true
+    multiSelect: true,
+    submitLoading: false
 })
 
 defineSlots<{
@@ -239,9 +250,12 @@ const subTable1Ref = ref<SubFormExpose>()
 const subTable2Ref = ref<SubFormExpose>()
 // 提交
 const handleSubmit = async (): Promise<void> => {
+    if (props.submitLoading) return
+    
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
     const subTable1Valid: boolean | undefined = await subTable1Ref.value?.formRef?.validate().catch(() => false)
     const subTable2Valid: boolean | undefined = await subTable2Ref.value?.formRef?.validate().catch(() => false)
+    
     if (formValid && subTable1Valid && subTable2Valid)
         emits("submit", formData.value)
 }
@@ -340,7 +354,11 @@ const handleSingleDelete = async (index: number): Promise<void> => {
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
-                <el-button type="primary" @click="handleSubmit">
+                <el-button
+                    type="primary"
+                    :loading="submitLoading"
+                    @click="handleSubmit"
+                >
                     提交
                 </el-button>
             </div>
@@ -391,16 +409,18 @@ const formData = defineModel<Array<EntitySubTableType>>({
     required: true
 })
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined,
+    submitLoading?: boolean | undefined,
     CustomerOptions: Array<CustomerOptionView>,
     TypeOptions: Array<TypeOptionView>
 }>(), {
     idColumn: false,
     indexColumn: false,
-    multiSelect: true
+    multiSelect: true,
+    submitLoading: false
 })
 
 defineSlots<{
@@ -415,7 +435,10 @@ const rules = useRules(formData)
 
 // 提交
 const handleSubmit = async (): Promise<void> => {
+    if (props.submitLoading) return
+    
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
+    
     if (formValid)
         emits("submit", formData.value)
 }
@@ -514,7 +537,11 @@ const handleSingleDelete = async (index: number): Promise<void> => {
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
-                <el-button type="primary" @click="handleSubmit">
+                <el-button
+                    type="primary"
+                    :loading="submitLoading"
+                    @click="handleSubmit"
+                >
                     提交
                 </el-button>
             </div>

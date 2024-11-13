@@ -36,6 +36,12 @@ const formData = defineModel<EntityUpdateInput>({
     required: true
 })
 
+const props = withDefaults(defineProps<{
+    submitLoading?: boolean | undefined
+}>(), {
+    submitLoading: false
+})
+
 const emits = defineEmits<{
     (
         event: "submit",
@@ -56,7 +62,10 @@ const rules = useRules(formData)
 
 // 提交
 const handleSubmit = async (): Promise<void> => {
+    if (props.submitLoading) return
+    
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
+    
     if (formValid)
         emits("submit", formData.value)
 }
@@ -83,7 +92,11 @@ const handleCancel = (): void => {
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
-                <el-button type="primary" @click="handleSubmit">
+                <el-button
+                    type="primary"
+                    :loading="submitLoading"
+                    @click="handleSubmit"
+                >
                     提交
                 </el-button>
             </div>
@@ -124,6 +137,12 @@ const formData = defineModel<EntityUpdateInput>({
     required: true
 })
 
+const props = withDefaults(defineProps<{
+    submitLoading?: boolean | undefined
+}>(), {
+    submitLoading: false
+})
+
 const emits = defineEmits<{
     (
         event: "submit",
@@ -146,9 +165,12 @@ const subTable1Ref = ref<SubFormExpose>()
 const subTable2Ref = ref<SubFormExpose>()
 // 提交
 const handleSubmit = async (): Promise<void> => {
+    if (props.submitLoading) return
+    
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
     const subTable1Valid: boolean | undefined = await subTable1Ref.value?.formRef?.validate().catch(() => false)
     const subTable2Valid: boolean | undefined = await subTable2Ref.value?.formRef?.validate().catch(() => false)
+    
     if (formValid && subTable1Valid && subTable2Valid)
         emits("submit", formData.value)
 }
@@ -175,7 +197,11 @@ const handleCancel = (): void => {
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
-                <el-button type="primary" @click="handleSubmit">
+                <el-button
+                    type="primary"
+                    :loading="submitLoading"
+                    @click="handleSubmit"
+                >
                     提交
                 </el-button>
             </div>
@@ -219,10 +245,13 @@ const formData = defineModel<EntityUpdateInput>({
     required: true
 })
 
-defineProps<{
+const props = withDefaults(defineProps<{
+    submitLoading?: boolean | undefined,
     CustomerOptions: Array<CustomerOptionView>,
     TypeOptions: Array<TypeOptionView>
-}>()
+}>(), {
+    submitLoading: false
+})
 
 const emits = defineEmits<{
     (
@@ -244,7 +273,10 @@ const rules = useRules(formData)
 
 // 提交
 const handleSubmit = async (): Promise<void> => {
+    if (props.submitLoading) return
+    
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
+    
     if (formValid)
         emits("submit", formData.value)
 }
@@ -271,7 +303,11 @@ const handleCancel = (): void => {
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
-                <el-button type="primary" @click="handleSubmit">
+                <el-button
+                    type="primary"
+                    :loading="submitLoading"
+                    @click="handleSubmit"
+                >
                     提交
                 </el-button>
             </div>

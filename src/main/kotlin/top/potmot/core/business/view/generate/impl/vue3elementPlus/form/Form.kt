@@ -76,6 +76,10 @@ private val submitEvent = { formData: String, formDataType: String ->
     )
 }
 
+private const val submitLoading = "submitLoading"
+
+private val submitLoadingProp = Prop(submitLoading, "boolean", false, "false")
+
 private fun handleSubmit(
     formData: String,
     formRef: String,
@@ -85,6 +89,8 @@ private fun handleSubmit(
     true,
     handleSubmitFnName,
     body = listOf(
+        CodeBlock("if (props.$submitLoading) return\n"),
+
         ConstVariable("formValid", "boolean | undefined", "await $formRef.value?.validate().catch(() => false)"),
         *subValidateItems.map {
             ConstVariable(
@@ -93,8 +99,10 @@ private fun handleSubmit(
                 "await ${it.ref}.value?.formRef?.validate().catch(() => false)"
             )
         }.toTypedArray(),
+
         CodeBlock(
             buildString {
+                appendLine()
                 append("if (")
                 append((listOf("formValid") + subValidateItems.map { it.validateVariable }).joinToString(" && "))
                 appendLine(")")
@@ -148,6 +156,7 @@ private val operationsSlotElement = slotElement(
                     events += cancelEventBind
                 },
                 button(content = "提交", type = ElementPlus.Type.PRIMARY).merge {
+                    props += PropBind("loading", submitLoading)
                     events += submitEventBind
                 },
             ),
@@ -185,6 +194,7 @@ fun addForm(
             + subValidateItems.map { it.toImport() }
             + selectOptions.map { it.toImport() },
     props = listOf(
+        submitLoadingProp,
         *selectOptions.map { it.toProp() }.toTypedArray(),
     ),
     emits = listOf(
@@ -254,6 +264,7 @@ fun editForm(
         ModelProp(formData, type),
     ),
     props = listOf(
+        submitLoadingProp,
         *selectOptions.map { it.toProp() }.toTypedArray(),
     ),
     emits = listOf(
@@ -328,6 +339,7 @@ fun editTable(
         ModelProp(formData, "Array<$type>"),
     ),
     props = tableUtilProps(showIndex = false) + listOf(
+        submitLoadingProp,
         *selectOptions.map { it.toProp() }.toTypedArray(),
     ),
     slots = listOf(
