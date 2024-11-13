@@ -6,7 +6,7 @@ import top.potmot.core.business.utils.PropertyQueryType
 import top.potmot.core.business.utils.baseProperties
 import top.potmot.core.business.utils.componentNames
 import top.potmot.core.business.utils.constants
-import top.potmot.core.business.utils.defaultItems
+import top.potmot.core.business.utils.defaultItem
 import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.enums
 import top.potmot.core.business.utils.formType
@@ -204,7 +204,7 @@ $propertyColumns
         """.trim()
     }
 
-    override fun stringifyAddFormDataType(entity: GenEntityBusinessView): String {
+    override fun stringifyAddFormType(entity: GenEntityBusinessView): String {
         return ""
     }
 
@@ -435,7 +435,7 @@ ${entity.queryFormItems()}
     }
 
     @Throws(GenerateException::class)
-    override fun stringifyDefaultAddFormData(entity: GenEntityBusinessView) = buildString {
+    override fun stringifyAddFormDefault(entity: GenEntityBusinessView) = buildString {
         val insertInput = entity.dtoNames.insertInput
 
         appendLine("""import type {${insertInput}} from "@/api/__generated/model/static"""")
@@ -449,10 +449,7 @@ ${entity.queryFormItems()}
                 if (it.listType) {
                     "${it.name}: [],"
                 } else if (it.enum != null) {
-                    if (it.enum.defaultItems.size != 1)
-                        throw GenerateException.defaultItemNotFound("enumName: ${it.enum.name}")
-
-                    "${it.name}: \"${it.enum.defaultItems[0].name}\","
+                    "${it.name}: \"${it.enum.defaultItem.name}\","
                 } else {
                     "${it.name}: ${typeStrToTypeScriptDefault(it.type, it.typeNotNull)},"
                 }
@@ -763,7 +760,7 @@ $propertyRules
 
     override fun stringifyAddForm(entity: GenEntityBusinessView): String {
         val dir = entity.componentNames.dir
-        val defaultAddFormData = entity.defaultAddFormData
+        val defaultAddFormData = entity.addFormDefault
         val (_, _, _, insertInput) = entity.dtoNames
         val (_, ruleDir, addFormRules) = entity.ruleNames
 
@@ -898,7 +895,7 @@ $propertyRules
     override fun stringifyEditTable(entity: GenEntityBusinessView): String {
         val lowerName = entity.name.replaceFirstChar { c -> c.lowercase() }
         val editTableType = entity.editTableType
-        val defaultAddFormData = entity.defaultAddFormData
+        val defaultAddFormData = entity.addFormDefault
         val rules = entity.ruleNames.editTableRules
 
         val tableColumns = entity.formItems("row") { property, component ->

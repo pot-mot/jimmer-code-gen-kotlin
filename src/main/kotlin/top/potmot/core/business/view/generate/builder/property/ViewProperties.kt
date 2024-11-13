@@ -6,10 +6,12 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.utils.string.toSingular
 
+// TODO 添加长短关联区分
+
 interface ViewProperties {
     val GenEntityBusinessView.selectProperties
         get() = properties.filter {
-            it.associationType in targetOneAssociationType && it.typeEntity != null
+            it.associationType in targetOneAssociationType
         }.produceIdView()
 
     val GenEntityBusinessView.tableProperties
@@ -20,12 +22,16 @@ interface ViewProperties {
     val GenEntityBusinessView.queryProperties
         get() = properties.filter {
             !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
-        }.produceIdView()
+        }.produceIdView().let { properties ->
+            properties.map {
+                it.copy(typeNotNull = false)
+            }
+        }
 
     val GenEntityBusinessView.addFormProperties
         get() = properties.filter {
             !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
-        }.produceIdView()
+        }.produceIdView().produceIdViewNullable()
 
     val GenEntityBusinessView.editFormProperties
         get() = properties.filter {
@@ -35,34 +41,40 @@ interface ViewProperties {
     val GenEntityBusinessView.editTableProperties
         get() = properties.filter {
             !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
-        }.produceIdView()
+        }.produceIdView().produceIdViewNullable()
 
-    private fun List<TargetOf_properties>.produceIdView(): List<TargetOf_properties> {
+    private fun Iterable<TargetOf_properties>.produceIdView(): List<TargetOf_properties> {
         val producedProperties = mutableListOf<TargetOf_properties>()
+
+        val idViewPropertyMap = filter { it.idView }.associateBy { it.idViewTarget }
 
         for (property in this) {
             if (property.associationType != null) {
                 if (property.idView) continue
                 if (property.typeEntity == null) continue
-                if (property.typeEntity.idProperties.size != 1) continue
 
-                if (property.listType) {
-                    producedProperties.add(
+                val idViewProperty = idViewPropertyMap[property.name]
+
+                if (idViewProperty != null) {
+                    producedProperties.add(idViewProperty)
+                    continue
+                }
+
+                producedProperties.add(
+                    if (property.listType) {
                         property.copy(
                             name = "${property.name.toSingular()}Ids",
                             type = property.typeEntity.idProperty.type,
                             idView = true,
                         )
-                    )
-                } else {
-                    producedProperties.add(
+                    } else {
                         property.copy(
                             name = "${property.name}Id",
                             type = property.typeEntity.idProperty.type,
                             idView = true,
                         )
-                    )
-                }
+                    }
+                )
             } else {
                 producedProperties.add(property)
             }
@@ -70,4 +82,13 @@ interface ViewProperties {
 
         return producedProperties
     }
+
+    private fun Iterable<TargetOf_properties>.produceIdViewNullable(): List<TargetOf_properties> =
+        map {
+            if (it.idView && it.associationType in targetOneAssociationType && it.typeNotNull) {
+                it.copy(typeNotNull = false)
+            } else {
+                it
+            }
+        }
 }

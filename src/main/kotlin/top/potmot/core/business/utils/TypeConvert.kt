@@ -64,7 +64,9 @@ fun typeStrToTypeScriptType(typeStr: String, typeNotNull: Boolean) =
         Boolean::class.qualifiedName, "boolean" -> if (typeNotNull) "boolean" else "boolean | undefined"
         "java.lang.Boolean" -> "boolean | undefined"
 
-        else -> typeStr.substringAfterLast(".")
+        else -> typeStr.substringAfterLast(".").let {
+            if (typeNotNull) it else "$it | undefined"
+        }
     }
 
 fun typeStrToTypeScriptDefault(typeStr: String, typeNotNull: Boolean) =

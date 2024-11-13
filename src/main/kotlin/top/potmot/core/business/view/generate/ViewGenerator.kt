@@ -24,12 +24,12 @@ interface ViewGenerator {
     val GenEntityBusinessView.addFormDataType
         get() = "${name}AddFormDataType"
 
-    fun stringifyAddFormDataType(entity: GenEntityBusinessView): String
+    fun stringifyAddFormType(entity: GenEntityBusinessView): String
 
-    val GenEntityBusinessView.defaultAddFormData
-        get() = "default${name}AddFormData"
+    val GenEntityBusinessView.addFormDefault
+        get() = "default${name}"
 
-    fun stringifyDefaultAddFormData(entity: GenEntityBusinessView): String
+    fun stringifyAddFormDefault(entity: GenEntityBusinessView): String
 
     fun stringifyAddFormRules(entity: GenEntityBusinessView): String
 
@@ -93,7 +93,7 @@ interface ViewGenerator {
         val suffix = getFileSuffix()
         val (_, dir, table, addForm, editForm, queryForm, page, singleSelect, multiSelect, idSelect, idMultiSelect, editTable) = flatEntity.componentNames
         val addFormDataType = flatEntity.addFormDataType
-        val defaultAddFormData = flatEntity.defaultAddFormData
+        val defaultAddFormData = flatEntity.addFormDefault
         val (_, ruleDir, addFormRules, editFormRules, editTableRules) = entity.ruleNames
 
         return listOf(
@@ -104,12 +104,12 @@ interface ViewGenerator {
             ),
             GenerateFile(
                 "components/${dir}/${addFormDataType}.d.ts",
-                stringifyAddFormDataType(flatEntity),
+                stringifyAddFormType(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.AddFormDataType),
             ),
             GenerateFile(
                 "components/${dir}/${defaultAddFormData}.ts",
-                stringifyDefaultAddFormData(flatEntity),
+                stringifyAddFormDefault(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.DefaultAddFormData),
             ),
             GenerateFile(

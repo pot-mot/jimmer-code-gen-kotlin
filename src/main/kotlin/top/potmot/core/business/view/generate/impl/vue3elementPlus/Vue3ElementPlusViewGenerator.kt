@@ -200,7 +200,7 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
-    override fun stringifyAddFormDataType(entity: GenEntityBusinessView): String {
+    override fun stringifyAddFormType(entity: GenEntityBusinessView): String {
         val context = entity.addFormProperties.associateWith { it.addFormType }
         return buildString {
             appendLine("export type ${entity.addFormDataType} = {")
@@ -211,12 +211,12 @@ object Vue3ElementPlusViewGenerator :
         }
     }
 
-    override fun stringifyDefaultAddFormData(entity: GenEntityBusinessView): String {
+    override fun stringifyAddFormDefault(entity: GenEntityBusinessView): String {
         val content = entity.addFormProperties.associateWith { it.addFormDefault }
         return buildString {
             appendLine("import type {${entity.addFormDataType}} from \"./${entity.addFormDataType}\"")
 
-            appendLine("export const ${entity.defaultAddFormData} = {")
+            appendLine("export const ${entity.addFormDefault} = {")
             content.forEach { (property, default) ->
                 appendLine("${builder.indent}${property.name}: $default,")
             }
@@ -238,8 +238,8 @@ object Vue3ElementPlusViewGenerator :
                 submitTypePath = staticPath,
                 type = entity.addFormDataType,
                 typePath = staticPath,
-                default = entity.defaultAddFormData,
-                defaultPath = componentPath + "/" + entity.name.replaceFirstChar { it.lowercase() } + "/" + entity.defaultAddFormData,
+                default = entity.addFormDefault,
+                defaultPath = componentPath + "/" + entity.name.replaceFirstChar { it.lowercase() } + "/" + entity.addFormDefault,
                 useRules = "useRules",
                 useRulesPath = rulePath + "/" + entity.ruleNames.addFormRules,
                 formData = formData,
@@ -288,11 +288,11 @@ object Vue3ElementPlusViewGenerator :
                 type = entity.addFormDataType,
                 typePath = staticPath,
                 useRules = "useRules",
-                default = entity.defaultAddFormData,
-                defaultPath = componentPath + "/" + entity.name.replaceFirstChar { it.lowercase() } + "/" + entity.defaultAddFormData,
+                default = entity.addFormDefault,
+                defaultPath = componentPath + "/" + entity.name.replaceFirstChar { it.lowercase() } + "/" + entity.addFormDefault,
                 useRulesPath = rulePath + "/" + entity.ruleNames.editTableRules,
                 indent = builder.indent,
-                idPropertyName = entity.idProperties.first().name,
+                idPropertyName = entity.idProperty.name,
                 comment = entity.comment,
                 content = entity.editTableProperties
                     .associateWith { it.createFormItem(rows) }

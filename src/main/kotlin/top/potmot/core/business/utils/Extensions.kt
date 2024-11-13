@@ -106,8 +106,16 @@ data class EnumComponentNames(
 val GenerateEnum.componentNames
     get() = EnumComponentNames(this)
 
-val GenEntityBusinessView.TargetOf_properties.TargetOf_enum.defaultItems
-    get() = items.filter { it.orderKey == 0L }
+val GenEntityBusinessView.TargetOf_properties.TargetOf_enum.defaultItem: GenEntityBusinessView.TargetOf_properties.TargetOf_enum.TargetOf_items
+    @Throws(GenerateException.DefaultItemNotFound::class)
+    get() {
+        val defaultItem = items.minByOrNull { it.orderKey }
+
+        if (defaultItem == null)
+            throw GenerateException.defaultItemNotFound("enumName: $name")
+
+        return defaultItem
+    }
 
 val alternativeSelectOptionLabel = setOf(
     "name",
