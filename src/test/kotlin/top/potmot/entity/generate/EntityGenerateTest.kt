@@ -94,6 +94,7 @@ class EntityGenerateTest {
         author = "Potmot",
         table = baseTable,
         packagePath = "com.example.test",
+        superEntities = emptyList(),
         properties = listOf(
             pkProperty,
             manyToOneProperty

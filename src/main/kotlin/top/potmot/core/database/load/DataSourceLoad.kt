@@ -115,6 +115,7 @@ fun Schema.toInput(
 )
 
 fun Table.toInput(schemaId: Long) = GenTableInput(
+    modelId = null,
     schemaId = schemaId,
     name = this.name,
     comment = remarks,
@@ -122,7 +123,8 @@ fun Table.toInput(schemaId: Long) = GenTableInput(
     remark = "",
     columns = columns.mapIndexed { index, it ->
         it.toInput(index.toLong())
-    }
+    },
+    superTableIds = emptyList()
 )
 
 private fun Column.toInput(

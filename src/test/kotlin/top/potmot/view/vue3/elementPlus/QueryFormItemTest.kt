@@ -15,6 +15,7 @@ class QueryFormItemTest : QueryFormItem {
     private val spec = "spec"
 
     private val baseProperty = GenEntityBusinessView.TargetOf_properties(
+        id = 0,
         createdTime = LocalDateTime.now(),
         modifiedTime = LocalDateTime.now(),
         name = "name",
@@ -22,6 +23,8 @@ class QueryFormItemTest : QueryFormItem {
         type = "type",
         remark = "remark",
         typeNotNull = true,
+        orderKey = 0,
+        entityId = 0,
     )
 
     private val builder = Vue3ComponentBuilder()
@@ -181,7 +184,7 @@ class QueryFormItemTest : QueryFormItem {
     :value-on-clear="undefined"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9)).result,
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9, numericPrecision = 0)).result,
         )
     }
 
@@ -236,9 +239,11 @@ import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
 <EnumNullableSelect v-model="spec.name"/>
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.String", enum = TargetOf_enum(
+                id = 0,
                 packagePath = "",
                 name = "Enum",
-                comment = "comment"
+                comment = "comment",
+                items = emptyList(),
             )
             ).result,
         )
@@ -258,9 +263,11 @@ import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
             type = "kotlin.Int",
             associationType = AssociationType.MANY_TO_ONE,
             typeEntity = TargetOf_typeEntity(
+                id = 0,
                 packagePath = "",
                 name = "Entity",
-                comment = "comment"
+                comment = "comment",
+                idProperties = emptyList(),
             )
         )
 
@@ -294,9 +301,11 @@ import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
             associationType = AssociationType.MANY_TO_MANY,
             listType = true,
             typeEntity = TargetOf_typeEntity(
+                id = 0,
                 packagePath = "",
                 name = "Entity",
-                comment = "comment"
+                comment = "comment",
+                idProperties = emptyList(),
             )
         )
 

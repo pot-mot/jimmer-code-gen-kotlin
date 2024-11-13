@@ -90,6 +90,7 @@ private fun createMappingTableColumn(
     type: ColumnTypeMeta
 ) =
     GenTableGenerateView.TargetOf_columns(
+        id = 0,
         createdTime = LocalDateTime.now(),
         modifiedTime = LocalDateTime.now(),
         remark = "",

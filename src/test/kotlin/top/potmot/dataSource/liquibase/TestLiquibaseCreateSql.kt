@@ -187,6 +187,7 @@ COMMENT ON COLUMN "table"."Another Name" IS 'Another comment';
         columns = listOf(
             column1,
             column2
-        )
+        ),
+        indexes = emptyList()
     )
 }

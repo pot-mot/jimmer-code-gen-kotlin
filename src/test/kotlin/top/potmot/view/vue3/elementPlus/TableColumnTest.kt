@@ -64,9 +64,11 @@ class TableColumnTest : TableColumn {
             "<EnumView :value=\"scope.row.name\"/>",
             baseProperty.copy(
                 enum = TargetOf_enum(
+                    id = 0,
                     packagePath = "",
                     name = "Enum",
-                    comment = "comment"
+                    comment = "comment",
+                    items = emptyList(),
                 )
             ).result,
         )

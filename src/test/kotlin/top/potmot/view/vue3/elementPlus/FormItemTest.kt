@@ -17,13 +17,16 @@ class FormItemTest : FormItem {
     private val disabled = false
 
     private val baseProperty = GenEntityBusinessView.TargetOf_properties(
+        id = 0,
         createdTime = LocalDateTime.now(),
         modifiedTime = LocalDateTime.now(),
         name = "name",
         comment = "comment",
         type = "type",
-        remark = "remark",
         typeNotNull = true,
+        orderKey = 0,
+        remark = "remark",
+        entityId = 0,
     )
 
     private val builder = Vue3ComponentBuilder()
@@ -160,7 +163,7 @@ class FormItemTest : FormItem {
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9)).result,
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9, numericPrecision = 0)).result,
         )
 
         assertEquals(
@@ -174,7 +177,7 @@ class FormItemTest : FormItem {
     :value-on-clear="undefined"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", typeNotNull = false, column = TargetOf_column(dataSize = 9)).result,
+            baseProperty.copy(type = "kotlin.Int", typeNotNull = false, column = TargetOf_column(dataSize = 9, numericPrecision = 0)).result,
         )
 
         assertEquals(
@@ -188,7 +191,7 @@ class FormItemTest : FormItem {
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 10)).result,
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 10, numericPrecision = 0)).result,
         )
 
         assertEquals(
@@ -202,7 +205,7 @@ class FormItemTest : FormItem {
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 12)).result,
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 12, numericPrecision = 0)).result,
         )
 
         assertEquals(
@@ -216,7 +219,7 @@ class FormItemTest : FormItem {
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 20)).result,
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 20, numericPrecision = 0)).result,
         )
     }
 
@@ -337,9 +340,11 @@ import EnumSelect from "@/components/enum/EnumSelect.vue"
             """.trimIndent(),
             baseProperty.copy(
                 type = "kotlin.String", enum = TargetOf_enum(
+                    id = 0,
                     packagePath = "",
                     name = "Enum",
-                    comment = "comment"
+                    comment = "comment",
+                    items = emptyList()
                 )
             ).result,
         )
@@ -360,9 +365,11 @@ import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
             type = "kotlin.Int",
             associationType = AssociationType.MANY_TO_ONE,
             typeEntity = TargetOf_typeEntity(
+                id = 0,
                 packagePath = "",
                 name = "Entity",
-                comment = "comment"
+                comment = "comment",
+                idProperties = emptyList()
             )
         )
 
@@ -396,9 +403,11 @@ import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
             associationType = AssociationType.MANY_TO_MANY,
             listType = true,
             typeEntity = TargetOf_typeEntity(
+                id = 0,
                 packagePath = "",
                 name = "Entity",
-                comment = "comment"
+                comment = "comment",
+                idProperties = emptyList()
             )
         )
 

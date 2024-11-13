@@ -11,18 +11,21 @@ import java.time.LocalDateTime
 
 class NumberRangeTest {
     private val baseProperty = TargetOf_properties(
+        id = 0,
         createdTime = LocalDateTime.now(),
         modifiedTime = LocalDateTime.now(),
         name = "",
         comment = "",
         type = "",
         remark = "",
+        orderKey = 0,
+        entityId = 0,
     )
 
     @Test
     fun `test numberPrecision when column is not null`() {
         val property = baseProperty.copy(
-            column = TargetOf_column(numericPrecision = 10)
+            column = TargetOf_column(numericPrecision = 10, dataSize = 20)
         )
         assertEquals(10, property.numberPrecision)
     }
@@ -38,7 +41,7 @@ class NumberRangeTest {
     @Test
     fun `test numberMin when column is not null`() {
         val property = baseProperty.copy(
-            column = TargetOf_column()
+            column = TargetOf_column(numericPrecision = 10, dataSize = 20)
         )
         assertEquals(0.0, property.numberMin)
     }
