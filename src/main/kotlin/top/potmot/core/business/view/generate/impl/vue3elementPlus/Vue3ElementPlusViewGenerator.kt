@@ -10,6 +10,7 @@ import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.ViewGenerator
 import top.potmot.core.business.view.generate.builder.property.ViewProperties
+import top.potmot.core.business.view.generate.builder.property.rules
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
 import top.potmot.core.business.view.generate.componentPath
@@ -26,7 +27,6 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.rules.Vue3RulesBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
-import top.potmot.core.business.view.generate.meta.rules.rules
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
@@ -288,6 +288,7 @@ object Vue3ElementPlusViewGenerator :
                 useRules = "useRules",
                 useRulesPath = rulePath + "/" + entity.ruleNames.editFormRules,
                 indent = builder.indent,
+                selectOptions = entity.selectOptions,
                 content = entity.editFormProperties
                     .filter { !it.idProperty }
                     .associateWith { it.createFormItem(formData) }
@@ -315,6 +316,7 @@ object Vue3ElementPlusViewGenerator :
                 indent = builder.indent,
                 idPropertyName = entity.idProperty.name,
                 comment = entity.comment,
+                selectOptions = entity.selectOptions,
                 content = entity.editTableProperties
                     .associateWith { it.createFormItem(rows) }
             )
