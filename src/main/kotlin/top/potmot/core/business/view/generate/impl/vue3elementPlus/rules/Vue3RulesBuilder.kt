@@ -51,7 +51,7 @@ class Vue3RulesBuilder(
         ).stringifyCodes()
 
         return """
-$imports
+${imports.joinToString("\n")}
 
 export $codes
         """.trimBlankLine()

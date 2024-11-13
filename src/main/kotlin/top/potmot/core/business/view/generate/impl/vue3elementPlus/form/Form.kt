@@ -85,6 +85,7 @@ private fun handleSubmit(
     formRef: String,
     subValidateItems: Iterable<SubValidateItem>,
     indent: String,
+    afterValidCodes: String? = null,
 ) = Function(
     true,
     handleSubmitFnName,
@@ -105,8 +106,14 @@ private fun handleSubmit(
                 appendLine()
                 append("if (")
                 append((listOf("formValid") + subValidateItems.map { it.validateVariable }).joinToString(" && "))
-                appendLine(")")
-                append("${indent}emits(\"submit\", $formData.value)")
+                appendLine(") {")
+
+                afterValidCodes?.split("\n")?.forEach {
+                    appendLine("$indent$it")
+                }
+
+                appendLine("${indent}emits(\"submit\", $formData.value)")
+                append("}")
             }
         )
     )
@@ -178,6 +185,7 @@ fun addForm(
     indent: String,
     subValidateItems: Iterable<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
+    afterValidCodes: String? = null,
     content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
 ) = Component(
     imports = listOf(
@@ -212,7 +220,7 @@ fun addForm(
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
         commentLine("提交"),
-        handleSubmit(formData, formRef, subValidateItems, indent),
+        handleSubmit(formData, formRef, subValidateItems, indent, afterValidCodes),
         emptyLineCode,
         commentLine("取消"),
         handleCancel(),
@@ -248,6 +256,7 @@ fun editForm(
     indent: String,
     subValidateItems: Iterable<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
+    afterValidCodes: String? = null,
     content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
 ) = Component(
     imports = listOf(
@@ -280,7 +289,7 @@ fun editForm(
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
         commentLine("提交"),
-        handleSubmit(formData, formRef, subValidateItems, indent),
+        handleSubmit(formData, formRef, subValidateItems, indent, afterValidCodes),
         emptyLineCode,
         commentLine("取消"),
         handleCancel(),
@@ -320,6 +329,7 @@ fun editTable(
     indent: String,
     subValidateItems: Iterable<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
+    afterValidCodes: String? = null,
     content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
 ) = Component(
     imports = listOf(
@@ -351,7 +361,7 @@ fun editTable(
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
         commentLine("提交"),
-        handleSubmit(formData, formRef, subValidateItems, indent),
+        handleSubmit(formData, formRef, subValidateItems, indent, afterValidCodes),
         emptyLineCode,
         commentLine("取消"),
         handleCancel(),

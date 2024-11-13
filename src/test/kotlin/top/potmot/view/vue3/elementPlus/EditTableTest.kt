@@ -74,8 +74,9 @@ const handleSubmit = async (): Promise<void> => {
     
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
     
-    if (formValid)
+    if (formValid) {
         emits("submit", formData.value)
+    }
 }
 
 // 取消
@@ -256,8 +257,9 @@ const handleSubmit = async (): Promise<void> => {
     const subTable1Valid: boolean | undefined = await subTable1Ref.value?.formRef?.validate().catch(() => false)
     const subTable2Valid: boolean | undefined = await subTable2Ref.value?.formRef?.validate().catch(() => false)
     
-    if (formValid && subTable1Valid && subTable2Valid)
+    if (formValid && subTable1Valid && subTable2Valid) {
         emits("submit", formData.value)
+    }
 }
 
 // 取消
@@ -439,8 +441,9 @@ const handleSubmit = async (): Promise<void> => {
     
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
     
-    if (formValid)
+    if (formValid) {
         emits("submit", formData.value)
+    }
 }
 
 // 取消

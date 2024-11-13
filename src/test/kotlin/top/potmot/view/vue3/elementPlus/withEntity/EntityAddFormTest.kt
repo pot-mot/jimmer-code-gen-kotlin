@@ -29,6 +29,7 @@ export type EntityAddFormType = {
         assertEquals(
             """
 import type {EntityAddFormType} from "./EntityAddFormType"
+
 export const defaultEntity: EntityAddFormType = {
     enumProperty: "item1",
     enumNullableProperty: undefined,
@@ -44,19 +45,21 @@ export const defaultEntity: EntityAddFormType = {
     fun `test addFormRules`() {
         assertEquals(
             """
-[import type {Ref} from "vue", import type {FormRules} from "element-plus", import type {EntityAddFormDataType} from "@/api/__generated/model/static"]
+import type {Ref} from "vue"
+import type {FormRules} from "element-plus"
+import type {EntityInsertInput} from "@/api/__generated/model/static"
 
-export const useRules = (formData: Ref<EntityAddFormDataType>): FormRules<EntityAddFormDataType> => {
+export const useRules = (formData: Ref<EntityInsertInput>): FormRules<EntityInsertInput> => {
     return {
         enumProperty: [
-            {required: }
+            {required: true, message: "enumProperty不能为空", trigger: "blur"},
             {type: "enum", enum: ["item1"], message: "enumProperty必须是item1", trigger: "blur"},
         ],
         enumNullableProperty: [
             {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
         ],
         toOnePropertyId: [
-            {required: }
+            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
         ],
         toOneNullablePropertyId: [
         ],
@@ -71,7 +74,129 @@ export const useRules = (formData: Ref<EntityAddFormDataType>): FormRules<Entity
     @Test
     fun `test addForm`() {
         assertEquals(
-            "",
+            """
+<script setup lang="ts">
+import {ref} from "vue"
+import type {FormInstance} from "element-plus"
+import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
+import type {
+    EntityInsertInput,
+    EntityAddFormType,
+    ToOneEntityOptionView
+} from "@/api/__generated/model/static"
+import {cloneDeep} from "lodash"
+import {defaultEntity} from "@/components/entity/defaultEntity"
+import {useRules} from "@/rules/EntityAddFormRules"
+import EnumSelect from "@/components/enum/EnumSelect.vue"
+import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
+import {sendMessage} from "@/utils/message"
+
+const props = withDefaults(defineProps<{
+    submitLoading?: boolean | undefined,
+    toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
+    toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
+}>(), {
+    submitLoading: false
+})
+
+const emits = defineEmits<{
+    (
+        event: "submit",
+        formData: EntityInsertInput
+    ): void,
+    (event: "cancel"): void
+}>()
+
+defineSlots<{
+    operations(props: {
+        handleSubmit: () => Promise<void>,
+        handleCancel: () => void
+    }): any
+}>()
+
+const formData = ref<EntityAddFormType>(cloneDeep(defaultEntity))
+
+const formRef = ref<FormInstance>()
+const rules = useRules(formData)
+
+// 提交
+const handleSubmit = async (): Promise<void> => {
+    if (props.submitLoading) return
+    
+    const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
+    
+    if (formValid) {
+        if (formData.value.toOnePropertyId === undefined) {
+            sendMessage("toOneProperty不可为空", "warning")
+            return
+        }
+        
+        emits("submit", formData.value)
+    }
+}
+
+// 取消
+const handleCancel = (): void => {
+    emits("cancel")
+}
+</script>
+
+<template>
+    <el-form
+        :model="formData"
+        ref="formRef"
+        :rules="rules"
+    >
+        <el-form-item prop="enumProperty" label="enumProperty">
+            <EnumSelect v-model="formData.enumProperty"/>
+        </el-form-item>
+        <el-form-item
+            prop="enumNullableProperty"
+            label="enumNullableProperty"
+        >
+            <EnumNullableSelect v-model="formData.enumNullableProperty"/>
+        </el-form-item>
+        <el-form-item
+            prop="toOnePropertyId"
+            label="toOneProperty"
+        >
+            <ToOneEntityIdSelect
+                v-model="formData.toOnePropertyId"
+                :options="toOnePropertyIdOptions"
+            />
+        </el-form-item>
+        <el-form-item
+            prop="toOneNullablePropertyId"
+            label="toOneNullableProperty"
+        >
+            <ToOneEntityIdSelect
+                v-model="formData.toOneNullablePropertyId"
+                :options="toOneNullablePropertyIdOptions"
+            />
+        </el-form-item>
+
+        <slot
+            name="operations"
+            :handleSubmit="handleSubmit"
+            :handleCancel="handleCancel"
+        >
+            <div style="text-align: right;">
+                <el-button type="warning" @click="handleCancel">
+                    取消
+                </el-button>
+                <el-button
+                    type="primary"
+                    :loading="submitLoading"
+                    @click="handleSubmit"
+                >
+                    提交
+                </el-button>
+            </div>
+        </slot>
+    </el-form>
+</template>
+            """.trimIndent(),
             generator.stringifyAddForm(testEntity).trim()
         )
     }

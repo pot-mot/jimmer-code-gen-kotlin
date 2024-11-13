@@ -40,6 +40,7 @@ import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
 import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
+import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.share.GenerateEntity
@@ -213,10 +214,12 @@ object Vue3ElementPlusViewGenerator :
 
     override fun stringifyAddFormDefault(entity: GenEntityBusinessView): String {
         val content = entity.addFormProperties.associateWith { it.addFormDefault }
-        return buildString {
-            appendLine("import type {${entity.addFormDataType}} from \"./${entity.addFormDataType}\"")
+        val type = entity.addFormDataType
 
-            appendLine("export const ${entity.addFormDefault} = {")
+        return buildString {
+            appendLine("import type {$type} from \"./${entity.addFormDataType}\"")
+            appendLine()
+            appendLine("export const ${entity.addFormDefault}: $type = {")
             content.forEach { (property, default) ->
                 appendLine("${builder.indent}${property.name}: $default,")
             }
@@ -225,12 +228,25 @@ object Vue3ElementPlusViewGenerator :
     }
 
     override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
-        val rules = entity.addFormProperties.associate { it.name to it.rules }
-        return rulesBuilder.createFormRules("useRules", "formData", entity.addFormDataType, rules)
+        val rules = entity.insertInputProperties.associate { it.name to it.rules }
+        return rulesBuilder.createFormRules("useRules", "formData", entity.dtoNames.insertInput, rules)
     }
 
     override fun stringifyAddForm(entity: GenEntityBusinessView): String {
         val formData = "formData"
+
+        val nullableDiffProperties = entity.addFormInsertInputNullableDiffProperty
+
+        val hasNullableDiffProperties = nullableDiffProperties.isNotEmpty()
+
+        val afterValidCodes = nullableDiffProperties.joinToString("\n\n") {
+            buildString {
+                appendLine("if (formData.value.toOnePropertyId === undefined) {")
+                appendLine("${builder.indent}sendMessage(\"toOneProperty不可为空\", \"warning\")")
+                appendLine("${builder.indent}return")
+                appendLine("}")
+            }
+        }
 
         return builder.build(
             addForm(
@@ -245,9 +261,14 @@ object Vue3ElementPlusViewGenerator :
                 formData = formData,
                 indent = builder.indent,
                 selectOptions = entity.selectOptions,
+                afterValidCodes = afterValidCodes,
                 content = entity.addFormProperties
                     .associateWith { it.createFormItem(formData) }
-            )
+            ).merge {
+                if (hasNullableDiffProperties) {
+                    imports += Import("$utilPath/message", listOf("sendMessage"))
+                }
+            }
         )
     }
 

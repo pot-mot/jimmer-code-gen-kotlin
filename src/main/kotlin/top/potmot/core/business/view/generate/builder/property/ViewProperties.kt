@@ -28,10 +28,16 @@ interface ViewProperties {
             }
         }
 
-    val GenEntityBusinessView.addFormProperties
+    val GenEntityBusinessView.insertInputProperties
         get() = properties.filter {
             !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
-        }.produceIdView().produceIdViewNullable()
+        }.produceIdView()
+
+    val GenEntityBusinessView.addFormProperties
+        get() = insertInputProperties.produceIdViewNullable()
+
+    val GenEntityBusinessView.addFormInsertInputNullableDiffProperty
+        get() = insertInputProperties.filter { it.needChangeToNullable() }
 
     val GenEntityBusinessView.editFormProperties
         get() = properties.filter {
@@ -39,9 +45,7 @@ interface ViewProperties {
         }.produceIdView()
 
     val GenEntityBusinessView.editTableProperties
-        get() = properties.filter {
-            !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
-        }.produceIdView().produceIdViewNullable()
+        get() = editFormProperties.filter { !it.idProperty }.produceIdViewNullable()
 
     private fun Iterable<TargetOf_properties>.produceIdView(): List<TargetOf_properties> {
         val producedProperties = mutableListOf<TargetOf_properties>()
@@ -83,9 +87,12 @@ interface ViewProperties {
         return producedProperties
     }
 
+    private fun TargetOf_properties.needChangeToNullable() =
+        idView && associationType in targetOneAssociationType && typeNotNull
+
     private fun Iterable<TargetOf_properties>.produceIdViewNullable(): List<TargetOf_properties> =
         map {
-            if (it.idView && it.associationType in targetOneAssociationType && it.typeNotNull) {
+            if (it.needChangeToNullable()) {
                 it.copy(typeNotNull = false)
             } else {
                 it

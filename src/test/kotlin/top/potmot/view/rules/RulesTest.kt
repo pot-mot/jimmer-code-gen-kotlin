@@ -31,7 +31,7 @@ class RulesTest {
     @Test
     fun testEnumRule() {
         val rule = EnumRule("性别", listOf("男", "女"))
-        assertEquals("{type: \"enum\", enum: [\"男\", \"女\"], message: \"性别必须是枚举\", trigger: \"blur\"}", rule.stringify())
+        assertEquals("{type: \"enum\", enum: [\"男\", \"女\"], message: \"性别必须是男/女\", trigger: \"blur\"}", rule.stringify())
     }
 
     @Test

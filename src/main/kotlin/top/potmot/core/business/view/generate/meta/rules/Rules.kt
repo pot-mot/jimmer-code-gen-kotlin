@@ -29,7 +29,7 @@ data class ArrayRule(
 data class EnumRule(
     val comment: String,
     val enumItems: Iterable<String> = emptyList(),
-    val message: String = "${comment}必须是枚举",
+    val message: String = "${comment}必须是${enumItems.joinToString("/")}",
     val trigger: String? = "blur",
 ) : Rule {
     override fun stringify(): String {
@@ -152,7 +152,7 @@ val GenEntityBusinessView.TargetOf_properties.rules: List<Rule>
             rules += ArrayRule(comment)
         } else {
             if (enum != null) {
-                rules += EnumRule(comment, enum.items.map { "\"${it.name}\"" })
+                rules += EnumRule(comment, enum.items.map { it.name })
             } else {
                 val formType = formType
 
@@ -169,8 +169,7 @@ val GenEntityBusinessView.TargetOf_properties.rules: List<Rule>
                         rules += PatternRule("[0-9]{2}:[0-9]{2}:[0-9]{2}", "${comment}必须是时间")
 
                     PropertyFormType.DATE,
-                    PropertyFormType.DATETIME,
-                    ->
+                    PropertyFormType.DATETIME ->
                         rules += DateRule(comment)
 
                     PropertyFormType.SWITCH ->
