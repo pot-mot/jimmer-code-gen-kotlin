@@ -71,9 +71,9 @@ const rules = useRules(formData)
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
-    
+
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-    
+
     if (formValid) {
         emits("submit", formData.value)
     }
@@ -249,14 +249,15 @@ const rules = useRules(formData)
 
 const subTable1Ref = ref<SubFormExpose>()
 const subTable2Ref = ref<SubFormExpose>()
+
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
-    
+
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
     const subTable1Valid: boolean | undefined = await subTable1Ref.value?.formRef?.validate().catch(() => false)
     const subTable2Valid: boolean | undefined = await subTable2Ref.value?.formRef?.validate().catch(() => false)
-    
+
     if (formValid && subTable1Valid && subTable2Valid) {
         emits("submit", formData.value)
     }
@@ -438,9 +439,9 @@ const rules = useRules(formData)
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
-    
+
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-    
+
     if (formValid) {
         emits("submit", formData.value)
     }

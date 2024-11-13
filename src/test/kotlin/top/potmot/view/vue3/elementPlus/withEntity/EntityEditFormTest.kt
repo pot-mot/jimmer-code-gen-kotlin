@@ -16,7 +16,7 @@ import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
 import type {EntityUpdateInput} from "@/api/__generated/model/static"
 
-export const useRules = (formData: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput> => {
+export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput> => {
     return {
         id: [
             {required: true, message: "id不能为空", trigger: "blur"},
@@ -35,7 +35,6 @@ export const useRules = (formData: Ref<EntityUpdateInput>): FormRules<EntityUpda
         toOneNullablePropertyId: [
         ],
     }
-    
 }
             """.trimIndent(),
             generator.stringifyEditFormRules(testEntity).trim()
@@ -89,9 +88,9 @@ const rules = useRules(formData)
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
-    
+
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-    
+
     if (formValid) {
         emits("submit", formData.value)
     }

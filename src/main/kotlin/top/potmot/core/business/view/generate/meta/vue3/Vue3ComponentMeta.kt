@@ -212,7 +212,7 @@ fun slotTemplate(
             if (props.isNullOrEmpty()) {
                 if (propScope.isNullOrBlank()) null else propScope
             } else {
-                "{${props.joinToString { "," }}}"
+                "{${props.joinToString(", ")}}"
             },
             isLiteral = true
         ),

@@ -48,7 +48,7 @@ import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
 
-export const useRules = (formData: Ref<EntityInsertInput>): FormRules<EntityInsertInput> => {
+export const useRules = (_: Ref<EntityInsertInput>): FormRules<EntityInsertInput> => {
     return {
         enumProperty: [
             {required: true, message: "enumProperty不能为空", trigger: "blur"},
@@ -63,7 +63,6 @@ export const useRules = (formData: Ref<EntityInsertInput>): FormRules<EntityInse
         toOneNullablePropertyId: [
         ],
     }
-    
 }
             """.trimIndent(),
             generator.stringifyAddFormRules(testEntity).trim()
@@ -122,15 +121,15 @@ const rules = useRules(formData)
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
-    
+
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-    
+
     if (formValid) {
         if (formData.value.toOnePropertyId === undefined) {
             sendMessage("toOneProperty不可为空", "warning")
             return
         }
-        
+
         emits("submit", formData.value)
     }
 }

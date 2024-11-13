@@ -83,13 +83,13 @@ private val submitLoadingProp = Prop(submitLoading, "boolean", false, "false")
 private fun handleSubmit(
     formData: String,
     formRef: String,
-    subValidateItems: Iterable<SubValidateItem>,
+    subValidateItems: Collection<SubValidateItem>,
     indent: String,
     afterValidCodes: String? = null,
 ) = Function(
     true,
     handleSubmitFnName,
-    body = listOf(
+    body = listOfNotNull(
         CodeBlock("if (props.$submitLoading) return\n"),
 
         ConstVariable("formValid", "boolean | undefined", "await $formRef.value?.validate().catch(() => false)"),
@@ -108,7 +108,7 @@ private fun handleSubmit(
                 append((listOf("formValid") + subValidateItems.map { it.validateVariable }).joinToString(" && "))
                 appendLine(") {")
 
-                afterValidCodes?.split("\n")?.forEach {
+                afterValidCodes?.lines()?.forEach {
                     appendLine("$indent$it")
                 }
 
@@ -183,7 +183,7 @@ fun addForm(
     formData: String = "formData",
     formRef: String = "formRef",
     indent: String,
-    subValidateItems: Iterable<SubValidateItem> = emptyList(),
+    subValidateItems: Collection<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
     afterValidCodes: String? = null,
     content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
@@ -212,13 +212,14 @@ fun addForm(
     slots = listOf(
         operationsSlot
     ),
-    script = listOf(
+    script = listOfNotNull(
         ConstVariable(formData, null, "ref<$type>(cloneDeep($default))"),
         emptyLineCode,
         ConstVariable(formRef, null, "ref<FormInstance>()"),
         ConstVariable("rules", null, "$useRules($formData)"),
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
+        if (subValidateItems.isNotEmpty()) emptyLineCode else null,
         commentLine("提交"),
         handleSubmit(formData, formRef, subValidateItems, indent, afterValidCodes),
         emptyLineCode,
@@ -254,7 +255,7 @@ fun editForm(
     formData: String = "formData",
     formRef: String = "formRef",
     indent: String,
-    subValidateItems: Iterable<SubValidateItem> = emptyList(),
+    subValidateItems: Collection<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
     afterValidCodes: String? = null,
     content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
@@ -283,11 +284,12 @@ fun editForm(
     slots = listOf(
         operationsSlot
     ),
-    script = listOf(
+    script = listOfNotNull(
         ConstVariable(formRef, null, "ref<FormInstance>()"),
         ConstVariable("rules", null, "$useRules($formData)"),
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
+        if (subValidateItems.isNotEmpty()) emptyLineCode else null,
         commentLine("提交"),
         handleSubmit(formData, formRef, subValidateItems, indent, afterValidCodes),
         emptyLineCode,
@@ -327,7 +329,7 @@ fun editTable(
     formData: String = "formData",
     formRef: String = "formRef",
     indent: String,
-    subValidateItems: Iterable<SubValidateItem> = emptyList(),
+    subValidateItems: Collection<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
     afterValidCodes: String? = null,
     content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
@@ -355,11 +357,12 @@ fun editTable(
     slots = listOf(
         operationsSlot
     ),
-    script = listOf(
+    script = listOfNotNull(
         ConstVariable(formRef, null, "ref<FormInstance>()"),
         ConstVariable("rules", null, "$useRules($formData)"),
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
+        if (subValidateItems.isNotEmpty()) emptyLineCode else null,
         commentLine("提交"),
         handleSubmit(formData, formRef, subValidateItems, indent, afterValidCodes),
         emptyLineCode,

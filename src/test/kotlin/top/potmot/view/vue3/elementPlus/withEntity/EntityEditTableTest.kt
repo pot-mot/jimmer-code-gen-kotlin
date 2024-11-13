@@ -18,7 +18,7 @@ import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
 import type {EntityUpdateInput} from "@/api/__generated/model/static"
 
-export const useRules = (formData: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpdateInput> => {
+export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpdateInput> => {
     return {
         enumProperty: [
             {required: true, message: "enumProperty不能为空", trigger: "blur"},
@@ -32,7 +32,6 @@ export const useRules = (formData: Ref<Array<EntityUpdateInput>>): FormRules<Ent
         toOneNullablePropertyId: [
         ],
     }
-    
 }
             """.trimIndent(),
             generator.stringifyEditTableRules(testEntity).trim()
@@ -87,9 +86,9 @@ const rules = useRules(rows)
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
-    
+
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-    
+
     if (formValid) {
         emits("submit", rows.value)
     }

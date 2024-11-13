@@ -26,27 +26,31 @@ class Vue3RulesBuilder(
             ImportType(staticPath, listOf(formDataType)),
         ).stringifyImports()
 
+        val body = buildString {
+            appendLine("return {")
+            propertyRules.forEach { (property, rules) ->
+                appendLine("$indent$property: [")
+                rules.forEach { rule ->
+                    appendLine("$indent$indent${rule.stringify()},")
+                }
+                appendLine("$indent],")
+            }
+            append("}")
+        }
+
+        val withFormDataProp = body.contains(formData)
+
         val codes = listOf(
             Function(
                 name = functionName,
                 args = listOf(
                     FunctionArg(
-                        name = formData,
+                        name = if (withFormDataProp) formData else "_",
                         type = "Ref<${if (isArray) "Array<${formDataType}>" else formDataType}>"
                     ),
                 ),
                 returnType = "FormRules<${formDataType}>",
-                body = listOf(CodeBlock(buildString {
-                    appendLine("return {")
-                    propertyRules.forEach { (property, rules) ->
-                        appendLine("$indent$property: [")
-                        rules.forEach { rule ->
-                            appendLine("$indent$indent${rule.stringify()},")
-                        }
-                        appendLine("$indent],")
-                    }
-                    appendLine("}")
-                }))
+                body = listOf(CodeBlock(body))
             )
         ).stringifyCodes()
 

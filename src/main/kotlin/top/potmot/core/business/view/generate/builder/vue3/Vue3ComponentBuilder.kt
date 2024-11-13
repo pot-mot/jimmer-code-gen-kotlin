@@ -158,7 +158,7 @@ class Vue3ComponentBuilder(
                         .inlineOrWarpLines("")
                         .let {
                             if (it.isNotBlank()) {
-                                val lines = it.split("\n")
+                                val lines = it.lines()
                                 if (lines.size > 1) {
                                     lines.joinToString("\n$currentIndent") { line -> line }
                                 } else {

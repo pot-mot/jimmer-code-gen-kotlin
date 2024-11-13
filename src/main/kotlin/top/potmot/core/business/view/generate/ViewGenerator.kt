@@ -45,10 +45,6 @@ interface ViewGenerator {
 
     fun stringifyPage(entity: GenEntityBusinessView): String
 
-    fun stringifySingleSelect(entity: GenEntityBusinessView): String
-
-    fun stringifyMultiSelect(entity: GenEntityBusinessView): String
-
     fun stringifyIdSelect(entity: GenEntityBusinessView): String
 
     fun stringifyIdMultiSelect(entity: GenEntityBusinessView): String
@@ -136,16 +132,6 @@ interface ViewGenerator {
                 "pages/${dir}/${page}.$suffix",
                 stringifyPage(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Page),
-            ),
-            GenerateFile(
-                "components/${dir}/${singleSelect}.$suffix",
-                stringifySingleSelect(flatEntity),
-                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EntitySelect),
-            ),
-            GenerateFile(
-                "components/${dir}/${multiSelect}.$suffix",
-                stringifyMultiSelect(flatEntity),
-                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EntityMultiSelect),
             ),
             GenerateFile(
                 "components/${dir}/${idSelect}.$suffix",

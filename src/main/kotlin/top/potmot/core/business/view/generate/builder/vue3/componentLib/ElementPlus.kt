@@ -373,6 +373,25 @@ interface ElementPlus {
         children = columns
     )
 
+    fun pagination(
+        currentPage: String,
+        pageSize: String,
+        total: String,
+        pageSizes: Iterable<Int> = listOf(5, 10, 20),
+        layout: Iterable<String> = listOf("total", "sizes", "prev", "pager", "next", "jumper"),
+    ) = TagElement(
+        "el-pagination",
+        directives = listOf(
+            VModel(propName = "current-page", value = currentPage),
+            VModel(propName = "page-size", value = pageSize),
+        ),
+        props = listOfNotNull(
+            total.toPropBind("total"),
+            PropBind("page-sizes", pageSizes.toString()),
+            PropBind("layout", layout.joinToString(", "), isLiteral = true),
+        )
+    )
+
     fun dialog(
         modelValue: String,
         destroyOnClose: Boolean = true,

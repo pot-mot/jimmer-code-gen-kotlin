@@ -9,6 +9,7 @@ import top.potmot.core.business.utils.selectOptionLabel
 import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.ViewGenerator
+import top.potmot.core.business.view.generate.apiPath
 import top.potmot.core.business.view.generate.builder.property.ViewProperties
 import top.potmot.core.business.view.generate.builder.property.rules
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
@@ -28,22 +29,30 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.rules.Vue3Rul
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
+import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
+import top.potmot.core.business.view.generate.meta.typescript.Function
+import top.potmot.core.business.view.generate.meta.typescript.FunctionArg
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
+import top.potmot.core.business.view.generate.meta.typescript.commentLine
+import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VIf
+import top.potmot.core.business.view.generate.meta.vue3.VModel
+import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
 import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
 import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
-import top.potmot.entity.dto.share.GenerateEntity
+import top.potmot.utils.string.appendLines
 
 object Vue3ElementPlusViewGenerator :
     ViewGenerator,
@@ -59,9 +68,6 @@ object Vue3ElementPlusViewGenerator :
     private val rulesBuilder = Vue3RulesBuilder(builder.indent, builder.wrapThreshold)
 
     override fun getFileSuffix() = "vue"
-
-    private val GenerateEntity.apiServiceName
-        get() = serviceName.replaceFirstChar { it.lowercase() }
 
     override fun stringifyEnumView(enum: GenEnumGenerateView): String {
         val items = enum.items.mapIndexed { index, it ->
@@ -151,25 +157,16 @@ object Vue3ElementPlusViewGenerator :
                 )
         }
 
-    private fun createOptionQuery(
-        selectOption: SelectOption,
-        serviceName: String,
-    ) = mutableListOf(
-        ImportType("vue", listOf("Ref")),
-        ImportType(staticPath, listOf(selectOption.type)),
-        Import("vue", listOf("onBeforeMount")),
-        Import("@/api", listOf("api")),
-    ) to mutableListOf(
-        selectOption.toVariable(),
-        CodeBlock(buildString {
-            appendLine("onBeforeMount(async () => {")
-            appendLine("${builder.indent}${selectOption.name}.value = await api.$serviceName.listOptions({body: {}})")
-            appendLine("})")
-        })
-    )
-
-    private val GenEntityBusinessView.optionQueries
-        get() = selectOptions.map { createOptionQuery(it, apiServiceName) }
+    private val GenEntityBusinessView.selectOptionPairs
+        get() = selectProperties.mapNotNull {
+            if (it.typeEntity == null)
+                null
+            else
+                it to SelectOption(
+                    it.name + "Options",
+                    it.typeEntity.dtoNames.optionView,
+                )
+        }
 
     override fun stringifyQueryForm(entity: GenEntityBusinessView): String {
         val spec = "spec"
@@ -255,7 +252,7 @@ object Vue3ElementPlusViewGenerator :
                 type = entity.addFormDataType,
                 typePath = staticPath,
                 default = entity.addFormDefault,
-                defaultPath = componentPath + "/" + entity.name.replaceFirstChar { it.lowercase() } + "/" + entity.addFormDefault,
+                defaultPath = componentPath + "/" + entity.componentNames.dir + "/" + entity.addFormDefault,
                 useRules = "useRules",
                 useRulesPath = rulePath + "/" + entity.ruleNames.addFormRules,
                 formData = formData,
@@ -311,7 +308,7 @@ object Vue3ElementPlusViewGenerator :
                 typePath = staticPath,
                 useRules = "useRules",
                 default = entity.addFormDefault,
-                defaultPath = componentPath + "/" + entity.name.replaceFirstChar { it.lowercase() } + "/" + entity.addFormDefault,
+                defaultPath = componentPath + "/" + entity.componentNames.dir + "/" + entity.addFormDefault,
                 useRulesPath = rulePath + "/" + entity.ruleNames.editTableRules,
                 indent = builder.indent,
                 idPropertyName = entity.idProperty.name,
@@ -409,29 +406,334 @@ object Vue3ElementPlusViewGenerator :
         createIdSelect(entity, true)
     )
 
-    override fun stringifySingleSelect(entity: GenEntityBusinessView): String {
-        return ""
-    }
-
-    override fun stringifyMultiSelect(entity: GenEntityBusinessView): String {
-        return ""
-    }
+    private fun createOptionQuery(
+        comment: String,
+        selectOption: SelectOption,
+        serviceName: String,
+    ) = mutableListOf(
+        ImportType("vue", listOf("Ref")),
+        ImportType(staticPath, listOf(selectOption.type)),
+        Import("vue", listOf("onBeforeMount")),
+        Import("@/api", listOf("api")),
+    ) to mutableListOf(
+        commentLine("${comment}选项"),
+        selectOption.toVariable(),
+        CodeBlock(buildString {
+            appendLine("onBeforeMount(async () => {")
+            appendLine("${builder.indent}${selectOption.name}.value = await api.$serviceName.listOptions({body: {}})")
+            appendLine("})")
+        })
+    )
 
     override fun stringifyPage(entity: GenEntityBusinessView): String {
         val (_, dir, table, addForm, editForm, queryForm) = entity.componentNames
         val (_, listView, _, insertInput, updateInput, spec) = entity.dtoNames
 
-        val optionQueries = entity.optionQueries
+        val idProperty = entity.idProperty
+        val idName = idProperty.name
+        val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
+
+        val apiServiceName = entity.serviceName.replaceFirstChar { it.lowercase() }
+
+        val selectOptionPairs = entity.selectOptionPairs
+        val selectOptionNames = selectOptionPairs.map { it.first.name }
+        val optionQueries = selectOptionPairs.map {
+            createOptionQuery(it.first.comment, it.second, apiServiceName)
+        }
 
         return builder.build(
             Component(
                 imports = listOf(
                     Import("vue", listOf("ref")),
-                    ImportType(staticPath, listOf("Page", "PageQuery", listView, insertInput, updateInput, spec))
-                ) + optionQueries.flatMap { it.first },
-                script = optionQueries.flatMap { it.second },
-                template = listOf(
+                    Import("@element-plus/icons-vue", listOf("Plus", "EditPen", "Delete")),
+                    ImportType(staticPath, listOf("Page", "PageQuery", listView, insertInput, updateInput, spec)),
+                    Import(apiPath, listOf("api")),
+                    Import("$utilPath/message", listOf("sendMessage")),
+                    Import("$utilPath/confirm", listOf("deleteConfirm")),
+                    Import("$utilPath/loading", listOf("useLoading")),
+                    Import("$utilPath/legalPage", listOf("useLegalPage")),
+                ) + listOf(table, addForm, editForm, queryForm).map {
+                    ImportDefault("$componentPath/$dir/$it.vue", it)
+                } + optionQueries.flatMap { it.first },
+                script = listOf(
+                    ConstVariable("{isLoading, withLoading}", null, "useLoading()\n"),
+                    ConstVariable("pageData", null, "ref<Page<EntityListView>>()\n"),
+                    commentLine("分页查询"),
+                    ConstVariable("queryInfo", null, buildString {
+                        appendLine("ref<PageQuery<EntitySpec>>({")
+                        appendLines(
+                            "spec: {}",
+                            "pageIndex: 1",
+                            "pageSize: 5"
+                        ) { "${builder.indent}$it," }
+                        appendLine("})")
+                    }),
+                    ConstVariable("{queryPage}", null, buildString {
+                        appendLine("useLegalPage(")
+                        appendLines(
+                            "pageData",
+                            "queryInfo",
+                            "withLoading(api.entityService.page)"
+                        ) { "${builder.indent}$it," }
+                        appendLine(")")
+                    }),
+                    ConstVariable(
+                        "get${entity.name}",
+                        null,
+                        "withLoading((id: $idType) => api.$apiServiceName.get({id}))\n"
+                    ),
+                    ConstVariable(
+                        "add${entity.name}",
+                        null,
+                        "withLoading((body: $insertInput) => api.$apiServiceName.insert({body}))\n"
+                    ),
+                    ConstVariable(
+                        "edit${entity.name}",
+                        null,
+                        "withLoading((body: $updateInput) => api.$apiServiceName.update({body}))\n"
+                    ),
+                    ConstVariable(
+                        "delete${entity.name}",
+                        null,
+                        "withLoading((ids: Array<$idType>) => api.$apiServiceName.delete({ids}))\n"
+                    ),
 
+                    commentLine("多选"),
+                    ConstVariable("selection", null, "ref<EntityListView[]>([])"),
+                    emptyLineCode,
+                    Function(
+                        name = "handleSelectionChange",
+                        args = listOf(FunctionArg("newSelection", "Array<$listView>")),
+                        body = listOf(
+                            CodeBlock("selection.value = newSelection")
+                        )
+                    ),
+                    emptyLineCode,
+
+                    *optionQueries.flatMap { it.second }.toTypedArray(),
+
+                    commentLine("新增"),
+                    ConstVariable("addDialogVisible", null, "ref<boolean>(false)"),
+                    emptyLineCode,
+                    Function(
+                        name = "startAdd",
+                        body = listOf(
+                            CodeBlock("addDialogVisible.value = true")
+                        )
+                    ),
+                    emptyLineCode,
+                    Function(
+                        name = "submitAdd",
+                        args = listOf(FunctionArg("insertInput", insertInput)),
+                        body = listOf(CodeBlock(buildString {
+                            appendLine("try {")
+                            appendLines(
+                                "await add${entity.name}(insertInput)",
+                                "await queryPage()",
+                                "addDialogVisible.value = false",
+                                "",
+                                "sendMessage('新增${entity.comment}成功', 'success')"
+                            ) { "${builder.indent}$it" }
+                            appendLine("} catch (e) {")
+                            appendLines(
+                                "sendMessage(\"新增${entity.comment}失败\", \"error\", e)"
+                            ) { "${builder.indent}$it" }
+                            append("}")
+                        }))
+                    ),
+                    emptyLineCode,
+                    Function(
+                        name = "cancelAdd",
+                        body = listOf(
+                            CodeBlock("addDialogVisible.value = false")
+                        )
+                    ),
+                    emptyLineCode,
+
+                    commentLine("修改"),
+                    ConstVariable("editDialogVisible", null, "ref(false)"),
+                    emptyLineCode,
+                    ConstVariable("updateInput", null, "ref<${entity.name}UpdateInput | undefined>(undefined)"),
+                    emptyLineCode,
+                    Function(
+                        name = "startEdit",
+                        args = listOf(FunctionArg("id", "number")),
+                        body = listOf(CodeBlock(buildString {
+                            appendLine("updateInput.value = await get${entity.name}(id)")
+                            appendLine("if (updateInput.value === undefined) {")
+                            appendLines(
+                                "sendMessage('编辑的${entity.comment}不存在', 'error')",
+                                "return"
+                            ) { "${builder.indent}$it" }
+                            appendLine("}")
+                            append("editDialogVisible.value = true")
+                        }))
+                    ),
+                    emptyLineCode,
+                    Function(
+                        name = "submitEdit",
+                        args = listOf(FunctionArg("updateInput", "${entity.name}UpdateInput")),
+                        body = listOf(CodeBlock(buildString {
+                            appendLine("try {")
+                            appendLines(
+                                "await edit${entity.name}(updateInput)",
+                                "await queryPage()",
+                                "editDialogVisible.value = false",
+                                "",
+                                "sendMessage('编辑${entity.comment}成功', 'success')"
+                            ) { "${builder.indent}$it" }
+                            appendLine("} catch (e) {")
+                            appendLines(
+                                "sendMessage('编辑${entity.comment}失败', 'error', e)"
+                            ) { "${builder.indent}$it" }
+                            append("}")
+                        }))
+                    ),
+                    emptyLineCode,
+                    Function(
+                        name = "cancelEdit",
+                        body = listOf(
+                            CodeBlock("editDialogVisible.value = false\nupdateInput.value = undefined")
+                        )
+                    ),
+                    emptyLineCode,
+
+                    commentLine("删除"),
+                    Function(
+                        name = "handleDelete",
+                        args = listOf(FunctionArg("ids", "number[]")),
+                        body = listOf(CodeBlock(buildString {
+                            appendLine("const result = await deleteConfirm('${entity.comment}')")
+                            appendLine("if (!result) return")
+                            appendLine("")
+                            appendLine("try {")
+                            appendLines(
+                                "await delete${entity.name}(ids)",
+                                "await queryPage()",
+                                "",
+                                "sendMessage('删除${entity.comment}成功', 'success')"
+                            ) { "${builder.indent}$it" }
+                            appendLine("} catch (e) {")
+                            appendLines(
+                                "sendMessage('删除${entity.comment}失败', 'error', e)"
+                            ) { "${builder.indent}$it" }
+                            append("}")
+                        }))
+                    )
+                ),
+                template = listOf(
+                    TagElement(
+                        "el-card",
+                        props = listOf(
+                            PropBind("v-loading", "isLoading", isLiteral = true)
+                        ),
+                        children = listOf(
+                            TagElement(
+                                queryForm,
+                                directives = listOf(
+                                    VModel("queryForm.spec")
+                                ),
+                                events = listOf(
+                                    EventBind("query", "queryPage")
+                                )
+                            ),
+                            emptyLineElement,
+                            TagElement(
+                                "div",
+                                children = listOf(
+                                    button(
+                                        content = "新增",
+                                        type = ElementPlus.Type.PRIMARY,
+                                        icon = "Plus",
+                                    ).merge {
+                                        events += EventBind("click", "startAdd")
+                                    },
+                                    button(
+                                        content = "删除",
+                                        type = ElementPlus.Type.DANGER,
+                                        icon = "Delete",
+                                    ).merge {
+                                        directives += VIf("selection.length === 0")
+                                        events += EventBind("click", "handleDelete(selection.map(it => it.id))")
+                                    },
+                                )
+                            ),
+                            emptyLineElement,
+                            TagElement(
+                                table,
+                                props = listOf(
+                                    PropBind("rows", "pageData.rows"),
+                                ),
+                                events = listOf(
+                                    EventBind("selectionChange", "handleSelectionChange")
+                                ),
+                                children = listOf(
+                                    slotTemplate(
+                                        "operations",
+                                        props = listOf("row"),
+                                        content = listOf(
+                                            button(
+                                                content = "编辑",
+                                                type = ElementPlus.Type.WARNING,
+                                                icon = "EditPen",
+                                                plain = true,
+                                            ).merge {
+                                                events += EventBind("click", "startEdit(row.$idName)")
+                                            },
+                                            button(
+                                                content = "删除",
+                                                type = ElementPlus.Type.DANGER,
+                                                icon = "Delete",
+                                                plain = true,
+                                            ).merge {
+                                                events += EventBind("click", "handleDelete([row.$idName])")
+                                            },
+                                        )
+                                    )
+                                )
+                            ),
+                            emptyLineElement,
+                            pagination(
+                                currentPage = "queryInfo.pageIndex",
+                                pageSize = "queryInfo.pageSize",
+                                total = "pageData.totalRowCount",
+                            )
+                        )
+                    ),
+                    emptyLineElement,
+                    dialog(
+                        modelValue = "addDialogVisible",
+                        content = listOf(
+                            TagElement(
+                                addForm
+                            ).merge {
+                                props += selectOptionNames.map { PropBind(it, it) }
+                                props += PropBind("submitLoading", "isLoading")
+                                events += EventBind("submit", "submitAdd")
+                                events += EventBind("cancel", "cancelAdd")
+                            }
+                        )
+                    ).merge {
+                        directives += VIf(selectOptionNames.joinToString(" && "))
+                    },
+                    emptyLineElement,
+                    dialog(
+                        modelValue = "editDialogVisible",
+                        content = listOf(
+                            TagElement(
+                                editForm
+                            ).merge {
+                                directives += VIf("updateInput !== undefined")
+                                directives += VModel("updateInput")
+                                props += selectOptionNames.map { PropBind(it, it) }
+                                props += PropBind("submitLoading", "isLoading")
+                                events += EventBind("submit", "submitEdit")
+                                events += EventBind("cancel", "cancelEdit")
+                            }
+                        )
+                    ).merge {
+                        directives += VIf(selectOptionNames.joinToString(" && "))
+                    }
                 )
             )
         )

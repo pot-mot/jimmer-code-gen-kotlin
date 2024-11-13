@@ -60,7 +60,10 @@ interface ViewProperties {
                 val idViewProperty = idViewPropertyMap[property.name]
 
                 if (idViewProperty != null) {
-                    producedProperties.add(idViewProperty)
+                    producedProperties.add(idViewProperty.copy(
+                        comment = property.comment,
+                        typeEntity = property.typeEntity
+                    ))
                     continue
                 }
 
