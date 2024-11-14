@@ -13,11 +13,9 @@ import schemacrawler.schemacrawler.LoadOptionsBuilder
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder
 import schemacrawler.schemacrawler.SchemaInfoLevelBuilder
 import schemacrawler.tools.utility.SchemaCrawlerUtility
-import top.potmot.core.database.meta.toColumnReferenceMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
-import top.potmot.error.DataSourceLoadException
-import top.potmot.entity.GenTable
+import top.potmot.error.LoadFromDataSourceException
 import top.potmot.entity.dto.GenAssociationInput
 import top.potmot.entity.dto.GenSchemaInput
 import top.potmot.entity.dto.GenSchemaPreview
@@ -25,6 +23,10 @@ import top.potmot.entity.dto.GenTableIndexInput
 import top.potmot.entity.dto.GenTableInput
 import us.fatehi.utility.datasource.DatabaseConnectionSource
 import java.util.regex.Pattern
+import top.potmot.entity.dto.GenTableLoadView
+import top.potmot.entity.dto.IdName
+import top.potmot.error.IndexColumnTableNotMatchItem
+import top.potmot.error.PropertyTableNotMatchItem
 
 /**
  * 获取数据库目录（Catalog）
@@ -151,56 +153,76 @@ private fun Column.toInput(
  * 根据 Table 中的外键转换 Association
  * 要求 GenTable 已经 save，具有 columns，columns 具有 id 与 name
  */
-@Throws(DataSourceLoadException::class)
+@Throws(LoadFromDataSourceException::class)
 fun ForeignKey.toInput(
-    tableNameMap: Map<String, GenTable>
+    tableNameMap: Map<String, GenTableLoadView>
 ): GenAssociationInput {
     val columnReferences = mutableListOf<GenAssociationInput.TargetOf_columnReferences>()
 
     if (this.columnReferences.isEmpty())
-        throw DataSourceLoadException.association(
+        throw LoadFromDataSourceException.associationColumnReferencesCannotBeEmpty(
             "Convert foreign key [${name}] to association fail: \n" +
-                    "column references is empty"
+                    "column references is empty",
+            foreignKeyName = name,
         )
 
-    var sourceTableId: Long? = null
-    var targetTableId: Long? = null
+    val sourceTablePairs = mutableSetOf<Pair<GenTableLoadView.TargetOf_columns, GenTableLoadView>>()
+    val targetTablePairs = mutableSetOf<Pair<GenTableLoadView.TargetOf_columns, GenTableLoadView>>()
 
     this.columnReferences.forEachIndexed { index, columnRef ->
-        columnRef.toColumnReferenceMeta(tableNameMap).let { meta ->
+        columnRef.toLoadColumnReference(tableNameMap).let { loadColumnReference ->
+            sourceTablePairs += loadColumnReference.source.column to loadColumnReference.source.table
+            targetTablePairs += loadColumnReference.target.column to loadColumnReference.target.table
             columnReferences +=
                 GenAssociationInput.TargetOf_columnReferences(
                     orderKey = index.toLong(),
                     remark = "",
-                    sourceColumnId = meta.source.column.id,
-                    targetColumnId = meta.target.column.id,
+                    sourceColumnId = loadColumnReference.source.column.id,
+                    targetColumnId = loadColumnReference.target.column.id,
                 )
-
-            if (sourceTableId != null && sourceTableId != meta.source.table.id) {
-                throw DataSourceLoadException.association(
-                    "Convert foreign key [${name}] to association fail: \n" +
-                            "source table not match: \n" +
-                            "association table not equals meta table [${meta.source.table}]"
-                )
-            }
-            sourceTableId = meta.source.table.id
-
-            if (targetTableId != null && targetTableId != meta.target.table.id) {
-                throw DataSourceLoadException.association(
-                    "Convert foreign key [${name}] to association fail: \n" +
-                            "target table not match: \n" +
-                            "association table not equals meta table [${meta.target.table}]"
-                )
-            }
-            targetTableId = meta.target.table.id
         }
+    }
+
+    if (sourceTablePairs.isEmpty() || targetTablePairs.isEmpty())
+        throw LoadFromDataSourceException.associationColumnReferencesCannotBeEmpty(
+            "Convert foreign key [${name}] to association fail: \n" +
+                    "column references is empty",
+            foreignKeyName = name,
+        )
+
+    if (sourceTablePairs.size > 1) {
+        throw LoadFromDataSourceException.associationSourceTableNotMatch(
+            "Convert foreign key [${name}] to association fail: \n" +
+                    "source table not match: [${sourceTablePairs}]",
+            foreignKeyName = name,
+            propertyToSourceTables = sourceTablePairs.map { (column, table) ->
+                PropertyTableNotMatchItem(
+                    IdName(column.id, column.name),
+                    IdName(table.id, table.name)
+                )
+            }
+        )
+    }
+
+    if (targetTablePairs.size > 1) {
+        throw LoadFromDataSourceException.associationTargetTableNotMatch(
+            "Convert foreign key [${name}] to association fail: \n" +
+                    "target table not match: [${sourceTablePairs}]",
+            foreignKeyName = name,
+            propertyToTargetTables = targetTablePairs.map { (column, table) ->
+                PropertyTableNotMatchItem(
+                    IdName(column.id, column.name),
+                    IdName(table.id, table.name)
+                )
+            }
+        )
     }
 
     return GenAssociationInput(
         name = name,
         type = AssociationType.MANY_TO_ONE,
-        sourceTableId = sourceTableId!!,
-        targetTableId = targetTableId!!,
+        sourceTableId = sourceTablePairs.first().second.id,
+        targetTableId = targetTablePairs.first().second.id,
         dissociateAction = deleteRule.toDissociateAction(),
         updateAction = updateRule.toString(),
         deleteAction = deleteRule.toString(),
@@ -220,12 +242,22 @@ private fun ForeignKeyUpdateRule.toDissociateAction(): DissociateAction =
         ForeignKeyUpdateRule.restrict -> DissociateAction.NONE
     }
 
-@Throws(DataSourceLoadException::class)
-fun Index.toInput(table: GenTable): GenTableIndexInput? {
+@Throws(LoadFromDataSourceException::class)
+fun Index.toInput(table: GenTableLoadView): GenTableIndexInput? {
     val columnIds = columns.map {
         val nameMatchColumns = table.columns.filter { column -> column.name == it.name }
         if (nameMatchColumns.size != 1) {
-            throw DataSourceLoadException.index("Index [$name] fail: \nmatch name ${it.name} column more than one in table [${table.name}]")
+            throw LoadFromDataSourceException.indexColumnTableNotMatch(
+                "Index [$name] fail: \nmatch name ${it.name} column more than one in table [${table.name}]",
+                foreignKeyName = name,
+                indexColumnToTables = nameMatchColumns.map { column ->
+                    IndexColumnTableNotMatchItem(
+                        indexName = name,
+                        column = IdName(column.id, column.name),
+                        table = IdName(table.id, table.name),
+                    )
+                }
+            )
         }
         nameMatchColumns[0].id
     }

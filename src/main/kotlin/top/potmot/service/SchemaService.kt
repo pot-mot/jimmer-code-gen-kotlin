@@ -16,17 +16,19 @@ import top.potmot.core.database.load.toInput
 import top.potmot.core.database.load.toView
 import top.potmot.entity.GenDataSource
 import top.potmot.entity.GenSchema
+import top.potmot.entity.copy
 import top.potmot.entity.dataSourceId
 import top.potmot.entity.dto.GenSchemaPreview
 import top.potmot.entity.dto.GenSchemaView
+import top.potmot.entity.dto.GenTableLoadView
 import top.potmot.entity.extension.use
 import top.potmot.entity.id
-import top.potmot.error.DataSourceLoadException
+import top.potmot.error.LoadFromDataSourceException
 
 @RestController
 class SchemaService(
     @Autowired val sqlClient: KSqlClient,
-    @Autowired val transactionTemplate: TransactionTemplate
+    @Autowired val transactionTemplate: TransactionTemplate,
 ) {
     private fun getDataSource(id: Long): GenDataSource? =
         sqlClient.findById(GenDataSource::class, id)
@@ -49,16 +51,16 @@ class SchemaService(
      * 导入 schema
      */
     @PostMapping("/dataSource/{dataSourceId}/schema/{name}")
-    @Throws(DataSourceLoadException::class)
+    @Throws(LoadFromDataSourceException::class)
     fun load(
         @PathVariable dataSourceId: Long,
-        @PathVariable name: String
+        @PathVariable name: String,
     ): List<Long> =
-        getDataSource(dataSourceId)?.use {
+        getDataSource(dataSourceId)?.use { dataSource ->
             val result = mutableListOf<Long>()
 
             // 获取目录
-            val catalog = it.getCatalog(schemaPattern = name)
+            val catalog = dataSource.getCatalog(schemaPattern = name)
 
             transactionTemplate.execute {
                 // 遍历 schema 进行保存 （因为一个 schema name 有可能会获取到多个不同的 schema）
@@ -71,7 +73,9 @@ class SchemaService(
 
                     // 保存 tables
                     val tableInputs = tables.map { it.toInput(savedSchema.id) }
-                    val savedTables = sqlClient.entities.saveInputs(tableInputs).simpleResults.map { it.modifiedEntity }
+                    val savedTables = sqlClient.entities.saveInputs(tableInputs).simpleResults.map {
+                        GenTableLoadView(it.modifiedEntity.copy { this.schema = savedSchema })
+                    }
 
                     val tableNameMap = savedTables.associateBy { it.name }
 
@@ -97,7 +101,7 @@ class SchemaService(
     @GetMapping("/dataSource/{dataSourceId}/schema/")
     fun list(
         @PathVariable dataSourceId: Long,
-        @RequestParam(required = false) schemaIds: List<Long>?
+        @RequestParam(required = false) schemaIds: List<Long>?,
     ): List<GenSchemaView> =
         sqlClient
             .createQuery(GenSchema::class) {

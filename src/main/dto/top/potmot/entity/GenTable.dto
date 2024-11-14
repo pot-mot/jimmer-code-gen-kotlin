@@ -40,3 +40,18 @@ input GenTableInput {
         id(enum)
     }
 }
+
+GenTableLoadView {
+    #allScalars(this)
+    id(model)
+    schema {
+        id
+        name
+    }
+    id(superTables) as superTableIds
+
+    columns {
+        #allScalars(this)
+        id(enum)
+    }
+}
