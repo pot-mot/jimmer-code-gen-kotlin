@@ -54,7 +54,7 @@ class H2Initializer(
                 H2Initializer::class.java
                     .classLoader
                     .getResourceAsStream(it)
-            } ?: throw DataSourceException.h2InitFail("no h2 sql find in path: $sqlPath")
+            } ?: throw DataSourceException.h2InitFail(exceptionMessage = "no h2 sql find in path: $sqlPath")
 
             val sqls = InputStreamReader(inputStream).use { reader ->
                 reader.readText()

@@ -21,7 +21,11 @@ fun DatabaseConnectionSource.test(): DatabaseConnectionSource =
         get().close()
         this
     } catch (e: Exception) {
-        throw DataSourceException.connectFail("dataSource connect fail", e)
+        throw DataSourceException.connectFail(
+            "dataSource connect fail",
+            e,
+            exceptionMessage = e.message ?: "unknown"
+        )
     }
 
 @Throws(DataSourceException.SqlExecuteFail::class)
@@ -47,7 +51,12 @@ fun GenDataSource.execute(
     } catch (e: Exception) {
         connection.rollback()
 
-        throw DataSourceException.sqlExecuteFail("dataSource execute fail", e)
+        throw DataSourceException.sqlExecuteFail(
+            "dataSource execute fail",
+            e,
+            sql = sql,
+            exceptionMessage = e.message ?: "unknown"
+        )
     } finally {
         connection.close()
     }
