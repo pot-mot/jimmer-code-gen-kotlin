@@ -6,13 +6,14 @@ import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.share.ReferenceTable
 import top.potmot.enumeration.GenLanguage
-import top.potmot.error.ConvertEntityException
+import top.potmot.error.ConvertException
 import kotlin.jvm.Throws
+import top.potmot.entity.dto.IdName
 
 /**
  * 从基础属性和关联属性生成 IdView
  */
-@Throws(ConvertEntityException.Property::class)
+@Throws(ConvertException.IdViewMultiplePkNotSupported::class)
 fun createIdViewProperty(
     singularName: String,
     baseProperty: GenPropertyInput,
@@ -43,7 +44,14 @@ fun createIdViewProperty(
             val language = getContextOrGlobal().language
 
             if (typeTable.pkColumns.size != 1)
-                throw ConvertEntityException.property("IdView Property [${name}] cannot parse from multi pkColumn Table [${typeTable.name}]")
+                throw ConvertException.idViewMultiplePkNotSupported(
+                    "IdView Property [${name}] cannot parse from multi pkColumn Table [${typeTable.name}]",
+                    idViewProperty = name,
+                    baseProperty = baseProperty.name,
+                    associationProperty = associationProperty.name,
+                    typeTable = IdName(typeTable.id, typeTable.name),
+                    typeTablePkColumnIds = typeTable.pkColumns.map { it.id }
+                )
 
             // IdView 的基础类型为外键列对应类型
             type = typeMapping(

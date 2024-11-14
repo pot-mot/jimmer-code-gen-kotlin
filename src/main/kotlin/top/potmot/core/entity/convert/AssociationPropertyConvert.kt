@@ -9,16 +9,18 @@ import top.potmot.core.entity.meta.AssociationPropertyPair
 import top.potmot.core.entity.meta.ConvertPropertyMeta
 import top.potmot.core.entity.meta.toJoinColumns
 import top.potmot.core.entity.meta.toJoinTable
+import top.potmot.entity.GenPropertyDraft
+import top.potmot.entity.copy
+import top.potmot.entity.dto.GenPropertyInput
+import top.potmot.entity.dto.GenTableConvertView
+import top.potmot.entity.dto.IdName
+import top.potmot.entity.dto.IdNullableName
 import top.potmot.enumeration.AssociationType.MANY_TO_MANY
 import top.potmot.enumeration.AssociationType.MANY_TO_ONE
 import top.potmot.enumeration.AssociationType.ONE_TO_MANY
 import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.error.ColumnTypeException
-import top.potmot.error.ConvertEntityException
-import top.potmot.entity.GenPropertyDraft
-import top.potmot.entity.copy
-import top.potmot.entity.dto.GenPropertyInput
-import top.potmot.entity.dto.GenTableConvertView
+import top.potmot.error.ConvertException
 import top.potmot.utils.string.clearTableComment
 import top.potmot.utils.string.tableNameToEntityName
 import top.potmot.utils.string.tableNameToPropertyName
@@ -31,7 +33,7 @@ import top.potmot.utils.string.toPlural
  * 因为 idView 属性并不单纯与基础属性类型相同，而是从关联属性映射而来，所以需要 typeMapping 进行对映射结果处理
  * 因为关联注释需要与数据源最终生成的 DDL 一致，所以需要 identifierFilter 处理 table 和 column
  */
-@Throws(ConvertEntityException::class, ColumnTypeException::class)
+@Throws(ConvertException::class, ColumnTypeException::class)
 fun convertAssociationProperties(
     table: GenTableConvertView,
     basePropertyMap: Map<Long, GenPropertyInput>,
@@ -64,29 +66,54 @@ fun convertAssociationProperties(
             sourceTable,
             sourceColumns,
             targetTable,
-            _,
+            targetColumns,
         ) = outAssociation
 
+        if (sourceColumns.size != 1 || targetColumns.size != 1)
+            throw ConvertException.multipleColumnsNotSupported(
+                association = IdName(association.id, association.name),
+                sourceTable = IdName(sourceTable.id, sourceTable.name),
+                sourceColumns = sourceColumns.map { IdName(it.id, it.name) },
+                targetTable = IdName(targetTable.id, targetTable.name),
+                targetColumns = targetColumns.map { IdName(it.id, it.name) },
+            )
+
+        val sourceColumn = sourceColumns[0]
+        val targetColumn = targetColumns[0]
+
         if (association.type == ONE_TO_MANY) {
-            throw ConvertEntityException.association(
+            throw ConvertException.associationCannotBeOneToMany(
                 "OutAssociation [${association.name}] convert property fail: \n" +
-                        "AssociationType can not be OneToMany"
+                        "AssociationType can not be OneToMany",
+                association = IdName(association.id, association.name),
+                sourceTable = IdName(sourceTable.id, sourceTable.name),
+                sourceColumn = IdName(sourceColumn.id, sourceColumn.name),
+                targetTable = IdName(targetTable.id, targetTable.name),
+                targetColumn = IdName(targetColumn.id, targetColumn.name),
             )
         }
 
-        val sourceColumn = sourceColumns[0]
-
         if (!propertiesMap.containsKey(sourceColumn.id)) {
-            throw ConvertEntityException.association(
+            throw ConvertException.outAssociationCannotFountSourceColumn(
                 "OutAssociation [${association.name}] convert property fail: \n" +
-                        "SourceColumn [${sourceColumn.name}] not found in table [${sourceTable.name}]"
+                        "SourceColumn [${sourceColumn.name}] not found in table [${sourceTable.name}]",
+                association = IdName(association.id, association.name),
+                sourceTable = IdName(sourceTable.id, sourceTable.name),
+                sourceColumn = IdNullableName(sourceColumn.id, sourceColumn.name),
+                targetTable = IdName(targetTable.id, targetTable.name),
+                targetColumn = IdName(targetColumn.id, targetColumn.name),
             )
         }
 
         val current = propertiesMap[sourceColumn.id]
-            ?: throw ConvertEntityException.association(
+            ?: throw ConvertException.outAssociationCannotFoundSourceBaseProperty(
                 "OutAssociation [${association.name}] convert property fail: \n" +
-                        "SourceColumn [${sourceColumn.name}] converted baseProperty not found"
+                        "SourceColumn [${sourceColumn.name}] converted baseProperty not found",
+                association = IdName(association.id, association.name),
+                sourceTable = IdName(sourceTable.id, sourceTable.name),
+                sourceColumn = IdName(sourceColumn.id, sourceColumn.name),
+                targetTable = IdName(targetTable.id, targetTable.name),
+                targetColumn = IdName(targetColumn.id, targetColumn.name),
             )
 
         val sourceProperty = current.baseProperty
@@ -166,21 +193,39 @@ fun convertAssociationProperties(
             targetColumns,
         ) = inAssociation
 
+        if (sourceColumns.size != 1 || targetColumns.size != 1)
+            throw ConvertException.multipleColumnsNotSupported(
+                association = IdName(association.id, association.name),
+                sourceTable = IdName(sourceTable.id, sourceTable.name),
+                sourceColumns = sourceColumns.map { IdName(it.id, it.name) },
+                targetTable = IdName(targetTable.id, targetTable.name),
+                targetColumns = targetColumns.map { IdName(it.id, it.name) },
+            )
+
+        val sourceColumn = sourceColumns[0]
+        val targetColumn = targetColumns[0]
+
         if (association.type == ONE_TO_MANY) {
-            throw ConvertEntityException.association(
+            throw ConvertException.associationCannotBeOneToMany(
                 "InAssociation [${association.name}] convert property fail: \n" +
-                        "AssociationType can not be OneToMany"
+                        "AssociationType can not be OneToMany",
+                association = IdName(association.id, association.name),
+                sourceTable = IdName(sourceTable.id, sourceTable.name),
+                sourceColumn = IdName(sourceColumn.id, sourceColumn.name),
+                targetTable = IdName(targetTable.id, targetTable.name),
+                targetColumn = IdName(targetColumn.id, targetColumn.name),
             )
         }
 
-        val sourceColumn = sourceColumns[0]
-
-        val targetColumn = targetColumns[0]
-
         val current = propertiesMap[targetColumn.id]
-            ?: throw ConvertEntityException.association(
+            ?: throw ConvertException.inAssociationCannotFoundTargetBaseProperty(
                 "InAssociation [${association.name}] convert property fail: \n" +
-                        "TargetColumn [${targetColumn.name}] converted property not found"
+                        "TargetColumn [${targetColumn.name}] converted property not found",
+                association = IdName(association.id, association.name),
+                sourceTable = IdName(sourceTable.id, sourceTable.name),
+                sourceColumn = IdName(sourceColumn.id, sourceColumn.name),
+                targetTable = IdName(targetTable.id, targetTable.name),
+                targetColumn = IdName(targetColumn.id, targetColumn.name),
             )
 
         val targetProperty = current.baseProperty

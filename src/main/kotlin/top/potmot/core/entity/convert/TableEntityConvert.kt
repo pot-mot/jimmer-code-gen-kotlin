@@ -2,7 +2,7 @@ package top.potmot.core.entity.convert
 
 import top.potmot.context.getContextOrGlobal
 import top.potmot.error.ColumnTypeException
-import top.potmot.error.ConvertEntityException
+import top.potmot.error.ConvertException
 import top.potmot.entity.dto.share.ColumnTypeMeta
 import top.potmot.entity.dto.GenEntityInput
 import top.potmot.entity.dto.GenPropertyInput
@@ -28,7 +28,7 @@ typealias TypeMapping = (column: ColumnTypeMeta) -> String
  *
  * 最终将 associationProperty 中的数据填充到 baseEntity 中
  */
-@Throws(ConvertEntityException::class, ColumnTypeException::class)
+@Throws(ConvertException::class, ColumnTypeException::class)
 fun GenTableConvertView.toGenEntity(
     modelId: Long?,
     typeMappings: List<GenTypeMappingView>,

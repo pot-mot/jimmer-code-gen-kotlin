@@ -2,12 +2,14 @@ package top.potmot.core.entity.convert
 
 import top.potmot.core.entity.meta.ConvertPropertyMeta
 import top.potmot.entity.dto.GenPropertyInput
-import top.potmot.error.ConvertEntityException
+import top.potmot.error.ConvertException
+import top.potmot.error.PropertyNameDuplicateData
 
 /**
  * 对属性处理名称重复：
  *  如果存在名称重复，则将基础属性拼接到关联属性名称之后
  */
+@Throws(ConvertException.PropertyNameDuplicate::class)
 fun handleDuplicateName(
     propertiesMap: Map<Long, ConvertPropertyMeta>
 ): List<GenPropertyInput> {
@@ -26,7 +28,29 @@ fun handleDuplicateName(
     val producedMappedByProperties = nameMap.flatMap { produceDuplicateNameMappedBy(it.value) }
 
     producedMappedByProperties.groupBy { it.name }.values.filter { it.size > 1 }.forEach {
-        throw ConvertEntityException.property("PropertyName [${it.first().name}] is Duplicate.")
+        val propertyNameDuplicateItems = it.map {property ->
+            PropertyNameDuplicateData(
+                columnId = property.columnId,
+                name = property.name,
+                comment = property.comment,
+                type = property.type,
+                listType = property.listType,
+                typeNotNull = property.typeNotNull,
+                typeTableId = property.typeTableId,
+                enumId = property.enumId,
+                associationType = property.associationType,
+                joinColumnMetas = property.joinColumnMetas,
+                joinTableMeta = property.joinTableMeta,
+                idView = property.idView,
+                idViewTarget = property.idViewTarget,
+            )
+        }
+
+        throw ConvertException.propertyNameDuplicate(
+            "PropertyName [${it.first().name}] is Duplicate",
+            duplicateName = it.first().name,
+            properties = propertyNameDuplicateItems,
+        )
     }
 
     return producedMappedByProperties

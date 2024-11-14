@@ -1,7 +1,7 @@
 package top.potmot.core.entity.convert
 
 import top.potmot.error.ColumnTypeException
-import top.potmot.error.ConvertEntityException
+import top.potmot.error.ConvertException
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.utils.string.clearColumnComment
@@ -11,7 +11,7 @@ import top.potmot.utils.string.snakeToLowerCamel
  * 转换基本属性
  * 返回 Map<columnId, property>
  */
-@Throws(ConvertEntityException::class, ColumnTypeException::class)
+@Throws(ConvertException::class, ColumnTypeException::class)
 fun convertBaseProperties(
     table: GenTableConvertView,
     typeMapping: TypeMapping,

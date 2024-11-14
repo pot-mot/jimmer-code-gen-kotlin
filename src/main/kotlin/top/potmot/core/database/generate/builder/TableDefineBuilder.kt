@@ -13,7 +13,7 @@ import top.potmot.enumeration.AssociationType.MANY_TO_ONE
 import top.potmot.enumeration.AssociationType.ONE_TO_MANY
 import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.error.ColumnTypeException
-import top.potmot.error.ConvertEntityException
+import top.potmot.error.ConvertException
 import top.potmot.error.GenerateTableDefineException
 import top.potmot.entity.dto.share.ColumnTypeMeta
 import top.potmot.entity.dto.GenTableGenerateView
@@ -246,7 +246,7 @@ abstract class TableDefineBuilder(
     /**
      * 根据 out association 生成外键约束、唯一性约束和关联表
      */
-    @Throws(ConvertEntityException::class)
+    @Throws(ConvertException::class)
     open fun associationsStringify(
         table: GenTableGenerateView
     ): List<String> {

@@ -25,7 +25,6 @@ import top.potmot.entity.modelId
 import top.potmot.entity.orderKey
 import top.potmot.entity.tableId
 import top.potmot.error.ColumnTypeException
-import top.potmot.error.ConvertEntityException
 import top.potmot.error.ConvertException
 
 @RestController
@@ -35,7 +34,7 @@ class ConvertService(
     @Autowired val transactionTemplate: TransactionTemplate
 ) {
     @PostMapping("/table")
-    @Throws(ConvertEntityException::class, ColumnTypeException::class)
+    @Throws(ConvertException::class, ColumnTypeException::class)
     fun convertTable(
         @RequestBody tableIds: List<Long>,
         @RequestParam(required = false) modelId: Long?,
@@ -66,7 +65,11 @@ class ConvertService(
                     val superEntityIds = sqlClient.listEntityId(superTableIds)
 
                     if (superTableIds.size != superEntityIds.size)
-                        throw ConvertEntityException.superTable("SuperTableIds [${superTableIds}] can't match superEntityIds [${superEntityIds}]")
+                        throw ConvertException.superTableSuperEntityNotMatch(
+                            "SuperTableIds $superTableIds can't match superEntityIds $superEntityIds",
+                            superTableIds = superTableIds,
+                            superEntityIds = superEntityIds,
+                        )
 
                     sqlClient.getAssociations(GenEntity::superEntities)
                         .saveAll(listOf(entity.id), superEntityIds)
@@ -78,7 +81,7 @@ class ConvertService(
     }
 
     @PostMapping("/model")
-    @Throws(ConvertException::class, ConvertEntityException::class, ColumnTypeException::class)
+    @Throws(ConvertException::class, ConvertException::class, ColumnTypeException::class)
     fun convertModel(
         @RequestParam id: Long,
         @RequestParam(required = false) properties: GenConfigProperties? = null,
@@ -86,7 +89,7 @@ class ConvertService(
         sqlClient.listTableId(id),
         id,
         sqlClient.getModelProperties(id)?.merge(properties)
-            ?: throw ConvertException.modelNotFound("modelId $id")
+            ?: throw ConvertException.modelNotFound(modelId = id)
     )
 
     private fun KSqlClient.getModelProperties(id: Long) =
