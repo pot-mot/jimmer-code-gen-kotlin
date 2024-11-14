@@ -21,9 +21,9 @@ class Vue3RulesBuilder(
         isArray: Boolean = false,
     ): String {
         val imports = listOf(
-            ImportType("vue", listOf("Ref")),
-            ImportType("element-plus", listOf("FormRules")),
-            ImportType(staticPath, listOf(formDataType)),
+            ImportType("vue", "Ref"),
+            ImportType("element-plus", "FormRules"),
+            ImportType(staticPath, formDataType),
         ).stringifyImports()
 
         val body = buildString {

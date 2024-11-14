@@ -71,7 +71,7 @@ fun viewTable(
     content: Map<GenEntityBusinessView.TargetOf_properties, TableColumnData>,
 ) = Component(
     imports = listOf(
-        ImportType(typePath, listOf(type)),
+        ImportType(typePath, type),
     ) + content.values.flatMap { it.imports },
     props = listOf(
         Prop(data, "Array<$type>"),

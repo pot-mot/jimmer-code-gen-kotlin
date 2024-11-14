@@ -52,7 +52,6 @@ import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
-import top.potmot.utils.string.appendLines
 
 object Vue3ElementPlusViewGenerator :
     ViewGenerator,
@@ -80,7 +79,7 @@ object Vue3ElementPlusViewGenerator :
 
         val component = Component(
             imports = listOf(
-                ImportType(enumPath, listOf(enum.name)),
+                ImportType(enumPath, enum.name),
             ),
             props = listOf(
                 Prop("value", enum.name)
@@ -127,8 +126,8 @@ object Vue3ElementPlusViewGenerator :
 
         return Component(
             imports = listOf(
-                Import(enumPath, listOf(options)),
-                ImportType(enumPath, listOf(enum.name)),
+                Import(enumPath, options),
+                ImportType(enumPath, enum.name),
                 ImportDefault("$componentPath/$dir/$view.vue", view)
             ),
             models = listOf(
@@ -263,7 +262,7 @@ object Vue3ElementPlusViewGenerator :
                     .associateWith { it.createFormItem(formData) }
             ).merge {
                 if (hasNullableDiffProperties) {
-                    imports += Import("$utilPath/message", listOf("sendMessage"))
+                    imports += Import("$utilPath/message", "sendMessage")
                 }
             }
         )
@@ -365,8 +364,8 @@ object Vue3ElementPlusViewGenerator :
 
         return Component(
             imports = listOf(
-                Import("vue", listOf("watch")),
-                ImportType(staticPath, listOf(optionView))
+                Import("vue", "watch"),
+                ImportType(staticPath, optionView)
             ),
             models = listOf(
                 ModelProp(modelValue, modelValueType)
@@ -411,18 +410,18 @@ object Vue3ElementPlusViewGenerator :
         selectOption: SelectOption,
         serviceName: String,
     ) = mutableListOf(
-        ImportType("vue", listOf("Ref")),
-        ImportType(staticPath, listOf(selectOption.type)),
-        Import("vue", listOf("onBeforeMount")),
-        Import("@/api", listOf("api")),
+        ImportType("vue", "Ref"),
+        ImportType(staticPath, selectOption.type),
+        Import("vue", "onBeforeMount"),
+        Import("@/api", "api"),
     ) to mutableListOf(
         commentLine("${comment}选项"),
         selectOption.toVariable(),
-        CodeBlock(buildString {
-            appendLine("onBeforeMount(async () => {")
-            appendLine("${builder.indent}${selectOption.name}.value = await api.$serviceName.listOptions({body: {}})")
-            appendLine("})")
-        })
+        CodeBlock(
+            "onBeforeMount(async () => {\n",
+            "${builder.indent}${selectOption.name}.value = await api.$serviceName.listOptions({body: {}})\n",
+            "})\n"
+        )
     )
 
     override fun stringifyPage(entity: GenEntityBusinessView): String {
@@ -444,14 +443,14 @@ object Vue3ElementPlusViewGenerator :
         return builder.build(
             Component(
                 imports = listOf(
-                    Import("vue", listOf("ref")),
-                    Import("@element-plus/icons-vue", listOf("Plus", "EditPen", "Delete")),
-                    ImportType(staticPath, listOf("Page", "PageQuery", listView, insertInput, updateInput, spec)),
-                    Import(apiPath, listOf("api")),
-                    Import("$utilPath/message", listOf("sendMessage")),
-                    Import("$utilPath/confirm", listOf("deleteConfirm")),
-                    Import("$utilPath/loading", listOf("useLoading")),
-                    Import("$utilPath/legalPage", listOf("useLegalPage")),
+                    Import("vue", "ref"),
+                    Import("@element-plus/icons-vue", "Plus", "EditPen", "Delete"),
+                    ImportType(staticPath, "Page", "PageQuery", listView, insertInput, updateInput, spec),
+                    Import(apiPath, "api"),
+                    Import("$utilPath/message", "sendMessage"),
+                    Import("$utilPath/confirm", "deleteConfirm"),
+                    Import("$utilPath/loading", "useLoading"),
+                    Import("$utilPath/legalPage", "useLegalPage"),
                 ) + listOf(table, addForm, editForm, queryForm).map {
                     ImportDefault("$componentPath/$dir/$it.vue", it)
                 } + optionQueries.flatMap { it.first },
@@ -459,24 +458,26 @@ object Vue3ElementPlusViewGenerator :
                     ConstVariable("{isLoading, withLoading}", null, "useLoading()\n"),
                     ConstVariable("pageData", null, "ref<Page<EntityListView>>()\n"),
                     commentLine("分页查询"),
-                    ConstVariable("queryInfo", null, buildString {
-                        appendLine("ref<PageQuery<EntitySpec>>({")
-                        appendLines(
+                    ConstVariable(
+                        "queryInfo", null,
+                        "ref<PageQuery<EntitySpec>>({\n",
+                        listOf(
                             "spec: {}",
                             "pageIndex: 1",
                             "pageSize: 5"
-                        ) { "${builder.indent}$it," }
-                        appendLine("})")
-                    }),
-                    ConstVariable("{queryPage}", null, buildString {
-                        appendLine("useLegalPage(")
-                        appendLines(
+                        ).joinToString(",\n") { "${builder.indent}$it" },
+                        "\n})\n",
+                    ),
+                    ConstVariable(
+                        "{queryPage}", null,
+                        "useLegalPage(\n",
+                        listOf(
                             "pageData",
                             "queryInfo",
                             "withLoading(api.entityService.page)"
-                        ) { "${builder.indent}$it," }
-                        appendLine(")")
-                    }),
+                        ).joinToString(",\n") { "${builder.indent}$it" },
+                        "\n)\n",
+                    ),
                     ConstVariable(
                         "get${entity.name}",
                         null,
@@ -504,9 +505,7 @@ object Vue3ElementPlusViewGenerator :
                     Function(
                         name = "handleSelectionChange",
                         args = listOf(FunctionArg("newSelection", "Array<$listView>")),
-                        body = listOf(
-                            CodeBlock("selection.value = newSelection")
-                        )
+                        "selection.value = newSelection"
                     ),
                     emptyLineCode,
 
@@ -525,21 +524,19 @@ object Vue3ElementPlusViewGenerator :
                     Function(
                         name = "submitAdd",
                         args = listOf(FunctionArg("insertInput", insertInput)),
-                        body = listOf(CodeBlock(buildString {
-                            appendLine("try {")
-                            appendLines(
-                                "await add${entity.name}(insertInput)",
-                                "await queryPage()",
-                                "addDialogVisible.value = false",
-                                "",
-                                "sendMessage('新增${entity.comment}成功', 'success')"
-                            ) { "${builder.indent}$it" }
-                            appendLine("} catch (e) {")
-                            appendLines(
-                                "sendMessage(\"新增${entity.comment}失败\", \"error\", e)"
-                            ) { "${builder.indent}$it" }
-                            append("}")
-                        }))
+                        "try {\n",
+                        listOf(
+                            "await add${entity.name}(insertInput)",
+                            "await queryPage()",
+                            "addDialogVisible.value = false",
+                            "",
+                            "sendMessage('新增${entity.comment}成功', 'success')"
+                        ).joinToString("") { "${builder.indent}$it\n" },
+                        "} catch (e) {\n",
+                        listOf(
+                            "sendMessage(\"新增${entity.comment}失败\", \"error\", e)"
+                        ).joinToString("") { "${builder.indent}$it\n" },
+                        "}"
                     ),
                     emptyLineCode,
                     Function(
@@ -558,36 +555,32 @@ object Vue3ElementPlusViewGenerator :
                     Function(
                         name = "startEdit",
                         args = listOf(FunctionArg("id", "number")),
-                        body = listOf(CodeBlock(buildString {
-                            appendLine("updateInput.value = await get${entity.name}(id)")
-                            appendLine("if (updateInput.value === undefined) {")
-                            appendLines(
-                                "sendMessage('编辑的${entity.comment}不存在', 'error')",
-                                "return"
-                            ) { "${builder.indent}$it" }
-                            appendLine("}")
-                            append("editDialogVisible.value = true")
-                        }))
+                        "updateInput.value = await get${entity.name}(id)\n",
+                        "if (updateInput.value === undefined) {\n",
+                        listOf(
+                            "sendMessage('编辑的${entity.comment}不存在', 'error')",
+                            "return"
+                        ).joinToString("") { "${builder.indent}$it\n" },
+                        "}\n",
+                        "editDialogVisible.value = true"
                     ),
                     emptyLineCode,
                     Function(
                         name = "submitEdit",
                         args = listOf(FunctionArg("updateInput", "${entity.name}UpdateInput")),
-                        body = listOf(CodeBlock(buildString {
-                            appendLine("try {")
-                            appendLines(
-                                "await edit${entity.name}(updateInput)",
-                                "await queryPage()",
-                                "editDialogVisible.value = false",
-                                "",
-                                "sendMessage('编辑${entity.comment}成功', 'success')"
-                            ) { "${builder.indent}$it" }
-                            appendLine("} catch (e) {")
-                            appendLines(
-                                "sendMessage('编辑${entity.comment}失败', 'error', e)"
-                            ) { "${builder.indent}$it" }
-                            append("}")
-                        }))
+                        "try {\n",
+                        listOf(
+                            "await edit${entity.name}(updateInput)",
+                            "await queryPage()",
+                            "editDialogVisible.value = false",
+                            "",
+                            "sendMessage('编辑${entity.comment}成功', 'success')"
+                        ).joinToString("") { "${builder.indent}$it\n" },
+                        "} catch (e) {\n",
+                        listOf(
+                            "sendMessage('编辑${entity.comment}失败', 'error', e)"
+                        ).joinToString("") { "${builder.indent}$it\n" },
+                        "}"
                     ),
                     emptyLineCode,
                     Function(
@@ -602,23 +595,21 @@ object Vue3ElementPlusViewGenerator :
                     Function(
                         name = "handleDelete",
                         args = listOf(FunctionArg("ids", "number[]")),
-                        body = listOf(CodeBlock(buildString {
-                            appendLine("const result = await deleteConfirm('${entity.comment}')")
-                            appendLine("if (!result) return")
-                            appendLine("")
-                            appendLine("try {")
-                            appendLines(
-                                "await delete${entity.name}(ids)",
-                                "await queryPage()",
-                                "",
-                                "sendMessage('删除${entity.comment}成功', 'success')"
-                            ) { "${builder.indent}$it" }
-                            appendLine("} catch (e) {")
-                            appendLines(
-                                "sendMessage('删除${entity.comment}失败', 'error', e)"
-                            ) { "${builder.indent}$it" }
-                            append("}")
-                        }))
+                        "const result = await deleteConfirm('${entity.comment}')\n",
+                        "if (!result) return\n",
+                        "\n",
+                        "try {\n",
+                        listOf(
+                            "await delete${entity.name}(ids)",
+                            "await queryPage()",
+                            "",
+                            "sendMessage('删除${entity.comment}成功', 'success')"
+                        ).joinToString("") { "${builder.indent}$it\n" },
+                        "} catch (e) {\n",
+                        listOf(
+                            "sendMessage('删除${entity.comment}失败', 'error', e)"
+                        ).joinToString("") { "${builder.indent}$it\n" },
+                        "}",
                     )
                 ),
                 template = listOf(
@@ -645,14 +636,16 @@ object Vue3ElementPlusViewGenerator :
                                         content = "新增",
                                         type = ElementPlus.Type.PRIMARY,
                                         icon = "Plus",
-                                    ).merge {
+                                    ).merge
+                                    {
                                         events += EventBind("click", "startAdd")
                                     },
                                     button(
                                         content = "删除",
                                         type = ElementPlus.Type.DANGER,
                                         icon = "Delete",
-                                    ).merge {
+                                    ).merge
+                                    {
                                         directives += VIf("selection.length === 0")
                                         events += EventBind("click", "handleDelete(selection.map(it => it.id))")
                                     },
@@ -677,7 +670,8 @@ object Vue3ElementPlusViewGenerator :
                                                 type = ElementPlus.Type.WARNING,
                                                 icon = "EditPen",
                                                 plain = true,
-                                            ).merge {
+                                            ).merge
+                                            {
                                                 events += EventBind("click", "startEdit(row.$idName)")
                                             },
                                             button(
@@ -685,7 +679,8 @@ object Vue3ElementPlusViewGenerator :
                                                 type = ElementPlus.Type.DANGER,
                                                 icon = "Delete",
                                                 plain = true,
-                                            ).merge {
+                                            ).merge
+                                            {
                                                 events += EventBind("click", "handleDelete([row.$idName])")
                                             },
                                         )
@@ -706,14 +701,16 @@ object Vue3ElementPlusViewGenerator :
                         content = listOf(
                             TagElement(
                                 addForm
-                            ).merge {
+                            ).merge
+                            {
                                 props += selectOptionNames.map { PropBind(it, it) }
                                 props += PropBind("submitLoading", "isLoading")
                                 events += EventBind("submit", "submitAdd")
                                 events += EventBind("cancel", "cancelAdd")
                             }
                         )
-                    ).merge {
+                    ).merge
+                    {
                         directives += VIf(selectOptionNames.joinToString(" && "))
                     },
                     emptyLineElement,
@@ -722,7 +719,8 @@ object Vue3ElementPlusViewGenerator :
                         content = listOf(
                             TagElement(
                                 editForm
-                            ).merge {
+                            ).merge
+                            {
                                 directives += VIf("updateInput !== undefined")
                                 directives += VModel("updateInput")
                                 props += selectOptionNames.map { PropBind(it, it) }
@@ -731,7 +729,8 @@ object Vue3ElementPlusViewGenerator :
                                 events += EventBind("cancel", "cancelEdit")
                             }
                         )
-                    ).merge {
+                    ).merge
+                    {
                         directives += VIf(selectOptionNames.joinToString(" && "))
                     }
                 )

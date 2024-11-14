@@ -49,7 +49,7 @@ data class SubValidateItem(
         ConstVariable(ref, null, "ref<$type>()")
 
     fun toImport() =
-        ImportType(typePath, listOf(type))
+        ImportType(typePath, type)
 }
 
 data class SelectOption(
@@ -58,7 +58,7 @@ data class SelectOption(
     val typePath: String = staticPath,
 ) {
     fun toImport() =
-        ImportType(typePath, listOf(type))
+        ImportType(typePath, type)
 
     fun toProp() =
         Prop(name, "Array<$type>")
@@ -87,8 +87,8 @@ private fun handleSubmit(
     indent: String,
     afterValidCodes: String? = null,
 ) = Function(
-    true,
-    handleSubmitFnName,
+    async = true,
+    name = handleSubmitFnName,
     body = listOfNotNull(
         CodeBlock("if (props.$submitLoading) return\n"),
 
@@ -102,19 +102,13 @@ private fun handleSubmit(
         }.toTypedArray(),
 
         CodeBlock(
-            buildString {
-                appendLine()
-                append("if (")
-                append((listOf("formValid") + subValidateItems.map { it.validateVariable }).joinToString(" && "))
-                appendLine(") {")
-
-                afterValidCodes?.lines()?.forEach {
-                    appendLine("$indent$it")
-                }
-
-                appendLine("${indent}emits(\"submit\", $formData.value)")
-                append("}")
-            }
+            "\n",
+            "if (", (listOf("formValid") + subValidateItems.map { it.validateVariable }).joinToString(" && "), ") {\n",
+            afterValidCodes?.lines()?.joinToString("") {
+                "$indent$it\n"
+            },
+            "${indent}emits(\"submit\", $formData.value)\n",
+            "}",
         )
     )
 )
@@ -132,9 +126,7 @@ private val cancelEvent = Event(
 private fun handleCancel() = Function(
     name = handleCancelFnName,
     body = listOf(
-        CodeBlock(
-            "emits(\"cancel\")"
-        )
+        CodeBlock("emits(\"cancel\")")
     )
 )
 
@@ -189,14 +181,14 @@ fun addForm(
     content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
 ) = Component(
     imports = listOf(
-        Import("vue", listOf("ref")),
-        ImportType("element-plus", listOf("FormInstance")),
-        ImportType("$staticPath/form/AddFormExpose", listOf("AddFormExpose")),
-        ImportType(submitTypePath, listOf(submitType)),
-        ImportType(typePath, listOf(type)),
-        Import("lodash", listOf("cloneDeep")),
-        Import(defaultPath, listOf(default)),
-        Import(useRulesPath, listOf(useRules)),
+        Import("vue", "ref"),
+        ImportType("element-plus", "FormInstance"),
+        ImportType("$staticPath/form/AddFormExpose", "AddFormExpose"),
+        ImportType(submitTypePath, submitType),
+        ImportType(typePath, type),
+        Import("lodash", "cloneDeep"),
+        Import(defaultPath, default),
+        Import(useRulesPath, useRules),
     )
             + content.values.flatMap { it.imports }
             + subValidateItems.map { it.toImport() }
@@ -261,11 +253,11 @@ fun editForm(
     content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
 ) = Component(
     imports = listOf(
-        Import("vue", listOf("ref")),
-        ImportType("element-plus", listOf("FormInstance")),
-        ImportType("$staticPath/form/EditFormExpose", listOf("EditFormExpose")),
-        ImportType(typePath, listOf(type)),
-        Import(useRulesPath, listOf(useRules))
+        Import("vue", "ref"),
+        ImportType("element-plus", "FormInstance"),
+        ImportType("$staticPath/form/EditFormExpose", "EditFormExpose"),
+        ImportType(typePath, type),
+        Import(useRulesPath, useRules)
     )
             + content.values.flatMap { it.imports }
             + subValidateItems.map { it.toImport() }
@@ -335,14 +327,14 @@ fun editTable(
     content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
 ) = Component(
     imports = listOf(
-        Import("vue", listOf("ref")),
-        ImportType("element-plus", listOf("FormInstance")),
-        ImportType("$staticPath/form/AddFormExpose", listOf("AddFormExpose")),
-        ImportType(typePath, listOf(type)),
-        Import("lodash", listOf("cloneDeep")),
-        Import(defaultPath, listOf(default)),
-        Import(useRulesPath, listOf(useRules)),
-        Import("@element-plus/icons-vue", listOf("Plus", "Delete")),
+        Import("vue", "ref"),
+        ImportType("element-plus", "FormInstance"),
+        ImportType("$staticPath/form/AddFormExpose", "AddFormExpose"),
+        ImportType(typePath, type),
+        Import("lodash", "cloneDeep"),
+        Import(defaultPath, default),
+        Import(useRulesPath, useRules),
+        Import("@element-plus/icons-vue", "Plus", "Delete"),
     )
             + content.values.flatMap { it.imports }
             + subValidateItems.map { it.toImport() }

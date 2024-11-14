@@ -43,13 +43,13 @@ const pageData = ref<Page<EntityListView>>()
 const queryInfo = ref<PageQuery<EntitySpec>>({
     spec: {},
     pageIndex: 1,
-    pageSize: 5,
+    pageSize: 5
 })
 
 const {queryPage} = useLegalPage(
     pageData,
     queryInfo,
-    withLoading(api.entityService.page),
+    withLoading(api.entityService.page)
 )
 
 const getEntity = withLoading((id: number) => api.entityService.get({id}))

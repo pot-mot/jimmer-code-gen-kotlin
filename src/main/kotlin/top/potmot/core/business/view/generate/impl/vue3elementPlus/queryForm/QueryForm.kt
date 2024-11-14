@@ -38,8 +38,8 @@ fun queryForm(
     content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
 ) = Component(
     imports = listOf(
-        Import("@element-plus/icons-vue", listOf("Search")),
-        ImportType(specTypePath, listOf(specType)),
+        Import("@element-plus/icons-vue", "Search"),
+        ImportType(specTypePath, specType),
     )
             + content.values.flatMap { it.imports }
             + selectOptions.map { it.toImport() },
