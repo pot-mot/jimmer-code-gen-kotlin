@@ -6,6 +6,7 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DatabaseNamingStrategyType
@@ -151,7 +152,7 @@ interface GenModel : BaseEntity {
     /**
      * 表
      */
-    @OneToMany(mappedBy = "model")
+    @OneToMany(mappedBy = "model", orderedProps = [OrderedProp("name")])
     val tables: List<GenTable>
 
     /**
@@ -163,7 +164,7 @@ interface GenModel : BaseEntity {
     /**
      * 关联
      */
-    @OneToMany(mappedBy = "model")
+    @OneToMany(mappedBy = "model", orderedProps = [OrderedProp("name")])
     val associations: List<GenAssociation>
 
     /**
@@ -175,7 +176,7 @@ interface GenModel : BaseEntity {
     /**
      * 实体
      */
-    @OneToMany(mappedBy = "model")
+    @OneToMany(mappedBy = "model", orderedProps = [OrderedProp("name")])
     val entities: List<GenEntity>
 
     /**
@@ -187,7 +188,7 @@ interface GenModel : BaseEntity {
     /**
      * 枚举
      */
-    @OneToMany(mappedBy = "model")
+    @OneToMany(mappedBy = "model", orderedProps = [OrderedProp("name")])
     val enums: List<GenEnum>
 
     /**

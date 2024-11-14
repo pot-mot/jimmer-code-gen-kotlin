@@ -24,7 +24,7 @@ abstract class TableDefineGenerator {
             .map { it.toFlat() }
 
         val result = listOf(
-            formatFileName("all-tables") to stringify(fullTables)
+            formatFileName("all-tables") to stringify(fullTables.sortedBy { it.name })
         )
 
         return if (withSingleTable) {
