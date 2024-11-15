@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.builder.vue3.componentLib
+package top.potmot.core.business.view.generate.builder.vue3.elementPlus
 
 import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.TagElement

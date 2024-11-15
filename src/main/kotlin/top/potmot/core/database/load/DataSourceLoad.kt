@@ -25,8 +25,7 @@ import us.fatehi.utility.datasource.DatabaseConnectionSource
 import java.util.regex.Pattern
 import top.potmot.entity.dto.GenTableLoadView
 import top.potmot.entity.dto.IdName
-import top.potmot.error.IndexColumnTableNotMatchItem
-import top.potmot.error.PropertyTableNotMatchItem
+import top.potmot.error.ColumnTableNotMatchItem
 
 /**
  * 获取数据库目录（Catalog）
@@ -170,7 +169,7 @@ fun ForeignKey.toInput(
     val targetTablePairs = mutableSetOf<Pair<GenTableLoadView.TargetOf_columns, GenTableLoadView>>()
 
     this.columnReferences.forEachIndexed { index, columnRef ->
-        columnRef.toLoadColumnReference(tableNameMap).let { loadColumnReference ->
+        columnRef.toLoadColumnReference(this, tableNameMap).let { loadColumnReference ->
             sourceTablePairs += loadColumnReference.source.column to loadColumnReference.source.table
             targetTablePairs += loadColumnReference.target.column to loadColumnReference.target.table
             columnReferences +=
@@ -195,10 +194,10 @@ fun ForeignKey.toInput(
             "Convert foreign key [${name}] to association fail: \n" +
                     "source table not match: [${sourceTablePairs}]",
             foreignKeyName = name,
-            propertyToSourceTables = sourceTablePairs.map { (column, table) ->
-                PropertyTableNotMatchItem(
-                    IdName(column.id, column.name),
-                    IdName(table.id, table.name)
+            columnToSourceTables = sourceTablePairs.map { (column, table) ->
+                ColumnTableNotMatchItem(
+                    column = IdName(column.id, column.name),
+                    table = IdName(table.id, table.name)
                 )
             }
         )
@@ -209,10 +208,10 @@ fun ForeignKey.toInput(
             "Convert foreign key [${name}] to association fail: \n" +
                     "target table not match: [${sourceTablePairs}]",
             foreignKeyName = name,
-            propertyToTargetTables = targetTablePairs.map { (column, table) ->
-                PropertyTableNotMatchItem(
-                    IdName(column.id, column.name),
-                    IdName(table.id, table.name)
+            columnToTargetTables = targetTablePairs.map { (column, table) ->
+                ColumnTableNotMatchItem(
+                    column = IdName(column.id, column.name),
+                    table = IdName(table.id, table.name)
                 )
             }
         )
@@ -249,10 +248,9 @@ fun Index.toInput(table: GenTableLoadView): GenTableIndexInput? {
         if (nameMatchColumns.size != 1) {
             throw LoadFromDataSourceException.indexColumnTableNotMatch(
                 "Index [$name] fail: \nmatch name ${it.name} column more than one in table [${table.name}]",
-                foreignKeyName = name,
+                indexName = name,
                 indexColumnToTables = nameMatchColumns.map { column ->
-                    IndexColumnTableNotMatchItem(
-                        indexName = name,
+                    ColumnTableNotMatchItem(
                         column = IdName(column.id, column.name),
                         table = IdName(table.id, table.name),
                     )

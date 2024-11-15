@@ -13,7 +13,7 @@ import top.potmot.core.business.view.generate.apiPath
 import top.potmot.core.business.view.generate.builder.property.ViewProperties
 import top.potmot.core.business.view.generate.builder.property.rules
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
-import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
+import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.AddFormDefault
@@ -25,7 +25,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTabl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.queryForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.rules.Vue3RulesBuilder
+import top.potmot.core.business.view.generate.builder.vue3.elementPlus.rules.Vue3RulesBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock

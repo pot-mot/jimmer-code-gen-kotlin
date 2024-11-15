@@ -62,10 +62,12 @@ enum class ConvertErrorCode {
     @ErrorField(name = "targetColumn", type = IdName::class)
     IN_ASSOCIATION_CANNOT_FOUND_TARGET_BASE_PROPERTY,
 
+    @ErrorField(name = "table", type = IdName::class)
     @ErrorField(name = "duplicateName", type = String::class)
     @ErrorField(name = "properties", type = PropertyNameDuplicateData::class, list = true)
     PROPERTY_NAME_DUPLICATE,
 
+    @ErrorField(name = "table", type = IdName::class)
     @ErrorField(name = "superTableIds", type = Long::class, list = true)
     @ErrorField(name = "superEntityIds", type = Long::class, list = true)
     SUPER_TABLE_SUPER_ENTITY_NOT_MATCH,

@@ -2,6 +2,7 @@ package top.potmot.core.database.load
 
 import schemacrawler.schema.Column
 import schemacrawler.schema.ColumnReference
+import schemacrawler.schema.ForeignKey
 import top.potmot.entity.dto.GenTableLoadView
 import top.potmot.error.LoadFromDataSourceException
 
@@ -51,38 +52,32 @@ private fun ColumnReference.getTargetNames(): ColumnReferenceNamePart {
 
 @Throws(LoadFromDataSourceException::class)
 private fun ColumnReferenceNamePart.toLoadPart(
+    foreignKey: ForeignKey,
     tableNameMap: Map<String, GenTableLoadView>,
 ): LoadColumnReferencePart {
     val table = tableNameMap[tableName]
         ?: throw LoadFromDataSourceException.associationColumnReferenceTableNotFound(
             "Can not find table [$tableName]",
+            foreignKeyName = foreignKey.name,
             tableName = tableName,
         )
     val column = table.columns.find { column -> column.name == columnName }
         ?: throw LoadFromDataSourceException.associationColumnReferenceColumnNotFound(
             "Can not find table column [$tableName.$columnName]",
             tableName = tableName,
+            foreignKeyName = foreignKey.name,
             columnName = columnName,
         )
 
     return LoadColumnReferencePart(table, column)
 }
 
-private fun ColumnReference.getSourcePart(
-    tableNameMap: Map<String, GenTableLoadView>,
-): LoadColumnReferencePart =
-    getSourceNames().toLoadPart(tableNameMap)
-
-private fun ColumnReference.getTargetPart(
-    tableNameMap: Map<String, GenTableLoadView>,
-): LoadColumnReferencePart =
-    getTargetNames().toLoadPart(tableNameMap)
-
 @Throws(LoadFromDataSourceException::class)
 fun ColumnReference.toLoadColumnReference(
+    foreignKey: ForeignKey,
     tableNameMap: Map<String, GenTableLoadView>,
 ): LoadColumnReference =
     LoadColumnReference(
-        getSourcePart(tableNameMap),
-        getTargetPart(tableNameMap)
+        getSourceNames().toLoadPart(foreignKey, tableNameMap),
+        getTargetNames().toLoadPart(foreignKey, tableNameMap)
     )

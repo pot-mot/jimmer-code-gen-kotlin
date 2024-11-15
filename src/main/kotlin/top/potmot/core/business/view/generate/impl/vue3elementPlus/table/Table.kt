@@ -1,6 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.table
 
-import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
+import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.tableColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumnData

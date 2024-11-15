@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.rules
+package top.potmot.core.business.view.generate.builder.vue3.elementPlus.rules
 
 import top.potmot.core.business.view.generate.builder.typescript.TypeScriptBuilder
 import top.potmot.core.business.view.generate.meta.rules.Rule

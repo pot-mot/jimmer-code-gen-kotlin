@@ -49,6 +49,7 @@ fun GenTableConvertView.toGenEntity(
     )
 
     val associationProperties = handleDuplicateName(
+        this,
         propertiesMap
     )
 

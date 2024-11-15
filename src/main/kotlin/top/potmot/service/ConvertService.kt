@@ -19,6 +19,7 @@ import top.potmot.entity.GenTypeMapping
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
+import top.potmot.entity.dto.IdName
 import top.potmot.entity.extension.merge
 import top.potmot.entity.id
 import top.potmot.entity.modelId
@@ -67,6 +68,7 @@ class ConvertService(
                     if (superTableIds.size != superEntityIds.size)
                         throw ConvertException.superTableSuperEntityNotMatch(
                             "SuperTableIds $superTableIds can't match superEntityIds $superEntityIds",
+                            table = IdName(table.id, table.name),
                             superTableIds = superTableIds,
                             superEntityIds = superEntityIds,
                         )

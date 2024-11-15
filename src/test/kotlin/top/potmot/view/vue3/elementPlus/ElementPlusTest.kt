@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
-import top.potmot.core.business.view.generate.builder.vue3.componentLib.ElementPlus
+import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.meta.vue3.TextElement
 import top.potmot.utils.string.trimBlankLine
 

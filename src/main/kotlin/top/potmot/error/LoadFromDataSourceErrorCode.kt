@@ -10,32 +10,28 @@ enum class LoadFromDataSourceErrorCode {
     ASSOCIATION_COLUMN_REFERENCES_CANNOT_BE_EMPTY,
 
     @ErrorField(name = "foreignKeyName", type = String::class)
-    @ErrorField(name = "propertyToSourceTables", type = PropertyTableNotMatchItem::class, list = true)
+    @ErrorField(name = "columnToSourceTables", type = ColumnTableNotMatchItem::class, list = true)
     ASSOCIATION_SOURCE_TABLE_NOT_MATCH,
 
     @ErrorField(name = "foreignKeyName", type = String::class)
-    @ErrorField(name = "propertyToTargetTables", type = PropertyTableNotMatchItem::class, list = true)
+    @ErrorField(name = "columnToTargetTables", type = ColumnTableNotMatchItem::class, list = true)
     ASSOCIATION_TARGET_TABLE_NOT_MATCH,
 
-    @ErrorField(name = "foreignKeyName", type = String::class)
-    @ErrorField(name = "indexColumnToTables", type = IndexColumnTableNotMatchItem::class, list = true)
+    @ErrorField(name = "indexName", type = String::class)
+    @ErrorField(name = "indexColumnToTables", type = ColumnTableNotMatchItem::class, list = true)
     INDEX_COLUMN_TABLE_NOT_MATCH,
 
+    @ErrorField(name = "foreignKeyName", type = String::class)
     @ErrorField(name = "tableName", type = String::class)
     ASSOCIATION_COLUMN_REFERENCE_TABLE_NOT_FOUND,
 
+    @ErrorField(name = "foreignKeyName", type = String::class)
     @ErrorField(name = "tableName", type = String::class)
     @ErrorField(name = "columnName", type = String::class)
     ASSOCIATION_COLUMN_REFERENCE_COLUMN_NOT_FOUND,
 }
 
-data class PropertyTableNotMatchItem(
-    val property: IdName,
-    val table: IdName,
-)
-
-data class IndexColumnTableNotMatchItem(
-    val indexName: String,
+data class ColumnTableNotMatchItem(
     val column: IdName,
     val table: IdName,
 )

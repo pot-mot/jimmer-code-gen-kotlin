@@ -2,6 +2,8 @@ package top.potmot.core.entity.convert
 
 import top.potmot.core.entity.meta.ConvertPropertyMeta
 import top.potmot.entity.dto.GenPropertyInput
+import top.potmot.entity.dto.GenTableConvertView
+import top.potmot.entity.dto.IdName
 import top.potmot.error.ConvertException
 import top.potmot.error.PropertyNameDuplicateData
 
@@ -11,6 +13,7 @@ import top.potmot.error.PropertyNameDuplicateData
  */
 @Throws(ConvertException.PropertyNameDuplicate::class)
 fun handleDuplicateName(
+    table: GenTableConvertView,
     propertiesMap: Map<Long, ConvertPropertyMeta>
 ): List<GenPropertyInput> {
     val protectDuplicateItems = mutableListOf<ProtectDuplicateItem>()
@@ -48,6 +51,7 @@ fun handleDuplicateName(
 
         throw ConvertException.propertyNameDuplicate(
             "PropertyName [${it.first().name}] is Duplicate",
+            table = IdName(table.id, table.name),
             duplicateName = it.first().name,
             properties = propertyNameDuplicateItems,
         )
