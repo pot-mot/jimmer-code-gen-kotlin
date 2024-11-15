@@ -139,5 +139,6 @@ val testEntity = GenEntityBusinessView(
         toOneProperty,
         toOneNullableProperty,
         toManyProperty,
-    )
+    ),
+    indexes = emptyList()
 )

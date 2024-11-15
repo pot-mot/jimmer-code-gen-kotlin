@@ -9,7 +9,8 @@ const val entityData = """
     "table": {
         "id": 738,
         "name": "condition_match",
-        "type": "TABLE"
+        "type": "TABLE",
+        "indexes": []
     },
     "superEntities": [],
     "name": "ConditionMatch",

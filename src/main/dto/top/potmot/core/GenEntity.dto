@@ -91,4 +91,18 @@ GenEntityBusinessView implements GenerateEntity {
             }
         }
     }
+
+    flat(table) {
+        indexes {
+            id
+            name
+            uniqueIndex
+            columns {
+                id
+                properties {
+                    id
+                }
+            }
+        }
+    }
 }
