@@ -48,7 +48,11 @@ interface TypeScriptBuilder {
             }
 
             if (defaultImports.size > 1)
-                throw GenerateException.canOnlyHaveOneDefaultImportForOnePath("path: ${path}, defaultImports: $defaultImports")
+                throw GenerateException.defaultImportMoreThanOne(
+                    "path: ${path}, defaultImports: $defaultImports",
+                    path = path,
+                    importItems = defaultImports.toList()
+                )
 
             val importStatements = mutableListOf<String>()
 

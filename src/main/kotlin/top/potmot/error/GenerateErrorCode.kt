@@ -18,5 +18,7 @@ enum class GenerateErrorCode {
     @ErrorField(name = "tableColumns", type = IdName::class, list = true)
     INDEX_COLUMN_NOT_FOUND_IN_TABLE,
 
-    CAN_ONLY_HAVE_ONE_DEFAULT_IMPORT_FOR_ONE_PATH,
+    @ErrorField(name = "path", type = String::class)
+    @ErrorField(name = "importItems", type = String::class, list = true)
+    DEFAULT_IMPORT_MORE_THAN_ONE,
 }
