@@ -16,7 +16,6 @@ import top.potmot.core.database.load.toInput
 import top.potmot.core.database.load.toView
 import top.potmot.entity.GenDataSource
 import top.potmot.entity.GenSchema
-import top.potmot.entity.copy
 import top.potmot.entity.dataSourceId
 import top.potmot.entity.dto.GenSchemaPreview
 import top.potmot.entity.dto.GenSchemaView
@@ -74,7 +73,7 @@ class SchemaService(
                     // 保存 tables
                     val tableInputs = tables.map { it.toInput(savedSchema.id) }
                     val savedTables = sqlClient.entities.saveInputs(tableInputs).simpleResults.map {
-                        GenTableLoadView(it.modifiedEntity.copy { this.schema = savedSchema })
+                        GenTableLoadView(it.modifiedEntity)
                     }
 
                     val tableNameMap = savedTables.associateBy { it.name }

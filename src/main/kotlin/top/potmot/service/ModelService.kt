@@ -26,10 +26,12 @@ import top.potmot.entity.createdTime
 import top.potmot.entity.dto.GenModelInput
 import top.potmot.entity.dto.GenModelSimpleView
 import top.potmot.entity.dto.GenModelView
+import top.potmot.entity.dto.GenTableLoadView
+import top.potmot.entity.dto.IdName
 import top.potmot.entity.id
 import top.potmot.entity.modelId
 import top.potmot.entity.tableId
-import top.potmot.error.ModelLoadException
+import top.potmot.error.LoadFromModelException
 
 @RestController
 @RequestMapping("/model")
@@ -53,7 +55,7 @@ class ModelService(
         }.execute()
 
     @PostMapping
-    @Throws(ModelLoadException::class)
+    @Throws(LoadFromModelException::class)
     fun save(
         @RequestBody input: GenModelInput
     ): Long =
@@ -71,8 +73,10 @@ class ModelService(
                     }
 
                 // 保存 tables
-                val tables = tableInputsList.map { it.table }
-                val savedTables = sqlClient.entities.saveInputs(tables).simpleResults.map { it.modifiedEntity }
+                val tableInputs = tableInputsList.map { it.table }
+                val savedTables = sqlClient.entities.saveInputs(tableInputs).simpleResults.map {
+                    GenTableLoadView(it.modifiedEntity)
+                }
 
                 // 移除遗留 tables
                 sqlClient.createDelete(GenTable::class) {
@@ -85,11 +89,19 @@ class ModelService(
                 // 保存 superTables
                 tableInputsList.forEach { (table, _, superTableNames) ->
                     val inheritTable = savedTableNameMap[table.name]
-                        ?: throw ModelLoadException.table("Table [${table.name}] not found")
+                        ?: throw LoadFromModelException.tableNotFound(
+                            "Table [${table.name}] not found",
+                            tableName = table.name
+                        )
 
                     val superTables = superTableNames.map { superTableName ->
                         savedTableNameMap[superTableName]
-                            ?: throw ModelLoadException.table("Super table [${superTableName}] not found")
+                            ?: throw LoadFromModelException.tableSuperTableNotFound(
+                                "Super table [${superTableName}] not found",
+                                table = IdName(inheritTable.id, inheritTable.name),
+                                superTableNames = superTableNames,
+                                notFoundSuperTableName = superTableName
+                            )
                     }
 
                     sqlClient.getAssociations(GenTable::superTables)
@@ -99,11 +111,15 @@ class ModelService(
                 // 保存 indexes
                 tableInputsList.forEach { (table, indexes) ->
                     val savedTable = savedTableNameMap[table.name]
-                        ?: throw ModelLoadException.index("Indexes [${indexes.joinToString(",") { it.name }}] recreate fail: \nTable [${table.name}] not found")
+                        ?: throw LoadFromModelException.indexesTableNotFound(
+                            "Indexes ${indexes.map { it.name }} create fail: \nTable [${table.name}] not found",
+                            indexNames = indexes.map { it.name },
+                            notFoundTableName = table.name
+                        )
 
                     val columnNameIdMap = savedTable.columns.associate { it.name to it.id }
 
-                    val indexInputs = indexes.map { it.toInput(savedTable.id, columnNameIdMap) }
+                    val indexInputs = indexes.map { it.toInput(savedTable, columnNameIdMap) }
                     val savedIndexes = sqlClient.entities.saveInputs(indexInputs).simpleResults.map { it.modifiedEntity }
 
                     // 移除遗留 indexes
