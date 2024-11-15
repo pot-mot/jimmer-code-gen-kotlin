@@ -1,7 +1,7 @@
 package top.potmot.core.entity.generate
 
 import top.potmot.core.utils.filePath
-import top.potmot.error.GenerateEntityException
+import top.potmot.error.GenerateException
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenEnumGenerateView
 
@@ -12,13 +12,13 @@ abstract class EntityCodeGenerator {
 
     protected abstract fun stringify(enum: GenEnumGenerateView): String
 
-    @Throws(GenerateEntityException::class)
+    @Throws(GenerateException::class)
     fun generateEntity(
         entity: GenEntityGenerateView,
     ): Pair<String, String> =
         "${entity.filePath}${entity.name}${getFileSuffix()}" to stringify(entity)
 
-    @Throws(GenerateEntityException::class)
+    @Throws(GenerateException::class)
     fun generateEntity(
         entities: Iterable<GenEntityGenerateView>,
     ): List<Pair<String, String>> =

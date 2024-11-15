@@ -3,7 +3,7 @@ package top.potmot.core.database.generate
 import top.potmot.core.database.generate.utils.toFlat
 import top.potmot.enumeration.TableType
 import top.potmot.error.ColumnTypeException
-import top.potmot.error.GenerateTableDefineException
+import top.potmot.error.GenerateException
 import top.potmot.entity.dto.GenTableGenerateView
 
 abstract class TableDefineGenerator {
@@ -14,7 +14,7 @@ abstract class TableDefineGenerator {
         tables: Iterable<GenTableGenerateView>,
     ): String
 
-    @Throws(ColumnTypeException::class, GenerateTableDefineException::class)
+    @Throws(ColumnTypeException::class, GenerateException::class)
     fun generate(
         tables: Iterable<GenTableGenerateView>,
         withSingleTable: Boolean = true

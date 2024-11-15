@@ -52,6 +52,7 @@ import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
+import top.potmot.error.ModelException
 
 object Vue3ElementPlusViewGenerator :
     ViewGenerator,
@@ -208,6 +209,7 @@ object Vue3ElementPlusViewGenerator :
         }
     }
 
+    @Throws(ModelException.DefaultItemNotFound::class)
     override fun stringifyAddFormDefault(entity: GenEntityBusinessView): String {
         val content = entity.addFormProperties.associateWith { it.addFormDefault }
         val type = entity.addFormDataType

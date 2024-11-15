@@ -2,19 +2,17 @@ package top.potmot.core.business.utils
 
 import top.potmot.core.utils.filePath
 import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.entity.dto.IdName
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
 import top.potmot.enumeration.AssociationType
-import top.potmot.error.GenerateException
+import top.potmot.error.ModelException
 
 val GenEntityBusinessView.enums
     get() = properties.mapNotNull { it.enum }
 
 private val GenEntityBusinessView.noIdView
     get() = properties.count { it.idView } == 0 && properties.count { it.associationType != null } > 0
-
-val GenEntityBusinessView.baseProperties
-    get() = properties.filter { it.associationType == null }
 
 val targetOneAssociationType =
     setOf(AssociationType.ONE_TO_ONE, AssociationType.MANY_TO_ONE)
@@ -73,8 +71,6 @@ data class EntityComponentNames(
     val editForm: String = "${entity.name}EditForm",
     val queryForm: String = "${entity.name}QueryForm",
     val page: String = "${entity.name}Page",
-    val singleSelect: String = "${entity.name}SingleSelect",
-    val multiSelect: String = "${entity.name}MultiSelect",
     val idSelect: String = "${entity.name}IdSelect",
     val idMultiSelect: String = "${entity.name}IdMultiSelect",
     val editTable: String = "${entity.name}EditTable",
@@ -107,12 +103,12 @@ val GenerateEnum.componentNames
     get() = EnumComponentNames(this)
 
 val GenEntityBusinessView.TargetOf_properties.TargetOf_enum.defaultItem: GenEntityBusinessView.TargetOf_properties.TargetOf_enum.TargetOf_items
-    @Throws(GenerateException.DefaultItemNotFound::class)
+    @Throws(ModelException.DefaultItemNotFound::class)
     get() {
         val defaultItem = items.minByOrNull { it.orderKey }
 
         if (defaultItem == null)
-            throw GenerateException.defaultItemNotFound("enumName: $name")
+            throw ModelException.defaultItemNotFound("enumName: $name", enum = IdName(id, name))
 
         return defaultItem
     }
@@ -124,16 +120,18 @@ val alternativeSelectOptionLabel = setOf(
 )
 
 val GenEntityBusinessView.idProperty
+    @Throws(ModelException.IdPropertyNotFound::class)
     get() =
         if (idProperties.size != 1)
-            throw GenerateException.idPropertyNotFound("entityName: $name")
+            throw ModelException.idPropertyNotFound("entityName: $name", entity = IdName(id, name))
         else
             idProperties[0]
 
 val GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity.idProperty
+    @Throws(ModelException.IdPropertyNotFound::class)
     get() =
         if (idProperties.size != 1)
-            throw GenerateException.idPropertyNotFound("entityName: $name")
+            throw ModelException.idPropertyNotFound("entityName: $name", entity = IdName(id, name))
         else
             idProperties[0]
 

@@ -32,7 +32,7 @@ interface ColumnTypeDefiner {
 
     fun getTypeName(typeMeta: ColumnTypeMeta): String
 
-    @Throws(ColumnTypeException::class)
+    @Throws(ColumnTypeException.MissRequiredParam::class)
     fun getTypeDataSizeAndNumericPrecision(
         typeCode: Int,
         dataSize: Long? = null,
@@ -48,7 +48,11 @@ interface ColumnTypeDefiner {
                 tempDataSize = dataSize ?: defaultDataSize(typeCode)
 
                 if (isRequiredDataSize && tempDataSize == null) {
-                    throw ColumnTypeException.missRequiredParam("dataSize is required for type [${typeCode}]")
+                    throw ColumnTypeException.missRequiredParam(
+                        "dataSize is required for type [${typeCode}]",
+                        typeCode = typeCode,
+                        requiredParam = "dataSize"
+                    )
                 }
             }
 
@@ -61,7 +65,11 @@ interface ColumnTypeDefiner {
                 tempNumericPrecision = numericPrecision ?: defaultNumericPrecision(typeCode)
 
                 if (isRequiredNumericPrecision && tempNumericPrecision == null) {
-                    throw ColumnTypeException.missRequiredParam("numericPrecision is required for type [${typeCode}]")
+                    throw ColumnTypeException.missRequiredParam(
+                        "numericPrecision is required for type [${typeCode}]",
+                        typeCode = typeCode,
+                        requiredParam = "dataSize"
+                    )
                 }
             }
 

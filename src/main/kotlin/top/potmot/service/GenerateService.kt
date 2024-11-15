@@ -40,9 +40,8 @@ import top.potmot.enumeration.GenerateType
 import top.potmot.enumeration.TableType
 import top.potmot.enumeration.ViewType
 import top.potmot.error.ColumnTypeException
-import top.potmot.error.GenerateEntityException
 import top.potmot.error.GenerateException
-import top.potmot.error.GenerateTableDefineException
+import top.potmot.error.ModelException
 
 @RestController
 @RequestMapping("/preview")
@@ -50,7 +49,7 @@ class GenerateService(
     @Autowired val sqlClient: KSqlClient
 ) {
     @PostMapping("/model")
-    @Throws(GenerateException::class, GenerateEntityException::class, ColumnTypeException::class)
+    @Throws(ModelException::class, GenerateException::class, ColumnTypeException::class)
     fun generateModel(
         @RequestParam id: Long,
         @RequestParam types: List<GenerateType>,
@@ -59,7 +58,7 @@ class GenerateService(
     ): List<GenerateFile> =
         useContext(
             sqlClient.getModelProperties(id)?.merge(properties)
-                ?: throw GenerateException.modelNotFound("modelId $id")
+                ?: throw GenerateException.modelNotFound("ModelId $id Not Found", modelId = id)
         ) { context ->
             val result = mutableListOf<GenerateFile>()
 
@@ -157,7 +156,7 @@ class GenerateService(
      * 批量生成的基本函数
      */
 
-    @Throws(GenerateEntityException::class)
+    @Throws(GenerateException::class)
     fun generateEntityCode(
         entities: Iterable<GenEntityGenerateView>,
         language: GenLanguage,
@@ -170,7 +169,7 @@ class GenerateService(
     ): List<Pair<String, String>> =
         language.getEntityGenerator().generateEnum(enums)
 
-    @Throws(GenerateTableDefineException::class, ColumnTypeException::class)
+    @Throws(GenerateException::class, ColumnTypeException::class)
     fun generateTableDefine(
         tables: Iterable<GenTableGenerateView>,
         dataSourceType: DataSourceType,
@@ -184,6 +183,7 @@ class GenerateService(
     ): List<Pair<String, String>> =
         language.getServiceGenerator().generateService(entities)
 
+    @Throws(ModelException.DefaultItemNotFound::class)
     fun generateView(
         entities: Iterable<GenEntityBusinessView>,
         viewType: ViewType,
@@ -196,6 +196,7 @@ class GenerateService(
     ): List<GenerateFile> =
         viewType.getViewGenerator().generateEnum(enums)
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
         entities: Iterable<GenEntityBusinessView>
     ): List<Pair<String, String>> =

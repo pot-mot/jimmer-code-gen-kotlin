@@ -8,7 +8,9 @@ import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.utils.selectOptionLabel
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.error.ModelException
 import top.potmot.utils.string.toSingular
+import kotlin.jvm.Throws
 
 object DtoGenerator {
     private fun formatFileName(
@@ -34,6 +36,7 @@ object DtoGenerator {
         appendLine("}")
     }
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     private fun generateOptionView(entity: GenEntityBusinessView) = buildString {
         val idProperty = entity.idProperty
         val idName = idProperty.name
@@ -54,6 +57,7 @@ object DtoGenerator {
         appendLine("}")
     }
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     private fun generateInsertInput(entity: GenEntityBusinessView) = buildString {
         val idProperty = entity.idProperty
         val idName = idProperty.name
@@ -67,6 +71,7 @@ object DtoGenerator {
         appendLine("}")
     }
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     private fun generateUpdateInput(entity: GenEntityBusinessView) = buildString {
         val idProperty = entity.idProperty
         val idName = idProperty.name
@@ -81,6 +86,7 @@ object DtoGenerator {
     }
 
     private val GenEntityBusinessView.TargetOf_properties.specExpression
+        @Throws(ModelException.IdPropertyNotFound::class)
         get() =
             if (idProperty)
                 listOf("eq(${name})")
@@ -107,6 +113,7 @@ object DtoGenerator {
                     listOf("associatedIdIn(${name}) as ${name.toSingular()}Ids")
             }
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     private fun generateSpec(entity: GenEntityBusinessView) = buildString {
         appendLine("specification ${entity.dtoNames.spec} {")
 
@@ -117,7 +124,7 @@ object DtoGenerator {
 
         appendLine("}")
     }
-
+    @Throws(ModelException.IdPropertyNotFound::class)
     private fun stringify(entity: GenEntityBusinessView): String {
         return """
 export ${entity.packagePath}.${entity.name}
@@ -131,6 +138,7 @@ ${generateSpec(entity)}
         """.trim()
     }
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
         entity: GenEntityBusinessView,
     ): Pair<String, String> {
@@ -139,6 +147,7 @@ ${generateSpec(entity)}
         return Pair(formatFileName(flatEntity), stringify(flatEntity))
     }
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
         entities: Iterable<GenEntityBusinessView>,
     ): List<Pair<String, String>> =

@@ -14,9 +14,9 @@ import top.potmot.enumeration.AssociationType.ONE_TO_MANY
 import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
-import top.potmot.error.GenerateTableDefineException
-import top.potmot.entity.dto.share.ColumnTypeMeta
+import top.potmot.error.GenerateException
 import top.potmot.entity.dto.GenTableGenerateView
+import top.potmot.entity.dto.IdName
 import top.potmot.entity.extension.pkColumns
 
 /**
@@ -24,12 +24,8 @@ import top.potmot.entity.extension.pkColumns
  */
 abstract class TableDefineBuilder(
     protected val identifiers: IdentifierProcessor,
-    protected val columnTypes: ColumnTypeDefiner,
+    private val columnTypes: ColumnTypeDefiner,
 ) {
-    @Throws(ColumnTypeException::class)
-    open fun getColumnTypeDefine(typeMeta: ColumnTypeMeta) =
-        columnTypes.getTypeDefine(typeMeta)
-
     open fun createTable(
         name: String,
         lines: List<String>,
@@ -62,7 +58,19 @@ abstract class TableDefineBuilder(
         buildString {
             append(identifiers.columnName(column.name))
             append(' ')
-            append(getColumnTypeDefine(column))
+            try {
+                append(columnTypes.getTypeDefine(column))
+            } catch (e: ColumnTypeException.MissRequiredParam) {
+                val columnIdName = IdName(column.id, column.name)
+                val columnName = column.name
+
+                throw ColumnTypeException.missRequiredParam(
+                    e.message,
+                    column = columnIdName,
+                    columnName = columnName,
+                    typeCode = e.typeCode,
+                    requiredParam = e.requiredParam)
+            }
 
             if (column.typeNotNull) {
                 append(" NOT NULL")
@@ -98,7 +106,7 @@ abstract class TableDefineBuilder(
         )
     }
 
-    @Throws(GenerateTableDefineException::class)
+    @Throws(GenerateException::class)
     open fun indexLines(
         table: GenTableGenerateView,
     ) =
@@ -106,9 +114,13 @@ abstract class TableDefineBuilder(
             val columnNames = table.columns.filter { it.id in index.columnIds }.map { it.name }
 
             if (columnNames.size != index.columnIds.size) {
-                throw GenerateTableDefineException.index(
+                throw GenerateException.indexColumnNotFoundInTable(
                     "Index [${index.name}] generate fail: " +
-                            " table ${table.name} columns [${table.columns.map { it.name }} not match index column ids [${index.columnIds}]"
+                            " table ${table.name} columns [${table.columns.map { it.name }} not match index column ids [${index.columnIds}]",
+                    index = IdName(index.id, index.name),
+                    indexColumnIds = index.columnIds,
+                    table = IdName(table.id, table.name),
+                    tableColumns = table.columns.map { IdName(it.id, it.name) }
                 )
             }
 

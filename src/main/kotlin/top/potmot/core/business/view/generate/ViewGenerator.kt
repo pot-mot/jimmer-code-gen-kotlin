@@ -7,6 +7,7 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
+import top.potmot.error.ModelException
 
 interface ViewGenerator {
     fun getFileSuffix(): String
@@ -29,6 +30,7 @@ interface ViewGenerator {
     val GenEntityBusinessView.addFormDefault
         get() = "default${name}"
 
+    @Throws(ModelException.DefaultItemNotFound::class)
     fun stringifyAddFormDefault(entity: GenEntityBusinessView): String
 
     fun stringifyAddFormRules(entity: GenEntityBusinessView): String
@@ -81,13 +83,14 @@ interface ViewGenerator {
             .flatMap { generateEnum(it) }
             .distinct().sortedBy { it.path }
 
+    @Throws(ModelException.DefaultItemNotFound::class)
     fun generateView(
         entity: GenEntityBusinessView,
     ): List<GenerateFile> {
         val flatEntity = entity.toFlat()
 
         val suffix = getFileSuffix()
-        val (_, dir, table, addForm, editForm, queryForm, page, singleSelect, multiSelect, idSelect, idMultiSelect, editTable) = flatEntity.componentNames
+        val (_, dir, table, addForm, editForm, queryForm, page, idSelect, idMultiSelect, editTable) = flatEntity.componentNames
         val addFormDataType = flatEntity.addFormDataType
         val defaultAddFormData = flatEntity.addFormDefault
         val (_, ruleDir, addFormRules, editFormRules, editTableRules) = entity.ruleNames
@@ -161,6 +164,7 @@ interface ViewGenerator {
         )
     }
 
+    @Throws(ModelException.DefaultItemNotFound::class)
     fun generateView(
         entities: Iterable<GenEntityBusinessView>,
     ): List<GenerateFile> =
