@@ -22,12 +22,6 @@ enum class LoadFromDataSourceErrorCode {
     INDEX_COLUMN_TABLE_NOT_MATCH,
 
     @ErrorField(name = "tableName", type = String::class)
-    @ErrorField(name = "tableSchemaName", type = String::class)
-    @ErrorField(name = "columnName", type = String::class)
-    @ErrorField(name = "columnSchemaName", type = String::class)
-    ASSOCIATION_COLUMN_REFERENCE_SCHEMA_NOT_MATCH,
-
-    @ErrorField(name = "tableName", type = String::class)
     ASSOCIATION_COLUMN_REFERENCE_TABLE_NOT_FOUND,
 
     @ErrorField(name = "tableName", type = String::class)
