@@ -307,6 +307,7 @@ CREATE TABLE "gen_column"
     "auto_increment"    boolean      NOT NULL,
     "type_not_null"     boolean      NOT NULL,
     "business_key"      boolean      NOT NULL,
+    "key_group"         varchar(500) NULL     DEFAULT NULL,
     "logical_delete"    boolean      NOT NULL,
     "enum_id"           bigint       NULL     DEFAULT NULL,
     "order_key"         bigint       NOT NULL,
@@ -336,6 +337,7 @@ COMMENT ON COLUMN "gen_column"."comment" IS '注释';
 COMMENT ON COLUMN "gen_column"."part_of_pk" IS '是否为主键的部分';
 COMMENT ON COLUMN "gen_column"."auto_increment" IS '是否自增';
 COMMENT ON COLUMN "gen_column"."business_key" IS '是否为业务键';
+COMMENT ON COLUMN "gen_column"."key_group" IS '业务键组';
 COMMENT ON COLUMN "gen_column"."logical_delete" IS '是否为逻辑删除';
 COMMENT ON COLUMN "gen_column"."enum_id" IS '枚举';
 COMMENT ON COLUMN "gen_column"."order_key" IS '排序键';
@@ -568,7 +570,7 @@ CREATE TABLE "gen_property"
     "association_type"         text        NULL     DEFAULT NULL,
     "long_association"         boolean     NOT NULL,
     "mapped_by"                text        NULL     DEFAULT NULL,
-    "input_not_null"           boolean    NULL     DEFAULT NULL,
+    "input_not_null"           boolean     NULL     DEFAULT NULL,
     "join_column_metas"        jsonb       NULL     DEFAULT NULL,
     "join_table_meta"          jsonb       NULL     DEFAULT NULL,
     "association_annotation"   text        NULL     DEFAULT NULL,

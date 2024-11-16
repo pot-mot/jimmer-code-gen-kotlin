@@ -106,6 +106,11 @@ interface GenColumn : BaseEntity {
     val businessKey: Boolean
 
     /**
+     * 业务键组
+     */
+    val keyGroup: String?
+
+    /**
      * 是否为逻辑删除
      */
     val logicalDelete: Boolean

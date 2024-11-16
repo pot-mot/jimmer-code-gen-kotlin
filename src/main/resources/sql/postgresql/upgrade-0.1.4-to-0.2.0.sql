@@ -1,3 +1,9 @@
+ALTER TABLE "jimmer_code_gen"."gen_column"
+    ADD COLUMN "key_group" varchar (500) NULL DEFAULT NULL;
+
+COMMENT ON COLUMN "gen_column"."key_group" IS '业务键组';
+
+
 ALTER TABLE "jimmer_code_gen"."gen_property"
     ADD COLUMN "key_group" varchar (500) NULL DEFAULT NULL;
 

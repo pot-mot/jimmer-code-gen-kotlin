@@ -1,5 +1,9 @@
+ALTER TABLE `jimmer_code_gen`.`gen_column`
+    ADD COLUMN `key_group` varchar(500) NULL DEFAULT NULL COMMENT '业务键组' AFTER `business_key`;
+
+
 ALTER TABLE `jimmer_code_gen`.`gen_property`
-    ADD COLUMN `key_group` varchar (500) NULL DEFAULT NULL COMMENT '业务键组' AFTER `key_property`;
+    ADD COLUMN `key_group` varchar(500) NULL DEFAULT NULL COMMENT '业务键组' AFTER `key_property`;
 
 
 ALTER TABLE `jimmer_code_gen`.`gen_property`

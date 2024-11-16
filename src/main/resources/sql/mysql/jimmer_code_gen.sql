@@ -198,6 +198,7 @@ CREATE TABLE `gen_column`
     `auto_increment`    boolean      NOT NULL COMMENT '是否自增',
     `type_not_null`     boolean      NOT NULL COMMENT '是否非空',
     `business_key`      boolean      NOT NULL COMMENT '是否为业务键',
+    `key_group`         varchar(500) NULL     DEFAULT NULL COMMENT '业务键组',
     `logical_delete`    boolean      NOT NULL COMMENT '是否为逻辑删除',
     `enum_id`           bigint       NULL     DEFAULT NULL COMMENT '对应枚举',
     `order_key`         bigint       NOT NULL COMMENT '排序键',

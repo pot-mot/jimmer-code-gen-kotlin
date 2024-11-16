@@ -34,7 +34,7 @@ abstract class EntityBuilder : CodeBuilder() {
 
     abstract fun propertyLine(property: GenPropertyView): String
 
-    fun String.quotationEscape(): String = replace("\"", "\\\"")
+    private fun String.quotationEscape(): String = replace("\"", "\\\"")
 
     fun build(entity: GenEntityGenerateView): String =
         buildString {
@@ -130,7 +130,7 @@ abstract class EntityBuilder : CodeBuilder() {
         }
     }
 
-    fun GenPropertyView.fullType(): String {
+    private fun GenPropertyView.fullType(): String {
         enum?.let {
             return if (it.packagePath.isNotBlank()) {
                 it.packagePath + "." + it.name
@@ -284,7 +284,12 @@ abstract class EntityBuilder : CodeBuilder() {
                     list += it
                 }
             } else if (keyProperty) {
-                list += "@Key"
+                list += buildString {
+                    append("@Key")
+                    if (!keyGroup.isNullOrBlank()) {
+                        append("(group = \"${keyGroup}\")")
+                    }
+                }
             }
 
             if (logicalDelete) {

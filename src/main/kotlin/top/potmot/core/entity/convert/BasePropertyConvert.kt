@@ -43,6 +43,7 @@ fun GenTableConvertView.TargetOf_columns.toBaseProperty(
         idProperty = false,
         idGenerationAnnotation = null,
         keyProperty = column.businessKey,
+        keyGroup = column.keyGroup,
         logicalDelete = column.logicalDelete,
         enumId = column.enumId,
         idView = false,
