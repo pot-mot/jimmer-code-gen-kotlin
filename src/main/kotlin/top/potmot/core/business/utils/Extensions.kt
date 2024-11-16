@@ -11,18 +11,8 @@ import top.potmot.error.ModelException
 val GenEntityBusinessView.enums
     get() = properties.mapNotNull { it.enum }
 
-private val GenEntityBusinessView.noIdView
-    get() = properties.count { it.idView } == 0 && properties.count { it.associationType != null } > 0
-
 val targetOneAssociationType =
     setOf(AssociationType.ONE_TO_ONE, AssociationType.MANY_TO_ONE)
-
-val GenEntityBusinessView.targetOneProperties
-    get() =
-        if (noIdView)
-            properties.filter { it.associationType in targetOneAssociationType }
-        else
-            properties.filter { it.associationType in targetOneAssociationType && it.idView }
 
 val GenerateEnum.constants
     get() = "${name}_CONSTANTS"

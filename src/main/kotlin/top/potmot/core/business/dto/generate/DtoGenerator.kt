@@ -1,22 +1,31 @@
 package top.potmot.core.business.dto.generate
 
 import top.potmot.core.business.utils.PropertyQueryType
-import top.potmot.core.business.utils.targetOneProperties
 import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.utils.selectOptionLabel
+import top.potmot.core.business.utils.targetOneAssociationType
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.ModelException
 import top.potmot.utils.string.toSingular
-import kotlin.jvm.Throws
 
 object DtoGenerator {
     private fun formatFileName(
         entity: GenEntityBusinessView,
     ): String =
         "${entity.name}.dto"
+
+    private val GenEntityBusinessView.noIdView
+        get() = properties.count { it.idView } == 0 && properties.count { it.associationType != null } > 0
+
+    private val GenEntityBusinessView.targetOneProperties
+        get() =
+            if (noIdView)
+                properties.filter { it.associationType in targetOneAssociationType }
+            else
+                properties.filter { it.associationType in targetOneAssociationType && it.idView }
 
     private fun GenEntityBusinessView.targetOneId(onlyThis: Boolean): List<String> =
         targetOneProperties.filter { if (onlyThis) it.entityId == id else true }.map {
@@ -90,17 +99,18 @@ object DtoGenerator {
         get() =
             if (idProperty)
                 listOf("eq(${name})")
-
             else when (queryType) {
                 PropertyQueryType.EQ,
-                PropertyQueryType.ENUM_SELECT ->
+                PropertyQueryType.ENUM_SELECT,
+                ->
                     listOf("eq(${name})")
 
                 PropertyQueryType.DATE_RANGE,
                 PropertyQueryType.TIME_RANGE,
                 PropertyQueryType.DATETIME_RANGE,
                 PropertyQueryType.INT_RANGE,
-                PropertyQueryType.FLOAT_RANGE ->
+                PropertyQueryType.FLOAT_RANGE,
+                ->
                     listOf("le(${name})", "ge(${name})")
 
                 PropertyQueryType.LIKE ->
@@ -124,6 +134,7 @@ object DtoGenerator {
 
         appendLine("}")
     }
+
     @Throws(ModelException.IdPropertyNotFound::class)
     private fun stringify(entity: GenEntityBusinessView): String {
         return """
