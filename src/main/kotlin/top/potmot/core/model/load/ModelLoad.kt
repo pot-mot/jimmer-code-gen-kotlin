@@ -105,6 +105,7 @@ fun GenTableModelInput.toInputs(
                 partOfPk = it.partOfPk,
                 autoIncrement = it.autoIncrement,
                 businessKey = it.businessKey,
+                keyGroup = it.keyGroup,
                 logicalDelete = it.logicalDelete,
                 orderKey = it.orderKey,
                 remark = it.remark,
