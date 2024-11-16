@@ -8,7 +8,7 @@ import top.potmot.utils.string.trimBlankLine
 object DynamicRouteGenerator {
     fun generate(entities: List<GenerateEntity>): List<Pair<String, String>> {
         val items = entities.map {
-            val lowerName = it.name.replaceFirstChar { c -> c.lowercase() }
+            val lowerName = it.name.lowercase()
             val dir = it.dir
             val page = it.components.page
 

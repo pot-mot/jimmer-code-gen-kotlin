@@ -1,6 +1,7 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn
 
 import top.potmot.core.business.utils.components
+import top.potmot.core.business.utils.lowerName
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
@@ -23,7 +24,7 @@ interface TableColumn {
                 ),
                 imports = listOf(
                     ImportDefault(
-                        componentPath + "/" + enum.name.replaceFirstChar { it.lowercase() } + "/" + componentName + ".vue",
+                        componentPath + "/" + enum.lowerName + "/" + componentName + ".vue",
                         componentName,
                     )
                 )

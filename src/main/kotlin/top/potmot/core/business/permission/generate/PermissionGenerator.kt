@@ -1,12 +1,13 @@
 package top.potmot.core.business.permission.generate
 
+import top.potmot.core.business.utils.lowerName
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.utils.string.trimBlankLine
 
 object PermissionGenerator {
     fun generate(entities: List<GenerateEntity>): List<Pair<String, String>> {
         val items = entities.map {
-            val lowerName = it.name.replaceFirstChar { c -> c.lowercase() }
+            val lowerName = it.lowerName
 
             "permission/${lowerName}.sql" to
                     """

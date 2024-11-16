@@ -2,14 +2,18 @@ package top.potmot.core.business.utils
 
 import top.potmot.core.utils.filePath
 import top.potmot.entity.dto.GenEntityBusinessView
-import top.potmot.entity.dto.IdName
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
 import top.potmot.entity.dto.share.GenerateItem
-import top.potmot.error.ModelException
+
+val GenerateItem.lowerName
+    get() = name.replaceFirstChar { it.lowercase() }
+
+val GenEntityBusinessView.TargetOf_properties.upperName
+    get() = name.replaceFirstChar { it.uppercaseChar() }
 
 val GenerateItem.dir
-    get() = name.replaceFirstChar { it.lowercase() }
+    get() = lowerName
 
 val GenEntityBusinessView.enums
     get() = properties.mapNotNull { it.enum }
@@ -40,10 +44,10 @@ val GenerateEntity.serviceFilePath
     get() = filePath.replace("/entity/", "/service/")
 
 val GenerateEntity.requestPath
-    get() = name.replaceFirstChar { it.lowercase() }
+    get() = lowerName
 
 val GenerateEntity.permissionPrefix
-    get() = name.replaceFirstChar { it.lowercase() }
+    get() = lowerName
 
 val GenerateEntity.serviceName
     get() = "${name}Service"
@@ -124,49 +128,3 @@ private fun EnumComponentNames(enum: GenerateEnum) = EnumComponentNames(
 
 val GenerateEnum.components
     get() = EnumComponentNames(this)
-
-val GenEntityBusinessView.TargetOf_properties.TargetOf_enum.defaultItem: GenEntityBusinessView.TargetOf_properties.TargetOf_enum.TargetOf_items
-    @Throws(ModelException.DefaultItemNotFound::class)
-    get() {
-        val defaultItem = items.minByOrNull { it.orderKey }
-
-        if (defaultItem == null)
-            throw ModelException.defaultItemNotFound("enumName: $name", enum = IdName(id, name))
-
-        return defaultItem
-    }
-
-val alternativeSelectOptionLabel = setOf(
-    "name",
-    "label",
-    "title",
-)
-
-val GenEntityBusinessView.idProperty
-    @Throws(ModelException.IdPropertyNotFound::class)
-    get() =
-        if (idProperties.size != 1)
-            throw ModelException.idPropertyNotFound("entityName: $name", entity = IdName(id, name))
-        else
-            idProperties[0]
-
-val GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity.idProperty
-    @Throws(ModelException.IdPropertyNotFound::class)
-    get() =
-        if (idProperties.size != 1)
-            throw ModelException.idPropertyNotFound("entityName: $name", entity = IdName(id, name))
-        else
-            idProperties[0]
-
-val GenEntityBusinessView.selectOptionLabel: String?
-    get() {
-        val propertyNames = properties
-            .filter { !it.idProperty && it.associationType == null && it.entityId == id }
-            .map { it.name }.toSet()
-
-        for (item in alternativeSelectOptionLabel) {
-            if (item in propertyNames) return item
-        }
-
-        return null
-    }

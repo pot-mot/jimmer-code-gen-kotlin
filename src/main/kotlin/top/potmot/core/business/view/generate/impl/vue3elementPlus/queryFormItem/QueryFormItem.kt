@@ -6,6 +6,7 @@ import top.potmot.core.business.utils.components
 import top.potmot.core.business.utils.dir
 import top.potmot.core.business.utils.formType
 import top.potmot.core.business.utils.queryType
+import top.potmot.core.business.utils.upperName
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.meta.rules.numberMax
 import top.potmot.core.business.view.generate.meta.rules.numberMin
@@ -28,8 +29,8 @@ interface QueryFormItem {
     fun GenEntityBusinessView.TargetOf_properties.createQueryFormItem(spec: String): FormItemData {
         val modelValue = "$spec.${name}"
         val rangeModelValue = "${name}Range"
-        val minModelValue = "$spec.min${name.replaceFirstChar { c -> c.uppercaseChar() }}"
-        val maxModelValue = "$spec.max${name.replaceFirstChar { c -> c.uppercaseChar() }}"
+        val minModelValue = "$spec.min${upperName}"
+        val maxModelValue = "$spec.max${upperName}"
         val numberMin = numberMin
         val numberMax = numberMax
 
