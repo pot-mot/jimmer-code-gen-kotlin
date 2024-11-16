@@ -1,10 +1,11 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
-import top.potmot.core.business.utils.componentNames
+import top.potmot.core.business.utils.components
 import top.potmot.core.business.utils.constants
-import top.potmot.core.business.utils.dtoNames
+import top.potmot.core.business.utils.dir
+import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.idProperty
-import top.potmot.core.business.utils.ruleNames
+import top.potmot.core.business.utils.rules
 import top.potmot.core.business.utils.selectOptionLabel
 import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.typeStrToTypeScriptType
@@ -95,7 +96,8 @@ object Vue3ElementPlusViewGenerator :
         enum: GenEnumGenerateView,
         nullable: Boolean,
     ): Component {
-        val (_, dir, _, _, view) = enum.componentNames
+        val dir = enum.dir
+        val view = enum.components.view
 
         val modelValue = "modelValue"
         val options = enum.constants
@@ -153,7 +155,7 @@ object Vue3ElementPlusViewGenerator :
             else
                 SelectOption(
                     it.name + "Options",
-                    it.typeEntity.dtoNames.optionView,
+                    it.typeEntity.dto.optionView,
                 )
         }
 
@@ -164,7 +166,7 @@ object Vue3ElementPlusViewGenerator :
             else
                 it to SelectOption(
                     it.name + "Options",
-                    it.typeEntity.dtoNames.optionView,
+                    it.typeEntity.dto.optionView,
                 )
         }
 
@@ -174,7 +176,7 @@ object Vue3ElementPlusViewGenerator :
         return builder.build(
             queryForm(
                 spec = spec,
-                specType = entity.dtoNames.spec,
+                specType = entity.dto.spec,
                 specTypePath = staticPath,
                 selectOptions = entity.selectOptions,
                 content = entity.queryProperties
@@ -189,7 +191,7 @@ object Vue3ElementPlusViewGenerator :
         return builder.build(
             viewTable(
                 data = rows,
-                type = entity.dtoNames.listView,
+                type = entity.dto.listView,
                 typePath = staticPath,
                 idPropertyName = entity.idProperty.name,
                 content = entity.tableProperties
@@ -227,7 +229,7 @@ object Vue3ElementPlusViewGenerator :
 
     override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
         val rules = entity.insertInputProperties.associate { it.name to it.rules }
-        return rulesBuilder.createFormRules("useRules", "formData", entity.dtoNames.insertInput, rules)
+        return rulesBuilder.createFormRules("useRules", "formData", entity.dto.insertInput, rules)
     }
 
     override fun stringifyAddForm(entity: GenEntityBusinessView): String {
@@ -248,14 +250,14 @@ object Vue3ElementPlusViewGenerator :
 
         return builder.build(
             addForm(
-                submitType = entity.dtoNames.insertInput,
+                submitType = entity.dto.insertInput,
                 submitTypePath = staticPath,
                 type = entity.addFormDataType,
                 typePath = staticPath,
                 default = entity.addFormDefault,
-                defaultPath = componentPath + "/" + entity.componentNames.dir + "/" + entity.addFormDefault,
+                defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormDefault,
                 useRules = "useRules",
-                useRulesPath = rulePath + "/" + entity.ruleNames.addFormRules,
+                useRulesPath = rulePath + "/" + entity.rules.addFormRules,
                 formData = formData,
                 indent = builder.indent,
                 selectOptions = entity.selectOptions,
@@ -272,7 +274,7 @@ object Vue3ElementPlusViewGenerator :
 
     override fun stringifyEditFormRules(entity: GenEntityBusinessView): String {
         val rules = entity.editFormProperties.associate { it.name to it.rules }
-        return rulesBuilder.createFormRules("useRules", "formData", entity.dtoNames.updateInput, rules)
+        return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules)
     }
 
     override fun stringifyEditForm(entity: GenEntityBusinessView): String {
@@ -281,10 +283,10 @@ object Vue3ElementPlusViewGenerator :
         return builder.build(
             editForm(
                 formData = formData,
-                type = entity.dtoNames.updateInput,
+                type = entity.dto.updateInput,
                 typePath = staticPath,
                 useRules = "useRules",
-                useRulesPath = rulePath + "/" + entity.ruleNames.editFormRules,
+                useRulesPath = rulePath + "/" + entity.rules.editFormRules,
                 indent = builder.indent,
                 selectOptions = entity.selectOptions,
                 content = entity.editFormProperties
@@ -296,7 +298,7 @@ object Vue3ElementPlusViewGenerator :
 
     override fun stringifyEditTableRules(entity: GenEntityBusinessView): String {
         val rules = entity.editTableProperties.associate { it.name to it.rules }
-        return rulesBuilder.createFormRules("useRules", "formData", entity.dtoNames.updateInput, rules, isArray = true)
+        return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules, isArray = true)
     }
 
     override fun stringifyEditTable(entity: GenEntityBusinessView): String {
@@ -309,8 +311,8 @@ object Vue3ElementPlusViewGenerator :
                 typePath = staticPath,
                 useRules = "useRules",
                 default = entity.addFormDefault,
-                defaultPath = componentPath + "/" + entity.componentNames.dir + "/" + entity.addFormDefault,
-                useRulesPath = rulePath + "/" + entity.ruleNames.editTableRules,
+                defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormDefault,
+                useRulesPath = rulePath + "/" + entity.rules.editTableRules,
                 indent = builder.indent,
                 idPropertyName = entity.idProperty.name,
                 comment = entity.comment,
@@ -326,7 +328,7 @@ object Vue3ElementPlusViewGenerator :
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
 
-        val optionView = entity.dtoNames.optionView
+        val optionView = entity.dto.optionView
 
         val label = entity.selectOptionLabel ?: idName
 
@@ -427,8 +429,9 @@ object Vue3ElementPlusViewGenerator :
     )
 
     override fun stringifyPage(entity: GenEntityBusinessView): String {
-        val (_, dir, table, addForm, editForm, queryForm) = entity.componentNames
-        val (_, listView, _, insertInput, updateInput, spec) = entity.dtoNames
+        val dir = entity.dir
+        val (table, addForm, editForm, queryForm) = entity.components
+        val (listView, _, insertInput, updateInput, spec) = entity.dto
 
         val idProperty = entity.idProperty
         val idName = idProperty.name

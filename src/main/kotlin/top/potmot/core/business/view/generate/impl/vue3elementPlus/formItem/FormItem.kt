@@ -1,7 +1,8 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem
 
 import top.potmot.core.business.utils.PropertyFormType
-import top.potmot.core.business.utils.componentNames
+import top.potmot.core.business.utils.components
+import top.potmot.core.business.utils.dir
 import top.potmot.core.business.utils.formType
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePicker
@@ -36,8 +37,8 @@ interface FormItem {
                 if (typeEntity == null) {
                     FormItemData()
                 } else {
-                    val components = typeEntity.componentNames
-                    val dir = components.dir
+                    val components = typeEntity.components
+                    val dir = typeEntity.dir
                     val componentName = components.idSelect
                     FormItemData(
                         elements = listOf(
@@ -63,8 +64,8 @@ interface FormItem {
                 if (typeEntity == null) {
                     FormItemData()
                 } else {
-                    val components = typeEntity.componentNames
-                    val dir = components.dir
+                    val components = typeEntity.components
+                    val dir = typeEntity.dir
                     val componentName = components.idMultiSelect
                     FormItemData(
                         elements = listOf(
@@ -90,8 +91,8 @@ interface FormItem {
                 if (enum == null) {
                     FormItemData()
                 } else {
-                    val components = enum.componentNames
-                    val dir = components.dir
+                    val components = enum.components
+                    val dir = enum.dir
                     val componentName = if (typeNotNull) components.select else components.nullableSelect
 
                     FormItemData(

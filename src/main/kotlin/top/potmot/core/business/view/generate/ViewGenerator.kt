@@ -1,7 +1,8 @@
 package top.potmot.core.business.view.generate
 
-import top.potmot.core.business.utils.componentNames
-import top.potmot.core.business.utils.ruleNames
+import top.potmot.core.business.utils.components
+import top.potmot.core.business.utils.dir
+import top.potmot.core.business.utils.rules
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
@@ -55,7 +56,8 @@ interface ViewGenerator {
         enum: GenEnumGenerateView,
     ): List<GenerateFile> {
         val suffix = getFileSuffix()
-        val (_, dir, select, nullableSelect, view) = enum.componentNames
+        val dir = enum.dir
+        val (view, select, nullableSelect) = enum.components
 
         return listOf(
             GenerateFile(
@@ -90,10 +92,11 @@ interface ViewGenerator {
         val flatEntity = entity.toFlat()
 
         val suffix = getFileSuffix()
-        val (_, dir, table, addForm, editForm, queryForm, page, idSelect, idMultiSelect, editTable) = flatEntity.componentNames
+        val dir = flatEntity.dir
+        val (table, addForm, editForm, queryForm, page, idSelect, idMultiSelect, editTable) = flatEntity.components
         val addFormDataType = flatEntity.addFormDataType
         val defaultAddFormData = flatEntity.addFormDefault
-        val (_, ruleDir, addFormRules, editFormRules, editTableRules) = entity.ruleNames
+        val (addFormRules, editFormRules, editTableRules) = entity.rules
 
         return listOf(
             GenerateFile(
@@ -147,17 +150,17 @@ interface ViewGenerator {
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.IdMultiSelect),
             ),
             GenerateFile(
-                "rules/${ruleDir}/${addFormRules}.ts",
+                "rules/${dir}/${addFormRules}.ts",
                 stringifyAddFormRules(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.AddFormRules, GenerateTag.AddForm),
             ),
             GenerateFile(
-                "rules/${ruleDir}/${editFormRules}.ts",
+                "rules/${dir}/${editFormRules}.ts",
                 stringifyEditFormRules(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditFormRules, GenerateTag.EditForm),
             ),
             GenerateFile(
-                "rules/${ruleDir}/${editTableRules}.ts",
+                "rules/${dir}/${editTableRules}.ts",
                 stringifyEditTableRules(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditTableRules, GenerateTag.EditTable),
             ),

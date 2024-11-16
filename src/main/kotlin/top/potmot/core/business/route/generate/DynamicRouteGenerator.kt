@@ -1,6 +1,7 @@
 package top.potmot.core.business.route.generate
 
-import top.potmot.core.business.utils.componentNames
+import top.potmot.core.business.utils.components
+import top.potmot.core.business.utils.dir
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.utils.string.trimBlankLine
 
@@ -8,7 +9,8 @@ object DynamicRouteGenerator {
     fun generate(entities: List<GenerateEntity>): List<Pair<String, String>> {
         val items = entities.map {
             val lowerName = it.name.replaceFirstChar { c -> c.lowercase() }
-            val (_, dir, _, _, _, _, page) = it.componentNames
+            val dir = it.dir
+            val page = it.components.page
 
             "menu/${lowerName}.sql" to
                     """
@@ -22,7 +24,7 @@ WHERE SYS_PERMISSION.NAME = '${lowerName}:menu' AND SYS_MENU.NAME = '${page}';
                     """.trimBlankLine()
         }.distinct().sortedBy { it.first }
 
-        val all = "menu/all-menus.sql" to items.map { it.second }.joinToString("\n\n")
+        val all = "menu/all-menus.sql" to items.joinToString("\n\n") { it.second }
 
         return listOf(all) + items
     }

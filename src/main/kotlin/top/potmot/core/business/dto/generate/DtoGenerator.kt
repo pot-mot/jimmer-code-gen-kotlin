@@ -1,7 +1,7 @@
 package top.potmot.core.business.dto.generate
 
 import top.potmot.core.business.utils.PropertyQueryType
-import top.potmot.core.business.utils.dtoNames
+import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.utils.selectOptionLabel
@@ -37,7 +37,7 @@ object DtoGenerator {
         }
 
     private fun generateListView(entity: GenEntityBusinessView) = buildString {
-        appendLine("${entity.dtoNames.listView} {")
+        appendLine("${entity.dto.listView} {")
         appendLine("    #allScalars")
         entity.targetOneId(onlyThis = true).forEach {
             appendLine("    $it")
@@ -51,14 +51,14 @@ object DtoGenerator {
         val idName = idProperty.name
         val label = entity.selectOptionLabel
 
-        appendLine("${entity.dtoNames.optionView} {")
+        appendLine("${entity.dto.optionView} {")
         appendLine("    $idName")
         label?.let { appendLine("   $it") }
         appendLine("}")
     }
 
     private fun generateDetailView(entity: GenEntityBusinessView) = buildString {
-        appendLine("${entity.dtoNames.detailView} {")
+        appendLine("${entity.dto.detailView} {")
         appendLine("    #allScalars")
         entity.targetOneId(onlyThis = false).forEach {
             appendLine("    $it")
@@ -71,7 +71,7 @@ object DtoGenerator {
         val idProperty = entity.idProperty
         val idName = idProperty.name
 
-        appendLine("input ${entity.dtoNames.insertInput} {")
+        appendLine("input ${entity.dto.insertInput} {")
         appendLine("    #allScalars(this)")
         appendLine("    -${idName}")
         entity.targetOneId(onlyThis = true).forEach {
@@ -85,7 +85,7 @@ object DtoGenerator {
         val idProperty = entity.idProperty
         val idName = idProperty.name
 
-        appendLine("input ${entity.dtoNames.updateInput} {")
+        appendLine("input ${entity.dto.updateInput} {")
         appendLine("    #allScalars(this)")
         appendLine("    ${idName}!")
         entity.targetOneId(onlyThis = true).forEach {
@@ -125,7 +125,7 @@ object DtoGenerator {
 
     @Throws(ModelException.IdPropertyNotFound::class)
     private fun generateSpec(entity: GenEntityBusinessView) = buildString {
-        appendLine("specification ${entity.dtoNames.spec} {")
+        appendLine("specification ${entity.dto.spec} {")
 
         entity.properties
             .filterNot { it.idView }

@@ -2,7 +2,8 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormIte
 
 import top.potmot.core.business.utils.PropertyFormType
 import top.potmot.core.business.utils.PropertyQueryType
-import top.potmot.core.business.utils.componentNames
+import top.potmot.core.business.utils.components
+import top.potmot.core.business.utils.dir
 import top.potmot.core.business.utils.formType
 import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.view.generate.componentPath
@@ -37,8 +38,8 @@ interface QueryFormItem {
                 if (typeEntity == null) {
                     FormItemData()
                 } else {
-                    val components = typeEntity.componentNames
-                    val dir = components.dir
+                    val components = typeEntity.components
+                    val dir = typeEntity.dir
                     val componentName = components.idSelect
                     FormItemData(
                         elements = listOf(
@@ -63,9 +64,8 @@ interface QueryFormItem {
                 if (typeEntity == null) {
                     FormItemData()
                 } else {
-                    val components = typeEntity.componentNames
-                    val dir = components.dir
-                    val componentName = components.idMultiSelect
+                    val dir = typeEntity.dir
+                    val componentName = typeEntity.components.idMultiSelect
                     FormItemData(
                         elements = listOf(
                             TagElement(
@@ -89,9 +89,8 @@ interface QueryFormItem {
                 if (enum == null) {
                     FormItemData()
                 } else {
-                    val components = enum.componentNames
-                    val dir = components.dir
-                    val componentName = components.nullableSelect
+                    val dir = enum.dir
+                    val componentName = enum.components.nullableSelect
 
                     FormItemData(
                         elements = listOf(
