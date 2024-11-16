@@ -28,3 +28,6 @@ enum class AssociationType {
             MANY_TO_MANY -> MANY_TO_MANY
         }
 }
+
+val targetOneAssociationTypes =
+    setOf(AssociationType.ONE_TO_ONE, AssociationType.MANY_TO_ONE)

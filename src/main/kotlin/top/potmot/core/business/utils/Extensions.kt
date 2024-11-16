@@ -5,14 +5,10 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.IdName
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
-import top.potmot.enumeration.AssociationType
 import top.potmot.error.ModelException
 
 val GenEntityBusinessView.enums
     get() = properties.mapNotNull { it.enum }
-
-val targetOneAssociationType =
-    setOf(AssociationType.ONE_TO_ONE, AssociationType.MANY_TO_ONE)
 
 val GenerateEnum.constants
     get() = "${name}_CONSTANTS"

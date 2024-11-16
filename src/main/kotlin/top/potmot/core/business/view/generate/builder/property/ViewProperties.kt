@@ -1,9 +1,9 @@
 package top.potmot.core.business.view.generate.builder.property
 
 import top.potmot.core.business.utils.idProperty
-import top.potmot.core.business.utils.targetOneAssociationType
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
+import top.potmot.enumeration.targetOneAssociationTypes
 import top.potmot.utils.string.toSingular
 
 // TODO 添加长短关联区分
@@ -11,17 +11,17 @@ import top.potmot.utils.string.toSingular
 interface ViewProperties {
     val GenEntityBusinessView.selectProperties
         get() = properties.filter {
-            it.associationType in targetOneAssociationType
+            it.associationType in targetOneAssociationTypes
         }.produceIdView()
 
     val GenEntityBusinessView.tableProperties
         get() = properties.filter {
-            !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
+            !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationTypes)
         }.produceIdView()
 
     val GenEntityBusinessView.queryProperties
         get() = properties.filter {
-            !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
+            !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationTypes)
         }.produceIdView().let { properties ->
             properties.map {
                 it.copy(typeNotNull = false)
@@ -30,7 +30,7 @@ interface ViewProperties {
 
     val GenEntityBusinessView.insertInputProperties
         get() = properties.filter {
-            !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationType)
+            !it.idProperty && (it.associationType == null || it.associationType in targetOneAssociationTypes)
         }.produceIdView()
 
     val GenEntityBusinessView.addFormProperties
@@ -41,7 +41,7 @@ interface ViewProperties {
 
     val GenEntityBusinessView.editFormProperties
         get() = properties.filter {
-            it.associationType == null || it.associationType in targetOneAssociationType
+            it.associationType == null || it.associationType in targetOneAssociationTypes
         }.produceIdView()
 
     val GenEntityBusinessView.editTableProperties
@@ -91,7 +91,7 @@ interface ViewProperties {
     }
 
     private fun TargetOf_properties.needChangeToNullable() =
-        idView && associationType in targetOneAssociationType && typeNotNull
+        idView && associationType in targetOneAssociationTypes && typeNotNull
 
     private fun Iterable<TargetOf_properties>.produceIdViewNullable(): List<TargetOf_properties> =
         map {

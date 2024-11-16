@@ -5,9 +5,9 @@ import top.potmot.core.business.utils.dtoNames
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.utils.selectOptionLabel
-import top.potmot.core.business.utils.targetOneAssociationType
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.enumeration.targetOneAssociationTypes
 import top.potmot.error.ModelException
 import top.potmot.utils.string.toSingular
 
@@ -23,9 +23,9 @@ object DtoGenerator {
     private val GenEntityBusinessView.targetOneProperties
         get() =
             if (noIdView)
-                properties.filter { it.associationType in targetOneAssociationType }
+                properties.filter { it.associationType in targetOneAssociationTypes }
             else
-                properties.filter { it.associationType in targetOneAssociationType && it.idView }
+                properties.filter { it.associationType in targetOneAssociationTypes && it.idView }
 
     private fun GenEntityBusinessView.targetOneId(onlyThis: Boolean): List<String> =
         targetOneProperties.filter { if (onlyThis) it.entityId == id else true }.map {
