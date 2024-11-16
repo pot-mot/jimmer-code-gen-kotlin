@@ -115,6 +115,11 @@ interface GenProperty : BaseEntity {
     val keyProperty: Boolean
 
     /**
+     * 业务键组
+     */
+    val keyGroup: String?
+
+    /**
      * 是否为逻辑删除属性
      */
     val logicalDelete: Boolean
@@ -133,6 +138,11 @@ interface GenProperty : BaseEntity {
      * 关联类型
      */
     val associationType: AssociationType?
+
+    /**
+     * 是否为长关联
+     */
+    val longAssociation: Boolean
 
     /**
      * 映射镜像

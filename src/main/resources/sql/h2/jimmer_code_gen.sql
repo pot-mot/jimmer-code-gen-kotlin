@@ -484,10 +484,12 @@ CREATE TABLE `gen_property`
     `id_property`              boolean      NOT NULL,
     `id_generation_annotation` varchar(500) NULL     DEFAULT NULL,
     `key_property`             boolean      NOT NULL,
+    `key_group`                varchar(500) NULL     DEFAULT NULL,
     `logical_delete`           boolean      NOT NULL,
     `id_view`                  boolean      NOT NULL,
     `id_view_target`           varchar(500) NULL     DEFAULT NULL,
     `association_type`         varchar(500) NULL     DEFAULT NULL,
+    `long_association`         boolean      NOT NULL,
     `mapped_by`                varchar(500) NULL     DEFAULT NULL,
     `input_not_null`           boolean      NULL     DEFAULT NULL,
     `join_column_metas`        varchar(500) NULL     DEFAULT NULL,
@@ -524,10 +526,12 @@ COMMENT ON COLUMN `gen_property`.`type_not_null` IS '是否非空';
 COMMENT ON COLUMN `gen_property`.`id_property` IS '是否 ID 属性';
 COMMENT ON COLUMN `gen_property`.`id_generation_annotation` IS 'ID 生成注释';
 COMMENT ON COLUMN `gen_property`.`key_property` IS '是否为业务键属性';
+COMMENT ON COLUMN `gen_property`.`key_group` IS '业务键组';
 COMMENT ON COLUMN `gen_property`.`logical_delete` IS '是否为逻辑删除属性';
 COMMENT ON COLUMN `gen_property`.`id_view` IS '是否为 视图属性';
 COMMENT ON COLUMN `gen_property`.`id_view_target` IS 'ID 视图目标';
 COMMENT ON COLUMN `gen_property`.`association_type` IS '关联类型';
+COMMENT ON COLUMN `gen_property`.`long_association` IS '是否为长关联';
 COMMENT ON COLUMN `gen_property`.`mapped_by` IS '映射镜像';
 COMMENT ON COLUMN `gen_property`.`input_not_null` IS '输入非空';
 COMMENT ON COLUMN `gen_property`.`join_column_metas` IS '关联列元数据';

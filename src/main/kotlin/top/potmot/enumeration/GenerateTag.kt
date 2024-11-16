@@ -16,8 +16,6 @@ enum class GenerateTag {
     EnumNullableSelect,
     IdSelect,
     IdMultiSelect,
-    EntitySelect,
-    EntityMultiSelect,
     Page,
     AddForm,
     EditForm,
