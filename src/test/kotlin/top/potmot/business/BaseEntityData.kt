@@ -1,4 +1,4 @@
-package top.potmot.view
+package top.potmot.business
 
 import java.time.LocalDateTime
 import top.potmot.entity.dto.GenEntityBusinessView
@@ -8,7 +8,7 @@ import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
 import top.potmot.enumeration.AssociationType
 
-private val baseProperty = TargetOf_properties(
+val baseProperty = TargetOf_properties(
     id = 0,
     name = "property",
     comment = "comment",
@@ -19,6 +19,7 @@ private val baseProperty = TargetOf_properties(
     idProperty = false,
     idGenerationAnnotation = null,
     keyProperty = false,
+    keyGroup = null,
     logicalDelete = false,
     idView = false,
     idViewTarget = null,
@@ -28,6 +29,7 @@ private val baseProperty = TargetOf_properties(
     joinColumnMetas = null,
     joinTableMeta = null,
     dissociateAnnotation = null,
+    longAssociation = false,
     otherAnnotation = null,
     orderKey = 0,
     entityId = 0,
@@ -38,14 +40,16 @@ private val baseProperty = TargetOf_properties(
     modifiedTime = LocalDateTime.now(),
 )
 
-private val idProperty = baseProperty.copy(
+val idProperty = baseProperty.copy(
+    id = 1,
     idProperty = true,
     name = "id",
     comment = "id",
     type = "kotlin.Int",
 )
 
-private val enumProperty = baseProperty.copy(
+val enumProperty = baseProperty.copy(
+    id = 2,
     name = "enumProperty",
     type = "Enum",
     comment = "enumProperty",
@@ -65,13 +69,15 @@ private val enumProperty = baseProperty.copy(
     )
 )
 
-private val enumNullableProperty = enumProperty.copy(
+val enumNullableProperty = enumProperty.copy(
+    id = 3,
     name = "enumNullableProperty",
     typeNotNull = false,
     comment = "enumNullableProperty",
 )
 
-private val toOneProperty = baseProperty.copy(
+val toOneProperty = baseProperty.copy(
+    id = 4,
     name = "toOneProperty",
     type = "ToOneEntity",
     comment = "toOneProperty",
@@ -92,13 +98,15 @@ private val toOneProperty = baseProperty.copy(
     )
 )
 
-private val toOneNullableProperty = toOneProperty.copy(
+val toOneNullableProperty = toOneProperty.copy(
+    id = 5,
     name = "toOneNullableProperty",
     typeNotNull = false,
     comment = "toOneNullableProperty",
 )
 
-private val toManyProperty = baseProperty.copy(
+val toManyProperty = baseProperty.copy(
+    id = 6,
     name = "toManyProperties",
     type = "ToManyEntity",
     comment = "toManyProperty",

@@ -1,4 +1,4 @@
-package top.potmot.business.enum
+package top.potmot.business.enums
 
 import top.potmot.business.AbstractEnumTest
 import top.potmot.enumeration.ViewType

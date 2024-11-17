@@ -1,9 +1,9 @@
-package top.potmot.view.vue3.elementPlus.withEntity
+package top.potmot.business.view.vue3.elementPlus.withEntity
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.view.testEntity
+import top.potmot.business.testEntity
 
 class EntityPageTest {
     private val generator = Vue3ElementPlusViewGenerator

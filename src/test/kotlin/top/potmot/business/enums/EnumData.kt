@@ -1,4 +1,4 @@
-package top.potmot.business.enum
+package top.potmot.business.enums
 
 const val enumJson = """
 {

@@ -1,4 +1,4 @@
-package top.potmot.business.enum
+package top.potmot.business.enums
 
 const val vue3ElementPlusResult = """
 [(components/enumTest/EnumTestView.vue, <script setup lang="ts">

@@ -1,4 +1,4 @@
-package top.potmot.view.rules
+package top.potmot.business.view.rules
 
 import top.potmot.core.business.view.generate.meta.rules.RequiredRule
 

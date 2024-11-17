@@ -1,17 +1,20 @@
 package top.potmot.core.business.dto.generate
 
+import top.potmot.core.business.utils.ExistByValid
+import top.potmot.core.business.utils.ExistByValidItem
 import top.potmot.core.business.utils.PropertyQueryType
 import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.utils.selectOptionLabel
 import top.potmot.core.business.utils.toFlat
+import top.potmot.core.business.utils.upperName
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.enumeration.targetOneAssociationTypes
 import top.potmot.error.ModelException
 import top.potmot.utils.string.toSingular
 
-object DtoGenerator {
+object DtoGenerator : ExistByValid {
     private fun formatFileName(
         entity: GenEntityBusinessView,
     ): String =
@@ -95,7 +98,6 @@ object DtoGenerator {
     }
 
     private val GenEntityBusinessView.TargetOf_properties.specExpression
-        @Throws(ModelException.IdPropertyNotFound::class)
         get() =
             if (idProperty)
                 listOf("eq(${name})")
@@ -123,7 +125,6 @@ object DtoGenerator {
                     listOf("associatedIdIn(${name}) as ${name.toSingular()}Ids")
             }
 
-    @Throws(ModelException.IdPropertyNotFound::class)
     private fun generateSpec(entity: GenEntityBusinessView) = buildString {
         appendLine("specification ${entity.dto.spec} {")
 
@@ -134,6 +135,30 @@ object DtoGenerator {
 
         appendLine("}")
     }
+
+    private fun ExistByValidItem.dtoName(entityName: String) =
+        entityName + "ExistBy" + properties.joinToString("And") { it.upperName } + "Spec"
+
+    private val GenEntityBusinessView.TargetOf_properties.existByValidSpecExpression
+        get() =
+            if (associationType != null && idView) {
+                "associatedIdEq(${name})"
+            } else {
+                name
+            }
+
+    private fun generateExistByValidDto(entity: GenEntityBusinessView) =
+        entity.existByValidItems.joinToString("\n") { item ->
+            buildString {
+                appendLine("specification ${item.dtoName(entity.name)} {")
+
+                item.properties.forEach {
+                    appendLine("    ${it.existByValidSpecExpression}")
+                }
+
+                appendLine("}")
+            }
+        }
 
     @Throws(ModelException.IdPropertyNotFound::class)
     private fun stringify(entity: GenEntityBusinessView): String {
@@ -146,6 +171,7 @@ ${generateOptionView(entity)}
 ${generateInsertInput(entity)}
 ${generateUpdateInput(entity)}
 ${generateSpec(entity)}
+${generateExistByValidDto(entity)}
         """.trim()
     }
 

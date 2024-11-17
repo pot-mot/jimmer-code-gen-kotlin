@@ -1,4 +1,4 @@
-package top.potmot.view.rules
+package top.potmot.business.view.rules
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

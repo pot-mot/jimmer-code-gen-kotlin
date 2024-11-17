@@ -1,4 +1,4 @@
-package top.potmot.view.vue3.elementPlus
+package top.potmot.business.view.vue3.elementPlus
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

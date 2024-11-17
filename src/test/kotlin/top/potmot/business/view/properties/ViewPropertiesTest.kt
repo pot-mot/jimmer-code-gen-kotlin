@@ -1,9 +1,9 @@
-package top.potmot.view.properties
+package top.potmot.business.view.properties
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import top.potmot.business.testEntity
 import top.potmot.core.business.view.generate.builder.property.ViewProperties
-import top.potmot.view.testEntity
 
 class ViewPropertiesTest : ViewProperties {
     @Test
