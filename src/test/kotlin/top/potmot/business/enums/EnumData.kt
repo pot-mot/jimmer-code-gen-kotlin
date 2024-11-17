@@ -1,6 +1,11 @@
 package top.potmot.business.enums
 
-const val enumJson = """
+import com.fasterxml.jackson.module.kotlin.readValue
+import top.potmot.entity.GenEnum
+import top.potmot.entity.dto.GenEnumGenerateView
+import top.potmot.utils.json.commonObjectMapper
+
+private const val enumJson = """
 {
     "id": 1,
     "packagePath": "com.example.enum",
@@ -33,3 +38,7 @@ const val enumJson = """
     ]
 }
 """
+
+val enumData = GenEnumGenerateView(
+    commonObjectMapper.readValue<GenEnum>(enumJson)
+)

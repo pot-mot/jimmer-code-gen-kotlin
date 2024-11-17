@@ -1,6 +1,5 @@
 package top.potmot.business
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -8,20 +7,12 @@ import org.junit.jupiter.params.provider.MethodSource
 import top.potmot.core.business.dto.generate.DtoGenerator
 import top.potmot.core.business.service.generate.getServiceGenerator
 import top.potmot.core.business.view.generate.getViewGenerator
-import top.potmot.entity.GenEntity
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.ViewType
-import top.potmot.utils.json.commonObjectMapper
-
 
 abstract class AbstractEntityTest {
-    abstract fun getTestEntityJson(): String
-
-    private fun getTestEntity(): GenEntityBusinessView =
-        GenEntityBusinessView(
-            commonObjectMapper.readValue<GenEntity>(getTestEntityJson())
-        )
+    abstract fun getTestEntity(): GenEntityBusinessView
 
     abstract fun getDtoResult(): String
 

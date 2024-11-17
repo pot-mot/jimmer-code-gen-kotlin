@@ -1,6 +1,11 @@
 package top.potmot.business.single
 
-const val entityData = """
+import com.fasterxml.jackson.module.kotlin.readValue
+import top.potmot.entity.GenEntity
+import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.utils.json.commonObjectMapper
+
+private const val entityJson = """
 {
     "createdTime": "2024-10-13T14:31:29.734295",
     "modifiedTime": "2024-10-16T12:02:02.927149",
@@ -467,3 +472,7 @@ const val entityData = """
     ]
 }
 """
+
+val entityData = GenEntityBusinessView(
+    commonObjectMapper.readValue<GenEntity>(entityJson)
+)

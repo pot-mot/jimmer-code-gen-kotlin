@@ -5,7 +5,7 @@ import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.ViewType
 
 class TestSingle : AbstractEntityTest() {
-    override fun getTestEntityJson() = entityData
+    override fun getTestEntity() = entityData
 
     override fun getDtoResult() = dtoResult
 

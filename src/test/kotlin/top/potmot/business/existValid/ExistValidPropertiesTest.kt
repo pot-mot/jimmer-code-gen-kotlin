@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import top.potmot.business.enumNullableProperty
 import top.potmot.business.enumProperty
-import top.potmot.business.idViewTestEntity
-import top.potmot.business.testEntity
 import top.potmot.business.toOneIdView
 import top.potmot.business.toOneNullableIdView
 import top.potmot.business.toOneNullableProperty
@@ -17,9 +15,7 @@ import top.potmot.error.ModelException
 class ExistValidPropertiesTest : ExistByValid {
     @Test
     fun `test existByValidItems`() {
-        val existByValidItems = testEntity.copy(
-            indexes = listOf(toOneUniqueIndex, enumUniqueIndex)
-        ).existByValidItems
+        val existByValidItems = toOneAndEnumEntity.existByValidItems
 
         assertEquals(
             2,
@@ -49,9 +45,7 @@ class ExistValidPropertiesTest : ExistByValid {
 
     @Test
     fun `test duplicate existByValidItems`() {
-        val existByValidItems = testEntity.copy(
-            indexes = listOf(toOneUniqueIndex, toOneUniqueIndex, enumUniqueIndex)
-        ).existByValidItems
+        val existByValidItems = toOneDuplicateAndEnumEntity.existByValidItems
 
         assertEquals(
             2,
@@ -82,17 +76,13 @@ class ExistValidPropertiesTest : ExistByValid {
     @Test
     fun `test toMany existByValidItems as error`() {
         assertThrows<ModelException.IndexRefPropertyCannotBeList> {
-            testEntity.copy(
-                indexes = listOf(toManyUniqueIndex)
-            ).existByValidItems
+            toManyEntity.existByValidItems
         }
     }
 
         @Test
     fun `test idView existByValidItems`() {
-        val existByValidItems = idViewTestEntity.copy(
-            indexes = listOf(toOneIdViewUniqueIndex, enumUniqueIndex)
-        ).existByValidItems
+        val existByValidItems = toOneIdViewAndEnumEntity.existByValidItems
 
         assertEquals(
             2,
@@ -122,9 +112,7 @@ class ExistValidPropertiesTest : ExistByValid {
 
     @Test
     fun `test idView duplicate existByValidItems`() {
-        val existByValidItems = idViewTestEntity.copy(
-            indexes = listOf(toOneIdViewUniqueIndex, toOneIdViewUniqueIndex, enumUniqueIndex)
-        ).existByValidItems
+        val existByValidItems = toOneIdViewDuplicateAndEntity.existByValidItems
 
         assertEquals(
             2,
@@ -155,9 +143,7 @@ class ExistValidPropertiesTest : ExistByValid {
     @Test
     fun `test idView toMany existByValidItems as error`() {
         assertThrows<ModelException.IndexRefPropertyCannotBeList> {
-            idViewTestEntity.copy(
-                indexes = listOf(toManyIdViewUniqueIndex)
-            ).existByValidItems
+            toManyIdViewEntity.existByValidItems
         }
     }
 }

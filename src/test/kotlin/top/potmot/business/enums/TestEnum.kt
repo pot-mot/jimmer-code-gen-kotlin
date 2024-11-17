@@ -4,7 +4,7 @@ import top.potmot.business.AbstractEnumTest
 import top.potmot.enumeration.ViewType
 
 class TestEnum : AbstractEnumTest() {
-    override fun getTestEnumJson() = enumJson
+    override fun getTestEnum() = enumData
 
     override fun getViewResult(viewType: ViewType) =
         when(viewType) {
