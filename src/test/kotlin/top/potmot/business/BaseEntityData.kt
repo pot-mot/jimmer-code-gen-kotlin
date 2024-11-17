@@ -1,12 +1,14 @@
 package top.potmot.business
 
 import java.time.LocalDateTime
+import top.potmot.core.business.utils.idProperty
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_idProperties
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
 import top.potmot.enumeration.AssociationType
+import top.potmot.utils.string.toSingular
 
 val baseProperty = TargetOf_properties(
     id = 0,
@@ -147,6 +149,58 @@ val testEntity = GenEntityBusinessView(
         toOneProperty,
         toOneNullableProperty,
         toManyProperty,
+    ),
+    indexes = emptyList()
+)
+
+val toOneIdView = toOneProperty.copy(
+    id = 7,
+    name = toOneProperty.name + "Id",
+    idView = true,
+    idViewTarget = toOneProperty.name,
+    typeEntity = null,
+    type = toOneProperty.typeEntity!!.idProperty.type,
+)
+
+val toOneNullableIdView = toOneNullableProperty.copy(
+    id = 8,
+    name = toOneNullableProperty.name + "Id",
+    idViewTarget = toOneNullableProperty.name,
+    typeEntity = null,
+    type = toOneNullableProperty.typeEntity!!.idProperty.type,
+
+)
+
+val toManyIdView = toManyProperty.copy(
+    id = 9,
+    name = toManyProperty.name.toSingular() + "Ids",
+    idViewTarget = toManyProperty.name,
+    typeEntity = null,
+    type = toManyProperty.typeEntity!!.idProperty.type,
+)
+
+val idViewTestEntity = GenEntityBusinessView(
+    id = 0,
+    name = "Entity",
+    comment = "comment",
+    author = "author",
+    remark = "remark",
+    packagePath = "EntityPackage",
+    createdTime = LocalDateTime.now(),
+    modifiedTime = LocalDateTime.now(),
+    idProperties = listOf(
+        TargetOf_idProperties(idProperty.toEntity())
+    ),
+    properties = listOf(
+        idProperty,
+        enumProperty,
+        enumNullableProperty,
+        toOneProperty,
+        toOneIdView,
+        toOneNullableProperty,
+        toOneNullableIdView,
+        toManyProperty,
+        toManyIdView,
     ),
     indexes = emptyList()
 )

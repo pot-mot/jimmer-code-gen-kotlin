@@ -5,23 +5,10 @@ import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.meta.rules.numberMax
 import top.potmot.core.business.view.generate.meta.rules.numberMin
 import top.potmot.core.business.view.generate.meta.rules.numberPrecision
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
-import java.time.LocalDateTime
+import top.potmot.business.baseProperty
 
 class NumberRangeTest {
-    private val baseProperty = TargetOf_properties(
-        id = 0,
-        createdTime = LocalDateTime.now(),
-        modifiedTime = LocalDateTime.now(),
-        name = "",
-        comment = "",
-        type = "",
-        remark = "",
-        orderKey = 0,
-        entityId = 0,
-    )
-
     @Test
     fun `test numberPrecision when column is not null`() {
         val property = baseProperty.copy(
