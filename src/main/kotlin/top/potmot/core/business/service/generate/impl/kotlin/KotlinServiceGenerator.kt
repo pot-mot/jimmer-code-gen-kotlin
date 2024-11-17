@@ -166,8 +166,9 @@ class $serviceName(
     @Throws(AuthorizeException::class)
     fun delete(@RequestParam ids: List<${idType}>) = 
         sqlClient.deleteByIds(${name}::class, ids).affectedRowCount(${name}::class)
-""".trim() + "\n\n" + existValidItemWithName.joinToString("\n\n") { (name, validItem) ->
+""".trim() + existValidItemWithName.joinToString("") { (name, validItem) ->
     """
+
     /**
      * 根据${validItem.properties.joinToString(", ") { it.comment }}校验${comment}是否存在。
      *
@@ -177,7 +178,7 @@ class $serviceName(
     @PostMapping("/${validItem.functionName}")
     @SaCheckPermission("${permissionPrefix}:list")
     @Throws(AuthorizeException::class)
-    """.trimBlankLine() + "\n" + stringifyExistValidQueryMethod(entity.name, name, validItem)
+""" + stringifyExistValidQueryMethod(entity.name, name, validItem)
         } + "\n}"
     }
 

@@ -192,8 +192,9 @@ public class $serviceName implements Tables {
         }> ids) throws AuthorizeException {
         return sqlClient.deleteByIds(${name}.class, ids).getAffectedRowCount(${name}.class);
     }
-""".trim() + "\n\n" + existValidItemWithNames.joinToString("\n\n") { (name, validItem) ->
+""".trim() + existValidItemWithNames.joinToString("") { (name, validItem) ->
             """
+
     /**
      * 根据${validItem.properties.joinToString(", ") { it.comment }}校验${comment}是否存在。
      *
@@ -202,7 +203,7 @@ public class $serviceName implements Tables {
      */
     @PostMapping("/${validItem.functionName}")
     @SaCheckPermission("${permissionPrefix}:list")
-    """.trimBlankLine() + "\n" + stringifyExistValidQueryMethod(tableProxy, name, validItem)
+""" + stringifyExistValidQueryMethod(tableProxy, name, validItem)
         } + "\n}"
     }
 
