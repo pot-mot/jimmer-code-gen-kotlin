@@ -141,7 +141,7 @@ object DtoGenerator : ExistByValid {
 
     private val GenEntityBusinessView.TargetOf_properties.existByValidSpecExpression
         get() =
-            if (associationType != null && idView) {
+            if (associationType != null && !idView) {
                 "associatedIdEq(${name})"
             } else {
                 name
