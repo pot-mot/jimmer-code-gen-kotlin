@@ -1,6 +1,8 @@
 package top.potmot.core.business.service.generate.impl.kotlin
 
+import top.potmot.core.business.dto.generate.dtoName
 import top.potmot.core.business.service.generate.ServiceGenerator
+import top.potmot.core.business.utils.ExistValidItem
 import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.packages
@@ -10,6 +12,7 @@ import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.typeStrToKotlinType
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.GenerateException
+import top.potmot.utils.string.trimBlankLine
 
 object KotlinServiceGenerator : ServiceGenerator() {
     override fun getFileSuffix() = ".kt"
@@ -26,10 +29,20 @@ object KotlinServiceGenerator : ServiceGenerator() {
 
         val packages = entity.packages
         val (listView, detailView, insertInput, updateInput, spec, optionView) = entity.dto
+        val existValidItemWithName = entity.existValidItems.map {
+            it.dtoName(entity.name) to it
+        }
+        val existValidDtoImports = existValidItemWithName.joinToString("\n") {
+            "import ${packages.dto}.${it.first}"
+        }.let {
+            if (it.isNotBlank()) "\n$it"
+            else ""
+        }
 
         val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToKotlinType(idProperty.type, idProperty.typeNotNull)
+
 
         return """
 package ${packages.service}
@@ -55,7 +68,7 @@ import ${packages.dto}.${detailView}
 import ${packages.dto}.${insertInput}
 import ${packages.dto}.${updateInput}
 import ${packages.dto}.${spec}
-import ${packages.dto}.${optionView}
+import ${packages.dto}.${optionView}${existValidDtoImports}
 import ${packages.entity}.query.PageQuery
 import ${packages.exception}.AuthorizeException
 import ${packages.utils}.sqlClient.query
@@ -153,7 +166,32 @@ class $serviceName(
     @Throws(AuthorizeException::class)
     fun delete(@RequestParam ids: List<${idType}>) = 
         sqlClient.deleteByIds(${name}::class, ids).affectedRowCount(${name}::class)
-}
-    """.trim()
+""".trim() + "\n\n" + existValidItemWithName.joinToString("\n\n") { (name, validItem) ->
+    """
+    /**
+     * 根据${validItem.properties.joinToString(", ") { it.comment }}校验${comment}是否存在。
+     *
+     * @param spec ${comment}校验规格对象。
+     * @return ${comment}是否存在。
+     */
+    @PostMapping("/${validItem.functionName}")
+    @SaCheckPermission("${permissionPrefix}:list")
+    @Throws(AuthorizeException::class)
+    """.trimBlankLine() + "\n" + stringifyExistValidQueryMethod(entity.name, name, validItem)
+        } + "\n}"
+    }
+
+    private fun stringifyExistValidQueryMethod(
+        entityName: String,
+        name: String,
+        validItem: ExistValidItem,
+    ): String {
+        return """
+    fun ${validItem.functionName}(@RequestBody spec: $name): Boolean =
+        sqlClient.createQuery($entityName::class) {
+            where(spec)
+            select(table)
+        }.exists()
+        """.trimBlankLine()
     }
 }

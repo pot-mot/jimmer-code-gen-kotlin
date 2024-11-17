@@ -5,18 +5,20 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.IdName
 import top.potmot.error.ModelException
 
-data class ExistByValidItem(
+data class ExistValidItem(
     val properties: SortedSet<GenEntityBusinessView.TargetOf_properties>,
-)
+) {
+    val functionName = "existBy${properties.joinToString(separator = "And") { it.upperName }}"
+}
 
-interface ExistByValid {
- val GenEntityBusinessView.existByValidItems: List<ExistByValidItem>
+interface ExistValidItems {
+ val GenEntityBusinessView.existValidItems: List<ExistValidItem>
     @Throws(ModelException.IndexRefPropertyNotFound::class, ModelException.IndexRefPropertyCannotBeList::class)
     get() {
         val propertyMap = properties.associateBy { it.id }
         val idViewTargets = properties.mapNotNull { it.idViewTarget }.toSet()
 
-        return indexes.filter { it.uniqueIndex }.map { index ->
+        return indexes.asSequence().filter { it.uniqueIndex }.map { index ->
             index.columns.flatMap { column ->
                 column.properties.mapNotNull { propertyIdOnly ->
                     val property = propertyMap[propertyIdOnly.id]
@@ -52,12 +54,12 @@ interface ExistByValid {
         }
             .filter { it.isNotEmpty() }
             .map {
-                ExistByValidItem(
+                ExistValidItem(
                     it.toSortedSet { property1, property2 ->
                         property1.id.compareTo(property2.id)
                     }
                 )
             }
-            .distinctBy { it.properties }
+            .distinctBy { it.properties }.toList()
     }
 }

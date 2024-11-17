@@ -9,13 +9,13 @@ import top.potmot.business.toOneIdView
 import top.potmot.business.toOneNullableIdView
 import top.potmot.business.toOneNullableProperty
 import top.potmot.business.toOneProperty
-import top.potmot.core.business.utils.ExistByValid
+import top.potmot.core.business.utils.ExistValidItems
 import top.potmot.error.ModelException
 
-class ExistValidPropertiesTest : ExistByValid {
+class ExistValidPropertiesTest : ExistValidItems {
     @Test
     fun `test existByValidItems`() {
-        val existByValidItems = toOneAndEnumEntity.existByValidItems
+        val existByValidItems = toOneAndEnumEntity.existValidItems
 
         assertEquals(
             2,
@@ -45,7 +45,7 @@ class ExistValidPropertiesTest : ExistByValid {
 
     @Test
     fun `test duplicate existByValidItems`() {
-        val existByValidItems = toOneDuplicateAndEnumEntity.existByValidItems
+        val existByValidItems = toOneDuplicateAndEnumEntity.existValidItems
 
         assertEquals(
             2,
@@ -76,13 +76,13 @@ class ExistValidPropertiesTest : ExistByValid {
     @Test
     fun `test toMany existByValidItems as error`() {
         assertThrows<ModelException.IndexRefPropertyCannotBeList> {
-            toManyEntity.existByValidItems
+            toManyEntity.existValidItems
         }
     }
 
         @Test
     fun `test idView existByValidItems`() {
-        val existByValidItems = toOneIdViewAndEnumEntity.existByValidItems
+        val existByValidItems = toOneIdViewAndEnumEntity.existValidItems
 
         assertEquals(
             2,
@@ -112,7 +112,7 @@ class ExistValidPropertiesTest : ExistByValid {
 
     @Test
     fun `test idView duplicate existByValidItems`() {
-        val existByValidItems = toOneIdViewDuplicateAndEntity.existByValidItems
+        val existByValidItems = toOneIdViewDuplicateAndEntity.existValidItems
 
         assertEquals(
             2,
@@ -143,7 +143,7 @@ class ExistValidPropertiesTest : ExistByValid {
     @Test
     fun `test idView toMany existByValidItems as error`() {
         assertThrows<ModelException.IndexRefPropertyCannotBeList> {
-            toManyIdViewEntity.existByValidItems
+            toManyIdViewEntity.existValidItems
         }
     }
 }

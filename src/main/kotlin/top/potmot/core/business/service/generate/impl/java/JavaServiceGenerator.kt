@@ -1,6 +1,8 @@
 package top.potmot.core.business.service.generate.impl.java
 
+import top.potmot.core.business.dto.generate.dtoName
 import top.potmot.core.business.service.generate.ServiceGenerator
+import top.potmot.core.business.utils.ExistValidItem
 import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.packages
@@ -11,9 +13,13 @@ import top.potmot.core.business.utils.typeStrToJavaType
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.entityNameToTableName
+import top.potmot.utils.string.trimBlankLine
 
 object JavaServiceGenerator : ServiceGenerator() {
     override fun getFileSuffix() = ".java"
+
+    private val GenEntityBusinessView.tableProxy
+        get() = entityNameToTableName(name) + "_TABLE"
 
     @Throws(GenerateException::class)
     override fun stringifyService(
@@ -24,11 +30,19 @@ object JavaServiceGenerator : ServiceGenerator() {
 
         val serviceName = entity.serviceName
         val permissionPrefix = entity.permissionPrefix
+        val tableProxy = entity.tableProxy
 
         val packages = entity.packages
         val (listView, detailView, insertInput, updateInput, spec, optionView) = entity.dto
-
-        val tableProxy = entityNameToTableName(name) + "_TABLE"
+        val existValidItemWithNames = entity.existValidItems.map {
+            it.dtoName(entity.name) to it
+        }
+        val existValidDtoImports = existValidItemWithNames.joinToString("\n") {
+            "import ${packages.dto}.${it.first};"
+        }.let {
+            if (it.isNotBlank()) "\n$it"
+            else ""
+        }
 
         val idProperty = entity.idProperty
         val idName = idProperty.name
@@ -58,7 +72,7 @@ import ${packages.dto}.${detailView};
 import ${packages.dto}.${insertInput};
 import ${packages.dto}.${updateInput};
 import ${packages.dto}.${spec};
-import ${packages.dto}.${optionView};
+import ${packages.dto}.${optionView};${existValidDtoImports}
 import ${packages.entity}.query.PageQuery;
 import ${packages.exception}.AuthorizeException;
 import org.jetbrains.annotations.NotNull;
@@ -178,7 +192,30 @@ public class $serviceName implements Tables {
         }> ids) throws AuthorizeException {
         return sqlClient.deleteByIds(${name}.class, ids).getAffectedRowCount(${name}.class);
     }
-}
-    """.trim()
+""".trim() + "\n\n" + existValidItemWithNames.joinToString("\n\n") { (name, validItem) ->
+            """
+    /**
+     * 根据${validItem.properties.joinToString(", ") { it.comment }}校验${comment}是否存在。
+     *
+     * @param spec ${comment}校验规格对象。
+     * @return ${comment}是否存在。
+     */
+    @PostMapping("/${validItem.functionName}")
+    @SaCheckPermission("${permissionPrefix}:list")
+    """.trimBlankLine() + "\n" + stringifyExistValidQueryMethod(tableProxy, name, validItem)
+        } + "\n}"
     }
+
+    private fun stringifyExistValidQueryMethod(
+        tableProxy: String,
+        name: String,
+        validItem: ExistValidItem,
+    ) = """
+    public boolean ${validItem.functionName}(@RequestBody @NotNull $name spec) throws AuthorizeException {
+        return sqlClient.createQuery($tableProxy)
+                .where(spec)
+                .select($tableProxy)
+                .exists();
+    }
+        """.trimBlankLine()
 }

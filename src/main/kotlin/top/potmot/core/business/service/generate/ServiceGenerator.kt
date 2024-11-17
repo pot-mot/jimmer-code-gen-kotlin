@@ -1,13 +1,13 @@
 package top.potmot.core.business.service.generate
 
-import kotlin.jvm.Throws
+import top.potmot.core.business.utils.ExistValidItems
 import top.potmot.core.business.utils.serviceFilePath
 import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.GenerateException
 
-abstract class ServiceGenerator {
+abstract class ServiceGenerator : ExistValidItems {
     abstract fun getFileSuffix(): String
 
     protected abstract fun stringifyService(entity: GenEntityBusinessView): String

@@ -1,7 +1,7 @@
 package top.potmot.core.business.dto.generate
 
-import top.potmot.core.business.utils.ExistByValid
-import top.potmot.core.business.utils.ExistByValidItem
+import top.potmot.core.business.utils.ExistValidItems
+import top.potmot.core.business.utils.ExistValidItem
 import top.potmot.core.business.utils.PropertyQueryType
 import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.idProperty
@@ -14,7 +14,7 @@ import top.potmot.enumeration.targetOneAssociationTypes
 import top.potmot.error.ModelException
 import top.potmot.utils.string.toSingular
 
-object DtoGenerator : ExistByValid {
+object DtoGenerator : ExistValidItems {
     private fun formatFileName(
         entity: GenEntityBusinessView,
     ): String =
@@ -136,9 +136,6 @@ object DtoGenerator : ExistByValid {
         appendLine("}")
     }
 
-    private fun ExistByValidItem.dtoName(entityName: String) =
-        entityName + "ExistBy" + properties.joinToString("And") { it.upperName } + "Spec"
-
     private val GenEntityBusinessView.TargetOf_properties.existByValidSpecExpression
         get() =
             if (associationType != null && !idView) {
@@ -148,7 +145,7 @@ object DtoGenerator : ExistByValid {
             }
 
     private fun generateExistByValidDto(entity: GenEntityBusinessView) =
-        entity.existByValidItems.joinToString("\n") { item ->
+        entity.existValidItems.joinToString("\n") { item ->
             buildString {
                 appendLine("specification ${item.dtoName(entity.name)} {")
 
@@ -192,3 +189,6 @@ ${generateExistByValidDto(entity)}
             .map { generateDto(it) }
             .distinct().sortedBy { it.first }
 }
+
+fun ExistValidItem.dtoName(entityName: String) =
+        entityName + "ExistBy" + properties.joinToString("And") { it.upperName } + "Spec"
