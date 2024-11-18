@@ -74,7 +74,7 @@ class ModelService(
 
                 // 保存 tables
                 val tableInputs = tableInputsList.map { it.table }
-                val savedTables = sqlClient.entities.saveInputs(tableInputs).simpleResults.map {
+                val savedTables = sqlClient.entities.saveInputs(tableInputs).items.map {
                     GenTableLoadView(it.modifiedEntity)
                 }
 
@@ -120,7 +120,7 @@ class ModelService(
                     val columnNameIdMap = savedTable.columns.associate { it.name to it.id }
 
                     val indexInputs = indexes.map { it.toInput(savedTable, columnNameIdMap) }
-                    val savedIndexes = sqlClient.entities.saveInputs(indexInputs).simpleResults.map { it.modifiedEntity }
+                    val savedIndexes = sqlClient.entities.saveInputs(indexInputs).items.map { it.modifiedEntity }
 
                     // 移除遗留 indexes
                     sqlClient.createDelete(GenTableIndex::class) {
@@ -131,7 +131,7 @@ class ModelService(
 
                 // 保存 associations
                 val associationInputs = associationModelInputs.map { it.toInput(savedTables) }
-                val savedAssociations = sqlClient.entities.saveEntities(associationInputs.map { it.toEntity { modelId = savedModel.id } }).simpleResults.map { it.modifiedEntity }
+                val savedAssociations = sqlClient.entities.saveEntities(associationInputs.map { it.toEntity { modelId = savedModel.id } }).items.map { it.modifiedEntity }
 
                 // 移除遗留 associations
                 sqlClient.createDelete(GenAssociation::class) {

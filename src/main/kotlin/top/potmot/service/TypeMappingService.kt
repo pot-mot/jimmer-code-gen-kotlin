@@ -35,6 +35,6 @@ class TypeMappingService(
     fun saveAll(@RequestBody typeMappings: List<GenTypeMappingInput>): List<Long> =
         transactionTemplate.execute {
             sqlClient.createDelete(GenTypeMapping::class) {}.execute()
-            sqlClient.entities.saveInputs(typeMappings).simpleResults.map { it.modifiedEntity.id }
+            sqlClient.entities.saveInputs(typeMappings).items.map { it.modifiedEntity.id }
         }!!
 }

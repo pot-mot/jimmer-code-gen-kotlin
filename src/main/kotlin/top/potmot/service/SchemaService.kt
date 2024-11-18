@@ -72,7 +72,7 @@ class SchemaService(
 
                     // 保存 tables
                     val tableInputs = tables.map { it.toInput(savedSchema.id) }
-                    val savedTables = sqlClient.entities.saveInputs(tableInputs).simpleResults.map {
+                    val savedTables = sqlClient.entities.saveInputs(tableInputs).items.map {
                         GenTableLoadView(it.modifiedEntity)
                     }
 
