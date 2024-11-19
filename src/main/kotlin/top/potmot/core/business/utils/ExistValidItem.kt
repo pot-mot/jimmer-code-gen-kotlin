@@ -11,8 +11,7 @@ data class ExistValidItem(
     val functionName = "existBy${properties.joinToString(separator = "And") { it.upperName }}"
 }
 
-interface ExistValidItems {
- val GenEntityBusinessView.existValidItems: List<ExistValidItem>
+val GenEntityBusinessView.existValidItems: List<ExistValidItem>
     @Throws(ModelException.IndexRefPropertyNotFound::class, ModelException.IndexRefPropertyCannotBeList::class)
     get() {
         val propertyMap = properties.associateBy { it.id }
@@ -62,4 +61,3 @@ interface ExistValidItems {
             }
             .distinctBy { it.properties }.toList()
     }
-}

@@ -12,7 +12,8 @@ import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.ViewGenerator
 import top.potmot.core.business.view.generate.apiPath
 import top.potmot.core.business.view.generate.builder.property.ViewProperties
-import top.potmot.core.business.view.generate.builder.property.rules
+import top.potmot.core.business.view.generate.builder.rules.existValidRules
+import top.potmot.core.business.view.generate.builder.rules.rules
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.componentPath
@@ -228,7 +229,7 @@ object Vue3ElementPlusViewGenerator :
     }
 
     override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
-        val rules = entity.insertInputProperties.associate { it.name to it.rules }
+        val rules = entity.insertInputProperties.associate { it.name to it.rules } + entity.existValidRules(withId = false)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.insertInput, rules)
     }
 
@@ -273,7 +274,7 @@ object Vue3ElementPlusViewGenerator :
     }
 
     override fun stringifyEditFormRules(entity: GenEntityBusinessView): String {
-        val rules = entity.editFormProperties.associate { it.name to it.rules }
+        val rules = entity.editFormProperties.associate { it.name to it.rules } + entity.existValidRules(withId = true)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules)
     }
 
@@ -297,7 +298,7 @@ object Vue3ElementPlusViewGenerator :
     }
 
     override fun stringifyEditTableRules(entity: GenEntityBusinessView): String {
-        val rules = entity.editTableProperties.associate { it.name to it.rules }
+        val rules = entity.editTableProperties.associate { it.name to it.rules } + entity.existValidRules(withId = false)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules, isArray = true)
     }
 

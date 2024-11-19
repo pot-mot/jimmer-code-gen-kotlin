@@ -4,6 +4,7 @@ import top.potmot.core.business.dto.generate.dtoName
 import top.potmot.core.business.service.generate.ServiceGenerator
 import top.potmot.core.business.utils.ExistValidItem
 import top.potmot.core.business.utils.dto
+import top.potmot.core.business.utils.existValidItems
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.packages
 import top.potmot.core.business.utils.permissionPrefix

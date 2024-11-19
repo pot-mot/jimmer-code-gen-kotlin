@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.builder.property
+package top.potmot.core.business.view.generate.builder.rules
 
 import top.potmot.core.business.utils.PropertyFormType
 import top.potmot.core.business.utils.formType

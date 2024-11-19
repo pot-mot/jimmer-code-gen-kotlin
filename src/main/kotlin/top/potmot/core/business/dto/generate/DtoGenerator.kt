@@ -1,9 +1,9 @@
 package top.potmot.core.business.dto.generate
 
-import top.potmot.core.business.utils.ExistValidItems
 import top.potmot.core.business.utils.ExistValidItem
 import top.potmot.core.business.utils.PropertyQueryType
 import top.potmot.core.business.utils.dto
+import top.potmot.core.business.utils.existValidItems
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.utils.selectOptionLabel
@@ -14,7 +14,7 @@ import top.potmot.enumeration.targetOneAssociationTypes
 import top.potmot.error.ModelException
 import top.potmot.utils.string.toSingular
 
-object DtoGenerator : ExistValidItems {
+object DtoGenerator {
     private fun formatFileName(
         entity: GenEntityBusinessView,
     ): String =
