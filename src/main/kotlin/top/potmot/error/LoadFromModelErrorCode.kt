@@ -53,4 +53,9 @@ enum class LoadFromModelErrorCode {
     @ErrorField(name = "indexNames", type = String::class, list = true)
     @ErrorField(name = "notFoundTableName", type = String::class)
     INDEXES_TABLE_NOT_FOUND,
+
+    @ErrorField(name = "indexNames", type = String::class, list = true)
+    @ErrorField(name = "table", type = IdName::class)
+    @ErrorField(name = "superTableIds", type = Long::class, list = true)
+    INDEXES_TABLE_SUPER_TABLE_NOT_FOUND,
 }
