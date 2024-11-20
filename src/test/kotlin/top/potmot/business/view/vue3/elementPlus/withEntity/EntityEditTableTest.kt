@@ -73,6 +73,14 @@ const props = withDefaults(defineProps<{
     submitLoading: false
 })
 
+const emits = defineEmits<{
+    (
+        event: "submit",
+        rows: Array<EntityAddFormType>
+    ): void,
+    (event: "cancel"): void
+}>()
+
 defineSlots<{
     operations(props: {
         handleSubmit: () => Promise<void>,

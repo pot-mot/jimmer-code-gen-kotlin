@@ -346,6 +346,10 @@ fun editTable(
         submitLoadingProp,
         *selectOptions.map { it.toProp() }.toTypedArray(),
     ),
+    emits = listOf(
+        submitEvent(formData, "Array<$type>"),
+        cancelEvent
+    ),
     slots = listOf(
         operationsSlot
     ),

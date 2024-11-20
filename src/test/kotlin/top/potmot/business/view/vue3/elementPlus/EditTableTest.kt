@@ -58,6 +58,14 @@ const props = withDefaults(defineProps<{
     submitLoading: false
 })
 
+const emits = defineEmits<{
+    (
+        event: "submit",
+        formData: Array<EntitySubTableType>
+    ): void,
+    (event: "cancel"): void
+}>()
+
 defineSlots<{
     operations(props: {
         handleSubmit: () => Promise<void>,
@@ -236,6 +244,14 @@ const props = withDefaults(defineProps<{
     multiSelect: true,
     submitLoading: false
 })
+
+const emits = defineEmits<{
+    (
+        event: "submit",
+        formData: Array<EntitySubTableType>
+    ): void,
+    (event: "cancel"): void
+}>()
 
 defineSlots<{
     operations(props: {
@@ -425,6 +441,14 @@ const props = withDefaults(defineProps<{
     multiSelect: true,
     submitLoading: false
 })
+
+const emits = defineEmits<{
+    (
+        event: "submit",
+        formData: Array<EntitySubTableType>
+    ): void,
+    (event: "cancel"): void
+}>()
 
 defineSlots<{
     operations(props: {
