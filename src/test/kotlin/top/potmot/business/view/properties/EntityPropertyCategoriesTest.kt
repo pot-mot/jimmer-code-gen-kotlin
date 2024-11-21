@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.business.idViewTestEntity
 import top.potmot.business.testEntity
-import top.potmot.core.business.view.generate.builder.property.ViewProperties
+import top.potmot.core.business.property.EntityPropertyCategories
 
-class ViewPropertiesTest : ViewProperties {
+class EntityPropertyCategoriesTest : EntityPropertyCategories {
     private val testEntities = listOf(testEntity, idViewTestEntity)
 
     @Test
@@ -137,28 +137,28 @@ class ViewPropertiesTest : ViewProperties {
     fun `test editFormProperties`() {
         testEntities.forEach { testEntity ->
             val editFormProperties = testEntity.editFormProperties
-            assertEquals(5, editFormProperties.size)
+            assertEquals(4, editFormProperties.size)
 
-            val enumProperty = editFormProperties[1]
+            val enumProperty = editFormProperties[0]
             assertEquals("enumProperty", enumProperty.name)
             assertEquals("Enum", enumProperty.type)
             assertEquals("enumProperty", enumProperty.comment)
             assertEquals(true, enumProperty.typeNotNull)
 
-            val enumNullableProperty = editFormProperties[2]
+            val enumNullableProperty = editFormProperties[1]
             assertEquals("enumNullableProperty", enumNullableProperty.name)
             assertEquals("Enum", enumNullableProperty.type)
             assertEquals("enumNullableProperty", enumNullableProperty.comment)
             assertEquals(false, enumNullableProperty.typeNotNull)
 
-            val toOneProperty = editFormProperties[3]
+            val toOneProperty = editFormProperties[2]
             assertEquals("toOnePropertyId", toOneProperty.name)
             assertEquals("kotlin.Long", toOneProperty.type)
             assertEquals("toOneProperty", toOneProperty.comment)
             assertEquals(true, toOneProperty.idView)
             assertEquals(true, toOneProperty.typeNotNull)
 
-            val toOneNullableProperty = editFormProperties[4]
+            val toOneNullableProperty = editFormProperties[3]
             assertEquals("toOneNullablePropertyId", toOneNullableProperty.name)
             assertEquals("kotlin.Long", toOneNullableProperty.type)
             assertEquals("toOneNullableProperty", toOneNullableProperty.comment)

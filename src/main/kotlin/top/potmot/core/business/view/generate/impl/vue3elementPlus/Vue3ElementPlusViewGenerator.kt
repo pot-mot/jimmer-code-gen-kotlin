@@ -1,5 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
+import top.potmot.core.business.property.EntityPropertyCategories
 import top.potmot.core.business.utils.components
 import top.potmot.core.business.utils.constants
 import top.potmot.core.business.utils.dir
@@ -12,7 +13,6 @@ import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.ViewGenerator
 import top.potmot.core.business.view.generate.apiPath
-import top.potmot.core.business.view.generate.builder.property.ViewProperties
 import top.potmot.core.business.view.generate.builder.rules.existValidRules
 import top.potmot.core.business.view.generate.builder.rules.rules
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
@@ -31,6 +31,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.que
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
+import top.potmot.core.business.view.generate.meta.rules.Rule
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
@@ -61,7 +62,7 @@ import top.potmot.utils.string.appendLines
 object Vue3ElementPlusViewGenerator :
     ViewGenerator,
     ElementPlus,
-    ViewProperties,
+    EntityPropertyCategories,
     TableColumn,
     FormItem,
     QueryFormItem,
@@ -242,15 +243,17 @@ object Vue3ElementPlusViewGenerator :
 
     @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
-        val rules =
-            entity.insertInputProperties.associate { it.name to it.rules } + entity.existValidRules(withId = false)
+        val addFormRulesProperties = entity.addFormRulesProperties
+        val rules: Map<String, List<Rule>> =
+            addFormRulesProperties.associate { it.name to it.rules } +
+                    entity.copy(properties = addFormRulesProperties).existValidRules(withId = false)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.insertInput, rules)
     }
 
     override fun stringifyAddForm(entity: GenEntityBusinessView): String {
         val formData = "formData"
 
-        val nullableDiffProperties = entity.addFormInsertInputNullableDiffProperty
+        val nullableDiffProperties = entity.addFormEditNullableProperty
 
         val hasNullableDiffProperties = nullableDiffProperties.isNotEmpty()
 
@@ -289,7 +292,10 @@ object Vue3ElementPlusViewGenerator :
 
     @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringifyEditFormRules(entity: GenEntityBusinessView): String {
-        val rules = entity.editFormProperties.associate { it.name to it.rules } + entity.existValidRules(withId = true)
+        val editFormRulesProperties = entity.editFormRulesProperties
+        val rules: Map<String, List<Rule>> =
+            editFormRulesProperties.associate { it.name to it.rules } +
+                    entity.copy(properties = editFormRulesProperties).existValidRules(withId = true)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules)
     }
 
@@ -306,7 +312,6 @@ object Vue3ElementPlusViewGenerator :
                 indent = builder.indent,
                 selectOptions = entity.selectOptions,
                 content = entity.editFormProperties
-                    .filter { !it.idProperty }
                     .associateWith { it.createFormItem(formData) }
             )
         )
@@ -314,8 +319,10 @@ object Vue3ElementPlusViewGenerator :
 
     @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringifyEditTableRules(entity: GenEntityBusinessView): String {
-        val rules =
-            entity.editTableProperties.associate { it.name to it.rules } + entity.existValidRules(withId = false)
+        val editTableRulesProperties = entity.editTableRulesProperties
+        val rules: Map<String, List<Rule>> =
+            editTableRulesProperties.associate { it.name to it.rules } +
+                    entity.copy(properties = editTableRulesProperties).existValidRules(withId = false)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules, isArray = true)
     }
 

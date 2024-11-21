@@ -1,5 +1,6 @@
 package top.potmot.core.business.dto.generate
 
+import top.potmot.core.business.property.EntityPropertyCategories
 import top.potmot.core.business.utils.ExistValidItem
 import top.potmot.core.business.utils.PropertyQueryType
 import top.potmot.core.business.utils.dto
@@ -10,27 +11,24 @@ import top.potmot.core.business.utils.selectOptionLabel
 import top.potmot.core.business.utils.toFlat
 import top.potmot.core.business.utils.upperName
 import top.potmot.entity.dto.GenEntityBusinessView
-import top.potmot.enumeration.targetOneAssociationTypes
+import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.error.ModelException
 import top.potmot.utils.string.toSingular
 
-object DtoGenerator {
+object DtoGenerator : EntityPropertyCategories {
     private fun formatFileName(
         entity: GenEntityBusinessView,
     ): String =
         "${entity.name}.dto"
 
-    private val GenEntityBusinessView.noIdView
-        get() = properties.count { it.idView } == 0 && properties.count { it.associationType != null } > 0
+    private fun Iterable<TargetOf_properties>.exclude(
+        includeProperties: Collection<TargetOf_properties>,
+    ) =
+        filter { it !in includeProperties }
 
-    private val GenEntityBusinessView.targetOneProperties
-        get() =
-            if (noIdView)
-                properties.filter { it.associationType in targetOneAssociationTypes }
-            else
-                properties.filter { it.associationType in targetOneAssociationTypes && it.idView }
-
-    private fun GenEntityBusinessView.targetOneId(onlyThis: Boolean): List<String> =
+    private fun GenEntityBusinessView.targetOneId(
+        onlyThis: Boolean = false,
+    ): List<String> =
         targetOneProperties.filter { if (onlyThis) it.entityId == id else true }.map {
             if (it.idView) {
                 it.name
@@ -40,9 +38,14 @@ object DtoGenerator {
         }
 
     private fun generateListView(entity: GenEntityBusinessView) = buildString {
+        val listViewProperties = entity.listViewProperties
+
         appendLine("${entity.dto.listView} {")
         appendLine("    #allScalars")
-        entity.targetOneId(onlyThis = false).forEach {
+        entity.scalarProperties.exclude(listViewProperties).forEach {
+            appendLine("    -${it.name}")
+        }
+        entity.copy(properties = listViewProperties).targetOneId().forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -61,9 +64,14 @@ object DtoGenerator {
     }
 
     private fun generateDetailView(entity: GenEntityBusinessView) = buildString {
+        val detailViewProperties = entity.detailViewProperties
+
         appendLine("${entity.dto.detailView} {")
         appendLine("    #allScalars")
-        entity.targetOneId(onlyThis = false).forEach {
+        entity.scalarProperties.exclude(detailViewProperties).forEach {
+            appendLine("    -${it.name}")
+        }
+        entity.copy(properties = detailViewProperties).targetOneId().forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -71,13 +79,17 @@ object DtoGenerator {
 
     @Throws(ModelException.IdPropertyNotFound::class)
     private fun generateInsertInput(entity: GenEntityBusinessView) = buildString {
+        val insertInputProperties = entity.insertInputProperties
         val idProperty = entity.idProperty
         val idName = idProperty.name
 
         appendLine("input ${entity.dto.insertInput} {")
         appendLine("    #allScalars")
         appendLine("    -${idName}")
-        entity.targetOneId(onlyThis = false).forEach {
+        entity.scalarProperties.exclude(insertInputProperties).forEach {
+            appendLine("    -${it.name}")
+        }
+        entity.copy(properties = insertInputProperties).targetOneId().forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -85,19 +97,23 @@ object DtoGenerator {
 
     @Throws(ModelException.IdPropertyNotFound::class)
     private fun generateUpdateInput(entity: GenEntityBusinessView) = buildString {
+        val updateInputProperties = entity.updateInputProperties
         val idProperty = entity.idProperty
         val idName = idProperty.name
 
         appendLine("input ${entity.dto.updateInput} {")
         appendLine("    #allScalars")
         appendLine("    ${idName}!")
-        entity.targetOneId(onlyThis = false).forEach {
+        entity.scalarProperties.exclude(updateInputProperties).forEach {
+            appendLine("    -${it.name}")
+        }
+        entity.copy(properties = updateInputProperties).targetOneId().forEach {
             appendLine("    $it")
         }
         appendLine("}")
     }
 
-    private val GenEntityBusinessView.TargetOf_properties.specExpression
+    private val TargetOf_properties.specExpression
         get() =
             if (idProperty)
                 listOf("eq(${name})")
@@ -128,15 +144,14 @@ object DtoGenerator {
     private fun generateSpec(entity: GenEntityBusinessView) = buildString {
         appendLine("specification ${entity.dto.spec} {")
 
-        entity.properties
-            .filterNot { it.idView }
+        entity.specificationProperties
             .flatMap { it.specExpression }
             .forEach { appendLine("    $it") }
 
         appendLine("}")
     }
 
-    private val GenEntityBusinessView.TargetOf_properties.existByValidSpecExpression
+    private val TargetOf_properties.existByValidSpecExpression
         get() =
             if (associationType != null && !idView) {
                 "associatedIdEq(${name})"
@@ -191,4 +206,4 @@ ${generateExistByValidDto(entity)}
 }
 
 fun ExistValidItem.dtoName(entityName: String) =
-        entityName + "ExistBy" + properties.joinToString("And") { it.upperName } + "Spec"
+    entityName + "ExistBy" + properties.joinToString("And") { it.upperName } + "Spec"

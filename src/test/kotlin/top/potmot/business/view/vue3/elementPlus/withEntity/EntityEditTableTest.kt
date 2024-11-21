@@ -28,6 +28,7 @@ export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpda
             {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
         ],
         toOnePropertyId: [
+            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
         ],
         toOneNullablePropertyId: [
         ],

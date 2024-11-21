@@ -75,7 +75,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             prop="toOneNullablePropertyId"
             label="toOneNullableProperty"
         />
-        <el-table-column prop="createdById" label="toOneProperty"/>
+        <el-table-column prop="createdById" label="createdBy"/>
         <el-table-column label="操作" fixed="right">
             <template #default="scope">
                 <slot
@@ -212,7 +212,7 @@ const handleCancel = (): void => {
                 :options="toOneNullablePropertyIdOptions"
             />
         </el-form-item>
-        <el-form-item prop="createdById" label="toOneProperty">
+        <el-form-item prop="createdById" label="createdBy">
             <ToOneEntityIdSelect
                 v-model="formData.createdById"
                 :options="createdByIdOptions"
@@ -339,7 +339,7 @@ const handleCancel = (): void => {
         </el-form-item>
         <el-form-item
             prop="createdById"
-            label="toOneProperty"
+            label="createdBy"
             @change="emits('query')"
         >
             <ToOneEntityIdSelect
@@ -562,11 +562,11 @@ const handleSingleDelete = async (index: number): Promise<void> => {
                     </el-form-item>
                 </template>
             </el-table-column>
-            <el-table-column prop="createdById" label="toOneProperty">
+            <el-table-column prop="createdById" label="createdBy">
                 <template #default="scope">
                     <el-form-item
                         :prop="[scope.$index, 'createdById']"
-                        label="toOneProperty"
+                        label="createdBy"
                         :rule="rules.createdById"
                     >
                         <ToOneEntityIdSelect
@@ -666,7 +666,7 @@ const emits = defineEmits<{(event: "query", spec: EntitySpec): void}>()
                 </el-form-item>
             </el-col>
             <el-col :span="8">
-                <el-form-item prop="createdById" label="toOneProperty">
+                <el-form-item prop="createdById" label="createdBy">
                     <ToOneEntityIdSelect
                         v-model="spec.createdById"
                         :options="createdByIdOptions"
@@ -750,7 +750,7 @@ onBeforeMount(async () => {
     toOneNullablePropertyIdOptions.value = await api.entityService.listOptions({body: {}})
 })
 
-// toOneProperty选项
+// createdBy选项
 const createdByIdOptions = ref<Array<ToOneEntityOptionView>>()
 onBeforeMount(async () => {
     createdByIdOptions.value = await api.entityService.listOptions({body: {}})
@@ -1016,7 +1016,7 @@ export const useRules = (_: Ref<EntityInsertInput>): FormRules<EntityInsertInput
         toOneNullablePropertyId: [
         ],
         createdById: [
-            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
+            {required: true, message: "createdBy不能为空", trigger: "blur"},
         ],
     }
 }), (rules/entity/EntityEditFormRules.ts, import type {Ref} from "vue"
@@ -1042,7 +1042,7 @@ export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput
         toOneNullablePropertyId: [
         ],
         createdById: [
-            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
+            {required: true, message: "createdBy不能为空", trigger: "blur"},
         ],
     }
 }), (rules/entity/EntityEditTableRules.ts, import type {Ref} from "vue"
@@ -1059,10 +1059,12 @@ export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpda
             {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
         ],
         toOnePropertyId: [
+            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
         ],
         toOneNullablePropertyId: [
         ],
         createdById: [
+            {required: true, message: "createdBy不能为空", trigger: "blur"},
         ],
     }
 })]

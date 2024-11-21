@@ -218,6 +218,7 @@ private val superTestEntity = testEntity.copy(
         toOneProperty.copy(
             id = testId++,
             name = "createdBy",
+            comment = "createdBy",
         )
     )
 )
