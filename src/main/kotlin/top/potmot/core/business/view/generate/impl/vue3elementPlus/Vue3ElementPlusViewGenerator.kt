@@ -27,7 +27,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTabl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.queryForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
-import top.potmot.core.business.view.generate.builder.vue3.elementPlus.rules.Vue3RulesBuilder
+import top.potmot.core.business.view.generate.builder.vue3.elementPlus.rules.Vue3ElementPlusRuleBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
@@ -67,7 +67,7 @@ object Vue3ElementPlusViewGenerator :
     AddFormType {
     private val builder = Vue3ComponentBuilder()
 
-    private val rulesBuilder = Vue3RulesBuilder(builder.indent, builder.wrapThreshold)
+    private val rulesBuilder = Vue3ElementPlusRuleBuilder(builder.indent, builder.wrapThreshold)
 
     override fun getFileSuffix() = "vue"
 
@@ -228,6 +228,7 @@ object Vue3ElementPlusViewGenerator :
         }
     }
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
         val rules = entity.insertInputProperties.associate { it.name to it.rules } + entity.existValidRules(withId = false)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.insertInput, rules)
@@ -273,6 +274,7 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringifyEditFormRules(entity: GenEntityBusinessView): String {
         val rules = entity.editFormProperties.associate { it.name to it.rules } + entity.existValidRules(withId = true)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules)
@@ -297,6 +299,7 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringifyEditTableRules(entity: GenEntityBusinessView): String {
         val rules = entity.editTableProperties.associate { it.name to it.rules } + entity.existValidRules(withId = false)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules, isArray = true)

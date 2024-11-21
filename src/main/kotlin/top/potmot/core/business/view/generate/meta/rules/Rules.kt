@@ -3,6 +3,9 @@ package top.potmot.core.business.view.generate.meta.rules
 import top.potmot.core.business.utils.ExistValidItem
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.lowerName
+import top.potmot.core.business.view.generate.apiPath
+import top.potmot.core.business.view.generate.meta.typescript.Import
+import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.ModelException
 
@@ -147,6 +150,11 @@ data class PatternRule(
         "{pattern: /$pattern/, message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
 }
 
+val existValidRuleImport = listOf(
+    Import(apiPath, "api"),
+    Import("$utilPath/asyncValidExist", "asyncValidExist"),
+)
+
 data class ExistValidRule(
     val item: ExistValidItem,
     val property: GenEntityBusinessView.TargetOf_properties,
@@ -169,7 +177,7 @@ data class ExistValidRule(
 
         return """
         {
-            asyncValidator: asyncValidExist('${property.comment}', async (${property.name}: ${property.type}) => {
+            asyncValidator: asyncValidExist("${property.comment}", async (${property.name}: ${property.type}) => {
                 return await api.${entity.lowerName}Service.${item.functionName}({body: {${property.name}$idBodyProp${otherBodyProps}}})
             }),
             trigger: ${trigger.stringifyTriggers()}
