@@ -1,23 +1,23 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS `gen_model`;
-DROP TABLE IF EXISTS `gen_enum`;
-DROP TABLE IF EXISTS `gen_enum_item`;
-DROP TABLE IF EXISTS `gen_data_source`;
-DROP TABLE IF EXISTS `gen_schema`;
-DROP TABLE IF EXISTS `gen_table`;
-DROP TABLE IF EXISTS `gen_column`;
-DROP TABLE IF EXISTS `gen_association`;
-DROP TABLE IF EXISTS `gen_column_reference`;
-DROP TABLE IF EXISTS `gen_table_index`;
-DROP TABLE IF EXISTS `gen_entity`;
-DROP TABLE IF EXISTS `gen_property`;
-DROP TABLE IF EXISTS `gen_index_column_mapping`;
-DROP TABLE IF EXISTS `gen_type_mapping`;
-DROP TABLE IF EXISTS `gen_column_default`;
-DROP TABLE IF EXISTS `gen_super_table_mapping`;
-DROP TABLE IF EXISTS `gen_super_entity_mapping`;
+DROP TABLE IF EXISTS `gen_model` CASCADE;
+DROP TABLE IF EXISTS `gen_enum` CASCADE;
+DROP TABLE IF EXISTS `gen_enum_item` CASCADE;
+DROP TABLE IF EXISTS `gen_data_source` CASCADE;
+DROP TABLE IF EXISTS `gen_schema` CASCADE;
+DROP TABLE IF EXISTS `gen_table` CASCADE;
+DROP TABLE IF EXISTS `gen_column` CASCADE;
+DROP TABLE IF EXISTS `gen_association` CASCADE;
+DROP TABLE IF EXISTS `gen_column_reference` CASCADE;
+DROP TABLE IF EXISTS `gen_table_index` CASCADE;
+DROP TABLE IF EXISTS `gen_entity` CASCADE;
+DROP TABLE IF EXISTS `gen_property` CASCADE;
+DROP TABLE IF EXISTS `gen_index_column_mapping` CASCADE;
+DROP TABLE IF EXISTS `gen_type_mapping` CASCADE;
+DROP TABLE IF EXISTS `gen_column_default` CASCADE;
+DROP TABLE IF EXISTS `gen_super_table_mapping` CASCADE;
+DROP TABLE IF EXISTS `gen_super_entity_mapping` CASCADE;
 
 -- ----------------------------
 -- Table structure for gen_model
