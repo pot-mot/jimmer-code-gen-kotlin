@@ -500,6 +500,11 @@ CREATE TABLE "gen_entity"
     "name"          text        NOT NULL,
     "comment"       text        NOT NULL,
     "author"        text        NOT NULL,
+    "can_add"       boolean     NOT NULL,
+    "can_edit"      boolean     NOT NULL,
+    "can_delete"    boolean     NOT NULL,
+    "can_query"     boolean     NOT NULL,
+    "has_page"      boolean     NOT NULL,
     "remark"        text        NOT NULL,
     "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -520,6 +525,11 @@ COMMENT ON COLUMN "gen_entity"."table_id" IS '对应表';
 COMMENT ON COLUMN "gen_entity"."name" IS '类名称';
 COMMENT ON COLUMN "gen_entity"."comment" IS '类注释';
 COMMENT ON COLUMN "gen_entity"."author" IS '作者';
+COMMENT ON COLUMN "gen_entity"."can_add" IS '是否可以创建';
+COMMENT ON COLUMN "gen_entity"."can_edit" IS '是否可以修改';
+COMMENT ON COLUMN "gen_entity"."can_delete" IS '是否可以删除';
+COMMENT ON COLUMN "gen_entity"."can_query" IS '是否可以查询';
+COMMENT ON COLUMN "gen_entity"."has_page" IS '是否具有页面';
 COMMENT ON COLUMN "gen_entity"."remark" IS '备注';
 COMMENT ON COLUMN "gen_entity"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_entity"."modified_time" IS '修改时间';
@@ -551,36 +561,43 @@ COMMENT ON COLUMN "gen_super_entity_mapping"."inherit_entity_id" IS '继承实�
 -- ----------------------------
 CREATE TABLE "gen_property"
 (
-    "id"                       BIGSERIAL   NOT NULL,
-    "entity_id"                bigint      NOT NULL,
-    "column_id"                bigint      NULL     DEFAULT NULL,
-    "name"                     text        NOT NULL,
-    "comment"                  text        NOT NULL,
-    "type"                     text        NOT NULL,
-    "type_table_id"            bigint      NULL     DEFAULT NULL,
-    "list_type"                boolean     NOT NULL,
-    "type_not_null"            boolean     NOT NULL,
-    "id_property"              boolean     NOT NULL,
-    "id_generation_annotation" text        NULL     DEFAULT NULL,
-    "key_property"             boolean     NOT NULL,
-    "key_group"                text        NULL     DEFAULT NULL,
-    "logical_delete"           boolean     NOT NULL,
-    "id_view"                  boolean     NOT NULL,
-    "id_view_target"           text        NULL     DEFAULT NULL,
-    "association_type"         text        NULL     DEFAULT NULL,
-    "long_association"         boolean     NOT NULL,
-    "mapped_by"                text        NULL     DEFAULT NULL,
-    "input_not_null"           boolean     NULL     DEFAULT NULL,
-    "join_column_metas"        jsonb       NULL     DEFAULT NULL,
-    "join_table_meta"          jsonb       NULL     DEFAULT NULL,
-    "association_annotation"   text        NULL     DEFAULT NULL,
-    "dissociate_annotation"    text        NULL     DEFAULT NULL,
-    "other_annotation"         text        NULL     DEFAULT NULL,
-    "enum_id"                  bigint      NULL     DEFAULT NULL,
-    "order_key"                bigint      NOT NULL,
-    "remark"                   text        NOT NULL,
-    "created_time"             timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"            timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "id"                        BIGSERIAL   NOT NULL,
+    "entity_id"                 bigint      NOT NULL,
+    "column_id"                 bigint      NULL     DEFAULT NULL,
+    "name"                      text        NOT NULL,
+    "comment"                   text        NOT NULL,
+    "type"                      text        NOT NULL,
+    "type_table_id"             bigint      NULL     DEFAULT NULL,
+    "list_type"                 boolean     NOT NULL,
+    "type_not_null"             boolean     NOT NULL,
+    "id_property"               boolean     NOT NULL,
+    "id_generation_annotation"  text        NULL     DEFAULT NULL,
+    "key_property"              boolean     NOT NULL,
+    "key_group"                 text        NULL     DEFAULT NULL,
+    "logical_delete"            boolean     NOT NULL,
+    "id_view"                   boolean     NOT NULL,
+    "id_view_target"            text        NULL     DEFAULT NULL,
+    "association_type"          text        NULL     DEFAULT NULL,
+    "long_association"          boolean     NOT NULL,
+    "mapped_by"                 text        NULL     DEFAULT NULL,
+    "input_not_null"            boolean     NULL     DEFAULT NULL,
+    "join_column_metas"         jsonb       NULL     DEFAULT NULL,
+    "join_table_meta"           jsonb       NULL     DEFAULT NULL,
+    "association_annotation"    text        NULL     DEFAULT NULL,
+    "dissociate_annotation"     text        NULL     DEFAULT NULL,
+    "other_annotation"          text        NULL     DEFAULT NULL,
+    "enum_id"                   bigint      NULL     DEFAULT NULL,
+    "order_key"                 bigint      NOT NULL,
+    "in_list_view"              boolean     NOT NULL,
+    "in_detail_view"            boolean     NOT NULL,
+    "in_insert_input"           boolean     NOT NULL,
+    "in_update_input"           boolean     NOT NULL,
+    "in_specification"          boolean     NOT NULL,
+    "in_long_association_view"  boolean     NOT NULL,
+    "in_long_association_input" boolean     NOT NULL,
+    "remark"                    text        NOT NULL,
+    "created_time"              timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"             timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id"),
     CONSTRAINT "fk_property_column" FOREIGN KEY ("column_id") REFERENCES "gen_column" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT "fk_property_entity" FOREIGN KEY ("entity_id") REFERENCES "gen_entity" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT,
@@ -621,6 +638,13 @@ COMMENT ON COLUMN "gen_property"."dissociate_annotation" IS '脱钩注解';
 COMMENT ON COLUMN "gen_property"."other_annotation" IS '其他注解';
 COMMENT ON COLUMN "gen_property"."enum_id" IS '对应枚举';
 COMMENT ON COLUMN "gen_property"."order_key" IS '排序键';
+COMMENT ON COLUMN "gen_property"."in_list_view" IS '是否在列表视图DTO中';
+COMMENT ON COLUMN "gen_property"."in_detail_view" IS '是否在详情视图DTO中';
+COMMENT ON COLUMN "gen_property"."in_insert_input" IS '是否在新增入参DTO中';
+COMMENT ON COLUMN "gen_property"."in_update_input" IS '是否在修改入参DTO中';
+COMMENT ON COLUMN "gen_property"."in_specification" IS '是否在查询规格DTO中';
+COMMENT ON COLUMN "gen_property"."in_long_association_view" IS '是否在长关联视图DTO中';
+COMMENT ON COLUMN "gen_property"."in_long_association_input" IS '是否在长关联入参DTO中';
 COMMENT ON COLUMN "gen_property"."remark" IS '备注';
 COMMENT ON COLUMN "gen_property"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_property"."modified_time" IS '修改时间';

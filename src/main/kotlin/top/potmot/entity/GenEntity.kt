@@ -118,6 +118,31 @@ interface GenEntity : BaseEntity {
      */
     val author: String
 
+     /**
+     * 是否可以创建
+     */
+    val canAdd: Boolean
+
+    /**
+     * 是否可以修改
+     */
+    val canEdit: Boolean
+
+    /**
+     * 是否可以删除
+     */
+    val canDelete: Boolean
+
+    /**
+     * 是否可以查询
+     */
+    val canQuery: Boolean
+
+    /**
+     * 是否具有页面
+     */
+    val hasPage: Boolean
+
     /**
      * 备注
      */

@@ -76,7 +76,12 @@ private fun tableToEntity(
         remark = genTable.remark,
         packagePath = "${context.packagePath}.entity",
         superEntityIds = emptyList(),
-        properties = emptyList()
+        properties = emptyList(),
+        canAdd = true,
+        canQuery = true,
+        canEdit = true,
+        canDelete = true,
+        hasPage = true,
     )
 }
 

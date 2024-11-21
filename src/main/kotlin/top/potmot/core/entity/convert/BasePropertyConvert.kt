@@ -56,6 +56,14 @@ fun GenTableConvertView.TargetOf_columns.toBaseProperty(
         otherAnnotation = null,
         remark = column.remark,
         orderKey = column.orderKey,
+        inListView = true,
+        inDetailView = true,
+        inInsertInput = true,
+        inUpdateInput = true,
+        inSpecification = true,
+        inLongAssociationView = true,
+        inLongAssociationInput = true,
+        longAssociation = false,
     )
 }
 

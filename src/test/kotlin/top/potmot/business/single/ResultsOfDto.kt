@@ -1,47 +1,44 @@
 package top.potmot.business.single
 
 const val dtoResult = """
-(ConditionMatch.dto, export com.example.entity.ConditionMatch
+(Entity.dto, export EntityPackage.Entity
 
-ConditionMatchListView {
+EntityListView {
     #allScalars
-    userId
-    conditionId
+    id(toOneProperty)
+    id(toOneNullableProperty)
 }
 
-ConditionMatchDetailView {
+EntityDetailView {
     #allScalars
-    userId
-    conditionId
+    id(toOneProperty)
+    id(toOneNullableProperty)
 }
 
-ConditionMatchOptionView {
+EntityOptionView {
     id
 }
 
-input ConditionMatchInsertInput {
+input EntityInsertInput {
     #allScalars
     -id
-    userId
-    conditionId
+    id(toOneProperty)
+    id(toOneNullableProperty)
 }
 
-input ConditionMatchUpdateInput {
+input EntityUpdateInput {
     #allScalars
     id!
-    userId
-    conditionId
+    id(toOneProperty)
+    id(toOneNullableProperty)
 }
 
-specification ConditionMatchSpec {
+specification EntitySpec {
     eq(id)
-    associatedIdEq(user)
-    associatedIdEq(condition)
-    eq(status)
-    le(date)
-    ge(date)
-    le(money)
-    ge(money)
-    like/i(description)
+    eq(enumProperty)
+    eq(enumNullableProperty)
+    associatedIdEq(toOneProperty)
+    associatedIdEq(toOneNullableProperty)
+    associatedIdIn(toManyProperties) as toManyPropertyIds
 })
 """

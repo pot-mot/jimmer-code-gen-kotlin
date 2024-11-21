@@ -1,7 +1,7 @@
 package top.potmot.business.single
 
 const val kotlinResult = """
-(com/example/service/ConditionMatchService.kt, package com.example.service
+(EntityPackage/EntityService.kt, package EntityPackage
 
 import cn.dev33.satoken.annotation.SaCheckPermission
 import org.babyfish.jimmer.View
@@ -18,115 +18,115 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import com.example.entity.ConditionMatch
-import com.example.entity.dto.ConditionMatchListView
-import com.example.entity.dto.ConditionMatchDetailView
-import com.example.entity.dto.ConditionMatchInsertInput
-import com.example.entity.dto.ConditionMatchUpdateInput
-import com.example.entity.dto.ConditionMatchSpec
-import com.example.entity.dto.ConditionMatchOptionView
-import com.example.entity.query.PageQuery
-import com.example.exception.AuthorizeException
-import com.example.utils.sqlClient.query
-import com.example.utils.sqlClient.queryPage
+import EntityPackage.Entity
+import EntityPackage.dto.EntityListView
+import EntityPackage.dto.EntityDetailView
+import EntityPackage.dto.EntityInsertInput
+import EntityPackage.dto.EntityUpdateInput
+import EntityPackage.dto.EntitySpec
+import EntityPackage.dto.EntityOptionView
+import EntityPackage.query.PageQuery
+import EntityPackage.AuthorizeException
+import EntityPackage.sqlClient.query
+import EntityPackage.sqlClient.queryPage
 
 @RestController
-@RequestMapping("/conditionMatch")
-class ConditionMatchService(
+@RequestMapping("/entity")
+class EntityService(
     @Autowired
     private val sqlClient: KSqlClient,
 ) {
     /**
-     * 根据ID获取条件匹配。
+     * 根据ID获取comment。
      *
-     * @param id 条件匹配的ID。
-     * @return 条件匹配的详细信息。
+     * @param id comment的ID。
+     * @return comment的详细信息。
      */
     @GetMapping("/{id}")
-    @SaCheckPermission("conditionMatch:get")
+    @SaCheckPermission("entity:get")
     @Throws(AuthorizeException::class)
     fun get(@PathVariable id: Int) = 
-        sqlClient.findById(ConditionMatchDetailView::class, id)
+        sqlClient.findById(EntityDetailView::class, id)
     
     /**
-     * 根据提供的查询参数列出条件匹配。
+     * 根据提供的查询参数列出comment。
      *
      * @param spec 查询参数。
-     * @return 条件匹配列表数据。
+     * @return comment列表数据。
      */
     @PostMapping("/list")
-    @SaCheckPermission("conditionMatch:list")
+    @SaCheckPermission("entity:list")
     @Throws(AuthorizeException::class)
-    fun list(@RequestBody spec: ConditionMatchSpec) = 
-        sqlClient.query(ConditionMatchListView::class, spec)
+    fun list(@RequestBody spec: EntitySpec) = 
+        sqlClient.query(EntityListView::class, spec)
 
     /**
-     * 根据提供的查询参数分页查询条件匹配。
+     * 根据提供的查询参数分页查询comment。
      *
      * @param query 分页查询参数。
-     * @return 条件匹配分页数据。
+     * @return comment分页数据。
      */
     @PostMapping("/page")
-    @SaCheckPermission("conditionMatch:list")
+    @SaCheckPermission("entity:list")
     @Throws(AuthorizeException::class)
-    fun page(@RequestBody query: PageQuery<ConditionMatchSpec>) = 
-        sqlClient.queryPage(ConditionMatchListView::class, query)
+    fun page(@RequestBody query: PageQuery<EntitySpec>) = 
+        sqlClient.queryPage(EntityListView::class, query)
     
     /**
-     * 根据提供的查询参数列出条件匹配选项。
+     * 根据提供的查询参数列出comment选项。
      *
      * @param spec 查询参数。
-     * @return 条件匹配列表数据。
+     * @return comment列表数据。
      */
     @PostMapping("/list/options")
-    @SaCheckPermission("conditionMatch:select")
+    @SaCheckPermission("entity:select")
     @Throws(AuthorizeException::class)
-    fun listOptions(@RequestBody spec: ConditionMatchSpec) = 
-        sqlClient.query(ConditionMatchOptionView::class, spec)
+    fun listOptions(@RequestBody spec: EntitySpec) = 
+        sqlClient.query(EntityOptionView::class, spec)
 
     /**
-     * 插入新的条件匹配。
+     * 插入新的comment。
      *
-     * @param input 条件匹配插入输入对象。
-     * @return 插入的条件匹配的ID。
+     * @param input comment插入输入对象。
+     * @return 插入的comment的ID。
      */
     @PostMapping
-    @SaCheckPermission("conditionMatch:insert")
+    @SaCheckPermission("entity:insert")
     @Transactional
     @Throws(AuthorizeException::class)
-    fun insert(@RequestBody input: ConditionMatchInsertInput) = 
+    fun insert(@RequestBody input: EntityInsertInput) = 
         sqlClient.insert(input).modifiedEntity.id
 
     /**
-     * 更新条件匹配。
+     * 更新comment。
      *
-     * @param input 条件匹配更新输入对象。
-     * @return 更新的条件匹配的ID。
+     * @param input comment更新输入对象。
+     * @return 更新的comment的ID。
      */
     @PutMapping
-    @SaCheckPermission("conditionMatch:update")
+    @SaCheckPermission("entity:update")
     @Transactional
     @Throws(AuthorizeException::class)
-    fun update(@RequestBody input: ConditionMatchUpdateInput) = 
+    fun update(@RequestBody input: EntityUpdateInput) = 
         sqlClient.update(input, AssociatedSaveMode.REPLACE).modifiedEntity.id
 
     /**
-     * 删除指定ID的条件匹配。
+     * 删除指定ID的comment。
      *
-     * @param ids 要删除的条件匹配ID列表。
-     * @return 删除的条件匹配的行数。
+     * @param ids 要删除的commentID列表。
+     * @return 删除的comment的行数。
      */
     @DeleteMapping
-    @SaCheckPermission("conditionMatch:delete")
+    @SaCheckPermission("entity:delete")
     @Transactional
     @Throws(AuthorizeException::class)
     fun delete(@RequestParam ids: List<Int>) = 
-        sqlClient.deleteByIds(ConditionMatch::class, ids).affectedRowCount(ConditionMatch::class)
+        sqlClient.deleteByIds(Entity::class, ids).affectedRowCount(Entity::class)
 })
 """
 
 const val javaResult = """
-(com/example/service/ConditionMatchService.java, package com.example.service;
+(EntityPackage/EntityService.java, package EntityPackage;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.babyfish.jimmer.Page;
@@ -142,127 +142,127 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.entity.ConditionMatch;
-import com.example.entity.Tables;
-import com.example.entity.dto.ConditionMatchListView;
-import com.example.entity.dto.ConditionMatchDetailView;
-import com.example.entity.dto.ConditionMatchInsertInput;
-import com.example.entity.dto.ConditionMatchUpdateInput;
-import com.example.entity.dto.ConditionMatchSpec;
-import com.example.entity.dto.ConditionMatchOptionView;
-import com.example.entity.query.PageQuery;
-import com.example.exception.AuthorizeException;
+import EntityPackage.Entity;
+import EntityPackage.Tables;
+import EntityPackage.dto.EntityListView;
+import EntityPackage.dto.EntityDetailView;
+import EntityPackage.dto.EntityInsertInput;
+import EntityPackage.dto.EntityUpdateInput;
+import EntityPackage.dto.EntitySpec;
+import EntityPackage.dto.EntityOptionView;
+import EntityPackage.query.PageQuery;
+import EntityPackage.AuthorizeException;
 import org.jetbrains.annotations.NotNull;
 import jakarta.annotation.Nullable;
 import java.util.List;
 
 @RestController
-@RequestMapping("/conditionMatch")
-public class ConditionMatchService implements Tables {
+@RequestMapping("/entity")
+public class EntityService implements Tables {
     private final JSqlClient sqlClient;
 
-    public ConditionMatchService(JSqlClient sqlClient) {
+    public EntityService(JSqlClient sqlClient) {
         this.sqlClient = sqlClient;
     }
 
     /**
-     * 根据ID获取条件匹配。
+     * 根据ID获取comment。
      *
-     * @param id 条件匹配的ID。
-     * @return 条件匹配的详细信息。
+     * @param id comment的ID。
+     * @return comment的详细信息。
      */
     @GetMapping("/{id}")
-    @SaCheckPermission("conditionMatch:get")
+    @SaCheckPermission("entity:get")
     @Nullable
-    public ConditionMatchDetailView get(@PathVariable int id) throws AuthorizeException { 
-        return sqlClient.findById(ConditionMatchDetailView.class, id);
+    public EntityDetailView get(@PathVariable int id) throws AuthorizeException { 
+        return sqlClient.findById(EntityDetailView.class, id);
     }
     
     /**
-     * 根据提供的查询参数列出条件匹配。
+     * 根据提供的查询参数列出comment。
      *
      * @param spec 查询参数。
-     * @return 条件匹配列表数据。
+     * @return comment列表数据。
      */
     @PostMapping("/list")
-    @SaCheckPermission("conditionMatch:list")
+    @SaCheckPermission("entity:list")
     @NotNull
-    public List<@NotNull ConditionMatchListView> list(@RequestBody @NotNull ConditionMatchSpec spec) throws AuthorizeException {
-        return sqlClient.createQuery(CONDITION_MATCH_TABLE)
+    public List<@NotNull EntityListView> list(@RequestBody @NotNull EntitySpec spec) throws AuthorizeException {
+        return sqlClient.createQuery(ENTITY_TABLE)
                 .where(spec)
-                .select(CONDITION_MATCH_TABLE.fetch(ConditionMatchListView.class))
+                .select(ENTITY_TABLE.fetch(EntityListView.class))
                 .execute();
     }
     
     /**
-     * 根据提供的查询参数列出条件匹配。
+     * 根据提供的查询参数列出comment。
      *
      * @param query 分页查询参数。
-     * @return 条件匹配分页数据。
+     * @return comment分页数据。
      */
     @PostMapping("/page")
-    @SaCheckPermission("conditionMatch:list")
+    @SaCheckPermission("entity:list")
     @NotNull
-    public Page<@NotNull ConditionMatchListView> page(@RequestBody @NotNull PageQuery<ConditionMatchSpec> query) throws AuthorizeException {
-        return sqlClient.createQuery(CONDITION_MATCH_TABLE)
+    public Page<@NotNull EntityListView> page(@RequestBody @NotNull PageQuery<EntitySpec> query) throws AuthorizeException {
+        return sqlClient.createQuery(ENTITY_TABLE)
                 .where(query.getSpec())
-                .select(CONDITION_MATCH_TABLE.fetch(ConditionMatchListView.class))
+                .select(ENTITY_TABLE.fetch(EntityListView.class))
                 .fetchPage(query.getPageIndex() - 1, query.getPageSize());
     }
     
     /**
-     * 根据提供的查询参数列出条件匹配选项。
+     * 根据提供的查询参数列出comment选项。
      *
      * @param spec 查询参数。
-     * @return 条件匹配列表数据。
+     * @return comment列表数据。
      */
     @PostMapping("/list/options")
-    @SaCheckPermission("conditionMatch:select")
+    @SaCheckPermission("entity:select")
     @NotNull
-    public List<@NotNull ConditionMatchOptionView> listOptions(@RequestBody @NotNull ConditionMatchSpec spec) throws AuthorizeException {
-        return sqlClient.createQuery(CONDITION_MATCH_TABLE)
+    public List<@NotNull EntityOptionView> listOptions(@RequestBody @NotNull EntitySpec spec) throws AuthorizeException {
+        return sqlClient.createQuery(ENTITY_TABLE)
                 .where(spec)
-                .select(CONDITION_MATCH_TABLE.fetch(ConditionMatchOptionView.class))
+                .select(ENTITY_TABLE.fetch(EntityOptionView.class))
                 .execute();
     }
 
     /**
-     * 插入新的条件匹配。
+     * 插入新的comment。
      *
-     * @param input 条件匹配插入输入对象。
-     * @return 插入的条件匹配的ID。
+     * @param input comment插入输入对象。
+     * @return 插入的comment的ID。
      */
     @PostMapping
-    @SaCheckPermission("conditionMatch:insert")
+    @SaCheckPermission("entity:insert")
     @Transactional
-    public int insert(@RequestBody @NotNull ConditionMatchInsertInput input) throws AuthorizeException {
+    public int insert(@RequestBody @NotNull EntityInsertInput input) throws AuthorizeException {
         return sqlClient.insert(input).getModifiedEntity().id();
     }
 
     /**
-     * 更新条件匹配。
+     * 更新comment。
      *
-     * @param input 条件匹配更新输入对象。
-     * @return 更新的条件匹配的ID。
+     * @param input comment更新输入对象。
+     * @return 更新的comment的ID。
      */
     @PutMapping
-    @SaCheckPermission("conditionMatch:update")
+    @SaCheckPermission("entity:update")
     @Transactional
-    public int update(@RequestBody @NotNull ConditionMatchUpdateInput input) throws AuthorizeException {
+    public int update(@RequestBody @NotNull EntityUpdateInput input) throws AuthorizeException {
         return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity().id();
     }
 
     /**
-     * 删除指定ID的条件匹配。
+     * 删除指定ID的comment。
      *
-     * @param ids 要删除的条件匹配ID列表。
-     * @return 删除的条件匹配的行数。
+     * @param ids 要删除的commentID列表。
+     * @return 删除的comment的行数。
      */
     @DeleteMapping
-    @SaCheckPermission("conditionMatch:delete")
+    @SaCheckPermission("entity:delete")
     @Transactional
     public int delete(@RequestParam @NotNull List<Integer> ids) throws AuthorizeException {
-        return sqlClient.deleteByIds(ConditionMatch.class, ids).getAffectedRowCount(ConditionMatch.class);
+        return sqlClient.deleteByIds(Entity.class, ids).getAffectedRowCount(Entity.class);
     }
 })
 """

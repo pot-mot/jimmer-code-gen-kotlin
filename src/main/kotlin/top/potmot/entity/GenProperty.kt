@@ -181,6 +181,41 @@ interface GenProperty : BaseEntity {
      */
     val orderKey: Long
 
+        /**
+     * 是否在列表视图DTO中
+     */
+    val inListView: Boolean
+
+    /**
+     * 是否在详情视图DTO中
+     */
+    val inDetailView: Boolean
+
+    /**
+     * 是否在新增入参DTO中
+     */
+    val inInsertInput: Boolean
+
+    /**
+     * 是否在修改入参DTO中
+     */
+    val inUpdateInput: Boolean
+
+    /**
+     * 是否在查询规格DTO中
+     */
+    val inSpecification: Boolean
+
+    /**
+     * 是否在长关联视图DTO中
+     */
+    val inLongAssociationView: Boolean
+
+    /**
+     * 是否在长关联入参DTO中
+     */
+    val inLongAssociationInput: Boolean
+
     /**
      * 备注
      */

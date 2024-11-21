@@ -3,12 +3,12 @@ package top.potmot.business.single
 const val index = """${'$'}index"""
 
 const val vue3ElementPlusResult = """
-[(components/conditionMatch/ConditionMatchTable.vue, <script setup lang="ts">
-import type {ConditionMatchListView} from "@/api/__generated/model/static"
-import MatchStatusView from "@/components/matchStatus/MatchStatusView.vue"
+[(components/entity/EntityTable.vue, <script setup lang="ts">
+import type {EntityListView} from "@/api/__generated/model/static"
+import EnumView from "@/components/enum/EnumView.vue"
 
 withDefaults(defineProps<{
-    rows: Array<ConditionMatchListView>,
+    rows: Array<EntityListView>,
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined
@@ -21,20 +21,15 @@ withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "selectionChange",
-        selection: Array<ConditionMatchListView>
+        selection: Array<EntityListView>
     ): void
 }>()
 
 defineSlots<{
-    operations(props: {
-        row: ConditionMatchListView,
-        index: number
-    }): any
+    operations(props: {row: EntityListView, index: number}): any
 }>()
 
-const handleSelectionChange = (
-    newSelection: Array<ConditionMatchListView>
-): void => {
+const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     emits("selectionChange", newSelection)
 }
 </script>
@@ -59,69 +54,75 @@ const handleSelectionChange = (
             type="selection"
             fixed
         />
-        <el-table-column prop="userId" label="用户"/>
-        <el-table-column prop="conditionId" label="条件"/>
-        <el-table-column prop="status" label="匹配状态">
+        <el-table-column prop="enumProperty" label="enumProperty">
             <template #default="scope">
-                <MatchStatusView :value="scope.row.status"/>
+                <EnumView :value="scope.row.enumProperty"/>
             </template>
         </el-table-column>
-        <el-table-column prop="date" label="匹配日期"/>
-        <el-table-column prop="money" label="金额"/>
-        <el-table-column prop="description" label="结果描述"/>
+        <el-table-column
+            prop="enumNullableProperty"
+            label="enumNullableProperty"
+        >
+            <template #default="scope">
+                <EnumView :value="scope.row.enumNullableProperty"/>
+            </template>
+        </el-table-column>
+        <el-table-column
+            prop="toOnePropertyId"
+            label="toOneProperty"
+        />
+        <el-table-column
+            prop="toOneNullablePropertyId"
+            label="toOneNullableProperty"
+        />
         <el-table-column label="操作" fixed="right">
             <template #default="scope">
                 <slot
                     name="operations"
-                    :row="scope.row as ConditionMatchListView"
+                    :row="scope.row as EntityListView"
                     :index="scope.$index"
                 />
             </template>
         </el-table-column>
     </el-table>
 </template>
-), (components/conditionMatch/ConditionMatchAddFormType.d.ts, import type {MatchStatus} from "@/api/__generated/model/enums"
+), (components/entity/EntityAddFormType.d.ts, import type {Enum} from "@/api/__generated/model/enums"
 
-export type ConditionMatchAddFormType = {
-    userId: number | undefined
-    conditionId: number | undefined
-    status: string
-    date: string
-    money: number
-    description: string
+export type EntityAddFormType = {
+    enumProperty: Enum
+    enumNullableProperty: Enum | undefined
+    toOnePropertyId: number | undefined
+    toOneNullablePropertyId: number | undefined
 }
-), (components/conditionMatch/defaultConditionMatch.ts, import type {ConditionMatchAddFormType} from "./ConditionMatchAddFormType"
+), (components/entity/defaultEntity.ts, import type {EntityAddFormType} from "./EntityAddFormType"
 
-export const defaultConditionMatch: ConditionMatchAddFormType = {
-    userId: undefined,
-    conditionId: undefined,
-    status: "EQ",
-    date: "",
-    money: 0,
-    description: "",
+export const defaultEntity: EntityAddFormType = {
+    enumProperty: "item1",
+    enumNullableProperty: undefined,
+    toOnePropertyId: undefined,
+    toOneNullablePropertyId: undefined,
 }
-), (components/conditionMatch/ConditionMatchAddForm.vue, <script setup lang="ts">
+), (components/entity/EntityAddForm.vue, <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
 import type {
-    ConditionMatchInsertInput,
-    ConditionMatchAddFormType,
-    SysUserOptionView,
-    PolicyConditionOptionView
+    EntityInsertInput,
+    EntityAddFormType,
+    ToOneEntityOptionView
 } from "@/api/__generated/model/static"
 import {cloneDeep} from "lodash"
-import {defaultConditionMatch} from "@/components/conditionMatch/defaultConditionMatch"
-import {useRules} from "@/rules/ConditionMatchAddFormRules"
-import SysUserIdSelect from "@/components/sysUser/SysUserIdSelect.vue"
-import PolicyConditionIdSelect from "@/components/policyCondition/PolicyConditionIdSelect.vue"
-import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
+import {defaultEntity} from "@/components/entity/defaultEntity"
+import {useRules} from "@/rules/EntityAddFormRules"
+import EnumSelect from "@/components/enum/EnumSelect.vue"
+import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 import {sendMessage} from "@/utils/message"
 
 const props = withDefaults(defineProps<{
     submitLoading?: boolean | undefined,
-    userIdOptions: Array<SysUserOptionView>,
-    conditionIdOptions: Array<PolicyConditionOptionView>
+    toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
+    toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
     submitLoading: false
 })
@@ -129,7 +130,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "submit",
-        formData: ConditionMatchInsertInput
+        formData: EntityInsertInput
     ): void,
     (event: "cancel"): void
 }>()
@@ -141,7 +142,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<ConditionMatchAddFormType>(cloneDeep(defaultConditionMatch))
+const formData = ref<EntityAddFormType>(cloneDeep(defaultEntity))
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -153,12 +154,6 @@ const handleSubmit = async (): Promise<void> => {
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
 
     if (formValid) {
-        if (formData.value.toOnePropertyId === undefined) {
-            sendMessage("toOneProperty不可为空", "warning")
-            return
-        }
-
-
         if (formData.value.toOnePropertyId === undefined) {
             sendMessage("toOneProperty不可为空", "warning")
             return
@@ -180,45 +175,31 @@ const handleCancel = (): void => {
         ref="formRef"
         :rules="rules"
     >
-        <el-form-item prop="userId" label="用户">
-            <SysUserIdSelect
-                v-model="formData.userId"
-                :options="userIdOptions"
+        <el-form-item prop="enumProperty" label="enumProperty">
+            <EnumSelect v-model="formData.enumProperty"/>
+        </el-form-item>
+        <el-form-item
+            prop="enumNullableProperty"
+            label="enumNullableProperty"
+        >
+            <EnumNullableSelect v-model="formData.enumNullableProperty"/>
+        </el-form-item>
+        <el-form-item
+            prop="toOnePropertyId"
+            label="toOneProperty"
+        >
+            <ToOneEntityIdSelect
+                v-model="formData.toOnePropertyId"
+                :options="toOnePropertyIdOptions"
             />
         </el-form-item>
-        <el-form-item prop="conditionId" label="条件">
-            <PolicyConditionIdSelect
-                v-model="formData.conditionId"
-                :options="conditionIdOptions"
-            />
-        </el-form-item>
-        <el-form-item prop="status" label="匹配状态">
-            <MatchStatusSelect v-model="formData.status"/>
-        </el-form-item>
-        <el-form-item prop="date" label="匹配日期">
-            <el-date-picker
-                v-model="formData.date"
-                type="datetime"
-                value-format="YYYY-MM-DDTHH:mm:ss"
-                placeholder="请选择匹配日期"
-                clearable
-            />
-        </el-form-item>
-        <el-form-item prop="money" label="金额">
-            <el-input-number
-                v-model.number="formData.money"
-                placeholder="请输入金额"
-                :precision="2"
-                :min="0.00"
-                :max="99999.99"
-                :value-on-clear="0.00"
-            />
-        </el-form-item>
-        <el-form-item prop="description" label="结果描述">
-            <el-input
-                v-model="formData.description"
-                placeholder="请输入结果描述"
-                clearable
+        <el-form-item
+            prop="toOneNullablePropertyId"
+            label="toOneNullableProperty"
+        >
+            <ToOneEntityIdSelect
+                v-model="formData.toOneNullablePropertyId"
+                :options="toOneNullablePropertyIdOptions"
             />
         </el-form-item>
 
@@ -242,28 +223,24 @@ const handleCancel = (): void => {
         </slot>
     </el-form>
 </template>
-), (components/conditionMatch/ConditionMatchEditForm.vue, <script setup lang="ts">
+), (components/entity/EntityEditForm.vue, <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {EditFormExpose} from "@/api/__generated/model/static/form/EditFormExpose"
-import type {
-    ConditionMatchUpdateInput,
-    SysUserOptionView,
-    PolicyConditionOptionView
-} from "@/api/__generated/model/static"
-import {useRules} from "@/rules/ConditionMatchEditFormRules"
-import SysUserIdSelect from "@/components/sysUser/SysUserIdSelect.vue"
-import PolicyConditionIdSelect from "@/components/policyCondition/PolicyConditionIdSelect.vue"
-import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
+import type {EntityUpdateInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
+import {useRules} from "@/rules/EntityEditFormRules"
+import EnumSelect from "@/components/enum/EnumSelect.vue"
+import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 
-const formData = defineModel<ConditionMatchUpdateInput>({
+const formData = defineModel<EntityUpdateInput>({
     required: true
 })
 
 const props = withDefaults(defineProps<{
     submitLoading?: boolean | undefined,
-    userIdOptions: Array<SysUserOptionView>,
-    conditionIdOptions: Array<PolicyConditionOptionView>
+    toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
+    toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
     submitLoading: false
 })
@@ -271,7 +248,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "submit",
-        formData: ConditionMatchUpdateInput
+        formData: EntityUpdateInput
     ): void,
     (event: "cancel"): void
 }>()
@@ -310,68 +287,37 @@ const handleCancel = (): void => {
         :rules="rules"
     >
         <el-form-item
-            prop="userId"
-            label="用户"
+            prop="enumProperty"
+            label="enumProperty"
             @change="emits('query')"
         >
-            <SysUserIdSelect
-                v-model="formData.userId"
-                :options="userIdOptions"
+            <EnumSelect v-model="formData.enumProperty"/>
+        </el-form-item>
+        <el-form-item
+            prop="enumNullableProperty"
+            label="enumNullableProperty"
+            @change="emits('query')"
+        >
+            <EnumNullableSelect v-model="formData.enumNullableProperty"/>
+        </el-form-item>
+        <el-form-item
+            prop="toOnePropertyId"
+            label="toOneProperty"
+            @change="emits('query')"
+        >
+            <ToOneEntityIdSelect
+                v-model="formData.toOnePropertyId"
+                :options="toOnePropertyIdOptions"
             />
         </el-form-item>
         <el-form-item
-            prop="conditionId"
-            label="条件"
+            prop="toOneNullablePropertyId"
+            label="toOneNullableProperty"
             @change="emits('query')"
         >
-            <PolicyConditionIdSelect
-                v-model="formData.conditionId"
-                :options="conditionIdOptions"
-            />
-        </el-form-item>
-        <el-form-item
-            prop="status"
-            label="匹配状态"
-            @change="emits('query')"
-        >
-            <MatchStatusSelect v-model="formData.status"/>
-        </el-form-item>
-        <el-form-item
-            prop="date"
-            label="匹配日期"
-            @change="emits('query')"
-        >
-            <el-date-picker
-                v-model="formData.date"
-                type="datetime"
-                value-format="YYYY-MM-DDTHH:mm:ss"
-                placeholder="请选择匹配日期"
-                clearable
-            />
-        </el-form-item>
-        <el-form-item
-            prop="money"
-            label="金额"
-            @change="emits('query')"
-        >
-            <el-input-number
-                v-model.number="formData.money"
-                placeholder="请输入金额"
-                :precision="2"
-                :min="0.00"
-                :max="99999.99"
-                :value-on-clear="0.00"
-            />
-        </el-form-item>
-        <el-form-item
-            prop="description"
-            label="结果描述"
-            @change="emits('query')"
-        >
-            <el-input
-                v-model="formData.description"
-                placeholder="请输入结果描述"
-                clearable
+            <ToOneEntityIdSelect
+                v-model="formData.toOneNullablePropertyId"
+                :options="toOneNullablePropertyIdOptions"
             />
         </el-form-item>
 
@@ -395,24 +341,20 @@ const handleCancel = (): void => {
         </slot>
     </el-form>
 </template>
-), (components/conditionMatch/ConditionMatchEditTable.vue, <script setup lang="ts">
+), (components/entity/EntityEditTable.vue, <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
-import type {
-    ConditionMatchAddFormType,
-    SysUserOptionView,
-    PolicyConditionOptionView
-} from "@/api/__generated/model/static"
+import type {EntityAddFormType, ToOneEntityOptionView} from "@/api/__generated/model/static"
 import {cloneDeep} from "lodash"
-import {defaultConditionMatch} from "@/components/conditionMatch/defaultConditionMatch"
-import {useRules} from "@/rules/ConditionMatchEditTableRules"
+import {defaultEntity} from "@/components/entity/defaultEntity"
+import {useRules} from "@/rules/EntityEditTableRules"
 import {Plus, Delete} from "@element-plus/icons-vue"
-import SysUserIdSelect from "@/components/sysUser/SysUserIdSelect.vue"
-import PolicyConditionIdSelect from "@/components/policyCondition/PolicyConditionIdSelect.vue"
-import MatchStatusSelect from "@/components/matchStatus/MatchStatusSelect.vue"
+import EnumSelect from "@/components/enum/EnumSelect.vue"
+import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 
-const rows = defineModel<Array<ConditionMatchAddFormType>>({
+const rows = defineModel<Array<EntityAddFormType>>({
     required: true
 })
 
@@ -421,8 +363,8 @@ const props = withDefaults(defineProps<{
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined,
     submitLoading?: boolean | undefined,
-    userIdOptions: Array<SysUserOptionView>,
-    conditionIdOptions: Array<PolicyConditionOptionView>
+    toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
+    toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
     idColumn: false,
     indexColumn: false,
@@ -433,7 +375,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "submit",
-        rows: Array<ConditionMatchAddFormType>
+        rows: Array<EntityAddFormType>
     ): void,
     (event: "cancel"): void
 }>()
@@ -465,28 +407,26 @@ const handleCancel = (): void => {
 }
 
 // 多选
-const selection = ref<Array<ConditionMatchAddFormType>>([])
+const selection = ref<Array<EntityAddFormType>>([])
 
-const handleSelectionChange = (
-    newSelection: Array<ConditionMatchAddFormType>
-): void => {
+const handleSelectionChange = (newSelection: Array<EntityAddFormType>): void => {
     selection.value = newSelection
 }
 
 // 新增
 const handleAdd = (): void => {
-    rows.value.push(cloneDeep(defaultConditionMatch))
+    rows.value.push(cloneDeep(defaultEntity))
 }
 
 // 删除
 const handleBatchDelete = async (): Promise<void> => {
-    const result = await deleteConfirm("这些条件匹配")
+    const result = await deleteConfirm("这些comment")
     if (!result) return
     rows.value = rows.value.filter(it => !selection.value.includes(it))
 }
 
 const handleSingleDelete = async (index: number): Promise<void> => {
-    const result = await deleteConfirm("该条件匹配")
+    const result = await deleteConfirm("该comment")
     if (!result) return
     rows.value = rows.value.filter((_, i) => i !== index)
 }
@@ -535,91 +475,61 @@ const handleSingleDelete = async (index: number): Promise<void> => {
                 type="selection"
                 fixed
             />
-            <el-table-column prop="userId" label="用户">
+            <el-table-column prop="enumProperty" label="enumProperty">
                 <template #default="scope">
                     <el-form-item
-                        :prop="[scope.$index, 'userId']"
-                        label="用户"
-                        :rule="rules.userId"
+                        :prop="[scope.$index, 'enumProperty']"
+                        label="enumProperty"
+                        :rule="rules.enumProperty"
                     >
-                        <SysUserIdSelect
-                            v-model="rows.userId"
-                            :options="userIdOptions"
+                        <EnumSelect v-model="rows.enumProperty"/>
+                    </el-form-item>
+                </template>
+            </el-table-column>
+            <el-table-column
+                prop="enumNullableProperty"
+                label="enumNullableProperty"
+            >
+                <template #default="scope">
+                    <el-form-item
+                        :prop="[scope.$index, 'enumNullableProperty']"
+                        label="enumNullableProperty"
+                        :rule="rules.enumNullableProperty"
+                    >
+                        <EnumNullableSelect v-model="rows.enumNullableProperty"/>
+                    </el-form-item>
+                </template>
+            </el-table-column>
+            <el-table-column
+                prop="toOnePropertyId"
+                label="toOneProperty"
+            >
+                <template #default="scope">
+                    <el-form-item
+                        :prop="[scope.$index, 'toOnePropertyId']"
+                        label="toOneProperty"
+                        :rule="rules.toOnePropertyId"
+                    >
+                        <ToOneEntityIdSelect
+                            v-model="rows.toOnePropertyId"
+                            :options="toOnePropertyIdOptions"
                         />
                     </el-form-item>
                 </template>
             </el-table-column>
-            <el-table-column prop="conditionId" label="条件">
+            <el-table-column
+                prop="toOneNullablePropertyId"
+                label="toOneNullableProperty"
+            >
                 <template #default="scope">
                     <el-form-item
-                        :prop="[scope.$index, 'conditionId']"
-                        label="条件"
-                        :rule="rules.conditionId"
+                        :prop="[scope.$index, 'toOneNullablePropertyId']"
+                        label="toOneNullableProperty"
+                        :rule="rules.toOneNullablePropertyId"
                     >
-                        <PolicyConditionIdSelect
-                            v-model="rows.conditionId"
-                            :options="conditionIdOptions"
-                        />
-                    </el-form-item>
-                </template>
-            </el-table-column>
-            <el-table-column prop="status" label="匹配状态">
-                <template #default="scope">
-                    <el-form-item
-                        :prop="[scope.$index, 'status']"
-                        label="匹配状态"
-                        :rule="rules.status"
-                    >
-                        <MatchStatusSelect v-model="rows.status"/>
-                    </el-form-item>
-                </template>
-            </el-table-column>
-            <el-table-column prop="date" label="匹配日期">
-                <template #default="scope">
-                    <el-form-item
-                        :prop="[scope.$index, 'date']"
-                        label="匹配日期"
-                        :rule="rules.date"
-                    >
-                        <el-date-picker
-                            v-model="rows.date"
-                            type="datetime"
-                            value-format="YYYY-MM-DDTHH:mm:ss"
-                            placeholder="请选择匹配日期"
-                            clearable
-                        />
-                    </el-form-item>
-                </template>
-            </el-table-column>
-            <el-table-column prop="money" label="金额">
-                <template #default="scope">
-                    <el-form-item
-                        :prop="[scope.$index, 'money']"
-                        label="金额"
-                        :rule="rules.money"
-                    >
-                        <el-input-number
-                            v-model.number="rows.money"
-                            placeholder="请输入金额"
-                            :precision="2"
-                            :min="0.00"
-                            :max="99999.99"
-                            :value-on-clear="0.00"
-                        />
-                    </el-form-item>
-                </template>
-            </el-table-column>
-            <el-table-column prop="description" label="结果描述">
-                <template #default="scope">
-                    <el-form-item
-                        :prop="[scope.$index, 'description']"
-                        label="结果描述"
-                        :rule="rules.description"
-                    >
-                        <el-input
-                            v-model="rows.description"
-                            placeholder="请输入结果描述"
-                            clearable
+                        <ToOneEntityIdSelect
+                            v-model="rows.toOneNullablePropertyId"
+                            :options="toOneNullablePropertyIdOptions"
                         />
                     </el-form-item>
                 </template>
@@ -655,29 +565,22 @@ const handleSingleDelete = async (index: number): Promise<void> => {
         </slot>
     </el-form>
 </template>
-), (components/conditionMatch/ConditionMatchQueryForm.vue, <script setup lang="ts">
+), (components/entity/EntityQueryForm.vue, <script setup lang="ts">
 import {Search} from "@element-plus/icons-vue"
-import type {
-    ConditionMatchSpec,
-    SysUserOptionView,
-    PolicyConditionOptionView
-} from "@/api/__generated/model/static"
-import SysUserIdSelect from "@/components/sysUser/SysUserIdSelect.vue"
-import PolicyConditionIdSelect from "@/components/policyCondition/PolicyConditionIdSelect.vue"
-import MatchStatusNullableSelect from "@/components/matchStatus/MatchStatusNullableSelect.vue"
+import type {EntitySpec, ToOneEntityOptionView} from "@/api/__generated/model/static"
+import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 
-const spec = defineModel<ConditionMatchSpec>({
+const spec = defineModel<EntitySpec>({
     required: true
 })
 
 defineProps<{
-    userIdOptions: Array<SysUserOptionView>,
-    conditionIdOptions: Array<PolicyConditionOptionView>
+    toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
+    toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>()
 
-const emits = defineEmits<{
-    (event: "query", spec: ConditionMatchSpec): void
-}>()
+const emits = defineEmits<{(event: "query", spec: EntitySpec): void}>()
 
 </script>
 
@@ -685,66 +588,37 @@ const emits = defineEmits<{
     <el-form :model="spec">
         <el-row :gutter="20">
             <el-col :span="8">
-                <el-form-item prop="userId" label="用户">
-                    <SysUserIdSelect
-                        v-model="spec.userId"
-                        :options="userIdOptions"
+                <el-form-item prop="enumProperty" label="enumProperty">
+                    <EnumNullableSelect v-model="spec.enumProperty"/>
+                </el-form-item>
+            </el-col>
+            <el-col :span="8">
+                <el-form-item
+                    prop="enumNullableProperty"
+                    label="enumNullableProperty"
+                >
+                    <EnumNullableSelect v-model="spec.enumNullableProperty"/>
+                </el-form-item>
+            </el-col>
+            <el-col :span="8">
+                <el-form-item
+                    prop="toOnePropertyId"
+                    label="toOneProperty"
+                >
+                    <ToOneEntityIdSelect
+                        v-model="spec.toOnePropertyId"
+                        :options="toOnePropertyIdOptions"
                     />
                 </el-form-item>
             </el-col>
             <el-col :span="8">
-                <el-form-item prop="conditionId" label="条件">
-                    <PolicyConditionIdSelect
-                        v-model="spec.conditionId"
-                        :options="conditionIdOptions"
-                    />
-                </el-form-item>
-            </el-col>
-            <el-col :span="8">
-                <el-form-item prop="status" label="匹配状态">
-                    <MatchStatusNullableSelect v-model="spec.status"/>
-                </el-form-item>
-            </el-col>
-            <el-col :span="8">
-                <el-form-item prop="date" label="匹配日期">
-                    <el-date-picker
-                        v-model="dateRange"
-                        type="datetime"
-                        value-format="YYYY-MM-DDTHH:mm:ss"
-                        is-range
-                        unlink-panels
-                        start-placeholder="请选择开始匹配日期"
-                        end-placeholder="请选择结束匹配日期"
-                        clearable
-                    />
-                </el-form-item>
-            </el-col>
-            <el-col :span="8">
-                <el-form-item prop="money" label="金额">
-                    <el-input-number
-                        v-model.number="spec.minMoney"
-                        placeholder="请输入最小金额"
-                        :precision="2"
-                        :min="0.00"
-                        :max="99999.99"
-                        :value-on-clear="undefined"
-                    />
-                    <el-input-number
-                        v-model.number="spec.maxMoney"
-                        placeholder="请输入最大金额"
-                        :precision="2"
-                        :min="0.00"
-                        :max="99999.99"
-                        :value-on-clear="undefined"
-                    />
-                </el-form-item>
-            </el-col>
-            <el-col :span="8">
-                <el-form-item prop="description" label="结果描述">
-                    <el-input
-                        v-model="spec.description"
-                        placeholder="请输入结果描述"
-                        clearable
+                <el-form-item
+                    prop="toOneNullablePropertyId"
+                    label="toOneNullableProperty"
+                >
+                    <ToOneEntityIdSelect
+                        v-model="spec.toOneNullablePropertyId"
+                        :options="toOneNullablePropertyIdOptions"
                     />
                 </el-form-item>
             </el-col>
@@ -758,29 +632,28 @@ const emits = defineEmits<{
         </el-row>
     </el-form>
 </template>
-), (pages/conditionMatch/ConditionMatchPage.vue, <script setup lang="ts">
+), (pages/entity/EntityPage.vue, <script setup lang="ts">
 import {ref, onBeforeMount} from "vue"
 import type {Ref} from "vue"
 import {Plus, EditPen, Delete} from "@element-plus/icons-vue"
 import type {
     Page,
     PageQuery,
-    ConditionMatchListView,
-    ConditionMatchInsertInput,
-    ConditionMatchUpdateInput,
-    ConditionMatchSpec,
-    SysUserOptionView,
-    PolicyConditionOptionView
+    EntityListView,
+    EntityInsertInput,
+    EntityUpdateInput,
+    EntitySpec,
+    ToOneEntityOptionView
 } from "@/api/__generated/model/static"
 import {api} from "@/api"
 import {sendMessage} from "@/utils/message"
 import {deleteConfirm} from "@/utils/confirm"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
-import ConditionMatchTable from "@/components/conditionMatch/ConditionMatchTable.vue"
-import ConditionMatchAddForm from "@/components/conditionMatch/ConditionMatchAddForm.vue"
-import ConditionMatchEditForm from "@/components/conditionMatch/ConditionMatchEditForm.vue"
-import ConditionMatchQueryForm from "@/components/conditionMatch/ConditionMatchQueryForm.vue"
+import EntityTable from "@/components/entity/EntityTable.vue"
+import EntityAddForm from "@/components/entity/EntityAddForm.vue"
+import EntityEditForm from "@/components/entity/EntityEditForm.vue"
+import EntityQueryForm from "@/components/entity/EntityQueryForm.vue"
 
 const {isLoading, withLoading} = useLoading()
 
@@ -799,33 +672,31 @@ const {queryPage} = useLegalPage(
     withLoading(api.entityService.page)
 )
 
-const getConditionMatch = withLoading((id: number) => api.conditionMatchService.get({id}))
+const getEntity = withLoading((id: number) => api.entityService.get({id}))
 
-const addConditionMatch = withLoading((body: ConditionMatchInsertInput) => api.conditionMatchService.insert({body}))
+const addEntity = withLoading((body: EntityInsertInput) => api.entityService.insert({body}))
 
-const editConditionMatch = withLoading((body: ConditionMatchUpdateInput) => api.conditionMatchService.update({body}))
+const editEntity = withLoading((body: EntityUpdateInput) => api.entityService.update({body}))
 
-const deleteConditionMatch = withLoading((ids: Array<number>) => api.conditionMatchService.delete({ids}))
+const deleteEntity = withLoading((ids: Array<number>) => api.entityService.delete({ids}))
 
 // 多选
 const selection = ref<EntityListView[]>([])
 
-const handleSelectionChange = (
-    newSelection: Array<ConditionMatchListView>
-): void => {
+const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     selection.value = newSelection
 }
 
-// 用户选项
-const userIdOptions = ref<Array<SysUserOptionView>>()
+// toOneProperty选项
+const toOnePropertyIdOptions = ref<Array<ToOneEntityOptionView>>()
 onBeforeMount(async () => {
-    userIdOptions.value = await api.conditionMatchService.listOptions({body: {}})
+    toOnePropertyIdOptions.value = await api.entityService.listOptions({body: {}})
 })
 
-// 条件选项
-const conditionIdOptions = ref<Array<PolicyConditionOptionView>>()
+// toOneNullableProperty选项
+const toOneNullablePropertyIdOptions = ref<Array<ToOneEntityOptionView>>()
 onBeforeMount(async () => {
-    conditionIdOptions.value = await api.conditionMatchService.listOptions({body: {}})
+    toOneNullablePropertyIdOptions.value = await api.entityService.listOptions({body: {}})
 })
 
 // 新增
@@ -835,15 +706,15 @@ const startAdd = (): void => {
     addDialogVisible.value = true
 }
 
-const submitAdd = (insertInput: ConditionMatchInsertInput): void => {
+const submitAdd = (insertInput: EntityInsertInput): void => {
     try {
-        await addConditionMatch(insertInput)
+        await addEntity(insertInput)
         await queryPage()
         addDialogVisible.value = false
 
-        sendMessage('新增条件匹配成功', 'success')
+        sendMessage('新增comment成功', 'success')
     } catch (e) {
-        sendMessage("新增条件匹配失败", "error", e)
+        sendMessage("新增comment失败", "error", e)
     }
 }
 
@@ -854,26 +725,26 @@ const cancelAdd = (): void => {
 // 修改
 const editDialogVisible = ref(false)
 
-const updateInput = ref<ConditionMatchUpdateInput | undefined>(undefined)
+const updateInput = ref<EntityUpdateInput | undefined>(undefined)
 
 const startEdit = (id: number): void => {
-    updateInput.value = await getConditionMatch(id)
+    updateInput.value = await getEntity(id)
     if (updateInput.value === undefined) {
-        sendMessage('编辑的条件匹配不存在', 'error')
+        sendMessage('编辑的comment不存在', 'error')
         return
     }
     editDialogVisible.value = true
 }
 
-const submitEdit = (updateInput: ConditionMatchUpdateInput): void => {
+const submitEdit = (updateInput: EntityUpdateInput): void => {
     try {
-        await editConditionMatch(updateInput)
+        await editEntity(updateInput)
         await queryPage()
         editDialogVisible.value = false
 
-        sendMessage('编辑条件匹配成功', 'success')
+        sendMessage('编辑comment成功', 'success')
     } catch (e) {
-        sendMessage('编辑条件匹配失败', 'error', e)
+        sendMessage('编辑comment失败', 'error', e)
     }
 }
 
@@ -884,23 +755,23 @@ const cancelEdit = (): void => {
 
 // 删除
 const handleDelete = (ids: number[]): void => {
-    const result = await deleteConfirm('条件匹配')
+    const result = await deleteConfirm('comment')
     if (!result) return
 
     try {
-        await deleteConditionMatch(ids)
+        await deleteEntity(ids)
         await queryPage()
 
-        sendMessage('删除条件匹配成功', 'success')
+        sendMessage('删除comment成功', 'success')
     } catch (e) {
-        sendMessage('删除条件匹配失败', 'error', e)
+        sendMessage('删除comment失败', 'error', e)
     }
 }
 </script>
 
 <template>
     <el-card v-loading="isLoading">
-        <ConditionMatchQueryForm
+        <EntityQueryForm
             v-model="queryForm.spec"
             @query="queryPage"
         />
@@ -923,7 +794,7 @@ const handleDelete = (ids: number[]): void => {
             </el-button>
         </div>
 
-        <ConditionMatchTable
+        <EntityTable
             :rows="pageData.rows"
             @selectionChange="handleSelectionChange"
         >
@@ -945,7 +816,7 @@ const handleDelete = (ids: number[]): void => {
                     删除
                 </el-button>
             </template>
-        </ConditionMatchTable>
+        </EntityTable>
 
         <el-pagination
             v-model:current-page="queryInfo.pageIndex"
@@ -958,13 +829,13 @@ const handleDelete = (ids: number[]): void => {
 
     <el-dialog
         v-model="addDialogVisible"
-        v-if="userId && conditionId"
+        v-if="toOnePropertyId && toOneNullablePropertyId"
         destroy-on-close
         :close-on-click-modal="false"
     >
-        <ConditionMatchAddForm
-            :userId="userId"
-            :conditionId="conditionId"
+        <EntityAddForm
+            :toOnePropertyId="toOnePropertyId"
+            :toOneNullablePropertyId="toOneNullablePropertyId"
             :submitLoading="isLoading"
             @submit="submitAdd"
             @cancel="cancelAdd"
@@ -973,31 +844,31 @@ const handleDelete = (ids: number[]): void => {
 
     <el-dialog
         v-model="editDialogVisible"
-        v-if="userId && conditionId"
+        v-if="toOnePropertyId && toOneNullablePropertyId"
         destroy-on-close
         :close-on-click-modal="false"
     >
-        <ConditionMatchEditForm
+        <EntityEditForm
             v-if="updateInput !== undefined"
             v-model="updateInput"
-            :userId="userId"
-            :conditionId="conditionId"
+            :toOnePropertyId="toOnePropertyId"
+            :toOneNullablePropertyId="toOneNullablePropertyId"
             :submitLoading="isLoading"
             @submit="submitEdit"
             @cancel="cancelEdit"
         />
     </el-dialog>
 </template>
-), (components/conditionMatch/ConditionMatchIdSelect.vue, <script setup lang="ts">
+), (components/entity/EntityIdSelect.vue, <script setup lang="ts">
 import {watch} from "vue"
-import type {ConditionMatchOptionView} from "@/api/__generated/model/static"
+import type {EntityOptionView} from "@/api/__generated/model/static"
 
 const modelValue = defineModel<number | undefined>({
     required: true
 })
 
 const props = defineProps<{
-    options: Array<ConditionMatchOptionView>
+    options: Array<EntityOptionView>
 }>()
 
 watch(() => [modelValue.value, props.options], () => {
@@ -1010,7 +881,7 @@ watch(() => [modelValue.value, props.options], () => {
 <template>
     <el-select
         v-model="modelValue"
-        placeholder="请选择条件匹配"
+        placeholder="请选择comment"
         filterable
         clearable
         :value-on-clear="undefined"
@@ -1023,16 +894,16 @@ watch(() => [modelValue.value, props.options], () => {
         />
     </el-select>
 </template>
-), (components/conditionMatch/ConditionMatchIdMultiSelect.vue, <script setup lang="ts">
+), (components/entity/EntityIdMultiSelect.vue, <script setup lang="ts">
 import {watch} from "vue"
-import type {ConditionMatchOptionView} from "@/api/__generated/model/static"
+import type {EntityOptionView} from "@/api/__generated/model/static"
 
 const modelValue = defineModel<Array<number>>({
     required: true
 })
 
 const props = defineProps<{
-    options: Array<ConditionMatchOptionView>
+    options: Array<EntityOptionView>
 }>()
 
 watch(() => [modelValue.value, props.options], () => {
@@ -1051,7 +922,7 @@ watch(() => [modelValue.value, props.options], () => {
 <template>
     <el-select
         v-model="modelValue"
-        placeholder="请选择条件匹配"
+        placeholder="请选择comment"
         filterable
         clearable
         :value-on-clear="undefined"
@@ -1067,97 +938,64 @@ watch(() => [modelValue.value, props.options], () => {
         />
     </el-select>
 </template>
-), (rules/conditionMatch/ConditionMatchAddFormRules.ts, import type {Ref} from "vue"
+), (rules/entity/EntityAddFormRules.ts, import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
-import type {ConditionMatchInsertInput} from "@/api/__generated/model/static"
+import type {EntityInsertInput} from "@/api/__generated/model/static"
 
-export const useRules = (_: Ref<ConditionMatchInsertInput>): FormRules<ConditionMatchInsertInput> => {
+export const useRules = (_: Ref<EntityInsertInput>): FormRules<EntityInsertInput> => {
     return {
-        userId: [
-            {required: true, message: "用户不能为空", trigger: "blur"},
+        enumProperty: [
+            {required: true, message: "enumProperty不能为空", trigger: "blur"},
+            {type: "enum", enum: ["item1"], message: "enumProperty必须是item1", trigger: "blur"},
         ],
-        conditionId: [
-            {required: true, message: "条件不能为空", trigger: "blur"},
+        enumNullableProperty: [
+            {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
         ],
-        status: [
-            {required: true, message: "匹配状态不能为空", trigger: "blur"},
-            {type: "enum", enum: ["EQ", "NE"], message: "匹配状态必须是EQ/NE", trigger: "blur"},
+        toOnePropertyId: [
+            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
         ],
-        date: [
-            {required: true, message: "匹配日期不能为空", trigger: "blur"},
-            {type: "date", message: "匹配日期必须是日期", trigger: "blur"},
-        ],
-        money: [
-            {required: true, message: "金额不能为空", trigger: "blur"},
-            {type: "number", message: "金额必须是数字", trigger: "blur"},
-            {type: "number", min: 0.0, max: 99999.99, message: "金额必须在0.0-99999.99之间", trigger: "blur"},
-        ],
-        description: [
-            {required: true, message: "结果描述不能为空", trigger: "blur"},
-            {type: "string", max: 255, message: "结果描述长度必须小于255", trigger: "blur"},
+        toOneNullablePropertyId: [
         ],
     }
-}), (rules/conditionMatch/ConditionMatchEditFormRules.ts, import type {Ref} from "vue"
+}), (rules/entity/EntityEditFormRules.ts, import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
-import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
+import type {EntityUpdateInput} from "@/api/__generated/model/static"
 
-export const useRules = (_: Ref<ConditionMatchUpdateInput>): FormRules<ConditionMatchUpdateInput> => {
+export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput> => {
     return {
         id: [
-            {required: true, message: "ID不能为空", trigger: "blur"},
-            {type: "integer", message: "ID必须是整数", trigger: "blur"},
-            {type: "integer", min: 0.0, max: 9.999999999E9, message: "ID必须在0.0-9.999999999E9之间", trigger: "blur"},
+            {required: true, message: "id不能为空", trigger: "blur"},
+            {type: "integer", message: "id必须是整数", trigger: "blur"},
         ],
-        userId: [
-            {required: true, message: "用户不能为空", trigger: "blur"},
+        enumProperty: [
+            {required: true, message: "enumProperty不能为空", trigger: "blur"},
+            {type: "enum", enum: ["item1"], message: "enumProperty必须是item1", trigger: "blur"},
         ],
-        conditionId: [
-            {required: true, message: "条件不能为空", trigger: "blur"},
+        enumNullableProperty: [
+            {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
         ],
-        status: [
-            {required: true, message: "匹配状态不能为空", trigger: "blur"},
-            {type: "enum", enum: ["EQ", "NE"], message: "匹配状态必须是EQ/NE", trigger: "blur"},
+        toOnePropertyId: [
+            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
         ],
-        date: [
-            {required: true, message: "匹配日期不能为空", trigger: "blur"},
-            {type: "date", message: "匹配日期必须是日期", trigger: "blur"},
-        ],
-        money: [
-            {required: true, message: "金额不能为空", trigger: "blur"},
-            {type: "number", message: "金额必须是数字", trigger: "blur"},
-            {type: "number", min: 0.0, max: 99999.99, message: "金额必须在0.0-99999.99之间", trigger: "blur"},
-        ],
-        description: [
-            {required: true, message: "结果描述不能为空", trigger: "blur"},
-            {type: "string", max: 255, message: "结果描述长度必须小于255", trigger: "blur"},
+        toOneNullablePropertyId: [
         ],
     }
-}), (rules/conditionMatch/ConditionMatchEditTableRules.ts, import type {Ref} from "vue"
+}), (rules/entity/EntityEditTableRules.ts, import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
-import type {ConditionMatchUpdateInput} from "@/api/__generated/model/static"
+import type {EntityUpdateInput} from "@/api/__generated/model/static"
 
-export const useRules = (_: Ref<Array<ConditionMatchUpdateInput>>): FormRules<ConditionMatchUpdateInput> => {
+export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpdateInput> => {
     return {
-        userId: [
+        enumProperty: [
+            {required: true, message: "enumProperty不能为空", trigger: "blur"},
+            {type: "enum", enum: ["item1"], message: "enumProperty必须是item1", trigger: "blur"},
         ],
-        conditionId: [
+        enumNullableProperty: [
+            {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
         ],
-        status: [
-            {required: true, message: "匹配状态不能为空", trigger: "blur"},
-            {type: "enum", enum: ["EQ", "NE"], message: "匹配状态必须是EQ/NE", trigger: "blur"},
+        toOnePropertyId: [
         ],
-        date: [
-            {required: true, message: "匹配日期不能为空", trigger: "blur"},
-            {type: "date", message: "匹配日期必须是日期", trigger: "blur"},
-        ],
-        money: [
-            {required: true, message: "金额不能为空", trigger: "blur"},
-            {type: "number", message: "金额必须是数字", trigger: "blur"},
-            {type: "number", min: 0.0, max: 99999.99, message: "金额必须在0.0-99999.99之间", trigger: "blur"},
-        ],
-        description: [
-            {required: true, message: "结果描述不能为空", trigger: "blur"},
-            {type: "string", max: 255, message: "结果描述长度必须小于255", trigger: "blur"},
+        toOneNullablePropertyId: [
         ],
     }
 })]
