@@ -4,6 +4,7 @@ import top.potmot.core.business.utils.components
 import top.potmot.core.business.utils.constants
 import top.potmot.core.business.utils.dir
 import top.potmot.core.business.utils.dto
+import top.potmot.core.business.utils.enums
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.rules
 import top.potmot.core.business.utils.selectOptionLabel
@@ -16,6 +17,7 @@ import top.potmot.core.business.view.generate.builder.rules.existValidRules
 import top.potmot.core.business.view.generate.builder.rules.rules
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
+import top.potmot.core.business.view.generate.builder.vue3.elementPlus.rules.Vue3ElementPlusRuleBuilder
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.AddFormDefault
@@ -27,7 +29,6 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTabl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.queryForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
-import top.potmot.core.business.view.generate.builder.vue3.elementPlus.rules.Vue3ElementPlusRuleBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
@@ -55,6 +56,7 @@ import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.error.ModelException
+import top.potmot.utils.string.appendLines
 
 object Vue3ElementPlusViewGenerator :
     ViewGenerator,
@@ -203,7 +205,17 @@ object Vue3ElementPlusViewGenerator :
 
     override fun stringifyAddFormType(entity: GenEntityBusinessView): String {
         val context = entity.addFormProperties.associateWith { it.addFormType }
+        val enumImports = entity.enums.map {
+            ImportType(enumPath, it.name)
+        }
+
         return buildString {
+            builder.apply {
+                appendLines(enumImports.stringifyImports())
+            }
+
+            if (enumImports.isNotEmpty()) appendLine()
+
             appendLine("export type ${entity.addFormDataType} = {")
             context.forEach { (property, type) ->
                 appendLine("${builder.indent}${property.name}: $type")
@@ -230,7 +242,8 @@ object Vue3ElementPlusViewGenerator :
 
     @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
-        val rules = entity.insertInputProperties.associate { it.name to it.rules } + entity.existValidRules(withId = false)
+        val rules =
+            entity.insertInputProperties.associate { it.name to it.rules } + entity.existValidRules(withId = false)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.insertInput, rules)
     }
 
@@ -301,7 +314,8 @@ object Vue3ElementPlusViewGenerator :
 
     @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringifyEditTableRules(entity: GenEntityBusinessView): String {
-        val rules = entity.editTableProperties.associate { it.name to it.rules } + entity.existValidRules(withId = false)
+        val rules =
+            entity.editTableProperties.associate { it.name to it.rules } + entity.existValidRules(withId = false)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules, isArray = true)
     }
 

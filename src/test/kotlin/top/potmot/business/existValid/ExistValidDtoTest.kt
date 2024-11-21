@@ -34,14 +34,14 @@ EntityOptionView {
 }
 
 input EntityInsertInput {
-    #allScalars(this)
+    #allScalars
     -id
     id(toOneProperty)
     id(toOneNullableProperty)
 }
 
 input EntityUpdateInput {
-    #allScalars(this)
+    #allScalars
     id!
     id(toOneProperty)
     id(toOneNullableProperty)
@@ -110,14 +110,14 @@ EntityOptionView {
 }
 
 input EntityInsertInput {
-    #allScalars(this)
+    #allScalars
     -id
     toOnePropertyId
     toOneNullablePropertyId
 }
 
 input EntityUpdateInput {
-    #allScalars(this)
+    #allScalars
     id!
     toOnePropertyId
     toOneNullablePropertyId

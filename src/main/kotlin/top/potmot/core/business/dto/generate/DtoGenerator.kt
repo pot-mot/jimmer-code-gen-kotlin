@@ -42,7 +42,7 @@ object DtoGenerator {
     private fun generateListView(entity: GenEntityBusinessView) = buildString {
         appendLine("${entity.dto.listView} {")
         appendLine("    #allScalars")
-        entity.targetOneId(onlyThis = true).forEach {
+        entity.targetOneId(onlyThis = false).forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -75,9 +75,9 @@ object DtoGenerator {
         val idName = idProperty.name
 
         appendLine("input ${entity.dto.insertInput} {")
-        appendLine("    #allScalars(this)")
+        appendLine("    #allScalars")
         appendLine("    -${idName}")
-        entity.targetOneId(onlyThis = true).forEach {
+        entity.targetOneId(onlyThis = false).forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -89,9 +89,9 @@ object DtoGenerator {
         val idName = idProperty.name
 
         appendLine("input ${entity.dto.updateInput} {")
-        appendLine("    #allScalars(this)")
+        appendLine("    #allScalars")
         appendLine("    ${idName}!")
-        entity.targetOneId(onlyThis = true).forEach {
+        entity.targetOneId(onlyThis = false).forEach {
             appendLine("    $it")
         }
         appendLine("}")

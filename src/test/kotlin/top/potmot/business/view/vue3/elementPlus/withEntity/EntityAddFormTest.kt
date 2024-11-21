@@ -12,6 +12,8 @@ class EntityAddFormTest {
     fun `test addFormType`() {
         assertEquals(
             """
+import type {Enum} from "@/api/__generated/model/enums"
+
 export type EntityAddFormType = {
     enumProperty: Enum
     enumNullableProperty: Enum | undefined

@@ -20,14 +20,14 @@ ConditionMatchOptionView {
 }
 
 input ConditionMatchInsertInput {
-    #allScalars(this)
+    #allScalars
     -id
     userId
     conditionId
 }
 
 input ConditionMatchUpdateInput {
-    #allScalars(this)
+    #allScalars
     id!
     userId
     conditionId

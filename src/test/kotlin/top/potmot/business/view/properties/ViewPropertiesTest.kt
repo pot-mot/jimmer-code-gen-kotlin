@@ -10,7 +10,7 @@ class ViewPropertiesTest : ViewProperties {
     private val testEntities = listOf(testEntity, idViewTestEntity)
 
     @Test
-    fun testSelectProperties() {
+    fun `test selectProperties`() {
         testEntities.forEach { testEntity ->
             val selectProperties = testEntity.selectProperties
             assertEquals(2, selectProperties.size)
@@ -32,7 +32,7 @@ class ViewPropertiesTest : ViewProperties {
     }
 
     @Test
-    fun testTableProperties() {
+    fun `test tableProperties`() {
         testEntities.forEach { testEntity ->
             val tableProperties = testEntity.tableProperties
             assertEquals(4, tableProperties.size)
@@ -66,7 +66,7 @@ class ViewPropertiesTest : ViewProperties {
     }
 
     @Test
-    fun testQueryProperties() {
+    fun `test queryProperties`() {
         testEntities.forEach { testEntity ->
             val queryProperties = testEntity.queryProperties
             assertEquals(4, queryProperties.size)
@@ -100,7 +100,7 @@ class ViewPropertiesTest : ViewProperties {
     }
 
     @Test
-    fun testAddFormProperties() {
+    fun `test addFormProperties`() {
         testEntities.forEach { testEntity ->
             val addFormProperties = testEntity.addFormProperties
             assertEquals(4, addFormProperties.size)
@@ -134,7 +134,7 @@ class ViewPropertiesTest : ViewProperties {
     }
 
     @Test
-    fun testEditFormProperties() {
+    fun `test editFormProperties`() {
         testEntities.forEach { testEntity ->
             val editFormProperties = testEntity.editFormProperties
             assertEquals(5, editFormProperties.size)
@@ -168,7 +168,7 @@ class ViewPropertiesTest : ViewProperties {
     }
 
     @Test
-    fun testEditTableProperties() {
+    fun `test editTableProperties`() {
         testEntities.forEach { testEntity ->
             val editTableProperties = testEntity.editTableProperties
             assertEquals(4, editTableProperties.size)

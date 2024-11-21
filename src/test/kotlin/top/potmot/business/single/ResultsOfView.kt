@@ -80,7 +80,9 @@ const handleSelectionChange = (
         </el-table-column>
     </el-table>
 </template>
-), (components/conditionMatch/ConditionMatchAddFormType.d.ts, export type ConditionMatchAddFormType = {
+), (components/conditionMatch/ConditionMatchAddFormType.d.ts, import type {MatchStatus} from "@/api/__generated/model/enums"
+
+export type ConditionMatchAddFormType = {
     userId: number | undefined
     conditionId: number | undefined
     status: string
