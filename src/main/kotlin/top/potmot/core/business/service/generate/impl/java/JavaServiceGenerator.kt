@@ -54,24 +54,28 @@ package ${packages.service};
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.babyfish.jimmer.Page;
-import org.babyfish.jimmer.sql.JSqlClient;
-import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.babyfish.jimmer.sql.JSqlClient;""" +
+                (if (!entity.canEdit) "" else "\nimport org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode;") +
+                (if (!entity.canAdd && !entity.canEdit && !entity.canDelete) "" else "\nimport org.springframework.transaction.annotation.Transactional;") +
+                (if (!entity.canDelete) "" else "\nimport org.springframework.web.bind.annotation.DeleteMapping;") +
+"""
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;""" +
+                (if (!entity.canEdit) "" else "\nimport org.springframework.web.bind.annotation.PutMapping;") +
+"""
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;""" +
+                (if (!entity.canDelete) "" else "\nimport org.springframework.web.bind.annotation.RequestParam;") +
+"""
 import org.springframework.web.bind.annotation.RestController;
 import ${packages.entity}.${name};
 import ${packages.entity}.Tables;
 import ${packages.dto}.${listView};
-import ${packages.dto}.${detailView};
-import ${packages.dto}.${insertInput};
-import ${packages.dto}.${updateInput};
+import ${packages.dto}.${detailView};""" +
+                (if (!entity.canAdd) "" else "\nimport ${packages.dto}.${insertInput};") +
+                (if (!entity.canEdit) "" else "\nimport ${packages.dto}.${updateInput};") +
+                """
 import ${packages.dto}.${spec};
 import ${packages.dto}.${optionView};${existValidDtoImports}
 import ${packages.entity}.query.PageQuery;
@@ -101,7 +105,7 @@ public class $serviceName implements Tables {
     public $detailView get(@PathVariable $idType id) throws AuthorizeException { 
         return sqlClient.findById(${detailView}.class, id);
     }
-""" + if (!entity.canQuery) "" else """
+
     /**
      * 根据提供的查询参数列出${comment}。
      *
@@ -149,7 +153,7 @@ public class $serviceName implements Tables {
                 .select(${tableProxy}.fetch(${optionView}.class))
                 .execute();
     }
-""" + if (!entity.canAdd) "" else """
+""" + (if (!entity.canAdd) "" else """
     /**
      * 插入新的${comment}。
      *
@@ -162,7 +166,7 @@ public class $serviceName implements Tables {
     public $idType insert(@RequestBody @NotNull $insertInput input) throws AuthorizeException {
         return sqlClient.insert(input).getModifiedEntity().${idName}();
     }
-""" + if (!entity.canEdit) "" else """
+""") + (if (!entity.canEdit) "" else """
     /**
      * 更新${comment}。
      *
@@ -175,7 +179,7 @@ public class $serviceName implements Tables {
     public $idType update(@RequestBody @NotNull $updateInput input) throws AuthorizeException {
         return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity().${idName}();
     }
-""" + if (!entity.canDelete) "" else """
+""") + (if (!entity.canDelete) "" else """
     /**
      * 删除指定ID的${comment}。
      *
@@ -193,7 +197,7 @@ public class $serviceName implements Tables {
         }> ids) throws AuthorizeException {
         return sqlClient.deleteByIds(${name}.class, ids).getAffectedRowCount(${name}.class);
     }
-""").trim() + existValidItemWithNames.joinToString("") { (name, validItem) ->
+""")).trim() + existValidItemWithNames.joinToString("") { (name, validItem) ->
             """
 
     /**
