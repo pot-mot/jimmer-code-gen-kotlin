@@ -12,7 +12,6 @@ import top.potmot.entity.GenEntity
 import top.potmot.entity.GenProperty
 import top.potmot.entity.GenTable
 import top.potmot.entity.copy
-import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.id
 import top.potmot.entity.tableId
@@ -49,7 +48,7 @@ class ConvertEntityTest {
     fun `test base convert`() {
         val tableId = sqlClient.save(baseTable).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId), null, GenConfigProperties())
+        convertService.convertTable(listOf(tableId), null)
 
         val entity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -162,7 +161,7 @@ class ConvertEntityTest {
             superTableIds = listOf(superTableId)
         )).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId, superTableId), null, GenConfigProperties())
+        convertService.convertTable(listOf(tableId, superTableId), null)
 
         val superEntityId = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq superTableId)
@@ -280,7 +279,7 @@ class ConvertEntityTest {
     fun `test MergeExistAndConvert`() {
         val tableId = sqlClient.save(baseTable).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId), null, GenConfigProperties())
+        convertService.convertTable(listOf(tableId), null)
 
         val firstConvertEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -517,7 +516,7 @@ class ConvertEntityTest {
             changedEntity.result
         )
 
-        convertService.convertTable(listOf(tableId), null, GenConfigProperties())
+        convertService.convertTable(listOf(tableId), null)
 
         val secondConvertEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
