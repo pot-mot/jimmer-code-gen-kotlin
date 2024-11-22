@@ -19,6 +19,9 @@ import org.babyfish.jimmer.sql.Transient
 import top.potmot.entity.base.BaseEntity
 import top.potmot.entity.resolver.GenEntityIdPropertiesResolver
 import top.potmot.entity.resolver.GenEntityLogicalDeleteResolver
+import top.potmot.entity.resolver.GenEntityLongPropertiesResolver
+import top.potmot.entity.resolver.GenEntityNotLongPropertiesResolver
+import top.potmot.entity.resolver.GenEntityShortViewPropertiesResolver
 
 /**
  * 生成实体
@@ -165,5 +168,23 @@ interface GenEntity : BaseEntity {
      */
     @Transient(GenEntityIdPropertiesResolver::class)
     val idProperties: List<GenProperty>
+
+    /**
+     * 短关联视图属性
+     */
+    @Transient(GenEntityShortViewPropertiesResolver::class)
+    val shortViewProperties: List<GenProperty>
+
+    /**
+     * 短关联属性
+     */
+    @Transient(GenEntityNotLongPropertiesResolver::class)
+    val notLongProperties: List<GenProperty>
+
+    /**
+     * 长关联属性
+     */
+    @Transient(GenEntityLongPropertiesResolver::class)
+    val longProperties: List<GenProperty>
 }
 

@@ -53,7 +53,7 @@ GenEntityBusinessView implements GenerateEntity {
 
     superEntities*
 
-    properties {
+    notLongProperties as properties {
         #allScalars
         id(entity)
 
@@ -74,6 +74,14 @@ GenEntityBusinessView implements GenerateEntity {
                     type
                     typeNotNull
                 }
+                shortViewProperties {
+                    #allScalars
+
+                    column {
+                        dataSize
+                        numericPrecision
+                    }
+                }
             }
         }
 
@@ -89,6 +97,22 @@ GenEntityBusinessView implements GenerateEntity {
                 comment
                 orderKey
                 defaultItem
+            }
+        }
+    }
+
+    longProperties {
+        #allScalars
+        id(entity)
+
+        column {
+            dataSize
+            numericPrecision
+        }
+
+        flat(typeTable) {
+            flat(entity) {
+                id as typeEntityId
             }
         }
     }

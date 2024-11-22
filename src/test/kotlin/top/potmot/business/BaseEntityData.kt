@@ -106,7 +106,8 @@ val toOneProperty = baseProperty.copy(
                 type = "kotlin.Long",
                 typeNotNull = true,
             )
-        )
+        ),
+        shortViewProperties = emptyList()
     )
 )
 
@@ -136,7 +137,8 @@ val toManyProperty = baseProperty.copy(
                 type = "kotlin.Long",
                 typeNotNull = true,
             )
-        )
+        ),
+        shortViewProperties = emptyList()
     )
 )
 
@@ -165,7 +167,8 @@ val testEntity = GenEntityBusinessView(
         toOneNullableProperty,
         toManyProperty,
     ),
-    indexes = emptyList()
+    indexes = emptyList(),
+    longProperties = emptyList()
 )
 
 val toOneIdView = toOneProperty.copy(

@@ -369,7 +369,8 @@ import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
                 packagePath = "",
                 name = "Entity",
                 comment = "comment",
-                idProperties = emptyList()
+                idProperties = emptyList(),
+                shortViewProperties = emptyList(),
             )
         )
 
@@ -407,7 +408,8 @@ import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
                 packagePath = "",
                 name = "Entity",
                 comment = "comment",
-                idProperties = emptyList()
+                idProperties = emptyList(),
+                shortViewProperties = emptyList(),
             )
         )
 

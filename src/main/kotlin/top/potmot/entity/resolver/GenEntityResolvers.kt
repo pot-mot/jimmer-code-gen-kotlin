@@ -11,7 +11,9 @@ import top.potmot.entity.GenProperty
 import top.potmot.entity.entityId
 import top.potmot.entity.id
 import top.potmot.entity.idProperty
+import top.potmot.entity.inShortAssociationView
 import top.potmot.entity.logicalDelete
+import top.potmot.entity.longAssociation
 
 @Component
 class GenEntityLogicalDeleteResolver(
@@ -37,6 +39,45 @@ class GenEntityIdPropertiesResolver(
         sqlClient.createQuery(GenProperty::class) {
             where(table.entityId valueIn ids)
             where(table.idProperty eq true)
+            select(table.entityId, table.id)
+        }.execute()
+            .groupBy({it._1}) { it._2 }
+}
+
+@Component
+class GenEntityShortViewPropertiesResolver(
+    @Autowired val sqlClient: KSqlClient
+) : KTransientResolver<Long, List<Long>> {
+    override fun resolve(ids: Collection<Long>): Map<Long, List<Long>> =
+        sqlClient.createQuery(GenProperty::class) {
+            where(table.entityId valueIn ids)
+            where(table.inShortAssociationView eq true)
+            select(table.entityId, table.id)
+        }.execute()
+            .groupBy({it._1}) { it._2 }
+}
+
+@Component
+class GenEntityNotLongPropertiesResolver(
+    @Autowired val sqlClient: KSqlClient
+) : KTransientResolver<Long, List<Long>> {
+    override fun resolve(ids: Collection<Long>): Map<Long, List<Long>> =
+        sqlClient.createQuery(GenProperty::class) {
+            where(table.entityId valueIn ids)
+            where(table.longAssociation eq false)
+            select(table.entityId, table.id)
+        }.execute()
+            .groupBy({it._1}) { it._2 }
+}
+
+@Component
+class GenEntityLongPropertiesResolver(
+    @Autowired val sqlClient: KSqlClient
+) : KTransientResolver<Long, List<Long>> {
+    override fun resolve(ids: Collection<Long>): Map<Long, List<Long>> =
+        sqlClient.createQuery(GenProperty::class) {
+            where(table.entityId valueIn ids)
+            where(table.longAssociation eq true)
             select(table.entityId, table.id)
         }.execute()
             .groupBy({it._1}) { it._2 }
