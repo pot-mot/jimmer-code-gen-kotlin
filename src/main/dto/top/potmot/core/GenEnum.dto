@@ -15,6 +15,7 @@ GenEnumGenerateView implements GenerateEnum {
         name
         mappedValue
         comment
+        defaultItem
         remark
     }
 }

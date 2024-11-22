@@ -19,21 +19,24 @@ private const val enumJson = """
             "name": "Item1",
             "mappedValue": "",
             "comment": "选项1",
-            "remark": ""
+            "remark": "",
+            "defaultItem": true
         },
         {
             "id": 2,
             "name": "Item2",
             "mappedValue": "",
             "comment": "选项2",
-            "remark": ""
+            "remark": "",
+            "defaultItem": false
         },
         {
             "id": 3,
             "name": "Item3",
             "mappedValue": "",
             "comment": "选项3",
-            "remark": ""
+            "remark": "",
+            "defaultItem": false
         }
     ]
 }

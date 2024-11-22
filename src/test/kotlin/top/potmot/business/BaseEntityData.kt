@@ -75,7 +75,8 @@ val enumProperty = baseProperty.copy(
                 name = "item1",
                 comment = "comment1",
                 orderKey = 0,
-            )
+                defaultItem = true
+            ),
         )
     )
 )

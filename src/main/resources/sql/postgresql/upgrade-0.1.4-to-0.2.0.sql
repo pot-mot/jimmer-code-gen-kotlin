@@ -104,3 +104,27 @@ ALTER TABLE "jimmer_code_gen"."gen_property"
     ALTER COLUMN "in_long_association_input" DROP DEFAULT;
 
 COMMENT ON COLUMN "gen_property"."in_long_association_input" IS '是否在长关联入参DTO中';
+
+
+
+ALTER TABLE "jimmer_code_gen"."gen_property"
+    ADD COLUMN "in_option_view" boolean NOT NULL DEFAULT FALSE;
+ALTER TABLE "jimmer_code_gen"."gen_property"
+    ALTER COLUMN "in_option_view" DROP DEFAULT;
+
+COMMENT ON COLUMN "gen_property"."in_option_view" IS '是否在选项视图DTO中';
+
+ALTER TABLE "jimmer_code_gen"."gen_property"
+    ADD COLUMN "in_short_association_view" boolean NOT NULL DEFAULT FALSE;
+ALTER TABLE "jimmer_code_gen"."gen_property"
+    ALTER COLUMN "in_short_association_view" DROP DEFAULT;
+
+COMMENT ON COLUMN "gen_property"."in_short_association_view" IS '是否在短关联视图DTO中';
+
+
+ALTER TABLE "jimmer_code_gen"."gen_enum_item"
+    ADD COLUMN "default_item" boolean NOT NULL DEFAULT FALSE;
+ALTER TABLE "jimmer_code_gen"."gen_enum_item"
+    ALTER COLUMN "default_item" DROP DEFAULT;
+
+COMMENT ON COLUMN "gen_enum_item"."default_item" IS '是否是默认值';

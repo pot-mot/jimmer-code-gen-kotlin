@@ -14,6 +14,7 @@ const val COMMON_ENUM = """
             "name": "item1",
             "mappedValue": "",
             "comment": "",
+            "defaultItem": true,
             "orderKey": 0
         },
         {
@@ -21,6 +22,7 @@ const val COMMON_ENUM = """
             "name": "item2",
             "mappedValue": "",
             "comment": "",
+            "defaultItem": false, 
             "orderKey": 1
         }
     ]
@@ -41,6 +43,7 @@ const val ORDINAL_ENUM = """
             "name": "item1",
             "mappedValue": "0",
             "comment": "",
+            "defaultItem": true,
             "orderKey": 0
         },
         {
@@ -48,6 +51,7 @@ const val ORDINAL_ENUM = """
             "name": "item2",
             "mappedValue": "1",
             "comment": "",
+            "defaultItem": false,
             "orderKey": 1
         }
     ]
@@ -68,6 +72,7 @@ const val NAME_ENUM = """
             "name": "item1",
             "mappedValue": "item1",
             "comment": "",
+            "defaultItem": true,
             "orderKey": 0
         },
         {
@@ -75,6 +80,7 @@ const val NAME_ENUM = """
             "name": "item2",
             "mappedValue": "item2",
             "comment": "",
+            "defaultItem": false,
             "orderKey": 1
         }
     ]

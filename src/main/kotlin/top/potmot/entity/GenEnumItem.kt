@@ -59,6 +59,11 @@ interface GenEnumItem : BaseEntity {
     val comment: String
 
     /**
+     * 是否是默认值
+     */
+    val defaultItem: Boolean
+
+    /**
      * 排序键
      */
     val orderKey: Long

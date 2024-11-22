@@ -64,3 +64,21 @@ ALTER TABLE `jimmer_code_gen`.`gen_property`
     ADD COLUMN `in_long_association_input` boolean NOT NULL DEFAULT TRUE COMMENT '是否在长关联入参DTO中' AFTER `in_long_association_view`;
 ALTER TABLE `jimmer_code_gen`.`gen_property`
     MODIFY COLUMN `in_long_association_input` boolean NOT NULL COMMENT '是否在长关联入参DTO中' AFTER `in_long_association_view`;
+
+
+
+ALTER TABLE `jimmer_code_gen`.`gen_property`
+    ADD COLUMN `in_option_view` boolean NOT NULL DEFAULT FALSE COMMENT '是否在选项视图DTO中' AFTER `in_specification`;
+ALTER TABLE `jimmer_code_gen`.`gen_property`
+    MODIFY COLUMN `in_option_view` boolean NOT NULL COMMENT '是否在选项视图DTO中' AFTER `in_specification`;
+
+ALTER TABLE `jimmer_code_gen`.`gen_property`
+    ADD COLUMN `in_short_association_view` boolean NOT NULL DEFAULT FALSE COMMENT '是否在短关联视图DTO中' AFTER `in_option_view`;
+ALTER TABLE `jimmer_code_gen`.`gen_property`
+    MODIFY COLUMN `in_short_association_view` boolean NOT NULL COMMENT '是否在短关联视图DTO中' AFTER `in_option_view`;
+
+
+ALTER TABLE `jimmer_code_gen`.`gen_enum_item`
+    ADD COLUMN `default_item` boolean NOT NULL DEFAULT FALSE COMMENT '是否是默认值' AFTER `comment`;
+ALTER TABLE `jimmer_code_gen`.`gen_enum_item`
+    MODIFY COLUMN `default_item` boolean NOT NULL COMMENT '是否是默认值' AFTER `comment`;

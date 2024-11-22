@@ -143,6 +143,7 @@ CREATE TABLE "gen_enum_item"
     "mapped_value"  text        NOT NULL,
     "comment"       text        NOT NULL,
     "order_key"     bigint      NOT NULL,
+    "default_item"       boolean     NOT NULL,
     "remark"        text        NOT NULL,
     "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -158,6 +159,7 @@ COMMENT ON COLUMN "gen_enum_item"."enum_id" IS '对应枚举';
 COMMENT ON COLUMN "gen_enum_item"."name" IS '元素名';
 COMMENT ON COLUMN "gen_enum_item"."mapped_value" IS '映射值';
 COMMENT ON COLUMN "gen_enum_item"."comment" IS '元素注释';
+COMMENT ON COLUMN "gen_enum_item"."default_item" IS '是否是默认值';
 COMMENT ON COLUMN "gen_enum_item"."remark" IS '备注';
 COMMENT ON COLUMN "gen_enum_item"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_enum_item"."modified_time" IS '修改时间';
@@ -593,6 +595,8 @@ CREATE TABLE "gen_property"
     "in_insert_input"           boolean     NOT NULL,
     "in_update_input"           boolean     NOT NULL,
     "in_specification"          boolean     NOT NULL,
+    "in_option_view"            boolean     NOT NULL,
+    "in_short_association_view" boolean     NOT NULL,
     "in_long_association_view"  boolean     NOT NULL,
     "in_long_association_input" boolean     NOT NULL,
     "remark"                    text        NOT NULL,
@@ -643,6 +647,8 @@ COMMENT ON COLUMN "gen_property"."in_detail_view" IS '是否在详情视图DTO�
 COMMENT ON COLUMN "gen_property"."in_insert_input" IS '是否在新增入参DTO中';
 COMMENT ON COLUMN "gen_property"."in_update_input" IS '是否在修改入参DTO中';
 COMMENT ON COLUMN "gen_property"."in_specification" IS '是否在查询规格DTO中';
+COMMENT ON COLUMN "gen_property"."in_option_view" IS '是否在选项视图DTO中';
+COMMENT ON COLUMN "gen_property"."in_short_association_view" IS '是否在短关联视图DTO中';
 COMMENT ON COLUMN "gen_property"."in_long_association_view" IS '是否在长关联视图DTO中';
 COMMENT ON COLUMN "gen_property"."in_long_association_input" IS '是否在长关联入参DTO中';
 COMMENT ON COLUMN "gen_property"."remark" IS '备注';

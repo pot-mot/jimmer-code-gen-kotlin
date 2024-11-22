@@ -207,6 +207,16 @@ interface GenProperty : BaseEntity {
     val inSpecification: Boolean
 
     /**
+     * 是否在选项视图DTO中
+     */
+    val inOptionView: Boolean
+
+    /**
+     * 是否在短关联视图DTO中
+     */
+    val inShortAssociationView: Boolean
+
+    /**
      * 是否在长关联视图DTO中
      */
     val inLongAssociationView: Boolean

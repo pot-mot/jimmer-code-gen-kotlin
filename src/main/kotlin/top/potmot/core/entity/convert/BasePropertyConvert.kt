@@ -61,6 +61,8 @@ fun GenTableConvertView.TargetOf_columns.toBaseProperty(
         inInsertInput = true,
         inUpdateInput = true,
         inSpecification = true,
+        inOptionView = false,
+        inShortAssociationView = false,
         inLongAssociationView = true,
         inLongAssociationInput = true,
         longAssociation = false,
