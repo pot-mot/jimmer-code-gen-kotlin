@@ -22,9 +22,6 @@ import kotlin.reflect.KClass
 class EntityService(
     @Autowired val sqlClient: KSqlClient,
 ) {
-    /**
-     * 获取单个数据源
-     */
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenEntityDetailView? =
         sqlClient.findById(GenEntityDetailView::class, id)
