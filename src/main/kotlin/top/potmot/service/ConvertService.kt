@@ -77,6 +77,7 @@ class ConvertService(
                             tableId = entity.tableId,
                         )
                     tableEntityIdPairs += table to entity.id
+                    result += entity.id
                 }
                 sqlClient.saveEntities(updateEntities).items.forEach {
                     val entity = it.modifiedEntity
@@ -87,6 +88,7 @@ class ConvertService(
                             tableId = entity.tableId,
                         )
                     tableEntityIdPairs += table to entity.id
+                    result += entity.id
                 }
 
                 tableEntityIdPairs.forEach { (table, entityId) ->
