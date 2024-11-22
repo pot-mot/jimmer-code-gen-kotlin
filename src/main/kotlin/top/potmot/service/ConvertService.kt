@@ -11,12 +11,15 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.context.useContext
+import top.potmot.core.entity.convert.mergeExistAndConvertEntity
 import top.potmot.core.entity.convert.toGenEntity
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenModel
 import top.potmot.entity.GenTable
 import top.potmot.entity.GenTypeMapping
 import top.potmot.entity.dto.GenConfigProperties
+import top.potmot.entity.dto.GenEntityDetailView
+import top.potmot.entity.dto.GenEntityInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
 import top.potmot.entity.dto.IdName
@@ -46,21 +49,47 @@ class ConvertService(
         transactionTemplate.execute {
             useContext(properties) {
                 val tables = sqlClient.listTable(tableIds)
-
+                val tableIdMap = tables.associateBy { it.id }
                 val typeMappings = sqlClient.listTypeMapping()
+                val tableEntityIdMap = sqlClient.listTableIdEntityTuple(tableIds).associate { it._1 to it._2 }
 
-                val tableEntityPairs = mutableListOf<Pair<GenTableConvertView, GenEntity>>()
+                val tableEntityIdPairs = mutableListOf<Pair<GenTableConvertView, Long>>()
+                val insertEntities = mutableListOf<GenEntityInput>()
+                val updateEntities = mutableListOf<GenEntity>()
 
                 tables.forEach { table ->
-                    val entity = table.toGenEntity(modelId, typeMappings)
-                    val savedEntity = sqlClient.save(entity).modifiedEntity
+                    val existEntity = tableEntityIdMap[table.id]
+                    val convertEntity = table.toGenEntity(modelId, typeMappings)
 
-                    tableEntityPairs += table to savedEntity
-
-                    result += savedEntity.id
+                    if (existEntity == null) {
+                        insertEntities += convertEntity
+                    } else {
+                        updateEntities += mergeExistAndConvertEntity(existEntity, convertEntity)
+                    }
                 }
 
-                tableEntityPairs.forEach { (table, entity) ->
+                sqlClient.insertInputs(insertEntities).items.forEach {
+                    val entity = it.modifiedEntity
+                    val table = tableIdMap[entity.tableId]
+                        ?: throw ConvertException.entityMatchTableNotFound(
+                            "entity [${entity}]",
+                            entity = IdName(entity.id, entity.name),
+                            tableId = entity.tableId,
+                        )
+                    tableEntityIdPairs += table to entity.id
+                }
+                sqlClient.saveEntities(updateEntities).items.forEach {
+                    val entity = it.modifiedEntity
+                    val table = tableIdMap[entity.tableId]
+                        ?: throw ConvertException.entityMatchTableNotFound(
+                            "entity [${entity}]",
+                            entity = IdName(entity.id, entity.name),
+                            tableId = entity.tableId,
+                        )
+                    tableEntityIdPairs += table to entity.id
+                }
+
+                tableEntityIdPairs.forEach { (table, entityId) ->
                     val superTableIds = table.superTableIds
 
                     val superEntityIds = sqlClient.listEntityId(superTableIds)
@@ -74,7 +103,7 @@ class ConvertService(
                         )
 
                     sqlClient.getAssociations(GenEntity::superEntities)
-                        .saveAll(listOf(entity.id), superEntityIds)
+                        .saveAll(listOf(entityId), superEntityIds)
                 }
             }
         }
@@ -111,6 +140,15 @@ class ConvertService(
         else createQuery(GenTable::class) {
             where(table.id valueIn ids)
             select(table.fetch(GenTableConvertView::class))
+        }.execute()
+
+    private fun KSqlClient.listTableIdEntityTuple(tableIds: List<Long>) =
+        if (tableIds.isEmpty()) emptyList()
+        else createQuery(GenEntity::class) {
+            where(
+                table.tableId valueIn tableIds
+            )
+            select(table.tableId, table.fetch(GenEntityDetailView::class))
         }.execute()
 
     private fun KSqlClient.listEntityId(tableIds: List<Long>): List<Long> =

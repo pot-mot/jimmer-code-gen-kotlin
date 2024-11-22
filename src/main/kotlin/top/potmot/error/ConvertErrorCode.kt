@@ -13,6 +13,10 @@ enum class ConvertErrorCode {
     @ErrorField(name = "modelId", type = Long::class)
     MODEL_NOT_FOUND,
 
+    @ErrorField(name = "entity", type = IdName::class)
+    @ErrorField(name = "tableId", type = Long::class)
+    ENTITY_MATCH_TABLE_NOT_FOUND,
+
     @ErrorField(name = "association", type = IdName::class)
     @ErrorField(name = "sourceTable", type = IdName::class)
     @ErrorField(name = "sourceColumn", type = IdNullableName::class)
