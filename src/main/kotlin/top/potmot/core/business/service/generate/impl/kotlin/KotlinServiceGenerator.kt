@@ -45,7 +45,7 @@ object KotlinServiceGenerator : ServiceGenerator() {
         val idType = typeStrToKotlinType(idProperty.type, idProperty.typeNotNull)
 
 
-        return """
+        return ("""
 package ${packages.service}
 
 import cn.dev33.satoken.annotation.SaCheckPermission
@@ -92,7 +92,7 @@ class $serviceName(
     @Throws(AuthorizeException::class)
     fun get(@PathVariable id: ${idType}) = 
         sqlClient.findById(${detailView}::class, id)
-    
+""" + if (!entity.canQuery) "" else """
     /**
      * 根据提供的查询参数列出${comment}。
      *
@@ -116,7 +116,7 @@ class $serviceName(
     @Throws(AuthorizeException::class)
     fun page(@RequestBody query: PageQuery<${spec}>) = 
         sqlClient.queryPage(${listView}::class, query)
-    
+
     /**
      * 根据提供的查询参数列出${comment}选项。
      *
@@ -128,7 +128,7 @@ class $serviceName(
     @Throws(AuthorizeException::class)
     fun listOptions(@RequestBody spec: ${spec}) = 
         sqlClient.query(${optionView}::class, spec)
-
+""" + if (!entity.canAdd) "" else """
     /**
      * 插入新的${comment}。
      *
@@ -141,7 +141,7 @@ class $serviceName(
     @Throws(AuthorizeException::class)
     fun insert(@RequestBody input: ${insertInput}) = 
         sqlClient.insert(input).modifiedEntity.${idName}
-
+""" + if (!entity.canEdit) "" else """
     /**
      * 更新${comment}。
      *
@@ -154,7 +154,7 @@ class $serviceName(
     @Throws(AuthorizeException::class)
     fun update(@RequestBody input: ${updateInput}) = 
         sqlClient.update(input, AssociatedSaveMode.REPLACE).modifiedEntity.${idName}
-
+""" + if (!entity.canDelete) "" else """
     /**
      * 删除指定ID的${comment}。
      *
@@ -167,7 +167,7 @@ class $serviceName(
     @Throws(AuthorizeException::class)
     fun delete(@RequestParam ids: List<${idType}>) = 
         sqlClient.deleteByIds(${name}::class, ids).affectedRowCount(${name}::class)
-""".trim() + existValidItemWithName.joinToString("") { (name, validItem) ->
+""").trim() + existValidItemWithName.joinToString("") { (name, validItem) ->
     """
 
     /**

@@ -49,7 +49,7 @@ object JavaServiceGenerator : ServiceGenerator() {
         val idName = idProperty.name
         val idType = typeStrToJavaType(idProperty.type, idProperty.typeNotNull)
 
-        return """
+        return ("""
 package ${packages.service};
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
@@ -101,7 +101,7 @@ public class $serviceName implements Tables {
     public $detailView get(@PathVariable $idType id) throws AuthorizeException { 
         return sqlClient.findById(${detailView}.class, id);
     }
-    
+""" + if (!entity.canQuery) "" else """
     /**
      * 根据提供的查询参数列出${comment}。
      *
@@ -117,7 +117,7 @@ public class $serviceName implements Tables {
                 .select(${tableProxy}.fetch(${listView}.class))
                 .execute();
     }
-    
+
     /**
      * 根据提供的查询参数列出${comment}。
      *
@@ -133,7 +133,7 @@ public class $serviceName implements Tables {
                 .select(${tableProxy}.fetch(${listView}.class))
                 .fetchPage(query.getPageIndex() - 1, query.getPageSize());
     }
-    
+
     /**
      * 根据提供的查询参数列出${comment}选项。
      *
@@ -149,7 +149,7 @@ public class $serviceName implements Tables {
                 .select(${tableProxy}.fetch(${optionView}.class))
                 .execute();
     }
-
+""" + if (!entity.canAdd) "" else """
     /**
      * 插入新的${comment}。
      *
@@ -162,7 +162,7 @@ public class $serviceName implements Tables {
     public $idType insert(@RequestBody @NotNull $insertInput input) throws AuthorizeException {
         return sqlClient.insert(input).getModifiedEntity().${idName}();
     }
-
+""" + if (!entity.canEdit) "" else """
     /**
      * 更新${comment}。
      *
@@ -175,7 +175,7 @@ public class $serviceName implements Tables {
     public $idType update(@RequestBody @NotNull $updateInput input) throws AuthorizeException {
         return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity().${idName}();
     }
-
+""" + if (!entity.canDelete) "" else """
     /**
      * 删除指定ID的${comment}。
      *
@@ -193,7 +193,7 @@ public class $serviceName implements Tables {
         }> ids) throws AuthorizeException {
         return sqlClient.deleteByIds(${name}.class, ids).getAffectedRowCount(${name}.class);
     }
-""".trim() + existValidItemWithNames.joinToString("") { (name, validItem) ->
+""").trim() + existValidItemWithNames.joinToString("") { (name, validItem) ->
             """
 
     /**

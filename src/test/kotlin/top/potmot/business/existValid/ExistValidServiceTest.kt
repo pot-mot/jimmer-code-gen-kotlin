@@ -67,7 +67,7 @@ public class EntityService implements Tables {
     public EntityDetailView get(@PathVariable int id) throws AuthorizeException { 
         return sqlClient.findById(EntityDetailView.class, id);
     }
-    
+
     /**
      * 根据提供的查询参数列出comment。
      *
@@ -83,7 +83,7 @@ public class EntityService implements Tables {
                 .select(ENTITY_TABLE.fetch(EntityListView.class))
                 .execute();
     }
-    
+
     /**
      * 根据提供的查询参数列出comment。
      *
@@ -99,7 +99,7 @@ public class EntityService implements Tables {
                 .select(ENTITY_TABLE.fetch(EntityListView.class))
                 .fetchPage(query.getPageIndex() - 1, query.getPageSize());
     }
-    
+
     /**
      * 根据提供的查询参数列出comment选项。
      *
@@ -242,7 +242,7 @@ class EntityService(
     @Throws(AuthorizeException::class)
     fun get(@PathVariable id: Int) = 
         sqlClient.findById(EntityDetailView::class, id)
-    
+
     /**
      * 根据提供的查询参数列出comment。
      *
@@ -266,7 +266,7 @@ class EntityService(
     @Throws(AuthorizeException::class)
     fun page(@RequestBody query: PageQuery<EntitySpec>) = 
         sqlClient.queryPage(EntityListView::class, query)
-    
+
     /**
      * 根据提供的查询参数列出comment选项。
      *

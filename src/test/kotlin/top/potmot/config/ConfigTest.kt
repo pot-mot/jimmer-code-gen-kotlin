@@ -24,17 +24,23 @@ class AssociationMatchTest(
             assertEquals(GenLanguage.KOTLIN, GlobalGenConfig.language)
 
             val testAuthor = "AUTHOR"
+            val oldAuthor = GlobalGenConfig.author
             configService.setConfig(GenConfigProperties(author = testAuthor))
             assertEquals(testAuthor, GlobalGenConfig.author)
+            configService.setConfig(GenConfigProperties(author = oldAuthor))
 
+            val oldLanguage = GlobalGenConfig.language
             configService.setConfig(GenConfigProperties(language = GenLanguage.JAVA))
             assertEquals(GenLanguage.JAVA, GlobalGenConfig.language)
+            configService.setConfig(GenConfigProperties(language = oldLanguage))
 
             val testColumnPrefix = "C_"
+            val oldColumnPrefix = GlobalGenConfig.columnNamePrefixes
             configService.setConfig(GenConfigProperties(columnNamePrefixes = testColumnPrefix))
             assertEquals(testColumnPrefix, GlobalGenConfig.columnNamePrefixes)
+            configService.setConfig(GenConfigProperties(columnNamePrefixes = oldColumnPrefix))
+            assertEquals(oldColumnPrefix, GlobalGenConfig.columnNamePrefixes)
 
-            assertEquals(testColumnPrefix, GlobalGenConfig.columnNamePrefixes)
         }
     }
 }

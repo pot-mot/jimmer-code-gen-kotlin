@@ -13,6 +13,7 @@ import top.potmot.core.business.utils.upperName
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.error.ModelException
+import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.toSingular
 
 object DtoGenerator : EntityPropertyCategories {
@@ -160,7 +161,7 @@ object DtoGenerator : EntityPropertyCategories {
             }
 
     private fun generateExistByValidDto(entity: GenEntityBusinessView) =
-        entity.existValidItems.joinToString("\n") { item ->
+        entity.existValidItems.joinToString("\n\n") { item ->
             buildString {
                 appendLine("specification ${item.dtoName(entity.name)} {")
 
@@ -168,24 +169,23 @@ object DtoGenerator : EntityPropertyCategories {
                     appendLine("    ${it.existByValidSpecExpression}")
                 }
 
-                appendLine("}")
+                append("}")
             }
         }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun stringify(entity: GenEntityBusinessView): String {
-        return """
-export ${entity.packagePath}.${entity.name}
+    private fun stringify(entity: GenEntityBusinessView) = buildString {
+        appendLine("export ${entity.packagePath}.${entity.name}")
+        appendLine()
 
-${generateListView(entity)}
-${generateDetailView(entity)}
-${generateOptionView(entity)}
-${generateInsertInput(entity)}
-${generateUpdateInput(entity)}
-${generateSpec(entity)}
-${generateExistByValidDto(entity)}
-        """.trim()
-    }
+        appendBlock(generateListView(entity))
+        appendBlock(generateDetailView(entity))
+        appendBlock(generateOptionView(entity))
+        if (entity.canAdd) appendBlock(generateInsertInput(entity))
+        if (entity.canEdit) appendBlock(generateUpdateInput(entity))
+        appendBlock(generateSpec(entity))
+        appendBlock(generateExistByValidDto(entity))
+    }.trim()
 
     @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
