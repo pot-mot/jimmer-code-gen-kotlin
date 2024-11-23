@@ -107,7 +107,9 @@ fun viewTable(
                     property.name,
                     property.comment,
                     content = tableColumnData.elements
-                )
+                ).merge {
+                    props += tableColumnData.props
+                }
             } + operationsColumn(
                 listOf(
                     slotElement(
