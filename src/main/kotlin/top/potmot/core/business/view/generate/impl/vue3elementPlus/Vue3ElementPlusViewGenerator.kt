@@ -1,6 +1,7 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
 import top.potmot.core.business.property.EntityPropertyCategories
+import top.potmot.core.business.utils.apiServiceName
 import top.potmot.core.business.utils.components
 import top.potmot.core.business.utils.constants
 import top.potmot.core.business.utils.dir
@@ -9,7 +10,6 @@ import top.potmot.core.business.utils.enums
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.rules
 import top.potmot.core.business.utils.selectOptionLabel
-import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.ViewGenerator
 import top.potmot.core.business.view.generate.apiPath
@@ -17,7 +17,7 @@ import top.potmot.core.business.view.generate.builder.rules.existValidRules
 import top.potmot.core.business.view.generate.builder.rules.rules
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
-import top.potmot.core.business.view.generate.builder.vue3.elementPlus.rules.Vue3ElementPlusRuleBuilder
+import top.potmot.core.business.view.generate.builder.rules.Vue3ElementPlusRuleBuilder
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.AddFormDefault
@@ -469,8 +469,7 @@ object Vue3ElementPlusViewGenerator :
         val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
-
-        val apiServiceName = entity.serviceName.replaceFirstChar { it.lowercase() }
+        val apiServiceName = entity.apiServiceName
 
         val selectOptionPairs = entity.selectOptionPairs
         val selectOptionNames = selectOptionPairs.map { it.second.name }

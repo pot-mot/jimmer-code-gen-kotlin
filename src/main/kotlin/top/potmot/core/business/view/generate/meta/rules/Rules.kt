@@ -1,25 +1,13 @@
 package top.potmot.core.business.view.generate.meta.rules
 
-import top.potmot.core.business.utils.ExistValidItem
-import top.potmot.core.business.utils.idProperty
-import top.potmot.core.business.utils.lowerName
-import top.potmot.core.business.utils.nameOrWithId
-import top.potmot.core.business.utils.typeStrToTypeScriptType
-import top.potmot.core.business.view.generate.apiPath
-import top.potmot.core.business.view.generate.meta.typescript.Import
-import top.potmot.core.business.view.generate.utilPath
-import top.potmot.entity.dto.GenEntityBusinessView
-import top.potmot.error.ModelException
-import top.potmot.utils.string.trimBlankLine
-
 sealed interface Rule {
     fun stringify(): String
-}
 
-private fun Collection<String>.stringifyTriggers() =
-    joinToString(", ") { "\"$it\"" }.let {
-        if (this@stringifyTriggers.size > 1) "[$it]" else it
-    }
+    fun Collection<String>.stringifyTriggers() =
+        joinToString(", ") { "\"$it\"" }.let {
+            if (this@stringifyTriggers.size > 1) "[$it]" else it
+        }
+}
 
 data class RequiredRule(
     val comment: String,
@@ -153,69 +141,4 @@ data class PatternRule(
         "{pattern: /$pattern/, message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
 }
 
-val existValidRuleImport = listOf(
-    Import(apiPath, "api"),
-    Import("$utilPath/asyncValidExist", "asyncValidExist"),
-)
-
-data class ExistValidRule(
-    val item: ExistValidItem,
-    val property: GenEntityBusinessView.TargetOf_properties,
-    val entity: GenEntityBusinessView,
-    val withId: Boolean,
-    val trigger: Collection<String> = listOf("blur"),
-) : Rule {
-    private val Pair<GenEntityBusinessView.TargetOf_properties, GenEntityBusinessView.TargetOf_properties?>.nameOrWithId
-        get() = if (second != null) second!!.name else first.nameOrWithId
-
-    @Throws(ModelException.IdPropertyNotFound::class)
-    override fun stringify(): String {
-        val idProperty = entity.idProperty
-        val idName = idProperty.name
-
-        val propertyName = property.nameOrWithId
-        val propertyType =
-            if (property.typeEntity != null) {
-                val typeEntityIdProperty = property.typeEntity.idProperty
-                typeStrToTypeScriptType(typeEntityIdProperty.type, property.typeNotNull)
-            } else {
-                typeStrToTypeScriptType(property.type, property.typeNotNull)
-            }
-
-        val properties = listOfNotNull(
-            propertyName,
-            if (withId) {
-                "$idName: formData.value.$idName"
-            } else null,
-        ) +
-                item.scalarProperties
-                    .filter {
-                        it.name != propertyName && it.name != idName
-                    }
-                    .map {
-                        "${it.name}: formData.value.${it.name},"
-                    } +
-                item.associationPropertyPairs
-                    .mapNotNull {
-                        val nameOrWithId = it.nameOrWithId
-
-                        if (nameOrWithId != propertyName && nameOrWithId != idName)
-                            "${nameOrWithId}: formData.value.${nameOrWithId},"
-                        else
-                            null
-                    }
-
-        return """
-{
-    asyncValidator: asyncValidExist("${property.comment}", async (${propertyName}: ${propertyType}) => {
-        return await api.${entity.lowerName}Service.${item.functionName}({
-            body: {
-${properties.joinToString(",\n") { "    ".repeat(4) + it }}
-            }
-        })
-    }),
-    trigger: ${trigger.stringifyTriggers()}
-}
-""".trimBlankLine()
-    }
-}
+abstract class ExistValidRule : Rule

@@ -52,6 +52,9 @@ val GenerateEntity.permissionPrefix
 val GenerateEntity.serviceName
     get() = "${name}Service"
 
+val GenerateEntity.apiServiceName
+    get() = "${lowerName}Service"
+
 data class DtoNames(
     val listView: String,
     val detailView: String,

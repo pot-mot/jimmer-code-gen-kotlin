@@ -1,11 +1,10 @@
-package top.potmot.core.business.view.generate.builder.vue3.elementPlus.rules
+package top.potmot.core.business.view.generate.builder.rules
 
 import top.potmot.core.business.utils.nameOrWithId
 import top.potmot.core.business.view.generate.builder.typescript.TypeScriptBuilder
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.meta.rules.ExistValidRule
 import top.potmot.core.business.view.generate.meta.rules.Rule
-import top.potmot.core.business.view.generate.meta.rules.existValidRuleImport
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Function
 import top.potmot.core.business.view.generate.meta.typescript.FunctionArg
