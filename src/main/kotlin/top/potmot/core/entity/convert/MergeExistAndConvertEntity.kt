@@ -11,11 +11,14 @@ private val GenEntityInput.TargetOf_properties.associationMatchKey
     get() = "$columnId $typeTableId $associationType $idView"
 
 private fun GenEntityInput.TargetOf_properties.mergeExistProperty(
-    existProperty: GenEntityDetailView.TargetOf_properties
+    existProperty: GenEntityDetailView.TargetOf_properties,
+    keepNameComment: Boolean
 ) = toEntity {
     id = existProperty.id
-    name = existProperty.name
-    comment = existProperty.comment
+    if (keepNameComment) {
+        name = existProperty.name
+        comment = existProperty.comment
+    }
     remark = existProperty.remark
     orderKey = existProperty.orderKey
 
@@ -33,8 +36,8 @@ private fun GenEntityInput.TargetOf_properties.mergeExistProperty(
 
 /**
  * 对已存在的实体和转换出的实体进行合并
- * 保留原实体的id，名称，注释，备注，业务配置
- * 根据属性匹配旧属性，并保留旧属性的id，名称，注释，备注，排序键，业务配置
+ * 保留原实体的id，注释，备注，业务配置
+ * 根据属性匹配旧属性，并保留旧属性的id，注释，备注，排序键，业务配置
  * 最后拼接 无法映射至当前属性 且 无对应列 的旧属性
  *
  * 匹配规则：
@@ -44,11 +47,14 @@ private fun GenEntityInput.TargetOf_properties.mergeExistProperty(
 fun mergeExistAndConvertEntity(
     existEntity: GenEntityDetailView,
     convertEntity: GenEntityInput,
+    keepNameComment: Boolean
 ): GenEntity =
     convertEntity.toEntity {
         id = existEntity.id
-        name = existEntity.name
-        comment = existEntity.comment
+        if (keepNameComment) {
+            name = existEntity.name
+            comment = existEntity.comment
+        }
         remark = existEntity.remark
 
         canAdd = existEntity.canAdd
@@ -72,18 +78,18 @@ fun mergeExistAndConvertEntity(
                     associationMatchColumnMap[it.associationMatchKey]?.firstOrNull()
 
                 if (associationMatchExistProperty != null)
-                    return@map it.mergeExistProperty(associationMatchExistProperty)
+                    return@map it.mergeExistProperty(associationMatchExistProperty, keepNameComment)
             } else {
                 val columnIdMatchExistProperty =
                     columnIdMatchColumnMap[it.columnId]?.firstOrNull()
 
                 if (columnIdMatchExistProperty != null)
-                    return@map it.mergeExistProperty(columnIdMatchExistProperty)
+                    return@map it.mergeExistProperty(columnIdMatchExistProperty, keepNameComment)
 
                 val nameEqualExistProperty = nameMatchColumnMap[it.name]
 
                 if (nameEqualExistProperty != null)
-                    return@map it.mergeExistProperty(nameEqualExistProperty)
+                    return@map it.mergeExistProperty(nameEqualExistProperty, keepNameComment)
             }
 
             it.toEntity()

@@ -43,6 +43,7 @@ class ConvertService(
         @RequestBody tableIds: List<Long>,
         @RequestParam(required = false) modelId: Long?,
         @RequestParam(required = false) properties: GenConfigProperties? = null,
+        @RequestParam(required = false) keepNameComment: Boolean? = null,
     ): List<Long> {
         val result = mutableListOf<Long>()
 
@@ -64,7 +65,7 @@ class ConvertService(
                     if (existEntity == null) {
                         insertEntities += convertEntity
                     } else {
-                        updateEntities += mergeExistAndConvertEntity(existEntity, convertEntity)
+                        updateEntities += mergeExistAndConvertEntity(existEntity, convertEntity, keepNameComment ?: false)
                     }
                 }
 

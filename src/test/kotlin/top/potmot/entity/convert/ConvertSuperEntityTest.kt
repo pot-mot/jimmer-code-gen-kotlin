@@ -20,7 +20,7 @@ class ConvertSuperEntityTest: BaseConvertTest() {
             )
         ).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId, superTableId), null)
+        convertService.convertTable(listOf(tableId, superTableId), null, keepNameComment = true)
 
         val superEntityId = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq superTableId)

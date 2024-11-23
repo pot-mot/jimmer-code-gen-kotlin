@@ -13,7 +13,7 @@ class ConvertEntityTest : BaseConvertTest() {
     fun `test base convert`() {
         val tableId = sqlClient.save(baseTable).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId), null)
+        convertService.convertTable(listOf(tableId), null, keepNameComment = true)
 
         val entity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -122,7 +122,7 @@ class ConvertEntityTest : BaseConvertTest() {
     fun `test MergeExistAndConvert`() {
         val tableId = sqlClient.save(baseTable).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId), null)
+        convertService.convertTable(listOf(tableId), null, keepNameComment = true)
 
         val firstConvertEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -359,7 +359,7 @@ class ConvertEntityTest : BaseConvertTest() {
             changedEntity.result
         )
 
-        convertService.convertTable(listOf(tableId), null)
+        convertService.convertTable(listOf(tableId), null, keepNameComment = true)
 
         val secondConvertEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
