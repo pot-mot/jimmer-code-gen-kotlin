@@ -9,7 +9,7 @@ import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.enums
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.rules
-import top.potmot.core.business.utils.selectOptionLabel
+import top.potmot.core.business.utils.selectOptionLabels
 import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.ViewGenerator
 import top.potmot.core.business.view.generate.apiPath
@@ -355,7 +355,7 @@ object Vue3ElementPlusViewGenerator :
 
         val optionView = entity.dto.optionView
 
-        val label = entity.selectOptionLabel ?: idName
+        val labels = entity.selectOptionLabels.ifEmpty { listOf(idName) }
 
         val modelValue = "modelValue"
         val options = "options"
@@ -418,7 +418,13 @@ object Vue3ElementPlusViewGenerator :
                             option = option,
                             key = { "$it.$idName" },
                             value = { "$it.$idName" },
-                            label = { "$it.$label" },
+                            label = {
+                                if (labels.size == 1) {
+                                    "$it.$labels"
+                                } else {
+                                    "`${labels.joinToString("_") { label -> "${'$'}{$it.$label}" }}`"
+                                }
+                            },
                         )
                     )
                 )

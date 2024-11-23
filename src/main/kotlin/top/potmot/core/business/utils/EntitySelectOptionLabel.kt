@@ -2,7 +2,7 @@ package top.potmot.core.business.utils
 
 import top.potmot.entity.dto.GenEntityBusinessView
 
-val GenEntityBusinessView.selectOptionLabel: String?
+val GenEntityBusinessView.selectOptionLabels: List<String>
     get() = properties
-        .firstOrNull { it.inOptionView }
-        ?.name
+        .filter { it.inOptionView }
+        .map { it.name }

@@ -6,7 +6,7 @@ import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.existValidItems
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.queryType
-import top.potmot.core.business.utils.selectOptionLabel
+import top.potmot.core.business.utils.selectOptionLabels
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
@@ -54,11 +54,11 @@ object DtoGenerator : EntityPropertyCategories {
     private fun generateOptionView(entity: GenEntityBusinessView) = buildString {
         val idProperty = entity.idProperty
         val idName = idProperty.name
-        val label = entity.selectOptionLabel
+        val label = entity.selectOptionLabels
 
         appendLine("${entity.dto.optionView} {")
         appendLine("    $idName")
-        label?.let { appendLine("   $it") }
+        label.forEach { appendLine("    $it") }
         appendLine("}")
     }
 
