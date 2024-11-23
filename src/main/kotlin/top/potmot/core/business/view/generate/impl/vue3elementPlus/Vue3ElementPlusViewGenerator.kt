@@ -420,7 +420,7 @@ object Vue3ElementPlusViewGenerator :
                             value = { "$it.$idName" },
                             label = {
                                 if (labels.size == 1) {
-                                    "$it.$labels"
+                                    "$it.${labels[0]}"
                                 } else {
                                     "`${labels.joinToString("_") { label -> "${'$'}{$it.$label}" }}`"
                                 }
