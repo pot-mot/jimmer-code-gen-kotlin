@@ -2,6 +2,7 @@ export top.potmot.entity.GenEntity
 
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
+import top.potmot.entity.dto.share.GenerateProperty
 
 GenEntityGenerateView implements GenerateEntity {
     #allScalars
@@ -53,7 +54,7 @@ GenEntityBusinessView implements GenerateEntity {
 
     superEntities*
 
-    notLongProperties as properties {
+    notLongProperties as properties implements GenerateProperty {
         #allScalars
         id(entity)
 
@@ -74,12 +75,27 @@ GenEntityBusinessView implements GenerateEntity {
                     type
                     typeNotNull
                 }
-                shortViewProperties {
+                shortViewProperties implements GenerateProperty {
                     #allScalars
 
                     column {
                         dataSize
                         numericPrecision
+                    }
+
+                    enum implements GenerateEnum {
+                        id
+                        packagePath
+                        name
+                        comment
+
+                        items {
+                            id
+                            name
+                            comment
+                            orderKey
+                            defaultItem
+                        }
                     }
                 }
             }
@@ -101,7 +117,7 @@ GenEntityBusinessView implements GenerateEntity {
         }
     }
 
-    longProperties {
+    longProperties implements GenerateProperty {
         #allScalars
         id(entity)
 

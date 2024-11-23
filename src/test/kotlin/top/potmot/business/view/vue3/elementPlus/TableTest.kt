@@ -81,7 +81,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
                     "EntityListView",
                     staticPath,
                     "id",
-                    content = emptyMap()
+                    content = emptyList()
                 )
             ).trim(),
         )

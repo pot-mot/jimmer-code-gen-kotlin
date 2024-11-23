@@ -19,7 +19,7 @@ import top.potmot.core.business.view.generate.meta.vue3.Slot
 import top.potmot.core.business.view.generate.meta.vue3.SlotProp
 import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.slotElement
-import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.entity.dto.share.GenerateProperty
 
 private const val idColumn = "idColumn"
 private const val indexColumn = "indexColumn"
@@ -68,11 +68,11 @@ fun viewTable(
     type: String,
     typePath: String,
     idPropertyName: String,
-    content: Map<GenEntityBusinessView.TargetOf_properties, TableColumnData>,
+    content: List<Pair<GenerateProperty, TableColumnData>>,
 ) = Component(
     imports = listOf(
         ImportType(typePath, type),
-    ) + content.values.flatMap { it.imports },
+    ) + content.flatMap { it.second.imports },
     props = listOf(
         Prop(data, "Array<$type>"),
     ) + tableUtilProps(),

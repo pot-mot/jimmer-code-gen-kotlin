@@ -6,7 +6,12 @@ import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.enumeration.targetOneAssociationTypes
 import top.potmot.utils.string.toSingular
 
-// TODO 添加长短关联区分
+val TargetOf_properties.isShortAssociation
+    get() = associationType != null && !idView && typeEntity != null && typeEntity.shortViewProperties.isNotEmpty()
+
+fun Iterable<TargetOf_properties>.createIdViewTargetMap() =
+    filter { it.idView }.associateBy { it.idViewTarget }
+
 
 interface EntityPropertyCategories {
     val GenEntityBusinessView.scalarProperties
@@ -45,18 +50,33 @@ interface EntityPropertyCategories {
         }.forceConvertIdView()
 
 
-    val GenEntityBusinessView.listViewProperties
-        get() = properties
-            .filter {
-                it.inListView &&
-                        (it.associationType == null || it.associationType in targetOneAssociationTypes)
+    val GenEntityBusinessView.listViewProperties: List<TargetOf_properties>
+        get() {
+            val filteredProperties = properties.filter {
+                it.inListView && (it.associationType == null || it.associationType in targetOneAssociationTypes)
             }
-            .produceIdView()
+
+            val idViewTargetMap = filteredProperties.createIdViewTargetMap()
+
+            return filteredProperties.mapNotNull {
+                if (it.isShortAssociation) {
+                    it
+                } else {
+                    it.produceIdView(idViewTargetMap)
+                }
+            }
+        }
 
     val GenEntityBusinessView.tableProperties
         get() = listViewProperties
             .filter { !it.idProperty }
-            .forceConvertIdView()
+            .mapNotNull {
+                if (it.isShortAssociation) {
+                    it
+                } else {
+                    it.forceConvertIdView()
+                }
+            }
 
 
     val GenEntityBusinessView.detailViewProperties
@@ -132,7 +152,20 @@ interface EntityPropertyCategories {
                 it.inLongAssociationInput &&
                         (it.associationType == null || it.associationType in targetOneAssociationTypes)
             }
+            .produceIdView()
             .produceEditNullable()
+
+    val GenEntityBusinessView.editTableProperties
+        get() = longAssociationInputProperties
+            .filter { !it.idProperty }
+            .forceConvertIdView()
+            .produceEditNullable()
+
+    val GenEntityBusinessView.editTableRulesProperties
+        get() = longAssociationInputProperties
+            .filter { !it.idProperty }
+            .forceConvertIdView()
+
 
     val GenEntityBusinessView.longAssociationViewProperties
         get() = properties
@@ -142,89 +175,76 @@ interface EntityPropertyCategories {
             }
             .produceIdView()
 
-    val GenEntityBusinessView.editTableProperties
-        get() = longAssociationInputProperties
-            .filter { !it.idProperty }
-            .forceConvertIdView()
-            .produceEditNullable()
-
-        val GenEntityBusinessView.editTableRulesProperties
-        get() = longAssociationInputProperties
-            .filter { !it.idProperty }
-            .forceConvertIdView()
-
     val GenEntityBusinessView.viewSubTableProperties
         get() = longAssociationViewProperties
             .filter { !it.idProperty }
             .forceConvertIdView()
 
-    // 将关联属性映射为 IdView
-    private fun Iterable<TargetOf_properties>.produceIdView(): List<TargetOf_properties> {
-        val producedProperties = mutableListOf<TargetOf_properties>()
-
-        val idViewPropertyMap = filter { it.idView }.associateBy { it.idViewTarget }
-
-        for (property in this) {
-            // 若是基础属性，不进行处理
-            if (property.associationType == null) {
-                producedProperties.add(property)
-                continue
-            }
-
-            // 若是 IdView 属性，忽略
-            if (property.idView)
-                continue
-
-            // 若不具有 typeEntity, 忽略
-            if (property.typeEntity == null)
-                continue
-
-            // 获取对应的 IdView 属性
-            val idViewProperty = idViewPropertyMap[property.name]
-
-            producedProperties.add(
-                // 若 IdView 属性存在，则取 IdView，不然使用默认属性
-                idViewProperty
-                    ?.copy(
-                        comment = property.comment,
-                        typeEntity = property.typeEntity
-                    )
-                    ?: property
-            )
+    // 将关联属性映射为 IdView，若找不到 IdView 则保持原状
+    // 适用于 dto 本身的处理
+    private fun TargetOf_properties.produceIdView(
+        idViewTargetMap: Map<String?, TargetOf_properties>,
+    ): TargetOf_properties? {
+        // 若是基础属性，不进行处理
+        if (associationType == null) {
+            return this
         }
 
-        return producedProperties
+        // 若是 IdView 属性，忽略
+        if (idView)
+            return null
+
+        // 若不具有 typeEntity, 忽略
+        if (typeEntity == null)
+            return null
+
+        // 获取对应的 IdView 属性
+        val idViewProperty = idViewTargetMap[name]
+
+        // 若 IdView 属性存在，则取 IdView，不然使用默认属性
+        return idViewProperty?.copy(
+            comment = comment,
+            typeEntity = typeEntity
+        ) ?: this
+    }
+
+    private fun Iterable<TargetOf_properties>.produceIdView(): List<TargetOf_properties> {
+        val idViewTargetMap = createIdViewTargetMap()
+        return mapNotNull { it.produceIdView(idViewTargetMap) }
     }
 
     // 将关联属性*强行*转换为 IdView
-    private fun Iterable<TargetOf_properties>.forceConvertIdView() =
-        mapNotNull { property ->
-            // 若不是关联属性，不进行处理
-            if (property.associationType === null)
-                return@mapNotNull property
+    // 适用于前端必然应用 dto id 函数的情况
+    private fun TargetOf_properties.forceConvertIdView(): TargetOf_properties? {
+        // 若不是关联属性，不进行处理
+        if (associationType === null)
+            return this
 
-            // 若不具有 typeEntity，忽略
-            if (property.typeEntity == null)
-                return@mapNotNull null
+        // 若不具有 typeEntity，忽略
+        if (typeEntity == null)
+            return null
 
-            // 若是 IdView 属性，不进行处理
-            if (property.idView)
-                return@mapNotNull property
+        // 若是 IdView 属性，不进行处理
+        if (idView)
+            return this
 
-            if (property.listType) {
-                property.copy(
-                    name = "${property.name.toSingular()}Ids",
-                    type = property.typeEntity.idProperty.type,
-                    idView = true,
-                )
-            } else {
-                property.copy(
-                    name = "${property.name}Id",
-                    type = property.typeEntity.idProperty.type,
-                    idView = true,
-                )
-            }
+        return if (listType) {
+            copy(
+                name = "${name.toSingular()}Ids",
+                type = typeEntity.idProperty.type,
+                idView = true,
+            )
+        } else {
+            copy(
+                name = "${name}Id",
+                type = typeEntity.idProperty.type,
+                idView = true,
+            )
         }
+    }
+
+    private fun Iterable<TargetOf_properties>.forceConvertIdView() =
+        mapNotNull { it.forceConvertIdView() }
 
     // 判断属性是否需要在编辑场景中转换为可null
     private val TargetOf_properties.editNullable

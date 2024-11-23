@@ -189,8 +189,7 @@ object Vue3ElementPlusViewGenerator :
                 type = entity.dto.listView,
                 typePath = staticPath,
                 idPropertyName = entity.idProperty.name,
-                content = entity.tableProperties
-                    .associateWith { it.createTableColumn() }
+                content = entity.tableProperties.flatMap { it.tableColumnDataList() }
             )
         )
     }

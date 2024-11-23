@@ -15,7 +15,7 @@ class TableColumnTest : TableColumn {
     private val builder = Vue3ComponentBuilder()
 
     private val GenEntityBusinessView.TargetOf_properties.result: String
-        get() = createTableColumn().let {
+        get() = tableColumnDataList().map { it.second }.joinToString("\n") {
             buildString {
                 builder.apply {
                     appendLines(it.imports.stringifyImports())

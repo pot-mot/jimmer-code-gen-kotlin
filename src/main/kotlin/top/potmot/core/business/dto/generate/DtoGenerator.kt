@@ -1,6 +1,7 @@
 package top.potmot.core.business.dto.generate
 
 import top.potmot.core.business.property.EntityPropertyCategories
+import top.potmot.core.business.property.isShortAssociation
 import top.potmot.core.business.utils.PropertyQueryType
 import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.existValidItems
@@ -25,15 +26,25 @@ object DtoGenerator : EntityPropertyCategories {
     ) =
         filter { it !in includeProperties }
 
-    private fun GenEntityBusinessView.targetOneId(
-        onlyThis: Boolean = false,
-    ): List<String> =
-        targetOneProperties.filter { if (onlyThis) it.entityId == id else true }.map {
-            if (it.idView) {
-                it.name
+    private val TargetOf_properties.associationIdExpress
+        get() = if (idView) name else "id(${name})"
+
+    private fun TargetOf_properties.extractShortAssociation(): String =
+        buildString {
+            if (typeEntity == null || typeEntity.shortViewProperties.isEmpty()) {
+                appendLine(associationIdExpress)
             } else {
-                "id(${it.name})"
+                appendLine("$name {")
+                typeEntity.shortViewProperties.forEach {
+                    appendLine("    ${it.name}")
+                }
+                append("}")
             }
+        }.trim()
+
+    private val GenEntityBusinessView.targetOneIdExpress: List<String>
+        get() = targetOneProperties.map {
+            it.associationIdExpress
         }
 
     private fun generateListView(entity: GenEntityBusinessView) = buildString {
@@ -44,8 +55,12 @@ object DtoGenerator : EntityPropertyCategories {
         entity.scalarProperties.exclude(listViewProperties).forEach {
             appendLine("    -${it.name}")
         }
-        entity.copy(properties = listViewProperties).targetOneId().forEach {
-            appendLine("    $it")
+        listViewProperties.filter { it.associationType != null }.forEach {
+            if (it.isShortAssociation) {
+                appendBlock(it.extractShortAssociation()) { line -> "    $line" }
+            } else {
+                appendLine("    ${it.associationIdExpress}")
+            }
         }
         appendLine("}")
     }
@@ -70,7 +85,7 @@ object DtoGenerator : EntityPropertyCategories {
         entity.scalarProperties.exclude(detailViewProperties).forEach {
             appendLine("    -${it.name}")
         }
-        entity.copy(properties = detailViewProperties).targetOneId().forEach {
+        entity.copy(properties = detailViewProperties).targetOneIdExpress.forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -88,7 +103,7 @@ object DtoGenerator : EntityPropertyCategories {
         entity.scalarProperties.exclude(insertInputProperties).forEach {
             appendLine("    -${it.name}")
         }
-        entity.copy(properties = insertInputProperties).targetOneId().forEach {
+        entity.copy(properties = insertInputProperties).targetOneIdExpress.forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -106,7 +121,7 @@ object DtoGenerator : EntityPropertyCategories {
         entity.scalarProperties.exclude(updateInputProperties).forEach {
             appendLine("    -${it.name}")
         }
-        entity.copy(properties = updateInputProperties).targetOneId().forEach {
+        entity.copy(properties = updateInputProperties).targetOneIdExpress.forEach {
             appendLine("    $it")
         }
         appendLine("}")
