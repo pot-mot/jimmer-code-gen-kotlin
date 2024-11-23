@@ -91,7 +91,7 @@ public class $serviceName implements Tables {
     public $serviceName(JSqlClient sqlClient) {
         this.sqlClient = sqlClient;
     }
-
+""" + (if (!entity.canEdit) "" else """
     /**
      * 根据ID获取${comment}。
      *
@@ -104,7 +104,7 @@ public class $serviceName implements Tables {
     public $detailView get(@PathVariable $idType id) throws AuthorizeException { 
         return sqlClient.findById(${detailView}.class, id);
     }
-
+""") + """
     /**
      * 根据提供的查询参数列出${comment}。
      *

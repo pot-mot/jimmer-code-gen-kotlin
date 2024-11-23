@@ -11,7 +11,7 @@ class TestAddOnly : AbstractEntityTest() {
 
     override fun getViewResult(viewType: ViewType) =
         when (viewType) {
-            ViewType.VUE3_ELEMENT_PLUS -> vue3ElementPlusResult
+            ViewType.VUE3_ELEMENT_PLUS -> addOnlyVue3ElementPlusResult
         }
 
     override fun getServiceResult(language: GenLanguage) =
@@ -28,7 +28,7 @@ class TestEditOnly : AbstractEntityTest() {
 
     override fun getViewResult(viewType: ViewType) =
         when (viewType) {
-            ViewType.VUE3_ELEMENT_PLUS -> vue3ElementPlusResult
+            ViewType.VUE3_ELEMENT_PLUS -> editOnlyVue3ElementPlusResult
         }
 
     override fun getServiceResult(language: GenLanguage) =
@@ -45,7 +45,7 @@ class TestQueryOnly : AbstractEntityTest() {
 
     override fun getViewResult(viewType: ViewType) =
         when (viewType) {
-            ViewType.VUE3_ELEMENT_PLUS -> vue3ElementPlusResult
+            ViewType.VUE3_ELEMENT_PLUS -> queryOnlyVue3ElementPlusResult
         }
 
     override fun getServiceResult(language: GenLanguage) =
@@ -62,7 +62,7 @@ class TestDeleteOnly : AbstractEntityTest() {
 
     override fun getViewResult(viewType: ViewType) =
         when (viewType) {
-            ViewType.VUE3_ELEMENT_PLUS -> vue3ElementPlusResult
+            ViewType.VUE3_ELEMENT_PLUS -> deleteOnlyVue3ElementPlusResult
         }
 
     override fun getServiceResult(language: GenLanguage) =

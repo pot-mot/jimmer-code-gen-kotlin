@@ -32,18 +32,6 @@ class EntityService(
     private val sqlClient: KSqlClient,
 ) {
     /**
-     * 根据ID获取comment。
-     *
-     * @param id comment的ID。
-     * @return comment的详细信息。
-     */
-    @GetMapping("/{id}")
-    @SaCheckPermission("entity:get")
-    @Throws(AuthorizeException::class)
-    fun get(@PathVariable id: Int) = 
-        sqlClient.findById(EntityDetailView::class, id)
-
-    /**
      * 根据提供的查询参数列出comment。
      *
      * @param spec 查询参数。
@@ -127,19 +115,6 @@ public class EntityService implements Tables {
 
     public EntityService(JSqlClient sqlClient) {
         this.sqlClient = sqlClient;
-    }
-
-    /**
-     * 根据ID获取comment。
-     *
-     * @param id comment的ID。
-     * @return comment的详细信息。
-     */
-    @GetMapping("/{id}")
-    @SaCheckPermission("entity:get")
-    @Nullable
-    public EntityDetailView get(@PathVariable int id) throws AuthorizeException { 
-        return sqlClient.findById(EntityDetailView.class, id);
     }
 
     /**
@@ -444,18 +419,6 @@ class EntityService(
     private val sqlClient: KSqlClient,
 ) {
     /**
-     * 根据ID获取comment。
-     *
-     * @param id comment的ID。
-     * @return comment的详细信息。
-     */
-    @GetMapping("/{id}")
-    @SaCheckPermission("entity:get")
-    @Throws(AuthorizeException::class)
-    fun get(@PathVariable id: Int) = 
-        sqlClient.findById(EntityDetailView::class, id)
-
-    /**
      * 根据提供的查询参数列出comment。
      *
      * @param spec 查询参数。
@@ -524,19 +487,6 @@ public class EntityService implements Tables {
 
     public EntityService(JSqlClient sqlClient) {
         this.sqlClient = sqlClient;
-    }
-
-    /**
-     * 根据ID获取comment。
-     *
-     * @param id comment的ID。
-     * @return comment的详细信息。
-     */
-    @GetMapping("/{id}")
-    @SaCheckPermission("entity:get")
-    @Nullable
-    public EntityDetailView get(@PathVariable int id) throws AuthorizeException { 
-        return sqlClient.findById(EntityDetailView.class, id);
     }
 
     /**
@@ -622,18 +572,6 @@ class EntityService(
     private val sqlClient: KSqlClient,
 ) {
     /**
-     * 根据ID获取comment。
-     *
-     * @param id comment的ID。
-     * @return comment的详细信息。
-     */
-    @GetMapping("/{id}")
-    @SaCheckPermission("entity:get")
-    @Throws(AuthorizeException::class)
-    fun get(@PathVariable id: Int) = 
-        sqlClient.findById(EntityDetailView::class, id)
-
-    /**
      * 根据提供的查询参数列出comment。
      *
      * @param spec 查询参数。
@@ -718,19 +656,6 @@ public class EntityService implements Tables {
 
     public EntityService(JSqlClient sqlClient) {
         this.sqlClient = sqlClient;
-    }
-
-    /**
-     * 根据ID获取comment。
-     *
-     * @param id comment的ID。
-     * @return comment的详细信息。
-     */
-    @GetMapping("/{id}")
-    @SaCheckPermission("entity:get")
-    @Nullable
-    public EntityDetailView get(@PathVariable int id) throws AuthorizeException { 
-        return sqlClient.findById(EntityDetailView.class, id);
     }
 
     /**

@@ -19,11 +19,30 @@ interface EntityPropertyCategories {
             it.associationType in targetOneAssociationTypes
         }
 
-    val GenEntityBusinessView.targetOneIdViews
-        get() = targetOneProperties.forceConvertIdView()
-
     val GenEntityBusinessView.selectProperties
-        get() = targetOneIdViews
+        get() = targetOneProperties.filter {
+            it.inSpecification || it.inInsertInput || it.inUpdateInput
+        }.forceConvertIdView()
+
+    val GenEntityBusinessView.specificationSelectProperties
+        get() = targetOneProperties.filter {
+            it.inSpecification
+        }.forceConvertIdView()
+
+    val GenEntityBusinessView.insertSelectProperties
+        get() = targetOneProperties.filter {
+            it.inInsertInput
+        }.forceConvertIdView()
+
+    val GenEntityBusinessView.updateSelectProperties
+        get() = targetOneProperties.filter {
+            it.inUpdateInput
+        }.forceConvertIdView()
+
+    val GenEntityBusinessView.editTableSelectProperties
+        get() = targetOneProperties.filter {
+            it.inLongAssociationInput
+        }.forceConvertIdView()
 
 
     val GenEntityBusinessView.listViewProperties

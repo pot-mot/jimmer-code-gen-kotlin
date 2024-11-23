@@ -85,6 +85,7 @@ class $serviceName(
     @Autowired
     private val sqlClient: KSqlClient,
 ) {
+""".trimEnd() + (if (!entity.canEdit) "" else """
     /**
      * 根据ID获取${comment}。
      *
@@ -96,7 +97,7 @@ class $serviceName(
     @Throws(AuthorizeException::class)
     fun get(@PathVariable id: ${idType}) = 
         sqlClient.findById(${detailView}::class, id)
-
+""") + """
     /**
      * 根据提供的查询参数列出${comment}。
      *

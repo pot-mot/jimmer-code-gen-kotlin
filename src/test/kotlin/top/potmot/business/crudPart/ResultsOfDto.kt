@@ -9,12 +9,6 @@ EntityListView {
     id(toOneNullableProperty)
 }
 
-EntityDetailView {
-    #allScalars
-    id(toOneProperty)
-    id(toOneNullableProperty)
-}
-
 EntityOptionView {
     id
 }
@@ -81,12 +75,6 @@ EntityListView {
     id(toOneNullableProperty)
 }
 
-EntityDetailView {
-    #allScalars
-    id(toOneProperty)
-    id(toOneNullableProperty)
-}
-
 EntityOptionView {
     id
 }
@@ -105,12 +93,6 @@ const val deleteOnlyDtoResult = """
 (Entity.dto, export EntityPackage.Entity
 
 EntityListView {
-    #allScalars
-    id(toOneProperty)
-    id(toOneNullableProperty)
-}
-
-EntityDetailView {
     #allScalars
     id(toOneProperty)
     id(toOneNullableProperty)

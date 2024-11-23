@@ -178,7 +178,7 @@ object DtoGenerator : EntityPropertyCategories {
         appendLine()
 
         appendBlock(generateListView(entity))
-        appendBlock(generateDetailView(entity))
+        if (entity.canEdit) appendBlock(generateDetailView(entity))
         appendBlock(generateOptionView(entity))
         if (entity.canAdd) appendBlock(generateInsertInput(entity))
         if (entity.canEdit) appendBlock(generateUpdateInput(entity))

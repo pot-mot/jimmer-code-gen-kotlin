@@ -153,6 +153,9 @@ const handleDelete = (ids: number[]): void => {
     <el-card v-loading="isLoading">
         <EntityQueryForm
             v-model="queryForm.spec"
+            v-if="toOnePropertyIdOptions && toOneNullablePropertyIdOptions"
+            :toOnePropertyIdOptions="toOnePropertyIdOptions"
+            :toOneNullablePropertyIdOptions="toOneNullablePropertyIdOptions"
             @query="queryPage"
         />
 

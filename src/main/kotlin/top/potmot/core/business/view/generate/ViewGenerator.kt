@@ -98,28 +98,28 @@ interface ViewGenerator {
         val defaultAddFormData = flatEntity.addFormDefault
         val (addFormRules, editFormRules, editTableRules) = entity.rules
 
-        return listOf(
+        return listOfNotNull(
             GenerateFile(
                 "components/${dir}/${table}.$suffix",
                 stringifyTable(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Table),
             ),
-            GenerateFile(
+            if (!entity.canAdd) null else GenerateFile(
                 "components/${dir}/${addFormDataType}.d.ts",
                 stringifyAddFormType(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.AddFormDataType),
             ),
-            GenerateFile(
+            if (!entity.canAdd) null else GenerateFile(
                 "components/${dir}/${defaultAddFormData}.ts",
                 stringifyAddFormDefault(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.DefaultAddFormData),
             ),
-            GenerateFile(
+            if (!entity.canAdd) null else GenerateFile(
                 "components/${dir}/${addForm}.$suffix",
                 stringifyAddForm(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.AddForm),
             ),
-            GenerateFile(
+            if (!entity.canEdit) null else GenerateFile(
                 "components/${dir}/${editForm}.$suffix",
                 stringifyEditForm(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EditForm),
@@ -129,12 +129,12 @@ interface ViewGenerator {
                 stringifyEditTable(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EditTable),
             ),
-            GenerateFile(
+            if (!entity.canQuery) null else GenerateFile(
                 "components/${dir}/${queryForm}.$suffix",
                 stringifyQueryForm(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.QueryForm),
             ),
-            GenerateFile(
+            if (!entity.hasPage) null else GenerateFile(
                 "pages/${dir}/${page}.$suffix",
                 stringifyPage(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Page),
@@ -149,12 +149,12 @@ interface ViewGenerator {
                 stringifyIdMultiSelect(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.IdMultiSelect),
             ),
-            GenerateFile(
+            if (!entity.canAdd) null else GenerateFile(
                 "rules/${dir}/${addFormRules}.ts",
                 stringifyAddFormRules(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.AddFormRules, GenerateTag.AddForm),
             ),
-            GenerateFile(
+            if (!entity.canEdit) null else GenerateFile(
                 "rules/${dir}/${editFormRules}.ts",
                 stringifyEditFormRules(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditFormRules, GenerateTag.EditForm),
