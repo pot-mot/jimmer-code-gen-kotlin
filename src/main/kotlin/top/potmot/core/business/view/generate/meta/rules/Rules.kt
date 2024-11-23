@@ -3,17 +3,20 @@ package top.potmot.core.business.view.generate.meta.rules
 import top.potmot.core.business.utils.ExistValidItem
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.lowerName
+import top.potmot.core.business.utils.nameOrWithId
+import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.apiPath
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.ModelException
+import top.potmot.utils.string.trimBlankLine
 
 sealed interface Rule {
     fun stringify(): String
 }
 
-private fun Collection<String>.stringifyTriggers() = 
+private fun Collection<String>.stringifyTriggers() =
     joinToString(", ") { "\"$it\"" }.let {
         if (this@stringifyTriggers.size > 1) "[$it]" else it
     }
@@ -21,7 +24,7 @@ private fun Collection<String>.stringifyTriggers() =
 data class RequiredRule(
     val comment: String,
     val message: String = "${comment}不能为空",
-    val trigger: Collection<String> = listOf("blur")
+    val trigger: Collection<String> = listOf("blur"),
 ) : Rule {
     override fun stringify() =
         "{required: true, message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
@@ -30,7 +33,7 @@ data class RequiredRule(
 data class ArrayRule(
     val comment: String,
     val message: String = "${comment}必须是列表",
-    val trigger: Collection<String> = listOf("blur")
+    val trigger: Collection<String> = listOf("blur"),
 ) : Rule {
     override fun stringify() =
         "{type: \"array\", message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
@@ -40,7 +43,7 @@ data class EnumRule(
     val comment: String,
     val enumItems: Collection<String> = emptyList(),
     val message: String = "${comment}必须是${enumItems.joinToString("/")}",
-    val trigger: Collection<String> = listOf("blur")
+    val trigger: Collection<String> = listOf("blur"),
 ) : Rule {
     override fun stringify(): String {
         val enumItems = enumItems.joinToString(", ") { "\"$it\"" }
@@ -61,7 +64,7 @@ data class StringLengthRule(
             "${comment}长度必须小于${max}"
         else
             "${comment}长度必须在${min}-${max}之间",
-    val trigger: Collection<String> = listOf("blur")
+    val trigger: Collection<String> = listOf("blur"),
 ) : Rule {
     override fun stringify() =
         "{type: \"string\", ${if (min != null) "min: $min, " else ""}${if (max != null) "max: $max, " else ""}message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
@@ -70,7 +73,7 @@ data class StringLengthRule(
 data class BooleanRule(
     val comment: String,
     val message: String = "${comment}必须是开启或关闭",
-    val trigger: Collection<String> = listOf("blur")
+    val trigger: Collection<String> = listOf("blur"),
 ) : Rule {
     override fun stringify() =
         "{type: \"boolean\", message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
@@ -79,7 +82,7 @@ data class BooleanRule(
 data class DateRule(
     val comment: String,
     val message: String = "${comment}必须是日期",
-    val trigger: Collection<String> = listOf("blur")
+    val trigger: Collection<String> = listOf("blur"),
 ) : Rule {
     override fun stringify() =
         "{type: \"date\", message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
@@ -88,7 +91,7 @@ data class DateRule(
 data class IntRule(
     val comment: String,
     val message: String = "${comment}必须是整数",
-    val trigger: Collection<String> = listOf("blur")
+    val trigger: Collection<String> = listOf("blur"),
 ) : Rule {
     override fun stringify() =
         "{type: \"integer\", message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
@@ -97,7 +100,7 @@ data class IntRule(
 data class NumberRule(
     val comment: String,
     val message: String = "${comment}必须是数字",
-    val trigger: Collection<String> = listOf("blur")
+    val trigger: Collection<String> = listOf("blur"),
 ) : Rule {
     override fun stringify() =
         "{type: \"number\", message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
@@ -116,7 +119,7 @@ data class IntSizeRule(
             "${comment}必须小于${max}"
         else
             "${comment}必须在${min}-${max}之间",
-    val trigger: Collection<String> = listOf("blur")
+    val trigger: Collection<String> = listOf("blur"),
 ) : Rule {
     override fun stringify() =
         "{type: \"integer\", ${if (min != null) "min: $min, " else ""}${if (max != null) "max: $max, " else ""}message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
@@ -135,7 +138,7 @@ data class NumberSizeRule(
             "${comment}必须小于${max}"
         else
             "${comment}必须在${min}-${max}之间",
-    val trigger: Collection<String> = listOf("blur")
+    val trigger: Collection<String> = listOf("blur"),
 ) : Rule {
     override fun stringify() =
         "{type: \"number\", ${if (min != null) "min: $min, " else ""}${if (max != null) "max: $max, " else ""}message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
@@ -144,7 +147,7 @@ data class NumberSizeRule(
 data class PatternRule(
     val pattern: String,
     val message: String,
-    val trigger: Collection<String> = listOf("blur")
+    val trigger: Collection<String> = listOf("blur"),
 ) : Rule {
     override fun stringify() =
         "{pattern: /$pattern/, message: \"${message}\", trigger: ${trigger.stringifyTriggers()}}"
@@ -160,28 +163,59 @@ data class ExistValidRule(
     val property: GenEntityBusinessView.TargetOf_properties,
     val entity: GenEntityBusinessView,
     val withId: Boolean,
-    val trigger: Collection<String> = listOf("blur")
-): Rule {
+    val trigger: Collection<String> = listOf("blur"),
+) : Rule {
+    private val Pair<GenEntityBusinessView.TargetOf_properties, GenEntityBusinessView.TargetOf_properties?>.nameOrWithId
+        get() = if (second != null) second!!.name else first.nameOrWithId
+
     @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringify(): String {
         val idProperty = entity.idProperty
         val idName = idProperty.name
 
-        val idBodyProp = if (withId) {
-            ", $idName: formData.value.$idName"
-        } else ""
-        
-        val otherBodyProps = item.properties.filter { it.name != property.name && it.name != idName }.joinToString("") {
-            ", ${it.name}: formData.value.${it.name}"
-        }
+        val propertyName = property.nameOrWithId
+        val propertyType =
+            if (property.typeEntity != null) {
+                val typeEntityIdProperty = property.typeEntity.idProperty
+                typeStrToTypeScriptType(typeEntityIdProperty.type, property.typeNotNull)
+            } else {
+                typeStrToTypeScriptType(property.type, property.typeNotNull)
+            }
+
+        val properties = listOfNotNull(
+            propertyName,
+            if (withId) {
+                "$idName: formData.value.$idName"
+            } else null,
+        ) +
+                item.scalarProperties
+                    .filter {
+                        it.name != propertyName && it.name != idName
+                    }
+                    .map {
+                        "${it.name}: formData.value.${it.name},"
+                    } +
+                item.associationPropertyPairs
+                    .mapNotNull {
+                        val nameOrWithId = it.nameOrWithId
+
+                        if (nameOrWithId != propertyName && nameOrWithId != idName)
+                            "${nameOrWithId}: formData.value.${nameOrWithId},"
+                        else
+                            null
+                    }
 
         return """
-        {
-            asyncValidator: asyncValidExist("${property.comment}", async (${property.name}: ${property.type}) => {
-                return await api.${entity.lowerName}Service.${item.functionName}({body: {${property.name}$idBodyProp${otherBodyProps}}})
-            }),
-            trigger: ${trigger.stringifyTriggers()}
-        }
-        """.trimIndent()
+{
+    asyncValidator: asyncValidExist("${property.comment}", async (${propertyName}: ${propertyType}) => {
+        return await api.${entity.lowerName}Service.${item.functionName}({
+            body: {
+${properties.joinToString(",\n") { "    ".repeat(4) + it }}
+            }
+        })
+    }),
+    trigger: ${trigger.stringifyTriggers()}
+}
+""".trimBlankLine()
     }
 }

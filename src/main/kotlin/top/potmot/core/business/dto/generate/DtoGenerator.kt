@@ -1,7 +1,6 @@
 package top.potmot.core.business.dto.generate
 
 import top.potmot.core.business.property.EntityPropertyCategories
-import top.potmot.core.business.utils.ExistValidItem
 import top.potmot.core.business.utils.PropertyQueryType
 import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.existValidItems
@@ -9,7 +8,6 @@ import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.utils.selectOptionLabel
 import top.potmot.core.business.utils.toFlat
-import top.potmot.core.business.utils.upperName
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.error.ModelException
@@ -152,26 +150,27 @@ object DtoGenerator : EntityPropertyCategories {
         appendLine("}")
     }
 
-    private val TargetOf_properties.existByValidSpecExpression
-        get() =
-            if (associationType != null && !idView) {
-                "associatedIdEq(${name})"
-            } else {
-                name
-            }
+    private fun generateExistValidDto(entity: GenEntityBusinessView): String {
+        val idProperty = entity.idProperty
+        val idName = idProperty.name
 
-    private fun generateExistByValidDto(entity: GenEntityBusinessView) =
-        entity.existValidItems.joinToString("\n\n") { item ->
+        return entity.existValidItems.joinToString("\n\n") { item ->
             buildString {
-                appendLine("specification ${item.dtoName(entity.name)} {")
+                appendLine("specification ${item.dtoName} {")
 
-                item.properties.forEach {
-                    appendLine("    ${it.existByValidSpecExpression}")
+                appendLine("    ne($idName) as $idName")
+                item.scalarProperties.forEach {
+                    appendLine("    eq(${it.name})")
+                }
+                item.associationPropertyPairs.forEach {
+                    appendLine("    associatedIdEq(${it.first.name})")
                 }
 
                 append("}")
             }
         }
+    }
+
 
     @Throws(ModelException.IdPropertyNotFound::class)
     private fun stringify(entity: GenEntityBusinessView) = buildString {
@@ -184,7 +183,7 @@ object DtoGenerator : EntityPropertyCategories {
         if (entity.canAdd) appendBlock(generateInsertInput(entity))
         if (entity.canEdit) appendBlock(generateUpdateInput(entity))
         appendBlock(generateSpec(entity))
-        appendBlock(generateExistByValidDto(entity))
+        appendBlock(generateExistValidDto(entity))
     }.trim()
 
     @Throws(ModelException.IdPropertyNotFound::class)
@@ -204,6 +203,3 @@ object DtoGenerator : EntityPropertyCategories {
             .map { generateDto(it) }
             .distinct().sortedBy { it.first }
 }
-
-fun ExistValidItem.dtoName(entityName: String) =
-    entityName + "ExistBy" + properties.joinToString("And") { it.upperName } + "Spec"

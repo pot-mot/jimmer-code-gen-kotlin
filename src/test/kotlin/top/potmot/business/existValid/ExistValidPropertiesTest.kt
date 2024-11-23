@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import top.potmot.business.enumNullableProperty
 import top.potmot.business.enumProperty
-import top.potmot.business.toOneIdView
-import top.potmot.business.toOneNullableIdView
 import top.potmot.business.toOneNullableProperty
 import top.potmot.business.toOneProperty
 import top.potmot.core.business.utils.existValidItems
@@ -79,7 +77,7 @@ class ExistValidPropertiesTest {
                 toOneExistByValidItem.properties.size
             )
             assertEquals(
-                "${toOneIdView.name}, ${toOneNullableIdView.name}",
+                "${toOneProperty.name}, ${toOneNullableProperty.name}",
                 toOneExistByValidItem.properties.joinToString(", ") { it.name }
             )
 

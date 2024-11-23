@@ -886,14 +886,14 @@ const handleDelete = (ids: number[]): void => {
 
     <el-dialog
         v-model="addDialogVisible"
-        v-if="toOnePropertyId && toOneNullablePropertyId && createdById"
+        v-if="toOnePropertyIdOptions && toOneNullablePropertyIdOptions && createdByIdOptions"
         destroy-on-close
         :close-on-click-modal="false"
     >
         <EntityAddForm
-            :toOnePropertyId="toOnePropertyId"
-            :toOneNullablePropertyId="toOneNullablePropertyId"
-            :createdById="createdById"
+            :toOnePropertyIdOptions="toOnePropertyIdOptions"
+            :toOneNullablePropertyIdOptions="toOneNullablePropertyIdOptions"
+            :createdByIdOptions="createdByIdOptions"
             :submitLoading="isLoading"
             @submit="submitAdd"
             @cancel="cancelAdd"
@@ -902,16 +902,16 @@ const handleDelete = (ids: number[]): void => {
 
     <el-dialog
         v-model="editDialogVisible"
-        v-if="toOnePropertyId && toOneNullablePropertyId && createdById"
+        v-if="toOnePropertyIdOptions && toOneNullablePropertyIdOptions && createdByIdOptions"
         destroy-on-close
         :close-on-click-modal="false"
     >
         <EntityEditForm
             v-if="updateInput !== undefined"
             v-model="updateInput"
-            :toOnePropertyId="toOnePropertyId"
-            :toOneNullablePropertyId="toOneNullablePropertyId"
-            :createdById="createdById"
+            :toOnePropertyIdOptions="toOnePropertyIdOptions"
+            :toOneNullablePropertyIdOptions="toOneNullablePropertyIdOptions"
+            :createdByIdOptions="createdByIdOptions"
             :submitLoading="isLoading"
             @submit="submitEdit"
             @cancel="cancelEdit"

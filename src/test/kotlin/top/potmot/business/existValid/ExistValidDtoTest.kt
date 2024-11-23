@@ -57,13 +57,15 @@ specification EntitySpec {
 }
 
 specification EntityExistByToOnePropertyAndToOneNullablePropertySpec {
+    ne(id) as id
     associatedIdEq(toOneProperty)
     associatedIdEq(toOneNullableProperty)
 }
 
 specification EntityExistByEnumPropertyAndEnumNullablePropertySpec {
-    enumProperty
-    enumNullableProperty
+    ne(id) as id
+    eq(enumProperty)
+    eq(enumNullableProperty)
 })
             """.trimIndent(),
                 DtoGenerator.generateDto(testEntity).toString().trim()
@@ -132,14 +134,16 @@ specification EntitySpec {
     associatedIdIn(toManyProperties) as toManyPropertyIds
 }
 
-specification EntityExistByToOnePropertyIdAndToOneNullablePropertyIdSpec {
-    toOnePropertyId
-    toOneNullablePropertyId
+specification EntityExistByToOnePropertyAndToOneNullablePropertySpec {
+    ne(id) as id
+    associatedIdEq(toOneProperty)
+    associatedIdEq(toOneNullableProperty)
 }
 
 specification EntityExistByEnumPropertyAndEnumNullablePropertySpec {
-    enumProperty
-    enumNullableProperty
+    ne(id) as id
+    eq(enumProperty)
+    eq(enumNullableProperty)
 })
             """.trimIndent(),
                 DtoGenerator.generateDto(testEntity).toString().trim()

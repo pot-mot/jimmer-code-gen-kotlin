@@ -31,7 +31,6 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.que
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
-import top.potmot.core.business.view.generate.meta.rules.Rule
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
@@ -241,12 +240,15 @@ object Vue3ElementPlusViewGenerator :
         }
     }
 
-    @Throws(ModelException.IdPropertyNotFound::class)
+    @Throws(
+        ModelException.IdPropertyNotFound::class,
+        ModelException.IndexRefPropertyNotFound::class,
+        ModelException.IndexRefPropertyCannotBeList::class
+    )
     override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
         val addFormRulesProperties = entity.addFormRulesProperties
-        val rules: Map<String, List<Rule>> =
-            addFormRulesProperties.associate { it.name to it.rules } +
-                    entity.copy(properties = addFormRulesProperties).existValidRules(withId = false)
+        val rules = addFormRulesProperties.associateWith { it.rules } +
+                entity.existValidRules(withId = false, addFormRulesProperties)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.insertInput, rules)
     }
 
@@ -290,12 +292,15 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
-    @Throws(ModelException.IdPropertyNotFound::class)
+    @Throws(
+        ModelException.IdPropertyNotFound::class,
+        ModelException.IndexRefPropertyNotFound::class,
+        ModelException.IndexRefPropertyCannotBeList::class
+    )
     override fun stringifyEditFormRules(entity: GenEntityBusinessView): String {
         val editFormRulesProperties = entity.editFormRulesProperties
-        val rules: Map<String, List<Rule>> =
-            editFormRulesProperties.associate { it.name to it.rules } +
-                    entity.copy(properties = editFormRulesProperties).existValidRules(withId = true)
+        val rules = editFormRulesProperties.associateWith { it.rules } +
+                entity.existValidRules(withId = true, editFormRulesProperties)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules)
     }
 
@@ -317,12 +322,15 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
-    @Throws(ModelException.IdPropertyNotFound::class)
+    @Throws(
+        ModelException.IdPropertyNotFound::class,
+        ModelException.IndexRefPropertyNotFound::class,
+        ModelException.IndexRefPropertyCannotBeList::class
+    )
     override fun stringifyEditTableRules(entity: GenEntityBusinessView): String {
         val editTableRulesProperties = entity.editTableRulesProperties
-        val rules: Map<String, List<Rule>> =
-            editTableRulesProperties.associate { it.name to it.rules } +
-                    entity.copy(properties = editTableRulesProperties).existValidRules(withId = false)
+        val rules = editTableRulesProperties.associateWith { it.rules } +
+                entity.existValidRules(withId = false, editTableRulesProperties)
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules, isArray = true)
     }
 
@@ -465,7 +473,7 @@ object Vue3ElementPlusViewGenerator :
         val apiServiceName = entity.serviceName.replaceFirstChar { it.lowercase() }
 
         val selectOptionPairs = entity.selectOptionPairs
-        val selectOptionNames = selectOptionPairs.map { it.first.name }
+        val selectOptionNames = selectOptionPairs.map { it.second.name }
         val optionQueries = selectOptionPairs.map {
             createOptionQuery(it.first.comment, it.second, apiServiceName)
         }

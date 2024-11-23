@@ -1,6 +1,8 @@
 package top.potmot.core.business.view.generate.builder.vue3.elementPlus.rules
 
+import top.potmot.core.business.utils.nameOrWithId
 import top.potmot.core.business.view.generate.builder.typescript.TypeScriptBuilder
+import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.meta.rules.ExistValidRule
 import top.potmot.core.business.view.generate.meta.rules.Rule
 import top.potmot.core.business.view.generate.meta.rules.existValidRuleImport
@@ -10,6 +12,7 @@ import top.potmot.core.business.view.generate.meta.typescript.FunctionArg
 import top.potmot.core.business.view.generate.meta.typescript.ImportItem
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.staticPath
+import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.ModelException
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.trimBlankLine
@@ -23,7 +26,7 @@ class Vue3ElementPlusRuleBuilder(
         functionName: String,
         formData: String,
         formDataType: String,
-        propertyRules: Map<String, Iterable<Rule>>,
+        propertyRules: Map<GenEntityBusinessView.TargetOf_properties, Iterable<Rule>>,
         isArray: Boolean = false,
     ): String {
         val imports = mutableListOf<ImportItem>(
@@ -37,7 +40,7 @@ class Vue3ElementPlusRuleBuilder(
         val body = buildString {
             appendLine("return {")
             propertyRules.forEach { (property, rules) ->
-                appendLine("$indent$property: [")
+                appendLine("$indent${property.nameOrWithId}: [")
                 rules.forEach { rule ->
                     hasExistValidRule = rule is ExistValidRule
                     appendBlock(rule.stringify() + ",") { "$indent$indent$it" }
@@ -49,6 +52,14 @@ class Vue3ElementPlusRuleBuilder(
 
         if (hasExistValidRule) {
             imports += existValidRuleImport
+        }
+        propertyRules.forEach { (property, rules) ->
+            if (property.enum != null) {
+                val enumName = property.enum.name
+                if (rules.map { it.stringify() }.toString().contains(enumName)) {
+                    imports += ImportType(enumPath, enumName)
+                }
+            }
         }
 
         val withFormDataProp = body.contains(formData)

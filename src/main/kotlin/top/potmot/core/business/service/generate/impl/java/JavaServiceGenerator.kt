@@ -1,6 +1,5 @@
 package top.potmot.core.business.service.generate.impl.java
 
-import top.potmot.core.business.dto.generate.dtoName
 import top.potmot.core.business.service.generate.ServiceGenerator
 import top.potmot.core.business.utils.ExistValidItem
 import top.potmot.core.business.utils.dto
@@ -36,7 +35,7 @@ object JavaServiceGenerator : ServiceGenerator() {
         val packages = entity.packages
         val (listView, detailView, insertInput, updateInput, spec, optionView) = entity.dto
         val existValidItemWithNames = entity.existValidItems.map {
-            it.dtoName(entity.name) to it
+            it.dtoName to it
         }
         val existValidDtoImports = existValidItemWithNames.joinToString("\n") {
             "import ${packages.dto}.${it.first};"
