@@ -26,7 +26,7 @@ abstract class AbstractEntityTest {
 
         assertEquals(
             getDtoResult().trim(),
-            DtoGenerator.generateDto(entity).toString()
+            DtoGenerator.generateDto(entity).let { it.path to it.content }.toString()
         )
     }
 
@@ -48,7 +48,7 @@ abstract class AbstractEntityTest {
 
         assertEquals(
             getServiceResult(language).trim(),
-            language.getServiceGenerator().generateService(entity).toString()
+            language.getServiceGenerator().generateService(entity).let { it.path to it.content }.toString()
         )
     }
 

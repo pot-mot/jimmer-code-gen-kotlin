@@ -4,6 +4,8 @@ import top.potmot.core.business.utils.serviceFilePath
 import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.entity.dto.GenerateFile
+import top.potmot.enumeration.GenerateTag
 import top.potmot.error.GenerateException
 
 abstract class ServiceGenerator {
@@ -14,17 +16,22 @@ abstract class ServiceGenerator {
     @Throws(GenerateException::class)
     fun generateService(
         entity: GenEntityBusinessView,
-    ): Pair<String, String> {
+    ): GenerateFile {
         val flatEntity = entity.toFlat()
 
-        return "${entity.serviceFilePath}${entity.serviceName}${getFileSuffix()}" to stringifyService(flatEntity)
+        return GenerateFile(
+            entity,
+            "${flatEntity.serviceFilePath}${entity.serviceName}${getFileSuffix()}",
+            stringifyService(flatEntity),
+            listOf(GenerateTag.BackEnd, GenerateTag.Service)
+        )
     }
 
     @Throws(GenerateException::class)
     fun generateService(
         entities: Iterable<GenEntityBusinessView>,
-    ): List<Pair<String, String>> =
+    ): List<GenerateFile> =
         entities
             .map { generateService(it) }
-            .distinct().sortedBy { it.first }
+            .sortedBy { it.path }
 }

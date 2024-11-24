@@ -4,9 +4,13 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import top.potmot.core.business.dto.generate.DtoGenerator
+import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.ModelException
 
 class ExistValidDtoTest {
+    private val GenEntityBusinessView.result
+        get() = DtoGenerator.generateDto(this).let { it.path to it.content }.toString()
+
     @Test
     fun `test toOneAndEnumEntity dto`() {
         listOf(
@@ -15,7 +19,7 @@ class ExistValidDtoTest {
         ).map { testEntity ->
             assertEquals(
                 """
-(Entity.dto, export EntityPackage.Entity
+(dto/Entity.dto, export EntityPackage.Entity
 
 EntityListView {
     #allScalars
@@ -68,7 +72,7 @@ specification EntityExistByEnumPropertyAndEnumNullablePropertySpec {
     eq(enumNullableProperty)
 })
             """.trimIndent(),
-                DtoGenerator.generateDto(testEntity).toString().trim()
+                testEntity.result
             )
         }
     }
@@ -93,7 +97,7 @@ specification EntityExistByEnumPropertyAndEnumNullablePropertySpec {
         ).forEach { testEntity ->
             assertEquals(
                 """
-(Entity.dto, export EntityPackage.Entity
+(dto/Entity.dto, export EntityPackage.Entity
 
 EntityListView {
     #allScalars
@@ -146,7 +150,7 @@ specification EntityExistByEnumPropertyAndEnumNullablePropertySpec {
     eq(enumNullableProperty)
 })
             """.trimIndent(),
-                DtoGenerator.generateDto(testEntity).toString().trim()
+                testEntity.result
             )
         }
     }

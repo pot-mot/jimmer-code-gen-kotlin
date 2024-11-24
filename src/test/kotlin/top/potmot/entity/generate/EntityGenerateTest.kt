@@ -24,7 +24,7 @@ class EntityGenerateTest {
     fun testJavaEntityGenerate() {
         assertEquals(
             javaExpected,
-            JavaEntityCodeGenerator.generateEntity(baseEntity).second
+            JavaEntityCodeGenerator.generateEntity(baseEntity).content
                 .replaceSinceTimeComment()
         )
     }
@@ -34,7 +34,7 @@ class EntityGenerateTest {
     fun testKotlinEntityGenerate() {
         assertEquals(
             kotlinExpected,
-            KotlinEntityCodeGenerator.generateEntity(baseEntity).second
+            KotlinEntityCodeGenerator.generateEntity(baseEntity).content
                 .replaceSinceTimeComment()
         )
     }

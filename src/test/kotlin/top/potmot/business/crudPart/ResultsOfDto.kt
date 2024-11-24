@@ -1,7 +1,7 @@
 package top.potmot.business.crudPart
 
 const val addOnlyDtoResult = """
-(Entity.dto, export EntityPackage.Entity
+(dto/Entity.dto, export EntityPackage.Entity
 
 EntityListView {
     #allScalars
@@ -31,7 +31,7 @@ specification EntitySpec {
 """
 
 const val editOnlyDtoResult = """
-(Entity.dto, export EntityPackage.Entity
+(dto/Entity.dto, export EntityPackage.Entity
 
 EntityListView {
     #allScalars
@@ -67,7 +67,7 @@ specification EntitySpec {
 """
 
 const val queryOnlyDtoResult = """
-(Entity.dto, export EntityPackage.Entity
+(dto/Entity.dto, export EntityPackage.Entity
 
 EntityListView {
     #allScalars
@@ -90,7 +90,7 @@ specification EntitySpec {
 """
 
 const val deleteOnlyDtoResult = """
-(Entity.dto, export EntityPackage.Entity
+(dto/Entity.dto, export EntityPackage.Entity
 
 EntityListView {
     #allScalars

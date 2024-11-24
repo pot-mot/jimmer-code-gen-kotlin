@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.context.useContext
-import top.potmot.core.business.dto.generate.DtoGenerator
+import top.potmot.core.business.dto.generate.DtoGenerator.generateDto
 import top.potmot.core.business.permission.generate.PermissionGenerator
 import top.potmot.core.business.route.generate.DynamicRouteGenerator
 import top.potmot.core.business.service.generate.getServiceGenerator
@@ -33,9 +33,6 @@ import top.potmot.entity.id
 import top.potmot.entity.modelId
 import top.potmot.entity.table
 import top.potmot.entity.type
-import top.potmot.enumeration.DataSourceType
-import top.potmot.enumeration.GenLanguage
-import top.potmot.enumeration.GenerateTag
 import top.potmot.enumeration.GenerateType
 import top.potmot.enumeration.TableType
 import top.potmot.enumeration.ViewType
@@ -46,7 +43,7 @@ import top.potmot.error.ModelException
 @RestController
 @RequestMapping("/preview")
 class GenerateService(
-    @Autowired val sqlClient: KSqlClient
+    @Autowired val sqlClient: KSqlClient,
 ) {
     @PostMapping("/model")
     @Throws(ModelException::class, GenerateException::class, ColumnTypeException::class)
@@ -78,129 +75,55 @@ class GenerateService(
             val containsBackEnd = GenerateType.BackEnd in typeSet
             val containsFrontEnd = GenerateType.FrontEnd in typeSet
 
+            val tableDefineGenerator by lazy {
+                context.dataSourceType.getTableDefineGenerator()
+            }
+            val entityGenerator by lazy {
+                context.language.getEntityGenerator()
+            }
+            val serviceGenerator by lazy {
+                context.language.getServiceGenerator()
+            }
+            val viewGenerator by lazy {
+                viewType.getViewGenerator()
+            }
+
             if (containsAll || containsBackEnd || GenerateType.DDL in typeSet) {
-                result += generateTableDefine(tables, context.dataSourceType)
-                    .map {
-                        GenerateFile(
-                            "ddl/${it.first}", it.second,
-                            listOf(GenerateTag.BackEnd, GenerateTag.Table)
-                        )
-                    }
+                result += tableDefineGenerator.generate(tables)
             }
             if (containsAll || containsBackEnd || GenerateType.Enum in typeSet) {
-                result += generateEnumCode(enums, context.language)
-                    .map {
-                        GenerateFile(
-                            "${languageDir}/${it.first}", it.second,
-                            listOf(GenerateTag.BackEnd, GenerateTag.Enum)
-                        )
-                    }
+                entityGenerator.generateEnum(enums).forEach {
+                    result += it.copy(path = "${languageDir}/${it.path}")
+                }
             }
             if (containsAll || containsBackEnd || GenerateType.Entity in typeSet) {
-                result += generateEntityCode(entityGenerateViews, context.language)
-                    .map {
-                        GenerateFile(
-                            "${languageDir}/${it.first}", it.second,
-                            listOf(GenerateTag.BackEnd, GenerateTag.Entity)
-                        )
-                    }
+                entityGenerator.generateEntity(entityGenerateViews).forEach {
+                    result += it.copy(path = "${languageDir}/${it.path}")
+                }
             }
             if (containsAll || containsBackEnd || GenerateType.Service in typeSet) {
-                result += generateServiceCode(entityBusinessViews, context.language)
-                    .map {
-                        GenerateFile(
-                            "${languageDir}/${it.first}", it.second,
-                            listOf(GenerateTag.BackEnd, GenerateTag.Service)
-                        )
-                    }
+                serviceGenerator.generateService(entityBusinessViews).forEach {
+                    result += it.copy(path = "${languageDir}/${it.path}")
+                }
             }
             if (containsAll || containsBackEnd || GenerateType.DTO in typeSet) {
                 result += generateDto(entityBusinessViews)
-                    .map {
-                        GenerateFile(
-                            "dto/${it.first}", it.second,
-                            listOf(GenerateTag.BackEnd, GenerateTag.DTO)
-                        )
-                    }
             }
             if (containsAll || containsBackEnd || GenerateType.Permission in typeSet) {
                 result += PermissionGenerator.generate(entityBusinessViews)
-                    .map {
-                        GenerateFile(
-                            "sql/${it.first}", it.second,
-                            listOf(GenerateTag.BackEnd, GenerateTag.Permission)
-                        )
-                    }
             }
             if (containsAll || containsBackEnd || GenerateType.Route in typeSet) {
                 result += DynamicRouteGenerator.generate(entityBusinessViews)
-                    .map {
-                        GenerateFile(
-                            "sql/${it.first}", it.second,
-                            listOf(GenerateTag.BackEnd, GenerateTag.Route)
-                        )
-                    }
             }
             if (containsAll || containsFrontEnd || GenerateType.EnumComponent in typeSet) {
-                result += generateEnumComponent(enums, viewType)
+                result += viewGenerator.generateEnum(enums)
             }
             if (containsAll || containsFrontEnd || GenerateType.View in typeSet) {
-                result += generateView(entityBusinessViews, viewType)
+                result += viewGenerator.generateView(entityBusinessViews)
             }
 
             result
         }
-
-
-    /**
-     * 批量生成的基本函数
-     */
-
-    @Throws(GenerateException::class)
-    fun generateEntityCode(
-        entities: Iterable<GenEntityGenerateView>,
-        language: GenLanguage,
-    ): List<Pair<String, String>> =
-        language.getEntityGenerator().generateEntity(entities)
-
-    fun generateEnumCode(
-        enums: Iterable<GenEnumGenerateView>,
-        language: GenLanguage,
-    ): List<Pair<String, String>> =
-        language.getEntityGenerator().generateEnum(enums)
-
-    @Throws(GenerateException::class, ColumnTypeException::class)
-    fun generateTableDefine(
-        tables: Iterable<GenTableGenerateView>,
-        dataSourceType: DataSourceType,
-    ): List<Pair<String, String>> =
-        dataSourceType.getTableDefineGenerator().generate(tables)
-
-    @Throws(GenerateException::class)
-    fun generateServiceCode(
-        entities: Iterable<GenEntityBusinessView>,
-        language: GenLanguage,
-    ): List<Pair<String, String>> =
-        language.getServiceGenerator().generateService(entities)
-
-    @Throws(ModelException.DefaultItemNotFound::class)
-    fun generateView(
-        entities: Iterable<GenEntityBusinessView>,
-        viewType: ViewType,
-    ): List<GenerateFile> =
-        viewType.getViewGenerator().generateView(entities)
-
-    fun generateEnumComponent(
-        enums: Iterable<GenEnumGenerateView>,
-        viewType: ViewType,
-    ): List<GenerateFile> =
-        viewType.getViewGenerator().generateEnum(enums)
-
-    @Throws(ModelException.IdPropertyNotFound::class)
-    fun generateDto(
-        entities: Iterable<GenEntityBusinessView>
-    ): List<Pair<String, String>> =
-        DtoGenerator.generateDto(entities)
 
     /**
      * 基本查询
@@ -220,7 +143,7 @@ class GenerateService(
 
     private inline fun <reified V : View<GenEntity>> KSqlClient.listEntity(
         modelId: Long,
-        crossinline block: KMutableRootQuery<GenEntity>.() -> Unit = {}
+        crossinline block: KMutableRootQuery<GenEntity>.() -> Unit = {},
     ) =
         createQuery(GenEntity::class) {
             where(table.modelId eq modelId)

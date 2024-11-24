@@ -11,6 +11,8 @@ import top.potmot.core.business.utils.selectOptionLabels
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
+import top.potmot.entity.dto.GenerateFile
+import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.toSingular
@@ -204,17 +206,22 @@ object DtoGenerator : EntityPropertyCategories {
     @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
         entity: GenEntityBusinessView,
-    ): Pair<String, String> {
+    ): GenerateFile {
         val flatEntity = entity.toFlat()
 
-        return Pair(formatFileName(flatEntity), stringify(flatEntity))
+        return GenerateFile(
+            entity,
+            "dto/${formatFileName(entity)}",
+            stringify(flatEntity),
+            listOf(GenerateTag.BackEnd, GenerateTag.DTO)
+        )
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
         entities: Iterable<GenEntityBusinessView>,
-    ): List<Pair<String, String>> =
+    ): List<GenerateFile> =
         entities
             .map { generateDto(it) }
-            .distinct().sortedBy { it.first }
+            .sortedBy { it.path }
 }

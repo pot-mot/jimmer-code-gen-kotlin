@@ -1,9 +1,11 @@
 package top.potmot.core.entity.generate
 
 import top.potmot.core.utils.filePath
-import top.potmot.error.GenerateException
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenEnumGenerateView
+import top.potmot.entity.dto.GenerateFile
+import top.potmot.enumeration.GenerateTag
+import top.potmot.error.GenerateException
 
 abstract class EntityCodeGenerator {
     abstract fun getFileSuffix(): String
@@ -15,26 +17,34 @@ abstract class EntityCodeGenerator {
     @Throws(GenerateException::class)
     fun generateEntity(
         entity: GenEntityGenerateView,
-    ): Pair<String, String> =
-        "${entity.filePath}${entity.name}${getFileSuffix()}" to stringify(entity)
+    ) = GenerateFile(
+        entity,
+        "${entity.filePath}${entity.name}${getFileSuffix()}",
+        stringify(entity),
+        listOf(GenerateTag.BackEnd, GenerateTag.Entity)
+    )
 
     @Throws(GenerateException::class)
     fun generateEntity(
         entities: Iterable<GenEntityGenerateView>,
-    ): List<Pair<String, String>> =
+    ): List<GenerateFile> =
         entities
             .map { generateEntity(it) }
-            .distinct().sortedBy { it.first }
+            .sortedBy { it.path }
 
-    fun generateEnum(
+   fun generateEnum(
         enum: GenEnumGenerateView,
-    ): Pair<String, String> =
-        "${enum.filePath}${enum.name}${getFileSuffix()}" to stringify(enum)
+    ) = GenerateFile(
+        enum,
+       "${enum.filePath}${enum.name}${getFileSuffix()}",
+        stringify(enum),
+        listOf(GenerateTag.BackEnd, GenerateTag.Entity)
+    )
 
     fun generateEnum(
         enums: Iterable<GenEnumGenerateView>,
-    ): List<Pair<String, String>> =
+    ): List<GenerateFile> =
         enums
             .map { generateEnum(it) }
-            .distinct().sortedBy { it.first }
+            .sortedBy { it.path }
 }

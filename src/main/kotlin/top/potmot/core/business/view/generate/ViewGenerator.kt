@@ -61,16 +61,19 @@ interface ViewGenerator {
 
         return listOf(
             GenerateFile(
+                enum,
                 "components/${dir}/${view}.$suffix",
                 stringifyEnumView(enum),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumView),
             ),
             GenerateFile(
+                enum,
                 "components/${dir}/${select}.$suffix",
                 stringifyEnumSelect(enum),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumSelect),
             ),
             GenerateFile(
+                enum,
                 "components/${dir}/${nullableSelect}.$suffix",
                 stringifyEnumNullableSelect(enum),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumNullableSelect),
@@ -100,66 +103,79 @@ interface ViewGenerator {
 
         return listOfNotNull(
             GenerateFile(
+                entity,
                 "components/${dir}/${table}.$suffix",
                 stringifyTable(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Table),
             ),
             if (!entity.canAdd) null else GenerateFile(
+                entity,
                 "components/${dir}/${addFormDataType}.d.ts",
                 stringifyAddFormType(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.AddFormDataType),
             ),
             if (!entity.canAdd) null else GenerateFile(
+                entity,
                 "components/${dir}/${defaultAddFormData}.ts",
                 stringifyAddFormDefault(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.DefaultAddFormData),
             ),
             if (!entity.canAdd) null else GenerateFile(
+                entity,
                 "components/${dir}/${addForm}.$suffix",
                 stringifyAddForm(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.AddForm),
             ),
             if (!entity.canEdit) null else GenerateFile(
+                entity,
                 "components/${dir}/${editForm}.$suffix",
                 stringifyEditForm(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EditForm),
             ),
             GenerateFile(
+                entity,
                 "components/${dir}/${editTable}.$suffix",
                 stringifyEditTable(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EditTable),
             ),
             if (!entity.canQuery) null else GenerateFile(
+                entity,
                 "components/${dir}/${queryForm}.$suffix",
                 stringifyQueryForm(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.QueryForm),
             ),
             if (!entity.hasPage) null else GenerateFile(
+                entity,
                 "pages/${dir}/${page}.$suffix",
                 stringifyPage(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Page),
             ),
             GenerateFile(
+                entity,
                 "components/${dir}/${idSelect}.$suffix",
                 stringifyIdSelect(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.IdSelect),
             ),
             GenerateFile(
+                entity,
                 "components/${dir}/${idMultiSelect}.$suffix",
                 stringifyIdMultiSelect(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.IdMultiSelect),
             ),
             if (!entity.canAdd) null else GenerateFile(
+                entity,
                 "rules/${dir}/${addFormRules}.ts",
                 stringifyAddFormRules(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.AddFormRules, GenerateTag.AddForm),
             ),
             if (!entity.canEdit) null else GenerateFile(
+                entity,
                 "rules/${dir}/${editFormRules}.ts",
                 stringifyEditFormRules(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditFormRules, GenerateTag.EditForm),
             ),
             GenerateFile(
+                entity,
                 "rules/${dir}/${editTableRules}.ts",
                 stringifyEditTableRules(flatEntity),
                 listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditTableRules, GenerateTag.EditTable),

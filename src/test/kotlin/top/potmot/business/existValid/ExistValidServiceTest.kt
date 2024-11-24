@@ -186,7 +186,7 @@ public class EntityService implements Tables {
     }
 })
             """.trimIndent(),
-            javaGenerator.generateService(toOneAndEnumEntity).toString()
+            javaGenerator.generateService(toOneAndEnumEntity).let { it.path to it.content }.toString()
         )
     }
 
@@ -349,7 +349,7 @@ class EntityService(
         }.exists()
 })
             """.trimIndent(),
-            kotlinGenerator.generateService(toOneAndEnumEntity).toString()
+            kotlinGenerator.generateService(toOneAndEnumEntity).let { it.path to it.content }.toString()
         )
     }
 }
