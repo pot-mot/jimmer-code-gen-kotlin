@@ -29,10 +29,10 @@ private fun GenEntityInput.TargetOf_properties.mergeExistProperty(
 
     inListView = existProperty.inListView
     inDetailView = existProperty.inDetailView
+    inOptionView = existProperty.inOptionView
     inSpecification = existProperty.inSpecification
     inInsertInput = existProperty.inInsertInput
     inUpdateInput = existProperty.inUpdateInput
-    inOptionView = existProperty.inOptionView
     inShortAssociationView = existProperty.inShortAssociationView
     inLongAssociationInput = existProperty.inLongAssociationInput
     inLongAssociationView = existProperty.inLongAssociationView
