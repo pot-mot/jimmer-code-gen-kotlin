@@ -52,6 +52,8 @@ interface EntityPropertyCategories {
 
     val GenEntityBusinessView.listViewProperties: List<TargetOf_properties>
         get() {
+            // TODO 需要考虑对多短关联
+
             val filteredProperties = properties.filter {
                 it.inListView && (it.associationType == null || it.associationType in targetOneAssociationTypes)
             }

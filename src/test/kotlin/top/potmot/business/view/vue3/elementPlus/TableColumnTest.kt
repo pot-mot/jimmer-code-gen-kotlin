@@ -15,22 +15,24 @@ class TableColumnTest : TableColumn {
     private val builder = Vue3ComponentBuilder()
 
     private val GenEntityBusinessView.TargetOf_properties.result: String
-        get() = tableColumnDataList().map { it.second }.joinToString("\n") {
-            buildString {
-                builder.apply {
-                    appendLines(it.imports.stringifyImports())
-                    appendBlock(
-                        listOf(
-                            TagElement(
-                                "el-table-item",
-                                props = it.props,
-                                children = it.elements
-                            )
-                        ).stringifyElements()
-                    )
-                }
-            }.trim()
-        }
+        get() = tableColumnDataList(withDateTimeFormat = true)
+            .map { it.second }
+            .joinToString("\n") {
+                buildString {
+                    builder.apply {
+                        appendLines(it.imports.stringifyImports())
+                        appendBlock(
+                            listOf(
+                                TagElement(
+                                    "el-table-item",
+                                    props = it.props,
+                                    children = it.elements
+                                )
+                            ).stringifyElements()
+                        )
+                    }
+                }.trim()
+            }
 
     @Test
     fun `test base table column`() {

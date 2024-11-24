@@ -24,11 +24,18 @@ data class TableColumnData(
     val props: Collection<PropBind> = emptyList(),
 )
 
+private val defaultTableColumnData = TableColumnData()
+
+// TODO 转换为全局配置
+private const val tableColumnWithDateTimeFormat: Boolean = true
+
 private const val formatTableColumnDate = "formatTableColumnDate"
 private const val formatTableColumnTime = "formatTableColumnTime"
 private const val formatTableColumnDateTime = "formatTableColumnDateTime"
 
-private fun GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity.TargetOf_shortViewProperties.toProperty(entityId: Long) =
+private fun GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity.TargetOf_shortViewProperties.toProperty(
+    entityId: Long,
+) =
     GenEntityBusinessView.TargetOf_properties(
         toEntity {
             entity {
@@ -41,7 +48,9 @@ private fun GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity.Target
     )
 
 interface TableColumn {
-    fun GenEntityBusinessView.TargetOf_properties.tableColumnDataList(): List<Pair<GenerateProperty, TableColumnData>> {
+    fun GenEntityBusinessView.TargetOf_properties.tableColumnDataList(
+        withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat
+    ): List<Pair<GenerateProperty, TableColumnData>> {
         if (isShortAssociation) {
             if (associationType in targetOneAssociationTypes) {
                 return typeEntity!!.shortViewProperties.flatMap { shortViewProperty ->
@@ -52,6 +61,8 @@ interface TableColumn {
                         ) to it.second
                     }
                 }
+            } else {
+                // TODO 完成对多短关联的翻译
             }
         }
 
@@ -81,39 +92,48 @@ interface TableColumn {
         return listOf(
             this to when (formType) {
                 PropertyFormType.DATE -> {
-                    TableColumnData(
-                        imports = listOf(
-                            Import("$utilPath/timeFormat", formatTableColumnDate)
-                        ),
-                        props = listOf(
-                            PropBind("formatter", formatTableColumnDate)
+                    if (!withDateTimeFormat)
+                        defaultTableColumnData
+                    else
+                        TableColumnData(
+                            imports = listOf(
+                                Import("$utilPath/timeFormat", formatTableColumnDate)
+                            ),
+                            props = listOf(
+                                PropBind("formatter", formatTableColumnDate)
+                            )
                         )
-                    )
                 }
 
                 PropertyFormType.TIME -> {
-                    TableColumnData(
-                        imports = listOf(
-                            Import("$utilPath/timeFormat", formatTableColumnTime)
-                        ),
-                        props = listOf(
-                            PropBind("formatter", formatTableColumnTime)
+                    if (!withDateTimeFormat)
+                        defaultTableColumnData
+                    else
+                        TableColumnData(
+                            imports = listOf(
+                                Import("$utilPath/timeFormat", formatTableColumnTime)
+                            ),
+                            props = listOf(
+                                PropBind("formatter", formatTableColumnTime)
+                            )
                         )
-                    )
                 }
 
                 PropertyFormType.DATETIME -> {
-                    TableColumnData(
-                        imports = listOf(
-                            Import("$utilPath/timeFormat", formatTableColumnDateTime)
-                        ),
-                        props = listOf(
-                            PropBind("formatter", formatTableColumnDateTime)
+                    if (!withDateTimeFormat)
+                        defaultTableColumnData
+                    else
+                        TableColumnData(
+                            imports = listOf(
+                                Import("$utilPath/timeFormat", formatTableColumnDateTime)
+                            ),
+                            props = listOf(
+                                PropBind("formatter", formatTableColumnDateTime)
+                            )
                         )
-                    )
                 }
 
-                else -> TableColumnData()
+                else -> defaultTableColumnData
             }
         )
     }
