@@ -56,6 +56,7 @@ import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.error.ModelException
+import top.potmot.utils.list.join
 import top.potmot.utils.string.appendLines
 
 object Vue3ElementPlusViewGenerator :
@@ -68,8 +69,11 @@ object Vue3ElementPlusViewGenerator :
     AddFormDefault,
     AddFormType {
     private val builder = Vue3ComponentBuilder()
+    
+    private val indent = builder.indent
+    private val wrapThreshold = builder.wrapThreshold
 
-    private val rulesBuilder = Vue3ElementPlusRuleBuilder(builder.indent, builder.wrapThreshold)
+    private val rulesBuilder = Vue3ElementPlusRuleBuilder(indent, wrapThreshold)
 
     override fun getFileSuffix() = "vue"
 
@@ -209,7 +213,7 @@ object Vue3ElementPlusViewGenerator :
 
             appendLine("export type ${entity.addFormDataType} = {")
             context.forEach { (property, type) ->
-                appendLine("${builder.indent}${property.name}: $type")
+                appendLine("${indent}${property.name}: $type")
             }
             appendLine("}")
         }
@@ -225,7 +229,7 @@ object Vue3ElementPlusViewGenerator :
             appendLine()
             appendLine("export const ${entity.addFormDefault}: $type = {")
             content.forEach { (property, default) ->
-                appendLine("${builder.indent}${property.name}: $default,")
+                appendLine("${indent}${property.name}: $default,")
             }
             appendLine("}")
         }
@@ -253,8 +257,8 @@ object Vue3ElementPlusViewGenerator :
         val afterValidCodes = nullableDiffProperties.joinToString("\n\n") {
             buildString {
                 appendLine("if (formData.value.toOnePropertyId === undefined) {")
-                appendLine("${builder.indent}sendMessage(\"toOneProperty不可为空\", \"warning\")")
-                appendLine("${builder.indent}return")
+                appendLine("${indent}sendMessage(\"toOneProperty不可为空\", \"warning\")")
+                appendLine("${indent}return")
                 appendLine("}")
             }
         }
@@ -270,7 +274,7 @@ object Vue3ElementPlusViewGenerator :
                 useRules = "useRules",
                 useRulesPath = rulePath + "/" + entity.rules.addFormRules,
                 formData = formData,
-                indent = builder.indent,
+                indent = indent,
                 selectOptions = entity.insertSelectProperties.selectOptions,
                 afterValidCodes = afterValidCodes,
                 content = entity.addFormProperties
@@ -305,7 +309,7 @@ object Vue3ElementPlusViewGenerator :
                 typePath = staticPath,
                 useRules = "useRules",
                 useRulesPath = rulePath + "/" + entity.rules.editFormRules,
-                indent = builder.indent,
+                indent = indent,
                 selectOptions = entity.updateSelectProperties.selectOptions,
                 content = entity.editFormProperties
                     .associateWith { it.createFormItem(formData) }
@@ -337,7 +341,7 @@ object Vue3ElementPlusViewGenerator :
                 default = entity.addFormDefault,
                 defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormDefault,
                 useRulesPath = rulePath + "/" + entity.rules.editTableRules,
-                indent = builder.indent,
+                indent = indent,
                 idPropertyName = entity.idProperty.name,
                 comment = entity.comment,
                 selectOptions = entity.editTableSelectProperties.selectOptions,
@@ -451,10 +455,19 @@ object Vue3ElementPlusViewGenerator :
     ) to mutableListOf(
         commentLine("${comment}选项"),
         selectOption.toVariable(),
+        emptyLineCode,
+        ConstVariable(
+            "set${selectOption.upperName}",
+            null,
+            "withLoading(async () => {\n",
+            "${indent}${selectOption.name}.value = await api.$serviceName.listOptions({body: {}})\n",
+            "})",
+        ),
+        emptyLineCode,
         CodeBlock(
             "onBeforeMount(async () => {\n",
-            "${builder.indent}${selectOption.name}.value = await api.$serviceName.listOptions({body: {}})\n",
-            "})\n"
+            "${indent}await set${selectOption.upperName}()\n",
+            "})"
         )
     )
 
@@ -521,7 +534,7 @@ object Vue3ElementPlusViewGenerator :
                             "spec: {}",
                             "pageIndex: 1",
                             "pageSize: 5"
-                        ).joinToString(",\n") { "${builder.indent}$it" },
+                        ).joinToString(",\n") { "${indent}$it" },
                         "\n})\n",
                     ),
                     ConstVariable(
@@ -531,7 +544,7 @@ object Vue3ElementPlusViewGenerator :
                             "pageData",
                             "queryInfo",
                             "withLoading(api.entityService.page)"
-                        ).joinToString(",\n") { "${builder.indent}$it" },
+                        ).joinToString(",\n") { "${indent}$it" },
                         "\n)\n",
                     ),
                     if (!entity.canEdit) null else ConstVariable(
@@ -565,9 +578,10 @@ object Vue3ElementPlusViewGenerator :
                     ),
                     emptyLineCode,
 
-                    *optionQueries.flatMap { it.second }.toTypedArray(),
+                    *optionQueries.map { it.second }.join(listOf(emptyLineCode)).flatten().toTypedArray(),
 
                     *if (!entity.canAdd) emptyArray() else arrayOf(
+                        emptyLineCode,
                         commentLine("新增"),
                         ConstVariable("addDialogVisible", null, "ref<boolean>(false)"),
                         emptyLineCode,
@@ -588,11 +602,11 @@ object Vue3ElementPlusViewGenerator :
                                 "addDialogVisible.value = false",
                                 "",
                                 "sendMessage('新增${entity.comment}成功', 'success')"
-                            ).joinToString("") { "${builder.indent}$it\n" },
+                            ).joinToString("") { "${indent}$it\n" },
                             "} catch (e) {\n",
                             listOf(
                                 "sendMessage(\"新增${entity.comment}失败\", \"error\", e)"
-                            ).joinToString("") { "${builder.indent}$it\n" },
+                            ).joinToString("") { "${indent}$it\n" },
                             "}"
                         ),
                         emptyLineCode,
@@ -619,7 +633,7 @@ object Vue3ElementPlusViewGenerator :
                             listOf(
                                 "sendMessage('编辑的${entity.comment}不存在', 'error')",
                                 "return"
-                            ).joinToString("") { "${builder.indent}$it\n" },
+                            ).joinToString("") { "${indent}$it\n" },
                             "}\n",
                             "editDialogVisible.value = true"
                         ),
@@ -634,11 +648,11 @@ object Vue3ElementPlusViewGenerator :
                                 "editDialogVisible.value = false",
                                 "",
                                 "sendMessage('编辑${entity.comment}成功', 'success')"
-                            ).joinToString("") { "${builder.indent}$it\n" },
+                            ).joinToString("") { "${indent}$it\n" },
                             "} catch (e) {\n",
                             listOf(
                                 "sendMessage('编辑${entity.comment}失败', 'error', e)"
-                            ).joinToString("") { "${builder.indent}$it\n" },
+                            ).joinToString("") { "${indent}$it\n" },
                             "}"
                         ),
                         emptyLineCode,
@@ -665,11 +679,11 @@ object Vue3ElementPlusViewGenerator :
                                 "await queryPage()",
                                 "",
                                 "sendMessage('删除${entity.comment}成功', 'success')"
-                            ).joinToString("") { "${builder.indent}$it\n" },
+                            ).joinToString("") { "${indent}$it\n" },
                             "} catch (e) {\n",
                             listOf(
                                 "sendMessage('删除${entity.comment}失败', 'error', e)"
-                            ).joinToString("") { "${builder.indent}$it\n" },
+                            ).joinToString("") { "${indent}$it\n" },
                             "}",
                         )
                     )

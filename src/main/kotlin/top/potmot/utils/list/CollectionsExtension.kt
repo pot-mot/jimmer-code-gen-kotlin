@@ -1,0 +1,18 @@
+package top.potmot.utils.list
+
+fun <T> Iterable<T>.join(separator: T): List<T> {
+    val result = ArrayList<T>()
+    val iterator = iterator()
+
+    if (iterator.hasNext()) {
+        // 处理第一个元素
+        result.add(iterator.next())
+
+        // 从第二个元素开始循环
+        while (iterator.hasNext()) {
+            result.add(separator)
+            result.add(iterator.next())
+        }
+    }
+    return result
+}

@@ -89,7 +89,7 @@ class Vue3ComponentBuilderTest {
         """.trimIndent()
 
         builder.apply {
-            assertEquals(expected, models.stringifyModels().trim())
+            assertEquals(expected, models.stringifyModels().joinToString("\n\n"))
         }
     }
 

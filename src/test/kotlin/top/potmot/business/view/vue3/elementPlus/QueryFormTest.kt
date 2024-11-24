@@ -35,7 +35,6 @@ const emits = defineEmits<{
         spec: EntitySpecification
     ): void
 }>()
-
 </script>
 
 <template>
@@ -94,7 +93,6 @@ const emits = defineEmits<{
         spec: EntitySpecification
     ): void
 }>()
-
 </script>
 
 <template>

@@ -14,6 +14,6 @@ fun StringBuilder.appendLines(vararg lines: String, produce: (line: String) -> S
 
 fun StringBuilder.appendBlock(block: String?, produce: (line: String) -> String = { it }) {
     block?.let {
-        appendLines(it.split("\n"), produce)
+        appendLines(it.lines(), produce)
     }
 }

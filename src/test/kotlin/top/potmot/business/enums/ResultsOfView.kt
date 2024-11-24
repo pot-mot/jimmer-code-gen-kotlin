@@ -5,7 +5,6 @@ const val vue3ElementPlusResult = """
 import type {EnumTest} from "@/api/__generated/model/enums"
 
 defineProps<{value: EnumTest}>()
-
 </script>
 
 <template>
@@ -27,7 +26,6 @@ import EnumTestView from "@/components/enumTest/EnumTestView.vue"
 const modelValue = defineModel<EnumTest>({
     required: true
 })
-
 </script>
 
 <template>
@@ -55,7 +53,6 @@ import EnumTestView from "@/components/enumTest/EnumTestView.vue"
 const modelValue = defineModel<EnumTest | undefined>({
     required: true
 })
-
 </script>
 
 <template>

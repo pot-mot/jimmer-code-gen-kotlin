@@ -581,7 +581,6 @@ defineProps<{
 }>()
 
 const emits = defineEmits<{(event: "query", spec: EntitySpec): void}>()
-
 </script>
 
 <template>
@@ -689,14 +688,24 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
 
 // toOneProperty选项
 const toOnePropertyIdOptions = ref<Array<ToOneEntityOptionView>>()
-onBeforeMount(async () => {
+
+const setToOnePropertyIdOptions = withLoading(async () => {
     toOnePropertyIdOptions.value = await api.entityService.listOptions({body: {}})
+})
+
+onBeforeMount(async () => {
+    await setToOnePropertyIdOptions()
 })
 
 // toOneNullableProperty选项
 const toOneNullablePropertyIdOptions = ref<Array<ToOneEntityOptionView>>()
-onBeforeMount(async () => {
+
+const setToOneNullablePropertyIdOptions = withLoading(async () => {
     toOneNullablePropertyIdOptions.value = await api.entityService.listOptions({body: {}})
+})
+
+onBeforeMount(async () => {
+    await setToOneNullablePropertyIdOptions()
 })
 
 // 新增

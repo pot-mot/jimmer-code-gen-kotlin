@@ -57,6 +57,8 @@ data class SelectOption(
     val type: String,
     val typePath: String = staticPath,
 ) {
+    val upperName: String = name.replaceFirstChar { it.uppercaseChar() }
+
     fun toImport() =
         ImportType(typePath, type)
 

@@ -16,18 +16,18 @@ import top.potmot.core.business.view.generate.meta.vue3.VFor
 import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.VShow
+import top.potmot.utils.list.join
 import top.potmot.utils.string.appendBlock
-import top.potmot.utils.string.appendLines
 
 class Vue3ComponentBuilder(
     override val indent: String = "    ",
     override val wrapThreshold: Int = 40,
 ) : TypeScriptBuilder {
-    fun Collection<ModelProp>.stringifyModels(currentIndent: String = indent): String {
+    fun Collection<ModelProp>.stringifyModels(currentIndent: String = indent): List<String> {
         val withName = size > 1
         val withNameIndent = if (withName) currentIndent else ""
 
-        return joinToString("\n") {
+        return map {
             val withModifier = it.modifier.isNotEmpty()
 
             val type = if (withModifier) "${it.type}, ${it.modifier.joinToString(" | ")}" else it.type
@@ -48,7 +48,7 @@ class Vue3ComponentBuilder(
                 }
             }
 
-            "const $variable = defineModel<$type>($data)\n"
+            "const $variable = defineModel<$type>($data)"
         }
     }
 
@@ -213,37 +213,42 @@ class Vue3ComponentBuilder(
     fun build(vueComponentPart: Component) = buildString {
         appendLine("<script setup lang=\"ts\">")
 
-        val stringifyImports = vueComponentPart.imports.stringifyImports()
-        appendLines(stringifyImports)
-        if (stringifyImports.isNotEmpty()) appendLine()
+        val scriptParts = mutableListOf<String>()
 
-        val stringifyModels = vueComponentPart.models.stringifyModels()
-        append(stringifyModels)
-        if (stringifyModels.isNotEmpty()) appendLine()
+        scriptParts += vueComponentPart.imports.stringifyImports().joinToString("\n")
+
+        scriptParts += vueComponentPart.models.stringifyModels()
 
         if (vueComponentPart.props.isNotEmpty()) {
             val stringifyProps = vueComponentPart.props.stringifyProps()
-            if (vueComponentPart.needPropsDeclare()) append("const props = ")
-            appendBlock(stringifyProps)
-            if (stringifyProps.isNotEmpty()) appendLine()
+            scriptParts +=
+                if (stringifyProps.isNotEmpty() && vueComponentPart.needPropsDeclare()) {
+                    "const props = $stringifyProps"
+                } else {
+                    stringifyProps
+                }
         }
 
         if (vueComponentPart.emits.isNotEmpty()) {
             val stringifyEmits = vueComponentPart.emits.stringifyEmits()
-            if (vueComponentPart.needEmitsDeclare()) append("const emits = ")
-            appendBlock(stringifyEmits)
-            if (stringifyEmits.isNotEmpty()) appendLine()
+            scriptParts +=
+                if (stringifyEmits.isNotEmpty() && vueComponentPart.needEmitsDeclare()) {
+                    "const emits = $stringifyEmits"
+                } else {
+                    stringifyEmits
+                }
         }
 
         if (vueComponentPart.slots.isNotEmpty()) {
-            val stringifySlots = vueComponentPart.slots.stringifySlots()
-            appendBlock(stringifySlots)
-            if (stringifySlots.isNotEmpty()) appendLine()
+            scriptParts += vueComponentPart.slots.stringifySlots()
         }
 
         if (vueComponentPart.script.isNotEmpty()) {
-            val stringifyCodes = vueComponentPart.script.stringifyCodes()
-            appendBlock(stringifyCodes)
+            scriptParts += vueComponentPart.script.stringifyCodes()
+        }
+
+        for (scriptPart in scriptParts.join("")) {
+            appendBlock(scriptPart)
         }
 
         appendLine("</script>")
