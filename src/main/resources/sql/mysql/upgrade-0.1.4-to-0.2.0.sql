@@ -82,3 +82,27 @@ ALTER TABLE `jimmer_code_gen`.`gen_enum_item`
     ADD COLUMN `default_item` boolean NOT NULL DEFAULT FALSE COMMENT '是否是默认值' AFTER `comment`;
 ALTER TABLE `jimmer_code_gen`.`gen_enum_item`
     MODIFY COLUMN `default_item` boolean NOT NULL COMMENT '是否是默认值' AFTER `comment`;
+
+
+
+ALTER TABLE `jimmer_code_gen`.`gen_property`
+    ADD COLUMN `overwrite_name` boolean NOT NULL DEFAULT FALSE COMMENT '覆盖自动生成属性名' AFTER `name`;
+ALTER TABLE `jimmer_code_gen`.`gen_property`
+    MODIFY COLUMN `overwrite_name` boolean NOT NULL COMMENT '覆盖自动生成属性名' AFTER `name`;
+
+ALTER TABLE `jimmer_code_gen`.`gen_property`
+    ADD COLUMN `overwrite_comment` boolean NOT NULL DEFAULT FALSE COMMENT '覆盖自动生成注释' AFTER `comment`;
+ALTER TABLE `jimmer_code_gen`.`gen_property`
+    MODIFY COLUMN `overwrite_comment` boolean NOT NULL COMMENT '覆盖自动生成注释' AFTER `comment`;
+
+
+
+ALTER TABLE `jimmer_code_gen`.`gen_entity`
+    ADD COLUMN `overwrite_name` boolean NOT NULL DEFAULT FALSE COMMENT '覆盖自动生成属性名' AFTER `name`;
+ALTER TABLE `jimmer_code_gen`.`gen_entity`
+    MODIFY COLUMN `overwrite_name` boolean NOT NULL COMMENT '覆盖自动生成属性名' AFTER `name`;
+
+ALTER TABLE `jimmer_code_gen`.`gen_entity`
+    ADD COLUMN `overwrite_comment` boolean NOT NULL DEFAULT FALSE COMMENT '覆盖自动生成注释' AFTER `comment`;
+ALTER TABLE `jimmer_code_gen`.`gen_entity`
+    MODIFY COLUMN `overwrite_comment` boolean NOT NULL COMMENT '覆盖自动生成注释' AFTER `comment`;

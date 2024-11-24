@@ -65,11 +65,21 @@ interface GenProperty : BaseEntity {
     @Key
     val name: String
 
+    /**
+     * 覆盖自动生成属性名
+     */
+    val overwriteName: Boolean
+
 
     /**
      * 属性注释
      */
     val comment: String
+
+    /**
+     * 覆盖自动生成注释
+     */
+    val overwriteComment: Boolean
 
     /**
      * 字面类型

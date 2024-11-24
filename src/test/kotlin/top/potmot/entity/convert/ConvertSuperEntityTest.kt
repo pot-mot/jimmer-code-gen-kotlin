@@ -20,7 +20,7 @@ class ConvertSuperEntityTest: BaseConvertTest() {
             )
         ).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId, superTableId), null, keepNameComment = true)
+        convertService.convertTable(listOf(tableId, superTableId), null)
 
         val superEntityId = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq superTableId)
@@ -46,7 +46,9 @@ class ConvertSuperEntityTest: BaseConvertTest() {
         }
     ],
     "name" : "Table",
+    "overwriteName" : false,
     "comment" : "table comment",
+    "overwriteComment" : false,
     "author" : "",
     "canAdd" : true,
     "canEdit" : true,
@@ -57,7 +59,9 @@ class ConvertSuperEntityTest: BaseConvertTest() {
     "properties" : [
         {
             "name" : "column",
+            "overwriteName" : false,
             "comment" : "column comment",
+            "overwriteComment" : false,
             "type" : "kotlin.Int",
             "typeTable" : null,
             "listType" : false,
@@ -92,7 +96,9 @@ class ConvertSuperEntityTest: BaseConvertTest() {
         },
         {
             "name" : "id",
+            "overwriteName" : false,
             "comment" : "id comment",
+            "overwriteComment" : false,
             "type" : "kotlin.Int",
             "typeTable" : null,
             "listType" : false,

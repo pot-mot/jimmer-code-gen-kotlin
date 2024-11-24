@@ -143,7 +143,7 @@ CREATE TABLE "gen_enum_item"
     "mapped_value"  text        NOT NULL,
     "comment"       text        NOT NULL,
     "order_key"     bigint      NOT NULL,
-    "default_item"       boolean     NOT NULL,
+    "default_item"  boolean     NOT NULL,
     "remark"        text        NOT NULL,
     "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -495,21 +495,23 @@ COMMENT ON COLUMN "gen_index_column_mapping"."column_id" IS '列';
 -- ----------------------------
 CREATE TABLE "gen_entity"
 (
-    "id"            bigserial   NOT NULL,
-    "model_id"      bigint      NULL,
-    "package_path"  text        NOT NULL,
-    "table_id"      bigint      NOT NULL,
-    "name"          text        NOT NULL,
-    "comment"       text        NOT NULL,
-    "author"        text        NOT NULL,
-    "can_add"       boolean     NOT NULL,
-    "can_edit"      boolean     NOT NULL,
-    "can_delete"    boolean     NOT NULL,
-    "can_query"     boolean     NOT NULL,
-    "has_page"      boolean     NOT NULL,
-    "remark"        text        NOT NULL,
-    "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "id"                bigserial   NOT NULL,
+    "model_id"          bigint      NULL,
+    "package_path"      text        NOT NULL,
+    "table_id"          bigint      NOT NULL,
+    "name"              text        NOT NULL,
+    "overwrite_name"    boolean     NOT NULL,
+    "comment"           text        NOT NULL,
+    "overwrite_comment" boolean     NOT NULL,
+    "author"            text        NOT NULL,
+    "can_add"           boolean     NOT NULL,
+    "can_edit"          boolean     NOT NULL,
+    "can_delete"        boolean     NOT NULL,
+    "can_query"         boolean     NOT NULL,
+    "has_page"          boolean     NOT NULL,
+    "remark"            text        NOT NULL,
+    "created_time"      timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id"),
     CONSTRAINT "fk_entity_model" FOREIGN KEY ("model_id") REFERENCES "gen_model" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT "fk_entity_table" FOREIGN KEY ("table_id") REFERENCES "gen_table" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT
@@ -525,7 +527,9 @@ COMMENT ON COLUMN "gen_entity"."model_id" IS '模型';
 COMMENT ON COLUMN "gen_entity"."package_path" IS '包路径';
 COMMENT ON COLUMN "gen_entity"."table_id" IS '对应表';
 COMMENT ON COLUMN "gen_entity"."name" IS '类名称';
+COMMENT ON COLUMN "gen_entity"."overwrite_name" IS '覆盖自动生成类名称';
 COMMENT ON COLUMN "gen_entity"."comment" IS '类注释';
+COMMENT ON COLUMN "gen_entity"."overwrite_comment" IS '覆盖自动生成注释';
 COMMENT ON COLUMN "gen_entity"."author" IS '作者';
 COMMENT ON COLUMN "gen_entity"."can_add" IS '是否可以创建';
 COMMENT ON COLUMN "gen_entity"."can_edit" IS '是否可以修改';
@@ -567,7 +571,9 @@ CREATE TABLE "gen_property"
     "entity_id"                 bigint      NOT NULL,
     "column_id"                 bigint      NULL     DEFAULT NULL,
     "name"                      text        NOT NULL,
+    "overwrite_name"            boolean     NOT NULL,
     "comment"                   text        NOT NULL,
+    "overwrite_comment"         boolean     NOT NULL,
     "type"                      text        NOT NULL,
     "type_table_id"             bigint      NULL     DEFAULT NULL,
     "list_type"                 boolean     NOT NULL,
@@ -619,7 +625,9 @@ COMMENT ON COLUMN "gen_property"."id" IS 'ID';
 COMMENT ON COLUMN "gen_property"."entity_id" IS '归属实体';
 COMMENT ON COLUMN "gen_property"."column_id" IS '对应列';
 COMMENT ON COLUMN "gen_property"."name" IS '属性名';
+COMMENT ON COLUMN "gen_property"."overwrite_name" IS '覆盖自动生成属性名';
 COMMENT ON COLUMN "gen_property"."comment" IS '属性注释';
+COMMENT ON COLUMN "gen_property"."overwrite_comment" IS '覆盖自动生成注释';
 COMMENT ON COLUMN "gen_property"."type" IS '属性类型';
 COMMENT ON COLUMN "gen_property"."type_table_id" IS '类型对应表';
 COMMENT ON COLUMN "gen_property"."list_type" IS '是否列表';

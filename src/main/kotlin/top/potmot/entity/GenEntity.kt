@@ -112,9 +112,19 @@ interface GenEntity : BaseEntity {
     val name: String
 
     /**
+     * 覆盖自动生成类名称
+     */
+    val overwriteName: Boolean
+
+    /**
      * 类注释
      */
     val comment: String
+
+    /**
+     * 覆盖自动生成注释
+     */
+    val overwriteComment: Boolean
 
     /**
      * 作者

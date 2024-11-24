@@ -13,7 +13,7 @@ class ConvertEntityTest : BaseConvertTest() {
     fun `test base convert`() {
         val tableId = sqlClient.save(baseTable).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId), null, keepNameComment = true)
+        convertService.convertTable(listOf(tableId), null)
 
         val entity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -30,7 +30,9 @@ class ConvertEntityTest : BaseConvertTest() {
     },
     "superEntities" : [ ],
     "name" : "Table",
+    "overwriteName" : false,
     "comment" : "table comment",
+    "overwriteComment" : false,
     "author" : "",
     "canAdd" : true,
     "canEdit" : true,
@@ -41,7 +43,9 @@ class ConvertEntityTest : BaseConvertTest() {
     "properties" : [
         {
             "name" : "column",
+            "overwriteName" : false,
             "comment" : "column comment",
+            "overwriteComment" : false,
             "type" : "kotlin.Int",
             "typeTable" : null,
             "listType" : false,
@@ -76,7 +80,9 @@ class ConvertEntityTest : BaseConvertTest() {
         },
         {
             "name" : "id",
+            "overwriteName" : false,
             "comment" : "id comment",
+            "overwriteComment" : false,
             "type" : "kotlin.Int",
             "typeTable" : null,
             "listType" : false,
@@ -122,7 +128,7 @@ class ConvertEntityTest : BaseConvertTest() {
     fun `test MergeExistAndConvert`() {
         val tableId = sqlClient.save(baseTable).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId), null, keepNameComment = true)
+        convertService.convertTable(listOf(tableId), null)
 
         val firstConvertEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -138,7 +144,9 @@ class ConvertEntityTest : BaseConvertTest() {
     },
     "superEntities" : [ ],
     "name" : "Table",
+    "overwriteName" : false,
     "comment" : "table comment",
+    "overwriteComment" : false,
     "author" : "",
     "canAdd" : true,
     "canEdit" : true,
@@ -149,7 +157,9 @@ class ConvertEntityTest : BaseConvertTest() {
     "properties" : [
         {
             "name" : "column",
+            "overwriteName" : false,
             "comment" : "column comment",
+            "overwriteComment" : false,
             "type" : "kotlin.Int",
             "typeTable" : null,
             "listType" : false,
@@ -184,7 +194,9 @@ class ConvertEntityTest : BaseConvertTest() {
         },
         {
             "name" : "id",
+            "overwriteName" : false,
             "comment" : "id comment",
+            "overwriteComment" : false,
             "type" : "kotlin.Int",
             "typeTable" : null,
             "listType" : false,
@@ -228,7 +240,9 @@ class ConvertEntityTest : BaseConvertTest() {
 
         sqlClient.save(firstConvertEntity.toEntity {
             name = firstConvertEntity.name + " changed"
+            overwriteName = true
             comment = firstConvertEntity.comment + " changed"
+            overwriteComment = true
             remark = firstConvertEntity.remark + " changed"
 
             canAdd = !firstConvertEntity.canAdd
@@ -240,7 +254,9 @@ class ConvertEntityTest : BaseConvertTest() {
             properties = firstConvertEntity.properties.map { property ->
                 property.toEntity {
                     name = property.name + " changed"
+                    overwriteName = true
                     comment = property.comment + " changed"
+                    overwriteComment = true
                     remark = property.remark + " changed"
                     orderKey = property.orderKey * -1
 
@@ -271,7 +287,9 @@ class ConvertEntityTest : BaseConvertTest() {
     },
     "superEntities" : [ ],
     "name" : "Table changed",
+    "overwriteName" : true,
     "comment" : "table comment changed",
+    "overwriteComment" : true,
     "author" : "",
     "canAdd" : false,
     "canEdit" : false,
@@ -282,7 +300,9 @@ class ConvertEntityTest : BaseConvertTest() {
     "properties" : [
         {
             "name" : "id changed",
+            "overwriteName" : true,
             "comment" : "id comment changed",
+            "overwriteComment" : true,
             "type" : "kotlin.Int",
             "typeTable" : null,
             "listType" : false,
@@ -317,7 +337,9 @@ class ConvertEntityTest : BaseConvertTest() {
         },
         {
             "name" : "column changed",
+            "overwriteName" : true,
             "comment" : "column comment changed",
+            "overwriteComment" : true,
             "type" : "kotlin.Int",
             "typeTable" : null,
             "listType" : false,
@@ -359,7 +381,7 @@ class ConvertEntityTest : BaseConvertTest() {
             changedEntity.result
         )
 
-        convertService.convertTable(listOf(tableId), null, keepNameComment = true)
+        convertService.convertTable(listOf(tableId), null)
 
         val secondConvertEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
