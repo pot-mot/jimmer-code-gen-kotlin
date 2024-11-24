@@ -25,13 +25,14 @@ private fun GenEntityInput.TargetOf_properties.mergeExistProperty(
     remark = existProperty.remark
     orderKey = existProperty.orderKey
 
+    longAssociation = existProperty.longAssociation
+
     inListView = existProperty.inListView
     inDetailView = existProperty.inDetailView
     inSpecification = existProperty.inSpecification
     inInsertInput = existProperty.inInsertInput
     inUpdateInput = existProperty.inUpdateInput
     inOptionView = existProperty.inOptionView
-    longAssociation = existProperty.longAssociation
     inShortAssociationView = existProperty.inShortAssociationView
     inLongAssociationInput = existProperty.inLongAssociationInput
     inLongAssociationView = existProperty.inLongAssociationView

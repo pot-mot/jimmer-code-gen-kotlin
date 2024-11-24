@@ -27,3 +27,40 @@ input GenEntityInput {
         id(enum)
     }
 }
+
+input GenEntityConfigInput {
+    id!
+    name
+    overwriteName
+    comment
+    overwriteComment
+    remark
+
+    canAdd
+    canEdit
+    canQuery
+    canDelete
+    hasPage
+
+    properties {
+        id!
+        name
+        overwriteName
+        comment
+        overwriteComment
+        remark
+
+        orderKey
+
+        longAssociation
+
+        inListView
+        inDetailView
+        inInsertInput
+        inUpdateInput
+        inSpecification
+        inShortAssociationView
+        inLongAssociationInput
+        inLongAssociationView
+    }
+}
