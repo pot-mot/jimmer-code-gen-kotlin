@@ -1,7 +1,7 @@
 package top.potmot.business.superTable
 
 const val dtoResult = """
-(Entity.dto, export EntityPackage.Entity
+(dto/Entity.dto, export EntityPackage.Entity
 
 EntityListView {
     #allScalars

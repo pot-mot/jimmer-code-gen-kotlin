@@ -4,16 +4,20 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.dto.generate.DtoGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
+import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.enumeration.GenerateTag
 
 class TestShortAssociation {
     private val index = "${'$'}index"
 
+    private val GenEntityBusinessView.result
+        get() = DtoGenerator.generateDto(this).let { it.path to it.content }.toString()
+
     @Test
     fun `test shortAssociation dto`() {
         assertEquals(
             """
-(ShortAssociationEntity.dto, export EntityPackage.ShortAssociationEntity
+(dto/ShortAssociationEntity.dto, export EntityPackage.ShortAssociationEntity
 
 ShortAssociationEntityListView {
     #allScalars
@@ -45,7 +49,7 @@ specification ShortAssociationEntitySpec {
     like/i(label2)
 })
             """.trimIndent(),
-            DtoGenerator.generateDto(shortAssociationEntity).toString()
+            shortAssociationEntity.result
         )
     }
 
@@ -144,7 +148,7 @@ watch(() => [modelValue.value, props.options], () => {
     fun `test shortAssociationTarget dto`() {
         assertEquals(
             """
-(Entity.dto, export EntityPackage.Entity
+(dto/Entity.dto, export EntityPackage.Entity
 
 EntityListView {
     #allScalars
@@ -179,7 +183,7 @@ specification EntitySpec {
     associatedIdEq(shortAssociationProperty)
 })
             """.trimIndent(),
-            DtoGenerator.generateDto(shortAssociationTargetEntity).toString()
+            DtoGenerator.generateDto(shortAssociationTargetEntity).let { it.path to it.content }.toString()
         )
     }
 
@@ -276,7 +280,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     fun `test shortAssociationTargetIdView dto`() {
         assertEquals(
             """
-(Entity.dto, export EntityPackage.Entity
+(dto/Entity.dto, export EntityPackage.Entity
 
 EntityListView {
     #allScalars
@@ -311,7 +315,7 @@ specification EntitySpec {
     associatedIdEq(shortAssociationProperty)
 })
             """.trimIndent(),
-            DtoGenerator.generateDto(shortAssociationTargetIdViewEntity).toString()
+            DtoGenerator.generateDto(shortAssociationTargetIdViewEntity).let { it.path to it.content }.toString()
         )
     }
 

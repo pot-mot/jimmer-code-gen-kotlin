@@ -56,6 +56,7 @@ interface TableColumn {
                 return typeEntity!!.shortViewProperties.flatMap { shortViewProperty ->
                     shortViewProperty.toProperty(entityId = typeEntity.id).tableColumnDataList().map {
                         GeneratePropertyData(
+                            id = id,
                             name = "${name}.${shortViewProperty.name}",
                             comment = "${comment}${shortViewProperty.comment}"
                         ) to it.second

@@ -1,10 +1,15 @@
 package top.potmot.core.database.generate
 
 import top.potmot.core.database.generate.utils.toFlat
+import top.potmot.entity.dto.GenTableGenerateView
+import top.potmot.entity.dto.GenerateFile
+import top.potmot.entity.dto.createGenerateFileByTables
+import top.potmot.enumeration.GenerateTag
 import top.potmot.enumeration.TableType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.GenerateException
-import top.potmot.entity.dto.GenTableGenerateView
+
+private const val allTableFileName = "all-tables"
 
 abstract class TableDefineGenerator {
     protected open fun formatFileName(name: String): String =
@@ -17,22 +22,30 @@ abstract class TableDefineGenerator {
     @Throws(ColumnTypeException::class, GenerateException::class)
     fun generate(
         tables: Iterable<GenTableGenerateView>,
-        withSingleTable: Boolean = true
-    ): List<Pair<String, String>> {
-        val fullTables = tables
-            .filter { it.type != TableType.SUPER_TABLE }
-            .map { it.toFlat() }
+    ): List<GenerateFile> {
+        val result = mutableListOf<GenerateFile>()
 
-        val result = listOf(
-            formatFileName("all-tables") to stringify(fullTables.sortedBy { it.name })
+        val flatTablePairs = tables
+            .filter { it.type != TableType.SUPER_TABLE }
+            .sortedBy { it.name }
+            .map { it to it.toFlat() }
+
+        result += createGenerateFileByTables(
+            tables,
+            "ddl/${formatFileName(allTableFileName)}",
+            stringify(flatTablePairs.map { it.second }),
+            listOf(GenerateTag.BackEnd, GenerateTag.Table)
         )
 
-        return if (withSingleTable) {
-            result + fullTables.map { table ->
-                formatFileName(table.name) to stringify(listOf(table))
-            }.distinct().sortedBy { it.first }
-        } else {
-            result
+        flatTablePairs.forEach { (table, flatTable) ->
+            result += GenerateFile(
+                table,
+                "ddl/${formatFileName(table.name)}",
+                stringify(listOf(flatTable)),
+                listOf(GenerateTag.BackEnd, GenerateTag.Table)
+            )
         }
+
+        return result
     }
 }
