@@ -285,9 +285,12 @@ abstract class EntityBuilder : CodeBuilder() {
                 }
             } else if (keyProperty) {
                 list += buildString {
-                    append("@Key")
-                    if (!keyGroup.isNullOrBlank()) {
-                        append("(group = \"${keyGroup}\")")
+                    if (keyGroups.isEmpty()) {
+                        append("@Key")
+                    } else {
+                        append(keyGroups.joinToString("\n") {
+                            if (it.isBlank()) "@Key" else "@Key(group = \"${it}\")"
+                        })
                     }
                 }
             }

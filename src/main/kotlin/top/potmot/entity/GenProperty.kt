@@ -1,5 +1,6 @@
 package top.potmot.entity
 
+import org.babyfish.jimmer.Formula
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -128,6 +129,10 @@ interface GenProperty : BaseEntity {
      * 业务键组
      */
     val keyGroup: String?
+
+    @Formula(dependencies = ["keyGroup"])
+    val keyGroups: List<String>
+        get() = keyGroup?.split(",")?.map { it.trim() }?.distinct()?.sorted() ?: emptyList()
 
     /**
      * 是否为逻辑删除属性

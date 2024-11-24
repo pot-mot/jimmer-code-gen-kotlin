@@ -21,6 +21,9 @@ GenEntityGenerateView implements GenerateEntity {
         #allScalars
         id(entity)
 
+        -keyGroup
+        keyGroups
+
         column {
             id
             name
