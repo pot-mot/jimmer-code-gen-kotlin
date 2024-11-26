@@ -3,6 +3,7 @@ package top.potmot.entity.convert
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.springframework.transaction.annotation.Transactional
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenTable
 import top.potmot.entity.dto.GenEntityDetailView
@@ -11,6 +12,7 @@ import top.potmot.entity.tableId
 
 class ConvertSuperEntityTest: BaseConvertTest() {
     @Test
+    @Transactional
     fun `test with super convert`() {
         val superTableId = sqlClient.save(superTable).modifiedEntity.id
 

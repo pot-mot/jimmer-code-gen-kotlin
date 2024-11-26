@@ -16,6 +16,7 @@ import top.potmot.core.entity.meta.JoinColumnMeta
 import top.potmot.core.entity.meta.JoinTableMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.entity.base.BaseEntity
+import top.potmot.entity.dto.PropertyOtherAnnotation
 
 /**
  * 生成属性
@@ -189,7 +190,8 @@ interface GenProperty : BaseEntity {
     /**
      * 其他注解
      */
-    val otherAnnotation: String?
+    @Serialized
+    val otherAnnotation: PropertyOtherAnnotation?
 
     /**
      * 排序键

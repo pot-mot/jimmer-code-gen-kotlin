@@ -1,15 +1,21 @@
 package top.potmot.entity.convert
 
+import org.babyfish.jimmer.kt.unload
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.springframework.transaction.annotation.Transactional
+import top.potmot.business.baseProperty
 import top.potmot.entity.GenEntity
+import top.potmot.entity.GenProperty
 import top.potmot.entity.GenTable
 import top.potmot.entity.dto.GenEntityDetailView
+import top.potmot.entity.dto.PropertyOtherAnnotation
 import top.potmot.entity.tableId
 
 class ConvertEntityTest : BaseConvertTest() {
     @Test
+    @Transactional
     fun `test base convert`() {
         val tableId = sqlClient.save(baseTable).modifiedEntity.id
 
@@ -125,6 +131,7 @@ class ConvertEntityTest : BaseConvertTest() {
     }
 
     @Test
+    @Transactional
     fun `test MergeExistAndConvert`() {
         val tableId = sqlClient.save(baseTable).modifiedEntity.id
 
@@ -270,6 +277,20 @@ class ConvertEntityTest : BaseConvertTest() {
                     inLongAssociationInput = !property.inLongAssociationInput
                     inLongAssociationView = !property.inLongAssociationView
                 }
+            } + baseProperty.toEntity {
+                unload(this, GenProperty::id)
+                name = "newProperty"
+                orderKey = -2
+                typeTable = null
+                otherAnnotation = PropertyOtherAnnotation(
+                    importLines = listOf(
+                        "org.babyfish.jimmer.sql.Transient",
+                        "com.example.entity.EntityNewPropertyResolver",
+                    ),
+                    annotations = listOf(
+                        "@Transient(EntityNewPropertyResolver::class)"
+                    )
+                )
             }
         })
 
@@ -298,6 +319,51 @@ class ConvertEntityTest : BaseConvertTest() {
     "hasPage" : false,
     "remark" : "table remark changed",
     "properties" : [
+        {
+            "name" : "newProperty",
+            "overwriteName" : false,
+            "comment" : "comment",
+            "overwriteComment" : false,
+            "type" : "kotlin.String",
+            "typeTable" : null,
+            "listType" : false,
+            "typeNotNull" : true,
+            "idProperty" : false,
+            "idGenerationAnnotation" : null,
+            "keyProperty" : false,
+            "keyGroup" : null,
+            "logicalDelete" : false,
+            "idView" : false,
+            "idViewTarget" : null,
+            "associationType" : null,
+            "longAssociation" : false,
+            "mappedBy" : null,
+            "inputNotNull" : null,
+            "joinColumnMetas" : null,
+            "joinTableMeta" : null,
+            "dissociateAnnotation" : null,
+            "otherAnnotation" : {
+                "importLines" : [
+                    "org.babyfish.jimmer.sql.Transient",
+                    "com.example.entity.EntityNewPropertyResolver"
+                ],
+                "annotations" : [
+                    "@Transient(EntityNewPropertyResolver::class)"
+                ]
+            },
+            "orderKey" : -2,
+            "inListView" : true,
+            "inDetailView" : true,
+            "inInsertInput" : true,
+            "inUpdateInput" : true,
+            "inSpecification" : true,
+            "inOptionView" : false,
+            "inShortAssociationView" : false,
+            "inLongAssociationView" : true,
+            "inLongAssociationInput" : true,
+            "remark" : "remark",
+            "enum" : null
+        },
         {
             "name" : "id changed",
             "overwriteName" : true,

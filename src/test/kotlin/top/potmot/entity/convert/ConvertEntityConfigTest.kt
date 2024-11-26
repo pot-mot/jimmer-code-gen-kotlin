@@ -4,17 +4,24 @@ import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
+import top.potmot.business.baseProperty
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenTable
 import top.potmot.entity.dto.GenEntityConfigInput
 import top.potmot.entity.dto.GenEntityDetailView
+import top.potmot.entity.dto.GenPropertyEntityConfigInput
+import top.potmot.entity.dto.PropertyOtherAnnotation
 import top.potmot.entity.tableId
 import top.potmot.service.EntityService
+import top.potmot.service.GenEntityConfigWithNewPropertiesInput
 
 class ConvertEntityConfigTest : BaseConvertTest() {
     @Autowired
     lateinit var entityService: EntityService
+
     @Test
+    @Transactional
     fun `test entity config convert`() {
         val tableId = sqlClient.save(baseTable).modifiedEntity.id
 
@@ -128,42 +135,61 @@ class ConvertEntityConfigTest : BaseConvertTest() {
             firstConvertEntity.result
         )
 
-        entityService.config(GenEntityConfigInput(
-            id = firstConvertEntity.id,
-            name = firstConvertEntity.name + " changed",
-            overwriteName = true,
-            comment = firstConvertEntity.comment + " changed",
-            overwriteComment = true,
-            remark = firstConvertEntity.remark + " changed",
-
-            canAdd = !firstConvertEntity.canAdd,
-            canEdit = !firstConvertEntity.canEdit,
-            canDelete = !firstConvertEntity.canDelete,
-            canQuery = !firstConvertEntity.canQuery,
-            hasPage = !firstConvertEntity.hasPage,
-
-            properties = firstConvertEntity.properties.map { property ->
-                GenEntityConfigInput.TargetOf_properties(
-                    id = property.id,
-                    name = property.name + " changed",
+        entityService.config(
+            GenEntityConfigWithNewPropertiesInput(
+                entity = GenEntityConfigInput(
+                    id = firstConvertEntity.id,
+                    name = firstConvertEntity.name + " changed",
                     overwriteName = true,
-                    comment = property.comment + " changed",
+                    comment = firstConvertEntity.comment + " changed",
                     overwriteComment = true,
-                    remark = property.remark + " changed",
-                    orderKey = property.orderKey * -1,
+                    remark = firstConvertEntity.remark + " changed",
 
-                    inListView = !property.inListView,
-                    inDetailView = !property.inDetailView,
-                    inSpecification = !property.inSpecification,
-                    inInsertInput = !property.inInsertInput,
-                    inUpdateInput = !property.inUpdateInput,
-                    inOptionView = !property.inOptionView,
-                    inShortAssociationView = !property.inShortAssociationView,
-                    inLongAssociationInput = !property.inLongAssociationInput,
-                    inLongAssociationView = !property.inLongAssociationView,
+                    canAdd = !firstConvertEntity.canAdd,
+                    canEdit = !firstConvertEntity.canEdit,
+                    canDelete = !firstConvertEntity.canDelete,
+                    canQuery = !firstConvertEntity.canQuery,
+                    hasPage = !firstConvertEntity.hasPage,
+
+                    properties = firstConvertEntity.properties.map { property ->
+                        GenEntityConfigInput.TargetOf_properties(
+                            id = property.id,
+                            name = property.name + " changed",
+                            overwriteName = true,
+                            comment = property.comment + " changed",
+                            overwriteComment = true,
+                            remark = property.remark + " changed",
+                            orderKey = property.orderKey * -1,
+
+                            inListView = !property.inListView,
+                            inDetailView = !property.inDetailView,
+                            inSpecification = !property.inSpecification,
+                            inInsertInput = !property.inInsertInput,
+                            inUpdateInput = !property.inUpdateInput,
+                            inOptionView = !property.inOptionView,
+                            inShortAssociationView = !property.inShortAssociationView,
+                            inLongAssociationInput = !property.inLongAssociationInput,
+                            inLongAssociationView = !property.inLongAssociationView,
+                        )
+                    }
+                ),
+                properties = listOf(
+                    GenPropertyEntityConfigInput(baseProperty.toEntity {
+                        name = "newProperty"
+                        orderKey = -2
+                        otherAnnotation = PropertyOtherAnnotation(
+                            importLines = listOf(
+                                "org.babyfish.jimmer.sql.Transient",
+                                "com.example.entity.EntityNewPropertyResolver",
+                            ),
+                            annotations = listOf(
+                                "@Transient(EntityNewPropertyResolver::class)"
+                            )
+                        )
+                    })
                 )
-            }
-        ))
+            )
+        )
 
         val changedEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -190,6 +216,51 @@ class ConvertEntityConfigTest : BaseConvertTest() {
     "hasPage" : false,
     "remark" : "table remark changed",
     "properties" : [
+        {
+            "name" : "newProperty",
+            "overwriteName" : false,
+            "comment" : "comment",
+            "overwriteComment" : false,
+            "type" : "kotlin.String",
+            "typeTable" : null,
+            "listType" : false,
+            "typeNotNull" : true,
+            "idProperty" : false,
+            "idGenerationAnnotation" : null,
+            "keyProperty" : false,
+            "keyGroup" : null,
+            "logicalDelete" : false,
+            "idView" : false,
+            "idViewTarget" : null,
+            "associationType" : null,
+            "longAssociation" : false,
+            "mappedBy" : null,
+            "inputNotNull" : null,
+            "joinColumnMetas" : null,
+            "joinTableMeta" : null,
+            "dissociateAnnotation" : null,
+            "otherAnnotation" : {
+                "importLines" : [
+                    "org.babyfish.jimmer.sql.Transient",
+                    "com.example.entity.EntityNewPropertyResolver"
+                ],
+                "annotations" : [
+                    "@Transient(EntityNewPropertyResolver::class)"
+                ]
+            },
+            "orderKey" : -2,
+            "inListView" : true,
+            "inDetailView" : true,
+            "inInsertInput" : true,
+            "inUpdateInput" : true,
+            "inSpecification" : true,
+            "inOptionView" : false,
+            "inShortAssociationView" : false,
+            "inLongAssociationView" : true,
+            "inLongAssociationInput" : true,
+            "remark" : "remark",
+            "enum" : null
+        },
         {
             "name" : "id changed",
             "overwriteName" : true,

@@ -13,6 +13,8 @@ import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import top.potmot.entity.dto.GenEntityConfigInput
+import top.potmot.entity.dto.GenPropertyEntityConfigInput
+import top.potmot.entity.dto.toEntities
 import top.potmot.entity.tableId
 
 @RestController
@@ -37,6 +39,21 @@ class EntityService(
         }.fetchOneOrNull()
 
     @PutMapping
-    fun config(@RequestBody input: GenEntityConfigInput): Long =
-        sqlClient.update(input).modifiedEntity.id
+    fun config(@RequestBody input: GenEntityConfigWithNewPropertiesInput): Long {
+        val (entity, properties) = input
+
+        val entityId = sqlClient.update(entity).modifiedEntity.id
+        sqlClient.insertEntities(properties.toEntities {
+            this.entityId = entityId
+            this.columnId = null
+            this.typeTable = null
+        })
+
+        return entityId
+    }
 }
+
+data class GenEntityConfigWithNewPropertiesInput(
+    val entity: GenEntityConfigInput,
+    val properties: List<GenPropertyEntityConfigInput>,
+)

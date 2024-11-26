@@ -243,7 +243,9 @@ abstract class EntityBuilder : CodeBuilder() {
     }
 
     open fun importItems(property: GenPropertyView): Set<String> =
-        classesToLines(importClasses(property)) + property.fullType()
+        classesToLines(importClasses(property)) +
+                property.fullType() +
+                (property.otherAnnotation?.importLines ?: emptyList())
 
     open fun importItems(entity: GenEntityGenerateView): List<String> {
         val imports = mutableListOf<String>()
@@ -326,9 +328,11 @@ abstract class EntityBuilder : CodeBuilder() {
                 columnAnnotation()?.let { list += it }
             }
 
-            otherAnnotation.takeIf { !otherAnnotation.isNullOrBlank() }?.let { list += it }
+            if (otherAnnotation != null && otherAnnotation.annotations.isNotEmpty()) {
+                list += otherAnnotation.annotations
+            }
         }
 
-        return list.flatMap { it.split("\n") }
+        return list.flatMap { it.lineSequence() }
     }
 }
