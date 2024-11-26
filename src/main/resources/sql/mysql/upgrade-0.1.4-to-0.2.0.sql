@@ -106,3 +106,12 @@ ALTER TABLE `jimmer_code_gen`.`gen_entity`
     ADD COLUMN `overwrite_comment` boolean NOT NULL DEFAULT FALSE COMMENT '覆盖自动生成注释' AFTER `comment`;
 ALTER TABLE `jimmer_code_gen`.`gen_entity`
     MODIFY COLUMN `overwrite_comment` boolean NOT NULL COMMENT '覆盖自动生成注释' AFTER `comment`;
+
+
+
+ALTER TABLE `jimmer_code_gen`.`gen_property`
+    ADD COLUMN `body` longtext NULL DEFAULT NULL COMMENT '属性方法体' AFTER `other_annotation`;
+
+ALTER TABLE `jimmer_code_gen`.`gen_entity`
+    ADD COLUMN `other_annotation`  varchar(500) NULL     DEFAULT NULL COMMENT '其他注解' AFTER `author`;
+

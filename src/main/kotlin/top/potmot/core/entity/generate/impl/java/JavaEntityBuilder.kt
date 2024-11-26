@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable
 import top.potmot.core.entity.generate.builder.EntityBuilder
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenPropertyView
+import top.potmot.utils.string.appendBlock
 import kotlin.reflect.KClass
 
 object JavaEntityBuilder : EntityBuilder() {
@@ -21,8 +22,21 @@ object JavaEntityBuilder : EntityBuilder() {
             }
         }
 
-    override fun propertyLine(property: GenPropertyView): String =
-        "${property.shortType()} ${property.name}();"
+    override fun propertyBlock(property: GenPropertyView) =
+        buildString {
+            if (property.body != null) {
+                append("default ")
+            }
+            append("${property.shortType()} ${property.name}()")
+            if (property.body == null) {
+                append(";")
+            } else {
+                appendLine(" {")
+                appendBlock(property.body.codeBlock) { "    $it" }
+                append("}")
+            }
+        }
+
 
     override fun classesToLines(classes: Set<KClass<*>>): Set<String> {
         return classes.map { it.java.name }.toSet()

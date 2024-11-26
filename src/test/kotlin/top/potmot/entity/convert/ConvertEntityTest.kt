@@ -10,7 +10,7 @@ import top.potmot.entity.GenEntity
 import top.potmot.entity.GenProperty
 import top.potmot.entity.GenTable
 import top.potmot.entity.dto.GenEntityDetailView
-import top.potmot.entity.dto.PropertyOtherAnnotation
+import top.potmot.entity.property.OtherAnnotation
 import top.potmot.entity.tableId
 
 class ConvertEntityTest : BaseConvertTest() {
@@ -40,6 +40,7 @@ class ConvertEntityTest : BaseConvertTest() {
     "comment" : "table comment",
     "overwriteComment" : false,
     "author" : "",
+    "otherAnnotation" : null,
     "canAdd" : true,
     "canEdit" : true,
     "canDelete" : true,
@@ -71,6 +72,7 @@ class ConvertEntityTest : BaseConvertTest() {
             "joinTableMeta" : null,
             "dissociateAnnotation" : null,
             "otherAnnotation" : null,
+            "body" : null,
             "orderKey" : 0,
             "inListView" : true,
             "inDetailView" : true,
@@ -108,6 +110,7 @@ class ConvertEntityTest : BaseConvertTest() {
             "joinTableMeta" : null,
             "dissociateAnnotation" : null,
             "otherAnnotation" : null,
+            "body" : null,
             "orderKey" : 1,
             "inListView" : true,
             "inDetailView" : true,
@@ -155,6 +158,7 @@ class ConvertEntityTest : BaseConvertTest() {
     "comment" : "table comment",
     "overwriteComment" : false,
     "author" : "",
+    "otherAnnotation" : null,
     "canAdd" : true,
     "canEdit" : true,
     "canDelete" : true,
@@ -186,6 +190,7 @@ class ConvertEntityTest : BaseConvertTest() {
             "joinTableMeta" : null,
             "dissociateAnnotation" : null,
             "otherAnnotation" : null,
+            "body" : null,
             "orderKey" : 0,
             "inListView" : true,
             "inDetailView" : true,
@@ -223,6 +228,7 @@ class ConvertEntityTest : BaseConvertTest() {
             "joinTableMeta" : null,
             "dissociateAnnotation" : null,
             "otherAnnotation" : null,
+            "body" : null,
             "orderKey" : 1,
             "inListView" : true,
             "inDetailView" : true,
@@ -282,7 +288,7 @@ class ConvertEntityTest : BaseConvertTest() {
                 name = "newProperty"
                 orderKey = -2
                 typeTable = null
-                otherAnnotation = PropertyOtherAnnotation(
+                otherAnnotation = OtherAnnotation(
                     importLines = listOf(
                         "org.babyfish.jimmer.sql.Transient",
                         "com.example.entity.EntityNewPropertyResolver",
@@ -312,6 +318,7 @@ class ConvertEntityTest : BaseConvertTest() {
     "comment" : "table comment changed",
     "overwriteComment" : true,
     "author" : "",
+    "otherAnnotation" : null,
     "canAdd" : false,
     "canEdit" : false,
     "canDelete" : false,
@@ -351,6 +358,7 @@ class ConvertEntityTest : BaseConvertTest() {
                     "@Transient(EntityNewPropertyResolver::class)"
                 ]
             },
+            "body" : null,
             "orderKey" : -2,
             "inListView" : true,
             "inDetailView" : true,
@@ -388,6 +396,7 @@ class ConvertEntityTest : BaseConvertTest() {
             "joinTableMeta" : null,
             "dissociateAnnotation" : null,
             "otherAnnotation" : null,
+            "body" : null,
             "orderKey" : -1,
             "inListView" : false,
             "inDetailView" : false,
@@ -425,6 +434,7 @@ class ConvertEntityTest : BaseConvertTest() {
             "joinTableMeta" : null,
             "dissociateAnnotation" : null,
             "otherAnnotation" : null,
+            "body" : null,
             "orderKey" : 0,
             "inListView" : false,
             "inDetailView" : false,

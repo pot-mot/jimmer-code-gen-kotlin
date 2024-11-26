@@ -32,7 +32,7 @@ import kotlin.reflect.KClass
 abstract class EntityBuilder : CodeBuilder() {
     abstract fun entityLine(entity: GenEntityGenerateView): String
 
-    abstract fun propertyLine(property: GenPropertyView): String
+    abstract fun propertyBlock(property: GenPropertyView): String
 
     private fun String.quotationEscape(): String = replace("\"", "\\\"")
 
@@ -52,7 +52,7 @@ abstract class EntityBuilder : CodeBuilder() {
             entity.properties.forEachIndexed { index, property ->
                 appendBlock(blockComment(property)) { "    $it" }
                 appendLines(annotationLines(property)) { "    $it" }
-                appendLine("    ${propertyLine(property)}")
+                appendBlock(propertyBlock(property)) { "    $it" }
                 if (index < entity.properties.size - 1) appendLine()
             }
 
@@ -245,11 +245,13 @@ abstract class EntityBuilder : CodeBuilder() {
     open fun importItems(property: GenPropertyView): Set<String> =
         classesToLines(importClasses(property)) +
                 property.fullType() +
-                (property.otherAnnotation?.importLines ?: emptyList())
+                (property.otherAnnotation?.importLines ?: emptyList()) +
+                (property.body?.importLines ?: emptyList())
 
     open fun importItems(entity: GenEntityGenerateView): List<String> {
         val imports = mutableListOf<String>()
-        imports.addAll(classesToLines(importClasses(entity)))
+        imports += classesToLines(importClasses(entity))
+        entity.otherAnnotation?.importLines?.let { imports += it }
         entity.properties.flatMapTo(imports) { importItems(it) }
         return imports.sorted().distinct().let { importItemsFilter(entity, it) }
     }
@@ -268,6 +270,10 @@ abstract class EntityBuilder : CodeBuilder() {
                 if (context.tableAnnotation) {
                     list += tableAnnotation()
                 }
+            }
+
+            if (otherAnnotation != null) {
+                list += otherAnnotation.annotations
             }
         }
 

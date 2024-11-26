@@ -504,6 +504,7 @@ CREATE TABLE "gen_entity"
     "comment"           text        NOT NULL,
     "overwrite_comment" boolean     NOT NULL,
     "author"            text        NOT NULL,
+    "other_annotation"  text        NULL     DEFAULT NULL,
     "can_add"           boolean     NOT NULL,
     "can_edit"          boolean     NOT NULL,
     "can_delete"        boolean     NOT NULL,
@@ -531,6 +532,7 @@ COMMENT ON COLUMN "gen_entity"."overwrite_name" IS '覆盖自动生成类名称'
 COMMENT ON COLUMN "gen_entity"."comment" IS '类注释';
 COMMENT ON COLUMN "gen_entity"."overwrite_comment" IS '覆盖自动生成注释';
 COMMENT ON COLUMN "gen_entity"."author" IS '作者';
+COMMENT ON COLUMN "gen_entity"."other_annotation" IS '其他注解';
 COMMENT ON COLUMN "gen_entity"."can_add" IS '是否可以创建';
 COMMENT ON COLUMN "gen_entity"."can_edit" IS '是否可以修改';
 COMMENT ON COLUMN "gen_entity"."can_delete" IS '是否可以删除';
@@ -594,6 +596,7 @@ CREATE TABLE "gen_property"
     "association_annotation"    text        NULL     DEFAULT NULL,
     "dissociate_annotation"     text        NULL     DEFAULT NULL,
     "other_annotation"          text        NULL     DEFAULT NULL,
+    "body"                      text        NULL     DEFAULT NULL,
     "enum_id"                   bigint      NULL     DEFAULT NULL,
     "order_key"                 bigint      NOT NULL,
     "in_list_view"              boolean     NOT NULL,
@@ -648,6 +651,7 @@ COMMENT ON COLUMN "gen_property"."join_table_meta" IS '关联表元数据';
 COMMENT ON COLUMN "gen_property"."association_annotation" IS '关联注解';
 COMMENT ON COLUMN "gen_property"."dissociate_annotation" IS '脱钩注解';
 COMMENT ON COLUMN "gen_property"."other_annotation" IS '其他注解';
+COMMENT ON COLUMN "gen_property"."body" IS '函数方法体';
 COMMENT ON COLUMN "gen_property"."enum_id" IS '对应枚举';
 COMMENT ON COLUMN "gen_property"."order_key" IS '排序键';
 COMMENT ON COLUMN "gen_property"."in_list_view" IS '是否在列表视图DTO中';

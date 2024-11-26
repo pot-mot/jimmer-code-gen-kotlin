@@ -18,7 +18,7 @@ import java.time.LocalDateTime
  * 验证 EntityGenerate 的基本功能
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class EntityGenerateTest {
+class GenerateEntityTest {
     @Test
     @Order(1)
     fun testJavaEntityGenerate() {
@@ -39,7 +39,7 @@ class EntityGenerateTest {
         )
     }
 
-    private val pkProperty = GenPropertyView(
+    private val idProperty = GenPropertyView(
         entityId = 1,
         id = 1,
         createdTime = LocalDateTime.now(),
@@ -98,7 +98,7 @@ class EntityGenerateTest {
         packagePath = "com.example.test",
         superEntities = emptyList(),
         properties = listOf(
-            pkProperty,
+            idProperty,
             manyToOneProperty
         )
     )

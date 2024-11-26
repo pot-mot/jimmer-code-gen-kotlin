@@ -3,6 +3,7 @@ package top.potmot.core.entity.generate.impl.kotlin
 import top.potmot.core.entity.generate.builder.EntityBuilder
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenPropertyView
+import top.potmot.utils.string.appendBlock
 
 object KotlinEntityBuilder : EntityBuilder() {
     override fun packageLine(path: String): String = "package $path"
@@ -19,6 +20,14 @@ object KotlinEntityBuilder : EntityBuilder() {
             }
         }
 
-    override fun propertyLine(property: GenPropertyView): String =
-        "val ${property.name}: ${property.shortType()}${if (property.typeNotNull) "" else "?"}"
+    override fun propertyBlock(property: GenPropertyView) =
+        buildString {
+            append("val ${property.name}: ${property.shortType()}${if (property.typeNotNull) "" else "?"}")
+
+            if (property.body != null) {
+                appendLine("\n    get() {")
+                appendBlock(property.body.codeBlock) { "        $it" }
+                append("    }")
+            }
+        }
 }

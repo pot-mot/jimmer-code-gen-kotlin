@@ -160,3 +160,16 @@ ALTER TABLE "jimmer_code_gen"."gen_entity"
     ALTER COLUMN "overwrite_comment" DROP DEFAULT;
 
 COMMENT ON COLUMN "gen_entity"."overwrite_comment" IS '覆盖自动生成注释';
+
+
+
+ALTER TABLE "jimmer_code_gen"."gen_property"
+    ADD COLUMN "body" text NULL DEFAULT NULL;
+
+COMMENT ON COLUMN "gen_property"."body" IS '函数方法体';
+
+
+ALTER TABLE "jimmer_code_gen"."gen_entity"
+    ADD COLUMN "other_annotation" text NULL DEFAULT NULL;
+
+COMMENT ON COLUMN "gen_entity"."other_annotation" IS '其他注解';
