@@ -1,0 +1,45 @@
+export top.potmot.entity.GenEntity
+
+input GenEntityConfigModelInput {
+    flat(table) {
+        name as tableName
+    }
+
+    name
+    overwriteName
+    comment
+    overwriteComment
+    remark
+
+    canAdd
+    canEdit
+    canQuery
+    canDelete
+    hasPage
+
+    properties {
+        flat(column) {
+            name as columnName
+        }
+
+        name
+        overwriteName
+        comment
+        overwriteComment
+        remark
+
+        orderKey
+
+        longAssociation
+
+        inListView
+        inDetailView
+        inOptionView
+        inInsertInput
+        inUpdateInput
+        inSpecification
+        inShortAssociationView
+        inLongAssociationInput
+        inLongAssociationView
+    }
+}

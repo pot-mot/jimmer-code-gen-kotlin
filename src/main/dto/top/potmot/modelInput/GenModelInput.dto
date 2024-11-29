@@ -1,10 +1,7 @@
-GenModelSimpleView {
-    #allScalars
-    -graphData
-}
+export top.potmot.entity.GenModel
 
-GenModelView {
-    #allScalars
+input GenModelInput {
+    #allScalars(this)
 
     enums {
         #allScalars(this)
