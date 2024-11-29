@@ -1,0 +1,39 @@
+export top.potmot.entity.GenEntity
+
+input GenEntityConfigInput {
+    id!
+    name
+    overwriteName
+    comment
+    overwriteComment
+    remark
+
+    canAdd
+    canEdit
+    canQuery
+    canDelete
+    hasPage
+
+    properties {
+        id!
+        name
+        overwriteName
+        comment
+        overwriteComment
+        remark
+
+        orderKey
+
+        longAssociation
+
+        inListView
+        inDetailView
+        inOptionView
+        inInsertInput
+        inUpdateInput
+        inSpecification
+        inShortAssociationView
+        inLongAssociationInput
+        inLongAssociationView
+    }
+}

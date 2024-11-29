@@ -1,0 +1,12 @@
+export top.potmot.entity.GenTable
+
+GenTableLoadView {
+    #allScalars(this)
+    id(model)
+    id(superTables) as superTableIds
+
+    columns {
+        #allScalars(this)
+        id(enum)
+    }
+}

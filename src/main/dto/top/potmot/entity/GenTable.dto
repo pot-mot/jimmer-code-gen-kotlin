@@ -40,14 +40,3 @@ input GenTableInput {
         id(enum)
     }
 }
-
-GenTableLoadView {
-    #allScalars(this)
-    id(model)
-    id(superTables) as superTableIds
-
-    columns {
-        #allScalars(this)
-        id(enum)
-    }
-}

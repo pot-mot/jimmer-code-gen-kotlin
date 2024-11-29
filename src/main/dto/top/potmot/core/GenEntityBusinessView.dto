@@ -4,51 +4,6 @@ import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
 import top.potmot.entity.dto.share.GenerateProperty
 
-GenEntityGenerateView implements GenerateEntity {
-    #allScalars
-
-    table {
-        id
-        name
-        type
-    }
-
-    superEntities {
-        name
-    }
-
-    properties {
-        #allScalars
-        id(entity)
-
-        -keyGroup
-        keyGroups
-
-        column {
-            id
-            name
-        }
-
-        typeTable {
-            id
-
-            entity implements GenerateEntity {
-                id
-                packagePath
-                name
-                comment
-            }
-        }
-
-        enum implements GenerateEnum {
-            id
-            packagePath
-            name
-            comment
-        }
-    }
-}
-
 GenEntityBusinessView implements GenerateEntity {
     #allScalars
     idProperties {
