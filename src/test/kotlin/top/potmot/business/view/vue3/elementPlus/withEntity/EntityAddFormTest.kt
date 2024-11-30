@@ -31,14 +31,16 @@ export type EntityAddFormType = {
             """
 import type {EntityAddFormType} from "./EntityAddFormType"
 
-export const defaultEntity: EntityAddFormType = {
-    enumProperty: "item1",
-    enumNullableProperty: undefined,
-    toOnePropertyId: undefined,
-    toOneNullablePropertyId: undefined,
+export const createDefaultEntity = (): EntityAddFormType => {
+    return {
+        enumProperty: "item1",
+        enumNullableProperty: undefined,
+        toOnePropertyId: undefined,
+        toOneNullablePropertyId: undefined,
+    }
 }
             """.trimIndent(),
-            generator.stringifyAddFormDefault(testEntity).trim()
+            generator.stringifyAddFormCreateDefault(testEntity).trim()
         )
     }
 
@@ -84,8 +86,7 @@ import type {
     EntityAddFormType,
     ToOneEntityOptionView
 } from "@/api/__generated/model/static"
-import {cloneDeep} from "lodash"
-import {defaultEntity} from "@/components/entity/defaultEntity"
+import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
 import {useRules} from "@/rules/EntityAddFormRules"
 import EnumSelect from "@/components/enum/EnumSelect.vue"
 import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
@@ -115,7 +116,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<EntityAddFormType>(cloneDeep(defaultEntity))
+const formData = ref<EntityAddFormType>(createDefaultEntity())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)

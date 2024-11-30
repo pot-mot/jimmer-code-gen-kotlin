@@ -48,8 +48,7 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
 import type {EntityAddFormType, ToOneEntityOptionView} from "@/api/__generated/model/static"
-import {cloneDeep} from "lodash"
-import {defaultEntity} from "@/components/entity/defaultEntity"
+import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
 import {useRules} from "@/rules/EntityEditTableRules"
 import {Plus, Delete} from "@element-plus/icons-vue"
 import EnumSelect from "@/components/enum/EnumSelect.vue"
@@ -117,7 +116,7 @@ const handleSelectionChange = (newSelection: Array<EntityAddFormType>): void => 
 
 // 新增
 const handleAdd = (): void => {
-    rows.value.push(cloneDeep(defaultEntity))
+    rows.value.push(createDefaultEntity())
 }
 
 // 删除

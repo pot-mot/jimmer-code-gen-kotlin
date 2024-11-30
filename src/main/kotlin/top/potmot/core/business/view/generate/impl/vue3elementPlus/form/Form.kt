@@ -170,7 +170,7 @@ fun addForm(
     submitTypePath: String,
     type: String,
     typePath: String,
-    default: String,
+    createDefault: String,
     defaultPath: String,
     useRules: String,
     useRulesPath: String,
@@ -188,8 +188,7 @@ fun addForm(
         ImportType("$staticPath/form/AddFormExpose", "AddFormExpose"),
         ImportType(submitTypePath, submitType),
         ImportType(typePath, type),
-        Import("lodash", "cloneDeep"),
-        Import(defaultPath, default),
+        Import(defaultPath, createDefault),
         Import(useRulesPath, useRules),
     )
             + content.values.flatMap { it.imports }
@@ -207,7 +206,7 @@ fun addForm(
         operationsSlot
     ),
     script = listOfNotNull(
-        ConstVariable(formData, null, "ref<$type>(cloneDeep($default))"),
+        ConstVariable(formData, null, "ref<$type>($createDefault())"),
         emptyLineCode,
         ConstVariable(formRef, null, "ref<FormInstance>()"),
         ConstVariable("rules", null, "$useRules($formData)"),
@@ -314,7 +313,7 @@ fun editForm(
 fun editTable(
     type: String,
     typePath: String,
-    default: String,
+    createDefault: String,
     defaultPath: String,
     useRules: String,
     useRulesPath: String,
@@ -333,8 +332,7 @@ fun editTable(
         ImportType("element-plus", "FormInstance"),
         ImportType("$staticPath/form/AddFormExpose", "AddFormExpose"),
         ImportType(typePath, type),
-        Import("lodash", "cloneDeep"),
-        Import(defaultPath, default),
+        Import(defaultPath, createDefault),
         Import(useRulesPath, useRules),
         Import("@element-plus/icons-vue", "Plus", "Delete"),
     )
@@ -379,7 +377,7 @@ fun editTable(
         commentLine("新增"),
         Function(
             name = "handleAdd",
-            body = listOf(CodeBlock("$formData.value.push(cloneDeep($default))"))
+            body = listOf(CodeBlock("$formData.value.push($createDefault())"))
         ),
         emptyLineCode,
         commentLine("删除"),

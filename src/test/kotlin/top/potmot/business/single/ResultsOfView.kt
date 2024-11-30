@@ -94,13 +94,15 @@ export type EntityAddFormType = {
     toOnePropertyId: number | undefined
     toOneNullablePropertyId: number | undefined
 }
-), (components/entity/defaultEntity.ts, import type {EntityAddFormType} from "./EntityAddFormType"
+), (components/entity/createDefaultEntity.ts, import type {EntityAddFormType} from "./EntityAddFormType"
 
-export const defaultEntity: EntityAddFormType = {
-    enumProperty: "item1",
-    enumNullableProperty: undefined,
-    toOnePropertyId: undefined,
-    toOneNullablePropertyId: undefined,
+export const createDefaultEntity = (): EntityAddFormType => {
+    return {
+        enumProperty: "item1",
+        enumNullableProperty: undefined,
+        toOnePropertyId: undefined,
+        toOneNullablePropertyId: undefined,
+    }
 }
 ), (components/entity/EntityAddForm.vue, <script setup lang="ts">
 import {ref} from "vue"
@@ -111,8 +113,7 @@ import type {
     EntityAddFormType,
     ToOneEntityOptionView
 } from "@/api/__generated/model/static"
-import {cloneDeep} from "lodash"
-import {defaultEntity} from "@/components/entity/defaultEntity"
+import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
 import {useRules} from "@/rules/EntityAddFormRules"
 import EnumSelect from "@/components/enum/EnumSelect.vue"
 import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
@@ -142,7 +143,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<EntityAddFormType>(cloneDeep(defaultEntity))
+const formData = ref<EntityAddFormType>(createDefaultEntity())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -346,8 +347,7 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
 import type {EntityAddFormType, ToOneEntityOptionView} from "@/api/__generated/model/static"
-import {cloneDeep} from "lodash"
-import {defaultEntity} from "@/components/entity/defaultEntity"
+import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
 import {useRules} from "@/rules/EntityEditTableRules"
 import {Plus, Delete} from "@element-plus/icons-vue"
 import EnumSelect from "@/components/enum/EnumSelect.vue"
@@ -415,7 +415,7 @@ const handleSelectionChange = (newSelection: Array<EntityAddFormType>): void => 
 
 // 新增
 const handleAdd = (): void => {
-    rows.value.push(cloneDeep(defaultEntity))
+    rows.value.push(createDefaultEntity())
 }
 
 // 删除

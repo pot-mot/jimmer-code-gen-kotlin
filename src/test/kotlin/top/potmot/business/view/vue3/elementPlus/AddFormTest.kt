@@ -20,8 +20,8 @@ class AddFormTest {
             staticPath,
             "EntityAddFormDataType",
             "$componentPath/entity/EntityAddFormDataType",
-            "defaultEntityAddFormData",
-            "$componentPath/entity/defaultEntityAddFormData",
+            "createDefaultEntityAddFormData",
+            "$componentPath/entity/createDefaultEntityAddFormData",
             "useRules",
             "$rulePath/entity",
             indent = "    ",
@@ -36,8 +36,7 @@ import type {FormInstance} from "element-plus"
 import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
 import type {EntityAddFormDataType} from "@/components/entity/EntityAddFormDataType"
-import {cloneDeep} from "lodash"
-import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
+import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 
 const props = withDefaults(defineProps<{
@@ -61,7 +60,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<EntityAddFormDataType>(cloneDeep(defaultEntityAddFormData))
+const formData = ref<EntityAddFormDataType>(createDefaultEntityAddFormData())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -122,8 +121,8 @@ const handleCancel = (): void => {
             staticPath,
             "EntityAddFormDataType",
             "$componentPath/entity/EntityAddFormDataType",
-            "defaultEntityAddFormData",
-            "$componentPath/entity/defaultEntityAddFormData",
+            "createDefaultEntityAddFormData",
+            "$componentPath/entity/createDefaultEntityAddFormData",
             "useRules",
             "$rulePath/entity",
             indent = "    ",
@@ -142,8 +141,7 @@ import type {FormInstance} from "element-plus"
 import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
 import type {EntityAddFormDataType} from "@/components/entity/EntityAddFormDataType"
-import {cloneDeep} from "lodash"
-import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
+import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 import type {SubFormExpose} from "@/components/form/SubFormExpose"
 
@@ -168,7 +166,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<EntityAddFormDataType>(cloneDeep(defaultEntityAddFormData))
+const formData = ref<EntityAddFormDataType>(createDefaultEntityAddFormData())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -234,8 +232,8 @@ const handleCancel = (): void => {
             staticPath,
             "EntityAddFormDataType",
             "$componentPath/entity/EntityAddFormDataType",
-            "defaultEntityAddFormData",
-            "$componentPath/entity/defaultEntityAddFormData",
+            "createDefaultEntityAddFormData",
+            "$componentPath/entity/createDefaultEntityAddFormData",
             "useRules",
             "$rulePath/entity",
             indent = "    ",
@@ -258,8 +256,7 @@ import type {
     TypeOptionView
 } from "@/api/__generated/model/static"
 import type {EntityAddFormDataType} from "@/components/entity/EntityAddFormDataType"
-import {cloneDeep} from "lodash"
-import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
+import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 
 const props = withDefaults(defineProps<{
@@ -285,7 +282,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<EntityAddFormDataType>(cloneDeep(defaultEntityAddFormData))
+const formData = ref<EntityAddFormDataType>(createDefaultEntityAddFormData())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)

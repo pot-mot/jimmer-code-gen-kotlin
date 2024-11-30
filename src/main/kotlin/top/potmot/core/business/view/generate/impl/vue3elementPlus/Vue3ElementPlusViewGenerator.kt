@@ -220,17 +220,19 @@ object Vue3ElementPlusViewGenerator :
     }
 
     @Throws(ModelException.DefaultItemNotFound::class)
-    override fun stringifyAddFormDefault(entity: GenEntityBusinessView): String {
+    override fun stringifyAddFormCreateDefault(entity: GenEntityBusinessView): String {
         val content = entity.addFormProperties.associateWith { it.addFormDefault }
         val type = entity.addFormDataType
 
         return buildString {
             appendLine("import type {$type} from \"./${entity.addFormDataType}\"")
             appendLine()
-            appendLine("export const ${entity.addFormDefault}: $type = {")
+            appendLine("export const ${entity.addFormCreateDefault} = (): $type => {")
+            appendLine("${indent}return {")
             content.forEach { (property, default) ->
-                appendLine("${indent}${property.name}: $default,")
+                appendLine("${indent}${indent}${property.name}: $default,")
             }
+            appendLine("${indent}}")
             appendLine("}")
         }
     }
@@ -269,8 +271,8 @@ object Vue3ElementPlusViewGenerator :
                 submitTypePath = staticPath,
                 type = entity.addFormDataType,
                 typePath = staticPath,
-                default = entity.addFormDefault,
-                defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormDefault,
+                createDefault = entity.addFormCreateDefault,
+                defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormCreateDefault,
                 useRules = "useRules",
                 useRulesPath = rulePath + "/" + entity.rules.addFormRules,
                 formData = formData,
@@ -338,8 +340,8 @@ object Vue3ElementPlusViewGenerator :
                 type = entity.addFormDataType,
                 typePath = staticPath,
                 useRules = "useRules",
-                default = entity.addFormDefault,
-                defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormDefault,
+                createDefault = entity.addFormCreateDefault,
+                defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormCreateDefault,
                 useRulesPath = rulePath + "/" + entity.rules.editTableRules,
                 indent = indent,
                 idPropertyName = entity.idProperty.name,

@@ -20,8 +20,8 @@ class EditTableTest {
         val component = editTable(
             "EntitySubTableType",
             staticPath,
-            "defaultEntityAddFormData",
-            "$componentPath/entity/defaultEntityAddFormData",
+            "createDefaultEntityAddFormData",
+            "$componentPath/entity/createDefaultEntityAddFormData",
             "useRules",
             "$rulePath/entity",
             indent = "    ",
@@ -37,8 +37,7 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
 import type {EntitySubTableType} from "@/api/__generated/model/static"
-import {cloneDeep} from "lodash"
-import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
+import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 import {Plus, Delete} from "@element-plus/icons-vue"
 
@@ -101,7 +100,7 @@ const handleSelectionChange = (newSelection: Array<EntitySubTableType>): void =>
 
 // 新增
 const handleAdd = (): void => {
-    formData.value.push(cloneDeep(defaultEntityAddFormData))
+    formData.value.push(createDefaultEntityAddFormData())
 }
 
 // 删除
@@ -202,8 +201,8 @@ const handleSingleDelete = async (index: number): Promise<void> => {
         val component = editTable(
             "EntitySubTableType",
             staticPath,
-            "defaultEntityAddFormData",
-            "$componentPath/entity/defaultEntityAddFormData",
+            "createDefaultEntityAddFormData",
+            "$componentPath/entity/createDefaultEntityAddFormData",
             "useRules",
             "$rulePath/entity",
             indent = "    ",
@@ -223,8 +222,7 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
 import type {EntitySubTableType} from "@/api/__generated/model/static"
-import {cloneDeep} from "lodash"
-import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
+import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 import {Plus, Delete} from "@element-plus/icons-vue"
 import type {SubFormExpose} from "@/components/form/SubFormExpose"
@@ -293,7 +291,7 @@ const handleSelectionChange = (newSelection: Array<EntitySubTableType>): void =>
 
 // 新增
 const handleAdd = (): void => {
-    formData.value.push(cloneDeep(defaultEntityAddFormData))
+    formData.value.push(createDefaultEntityAddFormData())
 }
 
 // 删除
@@ -394,8 +392,8 @@ const handleSingleDelete = async (index: number): Promise<void> => {
         val component = editTable(
             "EntitySubTableType",
             staticPath,
-            "defaultEntityAddFormData",
-            "$componentPath/entity/defaultEntityAddFormData",
+            "createDefaultEntityAddFormData",
+            "$componentPath/entity/createDefaultEntityAddFormData",
             "useRules",
             "$rulePath/entity",
             indent = "    ",
@@ -419,8 +417,7 @@ import type {
     CustomerOptionView,
     TypeOptionView
 } from "@/api/__generated/model/static"
-import {cloneDeep} from "lodash"
-import {defaultEntityAddFormData} from "@/components/entity/defaultEntityAddFormData"
+import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 import {Plus, Delete} from "@element-plus/icons-vue"
 
@@ -485,7 +482,7 @@ const handleSelectionChange = (newSelection: Array<EntitySubTableType>): void =>
 
 // 新增
 const handleAdd = (): void => {
-    formData.value.push(cloneDeep(defaultEntityAddFormData))
+    formData.value.push(createDefaultEntityAddFormData())
 }
 
 // 删除
