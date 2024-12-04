@@ -26,6 +26,12 @@ input EntityInsertInput {
     id(toOneNullableProperty)
 }
 
+EntityUpdateFillView {
+    #allScalars
+    id(toOneProperty)
+    id(toOneNullableProperty)
+}
+
 input EntityUpdateInput {
     #allScalars
     id!

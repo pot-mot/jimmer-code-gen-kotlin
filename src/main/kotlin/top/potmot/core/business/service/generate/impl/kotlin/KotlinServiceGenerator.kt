@@ -28,7 +28,7 @@ object KotlinServiceGenerator : ServiceGenerator() {
 
         val packages = entity.packages
         val permissions = entity.permissions
-        val (listView, detailView, insertInput, updateInput, spec, optionView) = entity.dto
+        val (listView, detailView, insertInput, updateFillView, updateInput, spec, optionView) = entity.dto
         val existValidItemWithName = entity.existValidItems.map {
             it.dtoName to it
         }
@@ -51,26 +51,28 @@ import cn.dev33.satoken.annotation.SaCheckPermission
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient""" +
                 (if (!entity.canEdit) "" else "\nimport org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode") +
-"""
+                """
 import org.springframework.beans.factory.annotation.Autowired""" +
                 (if (!entity.canAdd && !entity.canEdit && !entity.canDelete) "" else "\nimport org.springframework.transaction.annotation.Transactional") +
                 (if (!entity.canDelete) "" else "\nimport org.springframework.web.bind.annotation.DeleteMapping") +
-"""
+                """
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping""" +
                 (if (!entity.canEdit) "" else "\nimport org.springframework.web.bind.annotation.PutMapping") +
-"""
+                """
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping""" +
                 (if (!entity.canDelete) "" else "\nimport org.springframework.web.bind.annotation.RequestParam") +
-"""
+                """
 import org.springframework.web.bind.annotation.RestController
 import ${packages.entity}.${name}
 import ${packages.dto}.${listView}
 import ${packages.dto}.${detailView}""" +
                 (if (!entity.canAdd) "" else "\nimport ${packages.dto}.${insertInput}") +
-                (if (!entity.canEdit) "" else "\nimport ${packages.dto}.${updateInput}") +
+                (if (!entity.canEdit) "" else "\n" +
+                        "import ${packages.dto}.${updateInput}\n" +
+                        "import ${packages.dto}.${updateFillView}") +
                 """
 import ${packages.dto}.${spec}
 import ${packages.dto}.${optionView}${existValidDtoImports}
@@ -85,7 +87,7 @@ class $serviceName(
     @Autowired
     private val sqlClient: KSqlClient,
 ) {
-""".trimEnd() + (if (!entity.canEdit) "" else """
+""".trimEnd() + """
     /**
      * 根据ID获取${comment}。
      *
@@ -97,7 +99,7 @@ class $serviceName(
     @Throws(AuthorizeException::class)
     fun get(@PathVariable id: ${idType}) = 
         sqlClient.findById(${detailView}::class, id)
-""") + """
+
     /**
      * 根据提供的查询参数列出${comment}。
      *
@@ -147,6 +149,18 @@ class $serviceName(
     fun insert(@RequestBody input: ${insertInput}) = 
         sqlClient.insert(input).modifiedEntity.${idName}
 """) + (if (!entity.canEdit) "" else """
+    /**
+     * 根据ID获取${comment}的更新回填信息。
+     *
+     * @param id ${comment}的ID。
+     * @return ${comment}的更新回填信息。
+     */
+    @GetMapping("/{id}")
+    @SaCheckPermission("${permissions.update}")
+    @Throws(AuthorizeException::class)
+    fun getForUpdate(@PathVariable id: ${idType}) = 
+        sqlClient.findById(${updateFillView}::class, id)
+
     /**
      * 更新${comment}。
      *

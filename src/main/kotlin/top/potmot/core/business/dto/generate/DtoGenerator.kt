@@ -87,8 +87,12 @@ object DtoGenerator : EntityPropertyCategories {
         entity.scalarProperties.exclude(detailViewProperties).forEach {
             appendLine("    -${it.name}")
         }
-        entity.copy(properties = detailViewProperties).targetOneIdExpress.forEach {
-            appendLine("    $it")
+        detailViewProperties.filter { it.associationType != null }.forEach {
+            if (it.isShortAssociation) {
+                appendBlock(it.extractShortAssociation()) { line -> "    $line" }
+            } else {
+                appendLine("    ${it.associationIdExpress}")
+            }
         }
         appendLine("}")
     }
@@ -106,6 +110,20 @@ object DtoGenerator : EntityPropertyCategories {
             appendLine("    -${it.name}")
         }
         entity.copy(properties = insertInputProperties).targetOneIdExpress.forEach {
+            appendLine("    $it")
+        }
+        appendLine("}")
+    }
+
+    private fun generateUpdateFillView(entity: GenEntityBusinessView) = buildString {
+        val updateInputProperties = entity.updateInputProperties
+
+        appendLine("${entity.dto.updateFillView} {")
+        appendLine("    #allScalars")
+        entity.scalarProperties.exclude(updateInputProperties).forEach {
+            appendLine("    -${it.name}")
+        }
+        entity.copy(properties = updateInputProperties).targetOneIdExpress.forEach {
             appendLine("    $it")
         }
         appendLine("}")
@@ -198,7 +216,10 @@ object DtoGenerator : EntityPropertyCategories {
         if (entity.canEdit) appendBlock(generateDetailView(entity))
         appendBlock(generateOptionView(entity))
         if (entity.canAdd) appendBlock(generateInsertInput(entity))
-        if (entity.canEdit) appendBlock(generateUpdateInput(entity))
+        if (entity.canEdit) {
+            appendBlock(generateUpdateFillView(entity))
+            appendBlock(generateUpdateInput(entity))
+        }
         appendBlock(generateSpec(entity))
         appendBlock(generateExistValidDto(entity))
     }.trim()

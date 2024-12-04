@@ -722,9 +722,9 @@ const {queryPage} = useLegalPage(
     withLoading(api.entityService.page)
 )
 
-const getEntity = withLoading((id: number) => api.entityService.get({id}))
-
 const addEntity = withLoading((body: EntityInsertInput) => api.entityService.insert({body}))
+
+const getEntityForUpdate = withLoading((id: number) => api.entityService.getForUpdate({id}))
 
 const editEntity = withLoading((body: EntityUpdateInput) => api.entityService.update({body}))
 
@@ -799,7 +799,7 @@ const editDialogVisible = ref(false)
 const updateInput = ref<EntityUpdateInput | undefined>(undefined)
 
 const startEdit = (id: number): void => {
-    updateInput.value = await getEntity(id)
+    updateInput.value = await getEntityForUpdate(id)
     if (updateInput.value === undefined) {
         sendMessage('编辑的comment不存在', 'error')
         return

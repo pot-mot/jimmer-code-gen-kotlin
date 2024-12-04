@@ -49,6 +49,12 @@ EntityOptionView {
     id
 }
 
+EntityUpdateFillView {
+    #allScalars
+    id(toOneProperty)
+    id(toOneNullableProperty)
+}
+
 input EntityUpdateInput {
     #allScalars
     id!

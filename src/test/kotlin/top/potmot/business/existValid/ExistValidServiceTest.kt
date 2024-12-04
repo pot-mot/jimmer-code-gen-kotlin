@@ -36,6 +36,7 @@ import EntityPackage.dto.EntityListView;
 import EntityPackage.dto.EntityDetailView;
 import EntityPackage.dto.EntityInsertInput;
 import EntityPackage.dto.EntityUpdateInput;
+import EntityPackage.dto.EntityUpdateFillView;
 import EntityPackage.dto.EntitySpec;
 import EntityPackage.dto.EntityOptionView;
 import EntityPackage.dto.EntityExistByToOnePropertyAndToOneNullablePropertySpec;
@@ -130,6 +131,19 @@ public class EntityService implements Tables {
     }
 
     /**
+     * 根据ID获取comment的更新回填信息。
+     *
+     * @param id comment的ID。
+     * @return comment的更新回填信息。
+     */
+    @GetMapping("/{id}")
+    @SaCheckPermission("entity:update")
+    @Nullable
+    public EntityUpdateFillView getForUpdate(@PathVariable int id) throws AuthorizeException { 
+        return sqlClient.findById(EntityUpdateFillView.class, id);
+    }
+
+    /**
      * 更新comment。
      *
      * @param input comment更新输入对象。
@@ -216,6 +230,7 @@ import EntityPackage.dto.EntityListView
 import EntityPackage.dto.EntityDetailView
 import EntityPackage.dto.EntityInsertInput
 import EntityPackage.dto.EntityUpdateInput
+import EntityPackage.dto.EntityUpdateFillView
 import EntityPackage.dto.EntitySpec
 import EntityPackage.dto.EntityOptionView
 import EntityPackage.dto.EntityExistByToOnePropertyAndToOneNullablePropertySpec
@@ -291,6 +306,18 @@ class EntityService(
     @Throws(AuthorizeException::class)
     fun insert(@RequestBody input: EntityInsertInput) = 
         sqlClient.insert(input).modifiedEntity.id
+
+    /**
+     * 根据ID获取comment的更新回填信息。
+     *
+     * @param id comment的ID。
+     * @return comment的更新回填信息。
+     */
+    @GetMapping("/{id}")
+    @SaCheckPermission("entity:update")
+    @Throws(AuthorizeException::class)
+    fun getForUpdate(@PathVariable id: Int) = 
+        sqlClient.findById(EntityUpdateFillView::class, id)
 
     /**
      * 更新comment。

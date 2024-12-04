@@ -476,7 +476,7 @@ object Vue3ElementPlusViewGenerator :
     override fun stringifyPage(entity: GenEntityBusinessView): String {
         val dir = entity.dir
         val (table, addForm, editForm, queryForm) = entity.components
-        val (listView, _, insertInput, updateInput, spec) = entity.dto
+        val (listView, _, insertInput, _, updateInput, spec) = entity.dto
 
         val idProperty = entity.idProperty
         val idName = idProperty.name
@@ -549,15 +549,15 @@ object Vue3ElementPlusViewGenerator :
                         ).joinToString(",\n") { "${indent}$it" },
                         "\n)\n",
                     ),
-                    if (!entity.canEdit) null else ConstVariable(
-                        "get${entity.name}",
-                        null,
-                        "withLoading((id: $idType) => api.$apiServiceName.get({id}))\n"
-                    ),
                     if (!entity.canAdd) null else ConstVariable(
                         "add${entity.name}",
                         null,
                         "withLoading((body: $insertInput) => api.$apiServiceName.insert({body}))\n"
+                    ),
+                    if (!entity.canEdit) null else ConstVariable(
+                        "get${entity.name}ForUpdate",
+                        null,
+                        "withLoading((id: $idType) => api.$apiServiceName.getForUpdate({id}))\n"
                     ),
                     if (!entity.canEdit) null else ConstVariable(
                         "edit${entity.name}",
@@ -630,7 +630,7 @@ object Vue3ElementPlusViewGenerator :
                         Function(
                             name = "startEdit",
                             args = listOf(FunctionArg("id", "number")),
-                            "updateInput.value = await get${entity.name}(id)\n",
+                            "updateInput.value = await get${entity.name}ForUpdate(id)\n",
                             "if (updateInput.value === undefined) {\n",
                             listOf(
                                 "sendMessage('编辑的${entity.comment}不存在', 'error')",

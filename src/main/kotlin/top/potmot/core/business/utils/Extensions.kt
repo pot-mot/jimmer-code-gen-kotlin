@@ -56,6 +56,7 @@ data class DtoNames(
     val listView: String,
     val detailView: String,
     val insertInput: String,
+    val updateFillView: String,
     val updateInput: String,
     val spec: String,
     val optionView: String
@@ -64,6 +65,7 @@ data class DtoNames(
 private fun DtoNames(entity: GenerateEntity) = DtoNames(
     listView = "${entity.name}ListView",
     detailView = "${entity.name}DetailView",
+    updateFillView = "${entity.name}UpdateFillView",
     updateInput = "${entity.name}UpdateInput",
     insertInput = "${entity.name}InsertInput",
     spec = "${entity.name}Spec",

@@ -33,7 +33,7 @@ object JavaServiceGenerator : ServiceGenerator() {
 
         val packages = entity.packages
         val permissions = entity.permissions
-        val (listView, detailView, insertInput, updateInput, spec, optionView) = entity.dto
+        val (listView, detailView, insertInput, updateFillView, updateInput, spec, optionView) = entity.dto
         val existValidItemWithNames = entity.existValidItems.map {
             it.dtoName to it
         }
@@ -73,7 +73,9 @@ import ${packages.entity}.Tables;
 import ${packages.dto}.${listView};
 import ${packages.dto}.${detailView};""" +
                 (if (!entity.canAdd) "" else "\nimport ${packages.dto}.${insertInput};") +
-                (if (!entity.canEdit) "" else "\nimport ${packages.dto}.${updateInput};") +
+                (if (!entity.canEdit) "" else "\n" +
+                        "import ${packages.dto}.${updateInput};\n" +
+                        "import ${packages.dto}.${updateFillView};") +
                 """
 import ${packages.dto}.${spec};
 import ${packages.dto}.${optionView};${existValidDtoImports}
@@ -91,7 +93,7 @@ public class $serviceName implements Tables {
     public $serviceName(JSqlClient sqlClient) {
         this.sqlClient = sqlClient;
     }
-""" + (if (!entity.canEdit) "" else """
+
     /**
      * 根据ID获取${comment}。
      *
@@ -104,7 +106,7 @@ public class $serviceName implements Tables {
     public $detailView get(@PathVariable $idType id) throws AuthorizeException { 
         return sqlClient.findById(${detailView}.class, id);
     }
-""") + """
+
     /**
      * 根据提供的查询参数列出${comment}。
      *
@@ -166,6 +168,19 @@ public class $serviceName implements Tables {
         return sqlClient.insert(input).getModifiedEntity().${idName}();
     }
 """) + (if (!entity.canEdit) "" else """
+    /**
+     * 根据ID获取${comment}的更新回填信息。
+     *
+     * @param id ${comment}的ID。
+     * @return ${comment}的更新回填信息。
+     */
+    @GetMapping("/{id}")
+    @SaCheckPermission("${permissions.update}")
+    @Nullable
+    public $updateFillView getForUpdate(@PathVariable $idType id) throws AuthorizeException { 
+        return sqlClient.findById(${updateFillView}.class, id);
+    }
+
     /**
      * 更新${comment}。
      *

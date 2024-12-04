@@ -38,6 +38,10 @@ input ShortAssociationEntityInsertInput {
     -id
 }
 
+ShortAssociationEntityUpdateFillView {
+    #allScalars
+}
+
 input ShortAssociationEntityUpdateInput {
     #allScalars
     id!
@@ -160,7 +164,10 @@ EntityListView {
 
 EntityDetailView {
     #allScalars
-    id(shortAssociationProperty)
+    shortAssociationProperty {
+        label1
+        label2
+    }
 }
 
 EntityOptionView {
@@ -170,6 +177,11 @@ EntityOptionView {
 input EntityInsertInput {
     #allScalars
     -id
+    id(shortAssociationProperty)
+}
+
+EntityUpdateFillView {
+    #allScalars
     id(shortAssociationProperty)
 }
 
@@ -302,6 +314,11 @@ EntityOptionView {
 input EntityInsertInput {
     #allScalars
     -id
+    shortAssociationPropertyId
+}
+
+EntityUpdateFillView {
+    #allScalars
     shortAssociationPropertyId
 }
 

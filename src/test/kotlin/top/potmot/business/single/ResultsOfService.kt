@@ -23,6 +23,7 @@ import EntityPackage.dto.EntityListView
 import EntityPackage.dto.EntityDetailView
 import EntityPackage.dto.EntityInsertInput
 import EntityPackage.dto.EntityUpdateInput
+import EntityPackage.dto.EntityUpdateFillView
 import EntityPackage.dto.EntitySpec
 import EntityPackage.dto.EntityOptionView
 import EntityPackage.query.PageQuery
@@ -98,6 +99,18 @@ class EntityService(
         sqlClient.insert(input).modifiedEntity.id
 
     /**
+     * 根据ID获取comment的更新回填信息。
+     *
+     * @param id comment的ID。
+     * @return comment的更新回填信息。
+     */
+    @GetMapping("/{id}")
+    @SaCheckPermission("entity:update")
+    @Throws(AuthorizeException::class)
+    fun getForUpdate(@PathVariable id: Int) = 
+        sqlClient.findById(EntityUpdateFillView::class, id)
+
+    /**
      * 更新comment。
      *
      * @param input comment更新输入对象。
@@ -148,6 +161,7 @@ import EntityPackage.dto.EntityListView;
 import EntityPackage.dto.EntityDetailView;
 import EntityPackage.dto.EntityInsertInput;
 import EntityPackage.dto.EntityUpdateInput;
+import EntityPackage.dto.EntityUpdateFillView;
 import EntityPackage.dto.EntitySpec;
 import EntityPackage.dto.EntityOptionView;
 import EntityPackage.query.PageQuery;
@@ -237,6 +251,19 @@ public class EntityService implements Tables {
     @Transactional
     public int insert(@RequestBody @NotNull EntityInsertInput input) throws AuthorizeException {
         return sqlClient.insert(input).getModifiedEntity().id();
+    }
+
+    /**
+     * 根据ID获取comment的更新回填信息。
+     *
+     * @param id comment的ID。
+     * @return comment的更新回填信息。
+     */
+    @GetMapping("/{id}")
+    @SaCheckPermission("entity:update")
+    @Nullable
+    public EntityUpdateFillView getForUpdate(@PathVariable int id) throws AuthorizeException { 
+        return sqlClient.findById(EntityUpdateFillView.class, id);
     }
 
     /**
