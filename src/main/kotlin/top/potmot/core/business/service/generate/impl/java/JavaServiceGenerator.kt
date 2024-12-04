@@ -6,7 +6,7 @@ import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.existValidItems
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.packages
-import top.potmot.core.business.utils.permissionPrefix
+import top.potmot.core.business.utils.permissions
 import top.potmot.core.business.utils.requestPath
 import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.typeStrToJavaType
@@ -29,10 +29,10 @@ object JavaServiceGenerator : ServiceGenerator() {
         val comment = entity.comment
 
         val serviceName = entity.serviceName
-        val permissionPrefix = entity.permissionPrefix
         val tableProxy = entity.tableProxy
 
         val packages = entity.packages
+        val permissions = entity.permissions
         val (listView, detailView, insertInput, updateInput, spec, optionView) = entity.dto
         val existValidItemWithNames = entity.existValidItems.map {
             it.dtoName to it
@@ -99,7 +99,7 @@ public class $serviceName implements Tables {
      * @return ${comment}的详细信息。
      */
     @GetMapping("/{id}")
-    @SaCheckPermission("${permissionPrefix}:get")
+    @SaCheckPermission("${permissions.get}")
     @Nullable
     public $detailView get(@PathVariable $idType id) throws AuthorizeException { 
         return sqlClient.findById(${detailView}.class, id);
@@ -112,7 +112,7 @@ public class $serviceName implements Tables {
      * @return ${comment}列表数据。
      */
     @PostMapping("/list")
-    @SaCheckPermission("${permissionPrefix}:list")
+    @SaCheckPermission("${permissions.list}")
     @NotNull
     public List<@NotNull ${listView}> list(@RequestBody @NotNull $spec spec) throws AuthorizeException {
         return sqlClient.createQuery(${tableProxy})
@@ -128,7 +128,7 @@ public class $serviceName implements Tables {
      * @return ${comment}分页数据。
      */
     @PostMapping("/page")
-    @SaCheckPermission("${permissionPrefix}:list")
+    @SaCheckPermission("${permissions.list}")
     @NotNull
     public Page<@NotNull ${listView}> page(@RequestBody @NotNull PageQuery<${spec}> query) throws AuthorizeException {
         return sqlClient.createQuery(${tableProxy})
@@ -144,7 +144,7 @@ public class $serviceName implements Tables {
      * @return ${comment}列表数据。
      */
     @PostMapping("/list/options")
-    @SaCheckPermission("${permissionPrefix}:select")
+    @SaCheckPermission("${permissions.select}")
     @NotNull
     public List<@NotNull ${optionView}> listOptions(@RequestBody @NotNull $spec spec) throws AuthorizeException {
         return sqlClient.createQuery(${tableProxy})
@@ -160,7 +160,7 @@ public class $serviceName implements Tables {
      * @return 插入的${comment}的ID。
      */
     @PostMapping
-    @SaCheckPermission("${permissionPrefix}:insert")
+    @SaCheckPermission("${permissions.insert}")
     @Transactional
     public $idType insert(@RequestBody @NotNull $insertInput input) throws AuthorizeException {
         return sqlClient.insert(input).getModifiedEntity().${idName}();
@@ -173,7 +173,7 @@ public class $serviceName implements Tables {
      * @return 更新的${comment}的ID。
      */
     @PutMapping
-    @SaCheckPermission("${permissionPrefix}:update")
+    @SaCheckPermission("${permissions.update}")
     @Transactional
     public $idType update(@RequestBody @NotNull $updateInput input) throws AuthorizeException {
         return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity().${idName}();
@@ -186,7 +186,7 @@ public class $serviceName implements Tables {
      * @return 删除的${comment}的行数。
      */
     @DeleteMapping
-    @SaCheckPermission("${permissionPrefix}:delete")
+    @SaCheckPermission("${permissions.delete}")
     @Transactional
     public int delete(@RequestParam @NotNull List<${
             typeStrToJavaType(
@@ -206,7 +206,7 @@ public class $serviceName implements Tables {
      * @return ${comment}是否存在。
      */
     @PostMapping("/${validItem.functionName}")
-    @SaCheckPermission("${permissionPrefix}:list")
+    @SaCheckPermission("${permissions.list}")
 """ + stringifyExistValidQueryMethod(tableProxy, name, validItem)
         } + "\n}"
     }

@@ -1,43 +1,37 @@
 package top.potmot.core.business.permission.generate
 
 import top.potmot.core.business.utils.lowerName
+import top.potmot.core.business.utils.permissionStrList
+import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.createGenerateFileByEntities
-import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.enumeration.GenerateTag
+import top.potmot.utils.string.appendLines
 import top.potmot.utils.string.trimBlankLine
 
 private const val allPermissionFile = "all-permissions"
 
 object PermissionGenerator {
-    fun generate(entities: Iterable<GenerateEntity>): List<GenerateFile> {
+    fun generate(entities: Iterable<GenEntityBusinessView>): List<GenerateFile> {
         val items = entities.map {
-            val lowerName = it.lowerName
-
             GenerateFile(
                 it,
-                "sql/permission/${lowerName}.sql",
-                """
-INSERT INTO SYS_PERMISSION (NAME, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME)
-VALUES ('${lowerName}:get', 1, now(), 1, now());
-INSERT INTO SYS_PERMISSION (NAME, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME)
-VALUES ('${lowerName}:list', 1, now(), 1, now());
-INSERT INTO SYS_PERMISSION (NAME, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME)
-VALUES ('${lowerName}:insert', 1, now(), 1, now());
-INSERT INTO SYS_PERMISSION (NAME, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME)
-VALUES ('${lowerName}:update', 1, now(), 1, now());
-INSERT INTO SYS_PERMISSION (NAME, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME)
-VALUES ('${lowerName}:delete', 1, now(), 1, now());
-INSERT INTO SYS_PERMISSION (NAME, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME)
-VALUES ('${lowerName}:menu', 1, now(), 1, now());
-INSERT INTO SYS_PERMISSION (NAME, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME)
-VALUES ('${lowerName}:select', 1, now(), 1, now());
+                "sql/permission/${it.lowerName}.sql",
+                buildString {
+                    val permissions = it.permissionStrList
 
-INSERT INTO SYS_ROLE_SYS_PERMISSION_MAPPING 
-SELECT 1, ID FROM SYS_PERMISSION 
-WHERE SYS_PERMISSION.NAME IN 
-    ('${lowerName}:get', '${lowerName}:list', '${lowerName}:insert', '${lowerName}:update', '${lowerName}:delete', '${lowerName}:menu');
-                """.trimBlankLine(),
+                    for (permission in permissions) {
+                        appendLine("INSERT INTO SYS_PERMISSION (NAME, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME)")
+                        appendLine("VALUES ('${permission}', 1, now(), 1, now());")
+                    }
+
+                    appendLines(
+                        "INSERT INTO SYS_ROLE_SYS_PERMISSION_MAPPING ",
+                        "SELECT 1, ID FROM SYS_PERMISSION ",
+                        "WHERE SYS_PERMISSION.NAME IN ",
+                        "(${permissions.joinToString(", ") { permission -> "'$permission'" }});"
+                    )
+                }.trimBlankLine(),
                 listOf(GenerateTag.BackEnd, GenerateTag.Permission)
             )
         }.sortedBy { it.path }

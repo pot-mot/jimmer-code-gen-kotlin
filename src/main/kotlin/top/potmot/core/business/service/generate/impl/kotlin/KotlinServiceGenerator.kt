@@ -6,7 +6,7 @@ import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.existValidItems
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.packages
-import top.potmot.core.business.utils.permissionPrefix
+import top.potmot.core.business.utils.permissions
 import top.potmot.core.business.utils.requestPath
 import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.typeStrToKotlinType
@@ -25,9 +25,9 @@ object KotlinServiceGenerator : ServiceGenerator() {
         val comment = entity.comment
 
         val serviceName = entity.serviceName
-        val permissionPrefix = entity.permissionPrefix
 
         val packages = entity.packages
+        val permissions = entity.permissions
         val (listView, detailView, insertInput, updateInput, spec, optionView) = entity.dto
         val existValidItemWithName = entity.existValidItems.map {
             it.dtoName to it
@@ -93,7 +93,7 @@ class $serviceName(
      * @return ${comment}的详细信息。
      */
     @GetMapping("/{id}")
-    @SaCheckPermission("${permissionPrefix}:get")
+    @SaCheckPermission("${permissions.get}")
     @Throws(AuthorizeException::class)
     fun get(@PathVariable id: ${idType}) = 
         sqlClient.findById(${detailView}::class, id)
@@ -105,7 +105,7 @@ class $serviceName(
      * @return ${comment}列表数据。
      */
     @PostMapping("/list")
-    @SaCheckPermission("${permissionPrefix}:list")
+    @SaCheckPermission("${permissions.list}")
     @Throws(AuthorizeException::class)
     fun list(@RequestBody spec: ${spec}) = 
         sqlClient.query(${listView}::class, spec)
@@ -117,7 +117,7 @@ class $serviceName(
      * @return ${comment}分页数据。
      */
     @PostMapping("/page")
-    @SaCheckPermission("${permissionPrefix}:list")
+    @SaCheckPermission("${permissions.list}")
     @Throws(AuthorizeException::class)
     fun page(@RequestBody query: PageQuery<${spec}>) = 
         sqlClient.queryPage(${listView}::class, query)
@@ -129,7 +129,7 @@ class $serviceName(
      * @return ${comment}列表数据。
      */
     @PostMapping("/list/options")
-    @SaCheckPermission("${permissionPrefix}:select")
+    @SaCheckPermission("${permissions.select}")
     @Throws(AuthorizeException::class)
     fun listOptions(@RequestBody spec: ${spec}) = 
         sqlClient.query(${optionView}::class, spec)
@@ -141,7 +141,7 @@ class $serviceName(
      * @return 插入的${comment}的ID。
      */
     @PostMapping
-    @SaCheckPermission("${permissionPrefix}:insert")
+    @SaCheckPermission("${permissions.insert}")
     @Transactional
     @Throws(AuthorizeException::class)
     fun insert(@RequestBody input: ${insertInput}) = 
@@ -154,7 +154,7 @@ class $serviceName(
      * @return 更新的${comment}的ID。
      */
     @PutMapping
-    @SaCheckPermission("${permissionPrefix}:update")
+    @SaCheckPermission("${permissions.update}")
     @Transactional
     @Throws(AuthorizeException::class)
     fun update(@RequestBody input: ${updateInput}) = 
@@ -167,7 +167,7 @@ class $serviceName(
      * @return 删除的${comment}的行数。
      */
     @DeleteMapping
-    @SaCheckPermission("${permissionPrefix}:delete")
+    @SaCheckPermission("${permissions.delete}")
     @Transactional
     @Throws(AuthorizeException::class)
     fun delete(@RequestParam ids: List<${idType}>) = 
@@ -182,7 +182,7 @@ class $serviceName(
      * @return ${comment}是否存在。
      */
     @PostMapping("/${validItem.functionName}")
-    @SaCheckPermission("${permissionPrefix}:list")
+    @SaCheckPermission("${permissions.list}")
     @Throws(AuthorizeException::class)
 """ + stringifyExistValidQueryMethod(entity.name, name, validItem)
         } + "\n}"

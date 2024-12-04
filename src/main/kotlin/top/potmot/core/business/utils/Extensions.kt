@@ -46,9 +46,6 @@ val GenerateEntity.serviceFilePath
 val GenerateEntity.requestPath
     get() = lowerName
 
-val GenerateEntity.permissionPrefix
-    get() = lowerName
-
 val GenerateEntity.serviceName
     get() = "${name}Service"
 
@@ -116,6 +113,46 @@ private fun EntityRulesNames(entity: GenerateEntity) = EntityRulesNames(
 val GenerateEntity.rules
     get() = EntityRulesNames(this)
 
+
+data class EntityPermissions(
+    val get: String,
+    val list: String,
+    val select: String,
+    val insert: String,
+    val update: String,
+    val delete: String,
+    val menu: String,
+)
+
+private fun EntityPermissions(entity: GenerateEntity): EntityPermissions {
+    val permissionPrefix = entity.lowerName
+    return EntityPermissions(
+        get = "$permissionPrefix:get",
+        list = "$permissionPrefix:list",
+        select = "$permissionPrefix:select",
+        insert = "$permissionPrefix:insert",
+        update = "$permissionPrefix:update",
+        delete = "$permissionPrefix:delete",
+        menu = "$permissionPrefix:menu",
+    )
+}
+
+val GenerateEntity.permissions
+    get() = EntityPermissions(this)
+
+val GenEntityBusinessView.permissionStrList: List<String>
+    get() {
+        val permissions = this.permissions
+
+        return listOfNotNull(
+            permissions.get,
+            permissions.list,
+            permissions.select,
+            if (hasPage) permissions.menu else null,
+            if (canAdd) permissions.insert else null,
+            if (canEdit) permissions.update else null,
+        )
+    }
 
 data class EnumComponentNames(
     val view: String,

@@ -2,15 +2,16 @@ package top.potmot.core.business.route.generate
 
 import top.potmot.core.business.utils.components
 import top.potmot.core.business.utils.dir
+import top.potmot.core.business.utils.permissions
+import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.createGenerateFileByEntities
-import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.enumeration.GenerateTag
 import top.potmot.utils.string.trimBlankLine
 
 object DynamicRouteGenerator {
-    fun generate(entities: Iterable<GenerateEntity>): List<GenerateFile> {
-        val items = entities.map {
+    fun generate(entities: Iterable<GenEntityBusinessView>): List<GenerateFile> {
+        val items = entities.filter { it.hasPage }.map {
             val lowerName = it.name.lowercase()
             val dir = it.dir
             val page = it.components.page
@@ -25,7 +26,7 @@ VALUES (NULL, '${page}', '/${page}', 'List', '${it.comment}管理', 'pages/${dir
 
 INSERT INTO SYS_PERMISSION_SYS_MENU_MAPPING
 SELECT SYS_PERMISSION.ID, SYS_MENU.ID FROM SYS_PERMISSION, SYS_MENU
-WHERE SYS_PERMISSION.NAME = '${lowerName}:menu' AND SYS_MENU.NAME = '${page}';
+WHERE SYS_PERMISSION.NAME = '${it.permissions.menu}' AND SYS_MENU.NAME = '${page}';
                 """.trimBlankLine(),
                 listOf(GenerateTag.BackEnd, GenerateTag.Route)
             )
