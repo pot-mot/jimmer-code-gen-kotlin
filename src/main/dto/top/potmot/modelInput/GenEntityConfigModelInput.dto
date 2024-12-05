@@ -28,6 +28,8 @@ input GenEntityConfigModelInput {
         overwriteComment
         remark
 
+        otherAnnotation
+
         orderKey
 
         longAssociation

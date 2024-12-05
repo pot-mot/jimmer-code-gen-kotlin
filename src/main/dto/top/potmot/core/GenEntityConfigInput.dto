@@ -22,6 +22,8 @@ input GenEntityConfigInput {
         overwriteComment
         remark
 
+        otherAnnotation
+
         orderKey
 
         longAssociation
