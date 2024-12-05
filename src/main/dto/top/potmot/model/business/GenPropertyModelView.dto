@@ -1,10 +1,10 @@
 export top.potmot.entity.GenProperty
 
-input GenPropertyModelInput {
+GenPropertyModelView {
     #allScalars(this)
     -id
 
-    flat(entity) {
-        name as entityName
+    enum {
+        name
     }
 }

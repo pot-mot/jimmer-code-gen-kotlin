@@ -17,21 +17,24 @@ import top.potmot.entity.dto.GenDataSourceInput
 import top.potmot.entity.dto.GenDataSourceTemplateView
 import top.potmot.entity.dto.GenDataSourceView
 import top.potmot.entity.extension.test
+import top.potmot.utils.transaction.executeNotNull
 
 @RestController
 @RequestMapping("/dataSource")
 class DataSourceService(
-    @Autowired val sqlClient: KSqlClient,
-    @Autowired val transactionTemplate: TransactionTemplate
+    @Autowired
+    private val sqlClient: KSqlClient,
+    @Autowired
+    private val transactionTemplate: TransactionTemplate
 ) {
     /**
      * 列出所有数据源
      */
     @GetMapping
     fun list(): List<GenDataSourceView> =
-        sqlClient.createQuery(GenDataSource::class) {
+        sqlClient.executeQuery(GenDataSource::class) {
             select(table.fetch(GenDataSourceView::class))
-        }.execute()
+        }
 
     /**
      * 获取单个数据源
@@ -54,9 +57,9 @@ class DataSourceService(
     @Throws(DataSourceException.ConnectFail::class)
     fun save(@RequestBody dataSource: GenDataSourceInput): Long {
         dataSource.toEntity().test()
-        return transactionTemplate.execute {
+        return transactionTemplate.executeNotNull {
             sqlClient.save(dataSource).modifiedEntity.id
-        }!!
+        }
     }
 
 
@@ -78,7 +81,7 @@ class DataSourceService(
      */
     @DeleteMapping("/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =
-        transactionTemplate.execute {
+        transactionTemplate.executeNotNull {
             sqlClient.deleteByIds(GenDataSource::class, ids).affectedRowCount(GenDataSource::class)
-        }!!
+        }
 }

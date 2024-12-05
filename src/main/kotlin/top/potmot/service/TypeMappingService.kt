@@ -13,12 +13,15 @@ import top.potmot.entity.GenTypeMapping
 import top.potmot.entity.dto.GenTypeMappingInput
 import top.potmot.entity.dto.GenTypeMappingView
 import top.potmot.entity.orderKey
+import top.potmot.utils.transaction.executeNotNull
 
 @RestController
 @RequestMapping("/typeMapping")
 class TypeMappingService(
-    @Autowired val sqlClient: KSqlClient,
-    @Autowired val transactionTemplate: TransactionTemplate
+    @Autowired
+    private val sqlClient: KSqlClient,
+    @Autowired
+    private val transactionTemplate: TransactionTemplate
 ) {
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenTypeMappingView? =
@@ -26,15 +29,15 @@ class TypeMappingService(
 
     @GetMapping
     fun list(): List<GenTypeMappingView> =
-        sqlClient.createQuery(GenTypeMapping::class) {
+        sqlClient.executeQuery(GenTypeMapping::class) {
             orderBy(table.orderKey)
             select(table.fetch(GenTypeMappingView::class))
-        }.execute()
+        }
 
     @PostMapping
     fun saveAll(@RequestBody typeMappings: List<GenTypeMappingInput>): List<Long> =
-        transactionTemplate.execute {
+        transactionTemplate.executeNotNull {
             sqlClient.createDelete(GenTypeMapping::class) {}.execute()
             sqlClient.entities.saveInputs(typeMappings).items.map { it.modifiedEntity.id }
-        }!!
+        }
 }

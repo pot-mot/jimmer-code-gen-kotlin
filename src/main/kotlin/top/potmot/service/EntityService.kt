@@ -1,26 +1,31 @@
 package top.potmot.service
 
 import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import top.potmot.enumeration.GenLanguage
-import top.potmot.entity.GenEntity
-import top.potmot.entity.dto.GenEntityDetailView
-import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import top.potmot.entity.GenEntity
 import top.potmot.entity.dto.GenEntityConfigInput
+import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenPropertyEntityConfigInput
 import top.potmot.entity.dto.toEntities
 import top.potmot.entity.tableId
+import top.potmot.enumeration.GenLanguage
+import top.potmot.utils.transaction.executeNotNull
 
 @RestController
 @RequestMapping("/entity")
 class EntityService(
-    @Autowired val sqlClient: KSqlClient,
+    @Autowired
+    private val sqlClient: KSqlClient,
+    @Autowired
+    private val transactionTemplate: TransactionTemplate,
 ) {
     @GetMapping("/language")
     fun listLanguage(): List<GenLanguage> =
@@ -39,18 +44,19 @@ class EntityService(
         }.fetchOneOrNull()
 
     @PutMapping
-    fun config(@RequestBody input: GenEntityConfigWithNewPropertiesInput): Long {
-        val (entity, properties) = input
+    fun config(@RequestBody input: GenEntityConfigWithNewPropertiesInput): Long =
+        transactionTemplate.executeNotNull {
+            val (entity, properties) = input
 
-        val entityId = sqlClient.update(entity).modifiedEntity.id
-        sqlClient.insertEntities(properties.toEntities {
-            this.entityId = entityId
-            this.columnId = null
-            this.typeTable = null
-        })
+            sqlClient.update(entity)
+            sqlClient.insertEntities(properties.toEntities {
+                entityId = entity.id
+                columnId = null
+                typeTable = null
+            })
 
-        return entityId
-    }
+            entity.id
+        }
 }
 
 data class GenEntityConfigWithNewPropertiesInput(

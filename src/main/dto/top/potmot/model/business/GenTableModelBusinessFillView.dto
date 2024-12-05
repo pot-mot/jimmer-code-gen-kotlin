@@ -1,0 +1,29 @@
+export top.potmot.entity.GenTable
+
+GenTableModelBusinessFillView {
+    id
+    name
+
+    entityId
+
+    columns {
+        id
+        name
+
+        properties {
+            id
+
+            name
+            overwriteName
+
+            type
+            typeNotNull
+            typeTable {
+                name
+            }
+            associationType
+            joinColumnMetas
+            joinTableMeta
+        }
+    }
+}

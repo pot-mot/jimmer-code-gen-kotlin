@@ -43,7 +43,8 @@ import top.potmot.error.ModelException
 @RestController
 @RequestMapping("/preview")
 class GenerateService(
-    @Autowired val sqlClient: KSqlClient,
+    @Autowired
+    private val sqlClient: KSqlClient,
 ) {
     @PostMapping("/model")
     @Throws(ModelException::class, GenerateException::class, ColumnTypeException::class)
@@ -136,24 +137,24 @@ class GenerateService(
         }.fetchOneOrNull()
 
     private fun KSqlClient.listTable(modelId: Long) =
-        createQuery(GenTable::class) {
+        executeQuery(GenTable::class) {
             where(table.modelId eq modelId)
             select(table.fetch(GenTableGenerateView::class))
-        }.execute()
+        }
 
     private inline fun <reified V : View<GenEntity>> KSqlClient.listEntity(
         modelId: Long,
         crossinline block: KMutableRootQuery<GenEntity>.() -> Unit = {},
     ) =
-        createQuery(GenEntity::class) {
+        executeQuery(GenEntity::class) {
             where(table.modelId eq modelId)
             block()
             select(table.fetch(V::class))
-        }.execute()
+        }
 
     private fun KSqlClient.listEnum(modelId: Long) =
-        createQuery(GenEnum::class) {
+        executeQuery(GenEnum::class) {
             where(table.modelId eq modelId)
             select(table.fetch(GenEnumGenerateView::class))
-        }.execute()
+        }
 }

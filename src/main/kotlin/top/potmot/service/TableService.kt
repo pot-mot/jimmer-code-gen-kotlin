@@ -18,7 +18,8 @@ import kotlin.reflect.KClass
 @RestController
 @RequestMapping("/table")
 class TableService(
-    @Autowired val sqlClient: KSqlClient,
+    @Autowired
+    private val sqlClient: KSqlClient,
 ) {
     @PostMapping("/query/common")
     fun queryCommonView(@RequestBody query: TableQuery): List<GenTableCommonView> =
@@ -29,8 +30,8 @@ class TableService(
         sqlClient.queryTable(query, GenTableColumnsView::class)
 
     private fun <T : View<GenTable>> KSqlClient.queryTable(query: Query<GenTable>, viewCLass: KClass<T>): List<T> =
-        createQuery(GenTable::class) {
+        executeQuery(GenTable::class) {
             where(query)
             select(table.fetch(viewCLass))
-        }.execute()
+        }
 }

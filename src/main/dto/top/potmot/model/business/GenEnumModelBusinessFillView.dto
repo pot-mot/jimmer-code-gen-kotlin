@@ -1,0 +1,6 @@
+export top.potmot.entity.GenEnum
+
+GenEnumModelBusinessFillView {
+    id
+    name
+}

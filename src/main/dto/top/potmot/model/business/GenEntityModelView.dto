@@ -1,6 +1,6 @@
 export top.potmot.entity.GenEntity
 
-input GenEntityConfigModelInput {
+GenEntityModelView {
     flat(table) {
         name as tableName
     }
@@ -10,6 +10,8 @@ input GenEntityConfigModelInput {
     comment
     overwriteComment
     remark
+
+    otherAnnotation
 
     canAdd
     canEdit
@@ -21,6 +23,14 @@ input GenEntityConfigModelInput {
         flat(column) {
             name as columnName
         }
+        type
+        typeNotNull
+        typeTable {
+            name
+        }
+        associationType
+        joinColumnMetas
+        joinTableMeta
 
         name
         overwriteName
