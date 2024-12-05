@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.entity.GenTable
 import top.potmot.entity.dto.GenTableColumnsView
 import top.potmot.entity.dto.GenTableCommonView
-import top.potmot.entity.dto.GenTableIdView
 import top.potmot.entity.query.Query
 import top.potmot.entity.query.TableQuery
 import top.potmot.entity.query.where
@@ -21,10 +20,6 @@ import kotlin.reflect.KClass
 class TableService(
     @Autowired val sqlClient: KSqlClient,
 ) {
-    @PostMapping("/query/id")
-    fun queryIdView(@RequestBody query: TableQuery): List<GenTableIdView> =
-        sqlClient.queryTable(query, GenTableIdView::class)
-
     @PostMapping("/query/common")
     fun queryCommonView(@RequestBody query: TableQuery): List<GenTableCommonView> =
         sqlClient.queryTable(query, GenTableCommonView::class)

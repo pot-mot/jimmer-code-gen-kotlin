@@ -1,7 +1,3 @@
-GenTableIdView {
-    id
-}
-
 GenTableCommonView {
     #allScalars
     id(entity)
