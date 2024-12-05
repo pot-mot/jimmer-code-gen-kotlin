@@ -23,11 +23,14 @@ import top.potmot.entity.dto.GenTableLoadView
 import top.potmot.entity.extension.use
 import top.potmot.entity.id
 import top.potmot.error.LoadFromDataSourceException
+import top.potmot.utils.transaction.executeNotNull
 
 @RestController
 class SchemaService(
-    @Autowired val sqlClient: KSqlClient,
-    @Autowired val transactionTemplate: TransactionTemplate,
+    @Autowired
+    private val sqlClient: KSqlClient,
+    @Autowired
+    private val transactionTemplate: TransactionTemplate,
 ) {
     private fun getDataSource(id: Long): GenDataSource? =
         sqlClient.findById(GenDataSource::class, id)
@@ -102,19 +105,17 @@ class SchemaService(
         @PathVariable dataSourceId: Long,
         @RequestParam(required = false) schemaIds: List<Long>?,
     ): List<GenSchemaView> =
-        sqlClient
-            .createQuery(GenSchema::class) {
-                where(table.dataSourceId eq dataSourceId)
-                schemaIds?.takeIf { it.isNotEmpty() }?.let {
-                    where(table.id valueIn it)
-                }
-                select(table.fetch(GenSchemaView::class))
+        sqlClient.executeQuery(GenSchema::class) {
+            where(table.dataSourceId eq dataSourceId)
+            schemaIds?.takeIf { it.isNotEmpty() }?.let {
+                where(table.id valueIn it)
             }
-            .execute()
+            select(table.fetch(GenSchemaView::class))
+        }
 
     @DeleteMapping("/schema/{ids}")
     fun delete(@PathVariable ids: List<Long>): Int =
-        transactionTemplate.execute {
+        transactionTemplate.executeNotNull {
             sqlClient.deleteByIds(GenSchema::class, ids).affectedRowCount(GenSchema::class)
-        }!!
+        }
 }

@@ -20,7 +20,8 @@ import kotlin.reflect.KClass
 @RestController
 @RequestMapping("/enum")
 class EnumService(
-    @Autowired val sqlClient: KSqlClient,
+    @Autowired
+    private val sqlClient: KSqlClient,
 ) {
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenEnumItemsView? =
@@ -31,8 +32,8 @@ class EnumService(
         sqlClient.queryEnum(query, GenEnumView::class)
 
     private fun <T : View<GenEnum>> KSqlClient.queryEnum(query: Query<GenEnum>, viewCLass: KClass<T>): List<T> =
-        createQuery(GenEnum::class) {
+        executeQuery(GenEnum::class) {
             where(query)
             select(table.fetch(viewCLass))
-        }.execute()
+        }
 }

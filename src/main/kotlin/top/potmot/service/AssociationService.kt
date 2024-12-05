@@ -19,7 +19,8 @@ import kotlin.reflect.KClass
 @RestController
 @RequestMapping("/association")
 class AssociationService(
-    @Autowired val sqlClient: KSqlClient,
+    @Autowired
+    private val sqlClient: KSqlClient,
 ) {
     @PostMapping("/query")
     fun query(@RequestBody query: AssociationQuery): List<GenAssociationView> =
@@ -34,8 +35,8 @@ class AssociationService(
         sqlClient.queryAssociation(query, GenAssociationView::class)
 
     private fun <T : View<GenAssociation>> KSqlClient.queryAssociation(query: Query<GenAssociation>, viewClass: KClass<T>): List<T> =
-        createQuery(GenAssociation::class) {
+        executeQuery(GenAssociation::class) {
             where(query)
             select(table.fetch(viewClass))
-        }.execute()
+        }
 }

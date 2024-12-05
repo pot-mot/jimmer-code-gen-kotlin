@@ -14,12 +14,13 @@ import top.potmot.entity.query.where
 @RestController
 @RequestMapping("/column")
 class ColumnService(
-    @Autowired val sqlClient: KSqlClient
+    @Autowired
+    private val sqlClient: KSqlClient
 ) {
     @PostMapping("/query")
     fun query(@RequestBody query: ColumnQuery): List<GenColumnView> =
-        sqlClient.createQuery(GenColumn::class) {
+        sqlClient.executeQuery(GenColumn::class) {
             where(query)
             select(table.fetch(GenColumnView::class))
-        }.execute()
+        }
 }

@@ -1,5 +1,7 @@
 package top.potmot.dataSource.load
 
+import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
@@ -11,13 +13,14 @@ import org.springframework.test.context.ActiveProfiles
 import top.potmot.dataSource.h2DataSource
 import top.potmot.dataSource.mysqlDataSource
 import top.potmot.dataSource.postgresDataSource
+import top.potmot.entity.GenTable
+import top.potmot.entity.id
 import top.potmot.enumeration.SelectType
 import top.potmot.entity.query.AssociationTableQuery
-import top.potmot.entity.query.TableQuery
+import top.potmot.entity.schemaId
 import top.potmot.service.AssociationService
 import top.potmot.service.DataSourceService
 import top.potmot.service.SchemaService
-import top.potmot.service.TableService
 
 private const val SAVED_SCHEMA_SIZE = 1
 
@@ -29,9 +32,9 @@ private const val SAVED_ASSOCIATION_SIZE = 26
 @ActiveProfiles("test", "h2")
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class SchemaLoadTest(
+    @Autowired val sqlClient: KSqlClient,
     @Autowired val dataSourceService: DataSourceService,
     @Autowired val schemaService: SchemaService,
-    @Autowired val tableService: TableService,
     @Autowired val associationService: AssociationService
 ) {
     fun validateResult(dataSourceId: Long, schemaName: String = "jimmer_code_gen") {
@@ -40,12 +43,15 @@ class SchemaLoadTest(
         val savedSchemaIds = schemaService.load(dataSourceId, schema.name)
         assertEquals(SAVED_SCHEMA_SIZE, savedSchemaIds.size)
 
-        val saveTables = tableService.queryIdView(TableQuery(schemaIds = savedSchemaIds))
-        assertEquals(SAVED_TABLE_SIZE, saveTables.size)
+        val saveTableIds = sqlClient.executeQuery(GenTable::class) {
+            where(table.schemaId valueIn savedSchemaIds)
+            select(table.id)
+        }
+        assertEquals(SAVED_TABLE_SIZE, saveTableIds.size)
 
         val saveAssociations = associationService.queryByTable(
             AssociationTableQuery(
-                tableIds = saveTables.map { it.id },
+                tableIds = saveTableIds,
                 selectType = SelectType.AND
             )
         )

@@ -18,12 +18,15 @@ import top.potmot.entity.dataSourceType
 import top.potmot.entity.dto.GenColumnDefaultInput
 import top.potmot.entity.dto.GenColumnDefaultView
 import top.potmot.entity.orderKey
+import top.potmot.utils.transaction.executeNotNull
 
 @RestController
 @RequestMapping("/columnDefault")
 class ColumnDefaultService(
-    @Autowired val sqlClient: KSqlClient,
-    @Autowired val transactionTemplate: TransactionTemplate
+    @Autowired
+    private val sqlClient: KSqlClient,
+    @Autowired
+    private val transactionTemplate: TransactionTemplate
 ) {
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenColumnDefaultView? =
@@ -43,8 +46,8 @@ class ColumnDefaultService(
 
     @PostMapping
     fun saveAll(@RequestBody typeMappings: List<GenColumnDefaultInput>): List<Long> =
-        transactionTemplate.execute {
+        transactionTemplate.executeNotNull {
             sqlClient.createDelete(GenTypeMapping::class) {}.execute()
             sqlClient.entities.saveInputs(typeMappings).items.map { it.modifiedEntity.id }
-        }!!
+        }
 }

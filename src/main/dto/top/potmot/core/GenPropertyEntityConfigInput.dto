@@ -1,4 +1,7 @@
+export top.potmot.entity.GenProperty
+
 input GenPropertyEntityConfigInput {
     #allScalars(this)
     -id
+    enumId
 }
