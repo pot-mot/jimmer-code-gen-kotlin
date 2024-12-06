@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import top.potmot.core.entity.config.configEntity
 import top.potmot.entity.GenEntity
 import top.potmot.entity.dto.GenEntityConfigInput
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenPropertyEntityConfigInput
-import top.potmot.entity.dto.toEntities
 import top.potmot.entity.tableId
 import top.potmot.enumeration.GenLanguage
 import top.potmot.utils.transaction.executeNotNull
@@ -44,18 +44,9 @@ class EntityService(
         }.fetchOneOrNull()
 
     @PutMapping
-    fun config(@RequestBody input: EntityModelBusinessInput): Long =
+    fun config(@RequestBody input: EntityModelBusinessInput) =
         transactionTemplate.executeNotNull {
-            val (entity, properties) = input
-
-            sqlClient.update(entity)
-            sqlClient.insertEntities(properties.toEntities {
-                entityId = entity.id
-                columnId = null
-                typeTable = null
-            })
-
-            entity.id
+            configEntity(sqlClient, input)
         }
 }
 

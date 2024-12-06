@@ -1,5 +1,6 @@
 package top.potmot.service
 
+import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import top.potmot.core.entity.config.configEntities
 import top.potmot.core.model.business.EntityModelBusinessView
 import top.potmot.core.model.business.createEntityConfigInputs
 import top.potmot.core.model.business.getEntityModelBusinessViews
@@ -75,17 +77,7 @@ class ModelService(
                 sqlClient, id, entities,
             )
 
-            sqlClient.updateInputs(entityConfigInputs.map { it.entity })
-
-            sqlClient.insertEntities(
-                entityConfigInputs.flatMap {
-                    it.properties.toEntities {
-                        entityId = it.entity.id
-                        columnId = null
-                        typeTable = null
-                    }
-                }
-            )
+            configEntities(sqlClient, entityConfigInputs)
         }
     }
 
