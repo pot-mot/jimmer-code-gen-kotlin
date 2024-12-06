@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.model.business.EntityModelBusinessView
 import top.potmot.core.model.business.createEntityConfigInputs
@@ -42,8 +43,11 @@ class ModelService(
         sqlClient.findById(GenModelView::class, id)?.getGraphEntities()
 
     @GetMapping("/entityBusinessViews/{id}")
-    fun getEntityBusinessViews(@PathVariable id: Long): List<EntityModelBusinessView> =
-        getEntityModelBusinessViews(sqlClient, id)
+    fun getEntityBusinessViews(
+        @PathVariable id: Long,
+        @RequestParam(required = false) excludeEntityIds: List<Long>?,
+    ): List<EntityModelBusinessView> =
+        getEntityModelBusinessViews(sqlClient, id, excludeEntityIds)
 
     @GetMapping
     fun list(): List<GenModelSimpleView> =

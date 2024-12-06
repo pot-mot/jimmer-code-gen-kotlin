@@ -3,6 +3,7 @@ package top.potmot.core.model.business
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
+import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
 import org.babyfish.jimmer.sql.kt.ast.table.isNotNull
 import org.babyfish.jimmer.sql.kt.ast.table.isNull
 import org.babyfish.jimmer.sql.kt.fetcher.newFetcher
@@ -14,6 +15,7 @@ import top.potmot.entity.`column?`
 import top.potmot.entity.dto.GenEntityModelView
 import top.potmot.entity.dto.GenPropertyModelView
 import top.potmot.entity.entityId
+import top.potmot.entity.id
 import top.potmot.entity.modelId
 
 data class EntityModelBusinessView(
@@ -34,9 +36,13 @@ private val EntityModelViewFetcher = newFetcher(GenEntity::class).by(GenEntityMo
 fun getEntityModelBusinessViews(
     sqlClient: KSqlClient,
     modelId: Long,
+    excludeEntityIds: List<Long>?,
 ): List<EntityModelBusinessView> {
     val entities = sqlClient.executeQuery(GenEntity::class) {
         where(table.modelId eq modelId)
+        excludeEntityIds?.takeIf { it.isNotEmpty() }?.let {
+            where(table.id valueNotIn it)
+        }
         select(table.fetch(EntityModelViewFetcher))
     }
 

@@ -11,7 +11,7 @@ import top.potmot.entity.dto.GenPropertyEntityConfigInput
 import top.potmot.entity.dto.GenPropertyModelView
 import top.potmot.entity.dto.GenTableModelBusinessFillView
 import top.potmot.entity.modelId
-import top.potmot.service.GenEntityConfigWithNewPropertiesInput
+import top.potmot.service.EntityModelBusinessInput
 
 
 // TODO 添加单元测试和报错异常信息
@@ -119,7 +119,7 @@ private fun produceModelBusinessInput(
     entities: List<EntityModelBusinessView>,
     tables: List<GenTableModelBusinessFillView>,
     enums: List<GenEnumModelBusinessFillView>,
-): List<GenEntityConfigWithNewPropertiesInput> {
+): List<EntityModelBusinessInput> {
     val tableNameMap = tables.associateBy { it.name }
     val enumNameIdMap = enums.associate { it.name to it.id }
 
@@ -129,7 +129,7 @@ private fun produceModelBusinessInput(
 
         val columnNameMap = table.columns.associateBy { it.name }
 
-        GenEntityConfigWithNewPropertiesInput(
+        EntityModelBusinessInput(
             entity.toConfigInput(
                 entityId,
                 columnNameMap
@@ -145,7 +145,7 @@ fun createEntityConfigInputs(
     sqlClient: KSqlClient,
     modelId: Long,
     entities: List<EntityModelBusinessView>,
-): List<GenEntityConfigWithNewPropertiesInput> {
+): List<EntityModelBusinessInput> {
     val tables = sqlClient.executeQuery(GenTable::class) {
         where(table.modelId eq modelId)
         select(table.fetch(GenTableModelBusinessFillView::class))

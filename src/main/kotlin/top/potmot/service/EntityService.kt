@@ -44,7 +44,7 @@ class EntityService(
         }.fetchOneOrNull()
 
     @PutMapping
-    fun config(@RequestBody input: GenEntityConfigWithNewPropertiesInput): Long =
+    fun config(@RequestBody input: EntityModelBusinessInput): Long =
         transactionTemplate.executeNotNull {
             val (entity, properties) = input
 
@@ -59,7 +59,7 @@ class EntityService(
         }
 }
 
-data class GenEntityConfigWithNewPropertiesInput(
+data class EntityModelBusinessInput(
     val entity: GenEntityConfigInput,
     val properties: List<GenPropertyEntityConfigInput>,
 )

@@ -14,7 +14,7 @@ import top.potmot.entity.dto.GenPropertyEntityConfigInput
 import top.potmot.entity.property.OtherAnnotation
 import top.potmot.entity.tableId
 import top.potmot.service.EntityService
-import top.potmot.service.GenEntityConfigWithNewPropertiesInput
+import top.potmot.service.EntityModelBusinessInput
 
 class ConvertEntityConfigTest : BaseConvertTest() {
     @Autowired
@@ -139,7 +139,7 @@ class ConvertEntityConfigTest : BaseConvertTest() {
         )
 
         entityService.config(
-            GenEntityConfigWithNewPropertiesInput(
+            EntityModelBusinessInput(
                 entity = GenEntityConfigInput(
                     id = firstConvertEntity.id,
                     name = firstConvertEntity.name + " changed",
