@@ -24,10 +24,13 @@ import top.potmot.entity.GenModel
 import top.potmot.entity.GenTable
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.entity.dto.GenEntityGenerateFileFillView
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.dto.GenerateFile
+import top.potmot.entity.dto.IdName
+import top.potmot.entity.dto.TableEntityNotNullPair
 import top.potmot.entity.extension.merge
 import top.potmot.entity.id
 import top.potmot.entity.modelId
@@ -62,14 +65,21 @@ class GenerateService(
 
             val languageDir by lazy { context.language.name.lowercase() }
 
-            val tables by lazy { sqlClient.listTable(id) }
-            val entityGenerateViews by lazy { sqlClient.listEntity<GenEntityGenerateView>(id) }
+            val tables by lazy {
+                sqlClient.listTable(id)
+            }
+            val lazyEntityGenerateView = lazy {
+                sqlClient.listEntity<GenEntityGenerateView>(id)
+            }
+            val entityGenerateViews by lazyEntityGenerateView
             val entityBusinessViews by lazy {
                 sqlClient.listEntity<GenEntityBusinessView>(id) {
                     where(table.table.type ne TableType.SUPER_TABLE)
                 }
             }
-            val enums by lazy { sqlClient.listEnum(id) }
+            val enums by lazy {
+                sqlClient.listEnum(id)
+            }
 
             val typeSet = types.toSet()
             val containsAll = GenerateType.ALL in typeSet
@@ -123,8 +133,52 @@ class GenerateService(
                 result += viewGenerator.generateView(entityBusinessViews)
             }
 
-            result
+
+
+            result.apply {
+                val tableEntityPairs =
+                    if (lazyEntityGenerateView.isInitialized()) {
+                        entityGenerateViews.map {
+                            TableEntityNotNullPair(
+                                table = IdName(it.table.id, it.table.name),
+                                entity = IdName(it.id, it.name)
+                            )
+                        }
+                    } else {
+                        sqlClient.listEntity<GenEntityGenerateFileFillView>(modelId = id).map {
+                            TableEntityNotNullPair(
+                                table = IdName(it.table.id, it.table.name),
+                                entity = IdName(it.id, it.name)
+                            )
+                        }
+                    }
+
+                fillGenerateFilesData(
+                    this,
+                    tableEntityPairs
+                )
+            }
         }
+
+    fun fillGenerateFilesData(
+        generateFiles: List<GenerateFile>,
+        tableEntityPairs: List<TableEntityNotNullPair>,
+    ) {
+        val tableIdEntityMap = tableEntityPairs.associate { it.table.id to it.entity }
+        val entityIdTableMap = tableEntityPairs.associate { it.entity.id to it.table }
+
+        generateFiles.forEach { generateFile ->
+            generateFile.tableEntities.forEach {
+                val (table, entity) = it
+
+                if (table != null && entity == null) {
+                    it.entity = tableIdEntityMap[table.id]
+                } else if (entity != null && table == null) {
+                    it.table = entityIdTableMap[entity.id]
+                }
+            }
+        }
+    }
 
     /**
      * 基本查询

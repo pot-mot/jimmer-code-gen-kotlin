@@ -66,6 +66,8 @@ fun mergeExistAndConvertEntity(
         overwriteComment = existEntity.overwriteComment
         remark = existEntity.remark
 
+        otherAnnotation = existEntity.otherAnnotation
+
         canAdd = existEntity.canAdd
         canEdit = existEntity.canEdit
         canQuery = existEntity.canQuery

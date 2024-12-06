@@ -5,14 +5,33 @@ import top.potmot.entity.dto.share.GenerateEnum
 import top.potmot.entity.extension.allSuperTables
 import top.potmot.enumeration.GenerateTag
 
+enum class MainType {
+    Table,
+    Entity,
+    Enum,
+}
+
+data class MainIdName(
+    val mainType: MainType,
+    val idName: IdName,
+)
+
+data class TableEntityNotNullPair(
+    val table: IdName,
+    val entity: IdName,
+)
+
+data class TableEntityPair(
+    var table: IdName? = null,
+    var entity: IdName? = null,
+)
+
 data class GenerateFile(
     val path: String,
     val content: String,
     val tags: List<GenerateTag>,
-    val mainTable: IdName? = null,
-    val tables: List<IdName> = emptyList(),
-    val mainEntity: IdName? = null,
-    val entities: List<IdName> = emptyList(),
+    val main: MainIdName? = null,
+    val tableEntities: List<TableEntityPair> = emptyList(),
     val enums: List<IdName> = emptyList(),
     val associations: List<IdName> = emptyList(),
 )
@@ -38,8 +57,8 @@ fun GenerateFile(
         path = path,
         content = content,
         tags = tags,
-        mainTable = table.idName,
-        tables = allSuperTables.map { it.idName },
+        main = MainIdName(MainType.Table, table.idName),
+        tableEntities = allSuperTables.map { TableEntityPair(table = it.idName) },
         associations = listOf(
             table.outAssociations.map { it.idName },
             allSuperTables.flatMap { it.outAssociations.map { a -> a.idName } },
@@ -61,8 +80,13 @@ fun createGenerateFileByTables(
         path = path,
         content = content,
         tags = tags,
-        tables = tables.map { it.idName } +
-                allSuperTables.map { it.idName },
+        tableEntities =
+        listOf(
+            tables.map { it.idName },
+            allSuperTables.map { it.idName }
+        ).flatten().map {
+            TableEntityPair(table = it)
+        },
         associations = listOf(
             tables.flatMap { it.outAssociations.map { a -> a.idName } },
             allSuperTables.flatMap { it.outAssociations.map { a -> a.idName } },
@@ -84,6 +108,7 @@ fun GenerateFile(
     path = path,
     content = content,
     tags = tags,
+    main = MainIdName(MainType.Enum, enum.idName),
     enums = listOf(enum.idName),
 )
 
@@ -102,9 +127,10 @@ fun GenerateFile(
     path = path,
     content = content,
     tags = tags,
-    mainTable = entity.table.idName,
-    mainEntity = entity.idName,
-    entities = entity.properties.mapNotNull { it.typeTable?.entity?.idName },
+    main = MainIdName(MainType.Entity, entity.idName),
+    tableEntities = entity.properties.mapNotNull { it.typeTable?.entity?.idName }
+        .map { TableEntityPair(entity = it) }
+            + TableEntityPair(table = entity.table.idName, entity = entity.idName),
     enums = entity.properties.mapNotNull { it.enum?.idName }
 )
 
@@ -117,21 +143,9 @@ fun GenerateFile(
     path = path,
     content = content,
     tags = tags,
-    mainEntity = entity.idName,
-    entities = entity.properties.mapNotNull { it.typeEntity?.idName },
+    main = MainIdName(MainType.Entity, entity.idName),
+    tableEntities = entity.properties.mapNotNull { it.typeEntity?.idName }.map { TableEntityPair(entity = it) },
     enums = entity.properties.mapNotNull { it.enum?.idName }
-)
-
-fun GenerateFile(
-    entity: GenerateEntity,
-    path: String,
-    content: String,
-    tags: List<GenerateTag>,
-) = GenerateFile(
-    path = path,
-    content = content,
-    tags = tags,
-    mainEntity = IdName(entity.id, entity.name),
 )
 
 fun createGenerateFileByEntities(
@@ -143,5 +157,5 @@ fun createGenerateFileByEntities(
     path = path,
     content = content,
     tags = tags,
-    entities = entities.map { IdName(it.id, it.name) },
+    tableEntities = entities.map { TableEntityPair(entity = IdName(it.id, it.name)) },
 )
