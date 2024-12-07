@@ -14,14 +14,28 @@ class StringIndentScopeBuilder(
         currentIndent = currentIndent.dropLast(indent.length)
     }
 
+    fun indent() {
+        stringBuilder.append(indent)
+    }
+
+    fun currentIndent() {
+        stringBuilder.append(currentIndent)
+    }
+
     fun append(content: String) {
+        if (stringBuilder.endsWith("\n")) {
+            stringBuilder.append(currentIndent)
+        }
         stringBuilder.append(content)
     }
 
-    fun line(
-        content: String,
-    ) {
-        stringBuilder.appendLine("$currentIndent$content")
+    fun line() {
+        stringBuilder.appendLine()
+    }
+
+    fun line(content: String) {
+        stringBuilder.append(currentIndent)
+        stringBuilder.appendLine(content)
     }
 
     fun lines(

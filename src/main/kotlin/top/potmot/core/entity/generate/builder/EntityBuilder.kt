@@ -1,5 +1,6 @@
 package top.potmot.core.entity.generate.builder
 
+import java.util.UUID
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
@@ -23,11 +24,9 @@ import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
 import top.potmot.enumeration.TableType
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenPropertyView
-import top.potmot.utils.string.appendBlock
-import top.potmot.utils.string.appendLines
 import top.potmot.utils.time.now
-import java.util.*
 import kotlin.reflect.KClass
+import top.potmot.utils.string.buildScopeString
 
 abstract class EntityBuilder : CodeBuilder() {
     abstract fun entityLine(entity: GenEntityGenerateView): String
@@ -37,26 +36,28 @@ abstract class EntityBuilder : CodeBuilder() {
     private fun String.quotationEscape(): String = replace("\"", "\\\"")
 
     fun build(entity: GenEntityGenerateView): String =
-        buildString {
-            appendLine(packageLine(entity.packagePath))
+        buildScopeString {
+            line(packageLine(entity.packagePath))
 
-            appendLine()
-            appendLines(importItems(entity)) { importLine(it) }
-            appendLine()
+            line()
+            lines(importItems(entity)) { importLine(it) }
+            line()
 
-            appendBlock(blockComment(entity))
-            appendLines(annotationLines(entity))
+            block(blockComment(entity))
+            lines(annotationLines(entity))
 
-            appendLine(entityLine(entity) + " {")
+            line(entityLine(entity) + " {")
 
-            entity.properties.forEachIndexed { index, property ->
-                appendBlock(blockComment(property)) { "    $it" }
-                appendLines(annotationLines(property)) { "    $it" }
-                appendBlock(propertyBlock(property)) { "    $it" }
-                if (index < entity.properties.size - 1) appendLine()
+            scope {
+                entity.properties.forEachIndexed { index, property ->
+                    block(blockComment(property))
+                    lines(annotationLines(property))
+                    block(propertyBlock(property))
+                    if (index < entity.properties.size - 1) line()
+                }
             }
 
-            appendLine("}")
+            line("}")
         }
 
     open fun GenEntityGenerateView.tableAnnotation(): String =

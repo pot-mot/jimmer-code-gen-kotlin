@@ -2,32 +2,40 @@ package top.potmot.core.entity.generate.impl.java
 
 import top.potmot.core.entity.generate.builder.AssociationAnnotationBuilder
 import top.potmot.core.entity.meta.JoinTableMeta
+import top.potmot.utils.string.buildScopeString
 
 object JavaAssociationAnnotationBuilder : AssociationAnnotationBuilder("        ") {
     override fun build(meta: JoinTableMeta) =
-        buildString {
-            appendLine("@JoinTable(")
-            appendLine("${indent}name = \"${meta.tableName}\",")
+        buildScopeString(indent) {
+            line("@JoinTable(")
+            
+            scope {
+                line("name = \"${meta.tableName}\",")
 
-            val foreignKeyTypeProp = createForeignKeyType(meta.foreignKeyType)
+                val foreignKeyTypeProp = createForeignKeyType(meta.foreignKeyType)
 
-            if (meta.columnNamePairs.size == 1 && foreignKeyTypeProp == null) {
-                appendLine("${indent}joinColumnName = \"${meta.columnNamePairs[0].first}\",")
-                appendLine("${indent}inverseJoinColumnName = \"${meta.columnNamePairs[0].second}\"")
-            } else {
-                appendLine("${indent}joinColumns = {")
-                meta.columnNamePairs.forEach {
-                    appendLine("$indent${indent}@JoinColumn(name = \"${it.first}\", ${foreignKeyTypeProp ?: ""}),")
+                if (meta.columnNamePairs.size == 1 && foreignKeyTypeProp == null) {
+                    line("joinColumnName = \"${meta.columnNamePairs[0].first}\",")
+                    line("inverseJoinColumnName = \"${meta.columnNamePairs[0].second}\"")
+                } else {
+                    line("joinColumns = {")
+                    scope {
+                        meta.columnNamePairs.forEach {
+                            line("@JoinColumn(name = \"${it.first}\", ${foreignKeyTypeProp ?: ""}),")
+                        }
+                    }
+                    line("},")
+
+                    line("inverseJoinColumns = {")
+                    scope {
+                        meta.columnNamePairs.forEach {
+                            line("@JoinColumn(name = \"${it.second}\", ${foreignKeyTypeProp ?: ""}),")
+                        }
+                    }
+                    line("}")
                 }
-                appendLine("$indent},")
-
-                appendLine("${indent}inverseJoinColumns = {")
-                meta.columnNamePairs.forEach {
-                    appendLine("$indent${indent}@JoinColumn(name = \"${it.second}\", ${foreignKeyTypeProp ?: ""}),")
-                }
-                appendLine("$indent}")
             }
-
+            
             append(")")
         }
 }

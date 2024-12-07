@@ -4,8 +4,8 @@ import org.jetbrains.annotations.Nullable
 import top.potmot.core.entity.generate.builder.EntityBuilder
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenPropertyView
-import top.potmot.utils.string.appendBlock
 import kotlin.reflect.KClass
+import top.potmot.utils.string.buildScopeString
 
 object JavaEntityBuilder : EntityBuilder() {
     override fun packageLine(path: String): String = "package ${path};"
@@ -23,7 +23,7 @@ object JavaEntityBuilder : EntityBuilder() {
         }
 
     override fun propertyBlock(property: GenPropertyView) =
-        buildString {
+        buildScopeString {
             if (property.body != null) {
                 append("default ")
             }
@@ -31,8 +31,10 @@ object JavaEntityBuilder : EntityBuilder() {
             if (property.body == null) {
                 append(";")
             } else {
-                appendLine(" {")
-                appendBlock(property.body.codeBlock) { "    $it" }
+                line(" {")
+                scope {
+                    block(property.body.codeBlock)
+                }
                 append("}")
             }
         }

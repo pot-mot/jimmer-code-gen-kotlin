@@ -4,9 +4,8 @@ import org.babyfish.jimmer.sql.EnumItem
 import top.potmot.enumeration.EnumType
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenEnumItemGenerateView
-import top.potmot.utils.string.appendBlock
-import top.potmot.utils.string.appendLines
 import kotlin.reflect.KClass
+import top.potmot.utils.string.buildScopeString
 
 abstract class EnumBuilder : CodeBuilder() {
     abstract fun enumLine(enum: GenEnumGenerateView): String
@@ -14,25 +13,27 @@ abstract class EnumBuilder : CodeBuilder() {
     abstract fun itemLine(item: GenEnumItemGenerateView): String
 
     fun build(enum: GenEnumGenerateView): String =
-        buildString {
-            appendLine(packageLine(enum.packagePath))
+        buildScopeString {
+            line(packageLine(enum.packagePath))
 
-            appendLine()
-            appendLines(importLines(enum)) { importLine(it) }
-            appendLine()
+            line()
+            lines(importLines(enum)) { importLine(it) }
+            line()
 
-            appendBlock(blockComment(enum))
-            appendLines(annotationLines(enum))
-            appendLine(enumLine(enum) + " {")
+            block(blockComment(enum))
+            lines(annotationLines(enum))
+            line(enumLine(enum) + " {")
 
-            enum.items.forEachIndexed { index, item ->
-                appendBlock(blockComment(item)) { "    $it" }
-                appendBlock(annotationBlock(item, enum.enumType)) { "    $it" }
-                appendLine("    ${itemLine(item)}")
-                if (index < enum.items.size - 1) appendLine()
+            scope {
+                enum.items.forEachIndexed { index, item ->
+                    block(blockComment(item))
+                    block(annotationBlock(item, enum.enumType))
+                    line(itemLine(item))
+                    if (index < enum.items.size - 1) line()
+                }
             }
 
-            appendLine("}")
+            line("}")
         }
 
     open fun importClasses(enum: GenEnumGenerateView): Set<KClass<*>> {

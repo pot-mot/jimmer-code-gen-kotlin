@@ -2,9 +2,9 @@ package top.potmot.core.entity.generate.builder
 
 import top.potmot.core.entity.meta.judgeImportPathInDefaultPackage
 import top.potmot.entity.dto.GenEntityGenerateView
-import top.potmot.utils.string.appendLines
 import top.potmot.utils.string.toBlockLines
 import kotlin.reflect.KClass
+import top.potmot.utils.string.buildScopeString
 
 abstract class CodeBuilder {
     abstract fun packageLine(path: String): String
@@ -16,20 +16,20 @@ abstract class CodeBuilder {
         remark: String = "",
         params: Map<String, String> = emptyMap(),
     ): String? =
-        buildString {
+        buildScopeString {
             comment.takeIf { it.isNotBlank() }?.let {
-                appendLines(it.toBlockLines()) { line -> " * $line" }
+                lines(it.toBlockLines()) { line -> " * $line" }
             }
 
             remark.takeIf { it.isNotBlank() }?.let {
-                appendLines(it.toBlockLines()) { line -> " * $line" }
+                lines(it.toBlockLines()) { line -> " * $line" }
             }
 
-            if (params.isNotEmpty() && toString().isNotBlank()) {
-                appendLine(" * ")
+            if (params.isNotEmpty() && stringBuilder.isNotBlank()) {
+                line(" * ")
             }
             params.forEach { (key, value) ->
-                appendLine(" * @$key $value")
+                line(" * @$key $value")
             }
         }.let {
             if (it.isBlank()) null else "/**\n$it */"
