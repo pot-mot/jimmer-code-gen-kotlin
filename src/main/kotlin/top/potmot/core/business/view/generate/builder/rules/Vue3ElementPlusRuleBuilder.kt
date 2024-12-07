@@ -13,7 +13,7 @@ import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.ModelException
-import top.potmot.utils.string.appendBlock
+import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.trimBlankLine
 
 class Vue3ElementPlusRuleBuilder(
@@ -36,15 +36,19 @@ class Vue3ElementPlusRuleBuilder(
 
         var hasExistValidRule = false
 
-        val body = buildString {
-            appendLine("return {")
-            propertyRules.forEach { (property, rules) ->
-                appendLine("$indent${property.nameOrWithId}: [")
-                rules.forEach { rule ->
-                    hasExistValidRule = rule is ExistValidRule
-                    appendBlock(rule.stringify() + ",") { "$indent$indent$it" }
+        val body = buildScopeString(indent) {
+            line("return {")
+            scope {
+                propertyRules.forEach { (property, rules) ->
+                    line("${property.nameOrWithId}: [")
+                    rules.forEach { rule ->
+                        hasExistValidRule = rule is ExistValidRule
+                        scope {
+                            block(rule.stringify() + ",")
+                        }
+                    }
+                    line("],")
                 }
-                appendLine("$indent],")
             }
             append("}")
         }

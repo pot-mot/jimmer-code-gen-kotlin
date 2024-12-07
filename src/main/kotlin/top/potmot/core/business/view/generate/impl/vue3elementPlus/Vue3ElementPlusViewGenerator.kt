@@ -57,7 +57,7 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.error.ModelException
 import top.potmot.utils.list.join
-import top.potmot.utils.string.appendLines
+import top.potmot.utils.string.buildScopeString
 
 object Vue3ElementPlusViewGenerator :
     ViewGenerator,
@@ -69,7 +69,7 @@ object Vue3ElementPlusViewGenerator :
     AddFormDefault,
     AddFormType {
     private val builder = Vue3ComponentBuilder()
-    
+
     private val indent = builder.indent
     private val wrapThreshold = builder.wrapThreshold
 
@@ -204,18 +204,20 @@ object Vue3ElementPlusViewGenerator :
             ImportType(enumPath, it.name)
         }
 
-        return buildString {
+        return buildScopeString(indent) {
             builder.apply {
-                appendLines(enumImports.stringifyImports())
+                lines(enumImports.stringifyImports())
             }
 
-            if (enumImports.isNotEmpty()) appendLine()
+            if (enumImports.isNotEmpty()) line()
 
-            appendLine("export type ${entity.addFormDataType} = {")
-            context.forEach { (property, type) ->
-                appendLine("${indent}${property.name}: $type")
+            line("export type ${entity.addFormDataType} = {")
+            scope {
+                context.forEach { (property, type) ->
+                    line("${property.name}: $type")
+                }
             }
-            appendLine("}")
+            line("}")
         }
     }
 
@@ -224,16 +226,20 @@ object Vue3ElementPlusViewGenerator :
         val content = entity.addFormProperties.associateWith { it.addFormDefault }
         val type = entity.addFormDataType
 
-        return buildString {
-            appendLine("import type {$type} from \"./${entity.addFormDataType}\"")
-            appendLine()
-            appendLine("export const ${entity.addFormCreateDefault} = (): $type => {")
-            appendLine("${indent}return {")
-            content.forEach { (property, default) ->
-                appendLine("${indent}${indent}${property.name}: $default,")
+        return buildScopeString(indent) {
+            line("import type {$type} from \"./${entity.addFormDataType}\"")
+            line()
+            line("export const ${entity.addFormCreateDefault} = (): $type => {")
+            scope {
+                line("return {")
+                scope {
+                    content.forEach { (property, default) ->
+                        line("${property.name}: $default,")
+                    }
+                }
+                line("}")
             }
-            appendLine("${indent}}")
-            appendLine("}")
+            line("}")
         }
     }
 
@@ -257,11 +263,13 @@ object Vue3ElementPlusViewGenerator :
         val hasNullableDiffProperties = nullableDiffProperties.isNotEmpty()
 
         val afterValidCodes = nullableDiffProperties.joinToString("\n\n") {
-            buildString {
-                appendLine("if (formData.value.toOnePropertyId === undefined) {")
-                appendLine("${indent}sendMessage(\"toOneProperty不可为空\", \"warning\")")
-                appendLine("${indent}return")
-                appendLine("}")
+            buildScopeString(indent) {
+                line("if (formData.value.toOnePropertyId === undefined) {")
+                scope {
+                    line("sendMessage(\"toOneProperty不可为空\", \"warning\")")
+                    line("return")
+                }
+                line("}")
             }
         }
 
