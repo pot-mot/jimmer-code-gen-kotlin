@@ -11,8 +11,11 @@ import top.potmot.entity.dto.GenPropertyEntityConfigInput
 import top.potmot.entity.dto.GenPropertyModelView
 import top.potmot.entity.dto.GenTableModelBusinessFillView
 import top.potmot.entity.modelId
-import top.potmot.service.EntityModelBusinessInput
 
+data class EntityModelBusinessInput(
+    val entity: GenEntityConfigInput,
+    val properties: List<GenPropertyEntityConfigInput>,
+)
 
 // TODO 添加单元测试和报错异常信息
 
@@ -38,7 +41,7 @@ private fun GenEntityModelView.toConfigInput(
                 ?: throw RuntimeException()
 
             val matchProperties = column.properties.filter {
-                it.name == property.name
+                if (it.overwriteName) true else it.name == property.name
                         && it.type == property.type
                         && it.typeNotNull == property.typeNotNull
                         && it.typeTable?.name == property.typeTable?.name
@@ -115,15 +118,18 @@ private fun GenPropertyModelView.toConfigInput(
     enumId = enumNameIdMap[enum?.name]
 )
 
-private fun produceModelBusinessInput(
-    entities: List<EntityModelBusinessView>,
+
+/**
+ * 处理 ModelBusinessInput 为 EntityModelBusinessView
+ */
+private fun List<EntityModelBusinessView>.toModelBusinessInputs(
     tables: List<GenTableModelBusinessFillView>,
     enums: List<GenEnumModelBusinessFillView>,
 ): List<EntityModelBusinessInput> {
     val tableNameMap = tables.associateBy { it.name }
     val enumNameIdMap = enums.associate { it.name to it.id }
 
-    return entities.map { (entity, properties) ->
+    return map { (entity, properties) ->
         val table = tableNameMap[entity.tableName] ?: throw RuntimeException()
         val entityId = table.entityId ?: throw RuntimeException()
 
@@ -141,7 +147,10 @@ private fun produceModelBusinessInput(
     }
 }
 
-fun createEntityConfigInputs(
+/**
+ * 创建实体配置输入对象
+ */
+fun createEntityModelBusinessInputs(
     sqlClient: KSqlClient,
     modelId: Long,
     entities: List<EntityModelBusinessView>,
@@ -156,5 +165,5 @@ fun createEntityConfigInputs(
         select(table.fetch(GenEnumModelBusinessFillView::class))
     }
 
-    return produceModelBusinessInput(entities, tables, enums)
+    return entities.toModelBusinessInputs(tables, enums)
 }

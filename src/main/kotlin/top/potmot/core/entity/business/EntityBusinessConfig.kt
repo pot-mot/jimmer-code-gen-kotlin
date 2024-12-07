@@ -1,9 +1,9 @@
-package top.potmot.core.entity.config
+package top.potmot.core.entity.business
 
 import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
+import top.potmot.core.model.business.EntityModelBusinessInput
 import top.potmot.entity.dto.toEntities
-import top.potmot.service.EntityModelBusinessInput
 
 fun configEntities(
     sqlClient: KSqlClient,

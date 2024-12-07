@@ -10,11 +10,10 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.entity.config.configEntity
+import top.potmot.core.entity.business.configEntity
+import top.potmot.core.model.business.EntityModelBusinessInput
 import top.potmot.entity.GenEntity
-import top.potmot.entity.dto.GenEntityConfigInput
 import top.potmot.entity.dto.GenEntityDetailView
-import top.potmot.entity.dto.GenPropertyEntityConfigInput
 import top.potmot.entity.tableId
 import top.potmot.enumeration.GenLanguage
 import top.potmot.utils.transaction.executeNotNull
@@ -49,8 +48,3 @@ class EntityService(
             configEntity(sqlClient, input)
         }
 }
-
-data class EntityModelBusinessInput(
-    val entity: GenEntityConfigInput,
-    val properties: List<GenPropertyEntityConfigInput>,
-)
