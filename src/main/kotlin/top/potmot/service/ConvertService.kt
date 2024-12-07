@@ -70,18 +70,10 @@ class ConvertService(
                 }
             }
 
-            sqlClient.insertInputs(insertEntities).items.forEach {
-                val entity = it.modifiedEntity
-                val table = tableIdMap[entity.tableId]
-                    ?: throw ConvertException.entityMatchTableNotFound(
-                        "entity [${entity}]",
-                        entity = IdName(entity.id, entity.name),
-                        tableId = entity.tableId,
-                    )
-                tableEntityIdPairs += table to entity.id
-                result += entity.id
-            }
-            sqlClient.saveEntities(updateEntities).items.forEach {
+            listOf(
+                sqlClient.insertInputs(insertEntities).items,
+                sqlClient.saveEntities(updateEntities).items
+            ).flatten().forEach {
                 val entity = it.modifiedEntity
                 val table = tableIdMap[entity.tableId]
                     ?: throw ConvertException.entityMatchTableNotFound(
