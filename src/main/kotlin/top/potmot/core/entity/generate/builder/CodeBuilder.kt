@@ -48,8 +48,5 @@ abstract class CodeBuilder {
                     &&
                     // 非当前包下的 import
                     (importItem.substringBeforeLast(".") != entity.packagePath)
-                    &&
-                    // 至少有 2 级包
-                    (importItem.split(".").filter { it.isNotBlank() }.size >= 2)
         }
 }

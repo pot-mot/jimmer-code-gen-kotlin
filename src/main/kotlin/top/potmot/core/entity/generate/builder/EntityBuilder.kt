@@ -242,11 +242,23 @@ abstract class EntityBuilder : CodeBuilder() {
         return result
     }
 
-    open fun importItems(property: GenPropertyView): Set<String> =
-        classesToLines(importClasses(property)) +
-                property.fullType() +
-                (property.otherAnnotation?.importLines ?: emptyList()) +
-                (property.body?.importLines ?: emptyList())
+    open fun importItems(property: GenPropertyView): Set<String> {
+        val imports = classesToLines(importClasses(property)).toMutableSet()
+
+        property.otherAnnotation?.importLines?.let {
+            imports += it
+        }
+
+        property.body?.importLines?.let {
+            imports += it
+        }
+
+        property.fullType()
+            .takeIf { type -> type.split(".").filter { it.isNotBlank() }.size >= 2 }
+            ?.let { imports += it }
+
+        return imports
+    }
 
     open fun importItems(entity: GenEntityGenerateView): List<String> {
         val imports = mutableListOf<String>()
