@@ -24,6 +24,7 @@ import top.potmot.entity.dto.GenModelInput
 import top.potmot.entity.dto.GenModelSimpleView
 import top.potmot.entity.dto.GenModelView
 import top.potmot.error.LoadFromModelException
+import top.potmot.error.ModelBusinessInputException
 import top.potmot.utils.transaction.executeNotNull
 
 @RestController
@@ -66,6 +67,7 @@ class ModelService(
         }
 
     @PostMapping("/business/{id}")
+    @Throws(ModelBusinessInputException::class)
     fun saveBusiness(
         @PathVariable id: Long,
         @RequestBody entities: List<EntityModelBusinessView>,

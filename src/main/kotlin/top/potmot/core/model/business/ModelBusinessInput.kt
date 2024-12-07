@@ -1,5 +1,6 @@
 package top.potmot.core.model.business
 
+import kotlin.jvm.Throws
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import top.potmot.entity.GenEnum
@@ -10,7 +11,9 @@ import top.potmot.entity.dto.GenEnumModelBusinessFillView
 import top.potmot.entity.dto.GenPropertyEntityConfigInput
 import top.potmot.entity.dto.GenPropertyModelView
 import top.potmot.entity.dto.GenTableModelBusinessFillView
+import top.potmot.entity.dto.IdName
 import top.potmot.entity.modelId
+import top.potmot.error.ModelBusinessInputException
 
 data class EntityModelBusinessInput(
     val entity: GenEntityConfigInput,
@@ -19,6 +22,11 @@ data class EntityModelBusinessInput(
 
 // TODO 添加单元测试和报错异常信息
 
+@Throws(
+    ModelBusinessInputException.PropertyCannotMatchColumn::class,
+    ModelBusinessInputException.PropertyCannotRematchOldProperty::class,
+    ModelBusinessInputException.PropertyMatchedMoreThanOneOldProperty::class,
+)
 private fun GenEntityModelView.toConfigInput(
     id: Long,
     columnNameMap: Map<String, GenTableModelBusinessFillView.TargetOf_columns>,
@@ -38,7 +46,11 @@ private fun GenEntityModelView.toConfigInput(
         otherAnnotation = otherAnnotation,
         properties = properties.map { property ->
             val column = columnNameMap[property.columnName]
-                ?: throw RuntimeException()
+                ?: throw ModelBusinessInputException.propertyCannotMatchColumn(
+                    "Property [${property.name}] cannot match column",
+                    entity = IdName(id, name),
+                    propertyName = property.name,
+                )
 
             val matchProperties = column.properties.filter {
                 if (it.overwriteName) true else it.name == property.name
@@ -50,8 +62,23 @@ private fun GenEntityModelView.toConfigInput(
                         && it.joinTableMeta.toString() == property.joinTableMeta.toString()
             }
 
-            if (matchProperties.size != 1)
-                throw RuntimeException()
+            if (matchProperties.isEmpty())
+                throw ModelBusinessInputException.propertyCannotRematchOldProperty(
+                    "Property [${property.name}] matched column [${column.name}] has no properties",
+                    entity = IdName(id, name),
+                    propertyName = property.name,
+                    matchedColumn = IdName(column.id, column.name)
+                )
+
+            if (matchProperties.size > 1)
+                throw ModelBusinessInputException.propertyMatchedMoreThanOneOldProperty(
+                    "Property [${property.name}] matched column [${column.name}] has more than one matched properties:" +
+                            matchProperties.joinToString(", ") { "[${property.name}]" },
+                    entity = IdName(id, name),
+                    propertyName = property.name,
+                    matchedColumn = IdName(column.id, column.name),
+                    matchedProperties = matchProperties.map { IdName(it.id, it.name) }
+                )
 
             val matchProperty = matchProperties[0]
 
@@ -122,6 +149,7 @@ private fun GenPropertyModelView.toConfigInput(
 /**
  * 处理 ModelBusinessInput 为 EntityModelBusinessView
  */
+@Throws(ModelBusinessInputException::class)
 private fun List<EntityModelBusinessView>.toModelBusinessInputs(
     tables: List<GenTableModelBusinessFillView>,
     enums: List<GenEnumModelBusinessFillView>,
@@ -130,8 +158,17 @@ private fun List<EntityModelBusinessView>.toModelBusinessInputs(
     val enumNameIdMap = enums.associate { it.name to it.id }
 
     return map { (entity, properties) ->
-        val table = tableNameMap[entity.tableName] ?: throw RuntimeException()
-        val entityId = table.entityId ?: throw RuntimeException()
+        val table = tableNameMap[entity.tableName]
+            ?: throw ModelBusinessInputException.entityCannotMatchTable(
+                "entity [${entity.name}] cannot match table",
+                entityName = entity.name,
+                tableName = entity.tableName
+            )
+        val entityId = table.entityId
+            ?: throw ModelBusinessInputException.entityMatchedTableConvertedEntityNotFound(
+                entityName = entity.name,
+                table = IdName(table.id, table.name)
+            )
 
         val columnNameMap = table.columns.associateBy { it.name }
 
@@ -150,6 +187,7 @@ private fun List<EntityModelBusinessView>.toModelBusinessInputs(
 /**
  * 创建实体配置输入对象
  */
+@Throws(ModelBusinessInputException::class)
 fun createEntityModelBusinessInputs(
     sqlClient: KSqlClient,
     modelId: Long,
