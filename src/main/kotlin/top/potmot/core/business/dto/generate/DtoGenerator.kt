@@ -15,6 +15,7 @@ import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
 import top.potmot.utils.string.appendBlock
+import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.toSingular
 
 object DtoGenerator : EntityPropertyCategories {
@@ -31,120 +32,128 @@ object DtoGenerator : EntityPropertyCategories {
     private val TargetOf_properties.associationIdExpress
         get() = if (idView) name else "id(${name})"
 
-    private fun TargetOf_properties.extractShortAssociation(): String =
-        buildString {
-            if (typeEntity == null || typeEntity.shortViewProperties.isEmpty()) {
-                appendLine(associationIdExpress)
-            } else {
-                appendLine("$name {")
+    private fun TargetOf_properties.extractShortAssociation(): String = buildScopeString {
+        if (typeEntity == null || typeEntity.shortViewProperties.isEmpty()) {
+            append(associationIdExpress)
+        } else {
+            line("$name {")
+            scope {
                 typeEntity.shortViewProperties.forEach {
-                    appendLine("    ${it.name}")
+                    line(it.name)
                 }
-                append("}")
             }
-        }.trim()
+            append("}")
+        }
+    }
 
     private val GenEntityBusinessView.targetOneIdExpress: List<String>
         get() = targetOneProperties.map {
             it.associationIdExpress
         }
 
-    private fun generateListView(entity: GenEntityBusinessView) = buildString {
+    private fun generateListView(entity: GenEntityBusinessView) = buildScopeString {
         val listViewProperties = entity.listViewProperties
 
-        appendLine("${entity.dto.listView} {")
-        appendLine("    #allScalars")
-        entity.scalarProperties.exclude(listViewProperties).forEach {
-            appendLine("    -${it.name}")
-        }
-        listViewProperties.filter { it.associationType != null }.forEach {
-            if (it.isShortAssociation) {
-                appendBlock(it.extractShortAssociation()) { line -> "    $line" }
-            } else {
-                appendLine("    ${it.associationIdExpress}")
+        line("${entity.dto.listView} {")
+        scope {
+            line("#allScalars")
+            entity.scalarProperties.exclude(listViewProperties).forEach {
+                line("-${it.name}")
+            }
+            listViewProperties.filter { it.associationType != null }.forEach {
+                if (it.isShortAssociation) {
+                    block(it.extractShortAssociation())
+                } else {
+                    line(it.associationIdExpress)
+                }
             }
         }
-        appendLine("}")
+        line("}")
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun generateOptionView(entity: GenEntityBusinessView) = buildString {
+    private fun generateOptionView(entity: GenEntityBusinessView) = buildScopeString {
         val idProperty = entity.idProperty
         val idName = idProperty.name
         val label = entity.selectOptionLabels
 
-        appendLine("${entity.dto.optionView} {")
-        appendLine("    $idName")
-        label.forEach { appendLine("    $it") }
-        appendLine("}")
+        line("${entity.dto.optionView} {")
+        scope {
+            line(idName)
+            lines(label)
+
+        }
+        line("}")
     }
 
-    private fun generateDetailView(entity: GenEntityBusinessView) = buildString {
+    private fun generateDetailView(entity: GenEntityBusinessView) = buildScopeString {
         val detailViewProperties = entity.detailViewProperties
 
-        appendLine("${entity.dto.detailView} {")
-        appendLine("    #allScalars")
-        entity.scalarProperties.exclude(detailViewProperties).forEach {
-            appendLine("    -${it.name}")
-        }
-        detailViewProperties.filter { it.associationType != null }.forEach {
-            if (it.isShortAssociation) {
-                appendBlock(it.extractShortAssociation()) { line -> "    $line" }
-            } else {
-                appendLine("    ${it.associationIdExpress}")
+        line("${entity.dto.detailView} {")
+        scope {
+            line("#allScalars")
+            entity.scalarProperties.exclude(detailViewProperties).forEach {
+                line("-${it.name}")
+            }
+            detailViewProperties.filter { it.associationType != null }.forEach {
+                if (it.isShortAssociation) {
+                    block(it.extractShortAssociation())
+                } else {
+                    line(it.associationIdExpress)
+                }
             }
         }
-        appendLine("}")
+        line("}")
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun generateInsertInput(entity: GenEntityBusinessView) = buildString {
+    private fun generateInsertInput(entity: GenEntityBusinessView) = buildScopeString {
         val insertInputProperties = entity.insertInputProperties
         val idProperty = entity.idProperty
         val idName = idProperty.name
 
-        appendLine("input ${entity.dto.insertInput} {")
-        appendLine("    #allScalars")
-        appendLine("    -${idName}")
-        entity.scalarProperties.exclude(insertInputProperties).forEach {
-            appendLine("    -${it.name}")
+        line("input ${entity.dto.insertInput} {")
+        scope {
+            line("#allScalars")
+            line("-${idName}")
+            entity.scalarProperties.exclude(insertInputProperties).forEach {
+                line("-${it.name}")
+            }
+            lines(entity.copy(properties = insertInputProperties).targetOneIdExpress)
         }
-        entity.copy(properties = insertInputProperties).targetOneIdExpress.forEach {
-            appendLine("    $it")
-        }
-        appendLine("}")
+        line("}")
     }
 
-    private fun generateUpdateFillView(entity: GenEntityBusinessView) = buildString {
+    private fun generateUpdateFillView(entity: GenEntityBusinessView) = buildScopeString {
         val updateInputProperties = entity.updateInputProperties
 
-        appendLine("${entity.dto.updateFillView} {")
-        appendLine("    #allScalars")
-        entity.scalarProperties.exclude(updateInputProperties).forEach {
-            appendLine("    -${it.name}")
+        line("${entity.dto.updateFillView} {")
+        scope {
+            line("#allScalars")
+            entity.scalarProperties.exclude(updateInputProperties).forEach {
+                line("-${it.name}")
+            }
+            lines(entity.copy(properties = updateInputProperties).targetOneIdExpress)
         }
-        entity.copy(properties = updateInputProperties).targetOneIdExpress.forEach {
-            appendLine("    $it")
-        }
-        appendLine("}")
+        line("}")
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun generateUpdateInput(entity: GenEntityBusinessView) = buildString {
+    private fun generateUpdateInput(entity: GenEntityBusinessView) = buildScopeString {
         val updateInputProperties = entity.updateInputProperties
         val idProperty = entity.idProperty
         val idName = idProperty.name
 
-        appendLine("input ${entity.dto.updateInput} {")
-        appendLine("    #allScalars")
-        appendLine("    ${idName}!")
-        entity.scalarProperties.exclude(updateInputProperties).forEach {
-            appendLine("    -${it.name}")
+        line("input ${entity.dto.updateInput} {")
+        scope {
+            line("#allScalars")
+            line("${idName}!")
+            entity.scalarProperties.exclude(updateInputProperties).forEach {
+                line("-${it.name}")
+            }
+            lines(entity.copy(properties = updateInputProperties).targetOneIdExpress)
         }
-        entity.copy(properties = updateInputProperties).targetOneIdExpress.forEach {
-            appendLine("    $it")
-        }
-        appendLine("}")
+        line("}")
     }
 
     private val TargetOf_properties.specExpression
@@ -175,14 +184,12 @@ object DtoGenerator : EntityPropertyCategories {
                     listOf("associatedIdIn(${name}) as ${name.toSingular()}Ids")
             }
 
-    private fun generateSpec(entity: GenEntityBusinessView) = buildString {
-        appendLine("specification ${entity.dto.spec} {")
-
-        entity.specificationProperties
-            .flatMap { it.specExpression }
-            .forEach { appendLine("    $it") }
-
-        appendLine("}")
+    private fun generateSpec(entity: GenEntityBusinessView) = buildScopeString {
+        line("specification ${entity.dto.spec} {")
+        scope {
+            lines(entity.specificationProperties.flatMap { it.specExpression })
+        }
+        line("}")
     }
 
     private fun generateExistValidDto(entity: GenEntityBusinessView): String {
@@ -190,17 +197,17 @@ object DtoGenerator : EntityPropertyCategories {
         val idName = idProperty.name
 
         return entity.existValidItems.joinToString("\n\n") { item ->
-            buildString {
-                appendLine("specification ${item.dtoName} {")
-
-                appendLine("    ne($idName) as $idName")
-                item.scalarProperties.forEach {
-                    appendLine("    eq(${it.name})")
+            buildScopeString {
+                line("specification ${item.dtoName} {")
+                scope {
+                    line("ne($idName) as $idName")
+                    item.scalarProperties.forEach {
+                        line("eq(${it.name})")
+                    }
+                    item.associationPropertyPairs.forEach {
+                        line("associatedIdEq(${it.first.name})")
+                    }
                 }
-                item.associationPropertyPairs.forEach {
-                    appendLine("    associatedIdEq(${it.first.name})")
-                }
-
                 append("}")
             }
         }
