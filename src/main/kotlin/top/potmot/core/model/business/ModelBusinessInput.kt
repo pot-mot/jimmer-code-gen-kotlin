@@ -1,8 +1,8 @@
 package top.potmot.core.model.business
 
-import kotlin.jvm.Throws
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
+import org.springframework.transaction.support.TransactionTemplate
 import top.potmot.entity.GenEnum
 import top.potmot.entity.GenTable
 import top.potmot.entity.dto.GenEntityConfigInput
@@ -14,13 +14,12 @@ import top.potmot.entity.dto.GenTableModelBusinessFillView
 import top.potmot.entity.dto.IdName
 import top.potmot.entity.modelId
 import top.potmot.error.ModelBusinessInputException
+import top.potmot.utils.transaction.executeNotNull
 
 data class EntityModelBusinessInput(
     val entity: GenEntityConfigInput,
     val properties: List<GenPropertyEntityConfigInput>,
 )
-
-// TODO 添加单元测试和报错异常信息
 
 @Throws(
     ModelBusinessInputException.PropertyCannotMatchColumn::class,
@@ -145,63 +144,67 @@ private fun GenPropertyModelView.toConfigInput(
     enumId = enumNameIdMap[enum?.name]
 )
 
+interface EntityModelBusinessViewToModelBusinessInputs {
+    /**
+     * 处理 ModelBusinessInput 为 EntityModelBusinessView
+     */
+    @Throws(ModelBusinessInputException::class)
+    fun List<EntityModelBusinessView>.toModelBusinessInputs(
+        tables: List<GenTableModelBusinessFillView>,
+        enums: List<GenEnumModelBusinessFillView>,
+    ): List<EntityModelBusinessInput> {
+        val tableNameMap = tables.associateBy { it.name }
+        val enumNameIdMap = enums.associate { it.name to it.id }
 
-/**
- * 处理 ModelBusinessInput 为 EntityModelBusinessView
- */
-@Throws(ModelBusinessInputException::class)
-private fun List<EntityModelBusinessView>.toModelBusinessInputs(
-    tables: List<GenTableModelBusinessFillView>,
-    enums: List<GenEnumModelBusinessFillView>,
-): List<EntityModelBusinessInput> {
-    val tableNameMap = tables.associateBy { it.name }
-    val enumNameIdMap = enums.associate { it.name to it.id }
+        return map { (entity, properties) ->
+            val table = tableNameMap[entity.tableName]
+                ?: throw ModelBusinessInputException.entityCannotMatchTable(
+                    "entity [${entity.name}] cannot match table",
+                    entityName = entity.name,
+                    tableName = entity.tableName
+                )
+            val entityId = table.entityId
+                ?: throw ModelBusinessInputException.entityMatchedTableConvertedEntityNotFound(
+                    entityName = entity.name,
+                    table = IdName(table.id, table.name)
+                )
 
-    return map { (entity, properties) ->
-        val table = tableNameMap[entity.tableName]
-            ?: throw ModelBusinessInputException.entityCannotMatchTable(
-                "entity [${entity.name}] cannot match table",
-                entityName = entity.name,
-                tableName = entity.tableName
+            val columnNameMap = table.columns.associateBy { it.name }
+
+            EntityModelBusinessInput(
+                entity.toConfigInput(
+                    entityId,
+                    columnNameMap
+                ),
+                properties.map { property ->
+                    property.toConfigInput(enumNameIdMap)
+                }
             )
-        val entityId = table.entityId
-            ?: throw ModelBusinessInputException.entityMatchedTableConvertedEntityNotFound(
-                entityName = entity.name,
-                table = IdName(table.id, table.name)
-            )
-
-        val columnNameMap = table.columns.associateBy { it.name }
-
-        EntityModelBusinessInput(
-            entity.toConfigInput(
-                entityId,
-                columnNameMap
-            ),
-            properties.map { property ->
-                property.toConfigInput(enumNameIdMap)
-            }
-        )
+        }
     }
 }
 
-/**
- * 创建实体配置输入对象
- */
-@Throws(ModelBusinessInputException::class)
-fun createEntityModelBusinessInputs(
-    sqlClient: KSqlClient,
-    modelId: Long,
-    entities: List<EntityModelBusinessView>,
-): List<EntityModelBusinessInput> {
-    val tables = sqlClient.executeQuery(GenTable::class) {
-        where(table.modelId eq modelId)
-        select(table.fetch(GenTableModelBusinessFillView::class))
-    }
+interface ModelBusinessInput : EntityModelBusinessViewToModelBusinessInputs {
+    val transactionTemplate: TransactionTemplate
 
-    val enums = sqlClient.executeQuery(GenEnum::class) {
-        where(table.modelId eq modelId)
-        select(table.fetch(GenEnumModelBusinessFillView::class))
-    }
+    /**
+     * 创建实体配置输入对象
+     */
+    @Throws(ModelBusinessInputException::class)
+    fun KSqlClient.createEntityModelBusinessInputs(
+        modelId: Long,
+        entities: List<EntityModelBusinessView>,
+    ) = transactionTemplate.executeNotNull {
+        val tables = executeQuery(GenTable::class) {
+            where(table.modelId eq modelId)
+            select(table.fetch(GenTableModelBusinessFillView::class))
+        }
 
-    return entities.toModelBusinessInputs(tables, enums)
+        val enums = executeQuery(GenEnum::class) {
+            where(table.modelId eq modelId)
+            select(table.fetch(GenEnumModelBusinessFillView::class))
+        }
+
+        entities.toModelBusinessInputs(tables, enums)
+    }
 }

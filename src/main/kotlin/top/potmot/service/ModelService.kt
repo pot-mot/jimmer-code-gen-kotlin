@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.entity.business.configEntities
+import top.potmot.core.entity.business.EntityBusinessConfig
 import top.potmot.core.model.business.EntityModelBusinessView
-import top.potmot.core.model.business.createEntityModelBusinessInputs
-import top.potmot.core.model.business.getEntityModelBusinessViews
+import top.potmot.core.model.business.ModelBusinessInput
+import top.potmot.core.model.business.ModelBusinessOutput
 import top.potmot.core.model.load.ModelInputEntities
+import top.potmot.core.model.load.ModelSave
 import top.potmot.core.model.load.getGraphEntities
-import top.potmot.core.model.load.saveModel
 import top.potmot.entity.GenModel
 import top.potmot.entity.createdTime
 import top.potmot.entity.dto.GenModelInput
@@ -33,8 +33,11 @@ class ModelService(
     @Autowired
     private val sqlClient: KSqlClient,
     @Autowired
-    private val transactionTemplate: TransactionTemplate,
-) {
+    override val transactionTemplate: TransactionTemplate,
+) : ModelSave,
+    ModelBusinessInput,
+    ModelBusinessOutput,
+    EntityBusinessConfig {
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): GenModelView? =
         sqlClient.findById(GenModelView::class, id)
@@ -48,7 +51,7 @@ class ModelService(
         @PathVariable id: Long,
         @RequestParam(required = false) excludeEntityIds: List<Long>?,
     ): List<EntityModelBusinessView> =
-        getEntityModelBusinessViews(sqlClient, id, excludeEntityIds)
+        sqlClient.getEntityModelBusinessViews(id, excludeEntityIds)
 
     @GetMapping
     fun list(): List<GenModelSimpleView> =
@@ -62,9 +65,7 @@ class ModelService(
     fun save(
         @RequestBody input: GenModelInput,
     ): Long =
-        transactionTemplate.executeNotNull {
-            saveModel(sqlClient, input)
-        }
+        sqlClient.saveModel(input)
 
     @PostMapping("/business/{id}")
     @Throws(ModelBusinessInputException::class)
@@ -73,11 +74,10 @@ class ModelService(
         @RequestBody entities: List<EntityModelBusinessView>,
     ) {
         transactionTemplate.execute {
-            val entityModelBusinessInputs = createEntityModelBusinessInputs(
-                sqlClient, id, entities,
-            )
+            val entityModelBusinessInputs =
+                sqlClient.createEntityModelBusinessInputs(id, entities)
 
-            configEntities(sqlClient, entityModelBusinessInputs)
+            sqlClient.configEntities(entityModelBusinessInputs)
         }
     }
 

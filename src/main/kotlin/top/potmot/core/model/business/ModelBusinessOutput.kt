@@ -33,33 +33,34 @@ private val EntityModelViewFetcher = newFetcher(GenEntity::class).by(GenEntityMo
     }
 }
 
-fun getEntityModelBusinessViews(
-    sqlClient: KSqlClient,
-    modelId: Long,
-    excludeEntityIds: List<Long>?,
-): List<EntityModelBusinessView> {
-    val entities = sqlClient.executeQuery(GenEntity::class) {
-        where(table.modelId eq modelId)
-        excludeEntityIds?.takeIf { it.isNotEmpty() }?.let {
-            where(table.id valueNotIn it)
+interface ModelBusinessOutput {
+    fun KSqlClient.getEntityModelBusinessViews(
+        modelId: Long,
+        excludeEntityIds: List<Long>?,
+    ): List<EntityModelBusinessView> {
+        val entities = executeQuery(GenEntity::class) {
+            where(table.modelId eq modelId)
+            excludeEntityIds?.takeIf { it.isNotEmpty() }?.let {
+                where(table.id valueNotIn it)
+            }
+            select(table.fetch(EntityModelViewFetcher))
         }
-        select(table.fetch(EntityModelViewFetcher))
-    }
 
-    val propertiesMap = sqlClient.executeQuery(GenProperty::class) {
-        where(table.`column?`.isNull())
-        where(table.entityId valueIn entities.map { it.id })
-        select(table.entityId, table.fetch(GenPropertyModelView.METADATA.fetcher))
-    }.groupBy {
-        it._1
-    }
+        val propertiesMap = executeQuery(GenProperty::class) {
+            where(table.`column?`.isNull())
+            where(table.entityId valueIn entities.map { it.id })
+            select(table.entityId, table.fetch(GenPropertyModelView.METADATA.fetcher))
+        }.groupBy {
+            it._1
+        }
 
-    return entities.map {
-        EntityModelBusinessView(
-            GenEntityModelView(it),
-            propertiesMap[it.id]
-                ?.map { (_, property) -> GenPropertyModelView(property) }
-                ?: emptyList()
-        )
+        return entities.map {
+            EntityModelBusinessView(
+                GenEntityModelView(it),
+                propertiesMap[it.id]
+                    ?.map { (_, property) -> GenPropertyModelView(property) }
+                    ?: emptyList()
+            )
+        }
     }
 }

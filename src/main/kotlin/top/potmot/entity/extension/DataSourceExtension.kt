@@ -76,7 +76,14 @@ fun GenDataSource.toSource(urlSuffix: String = ""): DatabaseConnectionSource =
 fun GenDataSource.test() =
     this.toSource().close()
 
-fun <T> GenDataSource.use(urlSuffix: String = "", block: (databaseConnectionSource: DatabaseConnectionSource) -> T): T {
+/**
+ * 使用数据库连接源，并自动关闭连接。
+ */
+@Throws(DataSourceException::class)
+fun <T> GenDataSource.use(
+    urlSuffix: String = "",
+    block: (databaseConnectionSource: DatabaseConnectionSource) -> T
+): T {
     val databaseConnectionSource = toSource(urlSuffix)
 
     val result = block(databaseConnectionSource)

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import top.potmot.business.baseProperty
+import top.potmot.core.model.business.EntityModelBusinessInput
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenTable
 import top.potmot.entity.dto.GenEntityConfigInput
@@ -14,7 +15,6 @@ import top.potmot.entity.dto.GenPropertyEntityConfigInput
 import top.potmot.entity.property.OtherAnnotation
 import top.potmot.entity.tableId
 import top.potmot.service.EntityService
-import top.potmot.service.EntityModelBusinessInput
 
 class ConvertEntityConfigTest : BaseConvertTest() {
     @Autowired

@@ -13,5 +13,8 @@ enum class DataSourceErrorCode {
 
     @ErrorField(name = "sql", type = String::class)
     @ErrorField(name = "exceptionMessage", type = String::class)
-    SQL_EXECUTE_FAIL
+    SQL_EXECUTE_FAIL,
+
+    @ErrorField(name = "id", type = Long::class)
+    DATA_SOURCE_NOT_FOUND,
 }

@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import top.potmot.core.database.load.DataSourceSave
 import top.potmot.core.database.load.getCatalog
-import top.potmot.core.database.load.toInput
 import top.potmot.core.database.load.toView
 import top.potmot.entity.GenDataSource
 import top.potmot.entity.GenSchema
 import top.potmot.entity.dataSourceId
 import top.potmot.entity.dto.GenSchemaPreview
 import top.potmot.entity.dto.GenSchemaView
-import top.potmot.entity.dto.GenTableLoadView
 import top.potmot.entity.extension.use
 import top.potmot.entity.id
+import top.potmot.error.DataSourceException
 import top.potmot.error.LoadFromDataSourceException
 import top.potmot.utils.transaction.executeNotNull
 
@@ -30,75 +30,43 @@ class SchemaService(
     @Autowired
     private val sqlClient: KSqlClient,
     @Autowired
-    private val transactionTemplate: TransactionTemplate,
-) {
-    private fun getDataSource(id: Long): GenDataSource? =
+    override val transactionTemplate: TransactionTemplate,
+) : DataSourceSave {
+    @Throws(DataSourceException::class)
+    private fun getDataSource(id: Long): GenDataSource =
         sqlClient.findById(GenDataSource::class, id)
+            ?: throw DataSourceException.dataSourceNotFound(id = id)
 
     /**
      * 预览数据源中全部的 schema
      */
     @GetMapping("/dataSource/{dataSourceId}/schema/preview")
+    @Throws(DataSourceException::class)
     fun preview(@PathVariable dataSourceId: Long): List<GenSchemaPreview> =
-        getDataSource(dataSourceId)?.use {
+        getDataSource(dataSourceId).use {
             it
                 .getCatalog(withTable = false)
                 .schemas
                 .mapNotNull { schema ->
                     schema.toView(dataSourceId)
                 }
-        } ?: emptyList()
+        }
 
     /**
      * 导入 schema
      */
     @PostMapping("/dataSource/{dataSourceId}/schema/{name}")
-    @Throws(LoadFromDataSourceException::class)
+    @Throws(DataSourceException::class, LoadFromDataSourceException::class)
     fun load(
         @PathVariable dataSourceId: Long,
         @PathVariable name: String,
     ): List<Long> =
-        getDataSource(dataSourceId)?.use { dataSource ->
-            val result = mutableListOf<Long>()
-
+        getDataSource(dataSourceId).use { dataSource ->
             // 获取目录
             val catalog = dataSource.getCatalog(schemaPattern = name)
 
-            transactionTemplate.execute {
-                // 遍历 schema 进行保存 （因为一个 schema name 有可能会获取到多个不同的 schema）
-                catalog.schemas.forEach { schema ->
-                    val tables = catalog.getTables(schema)
-
-                    // 保存 schema
-                    val schemaInput = schema.toInput(dataSourceId)
-                    val savedSchema = sqlClient.save(schemaInput).modifiedEntity
-
-                    // 保存 tables
-                    val tableInputs = tables.map { it.toInput(savedSchema.id) }
-                    val savedTables = sqlClient.entities.saveInputs(tableInputs).items.map {
-                        GenTableLoadView(it.modifiedEntity)
-                    }
-
-                    val tableNameMap = savedTables.associateBy { it.name }
-
-                    tables.forEach { table ->
-                        // 保存 associations
-                        val associationInputs = table.foreignKeys.map { it.toInput(tableNameMap) }
-                        sqlClient.entities.saveInputs(associationInputs)
-
-                        // 保存 indexes
-                        val indexInputs = table.indexes.mapNotNull { index ->
-                            tableNameMap[table.name]?.let { index.toInput(it) }
-                        }
-                        sqlClient.entities.saveInputs(indexInputs)
-                    }
-
-                    result += savedSchema.id
-                }
-            }
-
-            result
-        } ?: emptyList()
+            sqlClient.saveDataSourceCatalog(dataSourceId, catalog)
+        }
 
     @GetMapping("/dataSource/{dataSourceId}/schema/")
     fun list(

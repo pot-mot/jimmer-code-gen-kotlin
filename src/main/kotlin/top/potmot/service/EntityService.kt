@@ -10,13 +10,12 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.entity.business.configEntity
+import top.potmot.core.entity.business.EntityBusinessConfig
 import top.potmot.core.model.business.EntityModelBusinessInput
 import top.potmot.entity.GenEntity
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.tableId
 import top.potmot.enumeration.GenLanguage
-import top.potmot.utils.transaction.executeNotNull
 
 @RestController
 @RequestMapping("/entity")
@@ -24,8 +23,8 @@ class EntityService(
     @Autowired
     private val sqlClient: KSqlClient,
     @Autowired
-    private val transactionTemplate: TransactionTemplate,
-) {
+    override val transactionTemplate: TransactionTemplate,
+): EntityBusinessConfig {
     @GetMapping("/language")
     fun listLanguage(): List<GenLanguage> =
         GenLanguage.entries
@@ -43,8 +42,7 @@ class EntityService(
         }.fetchOneOrNull()
 
     @PutMapping
-    fun config(@RequestBody input: EntityModelBusinessInput) =
-        transactionTemplate.executeNotNull {
-            configEntity(sqlClient, input)
-        }
+    fun config(@RequestBody input: EntityModelBusinessInput) {
+        sqlClient.configEntity(input)
+    }
 }
