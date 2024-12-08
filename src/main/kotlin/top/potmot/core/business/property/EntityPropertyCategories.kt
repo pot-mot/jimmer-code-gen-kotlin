@@ -19,48 +19,68 @@ interface EntityPropertyCategories {
             !it.idProperty && it.associationType == null
         }
 
+    val GenEntityBusinessView.associationProperties
+        get() = properties.filter {
+            it.associationType != null
+        }
+
     val GenEntityBusinessView.targetOneProperties
         get() = properties.filter {
             it.associationType in targetOneAssociationTypes
         }
 
-    val GenEntityBusinessView.selectProperties
-        get() = targetOneProperties.filter {
-            it.inSpecification || it.inInsertInput || it.inUpdateInput
-        }.forceConvertIdView()
-
     val GenEntityBusinessView.specificationSelectProperties
-        get() = targetOneProperties.filter {
-            it.inSpecification
+        get() = associationProperties.filter {
+            it.inSpecification && it.associationType in targetOneAssociationTypes
         }.forceConvertIdView()
 
     val GenEntityBusinessView.insertSelectProperties
-        get() = targetOneProperties.filter {
+        get() = associationProperties.filter {
             it.inInsertInput
         }.forceConvertIdView()
 
     val GenEntityBusinessView.updateSelectProperties
-        get() = targetOneProperties.filter {
+        get() = associationProperties.filter {
             it.inUpdateInput
         }.forceConvertIdView()
 
     val GenEntityBusinessView.editTableSelectProperties
-        get() = targetOneProperties.filter {
+        get() = associationProperties.filter {
             it.inLongAssociationInput
         }.forceConvertIdView()
+
+    val GenEntityBusinessView.selectProperties
+        get() = associationProperties.filter {
+            (it.inSpecification && it.associationType in targetOneAssociationTypes) || it.inInsertInput || it.inUpdateInput
+        }.forceConvertIdView()
+
+
+    val GenEntityBusinessView.optionViewProperties
+        get() = properties.filter {
+            it.inOptionView
+        }.forceConvertIdView()
+
+    val GenEntityBusinessView.optionLabelProperties: List<TargetOf_properties>
+        get() {
+            val optionViewProperties = this.optionViewProperties
+
+            return if (optionViewProperties.size > 1) optionViewProperties.filter {
+                !it.idProperty
+            } else {
+                optionViewProperties
+            }
+        }
 
 
     val GenEntityBusinessView.listViewProperties: List<TargetOf_properties>
         get() {
-            // TODO 需要考虑对多短关联
-
-            val filteredProperties = properties.filter {
-                it.inListView && (it.associationType == null || it.associationType in targetOneAssociationTypes)
+            val listViewProperties = properties.filter {
+                it.inListView
             }
 
-            val idViewTargetMap = filteredProperties.createIdViewTargetMap()
+            val idViewTargetMap = listViewProperties.createIdViewTargetMap()
 
-            return filteredProperties.mapNotNull {
+            return listViewProperties.mapNotNull {
                 if (it.isShortAssociation) {
                     it
                 } else {
@@ -81,13 +101,33 @@ interface EntityPropertyCategories {
             }
 
 
-    val GenEntityBusinessView.detailViewProperties
-        get() = properties
-            .filter {
-                it.inDetailView &&
-                        (it.associationType == null || it.associationType in targetOneAssociationTypes)
+    val GenEntityBusinessView.detailViewProperties: List<TargetOf_properties>
+        get() {
+            val detailViewProperties = properties.filter {
+                it.inDetailView
             }
-            .produceIdView()
+
+            val idViewTargetMap = listViewProperties.createIdViewTargetMap()
+
+            return detailViewProperties.mapNotNull {
+                if (it.isShortAssociation) {
+                    it
+                } else {
+                    it.produceIdView(idViewTargetMap)
+                }
+            }
+        }
+
+    val GenEntityBusinessView.viewFormProperties
+        get() = detailViewProperties
+            .filter { !it.idProperty }
+            .mapNotNull {
+                if (it.isShortAssociation) {
+                    it
+                } else {
+                    it.forceConvertIdView()
+                }
+            }
 
 
     val GenEntityBusinessView.specificationProperties
@@ -109,9 +149,7 @@ interface EntityPropertyCategories {
     val GenEntityBusinessView.insertInputProperties
         get() = properties
             .filter {
-                it.inInsertInput &&
-                        !it.idProperty &&
-                        (it.associationType == null || it.associationType in targetOneAssociationTypes)
+                it.inInsertInput
             }
             .produceIdView()
 
@@ -133,8 +171,7 @@ interface EntityPropertyCategories {
     val GenEntityBusinessView.updateInputProperties
         get() = properties
             .filter {
-                it.inUpdateInput &&
-                        (it.associationType == null || it.associationType in targetOneAssociationTypes)
+                it.inUpdateInput
             }
             .produceIdView()
 
@@ -151,8 +188,7 @@ interface EntityPropertyCategories {
     val GenEntityBusinessView.longAssociationInputProperties
         get() = properties
             .filter {
-                it.inLongAssociationInput &&
-                        (it.associationType == null || it.associationType in targetOneAssociationTypes)
+                it.inLongAssociationInput
             }
             .produceIdView()
             .produceEditNullable()
@@ -172,8 +208,7 @@ interface EntityPropertyCategories {
     val GenEntityBusinessView.longAssociationViewProperties
         get() = properties
             .filter {
-                it.inLongAssociationView &&
-                        (it.associationType == null || it.associationType in targetOneAssociationTypes)
+                it.inLongAssociationView
             }
             .produceIdView()
 

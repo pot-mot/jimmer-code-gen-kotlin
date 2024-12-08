@@ -14,6 +14,7 @@ EntityDetailView {
     #allScalars
     id(toOneProperty)
     id(toOneNullableProperty)
+    id(toManyProperties) as toManyPropertyIds
     id(createdBy)
 }
 

@@ -192,6 +192,7 @@ input EntityUpdateInput {
 }
 
 specification EntitySpec {
+    eq(id)
     associatedIdEq(shortAssociationProperty)
 })
             """.trimIndent(),
@@ -304,7 +305,10 @@ EntityListView {
 
 EntityDetailView {
     #allScalars
-    shortAssociationPropertyId
+    shortAssociationProperty {
+        label1
+        label2
+    }
 }
 
 EntityOptionView {
@@ -329,6 +333,7 @@ input EntityUpdateInput {
 }
 
 specification EntitySpec {
+    eq(id)
     associatedIdEq(shortAssociationProperty)
 })
             """.trimIndent(),

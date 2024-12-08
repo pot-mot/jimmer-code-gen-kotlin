@@ -31,6 +31,7 @@ EntityDetailView {
     #allScalars
     id(toOneProperty)
     id(toOneNullableProperty)
+    id(toManyProperties) as toManyPropertyIds
 }
 
 EntityOptionView {
@@ -115,6 +116,7 @@ EntityDetailView {
     #allScalars
     toOnePropertyId
     toOneNullablePropertyId
+    id(toManyProperties) as toManyPropertyIds
 }
 
 EntityOptionView {

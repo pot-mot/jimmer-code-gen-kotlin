@@ -54,9 +54,12 @@ val baseProperty = TargetOf_properties(
 val idProperty = baseProperty.copy(
     id = testId++,
     idProperty = true,
+    idGenerationAnnotation = "@GeneratedValue(strategy = GenerationType.IDENTITY)",
     name = "id",
     comment = "id",
     type = "kotlin.Int",
+    inInsertInput = false,
+    inOptionView = true,
 )
 
 val enumProperty = baseProperty.copy(
@@ -125,6 +128,15 @@ val toManyProperty = baseProperty.copy(
     comment = "toManyProperty",
     listType = true,
     associationType = AssociationType.MANY_TO_MANY,
+    inListView = false,
+    inDetailView = true,
+    inInsertInput = false,
+    inUpdateInput = false,
+    inSpecification = true,
+    inOptionView = false,
+    inShortAssociationView = false,
+    inLongAssociationView = false,
+    inLongAssociationInput = false,
     typeEntity = TargetOf_typeEntity(
         id = testId++,
         name = "ToManyEntity",

@@ -7,7 +7,6 @@ import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.existValidItems
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.queryType
-import top.potmot.core.business.utils.selectOptionLabels
 import top.potmot.core.business.utils.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
@@ -30,7 +29,13 @@ object DtoGenerator : EntityPropertyCategories {
         filter { it !in includeProperties }
 
     private val TargetOf_properties.associationIdExpress
-        get() = if (idView) name else "id(${name})"
+        get() = if (idView) name else {
+            if (listType) {
+                "id(${name}) as ${name.toSingular()}Ids"
+            } else {
+                "id(${name})"
+            }
+        }
 
     private fun TargetOf_properties.extractShortAssociation(): String = buildScopeString {
         if (typeEntity == null || typeEntity.shortViewProperties.isEmpty()) {
@@ -71,17 +76,12 @@ object DtoGenerator : EntityPropertyCategories {
         line("}")
     }
 
-    @Throws(ModelException.IdPropertyNotFound::class)
     private fun generateOptionView(entity: GenEntityBusinessView) = buildScopeString {
-        val idProperty = entity.idProperty
-        val idName = idProperty.name
-        val label = entity.selectOptionLabels
+        val optionViewProperties = entity.optionViewProperties
 
         line("${entity.dto.optionView} {")
         scope {
-            line(idName)
-            lines(label)
-
+            lines(optionViewProperties.map { it.name })
         }
         line("}")
     }
@@ -110,12 +110,13 @@ object DtoGenerator : EntityPropertyCategories {
     private fun generateInsertInput(entity: GenEntityBusinessView) = buildScopeString {
         val insertInputProperties = entity.insertInputProperties
         val idProperty = entity.idProperty
-        val idName = idProperty.name
 
         line("input ${entity.dto.insertInput} {")
         scope {
             line("#allScalars")
-            line("-${idName}")
+            if (!idProperty.idGenerationAnnotation.isNullOrBlank()) {
+                line("-${idProperty.name}")
+            }
             entity.scalarProperties.exclude(insertInputProperties).forEach {
                 line("-${it.name}")
             }
@@ -138,16 +139,15 @@ object DtoGenerator : EntityPropertyCategories {
         line("}")
     }
 
-    @Throws(ModelException.IdPropertyNotFound::class)
     private fun generateUpdateInput(entity: GenEntityBusinessView) = buildScopeString {
         val updateInputProperties = entity.updateInputProperties
-        val idProperty = entity.idProperty
-        val idName = idProperty.name
 
         line("input ${entity.dto.updateInput} {")
         scope {
             line("#allScalars")
-            line("${idName}!")
+            updateInputProperties.firstOrNull { it.idProperty }?.let {
+                line("${it.name}!")
+            }
             entity.scalarProperties.exclude(updateInputProperties).forEach {
                 line("-${it.name}")
             }

@@ -17,14 +17,16 @@ typealias TypeMapping = (column: ColumnTypeMeta) -> String
  * 转换 table 为 entity
  *
  * 流程如下：
- *  tableToEntity(): baseEntity
+ *  tableToEntity -> baseEntity
  *      映射基本实体信息
- *  convertBaseProperties(): Map<columnId, BaseProperty>
+ *  convertBaseProperties -> Map<columnId, BaseProperty>
  *      将列映射成基础属性
- *  convertAssociationProperties(): Map<columnId, AssociationPropertyMeta>
+ *  convertAssociationProperties -> Map<columnId, AssociationPropertyMeta>
  *      基于列和基础属性转换出关联属性，并存储在List中
- *  handleDuplicateName(): List<Property>
+ *  handleDuplicateName -> List<Property>
  *      处理属性重名
+ *  initPropertyBusinessConfig -> List<Property>
+ *      初始化属性的业务配置
  *
  * 最终将 associationProperty 中的数据填充到 baseEntity 中
  */
@@ -53,8 +55,12 @@ fun GenTableConvertView.toGenEntity(
         propertiesMap
     )
 
+    val businessConfigInitProperties = initPropertyBusinessConfig(
+        associationProperties
+    )
+
     return baseEntity.copy(
-        properties = associationProperties.setOrderKey()
+        properties = businessConfigInitProperties.setOrderKey()
     )
 }
 

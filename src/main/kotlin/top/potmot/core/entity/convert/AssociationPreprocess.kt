@@ -43,19 +43,25 @@ fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_colum
     val newOutAssociations = mutableListOf<OutAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
     val newInAssociations = mutableListOf<InAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
 
-    outAssociations.forEach {
-        if (it.association.type == AssociationType.ONE_TO_ONE && it.sourceColumns.all { it.partOfPk }) {
-            newInAssociations += it.reversed()
+    outAssociations.forEach { association ->
+        if (
+            association.association.type == AssociationType.ONE_TO_ONE &&
+            association.sourceColumns.all { it.partOfPk }
+        ) {
+            newInAssociations += association.reversed()
         } else {
-            newOutAssociations += it
+            newOutAssociations += association
         }
     }
 
-    inAssociations.forEach {
-        if (it.association.type == AssociationType.ONE_TO_ONE && it.sourceColumns.all { it.partOfPk }) {
-            newOutAssociations += it.reversed()
+    inAssociations.forEach { association ->
+        if (
+            association.association.type == AssociationType.ONE_TO_ONE &&
+            association.sourceColumns.all { it.partOfPk }
+        ) {
+            newOutAssociations += association.reversed()
         } else {
-            newInAssociations += it
+            newInAssociations += association
         }
     }
 

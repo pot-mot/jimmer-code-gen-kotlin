@@ -56,6 +56,7 @@ private val shortAssociationProperty = baseProperty.copy(
 
 val shortAssociationTargetEntity = testEntity.copy(
     properties = listOf(
+        idProperty,
         shortAssociationProperty
     )
 )
@@ -70,6 +71,7 @@ private val shortAssociationIdViewProperty = baseProperty.copy(
 
 val shortAssociationTargetIdViewEntity = testEntity.copy(
     properties = listOf(
+        idProperty,
         shortAssociationProperty,
         shortAssociationIdViewProperty
     )
