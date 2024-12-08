@@ -1,11 +1,10 @@
 package top.potmot.utils.string
 
 class StringIndentScopeBuilder(
-    private val indent: String = "    ",
+    private val indent: String,
+    private var currentIndent: String,
     val stringBuilder: StringBuilder = StringBuilder(),
 ) {
-    private var currentIndent = ""
-
     fun scope(
         scopeBlock: () -> Unit
     ) {
@@ -60,9 +59,10 @@ class StringIndentScopeBuilder(
 
 fun buildScopeString(
     indent: String = "    ",
+    currentIndent: String = "",
     block: StringIndentScopeBuilder.() -> Unit
 ): String {
-    val scopeBuilder = StringIndentScopeBuilder(indent)
+    val scopeBuilder = StringIndentScopeBuilder(indent, currentIndent)
     scopeBuilder.block()
     return scopeBuilder.stringBuilder.toString()
 }

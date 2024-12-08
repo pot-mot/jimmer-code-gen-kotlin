@@ -18,6 +18,8 @@ import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.VShow
 import top.potmot.utils.list.join
 import top.potmot.utils.string.appendBlock
+import top.potmot.utils.string.buildScopeString
+import top.potmot.utils.string.clearBlankLine
 
 class Vue3ComponentBuilder(
     override val indent: String = "    ",
@@ -113,37 +115,82 @@ class Vue3ComponentBuilder(
     fun Iterable<Element>.stringifyElements(currentIndent: String = ""): String =
         joinToString("\n") { element ->
             when (element) {
-                is TextElement -> {
-                    if (element.text.isBlank()) "" else "$currentIndent${element.text}"
-                }
+                is TextElement ->
+                    "$currentIndent${element.text}"
 
-                is ExpressionElement -> {
+                is ExpressionElement ->
                     "$currentIndent{{ ${element.expression} }}"
-                }
 
-                is TagElement -> {
-                    val directives = element.directives.map { directive ->
+                is TagElement -> buildScopeString(indent, currentIndent) {
+                    append(currentIndent)
+                    append("<")
+                    append(element.tag)
+
+                    var firstVIfIndex: Int? = null
+                    val vIfDirections = mutableListOf<VIf>()
+
+                    var firstVShowIndex: Int? = null
+                    val vShowDirections = mutableListOf<VShow>()
+
+                    val directives = mutableListOf<String>()
+
+                    element.directives.forEach { directive ->
                         when (directive) {
                             is VModel -> {
-                                "v-model${if (directive.propName == null) "" else ":${directive.propName}"}${
-                                    if (directive.modifier.isEmpty()) "" else "." + directive.modifier.joinToString(
-                                        "."
-                                    )
-                                }=\"${directive.value}\""
+                                directives +=
+                                    "v-model${if (directive.propName == null) "" else ":${directive.propName}"}${
+                                        if (directive.modifier.isEmpty()) "" else "." +
+                                                directive.modifier.joinToString(".")
+                                    }=\"${directive.value}\""
                             }
 
-                            is VIf -> "v-${if (directive.isElse) "else-if" else "if"}=\"${directive.expression}\""
-                            is VElse -> "v-else"
-                            is VShow -> "v-show=\"${directive.expression}\""
+                            is VIf -> {
+                                if (firstVIfIndex == null)
+                                    firstVIfIndex = directives.size
+                                vIfDirections += directive
+                            }
+
+                            is VElse -> {
+                                directives += "v-else"
+                            }
+
+                            is VShow -> {
+                                if (firstVShowIndex == null)
+                                    firstVShowIndex = directives.size
+                                vShowDirections += directive
+                            }
+
                             is VFor -> {
                                 val item = if (directive.withIndex) "(${directive.item}, index)" else directive.item
-                                "v-for=\"$item in ${directive.list}\""
+                                directives += "v-for=\"$item in ${directive.list}\""
                             }
                         }
                     }
 
+                    if (vIfDirections.isNotEmpty()) {
+                        val vIfExpressions = vIfDirections.map { it.expression }
+                        firstVIfIndex?.let { index ->
+                            val vIf = "v-${if (vIfDirections.any { it.isElse }) "else-if" else "if"}=\"" +
+                                    vIfExpressions.inlineOrWarpLines(" &&") +
+                                    "\""
+                            directives.add(index, vIf)
+                        }
+                    }
+                    if (vShowDirections.isNotEmpty()) {
+                        val vShowExpressions = vIfDirections.map { it.expression }
+                        firstVShowIndex?.let { index ->
+                            val vShow = "v-show=\"" +
+                                    vShowExpressions.inlineOrWarpLines(" &&") +
+                                    "\""
+                            directives.add(index, vShow)
+                        }
+                    }
+
                     val props = element.props.map { prop ->
-                        if (prop.value == null) prop.name else "${if (prop.isLiteral) "" else ":"}${prop.name}=\"${prop.value}\""
+                        if (prop.value == null)
+                            prop.name
+                        else
+                            "${if (prop.isLiteral) "" else ":"}${prop.name}=\"${prop.value}\""
                     }
 
                     val events = element.events.map { event ->
@@ -155,59 +202,70 @@ class Vue3ComponentBuilder(
                         props,
                         events
                     ).flatten()
-                        .inlineOrWarpLines("")
-                        .let {
-                            if (it.isNotBlank()) {
-                                val lines = it.lines()
-                                if (lines.size > 1) {
-                                    lines.joinToString("\n$currentIndent") { line -> line }
-                                } else {
-                                    " $it"
+
+                    if (attributes.isNotEmpty()) {
+                        val joinAttributes = attributes.joinToString(" ")
+
+                        if (joinAttributes.length > wrapThreshold) {
+                            scope {
+                                append("\n")
+                                attributes.forEach {
+                                    block(it)
                                 }
-                            } else ""
+                            }
+                        } else {
+                            append(" ")
+                            append(joinAttributes)
                         }
+                    }
 
                     val children = element.children.toList()
 
-                    val tagStart = "<${element.tag}$attributes"
-                    val tagEnd = "</${element.tag}>"
-
                     if (children.isEmpty()) {
-                        "$currentIndent$tagStart/>"
+                        append("/>")
                     } else {
+                        val endTag = "</${element.tag}>"
+
                         if (children.size == 1) {
                             val child = children[0]
                             if (child is TextElement) {
                                 val result =
-                                    if (child.text.isBlank()) "$tagStart/>" else "$tagStart>${child.text}$tagEnd"
-                                if (result.length < wrapThreshold) {
-                                    return@joinToString "$currentIndent$result"
+                                    if (child.text.isBlank()) "/>" else ">${child.text}$endTag"
+                                if (stringBuilder.length + result.length < wrapThreshold) {
+                                    append(result)
+                                    return@buildScopeString
                                 }
                             } else if (child is ExpressionElement) {
-                                val result = "$tagStart>{{ ${child.expression} }}$tagEnd"
-                                if (result.length < wrapThreshold) {
-                                    return@joinToString "$currentIndent$result"
+                                val result = ">{{ ${child.expression} }}$endTag"
+                                if (stringBuilder.length + result.length < wrapThreshold) {
+                                    append(result)
+                                    return@buildScopeString
                                 }
                             }
                         }
 
-                        val childrenStr = children.stringifyElements(currentIndent + indent)
-                        buildString {
-                            appendLine("$currentIndent$tagStart>")
-                            appendLine(childrenStr)
-                            append("$currentIndent$tagEnd")
+                        val childrenStr = children.stringifyElements()
+                        append(">\n")
+                        scope {
+                            block(childrenStr)
                         }
+                        append(endTag)
                     }
                 }
             }
-        }
+        }.clearBlankLine()
 
     fun Iterable<StyleClass>.stringifyStyleClass(): String =
         joinToString("\n\n") { styleClass ->
-            val properties = styleClass.properties.entries.map { (key, value) ->
-                "$key: $value;"
-            }.wrapLines("")
-            "${styleClass.selector} {$properties}"
+            buildScopeString {
+                append("${styleClass.selector} {")
+                scope {
+                    styleClass.properties.entries.forEach { (key, value) ->
+                        line("$key: $value;")
+                    }
+                }
+                append("}")
+            }
         }
 
     fun build(vueComponentPart: Component) = buildString {

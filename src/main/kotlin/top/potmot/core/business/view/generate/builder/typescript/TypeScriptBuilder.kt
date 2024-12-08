@@ -10,14 +10,11 @@ import top.potmot.core.business.view.generate.meta.typescript.ImportItem
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.typescript.LetVariable
 import top.potmot.error.GenerateException
+import top.potmot.utils.string.clearBlankLine
 
 interface TypeScriptBuilder {
     val indent: String
     val wrapThreshold: Int
-
-    fun Iterable<String>.wrapLines(separator: String = ","): String {
-        return "\n" + joinToString("$separator\n") { "$indent$it" } + "\n"
-    }
 
     fun Iterable<String>.inlineOrWarpLines(
         separator: String = ",",
@@ -93,7 +90,5 @@ interface TypeScriptBuilder {
                 is CodeBlock ->
                     item.content
             }
-        }
-            .lines()
-            .joinToString("\n") { it.ifBlank { "" } }
+        }.clearBlankLine()
 }
