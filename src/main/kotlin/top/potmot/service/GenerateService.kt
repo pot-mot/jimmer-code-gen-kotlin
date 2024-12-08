@@ -29,6 +29,7 @@ import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.dto.GenerateFile
+import top.potmot.entity.dto.GenerateResult
 import top.potmot.entity.dto.IdName
 import top.potmot.entity.dto.TableEntityNotNullPair
 import top.potmot.entity.extension.merge
@@ -56,12 +57,12 @@ class GenerateService(
         @RequestParam types: List<GenerateType>,
         @RequestParam viewType: ViewType = ViewType.VUE3_ELEMENT_PLUS,
         @RequestParam(required = false) properties: GenConfigProperties? = null,
-    ): List<GenerateFile> =
+    ): GenerateResult =
         useContext(
             sqlClient.getModelProperties(id)?.merge(properties)
                 ?: throw GenerateException.modelNotFound("ModelId $id Not Found", modelId = id)
         ) { context ->
-            val result = mutableListOf<GenerateFile>()
+            val files = mutableListOf<GenerateFile>()
 
             val languageDir by lazy { context.language.name.lowercase() }
 
@@ -100,85 +101,61 @@ class GenerateService(
             }
 
             if (containsAll || containsBackEnd || GenerateType.DDL in typeSet) {
-                result += tableDefineGenerator.generate(tables)
+                files += tableDefineGenerator.generate(tables)
             }
             if (containsAll || containsBackEnd || GenerateType.Enum in typeSet) {
                 entityGenerator.generateEnum(enums).forEach {
-                    result += it.copy(path = "${languageDir}/${it.path}")
+                    files += it.copy(path = "${languageDir}/${it.path}")
                 }
             }
             if (containsAll || containsBackEnd || GenerateType.Entity in typeSet) {
                 entityGenerator.generateEntity(entityGenerateViews).forEach {
-                    result += it.copy(path = "${languageDir}/${it.path}")
+                    files += it.copy(path = "${languageDir}/${it.path}")
                 }
             }
             if (containsAll || containsBackEnd || GenerateType.Service in typeSet) {
                 serviceGenerator.generateService(entityBusinessViews).forEach {
-                    result += it.copy(path = "${languageDir}/${it.path}")
+                    files += it.copy(path = "${languageDir}/${it.path}")
                 }
             }
             if (containsAll || containsBackEnd || GenerateType.DTO in typeSet) {
-                result += generateDto(entityBusinessViews)
+                files += generateDto(entityBusinessViews)
             }
             if (containsAll || containsBackEnd || GenerateType.Permission in typeSet) {
-                result += PermissionGenerator.generate(entityBusinessViews)
+                files += PermissionGenerator.generate(entityBusinessViews)
             }
             if (containsAll || containsBackEnd || GenerateType.Route in typeSet) {
-                result += DynamicRouteGenerator.generate(entityBusinessViews)
+                files += DynamicRouteGenerator.generate(entityBusinessViews)
             }
             if (containsAll || containsFrontEnd || GenerateType.EnumComponent in typeSet) {
-                result += viewGenerator.generateEnum(enums)
+                files += viewGenerator.generateEnum(enums)
             }
             if (containsAll || containsFrontEnd || GenerateType.View in typeSet) {
-                result += viewGenerator.generateView(entityBusinessViews)
+                files += viewGenerator.generateView(entityBusinessViews)
             }
 
-
-
-            result.apply {
-                val tableEntityPairs =
-                    if (lazyEntityGenerateView.isInitialized()) {
-                        entityGenerateViews.map {
-                            TableEntityNotNullPair(
-                                table = IdName(it.table.id, it.table.name),
-                                entity = IdName(it.id, it.name)
-                            )
-                        }
-                    } else {
-                        sqlClient.listEntity<GenEntityGenerateFileFillView>(modelId = id).map {
-                            TableEntityNotNullPair(
-                                table = IdName(it.table.id, it.table.name),
-                                entity = IdName(it.id, it.name)
-                            )
-                        }
+            val tableEntityPairs =
+                if (lazyEntityGenerateView.isInitialized()) {
+                    entityGenerateViews.map {
+                        TableEntityNotNullPair(
+                            table = IdName(it.table.id, it.table.name),
+                            entity = IdName(it.id, it.name)
+                        )
                     }
-
-                fillGenerateFilesData(
-                    this,
-                    tableEntityPairs
-                )
-            }
-        }
-
-    fun fillGenerateFilesData(
-        generateFiles: List<GenerateFile>,
-        tableEntityPairs: List<TableEntityNotNullPair>,
-    ) {
-        val tableIdEntityMap = tableEntityPairs.associate { it.table.id to it.entity }
-        val entityIdTableMap = tableEntityPairs.associate { it.entity.id to it.table }
-
-        generateFiles.forEach { generateFile ->
-            generateFile.tableEntities.forEach {
-                val (table, entity) = it
-
-                if (table != null && entity == null) {
-                    it.entity = tableIdEntityMap[table.id]
-                } else if (entity != null && table == null) {
-                    it.table = entityIdTableMap[entity.id]
+                } else {
+                    sqlClient.listEntity<GenEntityGenerateFileFillView>(modelId = id).map {
+                        TableEntityNotNullPair(
+                            table = IdName(it.table.id, it.table.name),
+                            entity = IdName(it.id, it.name)
+                        )
+                    }
                 }
-            }
+
+            GenerateResult(
+                files,
+                tableEntityPairs
+            )
         }
-    }
 
     /**
      * 基本查询

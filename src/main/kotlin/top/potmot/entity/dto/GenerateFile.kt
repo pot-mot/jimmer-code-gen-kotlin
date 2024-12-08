@@ -36,6 +36,11 @@ data class GenerateFile(
     val associations: List<IdName> = emptyList(),
 )
 
+data class GenerateResult(
+    val files: List<GenerateFile>,
+    val tableEntityPairs: List<TableEntityNotNullPair>,
+)
+
 private val GenTableGenerateView.idName
     get() = IdName(id, name)
 
@@ -58,13 +63,14 @@ fun GenerateFile(
         content = content,
         tags = tags,
         main = MainIdName(MainType.Table, table.idName),
-        tableEntities = allSuperTables.map { TableEntityPair(table = it.idName) },
+        tableEntities = allSuperTables
+            .map { TableEntityPair(table = it.idName) },
         associations = listOf(
             table.outAssociations.map { it.idName },
             allSuperTables.flatMap { it.outAssociations.map { a -> a.idName } },
             table.inAssociations.map { it.idName },
             allSuperTables.flatMap { it.inAssociations.map { a -> a.idName } },
-        ).flatten()
+        ).flatten().distinctBy { it.id }
     )
 }
 
@@ -80,19 +86,18 @@ fun createGenerateFileByTables(
         path = path,
         content = content,
         tags = tags,
-        tableEntities =
-        listOf(
+        tableEntities = listOf(
             tables.map { it.idName },
             allSuperTables.map { it.idName }
-        ).flatten().map {
-            TableEntityPair(table = it)
-        },
+        ).flatten()
+            .distinctBy { it.id }
+            .map { TableEntityPair(table = it) },
         associations = listOf(
             tables.flatMap { it.outAssociations.map { a -> a.idName } },
             allSuperTables.flatMap { it.outAssociations.map { a -> a.idName } },
             tables.flatMap { it.inAssociations.map { a -> a.idName } },
             allSuperTables.flatMap { it.inAssociations.map { a -> a.idName } },
-        ).flatten()
+        ).flatten().distinctBy { it.id }
     )
 }
 
@@ -115,9 +120,6 @@ fun GenerateFile(
 private val GenerateEntity.idName
     get() = IdName(id, name)
 
-private val GenEntityGenerateView.TargetOf_table.idName
-    get() = IdName(id, name)
-
 fun GenerateFile(
     entity: GenEntityGenerateView,
     path: String,
@@ -128,10 +130,13 @@ fun GenerateFile(
     content = content,
     tags = tags,
     main = MainIdName(MainType.Entity, entity.idName),
-    tableEntities = entity.properties.mapNotNull { it.typeTable?.entity?.idName }
-        .map { TableEntityPair(entity = it) }
-            + TableEntityPair(table = entity.table.idName, entity = entity.idName),
-    enums = entity.properties.mapNotNull { it.enum?.idName }
+    tableEntities = entity.properties
+        .mapNotNull { it.typeTable?.entity?.idName }
+        .distinctBy { it.id }
+        .map { TableEntityPair(entity = it) },
+    enums = entity.properties
+        .mapNotNull { it.enum?.idName }
+        .distinctBy { it.id }
 )
 
 fun GenerateFile(
@@ -144,8 +149,13 @@ fun GenerateFile(
     content = content,
     tags = tags,
     main = MainIdName(MainType.Entity, entity.idName),
-    tableEntities = entity.properties.mapNotNull { it.typeEntity?.idName }.map { TableEntityPair(entity = it) },
-    enums = entity.properties.mapNotNull { it.enum?.idName }
+    tableEntities = entity.properties
+        .mapNotNull { it.typeEntity?.idName }
+        .distinctBy { it.id }
+        .map { TableEntityPair(entity = it) },
+    enums = entity.properties
+        .mapNotNull { it.enum?.idName }
+        .distinctBy { it.id }
 )
 
 fun createGenerateFileByEntities(
@@ -157,5 +167,7 @@ fun createGenerateFileByEntities(
     path = path,
     content = content,
     tags = tags,
-    tableEntities = entities.map { TableEntityPair(entity = IdName(it.id, it.name)) },
+    tableEntities = entities
+        .distinctBy { it.id }
+        .map { TableEntityPair(entity = IdName(it.id, it.name)) },
 )
