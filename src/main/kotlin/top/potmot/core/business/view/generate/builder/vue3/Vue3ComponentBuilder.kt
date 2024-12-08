@@ -258,7 +258,7 @@ class Vue3ComponentBuilder(
     fun Iterable<StyleClass>.stringifyStyleClass(): String =
         joinToString("\n\n") { styleClass ->
             buildScopeString {
-                append("${styleClass.selector} {")
+                line("${styleClass.selector} {")
                 scope {
                     styleClass.properties.entries.forEach { (key, value) ->
                         line("$key: $value;")

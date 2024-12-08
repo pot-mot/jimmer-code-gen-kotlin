@@ -27,6 +27,7 @@ import type {
 } from "@/api/__generated/model/static"
 import {api} from "@/api"
 import {sendMessage} from "@/utils/message"
+import {useUserStore} from "@/stores/userStore"
 import {deleteConfirm} from "@/utils/confirm"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
@@ -34,6 +35,8 @@ import EntityTable from "@/components/entity/EntityTable.vue"
 import EntityAddForm from "@/components/entity/EntityAddForm.vue"
 import EntityEditForm from "@/components/entity/EntityEditForm.vue"
 import EntityQueryForm from "@/components/entity/EntityQueryForm.vue"
+
+const userStore = useUserStore()
 
 const {isLoading, withLoading} = useLoading()
 
@@ -163,7 +166,10 @@ const handleDelete = (ids: number[]): void => {
     <el-card v-loading="isLoading">
         <EntityQueryForm
             v-model="queryForm.spec"
-            v-if="toOnePropertyIdOptions && toOneNullablePropertyIdOptions"
+            v-if="
+                toOnePropertyIdOptions &&
+                toOneNullablePropertyIdOptions
+            "
             :toOnePropertyIdOptions="toOnePropertyIdOptions"
             :toOneNullablePropertyIdOptions="toOneNullablePropertyIdOptions"
             @query="queryPage"
@@ -171,6 +177,9 @@ const handleDelete = (ids: number[]): void => {
 
         <div>
             <el-button
+                v-if="
+                    userStore.permissions.includes('entity:insert')
+                "
                 type="primary"
                 :icon="Plus"
                 @click="startAdd"
@@ -178,9 +187,12 @@ const handleDelete = (ids: number[]): void => {
                 新增
             </el-button>
             <el-button
-                v-if="selection.length === 0"
+                v-if="
+                    userStore.permissions.includes('entity:delete')
+                "
                 type="danger"
                 :icon="Delete"
+                :disabled="selection.length === 0"
                 @click="handleDelete(selection.map(it => it.id))"
             >
                 删除
@@ -193,6 +205,9 @@ const handleDelete = (ids: number[]): void => {
         >
             <template #operations="{row}">
                 <el-button
+                    v-if="
+                        userStore.permissions.includes('entity:update')
+                    "
                     type="warning"
                     :icon="EditPen"
                     plain
@@ -201,6 +216,9 @@ const handleDelete = (ids: number[]): void => {
                     编辑
                 </el-button>
                 <el-button
+                    v-if="
+                        userStore.permissions.includes('entity:delete')
+                    "
                     type="danger"
                     :icon="Delete"
                     plain
@@ -222,7 +240,11 @@ const handleDelete = (ids: number[]): void => {
 
     <el-dialog
         v-model="addDialogVisible"
-        v-if="toOnePropertyIdOptions && toOneNullablePropertyIdOptions"
+        v-if="
+            userStore.permissions.includes('entity:insert') &&
+            toOnePropertyIdOptions &&
+            toOneNullablePropertyIdOptions
+        "
         destroy-on-close
         :close-on-click-modal="false"
     >
@@ -237,7 +259,11 @@ const handleDelete = (ids: number[]): void => {
 
     <el-dialog
         v-model="editDialogVisible"
-        v-if="toOnePropertyIdOptions && toOneNullablePropertyIdOptions"
+        v-if="
+            userStore.permissions.includes('entity:update') &&
+            toOnePropertyIdOptions &&
+            toOneNullablePropertyIdOptions
+        "
         destroy-on-close
         :close-on-click-modal="false"
     >

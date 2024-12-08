@@ -8,6 +8,7 @@ import top.potmot.core.business.utils.dir
 import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.enums
 import top.potmot.core.business.utils.idProperty
+import top.potmot.core.business.utils.permissions
 import top.potmot.core.business.utils.rules
 import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.ViewGenerator
@@ -51,6 +52,7 @@ import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
 import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
 import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
+import top.potmot.core.business.view.generate.storePath
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
@@ -484,6 +486,10 @@ object Vue3ElementPlusViewGenerator :
         val dir = entity.dir
         val (table, addForm, editForm, queryForm) = entity.components
         val (listView, _, insertInput, _, updateInput, spec) = entity.dto
+        val permission = entity.permissions
+
+        val needMessage = entity.canAdd || entity.canEdit || entity.canDelete
+        val needUserStore = entity.canAdd || entity.canEdit || entity.canDelete
 
         val idProperty = entity.idProperty
         val idName = idProperty.name
@@ -520,7 +526,8 @@ object Vue3ElementPlusViewGenerator :
                         )
                     ),
                     Import(apiPath, "api"),
-                    Import("$utilPath/message", "sendMessage"),
+                    if (!needMessage) null else Import("$utilPath/message", "sendMessage"),
+                    if (!needUserStore) null else Import("$storePath/userStore", "useUserStore"),
                     if (!entity.canDelete) null else Import("$utilPath/confirm", "deleteConfirm"),
                     Import("$utilPath/loading", "useLoading"),
                     Import("$utilPath/legalPage", "useLegalPage"),
@@ -533,6 +540,7 @@ object Vue3ElementPlusViewGenerator :
                     ImportDefault("$componentPath/$dir/$it.vue", it)
                 } + optionQueries.flatMap { it.first },
                 script = listOfNotNull(
+                    if (!needUserStore) null else ConstVariable("userStore", null, "useUserStore()\n"),
                     ConstVariable("{isLoading, withLoading}", null, "useLoading()\n"),
                     ConstVariable("pageData", null, "ref<Page<EntityListView>>()\n"),
                     commentLine("分页查询"),
@@ -717,7 +725,7 @@ object Vue3ElementPlusViewGenerator :
                                         EventBind("query", "queryPage")
                                     )
                                 ).merge {
-                                    directives += VIf(specificationSelectNames.joinToString(" && "))
+                                    directives += specificationSelectNames.map { VIf(it) }
                                 },
                                 emptyLineElement,
                             ),
@@ -729,6 +737,7 @@ object Vue3ElementPlusViewGenerator :
                                         type = ElementPlus.Type.PRIMARY,
                                         icon = "Plus",
                                     ).merge {
+                                        directives += VIf("userStore.permissions.includes('${permission.insert}')")
                                         events += EventBind("click", "startAdd")
                                     },
                                     if (!entity.canDelete) null else button(
@@ -736,7 +745,8 @@ object Vue3ElementPlusViewGenerator :
                                         type = ElementPlus.Type.DANGER,
                                         icon = "Delete",
                                     ).merge {
-                                        directives += VIf("selection.length === 0")
+                                        directives += VIf("userStore.permissions.includes('${permission.delete}')")
+                                        props += PropBind("disabled", "selection.length === 0")
                                         events += EventBind("click", "handleDelete(selection.map(it => it.id))")
                                     },
                                 )
@@ -761,6 +771,7 @@ object Vue3ElementPlusViewGenerator :
                                                 icon = "EditPen",
                                                 plain = true,
                                             ).merge {
+                                                directives += VIf("userStore.permissions.includes('${permission.update}')")
                                                 events += EventBind("click", "startEdit(row.$idName)")
                                             },
                                             if (!entity.canDelete) null else button(
@@ -769,6 +780,7 @@ object Vue3ElementPlusViewGenerator :
                                                 icon = "Delete",
                                                 plain = true,
                                             ).merge {
+                                                directives += VIf("userStore.permissions.includes('${permission.delete}')")
                                                 events += EventBind("click", "handleDelete([row.$idName])")
                                             },
                                         )
@@ -798,7 +810,8 @@ object Vue3ElementPlusViewGenerator :
                                 }
                             )
                         ).merge {
-                            directives += VIf(insertSelectNames.joinToString(" && "))
+                            directives += VIf("userStore.permissions.includes('${permission.insert}')")
+                            directives += insertSelectNames.map { VIf(it) }
                         },
                     ),
                     *if (!entity.canEdit) emptyArray() else arrayOf(
@@ -818,7 +831,8 @@ object Vue3ElementPlusViewGenerator :
                                 }
                             )
                         ).merge {
-                            directives += VIf(updateSelectNames.joinToString(" && "))
+                            directives += VIf("userStore.permissions.includes('${permission.update}')")
+                            directives += updateSelectNames.map { VIf(it) }
                         }
                     )
                 )

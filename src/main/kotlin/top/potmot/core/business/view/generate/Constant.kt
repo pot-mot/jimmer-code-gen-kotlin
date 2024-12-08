@@ -10,4 +10,6 @@ const val rulePath = "@/rules"
 
 const val componentPath = "@/components"
 
+const val storePath = "@/stores"
+
 const val utilPath = "@/utils"

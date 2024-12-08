@@ -460,10 +460,13 @@ import type {
 } from "@/api/__generated/model/static"
 import {api} from "@/api"
 import {sendMessage} from "@/utils/message"
+import {useUserStore} from "@/stores/userStore"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import EntityTable from "@/components/entity/EntityTable.vue"
 import EntityAddForm from "@/components/entity/EntityAddForm.vue"
+
+const userStore = useUserStore()
 
 const {isLoading, withLoading} = useLoading()
 
@@ -541,6 +544,9 @@ const cancelAdd = (): void => {
     <el-card v-loading="isLoading">
         <div>
             <el-button
+                v-if="
+                    userStore.permissions.includes('entity:insert')
+                "
                 type="primary"
                 :icon="Plus"
                 @click="startAdd"
@@ -567,7 +573,11 @@ const cancelAdd = (): void => {
 
     <el-dialog
         v-model="addDialogVisible"
-        v-if="toOnePropertyIdOptions && toOneNullablePropertyIdOptions"
+        v-if="
+            userStore.permissions.includes('entity:insert') &&
+            toOnePropertyIdOptions &&
+            toOneNullablePropertyIdOptions
+        "
         destroy-on-close
         :close-on-click-modal="false"
     >
@@ -1138,10 +1148,13 @@ import type {
 } from "@/api/__generated/model/static"
 import {api} from "@/api"
 import {sendMessage} from "@/utils/message"
+import {useUserStore} from "@/stores/userStore"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import EntityTable from "@/components/entity/EntityTable.vue"
 import EntityEditForm from "@/components/entity/EntityEditForm.vue"
+
+const userStore = useUserStore()
 
 const {isLoading, withLoading} = useLoading()
 
@@ -1235,6 +1248,9 @@ const cancelEdit = (): void => {
         >
             <template #operations="{row}">
                 <el-button
+                    v-if="
+                        userStore.permissions.includes('entity:update')
+                    "
                     type="warning"
                     :icon="EditPen"
                     plain
@@ -1256,7 +1272,11 @@ const cancelEdit = (): void => {
 
     <el-dialog
         v-model="editDialogVisible"
-        v-if="toOnePropertyIdOptions && toOneNullablePropertyIdOptions"
+        v-if="
+            userStore.permissions.includes('entity:update') &&
+            toOnePropertyIdOptions &&
+            toOneNullablePropertyIdOptions
+        "
         destroy-on-close
         :close-on-click-modal="false"
     >
@@ -1779,7 +1799,6 @@ import type {
     ToOneEntityOptionView
 } from "@/api/__generated/model/static"
 import {api} from "@/api"
-import {sendMessage} from "@/utils/message"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import EntityTable from "@/components/entity/EntityTable.vue"
@@ -1836,7 +1855,10 @@ onBeforeMount(async () => {
     <el-card v-loading="isLoading">
         <EntityQueryForm
             v-model="queryForm.spec"
-            v-if="toOnePropertyIdOptions && toOneNullablePropertyIdOptions"
+            v-if="
+                toOnePropertyIdOptions &&
+                toOneNullablePropertyIdOptions
+            "
             :toOnePropertyIdOptions="toOnePropertyIdOptions"
             :toOneNullablePropertyIdOptions="toOneNullablePropertyIdOptions"
             @query="queryPage"
@@ -2280,10 +2302,13 @@ import type {
 } from "@/api/__generated/model/static"
 import {api} from "@/api"
 import {sendMessage} from "@/utils/message"
+import {useUserStore} from "@/stores/userStore"
 import {deleteConfirm} from "@/utils/confirm"
 import {useLoading} from "@/utils/loading"
 import {useLegalPage} from "@/utils/legalPage"
 import EntityTable from "@/components/entity/EntityTable.vue"
+
+const userStore = useUserStore()
 
 const {isLoading, withLoading} = useLoading()
 
@@ -2353,9 +2378,12 @@ const handleDelete = (ids: number[]): void => {
     <el-card v-loading="isLoading">
         <div>
             <el-button
-                v-if="selection.length === 0"
+                v-if="
+                    userStore.permissions.includes('entity:delete')
+                "
                 type="danger"
                 :icon="Delete"
+                :disabled="selection.length === 0"
                 @click="handleDelete(selection.map(it => it.id))"
             >
                 删除
@@ -2368,6 +2396,9 @@ const handleDelete = (ids: number[]): void => {
         >
             <template #operations="{row}">
                 <el-button
+                    v-if="
+                        userStore.permissions.includes('entity:delete')
+                    "
                     type="danger"
                     :icon="Delete"
                     plain
