@@ -8,11 +8,6 @@ import top.potmot.core.business.utils.formType
 import top.potmot.core.business.utils.queryType
 import top.potmot.core.business.utils.upperName
 import top.potmot.core.business.view.generate.componentPath
-import top.potmot.core.business.view.generate.meta.rules.numberMax
-import top.potmot.core.business.view.generate.meta.rules.numberMin
-import top.potmot.core.business.view.generate.meta.rules.numberPrecision
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.dateTimePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.input
@@ -21,8 +16,14 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.timePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
+import top.potmot.core.business.view.generate.meta.rules.numberMax
+import top.potmot.core.business.view.generate.meta.rules.numberMin
+import top.potmot.core.business.view.generate.meta.rules.numberPrecision
+import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
+import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.entity.dto.GenEntityBusinessView
 
 interface QueryFormItem {
@@ -147,25 +148,40 @@ interface QueryFormItem {
 
             PropertyQueryType.TIME_RANGE ->
                 FormItemData(
-                    timePickerRange(
-                        rangeModelValue,
-                        comment = comment,
+                    imports = listOf(
+                        Import("vue", "computed")
+                    ),
+                    elements = listOf(
+                        timePickerRange(
+                            rangeModelValue,
+                            comment = comment,
+                        )
                     )
                 )
 
             PropertyQueryType.DATE_RANGE ->
                 FormItemData(
-                    datePickerRange(
-                        rangeModelValue,
-                        comment = comment,
+                    imports = listOf(
+                        Import("vue", "computed")
+                    ),
+                    elements = listOf(
+                        datePickerRange(
+                            rangeModelValue,
+                            comment = comment,
+                        )
                     )
                 )
 
             PropertyQueryType.DATETIME_RANGE ->
                 FormItemData(
-                    dateTimePickerRange(
-                        rangeModelValue,
-                        comment = comment,
+                    imports = listOf(
+                        Import("vue", "computed")
+                    ),
+                    elements = listOf(
+                        dateTimePickerRange(
+                            rangeModelValue,
+                            comment = comment,
+                        )
                     )
                 )
 
