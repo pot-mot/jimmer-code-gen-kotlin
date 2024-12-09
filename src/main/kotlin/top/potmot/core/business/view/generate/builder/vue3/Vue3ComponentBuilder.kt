@@ -57,8 +57,15 @@ class Vue3ComponentBuilder(
     private fun Component.needPropsDeclare(): Boolean =
         refContextContent.contains("props")
 
-    fun Iterable<Prop>.stringifyProps(currentIndent: String = indent): String {
-        val withDefaults = any { it.defaultValue != null }
+    fun Iterable<Prop>.stringifyProps(): String = buildScopeString(indent) {
+        val hasDefaultProps = filter { it.defaultValue != null }
+        val withDefaults = hasDefaultProps.isNotEmpty()
+
+        if (withDefaults) {
+            append("withDefaults(defineProps<{")
+        } else {
+            append("defineProps<{")
+        }
 
         val props = map { prop ->
             val required = if (prop.required) "" else "?"
@@ -66,17 +73,27 @@ class Vue3ComponentBuilder(
             "${prop.name}$required: $type"
         }.inlineOrWarpLines(currentWrapThreshold = wrapThreshold - "withDefaults(".length)
 
-        val defineProps = if (withDefaults) {
-            "withDefaults(defineProps<{$props}>(), {\n${
-                filter { it.defaultValue != null }.joinToString(",\n") {
-                    "$currentIndent${it.name}: ${it.defaultValue}"
-                }
-            }\n})"
-        } else {
-            "defineProps<{$props}>()"
-        }
+        append(props)
 
-        return defineProps
+        if (withDefaults) {
+            line("}>(), {")
+            scope {
+                hasDefaultProps.forEachIndexed { index, it ->
+                    if (it.defaultAsFunction) {
+                        line("${it.name}() {")
+                        scope {
+                            block(it.defaultValue)
+                        }
+                        line("}${if (index != hasDefaultProps.size - 1) "," else ""}")
+                    } else {
+                        line("${it.name}: ${it.defaultValue},")
+                    }
+                }
+            }
+            append("})")
+        } else {
+            append("}>()")
+        }
     }
 
     private fun Component.needEmitsDeclare(): Boolean =

@@ -42,7 +42,7 @@ class Vue3ElementPlusRuleBuilder(
                 propertyRules.forEach { (property, rules) ->
                     line("${property.nameOrWithId}: [")
                     rules.forEach { rule ->
-                        hasExistValidRule = rule is ExistValidRule
+                        if (!hasExistValidRule) hasExistValidRule = rule is ExistValidRule
                         scope {
                             block(rule.stringify() + ",")
                         }

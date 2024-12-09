@@ -1,6 +1,5 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
 
-import kotlin.jvm.Throws
 import top.potmot.core.business.utils.dto
 import top.potmot.core.business.utils.idProperty
 import top.potmot.core.business.utils.typeStrToTypeScriptType
@@ -37,14 +36,15 @@ interface IdTreeSelect : IdSelect {
 
         val treeOptions = CodeBlock(
             """
-            type TreeOption = {
+            type TreeNode = {
                 value: $idType,
                 label: string,
                 disabled: boolean,
-                children: Array<TreeOption>
+                children: Array<TreeNode>
             }
             
-            const treeOptions = computed<Array<TreeOption>>(() => {
+            const treeOptions = computed<Array<TreeNode>>(() => {
+                const items = props.$options
                 const idNodeMap = new Map<number, TreeNode>
                 const roots: Array<TreeNode> = []
             
@@ -62,7 +62,7 @@ interface IdTreeSelect : IdSelect {
                     const node = idNodeMap.get(item.$idName)
                     if (!node) continue
             
-                    const parentNode = idNodeMap.get(item.$parentId)                    
+                    const parentNode = item.$parentId ? idNodeMap.get(item.$parentId) : undefined
                     if (parentNode) {
                         if (parentNode.disabled) {
                             node.disabled = true
@@ -80,7 +80,7 @@ interface IdTreeSelect : IdSelect {
 
         val filterNodeMethod = CodeBlock(
             """
-            const filterNodeMethod = (value: string | undefined, data: TreeOption) => {
+            const filterNodeMethod = (value: string | undefined, data: TreeNode) => {
                 return !value || data.label.includes(value)
             }
             """.trimIndent()
@@ -114,7 +114,10 @@ interface IdTreeSelect : IdSelect {
             ),
             props = listOf(
                 Prop(options, "Array<$optionView>"),
-                Prop(excludeIds, "Array<$idType>", defaultValue = "[]")
+                Prop(
+                    excludeIds, "Array<$idType>", required = false,
+                    defaultValue = "return []", defaultAsFunction = true
+                )
             ),
             script = listOf(
                 keepModelValueLegal,

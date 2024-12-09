@@ -40,31 +40,16 @@ data class Function(
 ) : CodeItem
 
 fun Function(
+    async: Boolean = false,
     name: String,
     args: Iterable<FunctionArg> = emptyList(),
-    vararg content: String?,
-    async: Boolean = false,
-    returnType: String? = null,
-) = Function(
-    name = name,
-    args = args,
-    body = listOf(CodeBlock(content.filterNotNull().joinToString(""))),
-    async,
-    returnType
-)
-
-fun Function(
-    name: String,
-    args: Iterable<FunctionArg> = emptyList(),
-    async: Boolean = false,
-    returnType: String? = null,
     vararg content: String?,
 ) = Function(
     name = name,
     args = args,
     body = listOf(CodeBlock(content.filterNotNull().joinToString(""))),
     async,
-    returnType
+    null
 )
 
 data class CodeBlock(

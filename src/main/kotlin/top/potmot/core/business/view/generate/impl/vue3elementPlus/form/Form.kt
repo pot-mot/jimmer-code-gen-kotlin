@@ -298,8 +298,6 @@ fun addForm(
     )
 )
 
-private val queryOnChange = EventBind("change", "emits('query')")
-
 fun editForm(
     type: String,
     typePath: String,
@@ -365,9 +363,7 @@ fun editForm(
                     prop = property.name,
                     label = property.comment,
                     content = formItemData.elements
-                ).merge {
-                    events += listOf(queryOnChange)
-                }
+                )
             } + listOf(
                 emptyLineElement,
                 operationsSlotElement.merge {

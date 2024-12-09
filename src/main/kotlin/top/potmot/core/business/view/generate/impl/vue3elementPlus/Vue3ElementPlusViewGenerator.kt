@@ -275,10 +275,10 @@ object Vue3ElementPlusViewGenerator :
 
         val afterValidCodes = nullableDiffProperties.joinToString("\n\n") {
             buildScopeString(indent) {
-                line("if (formData.value.toOnePropertyId === undefined) {")
+                line("if (formData.value.${it.name} === undefined) {")
                 scope {
-                    line("sendMessage(\"toOneProperty不可为空\", \"warning\")")
-                    line("return")
+                    line("sendMessage(\"${it.comment}不可为空\", \"warning\")")
+                    line("return false")
                 }
                 line("}")
             }
@@ -289,11 +289,11 @@ object Vue3ElementPlusViewGenerator :
                 submitType = entity.dto.insertInput,
                 submitTypePath = staticPath,
                 type = entity.addFormDataType,
-                typePath = staticPath,
+                typePath = componentPath + "/" + entity.dir + "/" + entity.addFormDataType,
                 createDefault = entity.addFormCreateDefault,
                 defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormCreateDefault,
                 useRules = "useRules",
-                useRulesPath = rulePath + "/" + entity.rules.addFormRules,
+                useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.addFormRules,
                 formData = formData,
                 indent = indent,
                 selectOptions = entity.insertSelectProperties.selectOptions,
@@ -330,7 +330,7 @@ object Vue3ElementPlusViewGenerator :
                 type = entity.dto.updateInput,
                 typePath = staticPath,
                 useRules = "useRules",
-                useRulesPath = rulePath + "/" + entity.rules.editFormRules,
+                useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.editFormRules,
                 indent = indent,
                 selectOptions = entity.updateSelectProperties.selectOptions,
                 content = entity.editFormProperties
@@ -370,7 +370,7 @@ object Vue3ElementPlusViewGenerator :
                 useRules = "useRules",
                 createDefault = entity.addFormCreateDefault,
                 defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormCreateDefault,
-                useRulesPath = rulePath + "/" + entity.rules.editTableRules,
+                useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.editTableRules,
                 indent = indent,
                 idPropertyName = entity.idProperty.name,
                 comment = entity.comment,
@@ -494,11 +494,11 @@ object Vue3ElementPlusViewGenerator :
                 script = listOfNotNull(
                     if (!needUserStore) null else ConstVariable("userStore", null, "useUserStore()\n"),
                     ConstVariable("{isLoading, withLoading}", null, "useLoading()\n"),
-                    ConstVariable("pageData", null, "ref<Page<EntityListView>>()\n"),
+                    ConstVariable("pageData", null, "ref<Page<${listView}>>()\n"),
                     commentLine("分页查询"),
                     ConstVariable(
                         "queryInfo", null,
-                        "ref<PageQuery<EntitySpec>>({\n",
+                        "ref<PageQuery<${spec}>>({\n",
                         listOf(
                             "spec: {}",
                             "pageIndex: 1",
@@ -512,7 +512,7 @@ object Vue3ElementPlusViewGenerator :
                         listOf(
                             "pageData",
                             "queryInfo",
-                            "withLoading(api.entityService.page)"
+                            "withLoading(api.$apiServiceName.page)"
                         ).joinToString(",\n") { "${indent}$it" },
                         "\n)\n",
                     ),
@@ -538,12 +538,12 @@ object Vue3ElementPlusViewGenerator :
                     ),
 
                     commentLine("多选"),
-                    ConstVariable("selection", null, "ref<EntityListView[]>([])"),
+                    ConstVariable("selection", null, "ref<${listView}[]>([])"),
                     emptyLineCode,
                     Function(
                         name = "handleSelectionChange",
                         args = listOf(FunctionArg("newSelection", "Array<$listView>")),
-                        "selection.value = newSelection"
+                        content = arrayOf("selection.value = newSelection")
                     ),
                     emptyLineCode,
 
@@ -556,34 +556,33 @@ object Vue3ElementPlusViewGenerator :
                         emptyLineCode,
                         Function(
                             name = "startAdd",
-                            body = listOf(
-                                CodeBlock("addDialogVisible.value = true")
-                            )
+                            content = arrayOf("addDialogVisible.value = true")
                         ),
                         emptyLineCode,
                         Function(
+                            async = true,
                             name = "submitAdd",
                             args = listOf(FunctionArg("insertInput", insertInput)),
-                            "try {\n",
-                            listOf(
-                                "await add${entity.name}(insertInput)",
-                                "await queryPage()",
-                                "addDialogVisible.value = false",
-                                "",
-                                "sendMessage('新增${entity.comment}成功', 'success')"
-                            ).joinToString("") { "${indent}$it\n" },
-                            "} catch (e) {\n",
-                            listOf(
-                                "sendMessage(\"新增${entity.comment}失败\", \"error\", e)"
-                            ).joinToString("") { "${indent}$it\n" },
-                            "}"
+                            buildScopeString(indent) {
+                                line("try {")
+                                scope {
+                                    line("await add${entity.name}(insertInput)")
+                                    line("await queryPage()")
+                                    line("addDialogVisible.value = false")
+                                    line()
+                                    line("sendMessage('新增${entity.comment}成功', 'success')")
+                                }
+                                line("} catch (e) {")
+                                scope {
+                                    line("sendMessage(\"新增${entity.comment}失败\", \"error\", e)")
+                                }
+                                line("}")
+                            }
                         ),
                         emptyLineCode,
                         Function(
                             name = "cancelAdd",
-                            body = listOf(
-                                CodeBlock("addDialogVisible.value = false")
-                            )
+                            content = arrayOf("addDialogVisible.value = false")
                         ),
                     ),
 
@@ -595,34 +594,40 @@ object Vue3ElementPlusViewGenerator :
                         ConstVariable("updateInput", null, "ref<${entity.name}UpdateInput | undefined>(undefined)"),
                         emptyLineCode,
                         Function(
+                            async = true,
                             name = "startEdit",
                             args = listOf(FunctionArg("id", "number")),
-                            "updateInput.value = await get${entity.name}ForUpdate(id)\n",
-                            "if (updateInput.value === undefined) {\n",
-                            listOf(
-                                "sendMessage('编辑的${entity.comment}不存在', 'error')",
-                                "return"
-                            ).joinToString("") { "${indent}$it\n" },
-                            "}\n",
-                            "editDialogVisible.value = true"
+                            buildScopeString {
+                                line("updateInput.value = await get${entity.name}ForUpdate(id)")
+                                line("if (updateInput.value === undefined) {")
+                                scope {
+                                    line("sendMessage('编辑的${entity.comment}不存在', 'error')")
+                                    line("return")
+                                }
+                                line("}")
+                                line("editDialogVisible.value = true")
+                            },
                         ),
                         emptyLineCode,
                         Function(
+                            async = true,
                             name = "submitEdit",
                             args = listOf(FunctionArg("updateInput", "${entity.name}UpdateInput")),
-                            "try {\n",
-                            listOf(
-                                "await edit${entity.name}(updateInput)",
-                                "await queryPage()",
-                                "editDialogVisible.value = false",
-                                "",
-                                "sendMessage('编辑${entity.comment}成功', 'success')"
-                            ).joinToString("") { "${indent}$it\n" },
-                            "} catch (e) {\n",
-                            listOf(
-                                "sendMessage('编辑${entity.comment}失败', 'error', e)"
-                            ).joinToString("") { "${indent}$it\n" },
-                            "}"
+                            buildScopeString {
+                                line("try {")
+                                scope {
+                                    line("await edit${entity.name}(updateInput)")
+                                    line("await queryPage()")
+                                    line("editDialogVisible.value = false")
+                                    line()
+                                    line("sendMessage('编辑${entity.comment}成功', 'success')")
+                                }
+                                line("} catch (e) {")
+                                scope {
+                                    line("sendMessage('编辑${entity.comment}失败', 'error', e)")
+                                }
+                                line("}")
+                            },
                         ),
                         emptyLineCode,
                         Function(
@@ -637,23 +642,26 @@ object Vue3ElementPlusViewGenerator :
                         emptyLineCode,
                         commentLine("删除"),
                         Function(
+                            async = true,
                             name = "handleDelete",
                             args = listOf(FunctionArg("ids", "number[]")),
-                            "const result = await deleteConfirm('${entity.comment}')\n",
-                            "if (!result) return\n",
-                            "\n",
-                            "try {\n",
-                            listOf(
-                                "await delete${entity.name}(ids)",
-                                "await queryPage()",
-                                "",
-                                "sendMessage('删除${entity.comment}成功', 'success')"
-                            ).joinToString("") { "${indent}$it\n" },
-                            "} catch (e) {\n",
-                            listOf(
-                                "sendMessage('删除${entity.comment}失败', 'error', e)"
-                            ).joinToString("") { "${indent}$it\n" },
-                            "}",
+                            buildScopeString {
+                                line("const result = await deleteConfirm('${entity.comment}')")
+                                line("if (!result) return")
+                                line()
+                                line("try {")
+                                scope {
+                                    line("await delete${entity.name}(ids)")
+                                    line("await queryPage()")
+                                    line()
+                                    line("sendMessage('删除${entity.comment}成功', 'success')")
+                                }
+                                line("} catch (e) {")
+                                scope {
+                                    line("sendMessage('删除${entity.comment}失败', 'error', e)")
+                                }
+                                line("}")
+                            },
                         )
                     )
                 ),
@@ -668,7 +676,7 @@ object Vue3ElementPlusViewGenerator :
                                 TagElement(
                                     queryForm,
                                     directives = listOf(
-                                        VModel("queryForm.spec")
+                                        VModel("queryInfo.spec")
                                     ),
                                     props = specificationSelectNames.map {
                                         PropBind(it, it)
@@ -705,46 +713,52 @@ object Vue3ElementPlusViewGenerator :
                             ),
                             emptyLineElement,
                             TagElement(
-                                table,
-                                props = listOf(
-                                    PropBind("rows", "pageData.rows"),
-                                ),
-                                events = listOf(
-                                    EventBind("selectionChange", "handleSelectionChange")
-                                ),
+                                "template",
+                                directives = listOf(VIf("pageData")),
                                 children = listOf(
-                                    slotTemplate(
-                                        "operations",
-                                        props = listOf("row"),
-                                        content = listOfNotNull(
-                                            if (!entity.canEdit) null else button(
-                                                content = "编辑",
-                                                type = ElementPlus.Type.WARNING,
-                                                icon = "EditPen",
-                                                plain = true,
-                                            ).merge {
-                                                directives += VIf("userStore.permissions.includes('${permission.update}')")
-                                                events += EventBind("click", "startEdit(row.$idName)")
-                                            },
-                                            if (!entity.canDelete) null else button(
-                                                content = "删除",
-                                                type = ElementPlus.Type.DANGER,
-                                                icon = "Delete",
-                                                plain = true,
-                                            ).merge {
-                                                directives += VIf("userStore.permissions.includes('${permission.delete}')")
-                                                events += EventBind("click", "handleDelete([row.$idName])")
-                                            },
+                                    TagElement(
+                                        table,
+                                        props = listOf(
+                                            PropBind("rows", "pageData.rows"),
+                                        ),
+                                        events = listOf(
+                                            EventBind("selectionChange", "handleSelectionChange")
+                                        ),
+                                        children = listOf(
+                                            slotTemplate(
+                                                "operations",
+                                                props = listOf("row"),
+                                                content = listOfNotNull(
+                                                    if (!entity.canEdit) null else button(
+                                                        content = "编辑",
+                                                        type = ElementPlus.Type.WARNING,
+                                                        icon = "EditPen",
+                                                        plain = true,
+                                                    ).merge {
+                                                        directives += VIf("userStore.permissions.includes('${permission.update}')")
+                                                        events += EventBind("click", "startEdit(row.$idName)")
+                                                    },
+                                                    if (!entity.canDelete) null else button(
+                                                        content = "删除",
+                                                        type = ElementPlus.Type.DANGER,
+                                                        icon = "Delete",
+                                                        plain = true,
+                                                    ).merge {
+                                                        directives += VIf("userStore.permissions.includes('${permission.delete}')")
+                                                        events += EventBind("click", "handleDelete([row.$idName])")
+                                                    },
+                                                )
+                                            )
                                         )
+                                    ),
+                                    emptyLineElement,
+                                    pagination(
+                                        currentPage = "queryInfo.pageIndex",
+                                        pageSize = "queryInfo.pageSize",
+                                        total = "pageData.totalRowCount",
                                     )
                                 )
                             ),
-                            emptyLineElement,
-                            pagination(
-                                currentPage = "queryInfo.pageIndex",
-                                pageSize = "queryInfo.pageSize",
-                                total = "pageData.totalRowCount",
-                            )
                         )
                     ),
                     *if (!entity.canAdd) emptyArray() else arrayOf(

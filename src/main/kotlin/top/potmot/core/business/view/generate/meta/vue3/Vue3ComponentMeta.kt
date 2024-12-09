@@ -13,6 +13,7 @@ data class Prop(
     val type: String,
     val required: Boolean = true,
     val defaultValue: String? = null,
+    val defaultAsFunction: Boolean = false
 )
 
 data class ModelProp(
