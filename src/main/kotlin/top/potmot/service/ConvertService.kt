@@ -1,5 +1,6 @@
 package top.potmot.service
 
+import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
@@ -72,7 +73,7 @@ class ConvertService(
 
             listOf(
                 sqlClient.insertInputs(insertEntities).items,
-                sqlClient.saveEntities(updateEntities).items
+                sqlClient.updateEntities(updateEntities, AssociatedSaveMode.REPLACE).items
             ).flatten().forEach {
                 val entity = it.modifiedEntity
                 val table = tableIdMap[entity.tableId]
