@@ -10,11 +10,11 @@ import java.util.Date
 fun typeStrToJavaType(typeStr: String, typeNotNull: Boolean) =
     when (typeStr) {
         String::class.qualifiedName, String::class.java.name -> "String"
-        Int::class.qualifiedName, "java.lang.Integer" -> if (typeNotNull) "int" else "Integer"
-        Long::class.qualifiedName, "java.lang.Long" -> if (typeNotNull) "long" else "Long"
-        Float::class.qualifiedName, "java.lang.Float" -> if (typeNotNull) "float" else "Float"
-        Double::class.qualifiedName, "java.lang.Double" -> if (typeNotNull) "double" else "Double"
-        Boolean::class.qualifiedName, "java.lang.Boolean" -> if (typeNotNull) "boolean" else "Boolean"
+        "int", Int::class.qualifiedName, "java.lang.Integer" -> if (typeNotNull) "int" else "Integer"
+        "long", Long::class.qualifiedName, "java.lang.Long" -> if (typeNotNull) "long" else "Long"
+        "float", Float::class.qualifiedName, "java.lang.Float" -> if (typeNotNull) "float" else "Float"
+        "double", Double::class.qualifiedName, "java.lang.Double" -> if (typeNotNull) "double" else "Double"
+        "boolean", Boolean::class.qualifiedName, "java.lang.Boolean" -> if (typeNotNull) "boolean" else "Boolean"
         else -> typeStr.substringAfterLast(".")
     }
 
