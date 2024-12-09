@@ -5,10 +5,10 @@ import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenEntityInput
 
 private val GenEntityDetailView.TargetOf_properties.associationMatchKey
-    get() = "$columnId $typeTableId $associationType $idView"
+    get() = "$columnId $typeTableId $associationType $mappedBy $idView $idViewTarget"
 
 private val GenEntityInput.TargetOf_properties.associationMatchKey
-    get() = "$columnId $typeTableId $associationType $idView"
+    get() = "$columnId $typeTableId $associationType $mappedBy $idView $idViewTarget"
 
 private fun GenEntityInput.TargetOf_properties.mergeExistProperty(
     existProperty: GenEntityDetailView.TargetOf_properties,
@@ -85,20 +85,15 @@ fun mergeExistAndConvertEntity(
 
         val mergedConvertProperties = convertEntity.properties.map {
             if (it.associationType != null) {
-                val associationMatchExistProperty =
-                    associationMatchColumnMap[it.associationMatchKey]?.firstOrNull()
-
-                if (associationMatchExistProperty != null)
-                    return@map it.mergeExistProperty(associationMatchExistProperty)
+                val associationMatchExistProperties = associationMatchColumnMap[it.associationMatchKey]
+                if (associationMatchExistProperties?.size == 1)
+                    return@map it.mergeExistProperty(associationMatchExistProperties[0])
             } else {
-                val columnIdMatchExistProperty =
-                    columnIdMatchColumnMap[it.columnId]?.firstOrNull()
-
-                if (columnIdMatchExistProperty != null)
-                    return@map it.mergeExistProperty(columnIdMatchExistProperty)
+                val columnIdMatchExistProperties = columnIdMatchColumnMap[it.columnId]
+                if (columnIdMatchExistProperties?.size == 1)
+                    return@map it.mergeExistProperty(columnIdMatchExistProperties[0])
 
                 val nameEqualExistProperty = nameMatchColumnMap[it.name]
-
                 if (nameEqualExistProperty != null)
                     return@map it.mergeExistProperty(nameEqualExistProperty)
             }
