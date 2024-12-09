@@ -411,7 +411,6 @@ object Vue3ElementPlusViewGenerator :
         selectOption: SelectOption,
         serviceName: String,
     ) = mutableListOf(
-        ImportType("vue", "Ref"),
         ImportType(staticPath, selectOption.type),
         Import("vue", "onBeforeMount"),
         Import("@/api", "api"),
