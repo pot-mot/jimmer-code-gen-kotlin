@@ -42,27 +42,24 @@ fun typeStrToKotlinType(typeStr: String, typeNotNull: Boolean) =
 
 fun typeStrToTypeScriptType(typeStr: String, typeNotNull: Boolean) =
     when (typeStr) {
+        String::class.java.name,
         String::class.qualifiedName,
         Date::class.qualifiedName,
         Instant::class.qualifiedName,
         LocalDate::class.qualifiedName,
         LocalTime::class.qualifiedName,
-        LocalDateTime::class.qualifiedName -> if (typeNotNull) "string" else "string | undefined"
-        String::class.java.name -> "string | undefined"
+        LocalDateTime::class.qualifiedName,
+        -> if (typeNotNull) "string" else "string | undefined"
 
-        Int::class.qualifiedName, "int",
-        Long::class.qualifiedName, "long",
-        Float::class.qualifiedName, "float",
-        Double::class.qualifiedName, "double",
-        BigDecimal::class.java.name -> if (typeNotNull) "number" else "number | undefined"
+        Int::class.qualifiedName, "int", "java.lang.Integer",
+        Long::class.qualifiedName, "long", "java.lang.Long",
+        Float::class.qualifiedName, "float", "java.lang.Float",
+        Double::class.qualifiedName, "double", "java.lang.Double",
+        BigDecimal::class.java.name,
+        -> if (typeNotNull) "number" else "number | undefined"
 
-        "java.lang.Integer",
-        "java.lang.Long",
-        "java.lang.Float",
-        "java.lang.Double" -> "number | undefined"
-
-        Boolean::class.qualifiedName, "boolean" -> if (typeNotNull) "boolean" else "boolean | undefined"
-        "java.lang.Boolean" -> "boolean | undefined"
+        Boolean::class.qualifiedName, "boolean", "java.lang.Boolean",
+        -> if (typeNotNull) "boolean" else "boolean | undefined"
 
         else -> typeStr.substringAfterLast(".").let {
             if (typeNotNull) it else "$it | undefined"
@@ -71,27 +68,24 @@ fun typeStrToTypeScriptType(typeStr: String, typeNotNull: Boolean) =
 
 fun typeStrToTypeScriptDefault(typeStr: String, typeNotNull: Boolean) =
     when (typeStr) {
+        String::class.java.name,
         String::class.qualifiedName,
         Date::class.qualifiedName,
         Instant::class.qualifiedName,
         LocalDate::class.qualifiedName,
         LocalTime::class.qualifiedName,
         LocalDateTime::class.qualifiedName,
-        String::class.java.name -> if (typeNotNull) "\"\"" else "undefined"
+        -> if (typeNotNull) "\"\"" else "undefined"
 
-        Int::class.qualifiedName, "int",
-        Long::class.qualifiedName, "long",
-        Float::class.qualifiedName, "float",
-        Double::class.qualifiedName, "double",
+        Int::class.qualifiedName, "int", "java.lang.Integer",
+        Long::class.qualifiedName, "long", "java.lang.Long",
+        Float::class.qualifiedName, "float", "java.lang.Float",
+        Double::class.qualifiedName, "double", "java.lang.Double",
         BigDecimal::class.java.name,
-        "java.lang.Integer",
-        "java.lang.Long",
-        "java.lang.Float",
-        "java.lang.Double" -> if (typeNotNull) "0" else "undefined"
+        -> if (typeNotNull) "0" else "undefined"
 
-        Boolean::class.qualifiedName,
-        "boolean",
-        "java.lang.Boolean" -> if (typeNotNull) "false" else "undefined"
+        Boolean::class.qualifiedName, "boolean", "java.lang.Boolean",
+        -> if (typeNotNull) "false" else "undefined"
 
         else -> "undefined"
     }
