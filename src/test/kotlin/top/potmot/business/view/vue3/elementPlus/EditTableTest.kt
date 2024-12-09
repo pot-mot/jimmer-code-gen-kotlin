@@ -35,7 +35,7 @@ class EditTableTest {
 <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
-import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
+import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntitySubTableType} from "@/api/__generated/model/static"
 import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
@@ -49,11 +49,13 @@ const props = withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined,
+    withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined
 }>(), {
     idColumn: false,
     indexColumn: false,
     multiSelect: true,
+    withOperations: false,
     submitLoading: false
 })
 
@@ -75,13 +77,17 @@ defineSlots<{
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
+// 校验
+const handleValidate = async (): Promise<boolean> => {
+    return await formRef.value?.validate().catch(() => false) ?? false
+}
+
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
 
-    const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-
-    if (formValid) {
+    const validResult = await handleValidate()
+    if (validResult) {
         emits("submit", formData.value)
     }
 }
@@ -115,6 +121,10 @@ const handleSingleDelete = async (index: number): Promise<void> => {
     if (!result) return
     formData.value = formData.value.filter((_, i) => i !== index)
 }
+
+defineExpose<FormExpose>({
+    validate: handleValidate
+})
 </script>
 
 <template>
@@ -172,6 +182,7 @@ const handleSingleDelete = async (index: number): Promise<void> => {
         </el-table>
 
         <slot
+            v-if="withOperations"
             name="operations"
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
@@ -220,12 +231,11 @@ const handleSingleDelete = async (index: number): Promise<void> => {
 <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
-import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
+import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntitySubTableType} from "@/api/__generated/model/static"
 import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 import {Plus, Delete} from "@element-plus/icons-vue"
-import type {SubFormExpose} from "@/components/form/SubFormExpose"
 
 const formData = defineModel<Array<EntitySubTableType>>({
     required: true
@@ -235,11 +245,13 @@ const props = withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined,
+    withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined
 }>(), {
     idColumn: false,
     indexColumn: false,
     multiSelect: true,
+    withOperations: false,
     submitLoading: false
 })
 
@@ -261,18 +273,28 @@ defineSlots<{
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
-const subTable1Ref = ref<SubFormExpose>()
-const subTable2Ref = ref<SubFormExpose>()
+const subTable1Ref = ref<FormExpose>()
+const subTable2Ref = ref<FormExpose>()
+
+// 校验
+const handleValidate = async (): Promise<boolean> => {
+    const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
+    const subTable1Valid: boolean | undefined = await subTable1Ref.value?.validate().catch(() => false)
+    const subTable2Valid: boolean | undefined = await subTable2Ref.value?.validate().catch(() => false)
+
+    if (formValid && subTable1Valid && subTable2Valid) {
+        return true
+    } else {
+        return false
+    }
+}
 
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
 
-    const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-    const subTable1Valid: boolean | undefined = await subTable1Ref.value?.formRef?.validate().catch(() => false)
-    const subTable2Valid: boolean | undefined = await subTable2Ref.value?.formRef?.validate().catch(() => false)
-
-    if (formValid && subTable1Valid && subTable2Valid) {
+    const validResult = await handleValidate()
+    if (validResult) {
         emits("submit", formData.value)
     }
 }
@@ -306,6 +328,10 @@ const handleSingleDelete = async (index: number): Promise<void> => {
     if (!result) return
     formData.value = formData.value.filter((_, i) => i !== index)
 }
+
+defineExpose<FormExpose>({
+    validate: handleValidate
+})
 </script>
 
 <template>
@@ -363,6 +389,7 @@ const handleSingleDelete = async (index: number): Promise<void> => {
         </el-table>
 
         <slot
+            v-if="withOperations"
             name="operations"
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
@@ -411,7 +438,7 @@ const handleSingleDelete = async (index: number): Promise<void> => {
 <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
-import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
+import type {FormExpose} from "@/components/form/FormExpose"
 import type {
     EntitySubTableType,
     CustomerOptionView,
@@ -429,6 +456,7 @@ const props = withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined,
+    withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
     CustomerOptions: Array<CustomerOptionView>,
     TypeOptions: Array<TypeOptionView>
@@ -436,6 +464,7 @@ const props = withDefaults(defineProps<{
     idColumn: false,
     indexColumn: false,
     multiSelect: true,
+    withOperations: false,
     submitLoading: false
 })
 
@@ -457,13 +486,17 @@ defineSlots<{
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
+// 校验
+const handleValidate = async (): Promise<boolean> => {
+    return await formRef.value?.validate().catch(() => false) ?? false
+}
+
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
 
-    const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-
-    if (formValid) {
+    const validResult = await handleValidate()
+    if (validResult) {
         emits("submit", formData.value)
     }
 }
@@ -497,6 +530,10 @@ const handleSingleDelete = async (index: number): Promise<void> => {
     if (!result) return
     formData.value = formData.value.filter((_, i) => i !== index)
 }
+
+defineExpose<FormExpose>({
+    validate: handleValidate
+})
 </script>
 
 <template>
@@ -554,6 +591,7 @@ const handleSingleDelete = async (index: number): Promise<void> => {
         </el-table>
 
         <slot
+            v-if="withOperations"
             name="operations"
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"

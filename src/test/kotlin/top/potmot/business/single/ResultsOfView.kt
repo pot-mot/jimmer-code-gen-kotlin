@@ -107,7 +107,7 @@ export const createDefaultEntity = (): EntityAddFormType => {
 ), (components/entity/EntityAddForm.vue, <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
-import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
+import type {FormExpose} from "@/components/form/FormExpose"
 import type {
     EntityInsertInput,
     EntityAddFormType,
@@ -121,10 +121,12 @@ import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vu
 import {sendMessage} from "@/utils/message"
 
 const props = withDefaults(defineProps<{
+    withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
     toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
+    withOperations: true,
     submitLoading: false
 })
 
@@ -148,10 +150,8 @@ const formData = ref<EntityAddFormType>(createDefaultEntity())
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
-// 提交
-const handleSubmit = async (): Promise<void> => {
-    if (props.submitLoading) return
-
+// 校验
+const handleValidate = async (): Promise<boolean> => {
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
 
     if (formValid) {
@@ -160,6 +160,18 @@ const handleSubmit = async (): Promise<void> => {
             return
         }
 
+        return true
+    } else {
+        return false
+    }
+}
+
+// 提交
+const handleSubmit = async (): Promise<void> => {
+    if (props.submitLoading) return
+
+    const validResult = await handleValidate()
+    if (validResult) {
         emits("submit", formData.value)
     }
 }
@@ -168,6 +180,10 @@ const handleSubmit = async (): Promise<void> => {
 const handleCancel = (): void => {
     emits("cancel")
 }
+
+defineExpose<FormExpose>({
+    validate: handleValidate
+})
 </script>
 
 <template>
@@ -205,6 +221,7 @@ const handleCancel = (): void => {
         </el-form-item>
 
         <slot
+            v-if="withOperations"
             name="operations"
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
@@ -227,7 +244,7 @@ const handleCancel = (): void => {
 ), (components/entity/EntityEditForm.vue, <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
-import type {EditFormExpose} from "@/api/__generated/model/static/form/EditFormExpose"
+import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityUpdateInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
 import {useRules} from "@/rules/EntityEditFormRules"
 import EnumSelect from "@/components/enum/EnumSelect.vue"
@@ -239,10 +256,12 @@ const formData = defineModel<EntityUpdateInput>({
 })
 
 const props = withDefaults(defineProps<{
+    withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
     toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
+    withOperations: true,
     submitLoading: false
 })
 
@@ -264,13 +283,17 @@ defineSlots<{
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
+// 校验
+const handleValidate = async (): Promise<boolean> => {
+    return await formRef.value?.validate().catch(() => false) ?? false
+}
+
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
 
-    const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-
-    if (formValid) {
+    const validResult = await handleValidate()
+    if (validResult) {
         emits("submit", formData.value)
     }
 }
@@ -279,6 +302,10 @@ const handleSubmit = async (): Promise<void> => {
 const handleCancel = (): void => {
     emits("cancel")
 }
+
+defineExpose<FormExpose>({
+    validate: handleValidate
+})
 </script>
 
 <template>
@@ -323,6 +350,7 @@ const handleCancel = (): void => {
         </el-form-item>
 
         <slot
+            v-if="withOperations"
             name="operations"
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
@@ -345,7 +373,7 @@ const handleCancel = (): void => {
 ), (components/entity/EntityEditTable.vue, <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
-import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
+import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityAddFormType, ToOneEntityOptionView} from "@/api/__generated/model/static"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
 import {useRules} from "@/rules/EntityEditTableRules"
@@ -362,6 +390,7 @@ const props = withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined,
+    withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
     toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
@@ -369,6 +398,7 @@ const props = withDefaults(defineProps<{
     idColumn: false,
     indexColumn: false,
     multiSelect: true,
+    withOperations: false,
     submitLoading: false
 })
 
@@ -390,13 +420,17 @@ defineSlots<{
 const formRef = ref<FormInstance>()
 const rules = useRules(rows)
 
+// 校验
+const handleValidate = async (): Promise<boolean> => {
+    return await formRef.value?.validate().catch(() => false) ?? false
+}
+
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
 
-    const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-
-    if (formValid) {
+    const validResult = await handleValidate()
+    if (validResult) {
         emits("submit", rows.value)
     }
 }
@@ -430,6 +464,10 @@ const handleSingleDelete = async (index: number): Promise<void> => {
     if (!result) return
     rows.value = rows.value.filter((_, i) => i !== index)
 }
+
+defineExpose<FormExpose>({
+    validate: handleValidate
+})
 </script>
 
 <template>
@@ -546,6 +584,7 @@ const handleSingleDelete = async (index: number): Promise<void> => {
         </el-table>
 
         <slot
+            v-if="withOperations"
             name="operations"
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"

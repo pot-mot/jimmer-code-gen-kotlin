@@ -29,20 +29,23 @@ import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.Slot
 import top.potmot.core.business.view.generate.meta.vue3.SlotProp
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
+import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
 import top.potmot.core.business.view.generate.meta.vue3.slotElement
 import top.potmot.core.business.view.generate.meta.vue3.styleProp
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.utils.string.buildScopeString
 
-private const val submitEventName = "submit"
-private const val handleSubmitFnName = "handleSubmit"
+private const val formExposeType = "FormExpose"
+
+private const val formExposePath = "$componentPath/form/$formExposeType"
 
 data class SubValidateItem(
     val componentName: String,
     val ref: String = componentName.replaceFirstChar { it.lowercase() } + "Ref",
-    val type: String = "SubFormExpose",
-    val typePath: String = "$componentPath/form/SubFormExpose",
+    val type: String = formExposeType,
+    val typePath: String = formExposePath,
     val validateVariable: String = componentName.replaceFirstChar { it.lowercase() } + "Valid",
 ) {
     fun toRef() =
@@ -51,6 +54,66 @@ data class SubValidateItem(
     fun toImport() =
         ImportType(typePath, type)
 }
+
+private const val handleValidateFnName = "handleValidate"
+
+private fun handleValidate(
+    formRef: String,
+    subValidateItems: Collection<SubValidateItem>,
+    indent: String,
+    afterValidCodes: String? = null,
+) = Function(
+    async = true,
+    name = handleValidateFnName,
+    returnType = "boolean",
+    body =
+    if (subValidateItems.isEmpty() && afterValidCodes.isNullOrBlank())
+        listOf(
+            CodeBlock(
+                "return await $formRef.value?.validate().catch(() => false) ?? false"
+            )
+        )
+    else listOfNotNull(
+        ConstVariable("formValid", "boolean | undefined", "await $formRef.value?.validate().catch(() => false)"),
+        *subValidateItems.map {
+            ConstVariable(
+                it.validateVariable,
+                "boolean | undefined",
+                "await ${it.ref}.value?.validate().catch(() => false)"
+            )
+        }.toTypedArray(),
+        CodeBlock(
+            buildScopeString(indent) {
+                line()
+                line("if (${(listOf("formValid") + subValidateItems.map { it.validateVariable }).joinToString(" && ")}) {")
+                scope {
+                    afterValidCodes?.let {
+                        block(it)
+                    }
+                    line("return true")
+                }
+                line("} else {")
+                scope {
+                    line("return false")
+                }
+                append("}")
+            }
+        )
+    )
+)
+
+private fun exposeValid(indent: String) = CodeBlock(
+    buildScopeString(indent) {
+        line("defineExpose<$formExposeType>({")
+        scope {
+            line("validate: $handleValidateFnName")
+        }
+        append("})")
+    }
+)
+
+private const val submitEventName = "submit"
+private const val handleSubmitFnName = "handleSubmit"
 
 data class SelectOption(
     val name: String,
@@ -84,33 +147,22 @@ private val submitLoadingProp = Prop(submitLoading, "boolean", false, "false")
 
 private fun handleSubmit(
     formData: String,
-    formRef: String,
-    subValidateItems: Collection<SubValidateItem>,
     indent: String,
-    afterValidCodes: String? = null,
 ) = Function(
     async = true,
     name = handleSubmitFnName,
     body = listOfNotNull(
-        CodeBlock("if (props.$submitLoading) return\n"),
-
-        ConstVariable("formValid", "boolean | undefined", "await $formRef.value?.validate().catch(() => false)"),
-        *subValidateItems.map {
-            ConstVariable(
-                it.validateVariable,
-                "boolean | undefined",
-                "await ${it.ref}.value?.formRef?.validate().catch(() => false)"
-            )
-        }.toTypedArray(),
-
         CodeBlock(
-            "\n",
-            "if (", (listOf("formValid") + subValidateItems.map { it.validateVariable }).joinToString(" && "), ") {\n",
-            afterValidCodes?.lines()?.joinToString("") {
-                "$indent$it\n"
-            },
-            "${indent}emits(\"submit\", $formData.value)\n",
-            "}",
+            buildScopeString(indent) {
+                line("if (props.$submitLoading) return")
+                line()
+                line("const validResult = await $handleValidateFnName()")
+                line("if (validResult) {")
+                scope {
+                    line("emits(\"submit\", $formData.value)")
+                }
+                append("}")
+            }
         )
     )
 )
@@ -185,7 +237,7 @@ fun addForm(
     imports = listOf(
         Import("vue", "ref"),
         ImportType("element-plus", "FormInstance"),
-        ImportType("$staticPath/form/AddFormExpose", "AddFormExpose"),
+        ImportType(formExposePath, formExposeType),
         ImportType(submitTypePath, submitType),
         ImportType(typePath, type),
         Import(defaultPath, createDefault),
@@ -195,6 +247,7 @@ fun addForm(
             + subValidateItems.map { it.toImport() }
             + selectOptions.map { it.toImport() },
     props = listOf(
+        Prop("withOperations", "boolean", required = false, defaultValue = "true"),
         submitLoadingProp,
         *selectOptions.map { it.toProp() }.toTypedArray(),
     ),
@@ -213,11 +266,16 @@ fun addForm(
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
         if (subValidateItems.isNotEmpty()) emptyLineCode else null,
+        commentLine("校验"),
+        handleValidate(formRef, subValidateItems, indent, afterValidCodes),
+        emptyLineCode,
         commentLine("提交"),
-        handleSubmit(formData, formRef, subValidateItems, indent, afterValidCodes),
+        handleSubmit(formData, indent),
         emptyLineCode,
         commentLine("取消"),
         handleCancel(),
+        emptyLineCode,
+        exposeValid(indent)
     ),
     template = listOf(
         form(
@@ -232,7 +290,9 @@ fun addForm(
                 )
             } + listOf(
                 emptyLineElement,
-                operationsSlotElement,
+                operationsSlotElement.merge {
+                    directives += VIf("withOperations")
+                },
             )
         )
     )
@@ -256,7 +316,7 @@ fun editForm(
     imports = listOf(
         Import("vue", "ref"),
         ImportType("element-plus", "FormInstance"),
-        ImportType("$staticPath/form/EditFormExpose", "EditFormExpose"),
+        ImportType(formExposePath, formExposeType),
         ImportType(typePath, type),
         Import(useRulesPath, useRules)
     )
@@ -267,6 +327,7 @@ fun editForm(
         ModelProp(formData, type),
     ),
     props = listOf(
+        Prop("withOperations", "boolean", required = false, defaultValue = "true"),
         submitLoadingProp,
         *selectOptions.map { it.toProp() }.toTypedArray(),
     ),
@@ -283,11 +344,16 @@ fun editForm(
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
         if (subValidateItems.isNotEmpty()) emptyLineCode else null,
+        commentLine("校验"),
+        handleValidate(formRef, subValidateItems, indent, afterValidCodes),
+        emptyLineCode,
         commentLine("提交"),
-        handleSubmit(formData, formRef, subValidateItems, indent, afterValidCodes),
+        handleSubmit(formData, indent),
         emptyLineCode,
         commentLine("取消"),
         handleCancel(),
+        emptyLineCode,
+        exposeValid(indent)
     ),
     template = listOf(
         form(
@@ -304,7 +370,9 @@ fun editForm(
                 }
             } + listOf(
                 emptyLineElement,
-                operationsSlotElement,
+                operationsSlotElement.merge {
+                    directives += VIf("withOperations")
+                },
             ),
         )
     )
@@ -330,7 +398,7 @@ fun editTable(
     imports = listOf(
         Import("vue", "ref"),
         ImportType("element-plus", "FormInstance"),
-        ImportType("$staticPath/form/AddFormExpose", "AddFormExpose"),
+        ImportType(formExposePath, formExposeType),
         ImportType(typePath, type),
         Import(defaultPath, createDefault),
         Import(useRulesPath, useRules),
@@ -343,6 +411,7 @@ fun editTable(
         ModelProp(formData, "Array<$type>"),
     ),
     props = tableUtilProps(showIndex = false) + listOf(
+        Prop("withOperations", "boolean", required = false, defaultValue = "false"),
         submitLoadingProp,
         *selectOptions.map { it.toProp() }.toTypedArray(),
     ),
@@ -359,8 +428,11 @@ fun editTable(
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
         if (subValidateItems.isNotEmpty()) emptyLineCode else null,
+        commentLine("校验"),
+        handleValidate(formRef, subValidateItems, indent, afterValidCodes),
+        emptyLineCode,
         commentLine("提交"),
-        handleSubmit(formData, formRef, subValidateItems, indent, afterValidCodes),
+        handleSubmit(formData, indent),
         emptyLineCode,
         commentLine("取消"),
         handleCancel(),
@@ -403,6 +475,8 @@ fun editTable(
                 CodeBlock("$formData.value = $formData.value.filter((_, i) => i !== index)"),
             )
         ),
+        emptyLineCode,
+        exposeValid(indent)
     ),
     template = listOf(
         form(
@@ -462,7 +536,9 @@ fun editTable(
                     events += EventBind("selection-change", "handleSelectionChange")
                 },
                 emptyLineElement,
-                operationsSlotElement,
+                operationsSlotElement.merge {
+                    directives += VIf("withOperations")
+                },
             ),
         )
     )

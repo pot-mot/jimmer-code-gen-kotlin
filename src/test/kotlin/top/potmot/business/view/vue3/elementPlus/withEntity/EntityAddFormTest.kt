@@ -80,7 +80,7 @@ export const useRules = (_: Ref<EntityInsertInput>): FormRules<EntityInsertInput
 <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
-import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
+import type {FormExpose} from "@/components/form/FormExpose"
 import type {
     EntityInsertInput,
     EntityAddFormType,
@@ -94,10 +94,12 @@ import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vu
 import {sendMessage} from "@/utils/message"
 
 const props = withDefaults(defineProps<{
+    withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
     toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
+    withOperations: true,
     submitLoading: false
 })
 
@@ -121,10 +123,8 @@ const formData = ref<EntityAddFormType>(createDefaultEntity())
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
-// 提交
-const handleSubmit = async (): Promise<void> => {
-    if (props.submitLoading) return
-
+// 校验
+const handleValidate = async (): Promise<boolean> => {
     const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
 
     if (formValid) {
@@ -133,6 +133,18 @@ const handleSubmit = async (): Promise<void> => {
             return
         }
 
+        return true
+    } else {
+        return false
+    }
+}
+
+// 提交
+const handleSubmit = async (): Promise<void> => {
+    if (props.submitLoading) return
+
+    const validResult = await handleValidate()
+    if (validResult) {
         emits("submit", formData.value)
     }
 }
@@ -141,6 +153,10 @@ const handleSubmit = async (): Promise<void> => {
 const handleCancel = (): void => {
     emits("cancel")
 }
+
+defineExpose<FormExpose>({
+    validate: handleValidate
+})
 </script>
 
 <template>
@@ -178,6 +194,7 @@ const handleCancel = (): void => {
         </el-form-item>
 
         <slot
+            v-if="withOperations"
             name="operations"
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"

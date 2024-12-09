@@ -46,7 +46,7 @@ export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpda
 <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
-import type {AddFormExpose} from "@/api/__generated/model/static/form/AddFormExpose"
+import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityAddFormType, ToOneEntityOptionView} from "@/api/__generated/model/static"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
 import {useRules} from "@/rules/EntityEditTableRules"
@@ -63,6 +63,7 @@ const props = withDefaults(defineProps<{
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined,
+    withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
     toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
@@ -70,6 +71,7 @@ const props = withDefaults(defineProps<{
     idColumn: false,
     indexColumn: false,
     multiSelect: true,
+    withOperations: false,
     submitLoading: false
 })
 
@@ -91,13 +93,17 @@ defineSlots<{
 const formRef = ref<FormInstance>()
 const rules = useRules(rows)
 
+// 校验
+const handleValidate = async (): Promise<boolean> => {
+    return await formRef.value?.validate().catch(() => false) ?? false
+}
+
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
 
-    const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-
-    if (formValid) {
+    const validResult = await handleValidate()
+    if (validResult) {
         emits("submit", rows.value)
     }
 }
@@ -131,6 +137,10 @@ const handleSingleDelete = async (index: number): Promise<void> => {
     if (!result) return
     rows.value = rows.value.filter((_, i) => i !== index)
 }
+
+defineExpose<FormExpose>({
+    validate: handleValidate
+})
 </script>
 
 <template>
@@ -247,6 +257,7 @@ const handleSingleDelete = async (index: number): Promise<void> => {
         </el-table>
 
         <slot
+            v-if="withOperations"
             name="operations"
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"

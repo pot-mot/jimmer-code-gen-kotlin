@@ -48,7 +48,7 @@ export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput
 <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
-import type {EditFormExpose} from "@/api/__generated/model/static/form/EditFormExpose"
+import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityUpdateInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
 import {useRules} from "@/rules/EntityEditFormRules"
 import EnumSelect from "@/components/enum/EnumSelect.vue"
@@ -60,10 +60,12 @@ const formData = defineModel<EntityUpdateInput>({
 })
 
 const props = withDefaults(defineProps<{
+    withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
     toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
+    withOperations: true,
     submitLoading: false
 })
 
@@ -85,13 +87,17 @@ defineSlots<{
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
+// 校验
+const handleValidate = async (): Promise<boolean> => {
+    return await formRef.value?.validate().catch(() => false) ?? false
+}
+
 // 提交
 const handleSubmit = async (): Promise<void> => {
     if (props.submitLoading) return
 
-    const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
-
-    if (formValid) {
+    const validResult = await handleValidate()
+    if (validResult) {
         emits("submit", formData.value)
     }
 }
@@ -100,6 +106,10 @@ const handleSubmit = async (): Promise<void> => {
 const handleCancel = (): void => {
     emits("cancel")
 }
+
+defineExpose<FormExpose>({
+    validate: handleValidate
+})
 </script>
 
 <template>
@@ -144,6 +154,7 @@ const handleCancel = (): void => {
         </el-form-item>
 
         <slot
+            v-if="withOperations"
             name="operations"
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
