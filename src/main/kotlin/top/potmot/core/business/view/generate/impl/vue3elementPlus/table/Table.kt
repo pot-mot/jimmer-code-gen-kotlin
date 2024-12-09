@@ -69,6 +69,7 @@ fun viewTable(
     typePath: String,
     idPropertyName: String,
     content: List<Pair<GenerateProperty, TableColumnData>>,
+    childrenProp: String? = null,
 ) = Component(
     imports = listOf(
         ImportType(typePath, type),
@@ -102,6 +103,7 @@ fun viewTable(
         table(
             data = data,
             rowKey = idPropertyName,
+            childrenProp = childrenProp,
             columns = tableUtilColumns(idPropertyName) + content.map { (property, tableColumnData) ->
                 tableColumn(
                     property.name,

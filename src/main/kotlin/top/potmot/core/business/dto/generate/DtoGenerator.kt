@@ -29,13 +29,16 @@ object DtoGenerator : EntityPropertyCategories {
         filter { it !in includeProperties }
 
     private val TargetOf_properties.associationIdExpress
-        get() = if (idView) name else {
-            if (listType) {
-                "id(${name}) as ${name.toSingular()}Ids"
-            } else {
-                "id(${name})"
+        get() =
+            if (idView)
+                name
+            else {
+                if (listType) {
+                    "id(${name}) as ${name.toSingular()}Ids"
+                } else {
+                    "id(${name})"
+                }
             }
-        }
 
     private fun TargetOf_properties.extractShortAssociation(): String = buildScopeString {
         if (typeEntity == null || typeEntity.shortViewProperties.isEmpty()) {
@@ -66,7 +69,9 @@ object DtoGenerator : EntityPropertyCategories {
                 line("-${it.name}")
             }
             listViewProperties.filter { it.associationType != null }.forEach {
-                if (it.isShortAssociation) {
+                if (it.typeEntity?.id == entity.id && it.listType) {
+                    line("${it.name}*")
+                } else if (it.isShortAssociation) {
                     block(it.extractShortAssociation())
                 } else {
                     line(it.associationIdExpress)
@@ -81,7 +86,13 @@ object DtoGenerator : EntityPropertyCategories {
 
         line("${entity.dto.optionView} {")
         scope {
-            lines(optionViewProperties.map { it.name })
+            optionViewProperties.forEach {
+                if (it.associationType != null) {
+                    line(it.associationIdExpress)
+                } else {
+                    line(it.name)
+                }
+            }
         }
         line("}")
     }

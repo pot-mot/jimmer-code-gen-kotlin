@@ -3,7 +3,10 @@ package top.potmot.core.business.property
 import top.potmot.core.business.utils.idProperty
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
+import top.potmot.entity.dto.IdName
+import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.targetOneAssociationTypes
+import top.potmot.error.ModelException
 import top.potmot.utils.string.toSingular
 
 val TargetOf_properties.isShortAssociation
@@ -49,7 +52,7 @@ interface EntityPropertyCategories {
             it.inLongAssociationInput
         }.forceConvertIdView()
 
-    val GenEntityBusinessView.selectProperties
+    val GenEntityBusinessView.pageSelectProperties
         get() = associationProperties.filter {
             (it.inSpecification && it.associationType in targetOneAssociationTypes) || it.inInsertInput || it.inUpdateInput
         }.forceConvertIdView()
@@ -58,14 +61,14 @@ interface EntityPropertyCategories {
     val GenEntityBusinessView.optionViewProperties
         get() = properties.filter {
             it.inOptionView
-        }.forceConvertIdView()
+        }.produceIdView()
 
     val GenEntityBusinessView.optionLabelProperties: List<TargetOf_properties>
         get() {
-            val optionViewProperties = this.optionViewProperties
+            val optionViewProperties = optionViewProperties.forceConvertIdView()
 
             return if (optionViewProperties.size > 1) optionViewProperties.filter {
-                !it.idProperty
+                !it.idProperty && it.associationType == null
             } else {
                 optionViewProperties
             }
@@ -145,6 +148,9 @@ interface EntityPropertyCategories {
             .forceConvertIdView()
             .map { it.copy(typeNotNull = false) }
 
+    val GenEntityBusinessView.selfAssociatedProperties
+        get() = properties
+            .filter { it.typeEntity?.id == this.id }
 
     val GenEntityBusinessView.insertInputProperties
         get() = properties
@@ -216,6 +222,44 @@ interface EntityPropertyCategories {
         get() = longAssociationViewProperties
             .filter { !it.idProperty }
             .forceConvertIdView()
+
+    fun GenEntityBusinessView.isTreeEntity() =
+        properties.any {
+            it.typeEntity?.id == this.id &&
+                    (it.associationType == AssociationType.MANY_TO_ONE || it.associationType == AssociationType.ONE_TO_MANY)
+        }
+
+    val GenEntityBusinessView.parentIdProperty
+        @Throws(ModelException.TreeEntityCannotFoundParentProperty::class)
+        get() = properties
+            .filter {
+                it.typeEntity?.id == this.id && !it.listType &&
+                (it.associationType == AssociationType.MANY_TO_ONE || it.associationType == AssociationType.ONE_TO_MANY)
+            }
+            .let { candidates ->
+                candidates.firstOrNull { it.idView }
+                    ?: candidates.firstOrNull()?.forceConvertIdView()
+            }
+            ?: throw ModelException.treeEntityCannotFoundParentProperty(
+                "Tree Entity [${name}] cannot found Parent Property",
+                entity = IdName(id, name),
+                selfAssociationProperties = properties.filter { it.typeEntity?.id == this.id }
+                    .map { IdName(it.id, it.name) }
+            )
+
+    val GenEntityBusinessView.childrenProperty
+        @Throws(ModelException.TreeEntityCannotFoundChildrenProperty::class)
+        get() = properties
+            .firstOrNull {
+                it.typeEntity?.id == this.id && it.listType && !it.idView &&
+                (it.associationType == AssociationType.MANY_TO_ONE || it.associationType == AssociationType.ONE_TO_MANY)
+            }
+            ?: throw ModelException.treeEntityCannotFoundParentProperty(
+                "Tree Entity [${name}] cannot found Children Property",
+                entity = IdName(id, name),
+                selfAssociationProperties = properties.filter { it.typeEntity?.id == this.id }
+                    .map { IdName(it.id, it.name) }
+            )
 
     // 将关联属性映射为 IdView，若找不到 IdView 则保持原状
     // 适用于 dto 本身的处理

@@ -1,0 +1,131 @@
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
+
+import kotlin.jvm.Throws
+import top.potmot.core.business.utils.dto
+import top.potmot.core.business.utils.idProperty
+import top.potmot.core.business.utils.typeStrToTypeScriptType
+import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
+import top.potmot.core.business.view.generate.meta.typescript.Import
+import top.potmot.core.business.view.generate.meta.typescript.ImportType
+import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
+import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.business.view.generate.meta.vue3.ModelProp
+import top.potmot.core.business.view.generate.meta.vue3.Prop
+import top.potmot.core.business.view.generate.staticPath
+import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.error.ModelException
+
+interface IdTreeSelect : IdSelect {
+    @Throws(ModelException.TreeEntityCannotFoundParentProperty::class)
+    fun createIdTreeSelect(entity: GenEntityBusinessView, multiple: Boolean): Component {
+        val idProperty = entity.idProperty
+        val idName = idProperty.name
+        val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
+
+        val optionView = entity.dto.optionView
+
+        val modelValue = "modelValue"
+        val options = "options"
+        val excludeIds = "excludeIds"
+
+        val modelValueType = createModelValueType(
+            modelValue, multiple, idType
+        )
+
+        val parentId = entity.parentIdProperty.name
+        val labels = entity.optionLabelProperties.map { it.name }
+
+        val treeOptions = CodeBlock(
+            """
+            type TreeOption = {
+                value: $idType,
+                label: string,
+                disabled: boolean,
+                children: Array<TreeOption>
+            }
+            
+            const treeOptions = computed<Array<TreeOption>>(() => {
+                const idNodeMap = new Map<number, TreeNode>
+                const roots: Array<TreeNode> = []
+            
+                for (const item of items) {
+                    const node: TreeNode = {
+                        value: item.$idName,
+                        label: ${createLabelExpression("item", labels, idName)},
+                        disabled: props.$excludeIds.includes(item.$idName),
+                        children: []
+                    }
+                    idNodeMap.set(item.$idName, node)
+                }
+            
+                for (const item of items) {
+                    const node = idNodeMap.get(item.$idName)
+                    if (!node) continue
+            
+                    const parentNode = idNodeMap.get(item.$parentId)                    
+                    if (parentNode) {
+                        if (parentNode.disabled) {
+                            node.disabled = true
+                        }
+                        parentNode.children.push(node);
+                    } else {
+                        roots.push(node);
+                    }
+                }
+                
+                return roots
+            })
+            """.trimIndent()
+        )
+
+        val filterNodeMethod = CodeBlock(
+            """
+            const filterNodeMethod = (value: string | undefined, data: TreeOption) => {
+                return !value || data.label.includes(value)
+            }
+            """.trimIndent()
+        )
+
+        val keepModelValueLegal = createKeepModelValueLegal(
+            modelValue, multiple, options, idName, idType
+        )
+
+        val treeSelectElement = treeSelect(
+            data = "treeOptions",
+            labelProp = "label",
+            childrenProp = "children",
+            nodeKey = idName,
+            modelValue = modelValue,
+            comment = entity.comment,
+            filterable = true,
+            filterNodeMethod = "filterNodeMethod",
+            clearable = true,
+            multiple = multiple,
+        )
+
+        return Component(
+            imports = listOf(
+                Import("vue", "computed", "watch"),
+                ImportType("element-plus", "ElTreeSelect"),
+                ImportType(staticPath, optionView)
+            ),
+            models = listOf(
+                ModelProp(modelValue, modelValueType)
+            ),
+            props = listOf(
+                Prop(options, "Array<$optionView>"),
+                Prop(excludeIds, "Array<$idType>", defaultValue = "[]")
+            ),
+            script = listOf(
+                keepModelValueLegal,
+                emptyLineCode,
+                treeOptions,
+                emptyLineCode,
+                filterNodeMethod,
+            ),
+            template = listOf(
+                treeSelectElement
+            )
+        )
+    }
+}

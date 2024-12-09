@@ -59,6 +59,7 @@ abstract class AbstractModelTest {
         val id = modelService.save(model)
         convertService.convertModel(id, null)
         val entityCodes = generateService.generateModel(id, listOf(GenerateType.Entity, GenerateType.Enum))
+            .files
             .map {it.path to it.content}
         val deleteResult = sqlClient.deleteById(GenModel::class, id)
 
@@ -84,6 +85,7 @@ abstract class AbstractModelTest {
 
         val id = modelService.save(model)
         val tableDefineCodes = generateService.generateModel(id, listOf(GenerateType.DDL))
+            .files
             .map {it.path to it.content}
         val deleteResult = sqlClient.deleteById(GenModel::class, id)
 

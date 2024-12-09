@@ -10,9 +10,9 @@ class EntityPropertyCategoriesTest : EntityPropertyCategories {
     private val testEntities = listOf(testEntity, idViewTestEntity)
 
     @Test
-    fun `test selectProperties`() {
+    fun `test pageSelectProperties`() {
         testEntities.forEach { testEntity ->
-            val selectProperties = testEntity.selectProperties
+            val selectProperties = testEntity.pageSelectProperties
             assertEquals(2, selectProperties.size)
 
             val toOneProperty = selectProperties[0]

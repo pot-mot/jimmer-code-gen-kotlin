@@ -56,6 +56,7 @@ fun GenTableConvertView.toGenEntity(
     )
 
     val businessConfigInitProperties = initPropertyBusinessConfig(
+        this,
         associationProperties
     )
 

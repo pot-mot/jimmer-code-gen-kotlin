@@ -29,6 +29,8 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTabl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.queryForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.select.IdSelect
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.select.IdTreeSelect
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
@@ -66,6 +68,8 @@ object Vue3ElementPlusViewGenerator :
     EntityPropertyCategories,
     TableColumn,
     FormItem,
+    IdSelect,
+    IdTreeSelect,
     QueryFormItem,
     AddFormDefault,
     AddFormType {
@@ -100,7 +104,7 @@ object Vue3ElementPlusViewGenerator :
         return builder.build(component)
     }
 
-    private fun createEnumSelectVue(
+    private fun createEnumSelectElement(
         enum: GenEnumGenerateView,
         nullable: Boolean,
     ): Component {
@@ -151,10 +155,10 @@ object Vue3ElementPlusViewGenerator :
     }
 
     override fun stringifyEnumSelect(enum: GenEnumGenerateView) =
-        builder.build(createEnumSelectVue(enum, nullable = false))
+        builder.build(createEnumSelectElement(enum, nullable = false))
 
     override fun stringifyEnumNullableSelect(enum: GenEnumGenerateView) =
-        builder.build(createEnumSelectVue(enum, nullable = true))
+        builder.build(createEnumSelectElement(enum, nullable = true))
 
     private val Iterable<GenEntityBusinessView.TargetOf_properties>.selectOptionPairs
         get() = mapNotNull {
@@ -185,8 +189,13 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
+    @Throws(ModelException.TreeEntityCannotFoundChildrenProperty::class)
     override fun stringifyTable(entity: GenEntityBusinessView): String {
         val rows = "rows"
+
+        val childrenProp = takeIf { entity.isTreeEntity() }?.let {
+            entity.childrenProperty.name
+        }
 
         return builder.build(
             viewTable(
@@ -194,7 +203,8 @@ object Vue3ElementPlusViewGenerator :
                 type = entity.dto.listView,
                 typePath = staticPath,
                 idPropertyName = entity.idProperty.name,
-                content = entity.tableProperties.flatMap { it.tableColumnDataList() }
+                content = entity.tableProperties.flatMap { it.tableColumnDataList() },
+                childrenProp = childrenProp,
             )
         )
     }
@@ -310,6 +320,7 @@ object Vue3ElementPlusViewGenerator :
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules)
     }
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringifyEditForm(entity: GenEntityBusinessView): String {
         val formData = "formData"
 
@@ -323,7 +334,14 @@ object Vue3ElementPlusViewGenerator :
                 indent = indent,
                 selectOptions = entity.updateSelectProperties.selectOptions,
                 content = entity.editFormProperties
-                    .associateWith { it.createFormItem(formData) }
+                    .associateWith {
+                        it.createFormItem(
+                            formData,
+                            excludeSelf = true,
+                            entityId = entity.id,
+                            idName = entity.idProperty.name
+                        )
+                    }
             )
         )
     }
@@ -340,6 +358,7 @@ object Vue3ElementPlusViewGenerator :
         return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules, isArray = true)
     }
 
+    @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringifyEditTable(entity: GenEntityBusinessView): String {
         val rows = "rows"
 
@@ -357,101 +376,34 @@ object Vue3ElementPlusViewGenerator :
                 comment = entity.comment,
                 selectOptions = entity.editTableSelectProperties.selectOptions,
                 content = entity.editTableProperties
-                    .associateWith { it.createFormItem(rows) }
-            )
-        )
-    }
-
-    private fun createIdSelect(entity: GenEntityBusinessView, multiple: Boolean): Component {
-        val idProperty = entity.idProperty
-        val idName = idProperty.name
-        val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
-
-        val optionView = entity.dto.optionView
-
-        val labels = entity.optionLabelProperties.map { it.name }
-
-        val modelValue = "modelValue"
-        val options = "options"
-        val option = "option"
-
-        val modelValueType = if (multiple) "Array<$idType>" else "$idType | undefined"
-
-        val keepModelValueLegal =
-            if (!multiple)
-                CodeBlock(
-                    """
-                    watch(() => [$modelValue.value, props.${options}], () => {
-                        if (!(props.${options}.map(it => it.$idName) as Array<$idType | undefined>).includes($modelValue.value)) {
-                            $modelValue.value = undefined
-                        }
-                    }, {immediate: true})
-                    """.trimIndent()
-                )
-            else
-                CodeBlock(
-                    """
-                    watch(() => [$modelValue.value, props.${options}], () => {
-                        const newModelValue: Array<$idType> = []
-                        
-                        for (const item of $modelValue.value) {
-                            if (props.${options}.map(it => it.$idName).includes(item)) {
-                                newModelValue.push(item)
-                            }
-                        }
-                        if ($modelValue.value.length != newModelValue.length)
-                            $modelValue.value = newModelValue
-                    }, {immediate: true})
-                    """.trimIndent()
-                )
-
-        return Component(
-            imports = listOf(
-                Import("vue", "watch"),
-                ImportType(staticPath, optionView)
-            ),
-            models = listOf(
-                ModelProp(modelValue, modelValueType)
-            ),
-            props = listOf(
-                Prop(options, "Array<$optionView>")
-            ),
-            script = listOf(
-                keepModelValueLegal
-            ),
-            template = listOf(
-                select(
-                    modelValue = modelValue,
-                    comment = entity.comment,
-                    filterable = true,
-                    clearable = true,
-                    multiple = multiple,
-                    content = listOf(
-                        options(
-                            options = options,
-                            option = option,
-                            key = { "$it.$idName" },
-                            value = { "$it.$idName" },
-                            label = {
-                                if (labels.size == 1) {
-                                    "$it.${labels[0]}"
-                                } else {
-                                    "`${labels.joinToString("_") { label -> "${'$'}{$it.$label}" }}`"
-                                }
-                            },
+                    .associateWith {
+                        it.createFormItem(
+                            rows,
+                            excludeSelf = true,
+                            entityId = entity.id,
+                            idName = entity.idProperty.name
                         )
-                    )
-                )
+                    }
             )
         )
     }
 
+    @Throws(ModelException.TreeEntityCannotFoundParentProperty::class)
     override fun stringifyIdSelect(entity: GenEntityBusinessView) = builder.build(
-        createIdSelect(entity, false)
+        if (entity.isTreeEntity()) {
+            createIdTreeSelect(entity, false)
+        } else {
+            createIdSelect(entity, false)
+        }
     )
 
+    @Throws(ModelException.TreeEntityCannotFoundParentProperty::class)
     override fun stringifyIdMultiSelect(entity: GenEntityBusinessView) = builder.build(
-        createIdSelect(entity, true)
+        if (entity.isTreeEntity()) {
+            createIdTreeSelect(entity, true)
+        } else {
+            createIdSelect(entity, true)
+        }
     )
 
     private fun createOptionQuery(
@@ -496,7 +448,7 @@ object Vue3ElementPlusViewGenerator :
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
         val apiServiceName = entity.apiServiceName
 
-        val selectOptionPairs = entity.selectProperties.selectOptionPairs
+        val selectOptionPairs = entity.pageSelectProperties.selectOptionPairs
         val optionQueries = selectOptionPairs.map {
             createOptionQuery(it.first.comment, it.second, apiServiceName)
         }

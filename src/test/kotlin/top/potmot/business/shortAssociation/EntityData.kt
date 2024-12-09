@@ -7,6 +7,10 @@ import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_idProperties
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity
 import top.potmot.enumeration.AssociationType
 
+private const val shortAssociationEntityId = -1L
+
+private const val shortAssociationTargetEntityId = -2L
+
 private val label1Property = baseProperty.copy(
     name = "label1",
     comment = "label1",
@@ -22,6 +26,7 @@ private val label2Property = baseProperty.copy(
 )
 
 val shortAssociationEntity = testEntity.copy(
+    id = shortAssociationEntityId,
     name = "ShortAssociationEntity",
     comment = "shortAssociationEntityComment",
     remark = "shortAssociationEntityRemark",
@@ -40,7 +45,7 @@ private val shortAssociationProperty = baseProperty.copy(
     type = shortAssociationEntity.name,
     associationType = AssociationType.MANY_TO_ONE,
     typeEntity = TargetOf_typeEntity(
-        id = shortAssociationEntity.id,
+        id = shortAssociationEntityId,
         packagePath = shortAssociationEntity.packagePath,
         name = shortAssociationEntity.name,
         comment = shortAssociationEntity.comment,
@@ -62,7 +67,7 @@ val shortAssociationTargetEntity = testEntity.copy(
 )
 
 private val shortAssociationIdViewProperty = baseProperty.copy(
-    id = shortAssociationProperty.id,
+    id = shortAssociationEntityId,
     name = shortAssociationProperty.name + "Id",
     associationType = AssociationType.MANY_TO_ONE,
     idView = true,
@@ -70,6 +75,7 @@ private val shortAssociationIdViewProperty = baseProperty.copy(
 )
 
 val shortAssociationTargetIdViewEntity = testEntity.copy(
+    id = shortAssociationTargetEntityId,
     properties = listOf(
         idProperty,
         shortAssociationProperty,

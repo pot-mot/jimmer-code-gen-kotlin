@@ -19,10 +19,18 @@ enum class ModelErrorCode {
     @ErrorField(name = "notFoundPropertyId", type = Long::class)
     INDEX_REF_PROPERTY_NOT_FOUND,
 
-        @ErrorField(name = "entity", type = IdName::class)
+    @ErrorField(name = "entity", type = IdName::class)
     @ErrorField(name = "entityProperties", type = IdName::class, list = true)
     @ErrorField(name = "index", type = IdName::class)
     @ErrorField(name = "indexPropertyIds", type = Long::class, list = true)
     @ErrorField(name = "listProperty", type = IdName::class)
-    INDEX_REF_PROPERTY_CANNOT_BE_LIST
+    INDEX_REF_PROPERTY_CANNOT_BE_LIST,
+
+    @ErrorField(name = "entity", type = IdName::class)
+    @ErrorField(name = "selfAssociationProperties", type = IdName::class, list = true)
+    TREE_ENTITY_CANNOT_FOUND_PARENT_PROPERTY,
+
+    @ErrorField(name = "entity", type = IdName::class)
+    @ErrorField(name = "selfAssociationProperties", type = IdName::class, list = true)
+    TREE_ENTITY_CANNOT_FOUND_CHILDREN_PROPERTY,
 }

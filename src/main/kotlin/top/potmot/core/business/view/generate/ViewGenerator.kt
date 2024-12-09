@@ -88,7 +88,7 @@ interface ViewGenerator {
             .flatMap { generateEnum(it) }
             .distinct().sortedBy { it.path }
 
-    @Throws(ModelException.DefaultItemNotFound::class)
+    @Throws(ModelException::class)
     fun generateView(
         entity: GenEntityBusinessView,
     ): List<GenerateFile> {
@@ -183,7 +183,7 @@ interface ViewGenerator {
         )
     }
 
-    @Throws(ModelException.DefaultItemNotFound::class)
+    @Throws(ModelException::class)
     fun generateView(
         entities: Iterable<GenEntityBusinessView>,
     ): List<GenerateFile> =

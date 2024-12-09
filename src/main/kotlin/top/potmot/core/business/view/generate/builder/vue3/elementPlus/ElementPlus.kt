@@ -1,8 +1,8 @@
 package top.potmot.core.business.view.generate.builder.vue3.elementPlus
 
 import top.potmot.core.business.view.generate.meta.vue3.Element
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.TextElement
 import top.potmot.core.business.view.generate.meta.vue3.VFor
 import top.potmot.core.business.view.generate.meta.vue3.VModel
@@ -153,6 +153,43 @@ interface ElementPlus {
         directives += VFor(option, options, withIndex)
         key(option).toPropBind("key")?.let { props.add(0, it) }
     }
+
+    fun treeSelect(
+        data: String,
+        labelProp: String,
+        childrenProp: String,
+        nodeKey: String,
+        modelValue: String = "modelValue",
+        comment: String = "",
+        placeholder: (comment: String) -> String? = { "请选择$it" },
+        filterable: Boolean = true,
+        filterNodeMethod: String? = null,
+        clearable: Boolean = true,
+        disabled: Boolean = false,
+        multiple: Boolean = false,
+        checkStrictly: Boolean = true,
+        valueOnClear: String? = "undefined",
+        content: Collection<Element> = listOf(),
+    ) = TagElement(
+        "el-tree-select",
+        directives = listOf(
+            VModel(modelValue)
+        ),
+        props = listOfNotNull(
+            placeholder(comment).toPropBind("placeholder", isLiteral = true),
+            data.toPropBind("data"),
+            PropBind("props", "{label: '${labelProp}', children: '${childrenProp}'}"),
+            nodeKey.toPropBind("node-key", isLiteral = true),
+            filterable.toPropBind("filterable"),
+            filterNodeMethod.toPropBind("filter-node-method"),
+            clearable.toPropBind("clearable"),
+            valueOnClear.toPropBind("value-on-clear"),
+            disabled.toPropBind("disabled"),
+            multiple.toPropBind("multiple"),
+            checkStrictly.toPropBind("check-strictly"),
+        ),
+        children = content,
+    )
 
     fun timePicker(
         modelValue: String = "modelValue",
@@ -362,6 +399,7 @@ interface ElementPlus {
         border: Boolean = true,
         stripe: Boolean = true,
         columns: Collection<Element>,
+        childrenProp: String? = null,
     ) = TagElement(
         "el-table",
         props = listOfNotNull(
@@ -369,6 +407,9 @@ interface ElementPlus {
             PropBind("row-key", rowKey, isLiteral = true),
             border.toPropBind("border"),
             stripe.toPropBind("stripe"),
+            childrenProp?.let {
+                PropBind("tree-props", "{children: '${childrenProp}'}")
+            }
         ),
         children = columns
     )

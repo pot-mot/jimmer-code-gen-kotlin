@@ -27,19 +27,28 @@ interface FormItem {
     fun GenEntityBusinessView.TargetOf_properties.createFormItem(
         formData: String,
         disabled: Boolean = false,
+        excludeSelf: Boolean = false,
+        entityId: Long? = null,
+        idName: String? = null,
     ): FormItemData {
         val modelValue = "$formData.${name}"
         val numberMin = numberMin
         val numberMax = numberMax
 
         return when (formType) {
-            PropertyFormType.ASSOCIATION_ID ->
+            PropertyFormType.ASSOCIATION_ID,
+            PropertyFormType.ASSOCIATION_ID_LIST,
+            ->
                 if (typeEntity == null) {
                     FormItemData()
                 } else {
                     val components = typeEntity.components
                     val dir = typeEntity.dir
-                    val componentName = components.idSelect
+                    val componentName =
+                        if (formType == PropertyFormType.ASSOCIATION_ID_LIST)
+                            components.idMultiSelect
+                        else
+                            components.idSelect
                     FormItemData(
                         elements = listOf(
                             TagElement(
@@ -47,34 +56,11 @@ interface FormItem {
                                 directives = listOf(VModel(modelValue)),
                                 props = listOfNotNull(
                                     PropBind("options", "${name}Options"),
-                                    disabled.toPropBind("disabled")
-                                ),
-                            )
-                        ),
-                        imports = listOf(
-                            ImportDefault(
-                                "$componentPath/$dir/$componentName.vue",
-                                componentName,
-                            )
-                        )
-                    )
-                }
-
-            PropertyFormType.ASSOCIATION_ID_LIST ->
-                if (typeEntity == null) {
-                    FormItemData()
-                } else {
-                    val components = typeEntity.components
-                    val dir = typeEntity.dir
-                    val componentName = components.idMultiSelect
-                    FormItemData(
-                        elements = listOf(
-                            TagElement(
-                                componentName,
-                                directives = listOf(VModel(modelValue)),
-                                props = listOfNotNull(
-                                    PropBind("options", "${name}Options"),
-                                    disabled.toPropBind("disabled")
+                                    if (excludeSelf && typeEntity.id == entityId && idName != null)
+                                        PropBind("exclude-ids", "[${formData}.${idName}]")
+                                    else
+                                        null,
+                                    disabled.toPropBind("disabled"),
                                 ),
                             )
                         ),
