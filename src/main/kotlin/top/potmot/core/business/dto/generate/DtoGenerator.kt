@@ -69,9 +69,7 @@ object DtoGenerator : EntityPropertyCategories {
                 line("-${it.name}")
             }
             listViewProperties.filter { it.associationType != null }.forEach {
-                if (it.typeEntity?.id == entity.id && it.listType) {
-                    line("${it.name}*")
-                } else if (it.isShortAssociation) {
+                if (it.isShortAssociation) {
                     block(it.extractShortAssociation())
                 } else {
                     line(it.associationIdExpress)

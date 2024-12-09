@@ -50,6 +50,7 @@ private val childrenProperty = idProperty.copy(
     typeEntity = typeEntity,
     listType = true,
     idProperty = false,
+    inListView = false,
     inInsertInput = false,
     inUpdateInput = false,
     inOptionView = false,

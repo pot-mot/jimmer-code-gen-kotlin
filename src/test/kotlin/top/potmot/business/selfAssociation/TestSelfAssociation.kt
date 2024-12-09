@@ -23,7 +23,6 @@ class TestSelfAssociation {
 SelfAssociationEntityListView {
     #allScalars
     id(parent)
-    children*
 }
 
 SelfAssociationEntityDetailView {
@@ -307,7 +306,6 @@ const handleSelectionChange = (
         />
         <el-table-column prop="label" label="标签"/>
         <el-table-column prop="parentId" label="父节点"/>
-        <el-table-column prop="childIds" label="子节点"/>
         <el-table-column label="操作" fixed="right">
             <template #default="scope">
                 <slot

@@ -39,12 +39,11 @@ fun initPropertyBusinessConfig(
             inLongAssociationInput = false,
         )
     } else if (property.associationType != null) {
-        val isSelfAssociation = property.typeTableId == table.id
         val isTargetOne = property.associationType in targetOneAssociationTypes
 
         if (!isTargetOne) {
             property.copy(
-                inListView = isSelfAssociation,
+                inListView = false,
                 inDetailView = true,
                 inInsertInput = false,
                 inUpdateInput = false,
@@ -56,7 +55,7 @@ fun initPropertyBusinessConfig(
             )
         } else {
             property.copy(
-                inOptionView = isSelfAssociation,
+                inOptionView = property.typeTableId == table.id,
             )
         }
     } else {
