@@ -155,7 +155,7 @@ class $serviceName(
      * @param id ${comment}的ID。
      * @return ${comment}的更新回填信息。
      */
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/forUpdate")
     @SaCheckPermission("${permissions.update}")
     @Throws(AuthorizeException::class)
     fun getForUpdate(@PathVariable id: ${idType}) = 

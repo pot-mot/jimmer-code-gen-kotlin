@@ -104,7 +104,7 @@ class EntityService(
      * @param id comment的ID。
      * @return comment的更新回填信息。
      */
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/forUpdate")
     @SaCheckPermission("entity:update")
     @Throws(AuthorizeException::class)
     fun getForUpdate(@PathVariable id: Int) = 
@@ -259,7 +259,7 @@ public class EntityService implements Tables {
      * @param id comment的ID。
      * @return comment的更新回填信息。
      */
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/forUpdate")
     @SaCheckPermission("entity:update")
     @Nullable
     public EntityUpdateFillView getForUpdate(@PathVariable int id) throws AuthorizeException { 
@@ -288,7 +288,7 @@ public class EntityService implements Tables {
     @DeleteMapping
     @SaCheckPermission("entity:delete")
     @Transactional
-    public int delete(@RequestParam @NotNull List<Integer> ids) throws AuthorizeException {
+    public int delete(@RequestParam @NotNull List<@NotNull Integer> ids) throws AuthorizeException {
         return sqlClient.deleteByIds(Entity.class, ids).getAffectedRowCount(Entity.class);
     }
 })

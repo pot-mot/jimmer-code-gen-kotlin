@@ -174,7 +174,7 @@ public class $serviceName implements Tables {
      * @param id ${comment}的ID。
      * @return ${comment}的更新回填信息。
      */
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/forUpdate")
     @SaCheckPermission("${permissions.update}")
     @Nullable
     public $updateFillView getForUpdate(@PathVariable $idType id) throws AuthorizeException { 
@@ -203,7 +203,7 @@ public class $serviceName implements Tables {
     @DeleteMapping
     @SaCheckPermission("${permissions.delete}")
     @Transactional
-    public int delete(@RequestParam @NotNull List<${
+    public int delete(@RequestParam @NotNull List<@NotNull ${
             typeStrToJavaType(
                 idProperty.type,
                 false
