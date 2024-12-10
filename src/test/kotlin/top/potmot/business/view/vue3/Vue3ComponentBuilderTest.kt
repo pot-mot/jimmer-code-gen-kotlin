@@ -160,7 +160,7 @@ defineSlots<{
         val codeBlocks = listOf(
             ConstVariable("const1", "string", "\"value1\""),
             LetVariable("let1", "number", "0"),
-            Function("func1", listOf(FunctionArg("arg1", "string")), "console.log(arg1)"),
+            Function("func1", listOf(FunctionArg("arg1", "string")), listOf(CodeBlock("console.log(arg1)"))),
             CodeBlock("console.log('Hello, World!')")
         )
 
@@ -253,7 +253,7 @@ console.log('Hello, World!')
             script = listOf(
                 ConstVariable("const1", "string", "\"value1\""),
                 LetVariable("let1", "number", "0"),
-                Function("func1", listOf(FunctionArg("arg1", "string")), async = true, returnType = "boolean", "return false"),
+                Function(async = true, name = "func1", args = listOf(FunctionArg("arg1", "string")), returnType = "boolean", body = listOf(CodeBlock("return false"))),
                 CodeBlock("console.log('Hello, World!')")
             ),
             template = listOf(
