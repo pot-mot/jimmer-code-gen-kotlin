@@ -456,6 +456,23 @@ object Vue3ElementPlusViewGenerator :
         val updateSelectNames = entity.updateSelectProperties.selectOptions.map { it.name }
         val specificationSelectNames = entity.specificationSelectProperties.selectOptions.map { it.name }
 
+        val pageQuery =
+            if (entity.isTreeEntity()) {
+                """
+                withLoading((options: {
+                    body: PageQuery<$spec>
+                }) => {
+                    const spec = queryInfo.value.spec
+                    return api.$apiServiceName.page({
+                        ...options,
+                        tree: Object.keys(spec).filter((it) => !!spec[it as keyof typeof spec]).length === 0
+                    })
+                })
+                """.trimIndent()
+            } else {
+                "withLoading(api.$apiServiceName.page)"
+            }
+
         return builder.build(
             Component(
                 imports = listOfNotNull(
@@ -497,23 +514,31 @@ object Vue3ElementPlusViewGenerator :
                     commentLine("分页查询"),
                     ConstVariable(
                         "queryInfo", null,
-                        "ref<PageQuery<${spec}>>({\n",
-                        listOf(
-                            "spec: {}",
-                            "pageIndex: 1",
-                            "pageSize: 5"
-                        ).joinToString(",\n") { "${indent}$it" },
-                        "\n})\n",
+                        buildScopeString(indent) {
+                            line("ref<PageQuery<${spec}>>({")
+                            scope {
+                                lines(
+                                    "spec: {},",
+                                    "pageIndex: 1,",
+                                    "pageSize: 5",
+                                )
+                            }
+                            line("})")
+                        }
                     ),
                     ConstVariable(
                         "{queryPage}", null,
-                        "useLegalPage(\n",
-                        listOf(
-                            "pageData",
-                            "queryInfo",
-                            "withLoading(api.$apiServiceName.page)"
-                        ).joinToString(",\n") { "${indent}$it" },
-                        "\n)\n",
+                        buildScopeString(indent) {
+                            line("useLegalPage(")
+                            scope {
+                                lines(
+                                    "pageData,",
+                                    "queryInfo,"
+                                )
+                                block(pageQuery)
+                            }
+                            line(")")
+                        },
                     ),
                     if (!entity.canAdd) null else ConstVariable(
                         "add${entity.name}",

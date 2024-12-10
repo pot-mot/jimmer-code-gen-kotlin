@@ -68,7 +68,13 @@ object DtoGenerator : EntityPropertyCategories {
             entity.scalarProperties.exclude(listViewProperties).forEach {
                 line("-${it.name}")
             }
-            listViewProperties.filter { it.associationType != null }.forEach {
+            if (entity.isTreeEntity()) {
+                line("id(${entity.parentProperty.name})")
+                line("${entity.childrenProperty.name}*")
+            }
+            listViewProperties.filter {
+                it.associationType != null && it.typeEntity?.id != entity.id
+            }.forEach {
                 if (it.isShortAssociation) {
                     block(it.extractShortAssociation())
                 } else {

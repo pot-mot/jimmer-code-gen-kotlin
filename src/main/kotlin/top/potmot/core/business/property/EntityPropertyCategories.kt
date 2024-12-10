@@ -229,12 +229,29 @@ interface EntityPropertyCategories {
                     (it.associationType == AssociationType.MANY_TO_ONE || it.associationType == AssociationType.ONE_TO_MANY)
         }
 
+    val GenEntityBusinessView.parentProperty
+        @Throws(ModelException.TreeEntityCannotFoundParentProperty::class)
+        get() = properties
+            .filter {
+                it.typeEntity?.id == this.id && !it.listType &&
+                        (it.associationType == AssociationType.MANY_TO_ONE || it.associationType == AssociationType.ONE_TO_MANY)
+            }
+            .let { candidates ->
+                candidates.firstOrNull { !it.idView }
+            }
+            ?: throw ModelException.treeEntityCannotFoundParentProperty(
+                "Tree Entity [${name}] cannot found Parent Property",
+                entity = IdName(id, name),
+                selfAssociationProperties = properties.filter { it.typeEntity?.id == this.id }
+                    .map { IdName(it.id, it.name) }
+            )
+
     val GenEntityBusinessView.parentIdProperty
         @Throws(ModelException.TreeEntityCannotFoundParentProperty::class)
         get() = properties
             .filter {
                 it.typeEntity?.id == this.id && !it.listType &&
-                (it.associationType == AssociationType.MANY_TO_ONE || it.associationType == AssociationType.ONE_TO_MANY)
+                        (it.associationType == AssociationType.MANY_TO_ONE || it.associationType == AssociationType.ONE_TO_MANY)
             }
             .let { candidates ->
                 candidates.firstOrNull { it.idView }
@@ -252,7 +269,7 @@ interface EntityPropertyCategories {
         get() = properties
             .firstOrNull {
                 it.typeEntity?.id == this.id && it.listType && !it.idView &&
-                (it.associationType == AssociationType.MANY_TO_ONE || it.associationType == AssociationType.ONE_TO_MANY)
+                        (it.associationType == AssociationType.MANY_TO_ONE || it.associationType == AssociationType.ONE_TO_MANY)
             }
             ?: throw ModelException.treeEntityCannotFoundParentProperty(
                 "Tree Entity [${name}] cannot found Children Property",
