@@ -153,6 +153,7 @@ val GenEntityBusinessView.permissionStrList: List<String>
             if (hasPage) permissions.menu else null,
             if (canAdd) permissions.insert else null,
             if (canEdit) permissions.update else null,
+            if (canDelete) permissions.delete else null,
         )
     }
 
