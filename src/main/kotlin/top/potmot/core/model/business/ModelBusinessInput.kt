@@ -52,7 +52,7 @@ private fun GenEntityModelView.toConfigInput(
                 )
 
             val matchProperties = column.properties.filter {
-                if (it.overwriteName) true else it.name == property.name
+                (if (it.overwriteName) true else it.name == property.name)
                         && it.type == property.type
                         && it.typeNotNull == property.typeNotNull
                         && it.typeTable?.name == property.typeTable?.name
@@ -93,9 +93,9 @@ private fun GenEntityModelView.toConfigInput(
                 longAssociation = property.longAssociation,
                 inListView = property.inListView,
                 inDetailView = property.inDetailView,
-                inOptionView = property.inInsertInput,
                 inInsertInput = property.inInsertInput,
                 inUpdateInput = property.inUpdateInput,
+                inOptionView = property.inOptionView,
                 inSpecification = property.inSpecification,
                 inShortAssociationView = property.inShortAssociationView,
                 inLongAssociationInput = property.inLongAssociationInput,
