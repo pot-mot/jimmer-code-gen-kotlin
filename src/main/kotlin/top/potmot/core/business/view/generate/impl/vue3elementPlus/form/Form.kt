@@ -149,6 +149,7 @@ private val submitLoadingProp = Prop(submitLoading, "boolean", false, "false")
 private fun handleSubmit(
     formData: String,
     indent: String,
+    emitSubmit: String = "emits(\"submit\", $formData.value)"
 ) = Function(
     async = true,
     name = handleSubmitFnName,
@@ -160,7 +161,7 @@ private fun handleSubmit(
                 line("const validResult = await $handleValidateFnName()")
                 line("if (validResult) {")
                 scope {
-                    line("emits(\"submit\", $formData.value)")
+                    line(emitSubmit)
                 }
                 append("}")
             }
@@ -221,8 +222,8 @@ private val operationsSlotElement = slotElement(
 fun addForm(
     submitType: String,
     submitTypePath: String,
-    type: String,
-    typePath: String,
+    dataType: String,
+    dataTypePath: String,
     createDefault: String,
     defaultPath: String,
     useRules: String,
@@ -240,7 +241,7 @@ fun addForm(
         ImportType("element-plus", "FormInstance"),
         ImportType(formExposePath, formExposeType),
         ImportType(submitTypePath, submitType),
-        ImportType(typePath, type),
+        ImportType(dataTypePath, dataType),
         Import(defaultPath, createDefault),
         Import(useRulesPath, useRules),
     )
@@ -260,7 +261,7 @@ fun addForm(
         operationsSlot
     ),
     script = listOfNotNull(
-        ConstVariable(formData, null, "ref<$type>($createDefault())"),
+        ConstVariable(formData, null, "ref<$dataType>($createDefault())"),
         emptyLineCode,
         ConstVariable(formRef, null, "ref<FormInstance>()"),
         ConstVariable("rules", null, "$useRules($formData)"),
@@ -271,7 +272,7 @@ fun addForm(
         handleValidate(formRef, subValidateItems, indent, afterValidCodes),
         emptyLineCode,
         commentLine("提交"),
-        handleSubmit(formData, indent),
+        handleSubmit(formData, indent, "emits(\"submit\", $formData.value as $submitType)"),
         emptyLineCode,
         commentLine("取消"),
         handleCancel(),

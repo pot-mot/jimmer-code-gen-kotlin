@@ -25,13 +25,17 @@ class Vue3ElementPlusRuleBuilder(
         functionName: String,
         formData: String,
         formDataType: String,
+        formDataTypePath: String = staticPath,
+        ruleDataType: String = formDataType,
+        ruleDataTypePath: String = formDataTypePath,
         propertyRules: Map<GenEntityBusinessView.TargetOf_properties, Iterable<Rule>>,
         isArray: Boolean = false,
     ): String {
         val imports = mutableListOf<ImportItem>(
             ImportType("vue", "Ref"),
             ImportType("element-plus", "FormRules"),
-            ImportType(staticPath, formDataType),
+            ImportType(formDataTypePath, formDataType),
+            ImportType(ruleDataTypePath, ruleDataType),
         )
 
         var hasExistValidRule = false
@@ -76,7 +80,7 @@ class Vue3ElementPlusRuleBuilder(
                         type = "Ref<${if (isArray) "Array<${formDataType}>" else formDataType}>"
                     ),
                 ),
-                returnType = "FormRules<${formDataType}>",
+                returnType = "FormRules<${ruleDataType}>",
                 body = listOf(CodeBlock(body))
             )
         ).stringifyCodes()

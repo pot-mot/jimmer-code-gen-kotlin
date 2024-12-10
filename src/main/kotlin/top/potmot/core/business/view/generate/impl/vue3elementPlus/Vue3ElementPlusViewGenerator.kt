@@ -264,7 +264,14 @@ object Vue3ElementPlusViewGenerator :
         val addFormRulesProperties = entity.addFormRulesProperties
         val rules = addFormRulesProperties.associateWith { it.rules } +
                 entity.existValidRules(withId = false, addFormRulesProperties)
-        return rulesBuilder.createFormRules("useRules", "formData", entity.dto.insertInput, rules)
+        return rulesBuilder.createFormRules(
+            functionName =  "useRules",
+            formData = "formData",
+            formDataType = entity.addFormDataType,
+            formDataTypePath = componentPath + "/" + entity.dir + "/" + entity.addFormDataType,
+            ruleDataType = entity.dto.insertInput,
+            ruleDataTypePath = staticPath,
+            propertyRules = rules)
     }
 
     override fun stringifyAddForm(entity: GenEntityBusinessView): String {
@@ -289,8 +296,8 @@ object Vue3ElementPlusViewGenerator :
             addForm(
                 submitType = entity.dto.insertInput,
                 submitTypePath = staticPath,
-                type = entity.addFormDataType,
-                typePath = componentPath + "/" + entity.dir + "/" + entity.addFormDataType,
+                dataType = entity.addFormDataType,
+                dataTypePath = componentPath + "/" + entity.dir + "/" + entity.addFormDataType,
                 createDefault = entity.addFormCreateDefault,
                 defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormCreateDefault,
                 useRules = "useRules",
@@ -318,7 +325,12 @@ object Vue3ElementPlusViewGenerator :
         val editFormRulesProperties = entity.editFormRulesProperties
         val rules = editFormRulesProperties.associateWith { it.rules } +
                 entity.existValidRules(withId = true, editFormRulesProperties)
-        return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules)
+        return rulesBuilder.createFormRules(
+            functionName = "useRules",
+            formData = "formData",
+            formDataType = entity.dto.updateInput,
+            propertyRules = rules
+        )
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
@@ -356,7 +368,13 @@ object Vue3ElementPlusViewGenerator :
         val editTableRulesProperties = entity.editTableRulesProperties
         val rules = editTableRulesProperties.associateWith { it.rules } +
                 entity.existValidRules(withId = false, editTableRulesProperties)
-        return rulesBuilder.createFormRules("useRules", "formData", entity.dto.updateInput, rules, isArray = true)
+        return rulesBuilder.createFormRules(
+            functionName = "useRules",
+            formData = "formData",
+            formDataType = entity.dto.updateInput,
+            propertyRules = rules,
+            isArray = true
+        )
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
@@ -600,7 +618,7 @@ object Vue3ElementPlusViewGenerator :
                                 scope {
                                     line("sendMessage(\"新增${entity.comment}失败\", \"error\", e)")
                                 }
-                                line("}")
+                                append("}")
                             }
                         ),
                         emptyLineCode,
@@ -629,7 +647,7 @@ object Vue3ElementPlusViewGenerator :
                                     line("return")
                                 }
                                 line("}")
-                                line("editDialogVisible.value = true")
+                                append("editDialogVisible.value = true")
                             },
                         ),
                         emptyLineCode,
@@ -650,7 +668,7 @@ object Vue3ElementPlusViewGenerator :
                                 scope {
                                     line("sendMessage('编辑${entity.comment}失败', 'error', e)")
                                 }
-                                line("}")
+                                append("}")
                             },
                         ),
                         emptyLineCode,
@@ -684,7 +702,7 @@ object Vue3ElementPlusViewGenerator :
                                 scope {
                                     line("sendMessage('删除${entity.comment}失败', 'error', e)")
                                 }
-                                line("}")
+                                append("}")
                             },
                         )
                     )
