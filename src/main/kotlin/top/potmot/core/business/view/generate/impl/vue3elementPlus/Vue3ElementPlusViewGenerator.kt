@@ -168,6 +168,7 @@ object Vue3ElementPlusViewGenerator :
                 it to SelectOption(
                     it.name + "Options",
                     it.typeEntity.dto.optionView,
+                    it.typeEntity.apiServiceName
                 )
         }
 
@@ -409,7 +410,6 @@ object Vue3ElementPlusViewGenerator :
     private fun createOptionQuery(
         comment: String,
         selectOption: SelectOption,
-        serviceName: String,
     ) = mutableListOf(
         ImportType(staticPath, selectOption.type),
         Import("vue", "onBeforeMount"),
@@ -422,7 +422,7 @@ object Vue3ElementPlusViewGenerator :
             "set${selectOption.upperName}",
             null,
             "withLoading(async () => {\n",
-            "${indent}${selectOption.name}.value = await api.$serviceName.listOptions({body: {}})\n",
+            "${indent}${selectOption.name}.value = await api.${selectOption.apiServiceName}.listOptions({body: {}})\n",
             "})",
         ),
         emptyLineCode,
@@ -449,7 +449,7 @@ object Vue3ElementPlusViewGenerator :
 
         val selectOptionPairs = entity.pageSelectProperties.selectOptionPairs
         val optionQueries = selectOptionPairs.map {
-            createOptionQuery(it.first.comment, it.second, apiServiceName)
+            createOptionQuery(it.first.comment, it.second)
         }
 
         val insertSelectNames = entity.insertSelectProperties.selectOptions.map { it.name }

@@ -118,6 +118,7 @@ private const val handleSubmitFnName = "handleSubmit"
 data class SelectOption(
     val name: String,
     val type: String,
+    val apiServiceName: String,
     val typePath: String = staticPath,
 ) {
     val upperName: String = name.replaceFirstChar { it.uppercaseChar() }
