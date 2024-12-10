@@ -12,7 +12,7 @@ class ExistValidRulesTest {
     private val builder = Vue3ElementPlusRuleBuilder()
 
     private val Map<GenEntityBusinessView.TargetOf_properties, List<Rule>>.result
-        get() = builder.createFormRules("useRules", "formData", "EntityDto", this)
+        get() = builder.createFormRules("useRules", "formData", "EntityDto", propertyRules = this)
 
     @ParameterizedTest
     @MethodSource("entities")

@@ -428,8 +428,8 @@ defineExpose<FormExpose>({
             comment = "comment",
             content = mapOf(),
             selectOptions = listOf(
-                SelectOption("CustomerOptions", "CustomerOptionView"),
-                SelectOption("TypeOptions", "TypeOptionView"),
+                SelectOption("CustomerOptions", "CustomerOptionView", "customerService"),
+                SelectOption("TypeOptions", "TypeOptionView", "typeService"),
             )
         )
 
