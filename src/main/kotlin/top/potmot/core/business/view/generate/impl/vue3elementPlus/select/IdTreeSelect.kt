@@ -94,7 +94,7 @@ interface IdTreeSelect : IdSelect {
             data = "treeOptions",
             labelProp = "label",
             childrenProp = "children",
-            nodeKey = idName,
+            nodeKey = "id",
             modelValue = modelValue,
             comment = entity.comment,
             filterable = true,
