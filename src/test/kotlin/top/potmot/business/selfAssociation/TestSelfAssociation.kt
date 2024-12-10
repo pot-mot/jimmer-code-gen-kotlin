@@ -97,7 +97,7 @@ watch(() => [modelValue.value, props.options], () => {
 }, {immediate: true})
 
 type TreeNode = {
-    value: number,
+    id: number,
     label: string,
     disabled: boolean,
     children: Array<TreeNode>
@@ -110,7 +110,7 @@ const treeOptions = computed<Array<TreeNode>>(() => {
 
     for (const item of items) {
         const node: TreeNode = {
-            value: item.id,
+            id: item.id,
             label: item.label,
             disabled: props.excludeIds.includes(item.id),
             children: []
@@ -186,7 +186,7 @@ watch(() => [modelValue.value, props.options], () => {
 }, {immediate: true})
 
 type TreeNode = {
-    value: number,
+    id: number,
     label: string,
     disabled: boolean,
     children: Array<TreeNode>
@@ -199,7 +199,7 @@ const treeOptions = computed<Array<TreeNode>>(() => {
 
     for (const item of items) {
         const node: TreeNode = {
-            value: item.id,
+            id: item.id,
             label: item.label,
             disabled: props.excludeIds.includes(item.id),
             children: []
@@ -246,7 +246,7 @@ const filterNodeMethod = (value: string | undefined, data: TreeNode) => {
     />
 </template>
 )]
-            """.trimBlankLine(),
+            """.trimIndent().trimBlankLine(),
             Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
                 .filter { GenerateTag.IdSelect in it.tags || GenerateTag.IdMultiSelect in it.tags }
                 .map { it.path to it.content }.toString()
@@ -354,7 +354,6 @@ const submitAdd = async (
     } catch (e) {
         sendMessage("新增树节点失败", "error", e)
     }
-
 }
 
 const cancelAdd = (): void => {
@@ -373,7 +372,6 @@ const startEdit = async (id: number): Promise<void> => {
         return
     }
     editDialogVisible.value = true
-
 }
 
 const submitEdit = async (
@@ -388,7 +386,6 @@ const submitEdit = async (
     } catch (e) {
         sendMessage('编辑树节点失败', 'error', e)
     }
-
 }
 
 const cancelEdit = (): void => {
@@ -409,7 +406,6 @@ const handleDelete = async (ids: number[]): Promise<void> => {
     } catch (e) {
         sendMessage('删除树节点失败', 'error', e)
     }
-
 }
 </script>
 
@@ -524,7 +520,7 @@ const handleDelete = async (ids: number[]): Promise<void> => {
     </el-dialog>
 </template>
 )]
-            """.trimBlankLine(),
+            """.trimIndent().trimBlankLine(),
             Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
                 .filter { GenerateTag.Page in it.tags }
                 .map { it.path to it.content }.toString()
@@ -608,6 +604,139 @@ const handleSelectionChange = (
             """.trimBlankLine(),
             Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
                 .filter { GenerateTag.Table in it.tags }
+                .map { it.path to it.content }.toString()
+        )
+    }
+
+    @Test
+    fun `test selfAssociation addForm`() {
+        assertEquals(
+            """
+[(components/selfAssociationEntity/SelfAssociationEntityAddForm.vue, <script setup lang="ts">
+import {ref} from "vue"
+import type {FormInstance} from "element-plus"
+import type {FormExpose} from "@/components/form/FormExpose"
+import type {
+    SelfAssociationEntityInsertInput,
+    SelfAssociationEntityOptionView
+} from "@/api/__generated/model/static"
+import type {SelfAssociationEntityAddFormType} from "@/components/selfAssociationEntity/SelfAssociationEntityAddFormType"
+import {createDefaultSelfAssociationEntity} from "@/components/selfAssociationEntity/createDefaultSelfAssociationEntity"
+import {useRules} from "@/rules/selfAssociationEntity/SelfAssociationEntityAddFormRules"
+import SelfAssociationEntityIdSelect from "@/components/selfAssociationEntity/SelfAssociationEntityIdSelect.vue"
+
+const props = withDefaults(defineProps<{
+    withOperations?: boolean | undefined,
+    submitLoading?: boolean | undefined,
+    parentIdOptions: Array<SelfAssociationEntityOptionView>
+}>(), {
+    withOperations: true,
+    submitLoading: false,
+})
+
+const emits = defineEmits<{
+    (
+        event: "submit",
+        formData: SelfAssociationEntityInsertInput
+    ): void,
+    (event: "cancel"): void
+}>()
+
+defineSlots<{
+    operations(props: {
+        handleSubmit: () => Promise<void>,
+        handleCancel: () => void
+    }): any
+}>()
+
+const formData = ref<SelfAssociationEntityAddFormType>(createDefaultSelfAssociationEntity())
+
+const formRef = ref<FormInstance>()
+const rules = useRules(formData)
+
+// 校验
+const handleValidate = async (): Promise<boolean> => {
+    return await formRef.value?.validate().catch(() => false) ?? false
+}
+
+// 提交
+const handleSubmit = async (): Promise<void> => {
+    if (props.submitLoading) return
+
+    const validResult = await handleValidate()
+    if (validResult) {
+        emits("submit", formData.value as SelfAssociationEntityInsertInput)
+    }
+}
+
+// 取消
+const handleCancel = (): void => {
+    emits("cancel")
+}
+
+defineExpose<FormExpose>({
+    validate: handleValidate
+})
+</script>
+
+<template>
+    <el-form
+        :model="formData"
+        ref="formRef"
+        :rules="rules"
+    >
+        <el-form-item prop="label" label="标签">
+            <el-input
+                v-model="formData.label"
+                placeholder="请输入标签"
+                clearable
+            />
+        </el-form-item>
+        <el-form-item prop="parentId" label="父节点">
+            <SelfAssociationEntityIdSelect
+                v-model="formData.parentId"
+                :options="parentIdOptions"
+            />
+        </el-form-item>
+
+        <slot
+            v-if="withOperations"
+            name="operations"
+            :handleSubmit="handleSubmit"
+            :handleCancel="handleCancel"
+        >
+            <div style="text-align: right;">
+                <el-button type="warning" @click="handleCancel">
+                    取消
+                </el-button>
+                <el-button
+                    type="primary"
+                    :loading="submitLoading"
+                    @click="handleSubmit"
+                >
+                    提交
+                </el-button>
+            </div>
+        </slot>
+    </el-form>
+</template>
+), (rules/selfAssociationEntity/SelfAssociationEntityAddFormRules.ts, import type {Ref} from "vue"
+import type {FormRules} from "element-plus"
+import type {SelfAssociationEntityAddFormType} from "@/components/selfAssociationEntity/SelfAssociationEntityAddFormType"
+import type {SelfAssociationEntityInsertInput} from "@/api/__generated/model/static"
+
+export const useRules = (_: Ref<SelfAssociationEntityAddFormType>): FormRules<SelfAssociationEntityInsertInput> => {
+    return {
+        label: [
+            {required: true, message: "标签不能为空", trigger: "blur"},
+        ],
+        parentId: [
+        ],
+    }
+})]
+            """.trimIndent().trimBlankLine(),
+            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+                .filter { GenerateTag.AddForm in it.tags }
                 .map { it.path to it.content }.toString()
         )
     }
@@ -1141,7 +1270,7 @@ class SelfAssociationEntityService(
     @DeleteMapping
     @SaCheckPermission("selfAssociationEntity:delete")
     @Transactional
-    fun delete(@RequestParam ids: List<Int?>): Int =
+    fun delete(@RequestParam ids: List<Int>): Int =
         sqlClient.deleteByIds(SelfAssociationEntity::class, ids).affectedRowCount(SelfAssociationEntity::class)
 }
             """.trimIndent(),
@@ -1222,14 +1351,16 @@ public class SelfAssociationEntityService implements Tables {
         @RequestParam boolean tree
     ) throws AuthorizeException {
         if (tree) {
-            return sqlClient.executeQuery(SELF_ASSOCIATION_ENTITY_TABLE)
+            return sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
                     .where(spec)
                     .where(SELF_ASSOCIATION_ENTITY_TABLE.parentId().isNull())
-                    .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityListView.class));
+                    .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityListView.class))
+                    .execute();
         } else {
-            return sqlClient.executeQuery(SELF_ASSOCIATION_ENTITY_TABLE)
+            return sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
                     .where(spec)
                     .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityListView.METADATA.getFetcher().remove("children")))
+                    .execute()
                     .stream().map(SelfAssociationEntityListView::new).toList();
         }
     }
@@ -1277,9 +1408,10 @@ public class SelfAssociationEntityService implements Tables {
     @SaCheckPermission("selfAssociationEntity:select")
     @NotNull
     public List<@NotNull SelfAssociationEntityOptionView> listOptions(@RequestBody @NotNull SelfAssociationEntitySpec spec) throws AuthorizeException {
-        return sqlClient.executeQuery(SELF_ASSOCIATION_ENTITY_TABLE)
+        return sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
                 .where(spec)
-                .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityOptionView.class));
+                .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityOptionView.class))
+                .execute();
     }
 
     /**
