@@ -165,14 +165,16 @@ public List<@NotNull ${listView}> list(
     @RequestParam boolean tree
 ) throws AuthorizeException {
     if (tree) {
-        return sqlClient.executeQuery($tableProxy)
+        return sqlClient.createQuery($tableProxy)
                 .where(spec)
                 .where($tableProxy.${parentIdProperty.name}().isNull())
-                .select($tableProxy.fetch(${listView}.class));
+                .select($tableProxy.fetch(${listView}.class))
+                .execute();
     } else {
-        return sqlClient.executeQuery($tableProxy)
+        return sqlClient.createQuery($tableProxy)
                 .where(spec)
                 .select($tableProxy.fetch(${listView}.METADATA.getFetcher().remove("${childrenProperty.name}")))
+                .execute()
                 .stream().map(${listView}::new).toList();
     }
 }
@@ -230,9 +232,10 @@ public Page<@NotNull ${listView}> page(
 @SaCheckPermission("${permissions.list}")
 @NotNull
 public List<@NotNull ${listView}> list(@RequestBody @NotNull $spec spec) throws AuthorizeException {
-    return sqlClient.executeQuery(${tableProxy})
+    return sqlClient.createQuery(${tableProxy})
             .where(spec)
-            .select(${tableProxy}.fetch(${listView}.class));
+            .select(${tableProxy}.fetch(${listView}.class))
+            .execute();
 }
                         """.trimIndent()
                     )
@@ -272,9 +275,10 @@ public Page<@NotNull ${listView}> page(@RequestBody @NotNull PageQuery<${spec}> 
 @SaCheckPermission("${permissions.select}")
 @NotNull
 public List<@NotNull ${optionView}> listOptions(@RequestBody @NotNull $spec spec) throws AuthorizeException {
-    return sqlClient.executeQuery(${tableProxy})
+    return sqlClient.createQuery(${tableProxy})
             .where(spec)
-            .select(${tableProxy}.fetch(${optionView}.class));
+            .select(${tableProxy}.fetch(${optionView}.class))
+            .execute();
 }
                     """.trimIndent()
                 )
