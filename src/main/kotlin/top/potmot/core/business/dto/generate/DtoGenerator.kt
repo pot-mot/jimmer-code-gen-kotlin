@@ -90,7 +90,12 @@ object DtoGenerator : EntityPropertyCategories {
 
         line("${entity.dto.optionView} {")
         scope {
-            optionViewProperties.forEach {
+            if (entity.isTreeEntity()) {
+                line("id(${entity.parentProperty.name})")
+            }
+            optionViewProperties.filter {
+                it.typeEntity?.id != entity.id
+            }.forEach {
                 if (it.associationType != null) {
                     line(it.associationIdExpress)
                 } else {
