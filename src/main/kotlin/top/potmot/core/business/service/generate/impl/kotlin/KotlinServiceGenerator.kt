@@ -308,7 +308,6 @@ fun update(@RequestBody input: $updateInput): $idType =
 
                 if (entity.canDelete) {
                     line()
-                    val nullableIdType = typeStrToKotlinType(idProperty.type, false)
                     block(
                         """
 /**
@@ -320,7 +319,7 @@ fun update(@RequestBody input: $updateInput): $idType =
 @DeleteMapping
 @SaCheckPermission("${permissions.delete}")
 @Transactional
-fun delete(@RequestParam ids: List<$nullableIdType>): Int =
+fun delete(@RequestParam ids: List<$idType>): Int =
     sqlClient.deleteByIds(${name}::class, ids).affectedRowCount(${name}::class)
                         """.trimIndent()
                     )
