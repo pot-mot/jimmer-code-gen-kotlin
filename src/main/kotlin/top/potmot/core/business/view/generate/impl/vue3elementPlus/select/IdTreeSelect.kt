@@ -37,7 +37,7 @@ interface IdTreeSelect : IdSelect {
         val treeOptions = CodeBlock(
             """
             type TreeNode = {
-                value: $idType,
+                id: $idType,
                 label: string,
                 disabled: boolean,
                 children: Array<TreeNode>
@@ -50,7 +50,7 @@ interface IdTreeSelect : IdSelect {
             
                 for (const item of items) {
                     const node: TreeNode = {
-                        value: item.$idName,
+                        id: item.$idName,
                         label: ${createLabelExpression("item", labels, idName)},
                         disabled: props.$excludeIds.includes(item.$idName),
                         children: []
