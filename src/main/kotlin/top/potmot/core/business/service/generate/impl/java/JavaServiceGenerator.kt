@@ -161,8 +161,8 @@ public $detailView get(@PathVariable $idType id) throws AuthorizeException {
 @SaCheckPermission("${permissions.list}")
 @NotNull
 public List<@NotNull ${listView}> list(
-    @RequestBody @NotNull $spec spec,
-    @RequestParam boolean tree
+        @RequestBody @NotNull $spec spec,
+        @RequestParam boolean tree
 ) throws AuthorizeException {
     if (tree) {
         return sqlClient.createQuery($tableProxy)
@@ -194,8 +194,8 @@ public List<@NotNull ${listView}> list(
 @SaCheckPermission("${permissions.list}")
 @NotNull
 public Page<@NotNull ${listView}> page(
-    @RequestBody @NotNull PageQuery<${spec}> query,
-    @RequestParam boolean tree
+        @RequestBody @NotNull PageQuery<${spec}> query,
+        @RequestParam boolean tree
 ) throws AuthorizeException {
     if (tree) {
         return sqlClient.createQuery($tableProxy)
@@ -316,7 +316,7 @@ public $idType insert(@RequestBody @NotNull $insertInput input) throws Authorize
 @GetMapping("/{id}/forUpdate")
 @SaCheckPermission("${permissions.update}")
 @Nullable
-public $updateFillView getForUpdate(@PathVariable $idType id) throws AuthorizeException { 
+public $updateFillView getForUpdate(@PathVariable $idType id) throws AuthorizeException {
     return sqlClient.findById(${updateFillView}.class, id);
 }
 
