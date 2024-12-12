@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 import top.potmot.entity.GenColumn
 import top.potmot.entity.id
 import top.potmot.entity.logicalDelete
+import top.potmot.entity.orderKey
 import top.potmot.entity.partOfPk
 import top.potmot.entity.tableId
 
@@ -37,6 +38,7 @@ class GenTablePkColumnsResolver(
         sqlClient.createQuery(GenColumn::class) {
             where(table.tableId valueIn ids)
             where(table.partOfPk eq true)
+            orderBy(table.orderKey)
             select(table.tableId, table.id)
         }.execute()
             .groupBy({it._1}) { it._2 }

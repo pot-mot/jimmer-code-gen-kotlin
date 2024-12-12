@@ -14,6 +14,7 @@ import top.potmot.entity.idProperty
 import top.potmot.entity.inShortAssociationView
 import top.potmot.entity.logicalDelete
 import top.potmot.entity.longAssociation
+import top.potmot.entity.orderKey
 
 @Component
 class GenEntityLogicalDeleteResolver(
@@ -39,6 +40,7 @@ class GenEntityIdPropertiesResolver(
         sqlClient.createQuery(GenProperty::class) {
             where(table.entityId valueIn ids)
             where(table.idProperty eq true)
+            orderBy(table.orderKey)
             select(table.entityId, table.id)
         }.execute()
             .groupBy({it._1}) { it._2 }
@@ -52,6 +54,7 @@ class GenEntityShortViewPropertiesResolver(
         sqlClient.createQuery(GenProperty::class) {
             where(table.entityId valueIn ids)
             where(table.inShortAssociationView eq true)
+            orderBy(table.orderKey)
             select(table.entityId, table.id)
         }.execute()
             .groupBy({it._1}) { it._2 }
@@ -65,6 +68,7 @@ class GenEntityNotLongPropertiesResolver(
         sqlClient.createQuery(GenProperty::class) {
             where(table.entityId valueIn ids)
             where(table.longAssociation eq false)
+            orderBy(table.orderKey)
             select(table.entityId, table.id)
         }.execute()
             .groupBy({it._1}) { it._2 }
@@ -78,6 +82,7 @@ class GenEntityLongPropertiesResolver(
         sqlClient.createQuery(GenProperty::class) {
             where(table.entityId valueIn ids)
             where(table.longAssociation eq true)
+            orderBy(table.orderKey)
             select(table.entityId, table.id)
         }.execute()
             .groupBy({it._1}) { it._2 }
