@@ -32,7 +32,6 @@ import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
 import top.potmot.core.business.view.generate.meta.vue3.slotElement
-import top.potmot.core.business.view.generate.meta.vue3.styleProp
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.utils.string.buildScopeString
@@ -205,7 +204,7 @@ private val operationsSlotElement = slotElement(
     content = listOf(
         TagElement(
             "div",
-            props = listOf(styleProp("text-align" to "right")),
+            props = listOf(PropBind("class", "form-operations", isLiteral = true)),
             children = listOf(
                 button(content = "取消", type = ElementPlus.Type.WARNING).merge {
                     events += cancelEventBind
