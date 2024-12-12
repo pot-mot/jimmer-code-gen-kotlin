@@ -296,7 +296,9 @@ fun addForm(
                     directives += VIf("withOperations")
                 },
             )
-        )
+        ).merge {
+            props += PropBind("@submit.prevent", isLiteral = true)
+        }
     )
 )
 
@@ -372,7 +374,9 @@ fun editForm(
                     directives += VIf("withOperations")
                 },
             ),
-        )
+        ).merge {
+            props += PropBind("@submit.prevent", isLiteral = true)
+        }
     )
 )
 
@@ -525,6 +529,7 @@ fun editTable(
                             button(
                                 icon = "Delete",
                                 type = ElementPlus.Type.DANGER,
+                                link = true,
                             ).merge {
                                 events += EventBind("click", "handleSingleDelete(scope.${'$'}index)")
                             }
@@ -538,6 +543,8 @@ fun editTable(
                     directives += VIf("withOperations")
                 },
             ),
-        )
+        ).merge {
+            props += PropBind("@submit.prevent", isLiteral = true)
+        }
     )
 )

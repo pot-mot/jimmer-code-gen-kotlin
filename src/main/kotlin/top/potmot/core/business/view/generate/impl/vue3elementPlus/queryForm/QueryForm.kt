@@ -20,16 +20,27 @@ import top.potmot.core.business.view.generate.meta.vue3.Event
 import top.potmot.core.business.view.generate.meta.vue3.EventArg
 import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
+import top.potmot.core.business.view.generate.meta.vue3.PropBind
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.entity.dto.GenEntityBusinessView
 
 private fun createCol(property: GenEntityBusinessView.TargetOf_properties, elements: Collection<Element>) =
     col(
         span = 8,
+        xs = 24,
         content = listOf(
             formItem(
                 prop = property.name,
                 label = property.comment,
-                content = elements
+                content = elements.map {
+                    if (it is TagElement) {
+                        it.merge {
+                            events += EventBind("change", "emits('query', spec)")
+                        }
+                    } else {
+                        it
+                    }
+                }
             )
         )
     )
@@ -93,9 +104,12 @@ fun queryForm(
                         icon = "Search",
                     ).merge {
                         events += EventBind("click", "emits('query', spec)")
+                        props += PropBind("style", "margin-left: auto;", isLiteral = true)
                     }
                 )
             )
-        )
+        ).merge {
+            props += PropBind("@submit.prevent", isLiteral = true)
+        }
     )
 )

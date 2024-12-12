@@ -452,6 +452,11 @@ interface ElementPlus {
 
     fun col(
         span: Int = 24,
+        xs: Int? = null,
+        sm: Int? = null,
+        md: Int? = null,
+        lg: Int? = null,
+        xl: Int? = null,
         offset: Int? = null,
         content: Collection<Element>,
     ) = TagElement(
@@ -459,6 +464,11 @@ interface ElementPlus {
         props = listOfNotNull(
             span.toPropBind("span"),
             offset.toPropBind("offset"),
+            xs?.toPropBind("xs"),
+            sm?.toPropBind("sm"),
+            md?.toPropBind("md"),
+            lg?.toPropBind("lg"),
+            xl?.toPropBind("xl"),
         ),
         children = content
     )

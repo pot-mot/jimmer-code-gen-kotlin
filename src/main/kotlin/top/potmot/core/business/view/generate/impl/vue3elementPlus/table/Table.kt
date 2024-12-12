@@ -1,13 +1,15 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.table
 
-import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.tableColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumnData
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
+import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
 import top.potmot.core.business.view.generate.meta.typescript.FunctionArg
+import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
+import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.Event
@@ -19,6 +21,7 @@ import top.potmot.core.business.view.generate.meta.vue3.Slot
 import top.potmot.core.business.view.generate.meta.vue3.SlotProp
 import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.slotElement
+import top.potmot.core.business.view.generate.storePath
 import top.potmot.entity.dto.share.GenerateProperty
 
 private const val idColumn = "idColumn"
@@ -39,29 +42,30 @@ fun tableUtilColumns(idPropertyName: String) = listOf(
     tableColumn(
         label = "ID",
         prop = idPropertyName,
-        fixed = ElementPlus.TableColumnFixed.LEFT,
     ).merge {
         directives += VIf(idColumn)
+        props += PropBind("fixed", "pageSizeStore.isSmall ? undefined : 'left'")
     },
     tableColumn(
         type = "index",
-        fixed = ElementPlus.TableColumnFixed.LEFT,
     ).merge {
         directives += VIf(indexColumn)
+        props += PropBind("fixed", "pageSizeStore.isSmall ? undefined : 'left'")
     },
     tableColumn(
         type = "selection",
-        fixed = ElementPlus.TableColumnFixed.LEFT,
     ).merge {
         directives += VIf(multiSelect)
+        props += PropBind("fixed", "pageSizeStore.isSmall ? undefined : 'left'")
     },
 )
 
 fun operationsColumn(content: Collection<Element>) = tableColumn(
     label = "操作",
-    fixed = ElementPlus.TableColumnFixed.RIGHT,
     content = content,
-)
+).merge {
+    props += PropBind("fixed", "pageSizeStore.isSmall ? undefined : 'right'")
+}
 
 fun viewTable(
     data: String,
@@ -73,6 +77,7 @@ fun viewTable(
 ) = Component(
     imports = listOf(
         ImportType(typePath, type),
+        Import("$storePath/pageSizeStore", "usePageSizeStore"),
     ) + content.flatMap { it.second.imports },
     props = listOf(
         Prop(data, "Array<$type>"),
@@ -93,6 +98,8 @@ fun viewTable(
         )
     ),
     script = listOf(
+        ConstVariable("pageSizeStore", null, "usePageSizeStore()"),
+        emptyLineCode,
         Function(
             name = "handleSelectionChange",
             args = listOf(FunctionArg("newSelection", "Array<$type>")),

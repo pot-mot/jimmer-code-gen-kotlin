@@ -733,6 +733,9 @@ object Vue3ElementPlusViewGenerator :
                             ),
                             TagElement(
                                 "div",
+                                props = listOf(
+                                    PropBind("class", "page-operations", isLiteral = true),
+                                ),
                                 children = listOfNotNull(
                                     if (!entity.canAdd) null else button(
                                         content = "新增",
@@ -775,7 +778,7 @@ object Vue3ElementPlusViewGenerator :
                                                         content = "编辑",
                                                         type = ElementPlus.Type.WARNING,
                                                         icon = "EditPen",
-                                                        plain = true,
+                                                        link = true,
                                                     ).merge {
                                                         directives += VIf("userStore.permissions.includes('${permission.update}')")
                                                         events += EventBind("click", "startEdit(row.$idName)")
@@ -784,7 +787,7 @@ object Vue3ElementPlusViewGenerator :
                                                         content = "删除",
                                                         type = ElementPlus.Type.DANGER,
                                                         icon = "Delete",
-                                                        plain = true,
+                                                        link = true,
                                                     ).merge {
                                                         directives += VIf("userStore.permissions.includes('${permission.delete}')")
                                                         events += EventBind("click", "handleDelete([row.$idName])")
