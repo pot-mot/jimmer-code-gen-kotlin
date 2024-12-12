@@ -291,7 +291,7 @@ interface ElementPlus {
             VModel(modelValue)
         ),
         props = listOfNotNull(
-            PropBind("type", "date", true),
+            PropBind("type", "daterange", true),
             valueFormat.toPropBind("value-format", true),
             PropBind("is-range", isLiteral = true),
             PropBind("unlink-panels", isLiteral = true),
@@ -316,7 +316,7 @@ interface ElementPlus {
             VModel(modelValue)
         ),
         props = listOfNotNull(
-            PropBind("type", "datetime", true),
+            PropBind("type", "datetimerange", true),
             valueFormat.toPropBind("value-format", true),
             PropBind("is-range", isLiteral = true),
             PropBind("unlink-panels", isLiteral = true),
