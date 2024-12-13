@@ -127,7 +127,7 @@ fun convertAssociationProperties(
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = sourceProperty.toEntity().copy {
             name = singularName
-            if (comment.isBlank()) {
+            if (comment.isBlank() || this.idProperty) {
                 comment = targetTable.comment.clearTableComment()
             }
             type = tableNameToEntityName(targetTable.name)
@@ -239,7 +239,7 @@ fun convertAssociationProperties(
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = targetProperty.toEntity().copy {
             name = singularName
-            if (comment.isBlank()) {
+            if (comment.isBlank() || this.idProperty) {
                 comment = sourceTable.comment.clearTableComment()
             }
             type = tableNameToEntityName(sourceTable.name)

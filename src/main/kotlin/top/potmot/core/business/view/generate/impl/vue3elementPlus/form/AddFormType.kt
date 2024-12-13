@@ -4,13 +4,18 @@ import top.potmot.core.business.utils.typeStrToTypeScriptType
 import top.potmot.entity.dto.GenEntityBusinessView
 
 interface AddFormType {
-    val GenEntityBusinessView.TargetOf_properties.addFormType
-        get() =
-            if (associationType == null)
+    val GenEntityBusinessView.TargetOf_properties.addFormType: String
+        get() {
+            val baseType = if (associationType == null)
                 typeStrToTypeScriptType(type, typeNotNull)
             else
-                if (!listType && typeNotNull)
-                    typeStrToTypeScriptType(type, false)
-                else
-                    typeStrToTypeScriptType(type, typeNotNull)
+                typeStrToTypeScriptType(type, typeNotNull)
+
+            return if (listType) {
+                "Array<$baseType>"
+            } else {
+                baseType
+            }
+        }
+
 }

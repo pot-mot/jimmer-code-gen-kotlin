@@ -54,8 +54,8 @@ object DtoGenerator : EntityPropertyCategories {
         }
     }
 
-    private val GenEntityBusinessView.targetOneIdExpress: List<String>
-        get() = targetOneProperties.map {
+    private val GenEntityBusinessView.associationIdExpress: List<String>
+        get() = associationProperties.map {
             it.associationIdExpress
         }
 
@@ -140,7 +140,7 @@ object DtoGenerator : EntityPropertyCategories {
             entity.scalarProperties.exclude(insertInputProperties).forEach {
                 line("-${it.name}")
             }
-            lines(entity.copy(properties = insertInputProperties).targetOneIdExpress)
+            lines(entity.copy(properties = insertInputProperties).associationIdExpress)
         }
         line("}")
     }
@@ -154,7 +154,7 @@ object DtoGenerator : EntityPropertyCategories {
             entity.scalarProperties.exclude(updateInputProperties).forEach {
                 line("-${it.name}")
             }
-            lines(entity.copy(properties = updateInputProperties).targetOneIdExpress)
+            lines(entity.copy(properties = updateInputProperties).associationIdExpress)
         }
         line("}")
     }
@@ -171,7 +171,7 @@ object DtoGenerator : EntityPropertyCategories {
             entity.scalarProperties.exclude(updateInputProperties).forEach {
                 line("-${it.name}")
             }
-            lines(entity.copy(properties = updateInputProperties).targetOneIdExpress)
+            lines(entity.copy(properties = updateInputProperties).associationIdExpress)
         }
         line("}")
     }
