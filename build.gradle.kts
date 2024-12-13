@@ -89,6 +89,7 @@ kotlin {
 }
 
 ksp {
+//    切换dto可变性
 //    arg("jimmer.dto.mutable", "true")
 }
 
@@ -96,6 +97,15 @@ idea {
     module {
         isDownloadJavadoc = true
         isDownloadSources = true
+    }
+}
+
+// 强制要求kspKotlin任务添加src/main/dto
+afterEvaluate {
+    tasks {
+        "kspKotlin" {
+            inputs.dir(layout.projectDirectory.dir("src/main/dto"))
+        }
     }
 }
 
