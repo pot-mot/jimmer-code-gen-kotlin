@@ -537,7 +537,7 @@ object Vue3ElementPlusViewGenerator :
                             scope {
                                 lines(
                                     "spec: {},",
-                                    "pageIndex: 1,",
+                                    "pageIndex: 0,",
                                     "pageSize: 5",
                                 )
                             }
