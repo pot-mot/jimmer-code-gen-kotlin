@@ -187,12 +187,12 @@ fun page(
             where(query.spec)
             where(table.${parentIdProperty.name}.isNull())
             select(table.fetch(${listView}::class))
-        }.fetchPage(query.pageIndex - 1, query.pageSize)
+        }.fetchPage(query.pageIndex, query.pageSize)
     } else {
         val page = sqlClient.createQuery(${name}::class) {
             where(query.spec)
             select(table.fetch(${listView}.METADATA.getFetcher().remove("${childrenProperty.name}")))
-        }.fetchPage(query.pageIndex - 1, query.pageSize)
+        }.fetchPage(query.pageIndex, query.pageSize)
 
         Page(page.rows.map { ${listView}(it) }, page.totalRowCount, page.totalPageCount)
     }
@@ -233,7 +233,7 @@ fun page(@RequestBody query: PageQuery<$spec>): Page<$listView> =
     sqlClient.createQuery(${name}::class) {
         where(query.spec)
         select(table.fetch(${listView}::class))
-    }.fetchPage(query.pageIndex - 1, query.pageSize)
+    }.fetchPage(query.pageIndex, query.pageSize)
                         """.trimIndent()
                     )
                 }

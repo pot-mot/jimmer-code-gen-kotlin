@@ -545,7 +545,7 @@ object Vue3ElementPlusViewGenerator :
                         }
                     ),
                     ConstVariable(
-                        "{queryPage}", null,
+                        "{queryPage, currentPage}", null,
                         buildScopeString(indent) {
                             line("useLegalPage(")
                             scope {
@@ -798,7 +798,7 @@ object Vue3ElementPlusViewGenerator :
                                     ),
                                     emptyLineElement,
                                     pagination(
-                                        currentPage = "queryInfo.pageIndex",
+                                        currentPage = "currentPage",
                                         pageSize = "queryInfo.pageSize",
                                         total = "pageData.totalRowCount",
                                     )

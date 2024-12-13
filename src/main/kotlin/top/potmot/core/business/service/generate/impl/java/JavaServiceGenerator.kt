@@ -202,12 +202,12 @@ public Page<@NotNull ${listView}> page(
                 .where(query.getSpec())
                 .where($tableProxy.${parentIdProperty.name}().isNull())
                 .select($tableProxy.fetch(${listView}.class))
-                .fetchPage(query.getPageIndex() - 1, query.getPageSize());
+                .fetchPage(query.getPageIndex(), query.getPageSize());
     } else {
         Page<Menu> page = sqlClient.createQuery($tableProxy)
                 .where(query.getSpec())
                 .select($tableProxy.fetch(${listView}.METADATA.getFetcher().remove("${childrenProperty.name}")))
-                .fetchPage(query.getPageIndex() - 1, query.getPageSize());
+                .fetchPage(query.getPageIndex(), query.getPageSize());
 
         return new Page<>(
                 page.getRows().stream().map(${listView}::new).toList(),
@@ -256,7 +256,7 @@ public Page<@NotNull ${listView}> page(@RequestBody @NotNull PageQuery<${spec}> 
     return sqlClient.createQuery(${tableProxy})
             .where(query.getSpec())
             .select(${tableProxy}.fetch(${listView}.class))
-            .fetchPage(query.getPageIndex() - 1, query.getPageSize());
+            .fetchPage(query.getPageIndex(), query.getPageSize());
 }
                         """.trimIndent()
                     )
