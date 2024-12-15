@@ -78,7 +78,9 @@ object KotlinServiceGenerator : ServiceGenerator() {
 
             if (isTreeEntity) {
                 imports += listOf(
-                    "org.springframework.web.bind.annotation.RequestParam"
+                    "org.springframework.web.bind.annotation.RequestParam",
+                    "${packages.entity}.${parentIdProperty.name}",
+                    "org.babyfish.jimmer.sql.kt.ast.expression.isNull",
                 )
             }
 
@@ -162,7 +164,7 @@ fun list(
     } else {
         sqlClient.executeQuery(${name}::class) {
             where(spec)
-            select(table.fetch(${listView}.METADATA.getFetcher().remove("${childrenProperty.name}")))
+            select(table.fetch(${listView}.METADATA.fetcher.remove("${childrenProperty.name}")))
         }.map { ${listView}(it) }
     }
                         """.trimIndent()
@@ -335,7 +337,7 @@ fun delete(@RequestParam ids: List<$idType>): Int =
                     )
                 }
 
-                existValidItemWithNames.forEach { (name, validItem) ->
+                existValidItemWithNames.forEach { (specName, validItem) ->
                     line()
                     block(
                         """
@@ -348,7 +350,7 @@ fun delete(@RequestParam ids: List<$idType>): Int =
 @PostMapping("/${validItem.functionName}")
 @SaCheckPermission("${permissions.list}")
 @Throws(AuthorizeException::class)
-fun ${validItem.functionName}(@RequestBody spec: $name): Boolean =
+fun ${validItem.functionName}(@RequestBody spec: $specName): Boolean =
     sqlClient.createQuery(${name}::class) {
         where(spec)
         select(table)
