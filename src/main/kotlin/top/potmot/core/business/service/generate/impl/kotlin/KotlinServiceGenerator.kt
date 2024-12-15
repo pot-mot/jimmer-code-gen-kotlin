@@ -129,6 +129,7 @@ object KotlinServiceGenerator : ServiceGenerator() {
  */
 @GetMapping("/{id}")
 @SaCheckPermission("${permissions.get}")
+@Throws(AuthorizeException::class)
 fun get(@PathVariable id: $idType): $detailView? =
     sqlClient.findById(${detailView}::class, id)
                     """.trimIndent()
@@ -147,6 +148,7 @@ fun get(@PathVariable id: $idType): $detailView? =
  */
 @PostMapping("/list")
 @SaCheckPermission("${permissions.list}")
+@Throws(AuthorizeException::class)
 fun list(
     @RequestBody spec: $spec,
     @RequestParam tree: Boolean
@@ -178,6 +180,7 @@ fun list(
  */
 @PostMapping("/page")
 @SaCheckPermission("${permissions.list}")
+@Throws(AuthorizeException::class)
 fun page(
     @RequestBody query: PageQuery<$spec>,
     @RequestParam tree: Boolean
@@ -210,6 +213,7 @@ fun page(
  */
 @PostMapping("/list")
 @SaCheckPermission("${permissions.list}")
+@Throws(AuthorizeException::class)
 fun list(@RequestBody spec: $spec): List<$listView> =
     sqlClient.executeQuery(${name}::class) {
         where(spec)
@@ -229,6 +233,7 @@ fun list(@RequestBody spec: $spec): List<$listView> =
  */
 @PostMapping("/page")
 @SaCheckPermission("${permissions.list}")
+@Throws(AuthorizeException::class)
 fun page(@RequestBody query: PageQuery<$spec>): Page<$listView> =
     sqlClient.createQuery(${name}::class) {
         where(query.spec)
@@ -249,6 +254,7 @@ fun page(@RequestBody query: PageQuery<$spec>): Page<$listView> =
  */
 @PostMapping("/list/options")
 @SaCheckPermission("${permissions.select}")
+@Throws(AuthorizeException::class)
 fun listOptions(@RequestBody spec: $spec): List<$optionView> =
     sqlClient.executeQuery(${name}::class) {
         where(spec)
@@ -269,6 +275,7 @@ fun listOptions(@RequestBody spec: $spec): List<$optionView> =
  */
 @PostMapping
 @SaCheckPermission("${permissions.insert}")
+@Throws(AuthorizeException::class)
 @Transactional
 fun insert(@RequestBody input: $insertInput): $idType =
     sqlClient.insert(input).modifiedEntity.$idName
@@ -288,6 +295,7 @@ fun insert(@RequestBody input: $insertInput): $idType =
  */
 @GetMapping("/{id}/forUpdate")
 @SaCheckPermission("${permissions.update}")
+@Throws(AuthorizeException::class)
 fun getForUpdate(@PathVariable id: $idType): $updateFillView? =
     sqlClient.findById(${updateFillView}::class, id)
 
@@ -299,6 +307,7 @@ fun getForUpdate(@PathVariable id: $idType): $updateFillView? =
  */
 @PutMapping
 @SaCheckPermission("${permissions.update}")
+@Throws(AuthorizeException::class)
 @Transactional
 fun update(@RequestBody input: $updateInput): $idType =
     sqlClient.update(input, AssociatedSaveMode.REPLACE).modifiedEntity.$idName
@@ -318,6 +327,7 @@ fun update(@RequestBody input: $updateInput): $idType =
  */
 @DeleteMapping
 @SaCheckPermission("${permissions.delete}")
+@Throws(AuthorizeException::class)
 @Transactional
 fun delete(@RequestParam ids: List<$idType>): Int =
     sqlClient.deleteByIds(${name}::class, ids).affectedRowCount(${name}::class)
@@ -337,6 +347,7 @@ fun delete(@RequestParam ids: List<$idType>): Int =
  */
 @PostMapping("/${validItem.functionName}")
 @SaCheckPermission("${permissions.list}")
+@Throws(AuthorizeException::class)
 fun ${validItem.functionName}(@RequestBody spec: $name): Boolean =
     sqlClient.createQuery(${name}::class) {
         where(spec)
