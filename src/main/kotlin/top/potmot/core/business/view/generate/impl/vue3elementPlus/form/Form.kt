@@ -33,6 +33,8 @@ import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
 import top.potmot.core.business.view.generate.meta.vue3.slotElement
 import top.potmot.core.business.view.generate.staticPath
+import top.potmot.core.business.view.generate.storePath
+import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.utils.string.buildScopeString
 
@@ -319,7 +321,7 @@ fun editForm(
         ImportType("element-plus", "FormInstance"),
         ImportType(formExposePath, formExposeType),
         ImportType(typePath, type),
-        Import(useRulesPath, useRules)
+        Import(useRulesPath, useRules),
     )
             + content.values.flatMap { it.imports }
             + subValidateItems.map { it.toImport() }
@@ -403,7 +405,9 @@ fun editTable(
         ImportType(typePath, type),
         Import(defaultPath, createDefault),
         Import(useRulesPath, useRules),
+        Import("$storePath/pageSizeStore", "usePageSizeStore"),
         Import("@element-plus/icons-vue", "Plus", "Delete"),
+        Import("$utilPath/confirm", "deleteConfirm"),
     )
             + content.values.flatMap { it.imports }
             + subValidateItems.map { it.toImport() }
@@ -426,6 +430,8 @@ fun editTable(
     script = listOfNotNull(
         ConstVariable(formRef, null, "ref<FormInstance>()"),
         ConstVariable("rules", null, "$useRules($formData)"),
+        emptyLineCode,
+        ConstVariable("pageSizeStore", null, "usePageSizeStore()"),
         emptyLineCode,
         *subValidateItems.map { it.toRef() }.toTypedArray(),
         if (subValidateItems.isNotEmpty()) emptyLineCode else null,

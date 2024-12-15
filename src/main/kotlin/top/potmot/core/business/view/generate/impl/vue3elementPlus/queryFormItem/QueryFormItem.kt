@@ -194,8 +194,8 @@ interface QueryFormItem {
                                 comment = comment,
                                 filterable = false,
                                 content = listOf(
-                                    option("false", "否"),
-                                    option("true", "是"),
+                                    option("true", "是", true),
+                                    option("false", "否", true)
                                 )
                             )
                         )

@@ -6,6 +6,10 @@ import top.potmot.entity.dto.GenEntityBusinessView
 interface AddFormType {
     val GenEntityBusinessView.TargetOf_properties.addFormType: String
         get() {
+            if (enum != null) {
+                return enum.name
+            }
+
             val baseType = if (associationType == null)
                 typeStrToTypeScriptType(type, typeNotNull)
             else

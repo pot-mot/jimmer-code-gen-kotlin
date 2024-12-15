@@ -120,7 +120,11 @@ object Vue3ElementPlusViewGenerator :
             valueOnClear = if (nullable) "undefined" else null,
             content = listOf(
                 options(
-                    options, option, label = { null }, content = listOf(
+                    options = options,
+                    option = option,
+                    value = { option },
+                    label = { null },
+                    content = listOf(
                         TagElement(
                             view,
                             props = listOf(PropBind("value", option))
@@ -397,7 +401,7 @@ object Vue3ElementPlusViewGenerator :
                 content = entity.editTableProperties
                     .associateWith {
                         it.createFormItem(
-                            rows,
+                            "scope.row",
                             excludeSelf = true,
                             entityId = entity.id,
                             idName = entity.idProperty.name
