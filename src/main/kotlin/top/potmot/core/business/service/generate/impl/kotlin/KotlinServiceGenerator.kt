@@ -56,7 +56,7 @@ object KotlinServiceGenerator : ServiceGenerator() {
             val imports = mutableSetOf<String>()
             imports += listOf(
                 "cn.dev33.satoken.annotation.SaCheckPermission",
-                "org.babyfish.jimmer.View",
+                "org.babyfish.jimmer.Page",
                 "org.babyfish.jimmer.sql.kt.KSqlClient",
                 "org.springframework.web.bind.annotation.GetMapping",
                 "org.springframework.web.bind.annotation.PathVariable",
