@@ -638,7 +638,7 @@ object Vue3ElementPlusViewGenerator :
                         Function(
                             async = true,
                             name = "startEdit",
-                            args = listOf(FunctionArg("id", "number")),
+                            args = listOf(FunctionArg("id", idType)),
                             buildScopeString {
                                 line("updateInput.value = await get${entity.name}ForUpdate(id)")
                                 line("if (updateInput.value === undefined) {")
@@ -686,7 +686,7 @@ object Vue3ElementPlusViewGenerator :
                         Function(
                             async = true,
                             name = "handleDelete",
-                            args = listOf(FunctionArg("ids", "number[]")),
+                            args = listOf(FunctionArg("ids", "Array<${idType}>")),
                             buildScopeString {
                                 line("const result = await deleteConfirm('${entity.comment}')")
                                 line("if (!result) return")
@@ -752,7 +752,7 @@ object Vue3ElementPlusViewGenerator :
                                     ).merge {
                                         directives += VIf("userStore.permissions.includes('${permission.delete}')")
                                         props += PropBind("disabled", "selection.length === 0")
-                                        events += EventBind("click", "handleDelete(selection.map(it => it.id))")
+                                        events += EventBind("click", "handleDelete(selection.map(it => it.$idName))")
                                     },
                                 )
                             ),
