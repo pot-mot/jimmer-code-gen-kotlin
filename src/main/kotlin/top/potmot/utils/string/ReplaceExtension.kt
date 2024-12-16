@@ -3,12 +3,14 @@ package top.potmot.utils.string
 import top.potmot.constant.SEPARATOR
 
 fun String.replaceFirstOrAppend(
-    oldValue: String, newValue: String
+    oldValue: String,
+    newValue: String,
+    ignoreCase: Boolean
 ): String =
-    if (indexOf(oldValue) == -1)
+    if (indexOf(oldValue, ignoreCase = ignoreCase) == -1)
         this + SEPARATOR + newValue
     else
-        replaceFirst(oldValue, newValue)
+        replaceFirst(oldValue, newValue, ignoreCase = ignoreCase)
 
 /**
  * 从给定的字符串中移除前缀字符串

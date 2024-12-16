@@ -21,7 +21,8 @@ fun GenTableGenerateView.toFlat(): GenTableGenerateView {
                     leafAssociation.copy(
                         name = leafAssociation.name.replaceFirstOrAppend(
                             TARGET_INHERIT_PLACEHOLDER,
-                            tableName
+                            tableName,
+                            ignoreCase = true
                         )
                     )
                 }
@@ -33,7 +34,8 @@ fun GenTableGenerateView.toFlat(): GenTableGenerateView {
                     leafAssociation.copy(
                         name = leafAssociation.name.replaceFirstOrAppend(
                             SOURCE_INHERIT_PLACEHOLDER,
-                            tableName
+                            tableName,
+                            ignoreCase = true
                         )
                     )
                 }
@@ -44,7 +46,8 @@ fun GenTableGenerateView.toFlat(): GenTableGenerateView {
                 index.copy(
                     name = index.name.replaceFirstOrAppend(
                         INHERIT_PLACEHOLDER,
-                        tableName
+                        tableName,
+                        ignoreCase = true
                     )
                 )
             }
@@ -74,7 +77,14 @@ private fun GenTableGenerateView.TargetOf_inAssociations.getLeafAssociations():
         if (it == sourceTable)
             this
         else
-            copy(sourceTable = it, name = name.replaceFirstOrAppend(SOURCE_INHERIT_PLACEHOLDER, it.name))
+            copy(
+                sourceTable = it,
+                name = name.replaceFirstOrAppend(
+                    SOURCE_INHERIT_PLACEHOLDER,
+                    it.name,
+                    ignoreCase = true
+                )
+            )
     }
 
 private fun GenTableGenerateView.TargetOf_outAssociations.getLeafAssociations():
@@ -83,5 +93,12 @@ private fun GenTableGenerateView.TargetOf_outAssociations.getLeafAssociations():
         if (it == targetTable)
             this
         else
-            copy(targetTable = it, name = name.replaceFirstOrAppend(TARGET_INHERIT_PLACEHOLDER, it.name))
+            copy(
+                targetTable = it,
+                name = name.replaceFirstOrAppend(
+                    TARGET_INHERIT_PLACEHOLDER,
+                    it.name,
+                    ignoreCase = true
+                )
+            )
     }
