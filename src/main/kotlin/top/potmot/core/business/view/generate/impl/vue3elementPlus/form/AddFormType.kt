@@ -7,7 +7,7 @@ interface AddFormType {
     val GenEntityBusinessView.TargetOf_properties.addFormType: String
         get() {
             if (enum != null) {
-                return enum.name
+                return typeStrToTypeScriptType(enum.name, typeNotNull)
             }
 
             val baseType = if (associationType == null)
