@@ -18,7 +18,7 @@ object DynamicRouteGenerator {
 
             GenerateFile(
                 it,
-                "menu/${lowerName}.sql",
+                "sql/menu/${lowerName}.sql",
                 """
 INSERT INTO SYS_MENU 
 (PARENT_ID, NAME, PATH, ICON, LABEL, COMPONENT, ORDER_KEY, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME) 
@@ -34,7 +34,7 @@ WHERE SYS_PERMISSION.NAME = '${it.permissions.menu}' AND SYS_MENU.NAME = '${page
 
         val allDynamicRoutes = createGenerateFileByEntities(
             entities,
-            "menu/all-menus.sql",
+            "sql/menu/all-menus.sql",
             items.joinToString("\n\n") { it.content },
             listOf(GenerateTag.BackEnd, GenerateTag.Route)
         )
