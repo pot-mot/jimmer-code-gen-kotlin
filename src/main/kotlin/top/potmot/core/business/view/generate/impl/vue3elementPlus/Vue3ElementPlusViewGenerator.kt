@@ -269,13 +269,14 @@ object Vue3ElementPlusViewGenerator :
         val rules = addFormRulesProperties.associateWith { it.rules } +
                 entity.existValidRules(withId = false, addFormRulesProperties)
         return rulesBuilder.createFormRules(
-            functionName =  "useRules",
+            functionName = "useRules",
             formData = "formData",
             formDataType = entity.addFormDataType,
             formDataTypePath = componentPath + "/" + entity.dir + "/" + entity.addFormDataType,
             ruleDataType = entity.dto.insertInput,
             ruleDataTypePath = staticPath,
-            propertyRules = rules)
+            propertyRules = rules
+        )
     }
 
     override fun stringifyAddForm(entity: GenEntityBusinessView): String {
@@ -470,6 +471,10 @@ object Vue3ElementPlusViewGenerator :
         val apiServiceName = entity.apiServiceName
 
         val selectOptionPairs = entity.pageSelectProperties.selectOptionPairs
+        val selfOptionPairs = selectOptionPairs
+            .filter { (property, _) ->
+                property.typeEntity?.id == entity.id
+            }
         val optionQueries = selectOptionPairs.map {
             createOptionQuery(it.first.comment, it.second)
         }
@@ -478,8 +483,10 @@ object Vue3ElementPlusViewGenerator :
         val updateSelectNames = entity.updateSelectProperties.selectOptions.map { it.name }
         val specificationSelectNames = entity.specificationSelectProperties.selectOptions.map { it.name }
 
+        val isTree = entity.isTreeEntity()
+
         val pageQuery =
-            if (entity.isTreeEntity()) {
+            if (isTree) {
                 """
                 withLoading((options: {
                     body: PageQuery<$spec>
@@ -565,23 +572,69 @@ object Vue3ElementPlusViewGenerator :
                     if (!entity.canAdd) null else ConstVariable(
                         "add${entity.name}",
                         null,
-                        "withLoading((body: $insertInput) => api.$apiServiceName.insert({body}))\n"
+                        if (selfOptionPairs.isNotEmpty()) {
+                            buildScopeString {
+                                line("withLoading(async (body: $insertInput) => {")
+                                scope {
+                                    line("const result = await api.$apiServiceName.insert({body})")
+                                    selfOptionPairs.forEach {
+                                        line("await set${it.second.upperName}()")
+                                    }
+                                    line("return result")
+                                }
+                                line("})")
+                            }
+                        } else {
+                            "withLoading((body: $insertInput) => api.$apiServiceName.insert({body}))"
+                        }
                     ),
+                    emptyLineCode,
                     if (!entity.canEdit) null else ConstVariable(
                         "get${entity.name}ForUpdate",
                         null,
-                        "withLoading((id: $idType) => api.$apiServiceName.getForUpdate({id}))\n"
+                        "withLoading((id: $idType) => api.$apiServiceName.getForUpdate({id}))"
                     ),
+                    emptyLineCode,
                     if (!entity.canEdit) null else ConstVariable(
                         "edit${entity.name}",
                         null,
-                        "withLoading((body: $updateInput) => api.$apiServiceName.update({body}))\n"
+                        if (isTree) {
+                            buildScopeString {
+                                line("withLoading(async (body: $updateInput) => {")
+                                scope {
+                                    line("const result = await api.$apiServiceName.update({body})")
+                                    selfOptionPairs.forEach {
+                                        line("await set${it.second.upperName}()")
+                                    }
+                                    line("return result")
+                                }
+                                line("})")
+                            }
+                        } else {
+                            "withLoading((body: $updateInput) => api.$apiServiceName.update({body}))"
+                        }
                     ),
+                    emptyLineCode,
                     if (!entity.canDelete) null else ConstVariable(
                         "delete${entity.name}",
                         null,
-                        "withLoading((ids: Array<$idType>) => api.$apiServiceName.delete({ids}))\n"
+                        if (isTree) {
+                            buildScopeString {
+                                line("withLoading(async (ids: Array<$idType>) => {")
+                                scope {
+                                    line("const result = await api.$apiServiceName.delete({ids})")
+                                    selfOptionPairs.forEach {
+                                        line("await set${it.second.upperName}()")
+                                    }
+                                    line("return result")
+                                }
+                                line("})")
+                            }
+                        } else {
+                            "withLoading((ids: Array<$idType>) => api.$apiServiceName.delete({ids}))"
+                        }
                     ),
+                    emptyLineCode,
 
                     commentLine("多选"),
                     ConstVariable("selection", null, "ref<${listView}[]>([])"),
