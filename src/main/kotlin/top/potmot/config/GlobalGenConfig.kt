@@ -35,3 +35,6 @@ object GlobalGenConfig : MutableGenConfig(
     columnCommentPrefixes = "",
     columnCommentSuffixes = "",
 )
+
+// TODO 移入GenConfig
+const val tableColumnWithDateTimeFormat: Boolean = true

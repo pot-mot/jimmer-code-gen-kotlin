@@ -1,5 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn
 
+import top.potmot.config.tableColumnWithDateTimeFormat
 import top.potmot.core.business.property.isShortAssociation
 import top.potmot.core.business.utils.PropertyFormType
 import top.potmot.core.business.utils.components
@@ -25,9 +26,6 @@ data class TableColumnData(
 )
 
 private val defaultTableColumnData = TableColumnData()
-
-// TODO 转换为全局配置
-private const val tableColumnWithDateTimeFormat: Boolean = true
 
 private const val formatTableColumnDate = "formatTableColumnDate"
 private const val formatTableColumnTime = "formatTableColumnTime"
