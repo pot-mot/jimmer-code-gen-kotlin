@@ -16,10 +16,12 @@ import kotlin.reflect.jvm.isAccessible
 
 @RestController
 @RequestMapping("/config")
-class ConfigService {
+class ConfigService(
+    val globalGenConfig: GlobalGenConfig
+) {
     @GetMapping
     fun getConfig(): GenConfig {
-        return GenConfig(GlobalGenConfig.toEntity())
+        return GenConfig(globalGenConfig.toEntity())
     }
 
     @PutMapping
@@ -28,12 +30,12 @@ class ConfigService {
     ) {
         val newConfig = MutableGenConfig(
             merge(
-                GlobalGenConfig.toEntity(),
+                globalGenConfig.toEntity(),
                 properties.toEntity()
             )
         )
 
-        GlobalGenConfig.copyPropertiesFrom(newConfig)
+        globalGenConfig.copyPropertiesFrom(newConfig)
     }
 
     private fun MutableGenConfig.copyPropertiesFrom(source: MutableGenConfig) {

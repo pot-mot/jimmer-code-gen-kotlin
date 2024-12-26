@@ -7,15 +7,21 @@ import top.potmot.entity.dto.GenConfigProperties
 
 private val contextLocal = ThreadLocal<GenConfig>()
 
+private lateinit var globalGenConfig: GlobalGenConfig
+
+fun initContextGlobal(init: GlobalGenConfig) {
+    globalGenConfig = init
+}
+
 fun getContextOrGlobal() =
-    contextLocal.get() ?: GenConfig(GlobalGenConfig.toEntity())
+    contextLocal.get() ?: GenConfig(globalGenConfig.toEntity())
 
 fun <T> useContext(
-    initProperties: GenConfigProperties? = GlobalGenConfig.toProperties(),
+    initProperties: GenConfigProperties? = globalGenConfig.toProperties(),
     block: (context: GenConfig) -> T
 ): T {
     val merged = merge(
-        GlobalGenConfig.toEntity(),
+        globalGenConfig.toEntity(),
         initProperties?.toEntity()
     )
 
