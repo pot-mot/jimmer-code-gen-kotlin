@@ -190,30 +190,34 @@ fun ForeignKey.toInput(
         )
 
     if (sourceTablePairs.size > 1) {
-        throw LoadFromDataSourceException.associationSourceTableNotMatch(
+        val columnTablePairs = sourceTablePairs.map { (column, table) ->
+            ColumnTableNotMatchItem(
+                column = IdName(column.id, column.name),
+                table = IdName(table.id, table.name)
+            )
+        }
+
+        throw LoadFromDataSourceException.associationCannotSupportMultiColumns(
             "Convert foreign key [${name}] to association fail: \n" +
-                    "source table not match: [${sourceTablePairs}]",
+                    "source table not match: [${columnTablePairs}]",
             foreignKeyName = name,
-            columnToSourceTables = sourceTablePairs.map { (column, table) ->
-                ColumnTableNotMatchItem(
-                    column = IdName(column.id, column.name),
-                    table = IdName(table.id, table.name)
-                )
-            }
+            columnTablePairs = columnTablePairs
         )
     }
 
     if (targetTablePairs.size > 1) {
-        throw LoadFromDataSourceException.associationTargetTableNotMatch(
+        val columnTablePairs = targetTablePairs.map { (column, table) ->
+            ColumnTableNotMatchItem(
+                column = IdName(column.id, column.name),
+                table = IdName(table.id, table.name)
+            )
+        }
+
+        throw LoadFromDataSourceException.associationCannotSupportMultiColumns(
             "Convert foreign key [${name}] to association fail: \n" +
-                    "target table not match: [${sourceTablePairs}]",
+                    "target table not match: [${columnTablePairs}]",
             foreignKeyName = name,
-            columnToTargetTables = targetTablePairs.map { (column, table) ->
-                ColumnTableNotMatchItem(
-                    column = IdName(column.id, column.name),
-                    table = IdName(table.id, table.name)
-                )
-            }
+            columnTablePairs = columnTablePairs
         )
     }
 
