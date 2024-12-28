@@ -45,7 +45,7 @@ interface GenProperty : BaseEntity {
      * 对应列
      */
     @ManyToOne
-    @OnDissociate(DissociateAction.SET_NULL)
+    @OnDissociate(DissociateAction.DELETE)
     val column: GenColumn?
 
     /**
