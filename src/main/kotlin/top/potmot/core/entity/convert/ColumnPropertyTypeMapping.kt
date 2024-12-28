@@ -1,12 +1,5 @@
 package top.potmot.core.entity.convert
 
-import top.potmot.context.getContextOrGlobal
-import top.potmot.core.database.generate.columnType.getColumnTypeDefiner
-import top.potmot.enumeration.DataSourceType
-import top.potmot.enumeration.GenLanguage
-import top.potmot.error.ColumnTypeException
-import top.potmot.entity.dto.share.ColumnTypeMeta
-import top.potmot.entity.dto.GenTypeMappingView
 import java.math.BigDecimal
 import java.sql.Types
 import java.time.LocalDate
@@ -14,6 +7,13 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
+import top.potmot.context.getContextOrGlobal
+import top.potmot.core.database.generate.columnType.getColumnTypeDefiner
+import top.potmot.entity.dto.GenTypeMappingView
+import top.potmot.entity.dto.share.ColumnTypeMeta
+import top.potmot.enumeration.DataSourceType
+import top.potmot.enumeration.GenLanguage
+import top.potmot.error.ColumnTypeException
 
 /**
  * java.sql.Types 映射为 java 类型
@@ -22,9 +22,12 @@ private fun jdbcTypeToJavaType(jdbcType: Int, typeNotNull: Boolean = true): Clas
     return when (jdbcType) {
         Types.NULL -> null
         Types.JAVA_OBJECT -> JvmType.Object::class.java
-        Types.BIT, Types.BOOLEAN -> if (typeNotNull) Boolean::class.java else Boolean::class.javaObjectType
-        Types.TINYINT -> if (typeNotNull) Byte::class.java else Byte::class.javaObjectType
-        Types.SMALLINT -> if (typeNotNull) Short::class.java else Short::class.javaObjectType
+        Types.BOOLEAN -> if (typeNotNull) Boolean::class.java else Boolean::class.javaObjectType
+        Types.BIT -> if (typeNotNull) Byte::class.java else Byte::class.javaObjectType
+        Types.TINYINT,
+        Types.SMALLINT,
+        -> if (typeNotNull) Short::class.java else Short::class.javaObjectType
+
         Types.INTEGER -> if (typeNotNull) Int::class.java else Int::class.javaObjectType
         Types.BIGINT -> if (typeNotNull) Long::class.java else Long::class.javaObjectType
         Types.REAL -> if (typeNotNull) Float::class.java else Float::class.javaObjectType
@@ -46,9 +49,9 @@ private fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
     return when (jdbcType) {
         Types.NULL -> null
         Types.JAVA_OBJECT -> JvmType.Object::class
-        Types.BIT, Types.BOOLEAN -> Boolean::class
-        Types.TINYINT -> Byte::class
-        Types.SMALLINT -> Short::class
+        Types.BOOLEAN -> Boolean::class
+        Types.BIT -> Byte::class
+        Types.TINYINT, Types.SMALLINT -> Short::class
         Types.INTEGER -> Int::class
         Types.BIGINT -> Long::class
         Types.REAL -> Float::class
