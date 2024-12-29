@@ -303,3 +303,5 @@ data class Component(
         return builder.build()
     }
 }
+
+fun Component(block: Component.Builder.() -> Unit) = Component.Builder().apply(block).build()

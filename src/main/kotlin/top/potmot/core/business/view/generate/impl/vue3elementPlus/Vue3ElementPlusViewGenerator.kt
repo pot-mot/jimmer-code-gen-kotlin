@@ -502,409 +502,410 @@ object Vue3ElementPlusViewGenerator :
                 "withLoading(api.$apiServiceName.page)"
             }
 
-        return builder.build(
-            Component(
-                imports = listOfNotNull(
-                    Import("vue", "ref"),
-                    Import(
-                        "@element-plus/icons-vue", listOfNotNull(
-                            if (!entity.canAdd) null else "Plus",
-                            if (!entity.canEdit) null else "EditPen",
-                            if (!entity.canDelete) null else "Delete"
-                        )
-                    ),
-                    ImportType(
-                        staticPath, listOfNotNull(
-                            "Page", "PageQuery",
-                            listView,
-                            if (!entity.canAdd) null else insertInput,
-                            if (!entity.canEdit) null else updateInput,
-                            if (!entity.canQuery) null else spec,
-                        )
-                    ),
-                    Import(apiPath, "api"),
-                    if (!needMessage) null else Import("$utilPath/message", "sendMessage"),
-                    if (!needUserStore) null else Import("$storePath/userStore", "useUserStore"),
-                    if (!entity.canDelete) null else Import("$utilPath/confirm", "deleteConfirm"),
-                    Import("$utilPath/loading", "useLoading"),
-                    Import("$utilPath/legalPage", "useLegalPage"),
-                ) + listOfNotNull(
-                    table,
-                    if (!entity.canAdd) null else addForm,
-                    if (!entity.canEdit) null else editForm,
-                    if (!entity.canQuery) null else queryForm
-                ).map {
-                    ImportDefault("$componentPath/$dir/$it.vue", it)
-                } + optionQueries.flatMap { it.first },
-                script = listOfNotNull(
-                    if (!needUserStore) null else ConstVariable("userStore", null, "useUserStore()\n"),
-                    ConstVariable("{isLoading, withLoading}", null, "useLoading()\n"),
-                    ConstVariable("pageData", null, "ref<Page<${listView}>>()\n"),
-                    commentLine("分页查询"),
-                    ConstVariable(
-                        "queryInfo", null,
-                        buildScopeString(indent) {
-                            line("ref<PageQuery<${spec}>>({")
+        val component = Component {
+            imports += listOfNotNull(
+                Import("vue", "ref"),
+                Import(
+                    "@element-plus/icons-vue", listOfNotNull(
+                        if (!entity.canAdd) null else "Plus",
+                        if (!entity.canEdit) null else "EditPen",
+                        if (!entity.canDelete) null else "Delete"
+                    )
+                ),
+                ImportType(
+                    staticPath, listOfNotNull(
+                        "Page", "PageQuery",
+                        listView,
+                        if (!entity.canAdd) null else insertInput,
+                        if (!entity.canEdit) null else updateInput,
+                        if (!entity.canQuery) null else spec,
+                    )
+                ),
+                Import(apiPath, "api"),
+                if (!needMessage) null else Import("$utilPath/message", "sendMessage"),
+                if (!needUserStore) null else Import("$storePath/userStore", "useUserStore"),
+                if (!entity.canDelete) null else Import("$utilPath/confirm", "deleteConfirm"),
+                Import("$utilPath/loading", "useLoading"),
+                Import("$utilPath/legalPage", "useLegalPage"),
+            ) + listOfNotNull(
+                table,
+                if (!entity.canAdd) null else addForm,
+                if (!entity.canEdit) null else editForm,
+                if (!entity.canQuery) null else queryForm
+            ).map {
+                ImportDefault("$componentPath/$dir/$it.vue", it)
+            } + optionQueries.flatMap { it.first }
+
+            script += listOfNotNull(
+                if (!needUserStore) null else ConstVariable("userStore", null, "useUserStore()\n"),
+                ConstVariable("{isLoading, withLoading}", null, "useLoading()\n"),
+                ConstVariable("pageData", null, "ref<Page<${listView}>>()\n"),
+                commentLine("分页查询"),
+                ConstVariable(
+                    "queryInfo", null,
+                    buildScopeString(indent) {
+                        line("ref<PageQuery<${spec}>>({")
+                        scope {
+                            lines(
+                                "spec: {},",
+                                "pageIndex: 0,",
+                                "pageSize: 5",
+                            )
+                        }
+                        line("})")
+                    }
+                ),
+                ConstVariable(
+                    "{queryPage, currentPage}", null,
+                    buildScopeString(indent) {
+                        line("useLegalPage(")
+                        scope {
+                            lines(
+                                "pageData,",
+                                "queryInfo,"
+                            )
+                            block(pageQuery)
+                        }
+                        line(")")
+                    },
+                ),
+                if (!entity.canAdd) null else ConstVariable(
+                    "add${entity.name}",
+                    null,
+                    if (selfOptionPairs.isNotEmpty()) {
+                        buildScopeString {
+                            line("withLoading(async (body: $insertInput) => {")
                             scope {
-                                lines(
-                                    "spec: {},",
-                                    "pageIndex: 0,",
-                                    "pageSize: 5",
-                                )
+                                line("const result = await api.$apiServiceName.insert({body})")
+                                selfOptionPairs.forEach {
+                                    line("await set${it.second.upperName}()")
+                                }
+                                line("return result")
                             }
                             line("})")
                         }
-                    ),
-                    ConstVariable(
-                        "{queryPage, currentPage}", null,
-                        buildScopeString(indent) {
-                            line("useLegalPage(")
+                    } else {
+                        "withLoading((body: $insertInput) => api.$apiServiceName.insert({body}))"
+                    }
+                ),
+                emptyLineCode,
+                if (!entity.canEdit) null else ConstVariable(
+                    "get${entity.name}ForUpdate",
+                    null,
+                    "withLoading((id: $idType) => api.$apiServiceName.getForUpdate({id}))"
+                ),
+                emptyLineCode,
+                if (!entity.canEdit) null else ConstVariable(
+                    "edit${entity.name}",
+                    null,
+                    if (isTree) {
+                        buildScopeString {
+                            line("withLoading(async (body: $updateInput) => {")
                             scope {
-                                lines(
-                                    "pageData,",
-                                    "queryInfo,"
-                                )
-                                block(pageQuery)
-                            }
-                            line(")")
-                        },
-                    ),
-                    if (!entity.canAdd) null else ConstVariable(
-                        "add${entity.name}",
-                        null,
-                        if (selfOptionPairs.isNotEmpty()) {
-                            buildScopeString {
-                                line("withLoading(async (body: $insertInput) => {")
-                                scope {
-                                    line("const result = await api.$apiServiceName.insert({body})")
-                                    selfOptionPairs.forEach {
-                                        line("await set${it.second.upperName}()")
-                                    }
-                                    line("return result")
+                                line("const result = await api.$apiServiceName.update({body})")
+                                selfOptionPairs.forEach {
+                                    line("await set${it.second.upperName}()")
                                 }
-                                line("})")
+                                line("return result")
                             }
-                        } else {
-                            "withLoading((body: $insertInput) => api.$apiServiceName.insert({body}))"
+                            line("})")
                         }
-                    ),
-                    emptyLineCode,
-                    if (!entity.canEdit) null else ConstVariable(
-                        "get${entity.name}ForUpdate",
-                        null,
-                        "withLoading((id: $idType) => api.$apiServiceName.getForUpdate({id}))"
-                    ),
-                    emptyLineCode,
-                    if (!entity.canEdit) null else ConstVariable(
-                        "edit${entity.name}",
-                        null,
-                        if (isTree) {
-                            buildScopeString {
-                                line("withLoading(async (body: $updateInput) => {")
-                                scope {
-                                    line("const result = await api.$apiServiceName.update({body})")
-                                    selfOptionPairs.forEach {
-                                        line("await set${it.second.upperName}()")
-                                    }
-                                    line("return result")
+                    } else {
+                        "withLoading((body: $updateInput) => api.$apiServiceName.update({body}))"
+                    }
+                ),
+                emptyLineCode,
+                if (!entity.canDelete) null else ConstVariable(
+                    "delete${entity.name}",
+                    null,
+                    if (isTree) {
+                        buildScopeString {
+                            line("withLoading(async (ids: Array<$idType>) => {")
+                            scope {
+                                line("const result = await api.$apiServiceName.delete({ids})")
+                                selfOptionPairs.forEach {
+                                    line("await set${it.second.upperName}()")
                                 }
-                                line("})")
+                                line("return result")
                             }
-                        } else {
-                            "withLoading((body: $updateInput) => api.$apiServiceName.update({body}))"
+                            line("})")
                         }
-                    ),
-                    emptyLineCode,
-                    if (!entity.canDelete) null else ConstVariable(
-                        "delete${entity.name}",
-                        null,
-                        if (isTree) {
-                            buildScopeString {
-                                line("withLoading(async (ids: Array<$idType>) => {")
-                                scope {
-                                    line("const result = await api.$apiServiceName.delete({ids})")
-                                    selfOptionPairs.forEach {
-                                        line("await set${it.second.upperName}()")
-                                    }
-                                    line("return result")
-                                }
-                                line("})")
-                            }
-                        } else {
-                            "withLoading((ids: Array<$idType>) => api.$apiServiceName.delete({ids}))"
-                        }
-                    ),
-                    emptyLineCode,
+                    } else {
+                        "withLoading((ids: Array<$idType>) => api.$apiServiceName.delete({ids}))"
+                    }
+                ),
+                emptyLineCode,
 
-                    commentLine("多选"),
-                    ConstVariable("selection", null, "ref<${listView}[]>([])"),
+                commentLine("多选"),
+                ConstVariable("selection", null, "ref<${listView}[]>([])"),
+                emptyLineCode,
+                Function(
+                    name = "handleSelectionChange",
+                    args = listOf(FunctionArg("newSelection", "Array<$listView>")),
+                    content = arrayOf("selection.value = newSelection")
+                ),
+                emptyLineCode,
+
+                *optionQueries.map { it.second }.join(listOf(emptyLineCode)).flatten().toTypedArray(),
+
+                *if (!entity.canAdd) emptyArray() else arrayOf(
+                    emptyLineCode,
+                    commentLine("新增"),
+                    ConstVariable("addDialogVisible", null, "ref<boolean>(false)"),
                     emptyLineCode,
                     Function(
-                        name = "handleSelectionChange",
-                        args = listOf(FunctionArg("newSelection", "Array<$listView>")),
-                        content = arrayOf("selection.value = newSelection")
+                        name = "startAdd",
+                        content = arrayOf("addDialogVisible.value = true")
                     ),
                     emptyLineCode,
-
-                    *optionQueries.map { it.second }.join(listOf(emptyLineCode)).flatten().toTypedArray(),
-
-                    *if (!entity.canAdd) emptyArray() else arrayOf(
-                        emptyLineCode,
-                        commentLine("新增"),
-                        ConstVariable("addDialogVisible", null, "ref<boolean>(false)"),
-                        emptyLineCode,
-                        Function(
-                            name = "startAdd",
-                            content = arrayOf("addDialogVisible.value = true")
-                        ),
-                        emptyLineCode,
-                        Function(
-                            async = true,
-                            name = "submitAdd",
-                            args = listOf(FunctionArg("insertInput", insertInput)),
-                            buildScopeString(indent) {
-                                line("try {")
-                                scope {
-                                    line("await add${entity.name}(insertInput)")
-                                    line("await queryPage()")
-                                    line("addDialogVisible.value = false")
-                                    line()
-                                    line("sendMessage('新增${entity.comment}成功', 'success')")
-                                }
-                                line("} catch (e) {")
-                                scope {
-                                    line("sendMessage(\"新增${entity.comment}失败\", \"error\", e)")
-                                }
-                                append("}")
-                            }
-                        ),
-                        emptyLineCode,
-                        Function(
-                            name = "cancelAdd",
-                            content = arrayOf("addDialogVisible.value = false")
-                        ),
-                    ),
-
-                    *if (!entity.canEdit) emptyArray() else arrayOf(
-                        emptyLineCode,
-                        commentLine("修改"),
-                        ConstVariable("editDialogVisible", null, "ref(false)"),
-                        emptyLineCode,
-                        ConstVariable("updateInput", null, "ref<${entity.name}UpdateInput | undefined>(undefined)"),
-                        emptyLineCode,
-                        Function(
-                            async = true,
-                            name = "startEdit",
-                            args = listOf(FunctionArg("id", idType)),
-                            buildScopeString {
-                                line("updateInput.value = await get${entity.name}ForUpdate(id)")
-                                line("if (updateInput.value === undefined) {")
-                                scope {
-                                    line("sendMessage('编辑的${entity.comment}不存在', 'error')")
-                                    line("return")
-                                }
-                                line("}")
-                                append("editDialogVisible.value = true")
-                            },
-                        ),
-                        emptyLineCode,
-                        Function(
-                            async = true,
-                            name = "submitEdit",
-                            args = listOf(FunctionArg("updateInput", "${entity.name}UpdateInput")),
-                            buildScopeString {
-                                line("try {")
-                                scope {
-                                    line("await edit${entity.name}(updateInput)")
-                                    line("await queryPage()")
-                                    line("editDialogVisible.value = false")
-                                    line()
-                                    line("sendMessage('编辑${entity.comment}成功', 'success')")
-                                }
-                                line("} catch (e) {")
-                                scope {
-                                    line("sendMessage('编辑${entity.comment}失败', 'error', e)")
-                                }
-                                append("}")
-                            },
-                        ),
-                        emptyLineCode,
-                        Function(
-                            name = "cancelEdit",
-                            body = listOf(
-                                CodeBlock("editDialogVisible.value = false\nupdateInput.value = undefined")
-                            )
-                        ),
-                    ),
-
-                    *if (!entity.canDelete) emptyArray() else arrayOf(
-                        emptyLineCode,
-                        commentLine("删除"),
-                        Function(
-                            async = true,
-                            name = "handleDelete",
-                            args = listOf(FunctionArg("ids", "Array<${idType}>")),
-                            buildScopeString {
-                                line("const result = await deleteConfirm('${entity.comment}')")
-                                line("if (!result) return")
+                    Function(
+                        async = true,
+                        name = "submitAdd",
+                        args = listOf(FunctionArg("insertInput", insertInput)),
+                        buildScopeString(indent) {
+                            line("try {")
+                            scope {
+                                line("await add${entity.name}(insertInput)")
+                                line("await queryPage()")
+                                line("addDialogVisible.value = false")
                                 line()
-                                line("try {")
-                                scope {
-                                    line("await delete${entity.name}(ids)")
-                                    line("await queryPage()")
-                                    line()
-                                    line("sendMessage('删除${entity.comment}成功', 'success')")
-                                }
-                                line("} catch (e) {")
-                                scope {
-                                    line("sendMessage('删除${entity.comment}失败', 'error', e)")
-                                }
-                                append("}")
-                            },
-                        )
-                    )
-                ),
-                template = listOf(
-                    TagElement(
-                        "el-card",
-                        props = listOf(
-                            PropBind("v-loading", "isLoading", isLiteral = true)
-                        ),
-                        children = listOf(
-                            *if (!entity.canQuery) emptyArray() else arrayOf(
-                                TagElement(
-                                    queryForm,
-                                    directives = listOf(
-                                        VModel("queryInfo.spec")
-                                    ),
-                                    props = specificationSelectNames.map {
-                                        PropBind(it, it)
-                                    },
-                                    events = listOf(
-                                        EventBind("query", "queryPage")
-                                    )
-                                ).merge {
-                                    directives += specificationSelectNames.map { VIf(it) }
-                                },
-                                emptyLineElement,
-                            ),
-                            TagElement(
-                                "div",
-                                props = listOf(
-                                    PropBind("class", "page-operations", isLiteral = true),
-                                ),
-                                children = listOfNotNull(
-                                    if (!entity.canAdd) null else button(
-                                        content = "新增",
-                                        type = ElementPlus.Type.PRIMARY,
-                                        icon = "Plus",
-                                    ).merge {
-                                        directives += VIf("userStore.permissions.includes('${permission.insert}')")
-                                        events += EventBind("click", "startAdd")
-                                    },
-                                    if (!entity.canDelete) null else button(
-                                        content = "删除",
-                                        type = ElementPlus.Type.DANGER,
-                                        icon = "Delete",
-                                    ).merge {
-                                        directives += VIf("userStore.permissions.includes('${permission.delete}')")
-                                        props += PropBind("disabled", "selection.length === 0")
-                                        events += EventBind("click", "handleDelete(selection.map(it => it.$idName))")
-                                    },
-                                )
-                            ),
-                            emptyLineElement,
-                            TagElement(
-                                "template",
-                                directives = listOf(VIf("pageData")),
-                                children = listOf(
-                                    TagElement(
-                                        table,
-                                        props = listOf(
-                                            PropBind("rows", "pageData.rows"),
-                                        ),
-                                        events = listOf(
-                                            EventBind("selectionChange", "handleSelectionChange")
-                                        ),
-                                        children = listOf(
-                                            slotTemplate(
-                                                "operations",
-                                                props = listOf("row"),
-                                                content = listOfNotNull(
-                                                    if (!entity.canEdit) null else button(
-                                                        content = "编辑",
-                                                        type = ElementPlus.Type.WARNING,
-                                                        icon = "EditPen",
-                                                        link = true,
-                                                    ).merge {
-                                                        directives += VIf("userStore.permissions.includes('${permission.update}')")
-                                                        events += EventBind("click", "startEdit(row.$idName)")
-                                                    },
-                                                    if (!entity.canDelete) null else button(
-                                                        content = "删除",
-                                                        type = ElementPlus.Type.DANGER,
-                                                        icon = "Delete",
-                                                        link = true,
-                                                    ).merge {
-                                                        directives += VIf("userStore.permissions.includes('${permission.delete}')")
-                                                        events += EventBind("click", "handleDelete([row.$idName])")
-                                                    },
-                                                )
-                                            )
-                                        )
-                                    ),
-                                    emptyLineElement,
-                                    pagination(
-                                        currentPage = "currentPage",
-                                        pageSize = "queryInfo.pageSize",
-                                        total = "pageData.totalRowCount",
-                                    )
-                                )
-                            ),
-                        )
+                                line("sendMessage('新增${entity.comment}成功', 'success')")
+                            }
+                            line("} catch (e) {")
+                            scope {
+                                line("sendMessage(\"新增${entity.comment}失败\", \"error\", e)")
+                            }
+                            append("}")
+                        }
                     ),
-                    *if (!entity.canAdd) emptyArray() else arrayOf(
-                        emptyLineElement,
-                        dialog(
-                            modelValue = "addDialogVisible",
-                            content = listOf(
-                                TagElement(
-                                    addForm
-                                ).merge {
-                                    props += insertSelectNames.map { PropBind(it, it) }
-                                    props += PropBind("submitLoading", "isLoading")
-                                    events += EventBind("submit", "submitAdd")
-                                    events += EventBind("cancel", "cancelAdd")
-                                }
-                            )
-                        ).merge {
-                            directives += VIf("userStore.permissions.includes('${permission.insert}')")
-                            directives += insertSelectNames.map { VIf(it) }
+                    emptyLineCode,
+                    Function(
+                        name = "cancelAdd",
+                        content = arrayOf("addDialogVisible.value = false")
+                    ),
+                ),
+
+                *if (!entity.canEdit) emptyArray() else arrayOf(
+                    emptyLineCode,
+                    commentLine("修改"),
+                    ConstVariable("editDialogVisible", null, "ref(false)"),
+                    emptyLineCode,
+                    ConstVariable("updateInput", null, "ref<${entity.name}UpdateInput | undefined>(undefined)"),
+                    emptyLineCode,
+                    Function(
+                        async = true,
+                        name = "startEdit",
+                        args = listOf(FunctionArg("id", idType)),
+                        buildScopeString {
+                            line("updateInput.value = await get${entity.name}ForUpdate(id)")
+                            line("if (updateInput.value === undefined) {")
+                            scope {
+                                line("sendMessage('编辑的${entity.comment}不存在', 'error')")
+                                line("return")
+                            }
+                            line("}")
+                            append("editDialogVisible.value = true")
                         },
                     ),
-                    *if (!entity.canEdit) emptyArray() else arrayOf(
-                        emptyLineElement,
-                        dialog(
-                            modelValue = "editDialogVisible",
-                            content = listOf(
-                                TagElement(
-                                    editForm
-                                ).merge {
-                                    directives += VIf("updateInput !== undefined")
-                                    directives += VModel("updateInput")
-                                    props += updateSelectNames.map { PropBind(it, it) }
-                                    props += PropBind("submitLoading", "isLoading")
-                                    events += EventBind("submit", "submitEdit")
-                                    events += EventBind("cancel", "cancelEdit")
-                                }
-                            )
-                        ).merge {
-                            directives += VIf("userStore.permissions.includes('${permission.update}')")
-                            directives += updateSelectNames.map { VIf(it) }
-                        }
+                    emptyLineCode,
+                    Function(
+                        async = true,
+                        name = "submitEdit",
+                        args = listOf(FunctionArg("updateInput", "${entity.name}UpdateInput")),
+                        buildScopeString {
+                            line("try {")
+                            scope {
+                                line("await edit${entity.name}(updateInput)")
+                                line("await queryPage()")
+                                line("editDialogVisible.value = false")
+                                line()
+                                line("sendMessage('编辑${entity.comment}成功', 'success')")
+                            }
+                            line("} catch (e) {")
+                            scope {
+                                line("sendMessage('编辑${entity.comment}失败', 'error', e)")
+                            }
+                            append("}")
+                        },
+                    ),
+                    emptyLineCode,
+                    Function(
+                        name = "cancelEdit",
+                        body = listOf(
+                            CodeBlock("editDialogVisible.value = false\nupdateInput.value = undefined")
+                        )
+                    ),
+                ),
+
+                *if (!entity.canDelete) emptyArray() else arrayOf(
+                    emptyLineCode,
+                    commentLine("删除"),
+                    Function(
+                        async = true,
+                        name = "handleDelete",
+                        args = listOf(FunctionArg("ids", "Array<${idType}>")),
+                        buildScopeString {
+                            line("const result = await deleteConfirm('${entity.comment}')")
+                            line("if (!result) return")
+                            line()
+                            line("try {")
+                            scope {
+                                line("await delete${entity.name}(ids)")
+                                line("await queryPage()")
+                                line()
+                                line("sendMessage('删除${entity.comment}成功', 'success')")
+                            }
+                            line("} catch (e) {")
+                            scope {
+                                line("sendMessage('删除${entity.comment}失败', 'error', e)")
+                            }
+                            append("}")
+                        },
                     )
                 )
             )
-        )
+            template += listOf(
+                TagElement(
+                    "el-card",
+                    props = listOf(
+                        PropBind("v-loading", "isLoading", isLiteral = true)
+                    ),
+                    children = listOf(
+                        *if (!entity.canQuery) emptyArray() else arrayOf(
+                            TagElement(
+                                queryForm,
+                                directives = listOf(
+                                    VModel("queryInfo.spec")
+                                ),
+                                props = specificationSelectNames.map {
+                                    PropBind(it, it)
+                                },
+                                events = listOf(
+                                    EventBind("query", "queryPage")
+                                )
+                            ).merge {
+                                directives += specificationSelectNames.map { VIf(it) }
+                            },
+                            emptyLineElement,
+                        ),
+                        TagElement(
+                            "div",
+                            props = listOf(
+                                PropBind("class", "page-operations", isLiteral = true),
+                            ),
+                            children = listOfNotNull(
+                                if (!entity.canAdd) null else button(
+                                    content = "新增",
+                                    type = ElementPlus.Type.PRIMARY,
+                                    icon = "Plus",
+                                ).merge {
+                                    directives += VIf("userStore.permissions.includes('${permission.insert}')")
+                                    events += EventBind("click", "startAdd")
+                                },
+                                if (!entity.canDelete) null else button(
+                                    content = "删除",
+                                    type = ElementPlus.Type.DANGER,
+                                    icon = "Delete",
+                                ).merge {
+                                    directives += VIf("userStore.permissions.includes('${permission.delete}')")
+                                    props += PropBind("disabled", "selection.length === 0")
+                                    events += EventBind("click", "handleDelete(selection.map(it => it.$idName))")
+                                },
+                            )
+                        ),
+                        emptyLineElement,
+                        TagElement(
+                            "template",
+                            directives = listOf(VIf("pageData")),
+                            children = listOf(
+                                TagElement(
+                                    table,
+                                    props = listOf(
+                                        PropBind("rows", "pageData.rows"),
+                                    ),
+                                    events = listOf(
+                                        EventBind("selectionChange", "handleSelectionChange")
+                                    ),
+                                    children = listOf(
+                                        slotTemplate(
+                                            "operations",
+                                            props = listOf("row"),
+                                            content = listOfNotNull(
+                                                if (!entity.canEdit) null else button(
+                                                    content = "编辑",
+                                                    type = ElementPlus.Type.WARNING,
+                                                    icon = "EditPen",
+                                                    link = true,
+                                                ).merge {
+                                                    directives += VIf("userStore.permissions.includes('${permission.update}')")
+                                                    events += EventBind("click", "startEdit(row.$idName)")
+                                                },
+                                                if (!entity.canDelete) null else button(
+                                                    content = "删除",
+                                                    type = ElementPlus.Type.DANGER,
+                                                    icon = "Delete",
+                                                    link = true,
+                                                ).merge {
+                                                    directives += VIf("userStore.permissions.includes('${permission.delete}')")
+                                                    events += EventBind("click", "handleDelete([row.$idName])")
+                                                },
+                                            )
+                                        )
+                                    )
+                                ),
+                                emptyLineElement,
+                                pagination(
+                                    currentPage = "currentPage",
+                                    pageSize = "queryInfo.pageSize",
+                                    total = "pageData.totalRowCount",
+                                )
+                            )
+                        ),
+                    )
+                ),
+                *if (!entity.canAdd) emptyArray() else arrayOf(
+                    emptyLineElement,
+                    dialog(
+                        modelValue = "addDialogVisible",
+                        content = listOf(
+                            TagElement(
+                                addForm
+                            ).merge {
+                                props += insertSelectNames.map { PropBind(it, it) }
+                                props += PropBind("submitLoading", "isLoading")
+                                events += EventBind("submit", "submitAdd")
+                                events += EventBind("cancel", "cancelAdd")
+                            }
+                        )
+                    ).merge {
+                        directives += VIf("userStore.permissions.includes('${permission.insert}')")
+                        directives += insertSelectNames.map { VIf(it) }
+                    },
+                ),
+                *if (!entity.canEdit) emptyArray() else arrayOf(
+                    emptyLineElement,
+                    dialog(
+                        modelValue = "editDialogVisible",
+                        content = listOf(
+                            TagElement(
+                                editForm
+                            ).merge {
+                                directives += VIf("updateInput !== undefined")
+                                directives += VModel("updateInput")
+                                props += updateSelectNames.map { PropBind(it, it) }
+                                props += PropBind("submitLoading", "isLoading")
+                                events += EventBind("submit", "submitEdit")
+                                events += EventBind("cancel", "cancelEdit")
+                            }
+                        )
+                    ).merge {
+                        directives += VIf("userStore.permissions.includes('${permission.update}')")
+                        directives += updateSelectNames.map { VIf(it) }
+                    }
+                )
+            )
+        }
+
+        return builder.build(component)
     }
 }
