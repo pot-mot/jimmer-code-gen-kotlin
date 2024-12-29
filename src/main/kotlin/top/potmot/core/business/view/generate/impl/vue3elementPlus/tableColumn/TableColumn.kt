@@ -4,8 +4,8 @@ import top.potmot.config.tableColumnWithDateTimeFormat
 import top.potmot.core.business.property.isShortAssociation
 import top.potmot.core.business.utils.PropertyFormType
 import top.potmot.core.business.utils.components
+import top.potmot.core.business.utils.dir
 import top.potmot.core.business.utils.formType
-import top.potmot.core.business.utils.lowerName
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
@@ -80,7 +80,7 @@ interface TableColumn {
                     ),
                     imports = listOf(
                         ImportDefault(
-                            componentPath + "/" + enum.lowerName + "/" + componentName + ".vue",
+                            componentPath + "/" + enum.dir + "/" + componentName + ".vue",
                             componentName,
                         )
                     )

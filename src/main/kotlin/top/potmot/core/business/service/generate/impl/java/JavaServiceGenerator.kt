@@ -11,6 +11,7 @@ import top.potmot.core.business.utils.permissions
 import top.potmot.core.business.utils.requestPath
 import top.potmot.core.business.utils.serviceName
 import top.potmot.core.business.utils.typeStrToJavaType
+import top.potmot.core.business.utils.upperName
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.childrenProperty
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.GenerateException
@@ -37,7 +38,7 @@ object JavaServiceGenerator : ServiceGenerator() {
 
         val packages = entity.packages
         val permissions = entity.permissions
-        val (listView, detailView, insertInput, updateFillView, updateInput, spec, optionView) = entity.dto
+        val (listView, treeView, detailView, insertInput, updateFillView, updateInput, spec, optionView) = entity.dto
         val existValidItemWithNames = entity.existValidItems.map {
             it.dtoName to it
         }
@@ -87,7 +88,7 @@ object JavaServiceGenerator : ServiceGenerator() {
 
             if (isTreeEntity) {
                 imports += listOf(
-                    "org.springframework.web.bind.annotation.RequestParam"
+                    "${packages.dto}.${treeView}",
                 )
             }
 
@@ -147,81 +148,9 @@ public $detailView get(@PathVariable $idType id) throws AuthorizeException {
                     """.trimIndent()
                 )
 
-                if (isTreeEntity) {
-                    line()
-                    block(
-                        """
-/**
- * 根据提供的查询参数列出${comment}。
- *
- * @param spec 查询参数。
- * @return ${comment}列表数据。
- */
-@PostMapping("/list")
-@SaCheckPermission("${permissions.list}")
-@NotNull
-public List<@NotNull ${listView}> list(
-        @RequestBody @NotNull $spec spec,
-        @RequestParam boolean tree
-) throws AuthorizeException {
-    if (tree) {
-        return sqlClient.createQuery($tableProxy)
-                .where(spec)
-                .where($tableProxy.${parentIdProperty.name}().isNull())
-                .select($tableProxy.fetch(${listView}.class))
-                .execute();
-    } else {
-        return sqlClient.createQuery($tableProxy)
-                .where(spec)
-                .select($tableProxy.fetch(${listView}.METADATA.getFetcher().remove("${childrenProperty.name}")))
-                .execute()
-                .stream().map(${listView}::new).toList();
-    }
-}
-                        """.trimIndent()
-                    )
-
-                    line()
-                    block(
-                        """
-/**
- * 根据提供的查询参数列出${comment}。
- *
- * @param query 分页查询参数。
- * @return ${comment}分页数据。
- */
-@PostMapping("/page")
-@SaCheckPermission("${permissions.list}")
-@NotNull
-public Page<@NotNull ${listView}> page(
-        @RequestBody @NotNull PageQuery<${spec}> query,
-        @RequestParam boolean tree
-) throws AuthorizeException {
-    if (tree) {
-        return sqlClient.createQuery($tableProxy)
-                .where(query.getSpec())
-                .where($tableProxy.${parentIdProperty.name}().isNull())
-                .select($tableProxy.fetch(${listView}.class))
-                .fetchPage(query.getPageIndex(), query.getPageSize());
-    } else {
-        Page<Menu> page = sqlClient.createQuery($tableProxy)
-                .where(query.getSpec())
-                .select($tableProxy.fetch(${listView}.METADATA.getFetcher().remove("${childrenProperty.name}")))
-                .fetchPage(query.getPageIndex(), query.getPageSize());
-
-        return new Page<>(
-                page.getRows().stream().map(${listView}::new).toList(),
-                page.getTotalRowCount(),
-                page.getTotalPageCount()
-        );
-    }
-}
-                        """.trimIndent()
-                    )
-                } else {
-                    line()
-                    block(
-                        """
+                line()
+                block(
+                    """
 /**
  * 根据提供的查询参数列出${comment}。
  *
@@ -237,12 +166,12 @@ public List<@NotNull ${listView}> list(@RequestBody @NotNull $spec spec) throws 
             .select(${tableProxy}.fetch(${listView}.class))
             .execute();
 }
-                        """.trimIndent()
-                    )
+                    """.trimIndent()
+                )
 
-                    line()
-                    block(
-                        """
+                line()
+                block(
+                    """
 /**
  * 根据提供的查询参数列出${comment}。
  *
@@ -257,6 +186,64 @@ public Page<@NotNull ${listView}> page(@RequestBody @NotNull PageQuery<${spec}> 
             .where(query.getSpec())
             .select(${tableProxy}.fetch(${listView}.class))
             .fetchPage(query.getPageIndex(), query.getPageSize());
+}
+                    """.trimIndent()
+                )
+
+                if (isTreeEntity) {
+                    line()
+                    block(
+                        """
+@NotNull
+private List<@NotNull ${treeView}> buildTree(
+        @NotNull List<@NotNull ${treeView}> list
+) {
+    Map<$idType, ${treeView}> map = new HashMap<>();
+    for (${treeView} node : list) {
+        map.put(node.${idName}, node);
+    }
+
+    List<@NotNull ${treeView}> roots = new ArrayList<>();
+
+    for (${treeView} node : list) {
+        $treeView parent = map.get(node.${parentIdProperty.name});
+        if (parent == null)
+            roots.add(node);
+        } else {
+            if (parent.${childrenProperty.name} == null) {
+                parent.set${childrenProperty.upperName}(new ArrayList<>());
+            }
+            parent.${childrenProperty.name}.add(node);
+        }
+    }
+
+    return roots;
+}
+                        """.trimIndent()
+                    )
+
+                    line()
+                    block(
+                        """
+/**
+ * 根据提供的查询参数列出树形的${comment}。
+ *
+ * @param spec 查询参数。
+ * @return ${comment}列表数据。
+ */
+@PostMapping("/tree")
+@SaCheckPermission("${permissions.list}")
+@NotNull
+public List<@NotNull ${treeView}> tree(
+        @RequestBody @NotNull $spec spec,
+) throws AuthorizeException {
+    List<@NotNull ${treeView}> list = sqlClient.createQuery($tableProxy)
+            .where(spec)
+            .select($tableProxy.fetch(${treeView}.METADATA.getFetcher().remove("${childrenProperty.name}")))
+            .execute()
+            .stream().map(${treeView}::new).toList();
+
+    return buildTree(list);
 }
                         """.trimIndent()
                     )

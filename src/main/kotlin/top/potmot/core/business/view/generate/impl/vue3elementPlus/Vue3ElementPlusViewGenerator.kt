@@ -202,10 +202,12 @@ object Vue3ElementPlusViewGenerator :
             entity.childrenProperty.name
         }
 
+        val dto = entity.dto
+
         return builder.build(
             viewTable(
                 data = rows,
-                type = entity.dto.listView,
+                type = if (entity.isTreeEntity()) dto.treeView else dto.listView,
                 typePath = staticPath,
                 idPropertyName = entity.idProperty.name,
                 content = entity.tableProperties.flatMap { it.tableColumnDataList() },
@@ -459,7 +461,7 @@ object Vue3ElementPlusViewGenerator :
     override fun stringifyPage(entity: GenEntityBusinessView): String {
         val dir = entity.dir
         val (table, addForm, editForm, queryForm) = entity.components
-        val (listView, _, insertInput, _, updateInput, spec) = entity.dto
+        val (listView, treeView, _, insertInput, _, updateInput, spec) = entity.dto
         val permission = entity.permissions
 
         val needMessage = entity.canAdd || entity.canEdit || entity.canDelete
@@ -484,23 +486,10 @@ object Vue3ElementPlusViewGenerator :
         val specificationSelectNames = entity.specificationSelectProperties.selectOptions.map { it.name }
 
         val isTree = entity.isTreeEntity()
+        val dataType = if (isTree) treeView else listView
 
-        val pageQuery =
-            if (isTree) {
-                """
-                withLoading((options: {
-                    body: PageQuery<$spec>
-                }) => {
-                    const spec = queryInfo.value.spec
-                    return api.$apiServiceName.page({
-                        ...options,
-                        tree: Object.keys(spec).filter((it) => !!spec[it as keyof typeof spec]).length === 0
-                    })
-                })
-                """.trimIndent()
-            } else {
-                "withLoading(api.$apiServiceName.page)"
-            }
+        val queryByPage = !isTree
+        val queryFn = if (queryByPage) "queryPage" else "queryRows"
 
         val component = Component {
             imports += listOfNotNull(
@@ -514,8 +503,9 @@ object Vue3ElementPlusViewGenerator :
                 ),
                 ImportType(
                     staticPath, listOfNotNull(
-                        "Page", "PageQuery",
-                        listView,
+                        if (queryByPage) "Page" else null,
+                        if (queryByPage) "PageQuery" else null,
+                        dataType,
                         if (!entity.canAdd) null else insertInput,
                         if (!entity.canEdit) null else updateInput,
                         if (!entity.canQuery) null else spec,
@@ -526,7 +516,7 @@ object Vue3ElementPlusViewGenerator :
                 if (!needUserStore) null else Import("$storePath/userStore", "useUserStore"),
                 if (!entity.canDelete) null else Import("$utilPath/confirm", "deleteConfirm"),
                 Import("$utilPath/loading", "useLoading"),
-                Import("$utilPath/legalPage", "useLegalPage"),
+                if (queryByPage) Import("$utilPath/legalPage", "useLegalPage") else null,
             ) + listOfNotNull(
                 table,
                 if (!entity.canAdd) null else addForm,
@@ -534,41 +524,68 @@ object Vue3ElementPlusViewGenerator :
                 if (!entity.canQuery) null else queryForm
             ).map {
                 ImportDefault("$componentPath/$dir/$it.vue", it)
-            } + optionQueries.flatMap { it.first }
+            }
+
+            imports += optionQueries.flatMap { it.first }
 
             script += listOfNotNull(
                 if (!needUserStore) null else ConstVariable("userStore", null, "useUserStore()\n"),
-                ConstVariable("{isLoading, withLoading}", null, "useLoading()\n"),
-                ConstVariable("pageData", null, "ref<Page<${listView}>>()\n"),
-                commentLine("分页查询"),
-                ConstVariable(
-                    "queryInfo", null,
-                    buildScopeString(indent) {
-                        line("ref<PageQuery<${spec}>>({")
-                        scope {
-                            lines(
-                                "spec: {},",
-                                "pageIndex: 0,",
-                                "pageSize: 5",
-                            )
+                ConstVariable("{isLoading, withLoading}", null, "useLoading()\n")
+            )
+
+            if (queryByPage) {
+                script += listOfNotNull(
+                    ConstVariable("pageData", null, "ref<Page<${dataType}>>()\n"),
+                    commentLine("分页查询"),
+                    ConstVariable(
+                        "queryInfo", null,
+                        buildScopeString(indent) {
+                            line("ref<PageQuery<${spec}>>({")
+                            scope {
+                                lines(
+                                    "spec: {},",
+                                    "pageIndex: 0,",
+                                    "pageSize: 5",
+                                )
+                            }
+                            line("})")
                         }
-                        line("})")
-                    }
-                ),
-                ConstVariable(
-                    "{queryPage, currentPage}", null,
-                    buildScopeString(indent) {
-                        line("useLegalPage(")
-                        scope {
-                            lines(
-                                "pageData,",
-                                "queryInfo,"
-                            )
-                            block(pageQuery)
+                    ),
+                    ConstVariable(
+                        "{queryPage, currentPage}", null,
+                        buildScopeString(indent) {
+                            line("useLegalPage(")
+                            scope {
+                                lines(
+                                    "pageData,",
+                                    "queryInfo,"
+                                )
+                                block("withLoading(api.$apiServiceName.page)")
+                            }
+                            line(")")
+                        },
+                    )
+                )
+            } else {
+                script += listOf(
+                    ConstVariable("rows", null, "ref<Array<${dataType}>>()\n"),
+                    commentLine("数据查询"),
+                    ConstVariable("spec", null,
+                        "ref<$spec>({})\n"
+                    ),
+                    ConstVariable("queryRows", null,
+                        buildScopeString(indent) {
+                            line("withLoading(async () => {")
+                            scope {
+                                line("rows.value = await api.$apiServiceName.${if (isTree) "tree" else "list"}({body: spec.value})")
+                            }
+                            line("})")
                         }
-                        line(")")
-                    },
-                ),
+                    )
+                )
+            }
+
+            script += listOfNotNull(
                 if (!entity.canAdd) null else ConstVariable(
                     "add${entity.name}",
                     null,
@@ -637,11 +654,11 @@ object Vue3ElementPlusViewGenerator :
                 emptyLineCode,
 
                 commentLine("多选"),
-                ConstVariable("selection", null, "ref<${listView}[]>([])"),
+                ConstVariable("selection", null, "ref<${dataType}[]>([])"),
                 emptyLineCode,
                 Function(
                     name = "handleSelectionChange",
-                    args = listOf(FunctionArg("newSelection", "Array<$listView>")),
+                    args = listOf(FunctionArg("newSelection", "Array<$dataType>")),
                     content = arrayOf("selection.value = newSelection")
                 ),
                 emptyLineCode,
@@ -666,7 +683,7 @@ object Vue3ElementPlusViewGenerator :
                             line("try {")
                             scope {
                                 line("await add${entity.name}(insertInput)")
-                                line("await queryPage()")
+                                line("await ${queryFn}()")
                                 line("addDialogVisible.value = false")
                                 line()
                                 line("sendMessage('新增${entity.comment}成功', 'success')")
@@ -716,7 +733,7 @@ object Vue3ElementPlusViewGenerator :
                             line("try {")
                             scope {
                                 line("await edit${entity.name}(updateInput)")
-                                line("await queryPage()")
+                                line("await ${queryFn}()")
                                 line("editDialogVisible.value = false")
                                 line()
                                 line("sendMessage('编辑${entity.comment}成功', 'success')")
@@ -751,7 +768,7 @@ object Vue3ElementPlusViewGenerator :
                             line("try {")
                             scope {
                                 line("await delete${entity.name}(ids)")
-                                line("await queryPage()")
+                                line("await ${queryFn}()")
                                 line()
                                 line("sendMessage('删除${entity.comment}成功', 'success')")
                             }
@@ -775,13 +792,13 @@ object Vue3ElementPlusViewGenerator :
                             TagElement(
                                 queryForm,
                                 directives = listOf(
-                                    VModel("queryInfo.spec")
+                                    VModel(if (queryByPage) "queryInfo.spec" else "spec")
                                 ),
                                 props = specificationSelectNames.map {
                                     PropBind(it, it)
                                 },
                                 events = listOf(
-                                    EventBind("query", "queryPage")
+                                    EventBind("query", queryFn)
                                 )
                             ).merge {
                                 directives += specificationSelectNames.map { VIf(it) }
@@ -816,12 +833,12 @@ object Vue3ElementPlusViewGenerator :
                         emptyLineElement,
                         TagElement(
                             "template",
-                            directives = listOf(VIf("pageData")),
+                            directives = listOf(VIf(if (queryByPage) "pageData" else "rows")),
                             children = listOf(
                                 TagElement(
                                     table,
                                     props = listOf(
-                                        PropBind("rows", "pageData.rows"),
+                                        PropBind("rows", if (queryByPage) "pageData.rows" else "rows"),
                                     ),
                                     events = listOf(
                                         EventBind("selectionChange", "handleSelectionChange")
@@ -852,14 +869,15 @@ object Vue3ElementPlusViewGenerator :
                                             )
                                         )
                                     )
-                                ),
+                                )
+                            ) + if (queryByPage) listOf(
                                 emptyLineElement,
                                 pagination(
                                     currentPage = "currentPage",
                                     pageSize = "queryInfo.pageSize",
                                     total = "pageData.totalRowCount",
                                 )
-                            )
+                            ) else emptyList()
                         ),
                     )
                 ),

@@ -12,6 +12,9 @@ val GenerateItem.lowerName
 val GenEntityBusinessView.TargetOf_properties.upperName
     get() = name.replaceFirstChar { it.uppercaseChar() }
 
+val GenerateEnum.dir
+    get() = "enums/$lowerName"
+
 val GenerateItem.dir
     get() = lowerName
 
@@ -54,6 +57,7 @@ val GenerateEntity.apiServiceName
 
 data class DtoNames(
     val listView: String,
+    val treeView: String,
     val detailView: String,
     val insertInput: String,
     val updateFillView: String,
@@ -64,6 +68,7 @@ data class DtoNames(
 
 private fun DtoNames(entity: GenerateEntity) = DtoNames(
     listView = "${entity.name}ListView",
+    treeView = "${entity.name}TreeView",
     detailView = "${entity.name}DetailView",
     updateFillView = "${entity.name}UpdateFillView",
     updateInput = "${entity.name}UpdateInput",

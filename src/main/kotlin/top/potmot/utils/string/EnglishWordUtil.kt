@@ -387,7 +387,7 @@ object EnglishWordUtil {
             }
         }
         //去掉最后一个字母s
-        return word.substring(0, word.length - 1)
+        return if (word.endsWith("s")) word.substring(0, word.length - 1) else word
     }
 }
 

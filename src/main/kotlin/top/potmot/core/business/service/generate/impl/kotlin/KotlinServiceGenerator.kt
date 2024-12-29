@@ -32,7 +32,7 @@ object KotlinServiceGenerator : ServiceGenerator() {
 
         val packages = entity.packages
         val permissions = entity.permissions
-        val (listView, detailView, insertInput, updateFillView, updateInput, spec, optionView) = entity.dto
+        val (listView, treeView, detailView, insertInput, updateFillView, updateInput, spec, optionView) = entity.dto
         val existValidItemWithNames = entity.existValidItems.map {
             it.dtoName to it
         }
@@ -78,8 +78,7 @@ object KotlinServiceGenerator : ServiceGenerator() {
 
             if (isTreeEntity) {
                 imports += listOf(
-                    "org.springframework.web.bind.annotation.RequestParam",
-                    "${packages.entity}.${parentIdProperty.name}",
+                    "${packages.dto}.${treeView}",
                     "org.babyfish.jimmer.sql.kt.ast.expression.isNull",
                 )
             }
@@ -137,76 +136,9 @@ fun get(@PathVariable id: $idType): $detailView? =
                     """.trimIndent()
                 )
 
-                if (isTreeEntity) {
-                    line()
-                    block(
-                        """
-/**
- * 根据提供的查询参数列出${comment}。
- *
- * @param spec 查询参数。
- * @param tree 是否以树形结构返回。
- * @return ${comment}列表数据。
- */
-@PostMapping("/list")
-@SaCheckPermission("${permissions.list}")
-@Throws(AuthorizeException::class)
-fun list(
-    @RequestBody spec: $spec,
-    @RequestParam tree: Boolean
-): List<$listView> =
-    if (tree) {
-        sqlClient.executeQuery(${name}::class) {
-            where(spec)
-            where(table.${parentIdProperty.name}.isNull())
-            select(table.fetch(${listView}::class))
-        }
-    } else {
-        sqlClient.executeQuery(${name}::class) {
-            where(spec)
-            select(table.fetch(${listView}.METADATA.fetcher.remove("${childrenProperty.name}")))
-        }.map { ${listView}(it) }
-    }
-                        """.trimIndent()
-                    )
-
-                    line()
-                    block(
-                        """
-/**
- * 根据提供的查询参数分页查询${comment}。
- *
- * @param query 分页查询参数。
- * @param tree 是否以树形结构返回。
- * @return ${comment}分页数据。
- */
-@PostMapping("/page")
-@SaCheckPermission("${permissions.list}")
-@Throws(AuthorizeException::class)
-fun page(
-    @RequestBody query: PageQuery<$spec>,
-    @RequestParam tree: Boolean
-): Page<$listView> =
-    if (tree) {
-        sqlClient.createQuery(${name}::class) {
-            where(query.spec)
-            where(table.${parentIdProperty.name}.isNull())
-            select(table.fetch(${listView}::class))
-        }.fetchPage(query.pageIndex, query.pageSize)
-    } else {
-        val page = sqlClient.createQuery(${name}::class) {
-            where(query.spec)
-            select(table.fetch(${listView}.METADATA.getFetcher().remove("${childrenProperty.name}")))
-        }.fetchPage(query.pageIndex, query.pageSize)
-
-        Page(page.rows.map { ${listView}(it) }, page.totalRowCount, page.totalPageCount)
-    }
-                        """.trimIndent()
-                    )
-                } else {
-                    line()
-                    block(
-                        """
+                line()
+                block(
+                    """
 /**
  * 根据提供的查询参数列出${comment}。
  *
@@ -221,12 +153,12 @@ fun list(@RequestBody spec: $spec): List<$listView> =
         where(spec)
         select(table.fetch(${listView}::class))
     }
-                        """.trimIndent()
-                    )
+                    """.trimIndent()
+                )
 
-                    line()
-                    block(
-                        """
+                line()
+                block(
+                    """
 /**
  * 根据提供的查询参数分页查询${comment}。
  *
@@ -241,6 +173,62 @@ fun page(@RequestBody query: PageQuery<$spec>): Page<$listView> =
         where(query.spec)
         select(table.fetch(${listView}::class))
     }.fetchPage(query.pageIndex, query.pageSize)
+                    """.trimIndent()
+                )
+
+                if (isTreeEntity) {
+                    line()
+                    block(
+                        """
+private fun buildTree(
+    list: List<${treeView}>
+): List<${treeView}> {
+    val map = list.associateBy { it.${idName} }.toMutableMap()
+
+    val roots = mutableListOf<${treeView}>()
+    
+    for (node in list) {
+        val parent = map[node.${parentIdProperty.name}]
+        if (parent == null) {
+            roots.add(node)
+        } else {
+            val newParent =
+                if (parent.${childrenProperty.name} == null) {
+                    parent.copy(${childrenProperty.name} = emptyList())
+                } else {
+                    parent.copy(${childrenProperty.name} = parent.${childrenProperty.name} + node)
+                }
+
+            map[node.id] = newParent
+        }
+    }
+
+    return roots
+}
+                        """.trimIndent()
+                    )
+
+                    line()
+                    block(
+                        """
+/**
+ * 根据提供的查询参数列出树形的${comment}。
+ *
+ * @param spec 查询参数。
+ * @return ${comment}列表数据。
+ */
+@PostMapping("/tree")
+@SaCheckPermission("${permissions.list}")
+@Throws(AuthorizeException::class)
+fun tree(
+    @RequestBody spec: $spec,
+): List<$treeView> =
+    sqlClient.executeQuery(${name}::class) {
+        where(spec)
+        select(table.fetch(${treeView}.METADATA.fetcher.remove("${childrenProperty.name}")))
+    }
+        .map { ${treeView}(it) }
+        .let { buildTree(it) }
                         """.trimIndent()
                     )
                 }

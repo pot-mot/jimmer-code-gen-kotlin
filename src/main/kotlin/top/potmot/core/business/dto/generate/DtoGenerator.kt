@@ -68,10 +68,31 @@ object DtoGenerator : EntityPropertyCategories {
             entity.scalarProperties.exclude(listViewProperties).forEach {
                 line("-${it.name}")
             }
-            if (entity.isTreeEntity()) {
-                line("id(${entity.parentProperty.name})")
-                line("${entity.childrenProperty.name}*")
+            listViewProperties.filter { it.associationType != null }.forEach {
+                if (it.isShortAssociation) {
+                    block(it.extractShortAssociation())
+                } else {
+                    line(it.associationIdExpress)
+                }
             }
+        }
+        line("}")
+    }
+
+    private fun generateTreeView(entity: GenEntityBusinessView) = buildScopeString {
+        val listViewProperties = entity.listViewProperties
+
+        val parentProperty = entity.parentProperty
+        val childrenProperty = entity.childrenProperty
+
+        line("${entity.dto.treeView} {")
+        scope {
+            line("#allScalars")
+            entity.scalarProperties.exclude(listViewProperties).forEach {
+                line("-${it.name}")
+            }
+            line("id(${parentProperty.name})")
+            line("${childrenProperty.name}*")
             listViewProperties.filter {
                 it.associationType != null && it.typeEntity?.id != entity.id
             }.forEach {
@@ -240,6 +261,7 @@ object DtoGenerator : EntityPropertyCategories {
         appendLine()
 
         appendBlock(generateListView(entity))
+        if (entity.isTreeEntity()) appendBlock(generateTreeView(entity))
         if (entity.canEdit) appendBlock(generateDetailView(entity))
         appendBlock(generateOptionView(entity))
         if (entity.canAdd) appendBlock(generateInsertInput(entity))
