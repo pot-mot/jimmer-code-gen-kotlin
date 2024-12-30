@@ -193,12 +193,12 @@ private fun buildTree(
         } else {
             val newParent =
                 if (parent.${childrenProperty.name} == null) {
-                    parent.copy(${childrenProperty.name} = emptyList())
+                    parent.copy(${childrenProperty.name} = listOf(node))
                 } else {
                     parent.copy(${childrenProperty.name} = parent.${childrenProperty.name} + node)
                 }
 
-            map[node.id] = newParent
+            map[newParent.id] = newParent
         }
     }
 
