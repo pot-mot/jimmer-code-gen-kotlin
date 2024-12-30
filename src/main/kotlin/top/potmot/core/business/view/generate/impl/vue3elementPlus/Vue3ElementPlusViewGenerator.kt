@@ -581,8 +581,17 @@ object Vue3ElementPlusViewGenerator :
                             }
                             line("})")
                         }
-                    )
+                    ),
+                    CodeBlock(buildScopeString {
+                        line("onMounted(async () => {")
+                        scope {
+                            line("await queryRows()")
+                        }
+                        line("})")
+                    })
                 )
+
+                imports += Import("vue", "onMounted")
             }
 
             script += listOfNotNull(
@@ -599,7 +608,7 @@ object Vue3ElementPlusViewGenerator :
                                 }
                                 line("return result")
                             }
-                            line("})")
+                            append("})")
                         }
                     } else {
                         "withLoading((body: $insertInput) => api.$apiServiceName.insert({body}))"
@@ -625,7 +634,7 @@ object Vue3ElementPlusViewGenerator :
                                 }
                                 line("return result")
                             }
-                            line("})")
+                            append("})")
                         }
                     } else {
                         "withLoading((body: $updateInput) => api.$apiServiceName.update({body}))"
@@ -645,7 +654,7 @@ object Vue3ElementPlusViewGenerator :
                                 }
                                 line("return result")
                             }
-                            line("})")
+                            append("})")
                         }
                     } else {
                         "withLoading((ids: Array<$idType>) => api.$apiServiceName.delete({ids}))"
