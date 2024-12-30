@@ -28,6 +28,9 @@ private val intRangeType = setOf(
     Long::class.qualifiedName,
     "long",
     "java.lang.Long",
+    Short::class.qualifiedName,
+    "short",
+    "java.lang.Short",
 )
 
 private val floatRangeType = setOf(
