@@ -60,6 +60,7 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.error.ModelException
 import top.potmot.utils.list.join
+import top.potmot.utils.map.iterableMapOf
 import top.potmot.utils.string.buildScopeString
 
 object Vue3ElementPlusViewGenerator :
@@ -268,8 +269,10 @@ object Vue3ElementPlusViewGenerator :
     )
     override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
         val addFormRulesProperties = entity.addFormRulesProperties
-        val rules = addFormRulesProperties.associateWith { it.rules } +
-                entity.existValidRules(withId = false, addFormRulesProperties)
+        val rules = iterableMapOf(
+            addFormRulesProperties.associateWith { it.rules },
+            entity.existValidRules(withId = false, addFormRulesProperties)
+        )
         return rulesBuilder.createFormRules(
             functionName = "useRules",
             formData = "formData",
@@ -330,8 +333,10 @@ object Vue3ElementPlusViewGenerator :
     )
     override fun stringifyEditFormRules(entity: GenEntityBusinessView): String {
         val editFormRulesProperties = entity.editFormRulesProperties
-        val rules = editFormRulesProperties.associateWith { it.rules } +
-                entity.existValidRules(withId = true, editFormRulesProperties)
+        val rules = iterableMapOf(
+            editFormRulesProperties.associateWith { it.rules },
+            entity.existValidRules(withId = true, editFormRulesProperties)
+        )
         return rulesBuilder.createFormRules(
             functionName = "useRules",
             formData = "formData",
@@ -373,8 +378,10 @@ object Vue3ElementPlusViewGenerator :
     )
     override fun stringifyEditTableRules(entity: GenEntityBusinessView): String {
         val editTableRulesProperties = entity.editTableRulesProperties
-        val rules = editTableRulesProperties.associateWith { it.rules } +
-                entity.existValidRules(withId = false, editTableRulesProperties)
+        val rules = iterableMapOf(
+            editTableRulesProperties.associateWith { it.rules },
+            entity.existValidRules(withId = false, editTableRulesProperties),
+        )
         return rulesBuilder.createFormRules(
             functionName = "useRules",
             formData = "formData",
