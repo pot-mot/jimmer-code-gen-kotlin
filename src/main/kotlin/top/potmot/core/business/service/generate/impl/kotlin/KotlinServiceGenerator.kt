@@ -79,7 +79,6 @@ object KotlinServiceGenerator : ServiceGenerator() {
             if (isTreeEntity) {
                 imports += listOf(
                     "${packages.dto}.${treeView}",
-                    "org.babyfish.jimmer.sql.kt.ast.expression.isNull",
                 )
             }
 
