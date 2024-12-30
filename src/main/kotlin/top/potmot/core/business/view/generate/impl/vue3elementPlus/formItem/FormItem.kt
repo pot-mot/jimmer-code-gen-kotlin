@@ -194,7 +194,7 @@ interface FormItem {
                             disabled = disabled,
                         )
                     else
-                        timePicker(
+                        datePicker(
                             modelValue,
                             comment = comment,
                             clearable = true,
