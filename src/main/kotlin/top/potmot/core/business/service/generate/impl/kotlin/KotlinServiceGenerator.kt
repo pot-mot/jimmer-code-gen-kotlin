@@ -199,6 +199,9 @@ private fun buildTree(
                 }
 
             map[newParent.id] = newParent
+            roots.replaceAll {
+                if (it.id == parent.id) newParent else it
+            }
         }
     }
 
