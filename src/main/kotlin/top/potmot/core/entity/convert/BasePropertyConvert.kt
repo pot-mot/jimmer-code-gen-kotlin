@@ -5,7 +5,7 @@ import top.potmot.error.ConvertException
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.utils.string.clearColumnComment
-import top.potmot.utils.string.snakeToLowerCamel
+import top.potmot.utils.string.columnNameToPropertyName
 
 /**
  * 转换基本属性
@@ -34,7 +34,7 @@ fun GenTableConvertView.TargetOf_columns.toBaseProperty(
 
     return GenPropertyInput(
         columnId = column.id,
-        name = snakeToLowerCamel(column.name),
+        name = columnNameToPropertyName(column.name),
         comment = column.comment.clearColumnComment(),
         type = typeMapping(column),
         typeTableId = null,
