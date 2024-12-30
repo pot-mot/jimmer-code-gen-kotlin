@@ -38,7 +38,7 @@ abstract class EntityCodeGenerator {
         enum,
        "${enum.filePath}${enum.name}${getFileSuffix()}",
         stringify(enum),
-        listOf(GenerateTag.BackEnd, GenerateTag.Entity)
+        listOf(GenerateTag.BackEnd, GenerateTag.Enum)
     )
 
     fun generateEnum(
