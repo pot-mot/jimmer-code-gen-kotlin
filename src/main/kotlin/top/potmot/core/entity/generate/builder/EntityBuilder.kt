@@ -157,7 +157,7 @@ abstract class EntityBuilder : CodeBuilder() {
         val context = getContextOrGlobal()
 
         property.apply {
-            if (context.columnAnnotation && column != null) {
+            if (context.columnAnnotation && column != null && associationType == null) {
                 result += Column::class
             }
 
