@@ -24,7 +24,6 @@ import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
 import top.potmot.enumeration.TableType
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenPropertyView
-import top.potmot.utils.time.now
 import kotlin.reflect.KClass
 import top.potmot.utils.string.buildScopeString
 
@@ -99,7 +98,6 @@ abstract class EntityBuilder : CodeBuilder() {
             entity.remark,
             params = mapOf(
                 Pair("author", entity.author.ifEmpty { getContextOrGlobal().author }),
-                Pair("since", now())
             )
         )
 
