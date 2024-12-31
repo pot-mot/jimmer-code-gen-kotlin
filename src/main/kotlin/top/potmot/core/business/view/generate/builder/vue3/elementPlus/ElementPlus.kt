@@ -269,7 +269,6 @@ interface ElementPlus {
         props = listOfNotNull(
             valueFormat.toPropBind("value-format", true),
             PropBind("is-range", isLiteral = true),
-            PropBind("unlink-panels", isLiteral = true),
             startPlaceholder(comment).toPropBind("start-placeholder", true),
             endPlaceholder(comment).toPropBind("end-placeholder", true),
             clearable.toPropBind("clearable"),
@@ -293,7 +292,6 @@ interface ElementPlus {
         props = listOfNotNull(
             PropBind("type", "daterange", true),
             valueFormat.toPropBind("value-format", true),
-            PropBind("is-range", isLiteral = true),
             PropBind("unlink-panels", isLiteral = true),
             startPlaceholder(comment).toPropBind("start-placeholder", true),
             endPlaceholder(comment).toPropBind("end-placeholder", true),
@@ -318,7 +316,6 @@ interface ElementPlus {
         props = listOfNotNull(
             PropBind("type", "datetimerange", true),
             valueFormat.toPropBind("value-format", true),
-            PropBind("is-range", isLiteral = true),
             PropBind("unlink-panels", isLiteral = true),
             startPlaceholder(comment).toPropBind("start-placeholder", true),
             endPlaceholder(comment).toPropBind("end-placeholder", true),

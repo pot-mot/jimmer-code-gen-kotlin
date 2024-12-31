@@ -218,7 +218,6 @@ class ElementPlusTest : ElementPlus {
     v-model="testModel"
     value-format="HH:mm:ss"
     is-range
-    unlink-panels
     start-placeholder="testStartPlaceholder"
     end-placeholder="testEndPlaceholder"
 />
@@ -244,9 +243,8 @@ class ElementPlusTest : ElementPlus {
                 """
 <el-date-picker
     v-model="testModel"
-    type="date"
+    type="daterange"
     value-format="YYYY-MM-DD"
-    is-range
     unlink-panels
     start-placeholder="testStartPlaceholder"
     end-placeholder="testEndPlaceholder"
@@ -273,9 +271,8 @@ class ElementPlusTest : ElementPlus {
                 """
 <el-date-picker
     v-model="testModel"
-    type="datetime"
+    type="datetimerange"
     value-format="YYYY-MM-DDTHH:mm:ss"
-    is-range
     unlink-panels
     start-placeholder="testStartPlaceholder"
     end-placeholder="testEndPlaceholder"
