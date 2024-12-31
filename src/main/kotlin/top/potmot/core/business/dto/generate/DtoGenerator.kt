@@ -94,7 +94,11 @@ object DtoGenerator : EntityPropertyCategories {
             line("id(${parentProperty.name})")
             line("${childrenProperty.name}*")
             listViewProperties.filter {
-                it.associationType != null && it.typeEntity?.id != entity.id
+                it.associationType != null &&
+                        it.id != parentProperty.id &&
+                        it.id != childrenProperty.id &&
+                        it.idViewTarget != parentProperty.name &&
+                        it.idViewTarget != childrenProperty.name
             }.forEach {
                 if (it.isShortAssociation) {
                     block(it.extractShortAssociation())
