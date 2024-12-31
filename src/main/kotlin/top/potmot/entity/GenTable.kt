@@ -154,7 +154,7 @@ interface GenTable : BaseEntity {
     /**
      * 入关联
      */
-    @OneToMany(mappedBy = "targetTable")
+    @OneToMany(mappedBy = "targetTable", orderedProps = [OrderedProp(value = "name")])
     val inAssociations: List<GenAssociation>
 
     /**
@@ -166,7 +166,7 @@ interface GenTable : BaseEntity {
     /**
      * 出关联
      */
-    @OneToMany(mappedBy = "sourceTable")
+    @OneToMany(mappedBy = "sourceTable", orderedProps = [OrderedProp(value = "name")])
     val outAssociations: List<GenAssociation>
 
     /**

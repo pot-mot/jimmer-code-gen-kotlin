@@ -23,8 +23,7 @@ private fun GenEntityInput.TargetOf_properties.mergeExistProperty(
     }
     overwriteComment = existProperty.overwriteComment
     remark = existProperty.remark
-    orderKey = existProperty.orderKey
-    
+
     otherAnnotation =  existProperty.otherAnnotation
 
     longAssociation = existProperty.longAssociation
