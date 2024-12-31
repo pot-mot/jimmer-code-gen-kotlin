@@ -1,5 +1,6 @@
 package top.potmot.business.view.vue3.elementPlus
 
+import java.time.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
@@ -7,7 +8,6 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
-import java.time.LocalDateTime
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity
 import top.potmot.enumeration.AssociationType
 
@@ -34,7 +34,9 @@ class QueryFormItemTest : QueryFormItem {
             var result: String
             builder.apply {
                 result =
-                    (it.imports.stringifyImports() + it.elements.stringifyElements()).joinToString("\n")
+                    (it.imports.stringifyImports() + it.scripts.stringifyCodes() + it.elements.stringifyElements())
+                        .joinToString("\n")
+                        .trim()
             }
             result
         }
@@ -57,11 +59,23 @@ class QueryFormItemTest : QueryFormItem {
     fun `test time`() {
         assertEquals(
             """
+import {computed} from "vue"
+const nameRange = computed<[string | undefined, string | undefined]>({
+    get() {
+        return [
+            spec.value.minName,
+            spec.value.maxName,
+       ]
+    },
+    set(range: [string | undefined, string | undefined] | null) {
+        spec.value.minName = range?.[0]
+        spec.value.maxName = range?.[1]
+    }
+})
 <el-time-picker
     v-model="nameRange"
     value-format="HH:mm:ss"
     is-range
-    unlink-panels
     start-placeholder="请选择开始comment"
     end-placeholder="请选择结束comment"
     clearable
@@ -72,14 +86,26 @@ class QueryFormItemTest : QueryFormItem {
     }
 
     @Test
-    fun `test date` () {
+    fun `test date`() {
         assertEquals(
             """
+import {computed} from "vue"
+const nameRange = computed<[string | undefined, string | undefined]>({
+    get() {
+        return [
+            spec.value.minName,
+            spec.value.maxName,
+       ]
+    },
+    set(range: [string | undefined, string | undefined] | null) {
+        spec.value.minName = range?.[0]
+        spec.value.maxName = range?.[1]
+    }
+})
 <el-date-picker
     v-model="nameRange"
-    type="date"
+    type="daterange"
     value-format="YYYY-MM-DD"
-    is-range
     unlink-panels
     start-placeholder="请选择开始comment"
     end-placeholder="请选择结束comment"
@@ -91,14 +117,26 @@ class QueryFormItemTest : QueryFormItem {
     }
 
     @Test
-    fun `test datetime` () {
+    fun `test datetime`() {
         assertEquals(
             """
+import {computed} from "vue"
+const nameRange = computed<[string | undefined, string | undefined]>({
+    get() {
+        return [
+            spec.value.minName,
+            spec.value.maxName,
+       ]
+    },
+    set(range: [string | undefined, string | undefined] | null) {
+        spec.value.minName = range?.[0]
+        spec.value.maxName = range?.[1]
+    }
+})
 <el-date-picker
     v-model="nameRange"
-    type="datetime"
+    type="datetimerange"
     value-format="YYYY-MM-DDTHH:mm:ss"
-    is-range
     unlink-panels
     start-placeholder="请选择开始comment"
     end-placeholder="请选择结束comment"
@@ -110,7 +148,7 @@ class QueryFormItemTest : QueryFormItem {
     }
 
     @Test
-    fun `test switch` () {
+    fun `test switch`() {
         assertEquals(
             """
 <el-select
@@ -119,8 +157,8 @@ class QueryFormItemTest : QueryFormItem {
     clearable
     :value-on-clear="undefined"
 >
-    <el-option :value="false" :label="否"/>
-    <el-option :value="true" :label="是"/>
+    <el-option :value="true" label="是"/>
+    <el-option :value="false" label="否"/>
 </el-select>
             """.trimIndent(),
             baseProperty.copy(type = "kotlin.Boolean").result,
@@ -128,7 +166,7 @@ class QueryFormItemTest : QueryFormItem {
     }
 
     @Test
-    fun `test int` () {
+    fun `test int`() {
         assertEquals(
             """
 <el-input-number
@@ -189,7 +227,7 @@ class QueryFormItemTest : QueryFormItem {
     }
 
     @Test
-    fun `test float` () {
+    fun `test float`() {
         assertEquals(
             """
 <el-input-number
@@ -227,24 +265,29 @@ class QueryFormItemTest : QueryFormItem {
     :value-on-clear="undefined"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Float", column = TargetOf_column(dataSize = 10, numericPrecision = 2)).result,
+            baseProperty.copy(
+                type = "kotlin.Float",
+                column = TargetOf_column(dataSize = 10, numericPrecision = 2)
+            ).result,
         )
     }
 
     @Test
-    fun `test enum` () {
+    fun `test enum`() {
         assertEquals(
             """
-import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
+
 <EnumNullableSelect v-model="spec.name"/>
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.String", enum = TargetOf_enum(
-                id = 0,
-                packagePath = "",
-                name = "Enum",
-                comment = "comment",
-                items = emptyList(),
-            )
+            baseProperty.copy(
+                type = "kotlin.String", enum = TargetOf_enum(
+                    id = 0,
+                    packagePath = "",
+                    name = "Enum",
+                    comment = "comment",
+                    items = emptyList(),
+                )
             ).result,
         )
     }
@@ -253,6 +296,7 @@ import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
     fun `test to one association`() {
         val expect = """
 import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
+
 <EntityIdSelect
     v-model="spec.name"
     :options="nameOptions"
@@ -291,6 +335,7 @@ import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
     fun `test to many association`() {
         val expect = """
 import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
+
 <EntityIdMultiSelect
     v-model="spec.name"
     :options="nameOptions"

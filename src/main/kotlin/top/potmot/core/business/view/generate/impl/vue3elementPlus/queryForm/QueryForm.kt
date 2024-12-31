@@ -1,8 +1,5 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm
 
-import top.potmot.core.business.property.PropertyQueryType
-import top.potmot.core.business.property.queryType
-import top.potmot.core.business.utils.mark.upperName
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.button
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.col
@@ -11,7 +8,6 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.row
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
-import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.vue3.Component
@@ -65,30 +61,8 @@ fun queryForm(
     emits = listOf(
         Event("query", args = listOf(EventArg("spec", specType)))
     ),
-    script = content.keys.mapNotNull {
-        when (it.queryType) {
-            PropertyQueryType.DATE_RANGE,
-            PropertyQueryType.TIME_RANGE,
-            PropertyQueryType.DATETIME_RANGE ->
-                CodeBlock(
-                    """
-                    const ${it.name}Range = computed<[string | undefined, string | undefined]>({
-                        get() {
-                            return [
-                                spec.value.min${it.upperName},
-                                spec.value.max${it.upperName},
-                           ]
-                        },
-                        set(range: [string | undefined, string | undefined] | null) {
-                            spec.value.min${it.upperName} = range?.[0]
-                            spec.value.max${it.upperName} = range?.[1]
-                        }
-                    })
-                    """.trimIndent()
-                )
-
-            else -> null
-        }
+    script = content.values.flatMap {
+        it.scripts
     },
     template = listOf(
         form(

@@ -335,7 +335,7 @@ class FormItemTest : FormItem {
     fun `test enum`() {
         assertEquals(
             """
-import EnumSelect from "@/components/enum/EnumSelect.vue"
+import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
 <EnumSelect v-model="formData.name"/>
             """.trimIndent(),
             baseProperty.copy(

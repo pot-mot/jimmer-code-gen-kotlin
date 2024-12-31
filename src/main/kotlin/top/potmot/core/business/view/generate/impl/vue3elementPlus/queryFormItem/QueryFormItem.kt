@@ -19,6 +19,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.Form
 import top.potmot.core.business.view.generate.meta.rules.numberMax
 import top.potmot.core.business.view.generate.meta.rules.numberMin
 import top.potmot.core.business.view.generate.meta.rules.numberPrecision
+import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
@@ -34,6 +35,25 @@ interface QueryFormItem {
         val maxModelValue = "$spec.max${upperName}"
         val numberMin = numberMin
         val numberMax = numberMax
+
+        val rangeComputed by lazy {
+            CodeBlock(
+                """
+                    const ${name}Range = computed<[string | undefined, string | undefined]>({
+                        get() {
+                            return [
+                                $spec.value.min${upperName},
+                                $spec.value.max${upperName},
+                           ]
+                        },
+                        set(range: [string | undefined, string | undefined] | null) {
+                            $spec.value.min${upperName} = range?.[0]
+                            $spec.value.max${upperName} = range?.[1]
+                        }
+                    })
+                    """.trimIndent()
+            )
+        }
 
         return when (queryType) {
             PropertyQueryType.ASSOCIATION_ID_EQ ->
@@ -151,6 +171,9 @@ interface QueryFormItem {
                     imports = listOf(
                         Import("vue", "computed")
                     ),
+                    scripts = listOf(
+                        rangeComputed
+                    ),
                     elements = listOf(
                         timePickerRange(
                             rangeModelValue,
@@ -164,6 +187,9 @@ interface QueryFormItem {
                     imports = listOf(
                         Import("vue", "computed")
                     ),
+                    scripts = listOf(
+                        rangeComputed
+                    ),
                     elements = listOf(
                         datePickerRange(
                             rangeModelValue,
@@ -176,6 +202,9 @@ interface QueryFormItem {
                 FormItemData(
                     imports = listOf(
                         Import("vue", "computed")
+                    ),
+                    scripts = listOf(
+                        rangeComputed
                     ),
                     elements = listOf(
                         dateTimePickerRange(
