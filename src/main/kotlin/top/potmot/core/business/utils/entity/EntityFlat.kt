@@ -1,4 +1,4 @@
-package top.potmot.core.business.utils
+package top.potmot.core.business.utils.entity
 
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.extension.allSuperEntities

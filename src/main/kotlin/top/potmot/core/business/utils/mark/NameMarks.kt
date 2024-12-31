@@ -1,4 +1,4 @@
-package top.potmot.core.business.utils
+package top.potmot.core.business.utils.mark
 
 import top.potmot.core.utils.filePath
 import top.potmot.entity.dto.GenEntityBusinessView

@@ -1,4 +1,4 @@
-package top.potmot.core.entity.convert
+package top.potmot.core.entity.convert.association
 
 import top.potmot.core.database.meta.InAssociationMeta
 import top.potmot.core.database.meta.OutAssociationMeta

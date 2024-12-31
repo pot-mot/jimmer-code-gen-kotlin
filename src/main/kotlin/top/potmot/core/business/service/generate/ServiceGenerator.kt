@@ -1,8 +1,8 @@
 package top.potmot.core.business.service.generate
 
-import top.potmot.core.business.utils.serviceFilePath
-import top.potmot.core.business.utils.serviceName
-import top.potmot.core.business.utils.toFlat
+import top.potmot.core.business.utils.mark.serviceFilePath
+import top.potmot.core.business.utils.mark.serviceName
+import top.potmot.core.business.utils.entity.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag

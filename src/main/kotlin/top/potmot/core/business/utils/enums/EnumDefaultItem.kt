@@ -1,4 +1,4 @@
-package top.potmot.core.business.utils
+package top.potmot.core.business.utils.enums
 
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.IdName

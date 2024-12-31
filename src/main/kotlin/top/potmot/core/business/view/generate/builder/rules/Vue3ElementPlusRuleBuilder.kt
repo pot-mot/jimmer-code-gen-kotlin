@@ -1,6 +1,6 @@
 package top.potmot.core.business.view.generate.builder.rules
 
-import top.potmot.core.business.utils.nameOrWithId
+import top.potmot.core.business.property.nameOrWithId
 import top.potmot.core.business.view.generate.builder.typescript.TypeScriptBuilder
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.meta.rules.ExistValidRule

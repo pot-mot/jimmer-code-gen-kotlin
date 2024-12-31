@@ -1,8 +1,8 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm
 
-import top.potmot.core.business.utils.PropertyQueryType
-import top.potmot.core.business.utils.queryType
-import top.potmot.core.business.utils.upperName
+import top.potmot.core.business.property.PropertyQueryType
+import top.potmot.core.business.property.queryType
+import top.potmot.core.business.utils.mark.upperName
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.button
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.col

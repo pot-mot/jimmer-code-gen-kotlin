@@ -1,5 +1,6 @@
-package top.potmot.core.business.utils
+package top.potmot.core.business.utils.entity
 
+import top.potmot.core.business.utils.mark.upperName
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.IdName

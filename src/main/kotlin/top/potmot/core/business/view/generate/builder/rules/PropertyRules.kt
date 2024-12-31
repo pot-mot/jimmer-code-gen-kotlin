@@ -1,7 +1,7 @@
 package top.potmot.core.business.view.generate.builder.rules
 
-import top.potmot.core.business.utils.PropertyFormType
-import top.potmot.core.business.utils.formType
+import top.potmot.core.business.property.PropertyFormType
+import top.potmot.core.business.property.formType
 import top.potmot.core.business.view.generate.meta.rules.ArrayRule
 import top.potmot.core.business.view.generate.meta.rules.BooleanRule
 import top.potmot.core.business.view.generate.meta.rules.DateRule

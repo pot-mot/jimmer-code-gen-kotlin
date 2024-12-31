@@ -1,11 +1,11 @@
 package top.potmot.core.business.view.generate.builder.rules
 
-import top.potmot.core.business.utils.ExistValidItem
-import top.potmot.core.business.utils.apiServiceName
-import top.potmot.core.business.utils.existValidItems
-import top.potmot.core.business.utils.idProperty
-import top.potmot.core.business.utils.nameOrWithId
-import top.potmot.core.business.utils.typeStrToTypeScriptType
+import top.potmot.core.business.utils.entity.ExistValidItem
+import top.potmot.core.business.utils.mark.apiServiceName
+import top.potmot.core.business.utils.entity.existValidItems
+import top.potmot.core.business.utils.entity.idProperty
+import top.potmot.core.business.property.nameOrWithId
+import top.potmot.core.business.utils.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.apiPath
 import top.potmot.core.business.view.generate.meta.rules.ExistValidRule
 import top.potmot.core.business.view.generate.meta.typescript.Import

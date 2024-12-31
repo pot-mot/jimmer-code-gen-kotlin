@@ -1,4 +1,4 @@
-package top.potmot.core.entity.convert
+package top.potmot.core.entity.convert.business
 
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView

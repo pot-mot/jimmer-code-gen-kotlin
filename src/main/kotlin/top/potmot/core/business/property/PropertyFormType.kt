@@ -1,4 +1,4 @@
-package top.potmot.core.business.utils
+package top.potmot.core.business.property
 
 import java.math.BigDecimal
 import java.time.Instant

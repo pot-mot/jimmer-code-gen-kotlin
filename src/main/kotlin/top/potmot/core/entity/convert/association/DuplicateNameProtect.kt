@@ -1,4 +1,4 @@
-package top.potmot.core.entity.convert
+package top.potmot.core.entity.convert.association
 
 import top.potmot.core.entity.meta.ConvertPropertyMeta
 import top.potmot.entity.dto.GenPropertyInput

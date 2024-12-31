@@ -1,9 +1,9 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
 
 import top.potmot.core.business.property.EntityPropertyCategories
-import top.potmot.core.business.utils.dto
-import top.potmot.core.business.utils.idProperty
-import top.potmot.core.business.utils.typeStrToTypeScriptType
+import top.potmot.core.business.utils.mark.dto
+import top.potmot.core.business.utils.entity.idProperty
+import top.potmot.core.business.utils.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import

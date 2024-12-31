@@ -1,4 +1,4 @@
-package top.potmot.core.entity.convert
+package top.potmot.core.entity.convert.base
 
 import top.potmot.entity.GenPropertyDraft
 import top.potmot.utils.string.toPlural

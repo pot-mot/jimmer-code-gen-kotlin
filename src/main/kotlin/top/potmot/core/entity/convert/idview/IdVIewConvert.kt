@@ -1,4 +1,4 @@
-package top.potmot.core.entity.convert
+package top.potmot.core.entity.convert.idview
 
 import top.potmot.context.getContextOrGlobal
 import top.potmot.entity.copy
@@ -8,6 +8,8 @@ import top.potmot.entity.dto.share.ReferenceTable
 import top.potmot.enumeration.GenLanguage
 import top.potmot.error.ConvertException
 import kotlin.jvm.Throws
+import top.potmot.core.entity.convert.TypeMapping
+import top.potmot.core.entity.convert.base.toPlural
 import top.potmot.entity.dto.IdName
 
 /**

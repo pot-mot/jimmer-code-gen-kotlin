@@ -1,6 +1,6 @@
 package top.potmot.core.business.property
 
-import top.potmot.core.business.utils.idProperty
+import top.potmot.core.business.utils.entity.idProperty
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.IdName

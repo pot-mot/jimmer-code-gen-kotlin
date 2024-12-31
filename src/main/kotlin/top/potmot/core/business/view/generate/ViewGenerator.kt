@@ -1,9 +1,9 @@
 package top.potmot.core.business.view.generate
 
-import top.potmot.core.business.utils.components
-import top.potmot.core.business.utils.dir
-import top.potmot.core.business.utils.rules
-import top.potmot.core.business.utils.toFlat
+import top.potmot.core.business.utils.mark.components
+import top.potmot.core.business.utils.mark.dir
+import top.potmot.core.business.utils.mark.rules
+import top.potmot.core.business.utils.entity.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenerateFile

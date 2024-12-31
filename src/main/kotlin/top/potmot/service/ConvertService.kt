@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.context.useContext
-import top.potmot.core.entity.convert.mergeExistAndConvertEntity
+import top.potmot.core.entity.convert.business.mergeExistAndConvertEntity
 import top.potmot.core.entity.convert.toGenEntity
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenModel

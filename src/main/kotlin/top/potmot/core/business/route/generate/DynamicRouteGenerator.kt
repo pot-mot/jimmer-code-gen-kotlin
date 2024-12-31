@@ -1,8 +1,8 @@
 package top.potmot.core.business.route.generate
 
-import top.potmot.core.business.utils.components
-import top.potmot.core.business.utils.dir
-import top.potmot.core.business.utils.permissions
+import top.potmot.core.business.utils.mark.components
+import top.potmot.core.business.utils.mark.dir
+import top.potmot.core.business.utils.mark.permissions
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.createGenerateFileByEntities

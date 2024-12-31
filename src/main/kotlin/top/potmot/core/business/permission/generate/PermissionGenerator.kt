@@ -1,7 +1,7 @@
 package top.potmot.core.business.permission.generate
 
-import top.potmot.core.business.utils.lowerName
-import top.potmot.core.business.utils.permissionStrList
+import top.potmot.core.business.utils.mark.lowerName
+import top.potmot.core.business.utils.mark.permissionStrList
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.createGenerateFileByEntities

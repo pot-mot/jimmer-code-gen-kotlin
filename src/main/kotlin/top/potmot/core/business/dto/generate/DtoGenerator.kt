@@ -2,12 +2,12 @@ package top.potmot.core.business.dto.generate
 
 import top.potmot.core.business.property.EntityPropertyCategories
 import top.potmot.core.business.property.isShortAssociation
-import top.potmot.core.business.utils.PropertyQueryType
-import top.potmot.core.business.utils.dto
-import top.potmot.core.business.utils.existValidItems
-import top.potmot.core.business.utils.idProperty
-import top.potmot.core.business.utils.queryType
-import top.potmot.core.business.utils.toFlat
+import top.potmot.core.business.property.PropertyQueryType
+import top.potmot.core.business.utils.mark.dto
+import top.potmot.core.business.utils.entity.existValidItems
+import top.potmot.core.business.utils.entity.idProperty
+import top.potmot.core.business.property.queryType
+import top.potmot.core.business.utils.entity.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.GenerateFile

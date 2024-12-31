@@ -1,16 +1,16 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
 import top.potmot.core.business.property.EntityPropertyCategories
-import top.potmot.core.business.utils.apiServiceName
-import top.potmot.core.business.utils.components
-import top.potmot.core.business.utils.constants
-import top.potmot.core.business.utils.dir
-import top.potmot.core.business.utils.dto
-import top.potmot.core.business.utils.enums
-import top.potmot.core.business.utils.idProperty
-import top.potmot.core.business.utils.permissions
-import top.potmot.core.business.utils.rules
-import top.potmot.core.business.utils.typeStrToTypeScriptType
+import top.potmot.core.business.utils.mark.apiServiceName
+import top.potmot.core.business.utils.mark.components
+import top.potmot.core.business.utils.mark.constants
+import top.potmot.core.business.utils.mark.dir
+import top.potmot.core.business.utils.mark.dto
+import top.potmot.core.business.utils.mark.enums
+import top.potmot.core.business.utils.entity.idProperty
+import top.potmot.core.business.utils.mark.permissions
+import top.potmot.core.business.utils.mark.rules
+import top.potmot.core.business.utils.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.ViewGenerator
 import top.potmot.core.business.view.generate.apiPath
 import top.potmot.core.business.view.generate.builder.rules.Vue3ElementPlusRuleBuilder

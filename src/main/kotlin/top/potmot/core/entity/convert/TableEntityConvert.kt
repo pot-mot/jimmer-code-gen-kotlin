@@ -1,6 +1,11 @@
 package top.potmot.core.entity.convert
 
 import top.potmot.context.getContextOrGlobal
+import top.potmot.core.entity.convert.association.convertAssociationProperties
+import top.potmot.core.entity.convert.association.handleDuplicateName
+import top.potmot.core.entity.convert.base.convertBaseProperties
+import top.potmot.core.entity.convert.business.initPropertyBusinessConfig
+import top.potmot.core.entity.convert.type.getPropertyType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
 import top.potmot.entity.dto.share.ColumnTypeMeta

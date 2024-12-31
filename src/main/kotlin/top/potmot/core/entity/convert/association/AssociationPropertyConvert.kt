@@ -1,9 +1,12 @@
-package top.potmot.core.entity.convert
+package top.potmot.core.entity.convert.association
 
 import org.babyfish.jimmer.sql.DissociateAction
 import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.database.meta.getAssociations
+import top.potmot.core.entity.convert.TypeMapping
+import top.potmot.core.entity.convert.idview.createIdViewProperty
+import top.potmot.core.entity.convert.base.toPlural
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.meta.AssociationPropertyPair
 import top.potmot.core.entity.meta.ConvertPropertyMeta
