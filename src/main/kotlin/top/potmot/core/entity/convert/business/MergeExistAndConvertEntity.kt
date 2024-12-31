@@ -42,7 +42,7 @@ private fun GenEntityInput.TargetOf_properties.mergeExistProperty(
 /**
  * 对已存在的实体和转换出的实体进行合并
  * 保留原实体的id，注释，备注，业务配置
- * 根据属性匹配旧属性，并保留旧属性的id，注释，备注，排序键，业务配置
+ * 根据属性匹配旧属性，并保留旧属性的id，注释，备注，业务配置
  * 最后拼接 无法映射至当前属性 且 无对应列 的旧属性
  *
  * 匹配规则：
