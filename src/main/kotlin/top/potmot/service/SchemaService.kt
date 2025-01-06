@@ -81,8 +81,8 @@ class SchemaService(
             select(table.fetch(GenSchemaView::class))
         }
 
-    @DeleteMapping("/schema/{ids}")
-    fun delete(@PathVariable ids: List<Long>): Int =
+    @DeleteMapping("/schema")
+    fun delete(@RequestParam ids: List<Long>): Int =
         transactionTemplate.executeNotNull {
             sqlClient.deleteByIds(GenSchema::class, ids).affectedRowCount(GenSchema::class)
         }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.error.DataSourceException
 import top.potmot.entity.GenDataSource
@@ -79,8 +80,8 @@ class DataSourceService(
     /**
      * 删除数据源
      */
-    @DeleteMapping("/{ids}")
-    fun delete(@PathVariable ids: List<Long>): Int =
+    @DeleteMapping
+    fun delete(@RequestParam ids: List<Long>): Int =
         transactionTemplate.executeNotNull {
             sqlClient.deleteByIds(GenDataSource::class, ids).affectedRowCount(GenDataSource::class)
         }
