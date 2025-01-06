@@ -20,13 +20,13 @@ object DynamicRouteGenerator {
                 it,
                 "sql/menu/${lowerName}.sql",
                 """
-INSERT INTO SYS_MENU 
-(PARENT_ID, NAME, PATH, ICON, LABEL, COMPONENT, ORDER_KEY, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME) 
+INSERT INTO sys_menu 
+(parent_id, name, path, icon, label, component, order_key, created_by, created_time, modified_by, modified_time)
 VALUES (NULL, '${page}', '/${page}', 'List', '${it.comment}管理', 'pages/${dir}/${page}.vue', 1, 1, now(), 1, now());
 
-INSERT INTO SYS_PERMISSION_SYS_MENU_MAPPING
-SELECT SYS_PERMISSION.ID, SYS_MENU.ID FROM SYS_PERMISSION, SYS_MENU
-WHERE SYS_PERMISSION.NAME = '${it.permissions.menu}' AND SYS_MENU.NAME = '${page}';
+INSERT INTO sys_permission_sys_menu_mapping (permission_id, menu_id)
+SELECT sys_permission.id, sys_menu.id FROM sys_permission, sys_menu 
+WHERE sys_permission.name = '${it.permissions.menu}' AND sys_menu.name = '${page}';
                 """.trimBlankLine(),
                 listOf(GenerateTag.BackEnd, GenerateTag.Route)
             )

@@ -21,14 +21,14 @@ object PermissionGenerator {
                     val permissions = it.permissionStrList
 
                     for (permission in permissions) {
-                        appendLine("INSERT INTO SYS_PERMISSION (NAME, CREATED_BY, CREATED_TIME, MODIFIED_BY, MODIFIED_TIME)")
+                        appendLine("INSERT INTO sys_permission (name, created_by, created_time, modified_by, modified_time)")
                         appendLine("VALUES ('${permission}', 1, now(), 1, now());")
                     }
 
                     appendLines(
-                        "INSERT INTO SYS_ROLE_SYS_PERMISSION_MAPPING ",
-                        "SELECT 1, ID FROM SYS_PERMISSION ",
-                        "WHERE SYS_PERMISSION.NAME IN ",
+                        "INSERT INTO sys_role_sys_permission_mapping (role_id, permission_id)",
+                        "SELECT 1, id FROM sys_permission ",
+                        "WHERE sys_permission.name IN ",
                         "(${permissions.joinToString(", ") { permission -> "'$permission'" }});"
                     )
                 }.trimBlankLine(),
