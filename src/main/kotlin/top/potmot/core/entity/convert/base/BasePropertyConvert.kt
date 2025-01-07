@@ -1,6 +1,5 @@
 package top.potmot.core.entity.convert.base
 
-import top.potmot.core.entity.convert.TypeMapping
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
 import top.potmot.entity.dto.GenPropertyInput

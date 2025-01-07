@@ -1,4 +1,4 @@
-package top.potmot.core.entity.convert.business
+package top.potmot.core.entity.convert.merge
 
 import top.potmot.entity.GenEntity
 import top.potmot.entity.dto.GenEntityDetailView

@@ -1,22 +1,51 @@
 package top.potmot.core.entity.convert
 
-import top.potmot.context.getContextOrGlobal
 import top.potmot.core.entity.convert.association.convertAssociationProperties
 import top.potmot.core.entity.convert.association.handleDuplicateName
+import top.potmot.core.entity.convert.base.TypeMapping
 import top.potmot.core.entity.convert.base.convertBaseProperties
+import top.potmot.core.entity.convert.base.tableToEntity
 import top.potmot.core.entity.convert.business.initPropertyBusinessConfig
+import top.potmot.core.entity.convert.merge.mergeExistAndConvertEntity
 import top.potmot.core.entity.convert.type.getPropertyType
-import top.potmot.error.ColumnTypeException
-import top.potmot.error.ConvertException
-import top.potmot.entity.dto.share.ColumnTypeMeta
+import top.potmot.entity.GenEntity
+import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenEntityInput
-import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
-import top.potmot.utils.string.clearTableComment
-import top.potmot.utils.string.tableNameToEntityName
+import top.potmot.error.ColumnTypeException
+import top.potmot.error.ConvertException
 
-typealias TypeMapping = (column: ColumnTypeMeta) -> String
+data class ConvertResult (
+    val insertEntities: List<GenEntityInput>,
+    val updateEntities: List<GenEntity>
+)
+
+fun convertTableToEntities(
+    modelId: Long,
+    tables: List<GenTableConvertView>,
+    tableIdEntityMap: Map<Long, GenEntityDetailView>,
+    typeMappings: List<GenTypeMappingView>,
+): ConvertResult {
+    val insertEntities = mutableListOf<GenEntityInput>()
+    val updateEntities = mutableListOf<GenEntity>()
+
+    tables.forEach { table ->
+        val existEntity = tableIdEntityMap[table.id]
+        val convertEntity = table.toGenEntity(modelId, typeMappings)
+
+        if (existEntity == null) {
+            insertEntities += convertEntity
+        } else {
+            updateEntities += mergeExistAndConvertEntity(existEntity, convertEntity)
+        }
+    }
+
+    return ConvertResult(
+        insertEntities,
+        updateEntities
+    )
+}
 
 /**
  * 转换 table 为 entity
@@ -66,40 +95,10 @@ fun GenTableConvertView.toGenEntity(
     )
 
     return baseEntity.copy(
-        properties = businessConfigInitProperties.setOrderKey()
+        properties = businessConfigInitProperties.mapIndexed { index, property ->
+            property.copy(
+                orderKey = index.toLong()
+            )
+        }
     )
 }
-
-/**
- * 表到实体转换
- */
-private fun tableToEntity(
-    genTable: GenTableConvertView,
-    modelId: Long?,
-): GenEntityInput {
-    val context = getContextOrGlobal()
-
-    return GenEntityInput(
-        tableId = genTable.id,
-        modelId = modelId,
-        author = context.author,
-        name = tableNameToEntityName(genTable.name),
-        comment = genTable.comment.clearTableComment(),
-        remark = genTable.remark,
-        packagePath = "${context.packagePath}.entity",
-        superEntityIds = emptyList(),
-        properties = emptyList(),
-        canAdd = true,
-        canQuery = true,
-        canEdit = true,
-        canDelete = true,
-        hasPage = true,
-    )
-}
-
-private fun List<GenPropertyInput>.setOrderKey() =
-    mapIndexed { index, property ->
-        property.copy(
-            orderKey = index.toLong()
-        )
-    }

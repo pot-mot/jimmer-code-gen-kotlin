@@ -11,10 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import top.potmot.business.baseProperty
+import top.potmot.config.GlobalGenConfig
 import top.potmot.core.model.business.EntityModelBusinessInput
 import top.potmot.entity.GenEntity
+import top.potmot.entity.GenModel
 import top.potmot.entity.GenProperty
-import top.potmot.entity.GenTable
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenEntityConfigInput
 import top.potmot.entity.dto.GenEntityDetailView
@@ -33,6 +34,9 @@ class ConvertEntityTest {
     lateinit var sqlClient: KSqlClient
 
     @Autowired
+    lateinit var globalGenConfig: GlobalGenConfig
+
+    @Autowired
     lateinit var convertService: ConvertService
 
     @Autowired
@@ -41,6 +45,7 @@ class ConvertEntityTest {
     val GenEntityDetailView.result: String
         get() = prettyObjectWriter.writeValueAsString(
             toEntity {
+                unload(this, GenEntity::model)
                 unload(this, GenEntity::id)
                 unload(this, GenEntity::modifiedTime)
                 unload(this, GenEntity::createdTime)
@@ -58,9 +63,19 @@ class ConvertEntityTest {
     @Test
     @Transactional
     fun `test base convert`() {
-        val tableId = sqlClient.save(baseTable).modifiedEntity.id
+        val modelId = sqlClient.insert(
+            globalGenConfig.toEntity().copy {
+                name = ""
+                graphData = ""
+                remark = ""
+            },
+        ).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId), null)
+        val tableId = sqlClient.save(baseTable.copy(
+            modelId = modelId
+        )).modifiedEntity.id
+
+        convertService.convertModel(modelId, null)
 
         val entity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -70,7 +85,6 @@ class ConvertEntityTest {
         assertEquals(
             """
 {
-    "model" : null,
     "packagePath" : "com.example.entity",
     "table" : {
         "id" : $tableId
@@ -171,16 +185,26 @@ class ConvertEntityTest {
             entity.result
         )
 
-        sqlClient.deleteByIds(GenTable::class, listOf(tableId))
+        sqlClient.deleteByIds(GenModel::class, listOf(modelId))
     }
 
     // 测试转换过程中如果对属性做修改，添加新的属性，是否可以正确将变更和新的属性保存下来
     @Test
     @Transactional
     fun `test merge convert`() {
-        val tableId = sqlClient.save(baseTable).modifiedEntity.id
+        val modelId = sqlClient.insert(
+            globalGenConfig.toEntity().copy {
+                name = ""
+                graphData = ""
+                remark = ""
+            },
+        ).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId), null)
+        val tableId = sqlClient.save(baseTable.copy(
+            modelId = modelId
+        )).modifiedEntity.id
+
+        convertService.convertModel(modelId, null)
 
         val entity1 = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -189,7 +213,6 @@ class ConvertEntityTest {
 
         val result1 = """
 {
-    "model" : null,
     "packagePath" : "com.example.entity",
     "table" : {
         "id" : $tableId
@@ -349,7 +372,6 @@ class ConvertEntityTest {
 
         val result2 = """
 {
-    "model" : null,
     "packagePath" : "com.example.entity",
     "table" : {
         "id" : $tableId
@@ -499,7 +521,7 @@ class ConvertEntityTest {
             entity2.result
         )
 
-        convertService.convertTable(listOf(tableId), null)
+        convertService.convertModel(modelId, null)
 
         val entity3 = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -511,16 +533,26 @@ class ConvertEntityTest {
             entity3.result
         )
 
-        sqlClient.deleteByIds(GenTable::class, listOf(tableId))
+        sqlClient.deleteByIds(GenModel::class, listOf(modelId))
     }
 
     // 测试表转换实体后，原表中有列被删除，该列对应的旧属性在下次转换时是否会被正确删除
     @Test
     @Transactional
     fun `test column delete convert`() {
-        val tableId = sqlClient.save(baseTable).modifiedEntity.id
+        val modelId = sqlClient.insert(
+            globalGenConfig.toEntity().copy {
+                name = ""
+                graphData = ""
+                remark = ""
+            },
+        ).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId), null)
+        val tableId = sqlClient.save(baseTable.copy(
+            modelId = modelId
+        )).modifiedEntity.id
+
+        convertService.convertModel(modelId, null)
 
         val entity1 = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -529,7 +561,6 @@ class ConvertEntityTest {
 
         val result1 = """
 {
-    "model" : null,
     "packagePath" : "com.example.entity",
     "table" : {
         "id" : $tableId
@@ -634,9 +665,12 @@ class ConvertEntityTest {
         )
 
         // 使 baseTable 中仅有 primaryColumn
-        sqlClient.save(baseTable.copy(columns = listOf(primaryColumn)), AssociatedSaveMode.REPLACE)
+        sqlClient.save(baseTable.copy(
+            modelId = modelId,
+            columns = listOf(primaryColumn)
+        ), AssociatedSaveMode.REPLACE)
 
-        convertService.convertTable(listOf(tableId), null)
+        convertService.convertModel(modelId, null)
 
         val entity2 = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -645,7 +679,6 @@ class ConvertEntityTest {
 
         val result2 = """
 {
-    "model" : null,
     "packagePath" : "com.example.entity",
     "table" : {
         "id" : $tableId
@@ -711,22 +744,36 @@ class ConvertEntityTest {
             entity2.result
         )
 
-        sqlClient.deleteByIds(GenTable::class, listOf(tableId))
+        sqlClient.deleteByIds(GenModel::class, listOf(modelId))
     }
 
 
     @Test
     @Transactional
     fun `test superTable convert`() {
-        val superTableId = sqlClient.save(superTable).modifiedEntity.id
+        val modelId = sqlClient.insert(
+            globalGenConfig.toEntity().copy {
+                name = ""
+                graphData = ""
+                remark = ""
+            },
+        ).modifiedEntity.id
+
+
+        val superTableId = sqlClient.save(
+            superTable.copy(
+                modelId = modelId
+            )
+        ).modifiedEntity.id
 
         val tableId = sqlClient.save(
             baseTable.copy(
+                modelId = modelId,
                 superTableIds = listOf(superTableId)
             )
         ).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId, superTableId), null)
+        convertService.convertModel(modelId, null)
 
         val superEntityId = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq superTableId)
@@ -741,7 +788,6 @@ class ConvertEntityTest {
         assertEquals(
             """
 {
-    "model" : null,
     "packagePath" : "com.example.entity",
     "table" : {
         "id" : $tableId
@@ -846,15 +892,25 @@ class ConvertEntityTest {
             entity.result
         )
 
-        sqlClient.deleteByIds(GenTable::class, listOf(tableId, superTableId))
+        sqlClient.deleteByIds(GenModel::class, listOf(modelId))
     }
 
     @Test
     @Transactional
     fun `test entity config convert`() {
-        val tableId = sqlClient.save(baseTable).modifiedEntity.id
+        val modelId = sqlClient.insert(
+            globalGenConfig.toEntity().copy {
+                name = ""
+                graphData = ""
+                remark = ""
+            },
+        ).modifiedEntity.id
 
-        convertService.convertTable(listOf(tableId), null)
+        val tableId = sqlClient.save(baseTable.copy(
+            modelId = modelId
+        )).modifiedEntity.id
+
+        convertService.convertModel(modelId, null)
 
         val firstConvertEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -863,7 +919,6 @@ class ConvertEntityTest {
 
         val firstResult = """
 {
-    "model" : null,
     "packagePath" : "com.example.entity",
     "table" : {
         "id" : $tableId
@@ -1030,7 +1085,6 @@ class ConvertEntityTest {
 
         val result = """
 {
-    "model" : null,
     "packagePath" : "com.example.entity",
     "table" : {
         "id" : $tableId
@@ -1180,7 +1234,7 @@ class ConvertEntityTest {
             changedEntity.result
         )
 
-        convertService.convertTable(listOf(tableId), null)
+        convertService.convertModel(modelId, null)
 
         val secondConvertEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
@@ -1192,6 +1246,6 @@ class ConvertEntityTest {
             secondConvertEntity.result
         )
 
-        sqlClient.deleteByIds(GenTable::class, listOf(tableId))
+        sqlClient.deleteByIds(GenModel::class, listOf(modelId))
     }
 }
