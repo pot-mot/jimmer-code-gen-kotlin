@@ -3,6 +3,7 @@ package top.potmot.error
 import org.babyfish.jimmer.error.ErrorFamily
 import org.babyfish.jimmer.error.ErrorField
 import top.potmot.entity.dto.IdName
+import top.potmot.entity.dto.IdNullableName
 
 @ErrorFamily
 enum class GenerateErrorCode {
@@ -21,4 +22,11 @@ enum class GenerateErrorCode {
     @ErrorField(name = "path", type = String::class)
     @ErrorField(name = "importItems", type = String::class, list = true)
     DEFAULT_IMPORT_MORE_THAN_ONE,
+
+    @ErrorField(name = "association", type = IdName::class)
+    @ErrorField(name = "sourceTable", type = IdName::class)
+    @ErrorField(name = "sourceColumn", type = IdNullableName::class)
+    @ErrorField(name = "targetTable", type = IdName::class)
+    @ErrorField(name = "targetColumn", type = IdName::class)
+    OUT_ASSOCIATION_CANNOT_FOUNT_SOURCE_COLUMN,
 }

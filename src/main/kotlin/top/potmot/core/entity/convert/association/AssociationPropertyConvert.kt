@@ -3,13 +3,13 @@ package top.potmot.core.entity.convert.association
 import org.babyfish.jimmer.sql.DissociateAction
 import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
-import top.potmot.core.database.meta.getAssociations
 import top.potmot.core.entity.convert.base.TypeMapping
 import top.potmot.core.entity.convert.idview.createIdViewProperty
 import top.potmot.core.entity.convert.base.toPlural
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.meta.AssociationPropertyPair
 import top.potmot.core.entity.meta.ConvertPropertyMeta
+import top.potmot.core.entity.meta.getAssociationsMeta
 import top.potmot.core.entity.meta.toJoinColumns
 import top.potmot.core.entity.meta.toJoinTable
 import top.potmot.entity.GenPropertyDraft
@@ -47,10 +47,10 @@ fun convertAssociationProperties(
     val identifiers = context.dataSourceType.getIdentifierProcessor()
 
     val (
-        outAssociations,
-        inAssociations,
+        outAssociationMetas,
+        inAssociationMetas,
     ) = table
-        .getAssociations()
+        .getAssociationsMeta()
         .reverseOneToMany()
         .reverseReversedOneToOne()
         .aggregateOtherSideLeafTableAssociations()
@@ -63,14 +63,14 @@ fun convertAssociationProperties(
             )
         }.toMutableMap()
 
-    outAssociations.forEach { outAssociation ->
+    outAssociationMetas.forEach { meta ->
         val (
             association,
             sourceTable,
             sourceColumns,
             targetTable,
             targetColumns,
-        ) = outAssociation
+        ) = meta
 
         if (sourceColumns.size != 1 || targetColumns.size != 1)
             throw ConvertException.multipleColumnsNotSupported(
@@ -147,7 +147,7 @@ fun convertAssociationProperties(
                 setAssociation(
                     AssociationAnnotationMeta(
                         association.type,
-                        joinColumns = outAssociation.toJoinColumns(identifiers)
+                        joinColumns = meta.toJoinColumns(identifiers)
                     ),
                     association.dissociateAction
                 )
@@ -160,7 +160,7 @@ fun convertAssociationProperties(
                 setAssociation(
                     AssociationAnnotationMeta(
                         association.type,
-                        joinTable = outAssociation.toJoinTable(identifiers)
+                        joinTable = meta.toJoinTable(identifiers)
                     )
                 )
                 toPlural()
@@ -187,14 +187,14 @@ fun convertAssociationProperties(
         propertiesMap[sourceColumn.id] = current
     }
 
-    inAssociations.forEach { inAssociation ->
+    inAssociationMetas.forEach { meta ->
         val (
             association,
             sourceTable,
             sourceColumns,
             targetTable,
             targetColumns,
-        ) = inAssociation
+        ) = meta
 
         if (sourceColumns.size != 1 || targetColumns.size != 1)
             throw ConvertException.multipleColumnsNotSupported(

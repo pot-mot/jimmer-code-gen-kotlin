@@ -73,7 +73,7 @@ fun createMappingColumnName(
 ) =
     "${tableName.clearTableName()}_${columnName.clearColumnName()}"
 
-fun OutAssociationMeta<GenTableGenerateView, GenTableGenerateView.TargetOf_columns>.toMappingTableMeta() =
+fun OutAssociationMeta.toMappingTableMeta() =
     MappingTableMeta(
         name = association.name,
         sourceTableName = sourceTable.name,

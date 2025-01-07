@@ -1,20 +1,19 @@
 package top.potmot.core.entity.convert.association
 
-import top.potmot.core.database.meta.InAssociationMeta
-import top.potmot.core.database.meta.OutAssociationMeta
-import top.potmot.core.database.meta.TableAssociationMeta
-import top.potmot.entity.dto.GenTableConvertView
+import top.potmot.core.entity.meta.InAssociationMeta
+import top.potmot.core.entity.meta.OutAssociationMeta
+import top.potmot.core.entity.meta.TableAssociationMeta
 import top.potmot.entity.extension.allLeafTables
 import top.potmot.enumeration.AssociationType
 
 /**
  * 将所有 OneToMany 恢复为 ManyToOne
  */
-fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.reverseOneToMany(): TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns> {
-    val newOutAssociations = mutableListOf<OutAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
-    val newInAssociations = mutableListOf<InAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
+fun TableAssociationMeta.reverseOneToMany(): TableAssociationMeta {
+    val newOutAssociations = mutableListOf<OutAssociationMeta>()
+    val newInAssociations = mutableListOf<InAssociationMeta>()
 
-    outAssociations.forEach {
+    outAssociationMetas.forEach {
         if (it.association.type == AssociationType.ONE_TO_MANY) {
             newInAssociations += it.reversed()
         } else {
@@ -22,7 +21,7 @@ fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_colum
         }
     }
 
-    inAssociations.forEach {
+    inAssociationMetas.forEach {
         if (it.association.type == AssociationType.ONE_TO_MANY) {
             newOutAssociations += it.reversed()
         } else {
@@ -39,11 +38,11 @@ fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_colum
 /**
  * 将所有反向 OneToOne 恢复为正向 OneToOne
  */
-fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.reverseReversedOneToOne(): TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns> {
-    val newOutAssociations = mutableListOf<OutAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
-    val newInAssociations = mutableListOf<InAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
+fun TableAssociationMeta.reverseReversedOneToOne(): TableAssociationMeta {
+    val newOutAssociations = mutableListOf<OutAssociationMeta>()
+    val newInAssociations = mutableListOf<InAssociationMeta>()
 
-    outAssociations.forEach { association ->
+    outAssociationMetas.forEach { association ->
         if (
             association.association.type == AssociationType.ONE_TO_ONE &&
             association.sourceColumns.all { it.partOfPk }
@@ -54,7 +53,7 @@ fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_colum
         }
     }
 
-    inAssociations.forEach { association ->
+    inAssociationMetas.forEach { association ->
         if (
             association.association.type == AssociationType.ONE_TO_ONE &&
             association.sourceColumns.all { it.partOfPk }
@@ -71,7 +70,7 @@ fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_colum
     )
 }
 
-private fun OutAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.reversed() =
+private fun OutAssociationMeta.reversed() =
     InAssociationMeta(
         association = association.copy(type = association.type.reversed()),
         sourceTable = targetTable,
@@ -80,7 +79,7 @@ private fun OutAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf
         targetColumns = sourceColumns
     )
 
-private fun InAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.reversed() =
+private fun InAssociationMeta.reversed() =
     OutAssociationMeta(
         association = association.copy(type = association.type.reversed()),
         sourceTable = targetTable,
@@ -99,13 +98,13 @@ private fun InAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_
  *          Entity2.createBy -> User.id
  *          Entity3.createBy -> User.id
  */
-fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>.aggregateOtherSideLeafTableAssociations():
-        TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns> {
-    val newOutAssociations = mutableListOf<OutAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
+fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations():
+        TableAssociationMeta {
+    val newOutAssociations = mutableListOf<OutAssociationMeta>()
 
-    val newInAssociations = mutableListOf<InAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_columns>>()
+    val newInAssociations = mutableListOf<InAssociationMeta>()
 
-    outAssociations.forEach {
+    outAssociationMetas.forEach {
         val allTargetLeafTables = it.targetTable.allLeafTables()
 
         if (allTargetLeafTables.size == 1) {
@@ -118,7 +117,7 @@ fun TableAssociationMeta<GenTableConvertView, GenTableConvertView.TargetOf_colum
         }
     }
 
-    inAssociations.forEach {
+    inAssociationMetas.forEach {
         val allSourceLeafTables = it.sourceTable.allLeafTables()
 
         if (allSourceLeafTables.size == 1) {

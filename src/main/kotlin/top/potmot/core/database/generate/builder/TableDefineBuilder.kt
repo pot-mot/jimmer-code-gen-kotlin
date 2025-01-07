@@ -4,7 +4,7 @@ import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
 import top.potmot.core.database.generate.identifier.IdentifierProcessor
 import top.potmot.core.database.meta.ForeignKeyMeta
 import top.potmot.core.database.meta.MappingTableMeta
-import top.potmot.core.database.meta.outAssociations
+import top.potmot.core.database.meta.outAssociationMetas
 import top.potmot.core.database.meta.reversed
 import top.potmot.core.database.meta.toFkMeta
 import top.potmot.core.database.meta.toMappingTableMeta
@@ -13,7 +13,6 @@ import top.potmot.enumeration.AssociationType.MANY_TO_ONE
 import top.potmot.enumeration.AssociationType.ONE_TO_MANY
 import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.error.ColumnTypeException
-import top.potmot.error.ConvertException
 import top.potmot.error.GenerateException
 import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.dto.IdName
@@ -258,23 +257,23 @@ abstract class TableDefineBuilder(
     /**
      * 根据 out association 生成外键约束、唯一性约束和关联表
      */
-    @Throws(ConvertException::class)
+    @Throws(GenerateException::class)
     open fun associationsStringify(
         table: GenTableGenerateView
     ): List<String> {
         val list = mutableListOf<String>()
 
-        val outAssociations = table.outAssociations()
+        val outAssociationMetas = table.outAssociationMetas()
 
-        outAssociations.forEach { outAssociation ->
-            val (association) = outAssociation
+        outAssociationMetas.forEach { meta ->
+            val (association, _, sourceColumns) = meta
 
-            val fkMeta = outAssociation.toFkMeta()
+            val fkMeta = meta.toFkMeta()
 
             when (association.type) {
                 ONE_TO_ONE -> {
                     createFkConstraint(
-                        if (outAssociation.sourceColumns.all { it.partOfPk }) fkMeta.reversed() else fkMeta,
+                        if (sourceColumns.all { it.partOfPk }) fkMeta.reversed() else fkMeta,
                         fake = association.fake,
                     ).let {
                         list += it
@@ -301,7 +300,7 @@ abstract class TableDefineBuilder(
 
                 MANY_TO_MANY -> {
                     createMappingTable(
-                        outAssociation.toMappingTableMeta(),
+                        meta.toMappingTableMeta(),
                         fake = association.fake
                     ).let {
                         list += it
