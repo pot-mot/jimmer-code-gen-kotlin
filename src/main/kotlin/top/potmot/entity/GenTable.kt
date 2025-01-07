@@ -68,7 +68,7 @@ interface GenTable : BaseEntity {
     /**
      * 上级表
      */
-    @ManyToMany
+    @ManyToMany(orderedProps = [OrderedProp(value = "name")])
     @JoinTable(
         name = "gen_super_table_mapping",
         joinColumnName = "inherit_table_id",
@@ -85,7 +85,7 @@ interface GenTable : BaseEntity {
     /**
      * 继承表
      */
-    @ManyToMany(mappedBy = "superTables")
+    @ManyToMany(mappedBy = "superTables", orderedProps = [OrderedProp(value = "name")])
     val inheritTables: List<GenTable>
 
     /**

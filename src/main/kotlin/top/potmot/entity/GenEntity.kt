@@ -76,7 +76,7 @@ interface GenEntity : BaseEntity {
     /**
      * 上级实体
      */
-    @ManyToMany
+    @ManyToMany(orderedProps = [OrderedProp(value = "name")])
     @JoinTable(
         name = "gen_super_entity_mapping",
         joinColumnName = "inherit_entity_id",
@@ -93,7 +93,7 @@ interface GenEntity : BaseEntity {
     /**
      * 继承实体
      */
-    @ManyToMany(mappedBy = "superEntities")
+    @ManyToMany(mappedBy = "superEntities", orderedProps = [OrderedProp(value = "name")])
     val inheritEntities: List<GenEntity>
 
     /**
