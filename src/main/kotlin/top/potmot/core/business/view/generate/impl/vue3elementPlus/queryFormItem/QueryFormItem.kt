@@ -134,14 +134,14 @@ interface QueryFormItem {
                 FormItemData(
                     inputNumber(
                         minModelValue,
-                        comment = "最小$comment",
+                        placeholder = { "最小" },
                         precision = 0,
                         min = numberMin,
                         max = numberMax,
                     ),
                     inputNumber(
                         maxModelValue,
-                        comment = "最大$comment",
+                        placeholder = { "最大" },
                         precision = 0,
                         min = numberMin,
                         max = numberMax,
@@ -152,14 +152,14 @@ interface QueryFormItem {
                 FormItemData(
                     inputNumber(
                         minModelValue,
-                        comment = "最小$comment",
+                        placeholder = { "最小" },
                         precision = numberPrecision ?: 0,
                         min = numberMin,
                         max = numberMax,
                     ),
                     inputNumber(
                         maxModelValue,
-                        comment = "最大$comment",
+                        placeholder = { "最大" },
                         precision = numberPrecision ?: 0,
                         min = numberMin,
                         max = numberMax,
