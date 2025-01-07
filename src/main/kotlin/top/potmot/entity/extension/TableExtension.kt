@@ -1,8 +1,8 @@
 package top.potmot.entity.extension
 
+import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.enumeration.TableType
 import top.potmot.entity.dto.GenTableGenerateView
-import top.potmot.entity.dto.share.ReferenceTable
 
 fun GenTableGenerateView.pkColumns(): List<GenTableGenerateView.TargetOf_columns> =
     columns.filter { it.partOfPk }
@@ -18,7 +18,7 @@ fun GenTableGenerateView.allSuperTables(): List<GenTableGenerateView> {
 /**
  * 获取全部下级表
  */
-fun ReferenceTable.allInheritTables(): List<ReferenceTable> {
+fun GenTableConvertView.allInheritTables(): List<GenTableConvertView> {
     val result = inheritTables ?: listOf()
     return result + result.flatMap { it.allInheritTables() }
 }
@@ -26,6 +26,6 @@ fun ReferenceTable.allInheritTables(): List<ReferenceTable> {
 /**
  * 获取全部叶子表，即从自身开始到下级全部非 SUPER_TABLE 的表
  */
-fun ReferenceTable.allLeafTables(): List<ReferenceTable> {
+fun GenTableConvertView.allLeafTables(): List<GenTableConvertView> {
     return (allInheritTables() + this).filter { it.type != TableType.SUPER_TABLE }
 }

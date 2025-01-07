@@ -14,6 +14,7 @@ import top.potmot.core.entity.meta.toJoinColumns
 import top.potmot.core.entity.meta.toJoinTable
 import top.potmot.entity.GenPropertyDraft
 import top.potmot.entity.copy
+import top.potmot.entity.dto.GenAssociationConvertView
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.IdName
@@ -41,6 +42,9 @@ fun convertAssociationProperties(
     table: GenTableConvertView,
     basePropertyMap: Map<Long, GenPropertyInput>,
     typeMapping: TypeMapping,
+    tableIdMap: Map<Long, GenTableConvertView>,
+    columnIdMap: Map<Long, GenTableConvertView.TargetOf_columns>,
+    associationIdMap: Map<Long, GenAssociationConvertView>,
 ): Map<Long, ConvertPropertyMeta> {
     val context = getContextOrGlobal()
 
@@ -50,7 +54,7 @@ fun convertAssociationProperties(
         outAssociationMetas,
         inAssociationMetas,
     ) = table
-        .getAssociationsMeta()
+        .getAssociationsMeta(tableIdMap, columnIdMap, associationIdMap)
         .reverseOneToMany()
         .reverseReversedOneToOne()
         .aggregateOtherSideLeafTableAssociations()

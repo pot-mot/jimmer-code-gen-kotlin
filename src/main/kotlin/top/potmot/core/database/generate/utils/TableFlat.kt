@@ -13,6 +13,7 @@ fun GenTableGenerateView.toFlat(): GenTableGenerateView {
     val tableName = this.name
 
     return copy(
+        logicalDelete = logicalDelete || allSuperTables.any { it.logicalDelete },
         superTables = emptyList(),
         columns = columns + allSuperTables.flatMap { it.columns },
         inAssociations = inAssociations + allSuperTables.flatMap {
@@ -58,7 +59,7 @@ fun GenTableGenerateView.toFlat(): GenTableGenerateView {
 private fun GenTableGenerateView.TargetOf_inAssociations.TargetOf_sourceTable.getLeafTables():
         List<GenTableGenerateView.TargetOf_inAssociations.TargetOf_sourceTable> =
     if (!this.inheritTables.isNullOrEmpty()) {
-        this.inheritTables!!.flatMap { it.getLeafTables() }
+        this.inheritTables.flatMap { it.getLeafTables() }
     } else {
         listOf(this)
     }
@@ -66,7 +67,7 @@ private fun GenTableGenerateView.TargetOf_inAssociations.TargetOf_sourceTable.ge
 private fun GenTableGenerateView.TargetOf_outAssociations.TargetOf_targetTable.getLeafTables():
         List<GenTableGenerateView.TargetOf_outAssociations.TargetOf_targetTable> =
     if (!this.inheritTables.isNullOrEmpty()) {
-        this.inheritTables!!.flatMap { it.getLeafTables() }
+        this.inheritTables.flatMap { it.getLeafTables() }
     } else {
         listOf(this)
     }

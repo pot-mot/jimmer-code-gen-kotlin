@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.context.useContext
 import top.potmot.core.entity.convert.convertTableToEntities
+import top.potmot.entity.GenAssociation
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenModel
 import top.potmot.entity.GenTable
 import top.potmot.entity.GenTypeMapping
+import top.potmot.entity.dto.GenAssociationConvertView
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenTableConvertView
@@ -54,22 +56,29 @@ class ConvertService(
 
         useContext(mergedProperties) {
             val tables = sqlClient.listTable(id)
-            val tableIdMap = tables.associateBy { it.id }
+            val associations = sqlClient.listAssociation(id)
             val typeMappings = sqlClient.listTypeMapping()
+
+            val tableIdMap = tables.associateBy { it.id }
+            val columnIdMap = tables.flatMap { it.columns }.associateBy { it.id }
+            val associationIdMap = associations.associateBy { it.id }
+
             val tableIdEntityMap = sqlClient.listTableIdEntityTuple(tableIdMap.keys)
                 .associate { it._1 to it._2 }
-
-            val tableEntityIdPairs = mutableListOf<Pair<GenTableConvertView, Long>>()
 
             val (
                 insertEntities,
                 updateEntities,
             ) = convertTableToEntities(
                 modelId = id,
-                tables = tables,
+                tableIdMap = tableIdMap,
+                columnIdMap = columnIdMap,
+                associationIdMap = associationIdMap,
                 tableIdEntityMap = tableIdEntityMap,
                 typeMappings = typeMappings
             )
+
+            val tableEntityIdPairs = mutableListOf<Pair<GenTableConvertView, Long>>()
 
             listOf(
                 sqlClient.insertInputs(insertEntities).items,
@@ -119,6 +128,12 @@ class ConvertService(
         executeQuery(GenTable::class) {
             where(table.modelId eq modelId)
             select(table.fetch(GenTableConvertView::class))
+        }
+
+    private fun KSqlClient.listAssociation(modelId: Long): List<GenAssociationConvertView> =
+        executeQuery(GenAssociation::class) {
+            where(table.modelId eq modelId)
+            select(table.fetch(GenAssociationConvertView::class))
         }
 
     private fun KSqlClient.listTableIdEntityTuple(tableIds: Collection<Long>) =

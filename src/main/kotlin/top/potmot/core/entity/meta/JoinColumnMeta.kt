@@ -12,7 +12,7 @@ data class JoinColumnMeta(
     fun realFk() = foreignKeyType == ForeignKeyType.REAL
 }
 
-fun OutAssociationMeta.toJoinColumns(
+fun AssociationMeta.toJoinColumns(
     identifiers: IdentifierProcessor
 ) =
     sourceColumns.mapIndexed { index, sourceColumn ->

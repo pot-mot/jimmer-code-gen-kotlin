@@ -4,7 +4,6 @@ import top.potmot.context.getContextOrGlobal
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
-import top.potmot.entity.dto.share.ReferenceTable
 import top.potmot.enumeration.GenLanguage
 import top.potmot.error.ConvertException
 import kotlin.jvm.Throws
@@ -21,7 +20,7 @@ fun createIdViewProperty(
     baseProperty: GenPropertyInput,
     baseColumn: GenTableConvertView.TargetOf_columns,
     associationProperty: GenPropertyInput,
-    typeTable: ReferenceTable,
+    typeTable: GenTableConvertView,
     typeMapping: TypeMapping,
 ): GenPropertyInput =
     baseProperty.toEntity()

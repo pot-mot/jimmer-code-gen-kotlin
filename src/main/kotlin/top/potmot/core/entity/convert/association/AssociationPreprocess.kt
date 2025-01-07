@@ -1,7 +1,6 @@
 package top.potmot.core.entity.convert.association
 
-import top.potmot.core.entity.meta.InAssociationMeta
-import top.potmot.core.entity.meta.OutAssociationMeta
+import top.potmot.core.entity.meta.AssociationMeta
 import top.potmot.core.entity.meta.TableAssociationMeta
 import top.potmot.entity.extension.allLeafTables
 import top.potmot.enumeration.AssociationType
@@ -10,8 +9,8 @@ import top.potmot.enumeration.AssociationType
  * 将所有 OneToMany 恢复为 ManyToOne
  */
 fun TableAssociationMeta.reverseOneToMany(): TableAssociationMeta {
-    val newOutAssociations = mutableListOf<OutAssociationMeta>()
-    val newInAssociations = mutableListOf<InAssociationMeta>()
+    val newOutAssociations = mutableListOf<AssociationMeta>()
+    val newInAssociations = mutableListOf<AssociationMeta>()
 
     outAssociationMetas.forEach {
         if (it.association.type == AssociationType.ONE_TO_MANY) {
@@ -39,8 +38,8 @@ fun TableAssociationMeta.reverseOneToMany(): TableAssociationMeta {
  * 将所有反向 OneToOne 恢复为正向 OneToOne
  */
 fun TableAssociationMeta.reverseReversedOneToOne(): TableAssociationMeta {
-    val newOutAssociations = mutableListOf<OutAssociationMeta>()
-    val newInAssociations = mutableListOf<InAssociationMeta>()
+    val newOutAssociations = mutableListOf<AssociationMeta>()
+    val newInAssociations = mutableListOf<AssociationMeta>()
 
     outAssociationMetas.forEach { association ->
         if (
@@ -70,22 +69,13 @@ fun TableAssociationMeta.reverseReversedOneToOne(): TableAssociationMeta {
     )
 }
 
-private fun OutAssociationMeta.reversed() =
-    InAssociationMeta(
+private fun AssociationMeta.reversed() =
+    AssociationMeta(
         association = association.copy(type = association.type.reversed()),
         sourceTable = targetTable,
         sourceColumns = targetColumns.map { it },
         targetTable = sourceTable,
         targetColumns = sourceColumns
-    )
-
-private fun InAssociationMeta.reversed() =
-    OutAssociationMeta(
-        association = association.copy(type = association.type.reversed()),
-        sourceTable = targetTable,
-        sourceColumns = targetColumns,
-        targetTable = sourceTable,
-        targetColumns = sourceColumns.map { it }
     )
 
 /**
@@ -100,9 +90,9 @@ private fun InAssociationMeta.reversed() =
  */
 fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations():
         TableAssociationMeta {
-    val newOutAssociations = mutableListOf<OutAssociationMeta>()
+    val newOutAssociations = mutableListOf<AssociationMeta>()
 
-    val newInAssociations = mutableListOf<InAssociationMeta>()
+    val newInAssociations = mutableListOf<AssociationMeta>()
 
     outAssociationMetas.forEach {
         val allTargetLeafTables = it.targetTable.allLeafTables()

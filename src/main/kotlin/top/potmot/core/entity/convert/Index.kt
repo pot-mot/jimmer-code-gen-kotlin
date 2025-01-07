@@ -9,6 +9,7 @@ import top.potmot.core.entity.convert.business.initPropertyBusinessConfig
 import top.potmot.core.entity.convert.merge.mergeExistAndConvertEntity
 import top.potmot.core.entity.convert.type.getPropertyType
 import top.potmot.entity.GenEntity
+import top.potmot.entity.dto.GenAssociationConvertView
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenEntityInput
 import top.potmot.entity.dto.GenTableConvertView
@@ -23,16 +24,24 @@ data class ConvertResult (
 
 fun convertTableToEntities(
     modelId: Long,
-    tables: List<GenTableConvertView>,
+    tableIdMap: Map<Long, GenTableConvertView>,
+    columnIdMap: Map<Long, GenTableConvertView.TargetOf_columns>,
+    associationIdMap: Map<Long, GenAssociationConvertView>,
     tableIdEntityMap: Map<Long, GenEntityDetailView>,
     typeMappings: List<GenTypeMappingView>,
 ): ConvertResult {
     val insertEntities = mutableListOf<GenEntityInput>()
     val updateEntities = mutableListOf<GenEntity>()
 
-    tables.forEach { table ->
+    tableIdMap.values.forEach { table ->
         val existEntity = tableIdEntityMap[table.id]
-        val convertEntity = table.toGenEntity(modelId, typeMappings)
+        val convertEntity = table.toGenEntity(
+            modelId,
+            typeMappings,
+            tableIdMap,
+            columnIdMap,
+            associationIdMap,
+        )
 
         if (existEntity == null) {
             insertEntities += convertEntity
@@ -68,6 +77,9 @@ fun convertTableToEntities(
 fun GenTableConvertView.toGenEntity(
     modelId: Long?,
     typeMappings: List<GenTypeMappingView>,
+    tableIdMap: Map<Long, GenTableConvertView>,
+    columnIdMap: Map<Long, GenTableConvertView.TargetOf_columns>,
+    associationIdMap: Map<Long, GenAssociationConvertView>,
 ): GenEntityInput {
     val baseEntity = tableToEntity(this, modelId)
 
@@ -81,7 +93,10 @@ fun GenTableConvertView.toGenEntity(
     val propertiesMap = convertAssociationProperties(
         this,
         basePropertyMap,
-        typeMapping
+        typeMapping,
+        tableIdMap,
+        columnIdMap,
+        associationIdMap,
     )
 
     val associationProperties = handleDuplicateName(

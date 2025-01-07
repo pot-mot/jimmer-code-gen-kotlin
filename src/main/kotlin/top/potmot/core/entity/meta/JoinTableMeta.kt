@@ -13,7 +13,7 @@ data class JoinTableMeta(
     fun realFk() = foreignKeyType == ForeignKeyType.REAL
 }
 
-fun OutAssociationMeta.toJoinTable(
+fun AssociationMeta.toJoinTable(
     identifiers: IdentifierProcessor
 ) =
     JoinTableMeta(

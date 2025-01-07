@@ -1,0 +1,13 @@
+export top.potmot.entity.GenAssociation
+
+GenAssociationConvertView {
+    #allScalars
+
+    sourceTableId
+    targetTableId
+
+    columnReferences {
+        sourceColumnId
+        targetColumnId
+    }
+}
