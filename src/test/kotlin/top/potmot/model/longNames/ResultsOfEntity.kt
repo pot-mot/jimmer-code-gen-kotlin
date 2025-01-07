@@ -12,7 +12,6 @@ import org.babyfish.jimmer.sql.Table;
 
 /**
  * @author 
- * @since 2024-02-04 21:10:20
  */
 @Entity
 @Table(name = "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B")
@@ -67,7 +66,6 @@ import org.babyfish.jimmer.sql.Table
 
 /**
  * @author 
- * @since 2024-02-04 21:10:20
  */
 @Entity
 @Table(name = "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B")

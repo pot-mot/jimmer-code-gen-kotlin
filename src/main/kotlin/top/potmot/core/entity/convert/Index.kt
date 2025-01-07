@@ -52,7 +52,7 @@ fun convertTableToEntities(
             .getAssociationMeta(associationMetaIdMap)
             .reverseOneToMany()
             .reverseReversedOneToOne()
-            .aggregateOtherSideLeafTableAssociations()
+            .aggregateOtherSideLeafTableAssociations(tableIdEntityMap)
 
         val existEntity = tableIdEntityMap[table.id]
 

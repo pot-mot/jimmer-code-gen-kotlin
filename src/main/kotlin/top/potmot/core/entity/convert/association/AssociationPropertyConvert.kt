@@ -27,6 +27,7 @@ import top.potmot.enumeration.AssociationType.ONE_TO_ONE
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
 import top.potmot.utils.string.clearTableComment
+import top.potmot.utils.string.entityNameToPropertyName
 import top.potmot.utils.string.tableNameToEntityName
 import top.potmot.utils.string.tableNameToPropertyName
 import top.potmot.utils.string.toPlural
@@ -124,10 +125,12 @@ fun convertAssociationProperties(
         val sourceProperty = current.baseProperty
 
         val singularName =
-            if (targetEntity != null) {
-                targetEntity.name.replaceFirstChar { it.lowercaseChar() }
-            } else if (sourceProperty.idProperty) {
-                tableNameToPropertyName(targetTable.name)
+            if (sourceProperty.idProperty) {
+                if (targetEntity != null) {
+                    entityNameToPropertyName(targetEntity.name)
+                } else {
+                    tableNameToPropertyName(targetTable.name)
+                }
             } else {
                 sourceProperty.name.removeLastId()
             }
@@ -245,10 +248,12 @@ fun convertAssociationProperties(
         val targetProperty = current.baseProperty
 
         val singularName =
-            if (sourceEntity != null) {
-                sourceEntity.name.replaceFirstChar { it.lowercaseChar() }
-            } else if (targetProperty.idProperty) {
-                tableNameToPropertyName(sourceTable.name)
+            if (targetProperty.idProperty) {
+                if (sourceEntity != null) {
+                    entityNameToPropertyName(sourceEntity.name)
+                } else {
+                    tableNameToPropertyName(sourceTable.name)
+                }
             } else {
                 targetProperty.name.removeLastId()
             }
@@ -267,10 +272,12 @@ fun convertAssociationProperties(
             keyProperty = false
 
             val mappedBy =
-                (if (targetEntity != null) {
-                    targetEntity.name.replaceFirstChar { it.lowercaseChar() }
-                } else if (sourceColumn.partOfPk) {
-                    tableNameToPropertyName(targetTable.name)
+                (if (sourceColumn.partOfPk) {
+                    if (targetEntity != null) {
+                        entityNameToPropertyName(targetEntity.name)
+                    } else {
+                        tableNameToPropertyName(targetTable.name)
+                    }
                 } else {
                     tableNameToPropertyName(
                         sourceColumn.name

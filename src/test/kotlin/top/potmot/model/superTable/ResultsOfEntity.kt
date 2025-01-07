@@ -3,7 +3,6 @@ package top.potmot.model.superTable
 const val javaResult = """
 [(java/top/potmot/entity/BaseEntity.java, package top.potmot.entity;
 
-import org.babyfish.jimmer.sql.Column;
 import org.babyfish.jimmer.sql.IdView;
 import org.babyfish.jimmer.sql.JoinColumn;
 import org.babyfish.jimmer.sql.ManyToOne;
@@ -192,7 +191,6 @@ public interface SysUser extends BaseEntity {
 const val kotlinResult = """
 [(kotlin/top/potmot/entity/BaseEntity.kt, package top.potmot.entity
 
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.ManyToOne

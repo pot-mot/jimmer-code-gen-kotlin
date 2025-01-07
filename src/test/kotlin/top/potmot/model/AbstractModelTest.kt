@@ -16,7 +16,6 @@ import top.potmot.enumeration.GenerateType
 import top.potmot.service.ConvertService
 import top.potmot.service.GenerateService
 import top.potmot.service.ModelService
-import top.potmot.util.replaceSinceTimeComment
 
 /**
  * 测试 model 生成 entity 和 sql 是否符合 Results 的约定
@@ -61,12 +60,25 @@ abstract class AbstractModelTest {
         val entityCodes = generateService.generateModel(id, listOf(GenerateType.Entity, GenerateType.Enum))
             .files
             .map {it.path to it.content}
-        val deleteResult = sqlClient.deleteById(GenModel::class, id)
 
         assertEquals(
-            getEntityResult(config).replaceSinceTimeComment().trim(),
-            entityCodes.toString().replaceSinceTimeComment().trim()
+            getEntityResult(config).trim(),
+            entityCodes.toString().trim()
         )
+
+        modelService.save(model.copy(id = id))
+        convertService.convertModel(id, null)
+        val entityCodes2 = generateService.generateModel(id, listOf(GenerateType.Entity, GenerateType.Enum))
+            .files
+            .map {it.path to it.content}
+
+        assertEquals(
+            entityCodes.toString().trim(),
+            entityCodes2.toString().trim()
+        )
+
+        val deleteResult = sqlClient.deleteById(GenModel::class, id)
+        
         assertEquals(
             1,
             deleteResult.affectedRowCount(GenModel::class)
@@ -87,12 +99,24 @@ abstract class AbstractModelTest {
         val tableDefineCodes = generateService.generateModel(id, listOf(GenerateType.DDL))
             .files
             .map {it.path to it.content}
-        val deleteResult = sqlClient.deleteById(GenModel::class, id)
 
         assertEquals(
             getTableDefineResult(config).trim(),
             tableDefineCodes.toString().trim()
         )
+
+        modelService.save(model.copy(id = id))
+        val tableDefineCodes2 = generateService.generateModel(id, listOf(GenerateType.DDL))
+            .files
+            .map {it.path to it.content}
+
+        assertEquals(
+            tableDefineCodes.toString().trim(),
+            tableDefineCodes2.toString().trim()
+        )
+
+        val deleteResult = sqlClient.deleteById(GenModel::class, id)
+
         assertEquals(
             1,
             deleteResult.affectedRowCount(GenModel::class)

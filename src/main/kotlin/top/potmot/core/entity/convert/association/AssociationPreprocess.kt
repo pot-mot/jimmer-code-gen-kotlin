@@ -2,6 +2,7 @@ package top.potmot.core.entity.convert.association
 
 import top.potmot.core.entity.meta.AssociationMeta
 import top.potmot.core.entity.meta.TableAssociationMeta
+import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.extension.allLeafTables
 import top.potmot.enumeration.AssociationType
 
@@ -79,7 +80,9 @@ fun TableAssociationMeta.reverseReversedOneToOne(): TableAssociationMeta {
  *          Entity2.createBy -> User.id
  *          Entity3.createBy -> User.id
  */
-fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations(): TableAssociationMeta {
+fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations(
+    tableIdEntityMap: Map<Long, GenEntityDetailView>,
+): TableAssociationMeta {
     val newOutAssociations = mutableListOf<AssociationMeta>()
 
     val newInAssociations = mutableListOf<AssociationMeta>()
@@ -92,7 +95,7 @@ fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations(): TableAssocia
         } else {
             newOutAssociations +=
                 allTargetLeafTables.map { targetTable ->
-                    it.copy(targetTable = targetTable)
+                    it.copy(targetTable = targetTable, targetEntity = tableIdEntityMap[targetTable.id])
                 }
         }
     }
@@ -104,7 +107,7 @@ fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations(): TableAssocia
             newInAssociations += it
         } else {
             newInAssociations += allSourceLeafTables.map { sourceTable ->
-                it.copy(sourceTable = sourceTable)
+                it.copy(sourceTable = sourceTable, sourceEntity = tableIdEntityMap[sourceTable.id])
             }
         }
     }
