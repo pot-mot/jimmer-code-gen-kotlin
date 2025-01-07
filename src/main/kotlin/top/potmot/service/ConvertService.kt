@@ -61,7 +61,6 @@ class ConvertService(
 
             val tableIdMap = tables.associateBy { it.id }
             val columnIdMap = tables.flatMap { it.columns }.associateBy { it.id }
-            val associationIdMap = associations.associateBy { it.id }
 
             val tableIdEntityMap = sqlClient.listTableIdEntityTuple(tableIdMap.keys)
                 .associate { it._1 to it._2 }
@@ -73,7 +72,7 @@ class ConvertService(
                 modelId = id,
                 tableIdMap = tableIdMap,
                 columnIdMap = columnIdMap,
-                associationIdMap = associationIdMap,
+                associations = associations,
                 tableIdEntityMap = tableIdEntityMap,
                 typeMappings = typeMappings
             )

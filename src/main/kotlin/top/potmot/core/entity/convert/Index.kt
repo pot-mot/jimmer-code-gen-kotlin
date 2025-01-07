@@ -13,6 +13,7 @@ import top.potmot.core.entity.convert.merge.mergeExistAndConvertEntity
 import top.potmot.core.entity.convert.type.getPropertyType
 import top.potmot.core.entity.meta.TableAssociationMeta
 import top.potmot.core.entity.meta.getAssociationMeta
+import top.potmot.core.entity.meta.toAssociationMetaIdMap
 import top.potmot.entity.GenEntity
 import top.potmot.entity.dto.GenAssociationConvertView
 import top.potmot.entity.dto.GenEntityDetailView
@@ -31,18 +32,22 @@ fun convertTableToEntities(
     modelId: Long,
     tableIdMap: Map<Long, GenTableConvertView>,
     columnIdMap: Map<Long, GenTableConvertView.TargetOf_columns>,
-    associationIdMap: Map<Long, GenAssociationConvertView>,
+    associations: List<GenAssociationConvertView>,
     tableIdEntityMap: Map<Long, GenEntityDetailView>,
     typeMappings: List<GenTypeMappingView>,
 ): ConvertResult {
     val insertEntities = mutableListOf<GenEntityInput>()
     val updateEntities = mutableListOf<GenEntity>()
 
+    val associationMetaIdMap = associations.toAssociationMetaIdMap(
+        tableIdMap, columnIdMap
+    )
+
     tableIdMap.values.forEach { table ->
         val existEntity = tableIdEntityMap[table.id]
 
         val associationMeta = table
-            .getAssociationMeta(tableIdMap, columnIdMap, associationIdMap)
+            .getAssociationMeta(associationMetaIdMap)
             .reverseOneToMany()
             .reverseReversedOneToOne()
             .aggregateOtherSideLeafTableAssociations()
