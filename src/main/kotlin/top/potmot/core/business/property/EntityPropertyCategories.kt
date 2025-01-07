@@ -94,7 +94,16 @@ interface EntityPropertyCategories {
 
     val GenEntityBusinessView.tableProperties
         get() = listViewProperties
-            .filter { !it.idProperty }
+            .filter {
+                val notParentProperty =
+                    if (isTreeEntity()) {
+                        it.id != parentProperty.id && it.idViewTarget != parentProperty.name
+                    } else {
+                        true
+                    }
+
+                !it.idProperty && notParentProperty
+            }
             .mapNotNull {
                 if (it.isShortAssociation) {
                     it

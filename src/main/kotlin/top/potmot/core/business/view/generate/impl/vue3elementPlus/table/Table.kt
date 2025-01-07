@@ -74,6 +74,9 @@ fun viewTable(
     idPropertyName: String,
     content: List<Pair<GenerateProperty, TableColumnData>>,
     childrenProp: String? = null,
+    showId: Boolean = false,
+    showIndex: Boolean = true,
+    showSelection: Boolean = true,
 ) = Component(
     imports = listOf(
         ImportType(typePath, type),
@@ -81,7 +84,11 @@ fun viewTable(
     ) + content.flatMap { it.second.imports },
     props = listOf(
         Prop(data, "Array<$type>"),
-    ) + tableUtilProps(),
+    ) + tableUtilProps(
+        showId,
+        showIndex,
+        showSelection
+    ),
     slots = listOf(
         Slot(
             "operations",
