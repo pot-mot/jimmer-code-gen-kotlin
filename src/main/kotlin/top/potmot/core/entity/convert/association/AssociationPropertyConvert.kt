@@ -1,17 +1,20 @@
 package top.potmot.core.entity.convert.association
 
+import org.babyfish.jimmer.kt.unload
 import org.babyfish.jimmer.sql.DissociateAction
 import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.entity.convert.base.TypeMapping
-import top.potmot.core.entity.convert.idview.createIdViewProperty
 import top.potmot.core.entity.convert.base.toPlural
+import top.potmot.core.entity.convert.business.initAssociationBusinessConfig
+import top.potmot.core.entity.convert.idview.createIdViewProperty
+import top.potmot.core.entity.convert.merge.AssociationPropertyPairWaitMergeExist
 import top.potmot.core.entity.meta.AssociationAnnotationMeta
-import top.potmot.core.entity.meta.AssociationPropertyPair
 import top.potmot.core.entity.meta.ConvertPropertyMeta
 import top.potmot.core.entity.meta.TableAssociationMeta
 import top.potmot.core.entity.meta.toJoinColumns
 import top.potmot.core.entity.meta.toJoinTable
+import top.potmot.entity.GenProperty
 import top.potmot.entity.GenPropertyDraft
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenPropertyInput
@@ -62,9 +65,13 @@ fun convertAssociationProperties(
         val (
             association,
             sourceTable,
+            sourceEntity,
             sourceColumns,
+            sourceProperties,
             targetTable,
+            targetEntity,
             targetColumns,
+            targetProperties,
         ) = meta
 
         if (sourceColumns.size != 1 || targetColumns.size != 1)
@@ -117,18 +124,22 @@ fun convertAssociationProperties(
         val sourceProperty = current.baseProperty
 
         val singularName =
-            if (sourceProperty.idProperty)
+            if (targetEntity != null) {
+                targetEntity.name.replaceFirstChar { it.lowercaseChar() }
+            } else if (sourceProperty.idProperty) {
                 tableNameToPropertyName(targetTable.name)
-            else
+            } else {
                 sourceProperty.name.removeLastId()
+            }
 
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = sourceProperty.toEntity().copy {
+            unload(this, GenProperty::id)
             name = singularName
             if (comment.isBlank() || this.idProperty) {
                 comment = targetTable.comment.clearTableComment()
             }
-            type = tableNameToEntityName(targetTable.name)
+            type = targetEntity?.name ?: tableNameToEntityName(targetTable.name)
             typeTableId = targetTable.id
             idProperty = false
             idGenerationAnnotation = null
@@ -160,24 +171,25 @@ fun convertAssociationProperties(
                 )
                 toPlural()
             }
-        }.let {
-            GenPropertyInput(it)
         }
+            .let { GenPropertyInput(it) }
+            .initAssociationBusinessConfig(tableId = sourceTable.id)
 
-        val associationPropertyPair = AssociationPropertyPair(associationProperty)
+        current.associationPropertyPairs +=
+            if (context.idViewProperty) {
+                val idView = createIdViewProperty(
+                    singularName,
+                    sourceProperty,
+                    sourceColumn,
+                    associationProperty,
+                    targetTable,
+                    typeMapping
+                ).initAssociationBusinessConfig(tableId = sourceTable.id)
 
-        if (context.idViewProperty) {
-            associationPropertyPair.idView = createIdViewProperty(
-                singularName,
-                sourceProperty,
-                sourceColumn,
-                associationProperty,
-                targetTable,
-                typeMapping
-            )
-        }
-
-        current.associationPropertyPairs += associationPropertyPair
+                AssociationPropertyPairWaitMergeExist(associationProperty, idView, sourceProperties)
+            } else {
+                AssociationPropertyPairWaitMergeExist(associationProperty, null, sourceProperties)
+            }
 
         propertiesMap[sourceColumn.id] = current
     }
@@ -186,9 +198,13 @@ fun convertAssociationProperties(
         val (
             association,
             sourceTable,
+            sourceEntity,
             sourceColumns,
+            sourceProperties,
             targetTable,
+            targetEntity,
             targetColumns,
+            targetProperties,
         ) = meta
 
         if (sourceColumns.size != 1 || targetColumns.size != 1)
@@ -229,28 +245,37 @@ fun convertAssociationProperties(
         val targetProperty = current.baseProperty
 
         val singularName =
-            if (targetProperty.idProperty)
+            if (sourceEntity != null) {
+                sourceEntity.name.replaceFirstChar { it.lowercaseChar() }
+            } else if (targetProperty.idProperty) {
                 tableNameToPropertyName(sourceTable.name)
-            else
+            } else {
                 targetProperty.name.removeLastId()
+            }
 
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = targetProperty.toEntity().copy {
+            unload(this, GenProperty::id)
             name = singularName
             if (comment.isBlank() || this.idProperty) {
                 comment = sourceTable.comment.clearTableComment()
             }
-            type = tableNameToEntityName(sourceTable.name)
+            type = sourceEntity?.name ?: tableNameToEntityName(sourceTable.name)
             typeTableId = sourceTable.id
             idProperty = false
             idGenerationAnnotation = null
             keyProperty = false
 
             val mappedBy =
-                (if (sourceColumn.partOfPk)
+                (if (targetEntity != null) {
+                    targetEntity.name.replaceFirstChar { it.lowercaseChar() }
+                } else if (sourceColumn.partOfPk) {
                     tableNameToPropertyName(targetTable.name)
-                else
-                    tableNameToPropertyName(sourceColumn.name).removeLastId())
+                } else {
+                    tableNameToPropertyName(
+                        sourceColumn.name
+                    ).removeLastId()
+                })
                     .let {
                         if (association.type == MANY_TO_MANY) it.toPlural() else it
                     }
@@ -274,24 +299,25 @@ fun convertAssociationProperties(
             if (association.type == MANY_TO_ONE || association.type == MANY_TO_MANY) {
                 toPlural()
             }
-        }.let {
-            GenPropertyInput(it)
         }
+            .let { GenPropertyInput(it) }
+            .initAssociationBusinessConfig(tableId = targetTable.id)
 
-        val associationPropertyPair = AssociationPropertyPair(associationProperty)
+        current.associationPropertyPairs +=
+            if (context.idViewProperty) {
+                val idView = createIdViewProperty(
+                    singularName,
+                    targetProperty,
+                    targetColumn,
+                    associationProperty,
+                    sourceTable,
+                    typeMapping
+                ).initAssociationBusinessConfig(tableId = targetTable.id)
 
-        if (context.idViewProperty) {
-            associationPropertyPair.idView = createIdViewProperty(
-                singularName,
-                targetProperty,
-                targetColumn,
-                associationProperty,
-                sourceTable,
-                typeMapping
-            )
-        }
-
-        current.associationPropertyPairs += associationPropertyPair
+                AssociationPropertyPairWaitMergeExist(associationProperty, idView, targetProperties)
+            } else {
+                AssociationPropertyPairWaitMergeExist(associationProperty, null, targetProperties)
+            }
 
         propertiesMap[targetColumn.id] = current
     }

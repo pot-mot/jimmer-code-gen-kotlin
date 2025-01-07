@@ -71,7 +71,7 @@ private fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
  */
 private fun mappingPropertyType(
     typeDefine: String,
-    typeMappings: List<GenTypeMappingView>
+    typeMappings: Collection<GenTypeMappingView>
 ): String? {
     for (typeMapping in typeMappings) {
         if (typeMapping.typeExpression.isBlank()) {
@@ -109,7 +109,7 @@ private fun mappingPropertyType(
 @Throws(ColumnTypeException::class)
 fun getPropertyType(
     typeMeta: ColumnTypeMeta,
-    typeMappings: List<GenTypeMappingView> = emptyList(),
+    typeMappings: Collection<GenTypeMappingView> = emptyList(),
     dataSourceType: DataSourceType = getContextOrGlobal().dataSourceType,
     language: GenLanguage = getContextOrGlobal().language,
 ): String =

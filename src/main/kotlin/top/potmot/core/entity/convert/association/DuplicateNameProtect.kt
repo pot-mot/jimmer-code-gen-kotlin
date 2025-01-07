@@ -22,7 +22,7 @@ fun handleDuplicateName(
         if (meta.enableBase)
             protectDuplicateItems += BaseProtectDuplicateItem(meta.baseProperty, meta)
         meta.associationPropertyPairs.map {
-            protectDuplicateItems += AssociationProtectDuplicateItem(it.first, it.idView, meta, meta.baseProperty)
+            protectDuplicateItems += AssociationProtectDuplicateItem(it.associationProperty, it.idView, meta, meta.baseProperty)
         }
     }
 

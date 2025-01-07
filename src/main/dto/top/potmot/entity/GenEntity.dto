@@ -21,7 +21,6 @@ input GenEntityInput {
 
     properties {
         #allScalars(this)
-        -id
         id(column)
         id(typeTable)
         id(enum)

@@ -16,11 +16,12 @@ fun GenTableGenerateView.allSuperTables(): List<GenTableGenerateView> {
 }
 
 /**
- * 获取全部下级表
+ * 获取全部下级表，并传播逻辑删除
  */
 fun GenTableConvertView.allInheritTables(): List<GenTableConvertView> {
     val result = inheritTables ?: listOf()
-    return result + result.flatMap { it.allInheritTables() }
+    return (result + result.flatMap { it.allInheritTables() })
+        .map { if (logicalDelete) copy(logicalDelete = true) else it }
 }
 
 /**

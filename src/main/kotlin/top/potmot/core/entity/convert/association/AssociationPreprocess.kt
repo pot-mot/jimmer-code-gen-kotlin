@@ -69,15 +69,6 @@ fun TableAssociationMeta.reverseReversedOneToOne(): TableAssociationMeta {
     )
 }
 
-private fun AssociationMeta.reversed() =
-    AssociationMeta(
-        association = association.copy(type = association.type.reversed()),
-        sourceTable = targetTable,
-        sourceColumns = targetColumns.map { it },
-        targetTable = sourceTable,
-        targetColumns = sourceColumns
-    )
-
 /**
  *  将所有叶子表中的关联汇集到祖关联元数据中，使对应上级表的关联转换为对全部叶子表的关联
  *  eq:
@@ -88,8 +79,7 @@ private fun AssociationMeta.reversed() =
  *          Entity2.createBy -> User.id
  *          Entity3.createBy -> User.id
  */
-fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations():
-        TableAssociationMeta {
+fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations(): TableAssociationMeta {
     val newOutAssociations = mutableListOf<AssociationMeta>()
 
     val newInAssociations = mutableListOf<AssociationMeta>()

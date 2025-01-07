@@ -1,5 +1,8 @@
 package top.potmot.core.entity.convert.base
 
+import top.potmot.core.entity.convert.business.initBusinessConfig
+import top.potmot.core.entity.convert.merge.mergeExistAndConvertProperty
+import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
 import top.potmot.entity.dto.GenPropertyInput
@@ -14,6 +17,7 @@ import top.potmot.utils.string.columnNameToPropertyName
 @Throws(ConvertException::class, ColumnTypeException::class)
 fun convertBaseProperties(
     table: GenTableConvertView,
+    existEntity: GenEntityDetailView?,
     typeMapping: TypeMapping,
 ) =
     table.columns.associate { column ->
@@ -22,12 +26,23 @@ fun convertBaseProperties(
             .let { property ->
                 if (column.partOfPk) property.toIdProperty(column) else property
             }
+            .initBusinessConfig()
+            .let { property ->
+                if (existEntity != null) {
+                    val matchedProperty = existEntity.properties.firstOrNull { it.columnId == column.id && it.associationType == null }
+                    if (matchedProperty != null) {
+                        return@let GenPropertyInput(mergeExistAndConvertProperty(matchedProperty, property))
+                    }
+                }
+
+                property
+            }
     }
 
 /**
  * 转换为基础属性
  */
-fun GenTableConvertView.TargetOf_columns.toBaseProperty(
+private fun GenTableConvertView.TargetOf_columns.toBaseProperty(
     typeMapping: TypeMapping,
 ): GenPropertyInput {
     val column = this

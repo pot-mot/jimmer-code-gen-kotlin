@@ -1,24 +1,20 @@
 package top.potmot.core.entity.convert.business
 
 import top.potmot.entity.dto.GenPropertyInput
-import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.enumeration.targetOneAssociationTypes
 
 /**
  * 初始化属性的业务配置
  */
-fun initPropertyBusinessConfig(
-    table: GenTableConvertView,
-    properties: List<GenPropertyInput>
-): List<GenPropertyInput> = properties.map { property ->
-    if (property.idProperty) {
-        property.copy(
+fun GenPropertyInput.initBusinessConfig() =
+    if (idProperty) {
+        copy(
             inListView = false,
             inDetailView = false,
             inOptionView = true,
             inUpdateInput = true,
         ).let {
-            if (!property.idGenerationAnnotation.isNullOrBlank()) {
+            if (!idGenerationAnnotation.isNullOrBlank()) {
                 it.copy(
                     inInsertInput = false,
                 )
@@ -26,8 +22,8 @@ fun initPropertyBusinessConfig(
                 it
             }
         }
-    } else if (property.logicalDelete) {
-        property.copy(
+    } else if (logicalDelete) {
+        copy(
             inListView = false,
             inDetailView = false,
             inInsertInput = false,
@@ -38,11 +34,16 @@ fun initPropertyBusinessConfig(
             inLongAssociationView = false,
             inLongAssociationInput = false,
         )
-    } else if (property.associationType != null) {
-        val isTargetOne = property.associationType in targetOneAssociationTypes
+    } else {
+        this
+    }
+
+fun GenPropertyInput.initAssociationBusinessConfig(tableId: Long) =
+    if (associationType != null) {
+        val isTargetOne = associationType in targetOneAssociationTypes
 
         if (!isTargetOne) {
-            property.copy(
+            copy(
                 inListView = false,
                 inDetailView = true,
                 inInsertInput = false,
@@ -54,11 +55,10 @@ fun initPropertyBusinessConfig(
                 inLongAssociationInput = false,
             )
         } else {
-            property.copy(
-                inOptionView = property.typeTableId == table.id,
+            copy(
+                inOptionView = typeTableId == tableId,
             )
         }
     } else {
-        property
+        this
     }
-}
