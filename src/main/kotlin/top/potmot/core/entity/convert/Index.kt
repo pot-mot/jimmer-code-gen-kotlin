@@ -1,13 +1,18 @@
 package top.potmot.core.entity.convert
 
+import top.potmot.core.entity.convert.association.aggregateOtherSideLeafTableAssociations
 import top.potmot.core.entity.convert.association.convertAssociationProperties
 import top.potmot.core.entity.convert.association.handleDuplicateName
+import top.potmot.core.entity.convert.association.reverseOneToMany
+import top.potmot.core.entity.convert.association.reverseReversedOneToOne
 import top.potmot.core.entity.convert.base.TypeMapping
 import top.potmot.core.entity.convert.base.convertBaseProperties
 import top.potmot.core.entity.convert.base.tableToEntity
 import top.potmot.core.entity.convert.business.initPropertyBusinessConfig
 import top.potmot.core.entity.convert.merge.mergeExistAndConvertEntity
 import top.potmot.core.entity.convert.type.getPropertyType
+import top.potmot.core.entity.meta.TableAssociationMeta
+import top.potmot.core.entity.meta.getAssociationMeta
 import top.potmot.entity.GenEntity
 import top.potmot.entity.dto.GenAssociationConvertView
 import top.potmot.entity.dto.GenEntityDetailView
@@ -35,12 +40,17 @@ fun convertTableToEntities(
 
     tableIdMap.values.forEach { table ->
         val existEntity = tableIdEntityMap[table.id]
+
+        val associationMeta = table
+            .getAssociationMeta(tableIdMap, columnIdMap, associationIdMap)
+            .reverseOneToMany()
+            .reverseReversedOneToOne()
+            .aggregateOtherSideLeafTableAssociations()
+
         val convertEntity = table.toGenEntity(
             modelId,
             typeMappings,
-            tableIdMap,
-            columnIdMap,
-            associationIdMap,
+            associationMeta
         )
 
         if (existEntity == null) {
@@ -74,12 +84,10 @@ fun convertTableToEntities(
  * 最终将 associationProperty 中的数据填充到 baseEntity 中
  */
 @Throws(ConvertException::class, ColumnTypeException::class)
-fun GenTableConvertView.toGenEntity(
+private fun GenTableConvertView.toGenEntity(
     modelId: Long?,
     typeMappings: List<GenTypeMappingView>,
-    tableIdMap: Map<Long, GenTableConvertView>,
-    columnIdMap: Map<Long, GenTableConvertView.TargetOf_columns>,
-    associationIdMap: Map<Long, GenAssociationConvertView>,
+    associationMeta: TableAssociationMeta,
 ): GenEntityInput {
     val baseEntity = tableToEntity(this, modelId)
 
@@ -91,12 +99,9 @@ fun GenTableConvertView.toGenEntity(
     )
 
     val propertiesMap = convertAssociationProperties(
-        this,
         basePropertyMap,
         typeMapping,
-        tableIdMap,
-        columnIdMap,
-        associationIdMap,
+        associationMeta
     )
 
     val associationProperties = handleDuplicateName(

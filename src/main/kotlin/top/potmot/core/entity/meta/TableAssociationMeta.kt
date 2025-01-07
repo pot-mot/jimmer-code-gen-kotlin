@@ -8,7 +8,7 @@ data class TableAssociationMeta(
     val inAssociationMetas: List<AssociationMeta>,
 )
 
-fun GenTableConvertView.getAssociationsMeta(
+fun GenTableConvertView.getAssociationMeta(
     tableIdMap: Map<Long, GenTableConvertView>,
     columnIdMap: Map<Long, GenTableConvertView.TargetOf_columns>,
     associationIdMap: Map<Long, GenAssociationConvertView>,
