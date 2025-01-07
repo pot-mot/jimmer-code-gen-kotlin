@@ -117,6 +117,7 @@ object Vue3ElementPlusViewGenerator :
         val option = "option"
 
         val selectElement = select(
+            comment = enum.comment,
             clearable = nullable,
             valueOnClear = if (nullable) "undefined" else null,
             content = listOf(
@@ -204,15 +205,17 @@ object Vue3ElementPlusViewGenerator :
         }
 
         val dto = entity.dto
+        val isTree = entity.isTreeEntity()
 
         return builder.build(
             viewTable(
                 data = rows,
-                type = if (entity.isTreeEntity()) dto.treeView else dto.listView,
+                type = if (isTree) dto.treeView else dto.listView,
                 typePath = staticPath,
                 idPropertyName = entity.idProperty.name,
                 content = entity.tableProperties.flatMap { it.tableColumnDataList() },
                 childrenProp = childrenProp,
+                showIndex = !isTree,
             )
         )
     }
