@@ -77,7 +77,7 @@ fun tableNameToPropertyName(tableName: String): String =
     snakeToLowerCamel(tableName.trimToLetterOrDigit().clearTableName().clearColumnName())
 
 fun entityNameToPropertyName(entityName: String): String =
-    entityName.replaceFirstChar { it.lowercaseChar() }.clearColumnName()
+    entityName.clearColumnName().replaceFirstChar { it.lowercaseChar() }
 
 fun entityNameToTableName(entityName: String): String =
     camelToUpperSnake(entityName)
