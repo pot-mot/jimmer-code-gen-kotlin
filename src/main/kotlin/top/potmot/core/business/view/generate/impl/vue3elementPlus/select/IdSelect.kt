@@ -56,28 +56,32 @@ interface IdSelect : ElementPlus, EntityPropertyCategories {
             """.trimIndent()
     )
 
-    private fun templateVariable(name: String, typeNotNull: Boolean) =
-        "${'$'}{$name${if (typeNotNull) "" else " ?? ''"}}"
+    private fun templateVariable(name: String, typeNotNull: Boolean, nullPlaceholder: String = "''") =
+        "${'$'}{$name${if (typeNotNull) "" else " ?? $nullPlaceholder"}}"
 
-    private fun labelExpression(name: String, tsType: String, typeNotNull: Boolean) =
+    private fun labelExpression(name: String, tsType: String, typeNotNull: Boolean, nullPlaceholder: String = "''") =
         when (tsType) {
             "string" -> name
-            "string | undefined" -> "$name ?? ''"
-            else -> "`${templateVariable(name, typeNotNull)}`"
+            "string | undefined" -> "$name ?? $nullPlaceholder"
+            else -> "`${templateVariable(name, typeNotNull, nullPlaceholder)}`"
         }
 
     fun createLabelExpression(
         item: String,
         labelProperties: List<GenEntityBusinessView.TargetOf_properties>,
         idProperty: GenEntityBusinessView.TargetOf_idProperties,
-    ) =
-        if (labelProperties.size == 1) {
-            val property = labelProperties[0]
-            val tsType = typeStrToTypeScriptType(property.type, property.typeNotNull)
-            labelExpression("$item.${property.name}", tsType, property.typeNotNull)
-        } else if (labelProperties.isEmpty()) {
+    ): String {
+        val idExpression by lazy {
             val tsType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
             labelExpression("$item.${idProperty.name}", tsType, idProperty.typeNotNull)
+        }
+
+        return if (labelProperties.size == 1) {
+            val property = labelProperties[0]
+            val tsType = typeStrToTypeScriptType(property.type, property.typeNotNull)
+            labelExpression("$item.${property.name}", tsType, property.typeNotNull, idExpression)
+        } else if (labelProperties.isEmpty()) {
+            idExpression
         } else {
             "`${
                 labelProperties.joinToString(" ") { property ->
@@ -85,6 +89,7 @@ interface IdSelect : ElementPlus, EntityPropertyCategories {
                 }
             }`"
         }
+    }
 
     fun createIdSelect(entity: GenEntityBusinessView, multiple: Boolean): Component {
         val idProperty = entity.idProperty
