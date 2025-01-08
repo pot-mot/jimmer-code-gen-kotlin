@@ -7,7 +7,7 @@ import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
-import top.potmot.utils.string.clearColumnComment
+import top.potmot.utils.string.clearForPropertyComment
 import top.potmot.utils.string.columnNameToPropertyName
 
 /**
@@ -50,7 +50,7 @@ private fun GenTableConvertView.TargetOf_columns.toBaseProperty(
     return GenPropertyInput(
         columnId = column.id,
         name = columnNameToPropertyName(column.name),
-        comment = column.comment.clearColumnComment(),
+        comment = column.comment.clearForPropertyComment(),
         type = typeMapping(column),
         typeTableId = null,
         listType = false,

@@ -140,7 +140,7 @@ fun convertAssociationProperties(
             unload(this, GenProperty::id)
             name = singularName
             if (comment.isBlank() || this.idProperty) {
-                comment = targetTable.comment.clearTableComment()
+                comment = targetEntity?.comment ?: targetTable.comment.clearTableComment()
             }
             type = targetEntity?.name ?: tableNameToEntityName(targetTable.name)
             typeTableId = targetTable.id
@@ -263,7 +263,7 @@ fun convertAssociationProperties(
             unload(this, GenProperty::id)
             name = singularName
             if (comment.isBlank() || this.idProperty) {
-                comment = sourceTable.comment.clearTableComment()
+                comment = sourceEntity?.comment ?: sourceTable.comment.clearTableComment()
             }
             type = sourceEntity?.name ?: tableNameToEntityName(sourceTable.name)
             typeTableId = sourceTable.id

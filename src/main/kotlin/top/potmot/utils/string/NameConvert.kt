@@ -73,12 +73,6 @@ fun String.clearTableComment(): String =
 fun tableNameToEntityName(tableName: String): String =
     snakeToUpperCamel(tableName.trimToLetterOrDigit().clearTableName())
 
-fun tableNameToPropertyName(tableName: String): String =
-    snakeToLowerCamel(tableName.trimToLetterOrDigit().clearTableName().clearColumnName())
-
-fun entityNameToPropertyName(entityName: String): String =
-    entityName.clearColumnName().replaceFirstChar { it.lowercaseChar() }
-
 fun entityNameToTableName(entityName: String): String =
     camelToUpperSnake(entityName)
 
@@ -93,5 +87,15 @@ fun String.clearColumnComment(): String =
     this.removePrefixes(getContextOrGlobal().columnCommentPrefixes.splitTrim())
         .removeSuffixes(getContextOrGlobal().columnCommentSuffixes.splitTrim())
 
+fun String.clearForPropertyName(): String = clearColumnName()
+
+fun String.clearForPropertyComment(): String = clearColumnComment()
+
 fun columnNameToPropertyName(columnName: String): String =
-    snakeToLowerCamel(columnName.trimToLetterOrDigit().clearColumnName())
+    snakeToLowerCamel(columnName.trimToLetterOrDigit().clearForPropertyName())
+
+fun tableNameToPropertyName(tableName: String): String =
+    snakeToLowerCamel(tableName.trimToLetterOrDigit().clearTableName().clearForPropertyName())
+
+fun entityNameToPropertyName(entityName: String): String =
+    entityName.clearForPropertyName().replaceFirstChar { it.lowercaseChar() }
