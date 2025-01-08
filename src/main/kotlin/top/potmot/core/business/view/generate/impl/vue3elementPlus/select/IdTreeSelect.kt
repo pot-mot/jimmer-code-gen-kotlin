@@ -32,7 +32,6 @@ interface IdTreeSelect : IdSelect {
         )
 
         val parentId = entity.parentIdProperty.name
-        val labels = entity.optionLabelProperties.map { it.name }
 
         val treeOptions = CodeBlock(
             """
@@ -51,7 +50,7 @@ interface IdTreeSelect : IdSelect {
                 for (const item of items) {
                     const node: TreeNode = {
                         id: item.$idName,
-                        label: ${createLabelExpression("item", labels, idName)},
+                        label: ${createLabelExpression("item", entity.optionLabelProperties, idProperty)},
                         disabled: props.$excludeIds.includes(item.$idName),
                         children: []
                     }

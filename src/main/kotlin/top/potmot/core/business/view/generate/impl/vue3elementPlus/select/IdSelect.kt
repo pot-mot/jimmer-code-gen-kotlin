@@ -1,8 +1,8 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
 
 import top.potmot.core.business.property.EntityPropertyCategories
-import top.potmot.core.business.utils.mark.dto
 import top.potmot.core.business.utils.entity.idProperty
+import top.potmot.core.business.utils.mark.dto
 import top.potmot.core.business.utils.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
@@ -56,17 +56,34 @@ interface IdSelect : ElementPlus, EntityPropertyCategories {
             """.trimIndent()
     )
 
+    private fun templateVariable(name: String, typeNotNull: Boolean) =
+        "${'$'}{$name${if (typeNotNull) "" else " ?? ''"}}"
+
+    private fun labelExpression(name: String, tsType: String, typeNotNull: Boolean) =
+        when (tsType) {
+            "string" -> name
+            "string | undefined" -> "$name ?? ''"
+            else -> "`${templateVariable(name, typeNotNull)}`"
+        }
+
     fun createLabelExpression(
         item: String,
-        labelPropertyNames: List<String>,
-        idName: String,
+        labelProperties: List<GenEntityBusinessView.TargetOf_properties>,
+        idProperty: GenEntityBusinessView.TargetOf_idProperties,
     ) =
-        if (labelPropertyNames.size == 1) {
-            "$item.${labelPropertyNames[0]}"
-        } else if (labelPropertyNames.isEmpty()) {
-            "$item.${idName}"
+        if (labelProperties.size == 1) {
+            val property = labelProperties[0]
+            val tsType = typeStrToTypeScriptType(property.type, property.typeNotNull)
+            labelExpression("$item.${property.name}", tsType, property.typeNotNull)
+        } else if (labelProperties.isEmpty()) {
+            val tsType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
+            labelExpression("$item.${idProperty.name}", tsType, idProperty.typeNotNull)
         } else {
-            "`${labelPropertyNames.joinToString("_") { label -> "${'$'}{$item.$label}" }}`"
+            "`${
+                labelProperties.joinToString(" ") { property ->
+                    templateVariable("$item.${property.name}", property.typeNotNull)
+                }
+            }`"
         }
 
     fun createIdSelect(entity: GenEntityBusinessView, multiple: Boolean): Component {
@@ -75,8 +92,6 @@ interface IdSelect : ElementPlus, EntityPropertyCategories {
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
 
         val optionView = entity.dto.optionView
-
-        val labels = entity.optionLabelProperties.map { it.name }
 
         val modelValue = "modelValue"
         val options = "options"
@@ -101,7 +116,7 @@ interface IdSelect : ElementPlus, EntityPropertyCategories {
                     option = option,
                     key = { "$it.$idName" },
                     value = { "$it.$idName" },
-                    label = { createLabelExpression(it, labels, idName) },
+                    label = { createLabelExpression(it, entity.optionLabelProperties, idProperty) },
                 )
             )
         )
