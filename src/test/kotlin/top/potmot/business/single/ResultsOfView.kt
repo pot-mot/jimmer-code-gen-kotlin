@@ -5,7 +5,8 @@ const val index = """${'$'}index"""
 const val vue3ElementPlusResult = """
 [(components/entity/EntityTable.vue, <script setup lang="ts">
 import type {EntityListView} from "@/api/__generated/model/static"
-import EnumView from "@/components/enum/EnumView.vue"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
+import EnumView from "@/components/enums/enum/EnumView.vue"
 
 withDefaults(defineProps<{
     rows: Array<EntityListView>,
@@ -15,7 +16,7 @@ withDefaults(defineProps<{
 }>(), {
     idColumn: false,
     indexColumn: true,
-    multiSelect: true
+    multiSelect: true,
 })
 
 const emits = defineEmits<{
@@ -28,6 +29,8 @@ const emits = defineEmits<{
 defineSlots<{
     operations(props: {row: EntityListView, index: number}): any
 }>()
+
+const pageSizeStore = usePageSizeStore()
 
 const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     emits("selectionChange", newSelection)
@@ -46,13 +49,17 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             v-if="idColumn"
             prop="id"
             label="ID"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
-        <el-table-column v-if="indexColumn" type="index" fixed/>
+        <el-table-column
+            v-if="indexColumn"
+            type="index"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
         <el-table-column
             v-if="multiSelect"
             type="selection"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column prop="enumProperty" label="enumProperty">
             <template #default="scope">
@@ -75,7 +82,10 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             prop="toOneNullablePropertyId"
             label="toOneNullableProperty"
         />
-        <el-table-column label="操作" fixed="right">
+        <el-table-column
+            label="操作"
+            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+        >
             <template #default="scope">
                 <slot
                     name="operations"
@@ -108,15 +118,12 @@ export const createDefaultEntity = (): EntityAddFormType => {
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
-import type {
-    EntityInsertInput,
-    EntityAddFormType,
-    ToOneEntityOptionView
-} from "@/api/__generated/model/static"
+import type {EntityInsertInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
+import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
-import {useRules} from "@/rules/EntityAddFormRules"
-import EnumSelect from "@/components/enum/EnumSelect.vue"
-import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import {useRules} from "@/rules/entity/EntityAddFormRules"
+import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
+import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 import {sendMessage} from "@/utils/message"
 
@@ -127,7 +134,7 @@ const props = withDefaults(defineProps<{
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
     withOperations: true,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -157,7 +164,7 @@ const handleValidate = async (): Promise<boolean> => {
     if (formValid) {
         if (formData.value.toOnePropertyId === undefined) {
             sendMessage("toOneProperty不可为空", "warning")
-            return
+            return false
         }
 
         return true
@@ -191,6 +198,7 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <el-form-item prop="enumProperty" label="enumProperty">
             <EnumSelect v-model="formData.enumProperty"/>
@@ -226,7 +234,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -262,7 +270,7 @@ const props = withDefaults(defineProps<{
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
     withOperations: true,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -313,6 +321,7 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <el-form-item
             prop="enumProperty"
@@ -355,7 +364,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -399,7 +408,7 @@ const props = withDefaults(defineProps<{
     indexColumn: false,
     multiSelect: true,
     withOperations: false,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -475,6 +484,7 @@ defineExpose<FormExpose>({
         :model="rows"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <div>
             <el-button
@@ -505,13 +515,17 @@ defineExpose<FormExpose>({
                 v-if="idColumn"
                 prop="id"
                 label="ID"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column
+                v-if="indexColumn"
+                type="index"
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+            />
             <el-table-column
                 v-if="multiSelect"
                 type="selection"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
             <el-table-column prop="enumProperty" label="enumProperty">
                 <template #default="scope">
@@ -572,11 +586,15 @@ defineExpose<FormExpose>({
                     </el-form-item>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right">
+            <el-table-column
+                label="操作"
+                :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+            >
                 <template #default="scope">
                     <el-button
                         type="danger"
                         :icon="Delete"
+                        link
                         @click="handleSingleDelete(scope.$index)"
                     />
                 </template>
@@ -589,7 +607,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -672,7 +690,6 @@ const emits = defineEmits<{(event: "query", spec: EntitySpec): void}>()
 </template>
 ), (pages/entity/EntityPage.vue, <script setup lang="ts">
 import {ref, onBeforeMount} from "vue"
-import type {Ref} from "vue"
 import {Plus, EditPen, Delete} from "@element-plus/icons-vue"
 import type {
     Page,
@@ -703,11 +720,11 @@ const pageData = ref<Page<EntityListView>>()
 // 分页查询
 const queryInfo = ref<PageQuery<EntitySpec>>({
     spec: {},
-    pageIndex: 1,
+    pageIndex: 0,
     pageSize: 5
 })
 
-const {queryPage} = useLegalPage(
+const {queryPage, currentPage} = useLegalPage(
     pageData,
     queryInfo,
     withLoading(api.entityService.page)
@@ -732,7 +749,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
 const toOnePropertyIdOptions = ref<Array<ToOneEntityOptionView>>()
 
 const setToOnePropertyIdOptions = withLoading(async () => {
-    toOnePropertyIdOptions.value = await api.entityService.listOptions({body: {}})
+    toOnePropertyIdOptions.value = await api.toOneEntityService.listOptions({body: {}})
 })
 
 onBeforeMount(async () => {
@@ -743,7 +760,7 @@ onBeforeMount(async () => {
 const toOneNullablePropertyIdOptions = ref<Array<ToOneEntityOptionView>>()
 
 const setToOneNullablePropertyIdOptions = withLoading(async () => {
-    toOneNullablePropertyIdOptions.value = await api.entityService.listOptions({body: {}})
+    toOneNullablePropertyIdOptions.value = await api.toOneEntityService.listOptions({body: {}})
 })
 
 onBeforeMount(async () => {
@@ -757,7 +774,7 @@ const startAdd = (): void => {
     addDialogVisible.value = true
 }
 
-const submitAdd = (insertInput: EntityInsertInput): void => {
+const submitAdd = async (insertInput: EntityInsertInput): Promise<void> => {
     try {
         await addEntity(insertInput)
         await queryPage()
@@ -778,7 +795,7 @@ const editDialogVisible = ref(false)
 
 const updateInput = ref<EntityUpdateInput | undefined>(undefined)
 
-const startEdit = (id: number): void => {
+const startEdit = async (id: number): Promise<void> => {
     updateInput.value = await getEntityForUpdate(id)
     if (updateInput.value === undefined) {
         sendMessage('编辑的comment不存在', 'error')
@@ -787,7 +804,7 @@ const startEdit = (id: number): void => {
     editDialogVisible.value = true
 }
 
-const submitEdit = (updateInput: EntityUpdateInput): void => {
+const submitEdit = async (updateInput: EntityUpdateInput): Promise<void> => {
     try {
         await editEntity(updateInput)
         await queryPage()
@@ -805,7 +822,7 @@ const cancelEdit = (): void => {
 }
 
 // 删除
-const handleDelete = (ids: number[]): void => {
+const handleDelete = async (ids: Array<number>): Promise<void> => {
     const result = await deleteConfirm('comment')
     if (!result) return
 
@@ -823,7 +840,7 @@ const handleDelete = (ids: number[]): void => {
 <template>
     <el-card v-loading="isLoading">
         <EntityQueryForm
-            v-model="queryForm.spec"
+            v-model="queryInfo.spec"
             v-if="
                 toOnePropertyIdOptions &&
                 toOneNullablePropertyIdOptions
@@ -833,7 +850,7 @@ const handleDelete = (ids: number[]): void => {
             @query="queryPage"
         />
 
-        <div>
+        <div class="page-operations">
             <el-button
                 v-if="
                     userStore.permissions.includes('entity:insert')
@@ -857,43 +874,45 @@ const handleDelete = (ids: number[]): void => {
             </el-button>
         </div>
 
-        <EntityTable
-            :rows="pageData.rows"
-            @selectionChange="handleSelectionChange"
-        >
-            <template #operations="{row}">
-                <el-button
-                    v-if="
-                        userStore.permissions.includes('entity:update')
-                    "
-                    type="warning"
-                    :icon="EditPen"
-                    plain
-                    @click="startEdit(row.id)"
-                >
-                    编辑
-                </el-button>
-                <el-button
-                    v-if="
-                        userStore.permissions.includes('entity:delete')
-                    "
-                    type="danger"
-                    :icon="Delete"
-                    plain
-                    @click="handleDelete([row.id])"
-                >
-                    删除
-                </el-button>
-            </template>
-        </EntityTable>
+        <template v-if="pageData">
+            <EntityTable
+                :rows="pageData.rows"
+                @selectionChange="handleSelectionChange"
+            >
+                <template #operations="{row}">
+                    <el-button
+                        v-if="
+                            userStore.permissions.includes('entity:update')
+                        "
+                        type="warning"
+                        :icon="EditPen"
+                        link
+                        @click="startEdit(row.id)"
+                    >
+                        编辑
+                    </el-button>
+                    <el-button
+                        v-if="
+                            userStore.permissions.includes('entity:delete')
+                        "
+                        type="danger"
+                        :icon="Delete"
+                        link
+                        @click="handleDelete([row.id])"
+                    >
+                        删除
+                    </el-button>
+                </template>
+            </EntityTable>
 
-        <el-pagination
-            v-model:current-page="queryInfo.pageIndex"
-            v-model:page-size="queryInfo.pageSize"
-            :total="pageData.totalRowCount"
-            :page-sizes="[5, 10, 20]"
-            layout="total, sizes, prev, pager, next, jumper"
-        />
+            <el-pagination
+                v-model:current-page="currentPage"
+                v-model:page-size="queryInfo.pageSize"
+                :total="pageData.totalRowCount"
+                :page-sizes="[5, 10, 20]"
+                layout="total, sizes, prev, pager, next, jumper"
+            />
+        </template>
     </el-card>
 
     <el-dialog

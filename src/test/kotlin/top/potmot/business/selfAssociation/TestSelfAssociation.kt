@@ -258,12 +258,10 @@ const filterNodeMethod = (value: string | undefined, data: TreeNode) => {
         assertEquals(
             """
 [(pages/selfAssociationEntity/SelfAssociationEntityPage.vue, <script setup lang="ts">
-import {ref, onBeforeMount} from "vue"
+import {ref, onBeforeMount, onMounted} from "vue"
 import {Plus, EditPen, Delete} from "@element-plus/icons-vue"
 import type {
-    Page,
-    PageQuery,
-    SelfAssociationEntityListView,
+    SelfAssociationEntityTreeView,
     SelfAssociationEntityInsertInput,
     SelfAssociationEntityUpdateInput,
     SelfAssociationEntitySpec,
@@ -274,7 +272,6 @@ import {sendMessage} from "@/utils/message"
 import {useUserStore} from "@/stores/userStore"
 import {deleteConfirm} from "@/utils/confirm"
 import {useLoading} from "@/utils/loading"
-import {useLegalPage} from "@/utils/legalPage"
 import SelfAssociationEntityTable from "@/components/selfAssociationEntity/SelfAssociationEntityTable.vue"
 import SelfAssociationEntityAddForm from "@/components/selfAssociationEntity/SelfAssociationEntityAddForm.vue"
 import SelfAssociationEntityEditForm from "@/components/selfAssociationEntity/SelfAssociationEntityEditForm.vue"
@@ -284,42 +281,44 @@ const userStore = useUserStore()
 
 const {isLoading, withLoading} = useLoading()
 
-const pageData = ref<Page<SelfAssociationEntityListView>>()
+const rows = ref<Array<SelfAssociationEntityTreeView>>()
 
-// 分页查询
-const queryInfo = ref<PageQuery<SelfAssociationEntitySpec>>({
-    spec: {},
-    pageIndex: 1,
-    pageSize: 5
+// 数据查询
+const spec = ref<SelfAssociationEntitySpec>({})
+
+const queryRows = withLoading(async () => {
+    rows.value = await api.selfAssociationEntityService.tree({body: spec.value})
 })
 
-const {queryPage} = useLegalPage(
-    pageData,
-    queryInfo,
-    withLoading((options: {
-        body: PageQuery<SelfAssociationEntitySpec>
-    }) => {
-        const spec = queryInfo.value.spec
-        return api.selfAssociationEntityService.page({
-            ...options,
-            tree: Object.keys(spec).filter((it) => !!spec[it as keyof typeof spec]).length === 0
-        })
-    })
-)
+onMounted(async () => {
+    await queryRows()
+})
 
-const addSelfAssociationEntity = withLoading((body: SelfAssociationEntityInsertInput) => api.selfAssociationEntityService.insert({body}))
+const addSelfAssociationEntity = withLoading(async (body: SelfAssociationEntityInsertInput) => {
+    const result = await api.selfAssociationEntityService.insert({body})
+    await setParentIdOptions()
+    return result
+})
 
 const getSelfAssociationEntityForUpdate = withLoading((id: number) => api.selfAssociationEntityService.getForUpdate({id}))
 
-const editSelfAssociationEntity = withLoading((body: SelfAssociationEntityUpdateInput) => api.selfAssociationEntityService.update({body}))
+const editSelfAssociationEntity = withLoading(async (body: SelfAssociationEntityUpdateInput) => {
+    const result = await api.selfAssociationEntityService.update({body})
+    await setParentIdOptions()
+    return result
+})
 
-const deleteSelfAssociationEntity = withLoading((ids: Array<number>) => api.selfAssociationEntityService.delete({ids}))
+const deleteSelfAssociationEntity = withLoading(async (ids: Array<number>) => {
+    const result = await api.selfAssociationEntityService.delete({ids})
+    await setParentIdOptions()
+    return result
+})
 
 // 多选
-const selection = ref<SelfAssociationEntityListView[]>([])
+const selection = ref<SelfAssociationEntityTreeView[]>([])
 
 const handleSelectionChange = (
-    newSelection: Array<SelfAssociationEntityListView>
+    newSelection: Array<SelfAssociationEntityTreeView>
 ): void => {
     selection.value = newSelection
 }
@@ -347,7 +346,7 @@ const submitAdd = async (
 ): Promise<void> => {
     try {
         await addSelfAssociationEntity(insertInput)
-        await queryPage()
+        await queryRows()
         addDialogVisible.value = false
 
         sendMessage('新增树节点成功', 'success')
@@ -379,7 +378,7 @@ const submitEdit = async (
 ): Promise<void> => {
     try {
         await editSelfAssociationEntity(updateInput)
-        await queryPage()
+        await queryRows()
         editDialogVisible.value = false
 
         sendMessage('编辑树节点成功', 'success')
@@ -394,13 +393,13 @@ const cancelEdit = (): void => {
 }
 
 // 删除
-const handleDelete = async (ids: number[]): Promise<void> => {
+const handleDelete = async (ids: Array<number>): Promise<void> => {
     const result = await deleteConfirm('树节点')
     if (!result) return
 
     try {
         await deleteSelfAssociationEntity(ids)
-        await queryPage()
+        await queryRows()
 
         sendMessage('删除树节点成功', 'success')
     } catch (e) {
@@ -412,13 +411,13 @@ const handleDelete = async (ids: number[]): Promise<void> => {
 <template>
     <el-card v-loading="isLoading">
         <SelfAssociationEntityQueryForm
-            v-model="queryInfo.spec"
+            v-model="spec"
             v-if="parentIdOptions"
             :parentIdOptions="parentIdOptions"
-            @query="queryPage"
+            @query="queryRows"
         />
 
-        <div>
+        <div class="page-operations">
             <el-button
                 v-if="
                     userStore.permissions.includes('selfAssociationEntity:insert')
@@ -442,9 +441,9 @@ const handleDelete = async (ids: number[]): Promise<void> => {
             </el-button>
         </div>
 
-        <template v-if="pageData">
+        <template v-if="rows">
             <SelfAssociationEntityTable
-                :rows="pageData.rows"
+                :rows="rows"
                 @selectionChange="handleSelectionChange"
             >
                 <template #operations="{row}">
@@ -454,7 +453,7 @@ const handleDelete = async (ids: number[]): Promise<void> => {
                         "
                         type="warning"
                         :icon="EditPen"
-                        plain
+                        link
                         @click="startEdit(row.id)"
                     >
                         编辑
@@ -465,21 +464,13 @@ const handleDelete = async (ids: number[]): Promise<void> => {
                         "
                         type="danger"
                         :icon="Delete"
-                        plain
+                        link
                         @click="handleDelete([row.id])"
                     >
                         删除
                     </el-button>
                 </template>
             </SelfAssociationEntityTable>
-
-            <el-pagination
-                v-model:current-page="queryInfo.pageIndex"
-                v-model:page-size="queryInfo.pageSize"
-                :total="pageData.totalRowCount"
-                :page-sizes="[5, 10, 20]"
-                layout="total, sizes, prev, pager, next, jumper"
-            />
         </template>
     </el-card>
 
@@ -532,35 +523,38 @@ const handleDelete = async (ids: number[]): Promise<void> => {
         assertEquals(
             """
 [(components/selfAssociationEntity/SelfAssociationEntityTable.vue, <script setup lang="ts">
-import type {SelfAssociationEntityListView} from "@/api/__generated/model/static"
+import type {SelfAssociationEntityTreeView} from "@/api/__generated/model/static"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
 
 withDefaults(defineProps<{
-    rows: Array<SelfAssociationEntityListView>,
+    rows: Array<SelfAssociationEntityTreeView>,
     idColumn?: boolean | undefined,
     indexColumn?: boolean | undefined,
     multiSelect?: boolean | undefined
 }>(), {
     idColumn: false,
-    indexColumn: true,
+    indexColumn: false,
     multiSelect: true,
 })
 
 const emits = defineEmits<{
     (
         event: "selectionChange",
-        selection: Array<SelfAssociationEntityListView>
+        selection: Array<SelfAssociationEntityTreeView>
     ): void
 }>()
 
 defineSlots<{
     operations(props: {
-        row: SelfAssociationEntityListView,
+        row: SelfAssociationEntityTreeView,
         index: number
     }): any
 }>()
 
+const pageSizeStore = usePageSizeStore()
+
 const handleSelectionChange = (
-    newSelection: Array<SelfAssociationEntityListView>
+    newSelection: Array<SelfAssociationEntityTreeView>
 ): void => {
     emits("selectionChange", newSelection)
 }
@@ -571,7 +565,6 @@ const handleSelectionChange = (
         :data="rows"
         row-key="id"
         border
-        stripe
         :tree-props="{children: 'children'}"
         @selection-change="handleSelectionChange"
     >
@@ -579,21 +572,27 @@ const handleSelectionChange = (
             v-if="idColumn"
             prop="id"
             label="ID"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
-        <el-table-column v-if="indexColumn" type="index" fixed/>
+        <el-table-column
+            v-if="indexColumn"
+            type="index"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
         <el-table-column
             v-if="multiSelect"
             type="selection"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column prop="label" label="标签"/>
-        <el-table-column prop="parentId" label="父节点"/>
-        <el-table-column label="操作" fixed="right">
+        <el-table-column
+            label="操作"
+            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+        >
             <template #default="scope">
                 <slot
                     name="operations"
-                    :row="scope.row as SelfAssociationEntityListView"
+                    :row="scope.row as SelfAssociationEntityTreeView"
                     :index="scope.$index"
                 />
             </template>
@@ -654,6 +653,8 @@ const formData = ref<SelfAssociationEntityAddFormType>(createDefaultSelfAssociat
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
+const pageSizeStore = usePageSizeStore()
+
 // 校验
 const handleValidate = async (): Promise<boolean> => {
     return await formRef.value?.validate().catch(() => false) ?? false
@@ -684,6 +685,7 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <el-form-item prop="label" label="标签">
             <el-input
@@ -705,7 +707,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -787,6 +789,8 @@ defineSlots<{
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
+const pageSizeStore = usePageSizeStore()
+
 // 校验
 const handleValidate = async (): Promise<boolean> => {
     return await formRef.value?.validate().catch(() => false) ?? false
@@ -817,6 +821,7 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <el-form-item prop="label" label="标签">
             <el-input
@@ -839,7 +844,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -892,7 +897,9 @@ import type {
 } from "@/api/__generated/model/static"
 import {createDefaultSelfAssociationEntity} from "@/components/selfAssociationEntity/createDefaultSelfAssociationEntity"
 import {useRules} from "@/rules/selfAssociationEntity/SelfAssociationEntityEditTableRules"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
 import {Plus, Delete} from "@element-plus/icons-vue"
+import {deleteConfirm} from "@/utils/confirm"
 import SelfAssociationEntityIdSelect from "@/components/selfAssociationEntity/SelfAssociationEntityIdSelect.vue"
 
 const rows = defineModel<Array<SelfAssociationEntityAddFormType>>({
@@ -931,6 +938,8 @@ defineSlots<{
 
 const formRef = ref<FormInstance>()
 const rules = useRules(rows)
+
+const pageSizeStore = usePageSizeStore()
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
@@ -989,6 +998,7 @@ defineExpose<FormExpose>({
         :model="rows"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <div>
             <el-button
@@ -1019,13 +1029,17 @@ defineExpose<FormExpose>({
                 v-if="idColumn"
                 prop="id"
                 label="ID"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column
+                v-if="indexColumn"
+                type="index"
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+            />
             <el-table-column
                 v-if="multiSelect"
                 type="selection"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
             <el-table-column prop="label" label="标签">
                 <template #default="scope">
@@ -1035,7 +1049,7 @@ defineExpose<FormExpose>({
                         :rule="rules.label"
                     >
                         <el-input
-                            v-model="rows.label"
+                            v-model="scope.row.label"
                             placeholder="请输入标签"
                             clearable
                         />
@@ -1050,18 +1064,22 @@ defineExpose<FormExpose>({
                         :rule="rules.parentId"
                     >
                         <SelfAssociationEntityIdSelect
-                            v-model="rows.parentId"
+                            v-model="scope.row.parentId"
                             :options="parentIdOptions"
-                            :exclude-ids="[rows.id]"
+                            :exclude-ids="[scope.row.id]"
                         />
                     </el-form-item>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right">
+            <el-table-column
+                label="操作"
+                :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+            >
                 <template #default="scope">
                     <el-button
                         type="danger"
                         :icon="Delete"
+                        link
                         @click="handleSingleDelete(scope.$index)"
                     />
                 </template>
@@ -1074,7 +1092,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -1333,7 +1351,7 @@ public class SelfAssociationEntityService implements Tables {
     @GetMapping("/{id}")
     @SaCheckPermission("selfAssociationEntity:get")
     @Nullable
-    public SelfAssociationEntityDetailView get(@PathVariable int id) throws AuthorizeException { 
+    public SelfAssociationEntityDetailView get(@PathVariable int id) throws AuthorizeException {
         return sqlClient.findById(SelfAssociationEntityDetailView.class, id);
     }
 
@@ -1383,12 +1401,12 @@ public class SelfAssociationEntityService implements Tables {
                     .where(query.getSpec())
                     .where(SELF_ASSOCIATION_ENTITY_TABLE.parentId().isNull())
                     .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityListView.class))
-                    .fetchPage(query.getPageIndex() - 1, query.getPageSize());
+                    .fetchPage(query.getPageIndex(), query.getPageSize());
         } else {
             Page<Menu> page = sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
                     .where(query.getSpec())
                     .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityListView.METADATA.getFetcher().remove("children")))
-                    .fetchPage(query.getPageIndex() - 1, query.getPageSize());
+                    .fetchPage(query.getPageIndex(), query.getPageSize());
 
             return new Page<>(
                     page.getRows().stream().map(SelfAssociationEntityListView::new).toList(),
@@ -1436,7 +1454,7 @@ public class SelfAssociationEntityService implements Tables {
     @GetMapping("/{id}/forUpdate")
     @SaCheckPermission("selfAssociationEntity:update")
     @Nullable
-    public SelfAssociationEntityUpdateFillView getForUpdate(@PathVariable int id) throws AuthorizeException { 
+    public SelfAssociationEntityUpdateFillView getForUpdate(@PathVariable int id) throws AuthorizeException {
         return sqlClient.findById(SelfAssociationEntityUpdateFillView.class, id);
     }
 

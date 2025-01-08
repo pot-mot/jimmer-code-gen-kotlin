@@ -66,7 +66,7 @@ const props = withDefaults(defineProps<{
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
     withOperations: true,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -98,7 +98,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", formData.value as EntityInsertInput)
     }
 }
 
@@ -117,6 +117,7 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <el-form-item
             prop="enumProperty"
@@ -159,7 +160,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>

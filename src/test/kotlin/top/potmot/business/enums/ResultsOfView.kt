@@ -1,7 +1,7 @@
 package top.potmot.business.enums
 
 const val vue3ElementPlusResult = """
-[(components/enumTest/EnumTestView.vue, <script setup lang="ts">
+[(components/enums/enumTest/EnumTestView.vue, <script setup lang="ts">
 import type {EnumTest} from "@/api/__generated/model/enums"
 
 defineProps<{value: EnumTest}>()
@@ -18,10 +18,10 @@ defineProps<{value: EnumTest}>()
         选项3
     </el-text>
 </template>
-), (components/enumTest/EnumTestSelect.vue, <script setup lang="ts">
+), (components/enums/enumTest/EnumTestSelect.vue, <script setup lang="ts">
 import {EnumTest_CONSTANTS} from "@/api/__generated/model/enums"
 import type {EnumTest} from "@/api/__generated/model/enums"
-import EnumTestView from "@/components/enumTest/EnumTestView.vue"
+import EnumTestView from "@/components/enums/enumTest/EnumTestView.vue"
 
 const modelValue = defineModel<EnumTest>({
     required: true
@@ -31,12 +31,12 @@ const modelValue = defineModel<EnumTest>({
 <template>
     <el-select
         v-model="modelValue"
-        placeholder="请选择"
+        placeholder="请选择测试"
         filterable
     >
         <el-option
             v-for="option in EnumTest_CONSTANTS"
-            :value="option.value"
+            :value="option"
         >
             <EnumTestView :value="option"/>
         </el-option>
@@ -45,10 +45,10 @@ const modelValue = defineModel<EnumTest>({
         </template>
     </el-select>
 </template>
-), (components/enumTest/EnumTestNullableSelect.vue, <script setup lang="ts">
+), (components/enums/enumTest/EnumTestNullableSelect.vue, <script setup lang="ts">
 import {EnumTest_CONSTANTS} from "@/api/__generated/model/enums"
 import type {EnumTest} from "@/api/__generated/model/enums"
-import EnumTestView from "@/components/enumTest/EnumTestView.vue"
+import EnumTestView from "@/components/enums/enumTest/EnumTestView.vue"
 
 const modelValue = defineModel<EnumTest | undefined>({
     required: true
@@ -58,14 +58,14 @@ const modelValue = defineModel<EnumTest | undefined>({
 <template>
     <el-select
         v-model="modelValue"
-        placeholder="请选择"
+        placeholder="请选择测试"
         filterable
         clearable
         :value-on-clear="undefined"
     >
         <el-option
             v-for="option in EnumTest_CONSTANTS"
-            :value="option.value"
+            :value="option"
         >
             <EnumTestView :value="option"/>
         </el-option>

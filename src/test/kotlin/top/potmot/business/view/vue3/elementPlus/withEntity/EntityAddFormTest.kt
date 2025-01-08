@@ -81,15 +81,12 @@ export const useRules = (_: Ref<EntityInsertInput>): FormRules<EntityInsertInput
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
-import type {
-    EntityInsertInput,
-    EntityAddFormType,
-    ToOneEntityOptionView
-} from "@/api/__generated/model/static"
+import type {EntityInsertInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
+import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
-import {useRules} from "@/rules/EntityAddFormRules"
-import EnumSelect from "@/components/enum/EnumSelect.vue"
-import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import {useRules} from "@/rules/entity/EntityAddFormRules"
+import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
+import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 import {sendMessage} from "@/utils/message"
 
@@ -100,7 +97,7 @@ const props = withDefaults(defineProps<{
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
     withOperations: true,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -130,7 +127,7 @@ const handleValidate = async (): Promise<boolean> => {
     if (formValid) {
         if (formData.value.toOnePropertyId === undefined) {
             sendMessage("toOneProperty不可为空", "warning")
-            return
+            return false
         }
 
         return true
@@ -145,7 +142,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", formData.value as EntityInsertInput)
     }
 }
 
@@ -164,6 +161,7 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <el-form-item prop="enumProperty" label="enumProperty">
             <EnumSelect v-model="formData.enumProperty"/>
@@ -199,7 +197,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>

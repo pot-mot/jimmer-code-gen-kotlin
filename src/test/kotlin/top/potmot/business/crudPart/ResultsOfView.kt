@@ -5,7 +5,8 @@ const val index = """${'$'}index"""
 const val addOnlyVue3ElementPlusResult = """
 [(components/entity/EntityTable.vue, <script setup lang="ts">
 import type {EntityListView} from "@/api/__generated/model/static"
-import EnumView from "@/components/enum/EnumView.vue"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
+import EnumView from "@/components/enums/enum/EnumView.vue"
 
 withDefaults(defineProps<{
     rows: Array<EntityListView>,
@@ -15,7 +16,7 @@ withDefaults(defineProps<{
 }>(), {
     idColumn: false,
     indexColumn: true,
-    multiSelect: true
+    multiSelect: true,
 })
 
 const emits = defineEmits<{
@@ -28,6 +29,8 @@ const emits = defineEmits<{
 defineSlots<{
     operations(props: {row: EntityListView, index: number}): any
 }>()
+
+const pageSizeStore = usePageSizeStore()
 
 const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     emits("selectionChange", newSelection)
@@ -46,13 +49,17 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             v-if="idColumn"
             prop="id"
             label="ID"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
-        <el-table-column v-if="indexColumn" type="index" fixed/>
+        <el-table-column
+            v-if="indexColumn"
+            type="index"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
         <el-table-column
             v-if="multiSelect"
             type="selection"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column prop="enumProperty" label="enumProperty">
             <template #default="scope">
@@ -75,7 +82,10 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             prop="toOneNullablePropertyId"
             label="toOneNullableProperty"
         />
-        <el-table-column label="操作" fixed="right">
+        <el-table-column
+            label="操作"
+            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+        >
             <template #default="scope">
                 <slot
                     name="operations"
@@ -108,15 +118,12 @@ export const createDefaultEntity = (): EntityAddFormType => {
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
-import type {
-    EntityInsertInput,
-    EntityAddFormType,
-    ToOneEntityOptionView
-} from "@/api/__generated/model/static"
+import type {EntityInsertInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
+import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
-import {useRules} from "@/rules/EntityAddFormRules"
-import EnumSelect from "@/components/enum/EnumSelect.vue"
-import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import {useRules} from "@/rules/entity/EntityAddFormRules"
+import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
+import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 import {sendMessage} from "@/utils/message"
 
@@ -127,7 +134,7 @@ const props = withDefaults(defineProps<{
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
     withOperations: true,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -157,7 +164,7 @@ const handleValidate = async (): Promise<boolean> => {
     if (formValid) {
         if (formData.value.toOnePropertyId === undefined) {
             sendMessage("toOneProperty不可为空", "warning")
-            return
+            return false
         }
 
         return true
@@ -191,6 +198,7 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <el-form-item prop="enumProperty" label="enumProperty">
             <EnumSelect v-model="formData.enumProperty"/>
@@ -226,7 +234,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -270,7 +278,7 @@ const props = withDefaults(defineProps<{
     indexColumn: false,
     multiSelect: true,
     withOperations: false,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -346,6 +354,7 @@ defineExpose<FormExpose>({
         :model="rows"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <div>
             <el-button
@@ -376,13 +385,17 @@ defineExpose<FormExpose>({
                 v-if="idColumn"
                 prop="id"
                 label="ID"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column
+                v-if="indexColumn"
+                type="index"
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+            />
             <el-table-column
                 v-if="multiSelect"
                 type="selection"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
             <el-table-column prop="enumProperty" label="enumProperty">
                 <template #default="scope">
@@ -443,11 +456,15 @@ defineExpose<FormExpose>({
                     </el-form-item>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right">
+            <el-table-column
+                label="操作"
+                :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+            >
                 <template #default="scope">
                     <el-button
                         type="danger"
                         :icon="Delete"
+                        link
                         @click="handleSingleDelete(scope.$index)"
                     />
                 </template>
@@ -460,7 +477,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -741,7 +758,8 @@ export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpda
 const val editOnlyVue3ElementPlusResult = """
 [(components/entity/EntityTable.vue, <script setup lang="ts">
 import type {EntityListView} from "@/api/__generated/model/static"
-import EnumView from "@/components/enum/EnumView.vue"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
+import EnumView from "@/components/enums/enum/EnumView.vue"
 
 withDefaults(defineProps<{
     rows: Array<EntityListView>,
@@ -751,7 +769,7 @@ withDefaults(defineProps<{
 }>(), {
     idColumn: false,
     indexColumn: true,
-    multiSelect: true
+    multiSelect: true,
 })
 
 const emits = defineEmits<{
@@ -764,6 +782,8 @@ const emits = defineEmits<{
 defineSlots<{
     operations(props: {row: EntityListView, index: number}): any
 }>()
+
+const pageSizeStore = usePageSizeStore()
 
 const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     emits("selectionChange", newSelection)
@@ -782,13 +802,17 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             v-if="idColumn"
             prop="id"
             label="ID"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
-        <el-table-column v-if="indexColumn" type="index" fixed/>
+        <el-table-column
+            v-if="indexColumn"
+            type="index"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
         <el-table-column
             v-if="multiSelect"
             type="selection"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column prop="enumProperty" label="enumProperty">
             <template #default="scope">
@@ -811,7 +835,10 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             prop="toOneNullablePropertyId"
             label="toOneNullableProperty"
         />
-        <el-table-column label="操作" fixed="right">
+        <el-table-column
+            label="操作"
+            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+        >
             <template #default="scope">
                 <slot
                     name="operations"
@@ -843,7 +870,7 @@ const props = withDefaults(defineProps<{
     toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
 }>(), {
     withOperations: true,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -894,6 +921,7 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <el-form-item
             prop="enumProperty"
@@ -936,7 +964,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -980,7 +1008,7 @@ const props = withDefaults(defineProps<{
     indexColumn: false,
     multiSelect: true,
     withOperations: false,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -1056,6 +1084,7 @@ defineExpose<FormExpose>({
         :model="rows"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <div>
             <el-button
@@ -1086,13 +1115,17 @@ defineExpose<FormExpose>({
                 v-if="idColumn"
                 prop="id"
                 label="ID"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column
+                v-if="indexColumn"
+                type="index"
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+            />
             <el-table-column
                 v-if="multiSelect"
                 type="selection"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
             <el-table-column prop="enumProperty" label="enumProperty">
                 <template #default="scope">
@@ -1153,11 +1186,15 @@ defineExpose<FormExpose>({
                     </el-form-item>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right">
+            <el-table-column
+                label="操作"
+                :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+            >
                 <template #default="scope">
                     <el-button
                         type="danger"
                         :icon="Delete"
+                        link
                         @click="handleSingleDelete(scope.$index)"
                     />
                 </template>
@@ -1170,7 +1207,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -1468,7 +1505,8 @@ export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpda
 const val queryOnlyVue3ElementPlusResult = """
 [(components/entity/EntityTable.vue, <script setup lang="ts">
 import type {EntityListView} from "@/api/__generated/model/static"
-import EnumView from "@/components/enum/EnumView.vue"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
+import EnumView from "@/components/enums/enum/EnumView.vue"
 
 withDefaults(defineProps<{
     rows: Array<EntityListView>,
@@ -1478,7 +1516,7 @@ withDefaults(defineProps<{
 }>(), {
     idColumn: false,
     indexColumn: true,
-    multiSelect: true
+    multiSelect: true,
 })
 
 const emits = defineEmits<{
@@ -1491,6 +1529,8 @@ const emits = defineEmits<{
 defineSlots<{
     operations(props: {row: EntityListView, index: number}): any
 }>()
+
+const pageSizeStore = usePageSizeStore()
 
 const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     emits("selectionChange", newSelection)
@@ -1509,13 +1549,17 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             v-if="idColumn"
             prop="id"
             label="ID"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
-        <el-table-column v-if="indexColumn" type="index" fixed/>
+        <el-table-column
+            v-if="indexColumn"
+            type="index"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
         <el-table-column
             v-if="multiSelect"
             type="selection"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column prop="enumProperty" label="enumProperty">
             <template #default="scope">
@@ -1538,7 +1582,10 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             prop="toOneNullablePropertyId"
             label="toOneNullableProperty"
         />
-        <el-table-column label="操作" fixed="right">
+        <el-table-column
+            label="操作"
+            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+        >
             <template #default="scope">
                 <slot
                     name="operations"
@@ -1578,7 +1625,7 @@ const props = withDefaults(defineProps<{
     indexColumn: false,
     multiSelect: true,
     withOperations: false,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -1654,6 +1701,7 @@ defineExpose<FormExpose>({
         :model="rows"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <div>
             <el-button
@@ -1684,13 +1732,17 @@ defineExpose<FormExpose>({
                 v-if="idColumn"
                 prop="id"
                 label="ID"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column
+                v-if="indexColumn"
+                type="index"
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+            />
             <el-table-column
                 v-if="multiSelect"
                 type="selection"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
             <el-table-column prop="enumProperty" label="enumProperty">
                 <template #default="scope">
@@ -1751,11 +1803,15 @@ defineExpose<FormExpose>({
                     </el-form-item>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right">
+            <el-table-column
+                label="操作"
+                :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+            >
                 <template #default="scope">
                     <el-button
                         type="danger"
                         :icon="Delete"
+                        link
                         @click="handleSingleDelete(scope.$index)"
                     />
                 </template>
@@ -1768,7 +1824,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -2047,7 +2103,8 @@ export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpda
 const val deleteOnlyVue3ElementPlusResult = """
 [(components/entity/EntityTable.vue, <script setup lang="ts">
 import type {EntityListView} from "@/api/__generated/model/static"
-import EnumView from "@/components/enum/EnumView.vue"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
+import EnumView from "@/components/enums/enum/EnumView.vue"
 
 withDefaults(defineProps<{
     rows: Array<EntityListView>,
@@ -2057,7 +2114,7 @@ withDefaults(defineProps<{
 }>(), {
     idColumn: false,
     indexColumn: true,
-    multiSelect: true
+    multiSelect: true,
 })
 
 const emits = defineEmits<{
@@ -2070,6 +2127,8 @@ const emits = defineEmits<{
 defineSlots<{
     operations(props: {row: EntityListView, index: number}): any
 }>()
+
+const pageSizeStore = usePageSizeStore()
 
 const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     emits("selectionChange", newSelection)
@@ -2088,13 +2147,17 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             v-if="idColumn"
             prop="id"
             label="ID"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
-        <el-table-column v-if="indexColumn" type="index" fixed/>
+        <el-table-column
+            v-if="indexColumn"
+            type="index"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
         <el-table-column
             v-if="multiSelect"
             type="selection"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column prop="enumProperty" label="enumProperty">
             <template #default="scope">
@@ -2117,7 +2180,10 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             prop="toOneNullablePropertyId"
             label="toOneNullableProperty"
         />
-        <el-table-column label="操作" fixed="right">
+        <el-table-column
+            label="操作"
+            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+        >
             <template #default="scope">
                 <slot
                     name="operations"
@@ -2157,7 +2223,7 @@ const props = withDefaults(defineProps<{
     indexColumn: false,
     multiSelect: true,
     withOperations: false,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -2233,6 +2299,7 @@ defineExpose<FormExpose>({
         :model="rows"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <div>
             <el-button
@@ -2263,13 +2330,17 @@ defineExpose<FormExpose>({
                 v-if="idColumn"
                 prop="id"
                 label="ID"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column
+                v-if="indexColumn"
+                type="index"
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+            />
             <el-table-column
                 v-if="multiSelect"
                 type="selection"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
             <el-table-column prop="enumProperty" label="enumProperty">
                 <template #default="scope">
@@ -2330,11 +2401,15 @@ defineExpose<FormExpose>({
                     </el-form-item>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right">
+            <el-table-column
+                label="操作"
+                :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+            >
                 <template #default="scope">
                     <el-button
                         type="danger"
                         :icon="Delete"
+                        link
                         @click="handleSingleDelete(scope.$index)"
                     />
                 </template>
@@ -2347,7 +2422,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>

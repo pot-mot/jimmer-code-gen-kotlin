@@ -72,7 +72,7 @@ const props = withDefaults(defineProps<{
     indexColumn: false,
     multiSelect: true,
     withOperations: false,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -148,6 +148,7 @@ defineExpose<FormExpose>({
         :model="rows"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <div>
             <el-button
@@ -178,13 +179,17 @@ defineExpose<FormExpose>({
                 v-if="idColumn"
                 prop="id"
                 label="ID"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column
+                v-if="indexColumn"
+                type="index"
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+            />
             <el-table-column
                 v-if="multiSelect"
                 type="selection"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
             <el-table-column prop="enumProperty" label="enumProperty">
                 <template #default="scope">
@@ -245,11 +250,15 @@ defineExpose<FormExpose>({
                     </el-form-item>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" fixed="right">
+            <el-table-column
+                label="操作"
+                :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+            >
                 <template #default="scope">
                     <el-button
                         type="danger"
                         :icon="Delete"
+                        link
                         @click="handleSingleDelete(scope.$index)"
                     />
                 </template>
@@ -262,7 +271,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>

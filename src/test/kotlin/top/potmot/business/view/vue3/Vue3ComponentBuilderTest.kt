@@ -108,7 +108,7 @@ withDefaults(defineProps<{
     prop3?: boolean | undefined
 }>(), {
     prop2: 0,
-    prop3: false
+    prop3: false,
 })
            """.trimBlankLine()
 
@@ -294,7 +294,7 @@ withDefaults(defineProps<{
     prop3?: boolean | undefined
 }>(), {
     prop2: 0,
-    prop3: false
+    prop3: false,
 })
 
 defineEmits<{

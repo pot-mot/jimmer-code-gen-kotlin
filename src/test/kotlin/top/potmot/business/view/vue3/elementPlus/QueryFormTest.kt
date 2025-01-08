@@ -38,11 +38,12 @@ const emits = defineEmits<{
 </script>
 
 <template>
-    <el-form :model="spec">
+    <el-form :model="spec" @submit.prevent>
         <el-row :gutter="20">
             <el-button
                 type="primary"
                 :icon="Search"
+                class="search-button"
                 @click="emits('query', spec)"
             >
                 查询
@@ -96,11 +97,12 @@ const emits = defineEmits<{
 </script>
 
 <template>
-    <el-form :model="spec">
+    <el-form :model="spec" @submit.prevent>
         <el-row :gutter="20">
             <el-button
                 type="primary"
                 :icon="Search"
+                class="search-button"
                 @click="emits('query', spec)"
             >
                 查询

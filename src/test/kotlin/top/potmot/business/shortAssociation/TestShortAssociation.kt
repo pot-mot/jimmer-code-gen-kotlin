@@ -208,6 +208,7 @@ specification EntitySpec {
             """
 <script setup lang="ts">
 import type {EntityListView} from "@/api/__generated/model/static"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
 
 withDefaults(defineProps<{
     rows: Array<EntityListView>,
@@ -217,7 +218,7 @@ withDefaults(defineProps<{
 }>(), {
     idColumn: false,
     indexColumn: true,
-    multiSelect: true
+    multiSelect: true,
 })
 
 const emits = defineEmits<{
@@ -230,6 +231,8 @@ const emits = defineEmits<{
 defineSlots<{
     operations(props: {row: EntityListView, index: number}): any
 }>()
+
+const pageSizeStore = usePageSizeStore()
 
 const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     emits("selectionChange", newSelection)
@@ -248,13 +251,17 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             v-if="idColumn"
             prop="id"
             label="ID"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
-        <el-table-column v-if="indexColumn" type="index" fixed/>
+        <el-table-column
+            v-if="indexColumn"
+            type="index"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
         <el-table-column
             v-if="multiSelect"
             type="selection"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column
             prop="shortAssociationProperty.label1"
@@ -264,7 +271,10 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             prop="shortAssociationProperty.label2"
             label="commentlabel2"
         />
-        <el-table-column label="操作" fixed="right">
+        <el-table-column
+            label="操作"
+            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+        >
             <template #default="scope">
                 <slot
                     name="operations"
@@ -349,6 +359,7 @@ specification EntitySpec {
             """
 <script setup lang="ts">
 import type {EntityListView} from "@/api/__generated/model/static"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
 
 withDefaults(defineProps<{
     rows: Array<EntityListView>,
@@ -358,7 +369,7 @@ withDefaults(defineProps<{
 }>(), {
     idColumn: false,
     indexColumn: true,
-    multiSelect: true
+    multiSelect: true,
 })
 
 const emits = defineEmits<{
@@ -371,6 +382,8 @@ const emits = defineEmits<{
 defineSlots<{
     operations(props: {row: EntityListView, index: number}): any
 }>()
+
+const pageSizeStore = usePageSizeStore()
 
 const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     emits("selectionChange", newSelection)
@@ -389,13 +402,17 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             v-if="idColumn"
             prop="id"
             label="ID"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
-        <el-table-column v-if="indexColumn" type="index" fixed/>
+        <el-table-column
+            v-if="indexColumn"
+            type="index"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
         <el-table-column
             v-if="multiSelect"
             type="selection"
-            fixed
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column
             prop="shortAssociationProperty.label1"
@@ -405,7 +422,10 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             prop="shortAssociationProperty.label2"
             label="commentlabel2"
         />
-        <el-table-column label="操作" fixed="right">
+        <el-table-column
+            label="操作"
+            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+        >
             <template #default="scope">
                 <slot
                     name="operations"

@@ -188,7 +188,7 @@ public class EntityService implements Tables {
     @GetMapping("/{id}")
     @SaCheckPermission("entity:get")
     @Nullable
-    public EntityDetailView get(@PathVariable int id) throws AuthorizeException { 
+    public EntityDetailView get(@PathVariable int id) throws AuthorizeException {
         return sqlClient.findById(EntityDetailView.class, id);
     }
 
@@ -221,7 +221,7 @@ public class EntityService implements Tables {
         return sqlClient.createQuery(ENTITY_TABLE)
                 .where(query.getSpec())
                 .select(ENTITY_TABLE.fetch(EntityListView.class))
-                .fetchPage(query.getPageIndex() - 1, query.getPageSize());
+                .fetchPage(query.getPageIndex(), query.getPageSize());
     }
 
     /**
@@ -262,7 +262,7 @@ public class EntityService implements Tables {
     @GetMapping("/{id}/forUpdate")
     @SaCheckPermission("entity:update")
     @Nullable
-    public EntityUpdateFillView getForUpdate(@PathVariable int id) throws AuthorizeException { 
+    public EntityUpdateFillView getForUpdate(@PathVariable int id) throws AuthorizeException {
         return sqlClient.findById(EntityUpdateFillView.class, id);
     }
 

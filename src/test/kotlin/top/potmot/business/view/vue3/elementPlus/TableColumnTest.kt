@@ -46,7 +46,7 @@ class TableColumnTest : TableColumn {
     fun `test enum table column`() {
         assertEquals(
             """
-import EnumView from "@/components/enum/EnumView.vue"
+import EnumView from "@/components/enums/enum/EnumView.vue"
 <el-table-item>
     <EnumView :value="scope.row.property"/>
 </el-table-item>

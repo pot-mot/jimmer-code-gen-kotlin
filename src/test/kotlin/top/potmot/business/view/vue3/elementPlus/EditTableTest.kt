@@ -39,7 +39,9 @@ import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntitySubTableType} from "@/api/__generated/model/static"
 import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
 import {Plus, Delete} from "@element-plus/icons-vue"
+import {deleteConfirm} from "@/utils/confirm"
 
 const formData = defineModel<Array<EntitySubTableType>>({
     required: true
@@ -56,7 +58,7 @@ const props = withDefaults(defineProps<{
     indexColumn: false,
     multiSelect: true,
     withOperations: false,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -76,6 +78,8 @@ defineSlots<{
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
+
+const pageSizeStore = usePageSizeStore()
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
@@ -132,6 +136,7 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <div>
             <el-button
@@ -162,19 +167,27 @@ defineExpose<FormExpose>({
                 v-if="idColumn"
                 prop="id"
                 label="ID"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column
+                v-if="indexColumn"
+                type="index"
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+            />
             <el-table-column
                 v-if="multiSelect"
                 type="selection"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column label="操作" fixed="right">
+            <el-table-column
+                label="操作"
+                :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+            >
                 <template #default="scope">
                     <el-button
                         type="danger"
                         :icon="Delete"
+                        link
                         @click="handleSingleDelete(scope.$index)"
                     />
                 </template>
@@ -187,7 +200,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -235,7 +248,9 @@ import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntitySubTableType} from "@/api/__generated/model/static"
 import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
 import {Plus, Delete} from "@element-plus/icons-vue"
+import {deleteConfirm} from "@/utils/confirm"
 
 const formData = defineModel<Array<EntitySubTableType>>({
     required: true
@@ -252,7 +267,7 @@ const props = withDefaults(defineProps<{
     indexColumn: false,
     multiSelect: true,
     withOperations: false,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -339,6 +354,7 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <div>
             <el-button
@@ -369,19 +385,27 @@ defineExpose<FormExpose>({
                 v-if="idColumn"
                 prop="id"
                 label="ID"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column
+                v-if="indexColumn"
+                type="index"
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+            />
             <el-table-column
                 v-if="multiSelect"
                 type="selection"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column label="操作" fixed="right">
+            <el-table-column
+                label="操作"
+                :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+            >
                 <template #default="scope">
                     <el-button
                         type="danger"
                         :icon="Delete"
+                        link
                         @click="handleSingleDelete(scope.$index)"
                     />
                 </template>
@@ -394,7 +418,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>
@@ -446,7 +470,9 @@ import type {
 } from "@/api/__generated/model/static"
 import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
 import {Plus, Delete} from "@element-plus/icons-vue"
+import {deleteConfirm} from "@/utils/confirm"
 
 const formData = defineModel<Array<EntitySubTableType>>({
     required: true
@@ -465,7 +491,7 @@ const props = withDefaults(defineProps<{
     indexColumn: false,
     multiSelect: true,
     withOperations: false,
-    submitLoading: false
+    submitLoading: false,
 })
 
 const emits = defineEmits<{
@@ -485,6 +511,8 @@ defineSlots<{
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
+
+const pageSizeStore = usePageSizeStore()
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
@@ -541,6 +569,7 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        @submit.prevent
     >
         <div>
             <el-button
@@ -571,19 +600,27 @@ defineExpose<FormExpose>({
                 v-if="idColumn"
                 prop="id"
                 label="ID"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column v-if="indexColumn" type="index" fixed/>
+            <el-table-column
+                v-if="indexColumn"
+                type="index"
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+            />
             <el-table-column
                 v-if="multiSelect"
                 type="selection"
-                fixed
+                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column label="操作" fixed="right">
+            <el-table-column
+                label="操作"
+                :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+            >
                 <template #default="scope">
                     <el-button
                         type="danger"
                         :icon="Delete"
+                        link
                         @click="handleSingleDelete(scope.$index)"
                     />
                 </template>
@@ -596,7 +633,7 @@ defineExpose<FormExpose>({
             :handleSubmit="handleSubmit"
             :handleCancel="handleCancel"
         >
-            <div style="text-align: right;">
+            <div class="form-operations">
                 <el-button type="warning" @click="handleCancel">
                     取消
                 </el-button>

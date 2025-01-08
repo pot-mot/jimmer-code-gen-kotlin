@@ -16,10 +16,26 @@ class ExistValidServiceTest {
             """
 (EntityPackage/EntityService.java, package EntityPackage;
 
+import EntityPackage.AuthorizeException;
+import EntityPackage.Entity;
+import EntityPackage.Tables;
+import EntityPackage.dto.EntityDetailView;
+import EntityPackage.dto.EntityExistByEnumPropertyAndEnumNullablePropertySpec;
+import EntityPackage.dto.EntityExistByToOnePropertyAndToOneNullablePropertySpec;
+import EntityPackage.dto.EntityInsertInput;
+import EntityPackage.dto.EntityListView;
+import EntityPackage.dto.EntityOptionView;
+import EntityPackage.dto.EntitySpec;
+import EntityPackage.dto.EntityUpdateFillView;
+import EntityPackage.dto.EntityUpdateInput;
+import EntityPackage.query.PageQuery;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import jakarta.annotation.Nullable;
+import java.util.List;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,22 +46,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import EntityPackage.Entity;
-import EntityPackage.Tables;
-import EntityPackage.dto.EntityListView;
-import EntityPackage.dto.EntityDetailView;
-import EntityPackage.dto.EntityInsertInput;
-import EntityPackage.dto.EntityUpdateInput;
-import EntityPackage.dto.EntityUpdateFillView;
-import EntityPackage.dto.EntitySpec;
-import EntityPackage.dto.EntityOptionView;
-import EntityPackage.dto.EntityExistByToOnePropertyAndToOneNullablePropertySpec;
-import EntityPackage.dto.EntityExistByEnumPropertyAndEnumNullablePropertySpec;
-import EntityPackage.query.PageQuery;
-import EntityPackage.AuthorizeException;
-import org.jetbrains.annotations.NotNull;
-import jakarta.annotation.Nullable;
-import java.util.List;
 
 @RestController
 @RequestMapping("/entity")
@@ -65,7 +65,7 @@ public class EntityService implements Tables {
     @GetMapping("/{id}")
     @SaCheckPermission("entity:get")
     @Nullable
-    public EntityDetailView get(@PathVariable int id) throws AuthorizeException { 
+    public EntityDetailView get(@PathVariable int id) throws AuthorizeException {
         return sqlClient.findById(EntityDetailView.class, id);
     }
 
@@ -98,7 +98,7 @@ public class EntityService implements Tables {
         return sqlClient.createQuery(ENTITY_TABLE)
                 .where(query.getSpec())
                 .select(ENTITY_TABLE.fetch(EntityListView.class))
-                .fetchPage(query.getPageIndex() - 1, query.getPageSize());
+                .fetchPage(query.getPageIndex(), query.getPageSize());
     }
 
     /**
@@ -139,7 +139,7 @@ public class EntityService implements Tables {
     @GetMapping("/{id}/forUpdate")
     @SaCheckPermission("entity:update")
     @Nullable
-    public EntityUpdateFillView getForUpdate(@PathVariable int id) throws AuthorizeException { 
+    public EntityUpdateFillView getForUpdate(@PathVariable int id) throws AuthorizeException {
         return sqlClient.findById(EntityUpdateFillView.class, id);
     }
 
