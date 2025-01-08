@@ -142,7 +142,7 @@ object JavaServiceGenerator : ServiceGenerator() {
 @GetMapping("/{id}")
 @SaCheckPermission("${permissions.get}")
 @Nullable
-public $detailView get(@PathVariable $idType id) throws AuthorizeException { 
+public $detailView get(@PathVariable $idType id) throws AuthorizeException {
     return sqlClient.findById(${detailView}.class, id);
 }
                     """.trimIndent()
