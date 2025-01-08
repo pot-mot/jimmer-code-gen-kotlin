@@ -50,9 +50,9 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityUpdateInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
-import {useRules} from "@/rules/EntityEditFormRules"
-import EnumSelect from "@/components/enum/EnumSelect.vue"
-import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import {useRules} from "@/rules/entity/EntityEditFormRules"
+import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
+import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 
 const formData = defineModel<EntityUpdateInput>({
@@ -98,7 +98,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value as EntityInsertInput)
+        emits("submit", formData.value)
     }
 }
 
@@ -119,24 +119,18 @@ defineExpose<FormExpose>({
         :rules="rules"
         @submit.prevent
     >
-        <el-form-item
-            prop="enumProperty"
-            label="enumProperty"
-            @change="emits('query')"
-        >
+        <el-form-item prop="enumProperty" label="enumProperty">
             <EnumSelect v-model="formData.enumProperty"/>
         </el-form-item>
         <el-form-item
             prop="enumNullableProperty"
             label="enumNullableProperty"
-            @change="emits('query')"
         >
             <EnumNullableSelect v-model="formData.enumNullableProperty"/>
         </el-form-item>
         <el-form-item
             prop="toOnePropertyId"
             label="toOneProperty"
-            @change="emits('query')"
         >
             <ToOneEntityIdSelect
                 v-model="formData.toOnePropertyId"
@@ -146,7 +140,6 @@ defineExpose<FormExpose>({
         <el-form-item
             prop="toOneNullablePropertyId"
             label="toOneNullableProperty"
-            @change="emits('query')"
         >
             <ToOneEntityIdSelect
                 v-model="formData.toOneNullablePropertyId"

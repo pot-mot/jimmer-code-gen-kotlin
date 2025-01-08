@@ -171,13 +171,13 @@ const nameRange = computed<[string | undefined, string | undefined]>({
             """
 <el-input-number
     v-model.number="spec.minName"
-    placeholder="请输入最小comment"
+    placeholder="最小"
     :precision="0"
     :value-on-clear="undefined"
 />
 <el-input-number
     v-model.number="spec.maxName"
-    placeholder="请输入最大comment"
+    placeholder="最大"
     :precision="0"
     :value-on-clear="undefined"
 />
@@ -189,13 +189,13 @@ const nameRange = computed<[string | undefined, string | undefined]>({
             """
 <el-input-number
     v-model.number="spec.minName"
-    placeholder="请输入最小comment"
+    placeholder="最小"
     :precision="0"
     :value-on-clear="undefined"
 />
 <el-input-number
     v-model.number="spec.maxName"
-    placeholder="请输入最大comment"
+    placeholder="最大"
     :precision="0"
     :value-on-clear="undefined"
 />
@@ -207,7 +207,7 @@ const nameRange = computed<[string | undefined, string | undefined]>({
             """
 <el-input-number
     v-model.number="spec.minName"
-    placeholder="请输入最小comment"
+    placeholder="最小"
     :precision="0"
     :min="0"
     :max="999999999"
@@ -215,7 +215,7 @@ const nameRange = computed<[string | undefined, string | undefined]>({
 />
 <el-input-number
     v-model.number="spec.maxName"
-    placeholder="请输入最大comment"
+    placeholder="最大"
     :precision="0"
     :min="0"
     :max="999999999"
@@ -232,13 +232,13 @@ const nameRange = computed<[string | undefined, string | undefined]>({
             """
 <el-input-number
     v-model.number="spec.minName"
-    placeholder="请输入最小comment"
+    placeholder="最小"
     :precision="0"
     :value-on-clear="undefined"
 />
 <el-input-number
     v-model.number="spec.maxName"
-    placeholder="请输入最大comment"
+    placeholder="最大"
     :precision="0"
     :value-on-clear="undefined"
 />
@@ -250,7 +250,7 @@ const nameRange = computed<[string | undefined, string | undefined]>({
             """
 <el-input-number
     v-model.number="spec.minName"
-    placeholder="请输入最小comment"
+    placeholder="最小"
     :precision="2"
     :min="0.00"
     :max="99999999.99"
@@ -258,7 +258,7 @@ const nameRange = computed<[string | undefined, string | undefined]>({
 />
 <el-input-number
     v-model.number="spec.maxName"
-    placeholder="请输入最大comment"
+    placeholder="最大"
     :precision="2"
     :min="0.00"
     :max="99999999.99"

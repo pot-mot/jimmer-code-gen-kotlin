@@ -288,6 +288,8 @@ defineSlots<{
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
+const pageSizeStore = usePageSizeStore()
+
 const subTable1Ref = ref<FormExpose>()
 const subTable2Ref = ref<FormExpose>()
 

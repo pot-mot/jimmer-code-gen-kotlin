@@ -179,7 +179,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", formData.value as EntityInsertInput)
     }
 }
 
@@ -254,9 +254,9 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityUpdateInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
-import {useRules} from "@/rules/EntityEditFormRules"
-import EnumSelect from "@/components/enum/EnumSelect.vue"
-import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import {useRules} from "@/rules/entity/EntityEditFormRules"
+import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
+import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 
 const formData = defineModel<EntityUpdateInput>({
@@ -323,24 +323,18 @@ defineExpose<FormExpose>({
         :rules="rules"
         @submit.prevent
     >
-        <el-form-item
-            prop="enumProperty"
-            label="enumProperty"
-            @change="emits('query')"
-        >
+        <el-form-item prop="enumProperty" label="enumProperty">
             <EnumSelect v-model="formData.enumProperty"/>
         </el-form-item>
         <el-form-item
             prop="enumNullableProperty"
             label="enumNullableProperty"
-            @change="emits('query')"
         >
             <EnumNullableSelect v-model="formData.enumNullableProperty"/>
         </el-form-item>
         <el-form-item
             prop="toOnePropertyId"
             label="toOneProperty"
-            @change="emits('query')"
         >
             <ToOneEntityIdSelect
                 v-model="formData.toOnePropertyId"
@@ -350,7 +344,6 @@ defineExpose<FormExpose>({
         <el-form-item
             prop="toOneNullablePropertyId"
             label="toOneNullableProperty"
-            @change="emits('query')"
         >
             <ToOneEntityIdSelect
                 v-model="formData.toOneNullablePropertyId"
@@ -385,10 +378,12 @@ import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityAddFormType, ToOneEntityOptionView} from "@/api/__generated/model/static"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
-import {useRules} from "@/rules/EntityEditTableRules"
+import {useRules} from "@/rules/entity/EntityEditTableRules"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
 import {Plus, Delete} from "@element-plus/icons-vue"
-import EnumSelect from "@/components/enum/EnumSelect.vue"
-import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import {deleteConfirm} from "@/utils/confirm"
+import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
+import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 
 const rows = defineModel<Array<EntityAddFormType>>({
@@ -428,6 +423,8 @@ defineSlots<{
 
 const formRef = ref<FormInstance>()
 const rules = useRules(rows)
+
+const pageSizeStore = usePageSizeStore()
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
@@ -534,7 +531,7 @@ defineExpose<FormExpose>({
                         label="enumProperty"
                         :rule="rules.enumProperty"
                     >
-                        <EnumSelect v-model="rows.enumProperty"/>
+                        <EnumSelect v-model="scope.row.enumProperty"/>
                     </el-form-item>
                 </template>
             </el-table-column>
@@ -548,7 +545,7 @@ defineExpose<FormExpose>({
                         label="enumNullableProperty"
                         :rule="rules.enumNullableProperty"
                     >
-                        <EnumNullableSelect v-model="rows.enumNullableProperty"/>
+                        <EnumNullableSelect v-model="scope.row.enumNullableProperty"/>
                     </el-form-item>
                 </template>
             </el-table-column>
@@ -563,7 +560,7 @@ defineExpose<FormExpose>({
                         :rule="rules.toOnePropertyId"
                     >
                         <ToOneEntityIdSelect
-                            v-model="rows.toOnePropertyId"
+                            v-model="scope.row.toOnePropertyId"
                             :options="toOnePropertyIdOptions"
                         />
                     </el-form-item>
@@ -580,7 +577,7 @@ defineExpose<FormExpose>({
                         :rule="rules.toOneNullablePropertyId"
                     >
                         <ToOneEntityIdSelect
-                            v-model="rows.toOneNullablePropertyId"
+                            v-model="scope.row.toOneNullablePropertyId"
                             :options="toOneNullablePropertyIdOptions"
                         />
                     </el-form-item>
@@ -625,7 +622,7 @@ defineExpose<FormExpose>({
 ), (components/entity/EntityQueryForm.vue, <script setup lang="ts">
 import {Search} from "@element-plus/icons-vue"
 import type {EntitySpec, ToOneEntityOptionView} from "@/api/__generated/model/static"
-import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 
 const spec = defineModel<EntitySpec>({
@@ -641,22 +638,28 @@ const emits = defineEmits<{(event: "query", spec: EntitySpec): void}>()
 </script>
 
 <template>
-    <el-form :model="spec">
+    <el-form :model="spec" @submit.prevent>
         <el-row :gutter="20">
-            <el-col :span="8">
+            <el-col :span="8" :xs="24">
                 <el-form-item prop="enumProperty" label="enumProperty">
-                    <EnumNullableSelect v-model="spec.enumProperty"/>
+                    <EnumNullableSelect
+                        v-model="spec.enumProperty"
+                        @change="emits('query', spec)"
+                    />
                 </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="8" :xs="24">
                 <el-form-item
                     prop="enumNullableProperty"
                     label="enumNullableProperty"
                 >
-                    <EnumNullableSelect v-model="spec.enumNullableProperty"/>
+                    <EnumNullableSelect
+                        v-model="spec.enumNullableProperty"
+                        @change="emits('query', spec)"
+                    />
                 </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="8" :xs="24">
                 <el-form-item
                     prop="toOnePropertyId"
                     label="toOneProperty"
@@ -664,10 +667,11 @@ const emits = defineEmits<{(event: "query", spec: EntitySpec): void}>()
                     <ToOneEntityIdSelect
                         v-model="spec.toOnePropertyId"
                         :options="toOnePropertyIdOptions"
+                        @change="emits('query', spec)"
                     />
                 </el-form-item>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="8" :xs="24">
                 <el-form-item
                     prop="toOneNullablePropertyId"
                     label="toOneNullableProperty"
@@ -675,12 +679,14 @@ const emits = defineEmits<{(event: "query", spec: EntitySpec): void}>()
                     <ToOneEntityIdSelect
                         v-model="spec.toOneNullablePropertyId"
                         :options="toOneNullablePropertyIdOptions"
+                        @change="emits('query', spec)"
                     />
                 </el-form-item>
             </el-col>
             <el-button
                 type="primary"
                 :icon="Search"
+                class="search-button"
                 @click="emits('query', spec)"
             >
                 查询
@@ -986,7 +992,7 @@ watch(() => [modelValue.value, props.options], () => {
             v-for="option in options"
             :key="option.id"
             :value="option.id"
-            :label="option.id"
+            :label="`${'$'}{option.id}`"
         />
     </el-select>
 </template>
@@ -1030,15 +1036,16 @@ watch(() => [modelValue.value, props.options], () => {
             v-for="option in options"
             :key="option.id"
             :value="option.id"
-            :label="option.id"
+            :label="`${'$'}{option.id}`"
         />
     </el-select>
 </template>
 ), (rules/entity/EntityAddFormRules.ts, import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
+import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
 
-export const useRules = (_: Ref<EntityInsertInput>): FormRules<EntityInsertInput> => {
+export const useRules = (_: Ref<EntityAddFormType>): FormRules<EntityInsertInput> => {
     return {
         enumProperty: [
             {required: true, message: "enumProperty不能为空", trigger: "blur"},

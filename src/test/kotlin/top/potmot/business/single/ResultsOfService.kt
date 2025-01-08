@@ -3,11 +3,20 @@ package top.potmot.business.single
 const val kotlinResult = """
 (EntityPackage/EntityService.kt, package EntityPackage
 
+import EntityPackage.AuthorizeException
+import EntityPackage.Entity
+import EntityPackage.dto.EntityDetailView
+import EntityPackage.dto.EntityInsertInput
+import EntityPackage.dto.EntityListView
+import EntityPackage.dto.EntityOptionView
+import EntityPackage.dto.EntitySpec
+import EntityPackage.dto.EntityUpdateFillView
+import EntityPackage.dto.EntityUpdateInput
+import EntityPackage.query.PageQuery
 import cn.dev33.satoken.annotation.SaCheckPermission
-import org.babyfish.jimmer.View
-import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.Page
 import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
-import org.springframework.beans.factory.annotation.Autowired
+import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,24 +27,11 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import EntityPackage.Entity
-import EntityPackage.dto.EntityListView
-import EntityPackage.dto.EntityDetailView
-import EntityPackage.dto.EntityInsertInput
-import EntityPackage.dto.EntityUpdateInput
-import EntityPackage.dto.EntityUpdateFillView
-import EntityPackage.dto.EntitySpec
-import EntityPackage.dto.EntityOptionView
-import EntityPackage.query.PageQuery
-import EntityPackage.AuthorizeException
-import EntityPackage.sqlClient.query
-import EntityPackage.sqlClient.queryPage
 
 @RestController
 @RequestMapping("/entity")
 class EntityService(
-    @Autowired
-    private val sqlClient: KSqlClient,
+    private val sqlClient: KSqlClient
 ) {
     /**
      * 根据ID获取comment。
@@ -46,7 +42,7 @@ class EntityService(
     @GetMapping("/{id}")
     @SaCheckPermission("entity:get")
     @Throws(AuthorizeException::class)
-    fun get(@PathVariable id: Int) = 
+    fun get(@PathVariable id: Int): EntityDetailView? =
         sqlClient.findById(EntityDetailView::class, id)
 
     /**
@@ -58,8 +54,11 @@ class EntityService(
     @PostMapping("/list")
     @SaCheckPermission("entity:list")
     @Throws(AuthorizeException::class)
-    fun list(@RequestBody spec: EntitySpec) = 
-        sqlClient.query(EntityListView::class, spec)
+    fun list(@RequestBody spec: EntitySpec): List<EntityListView> =
+        sqlClient.executeQuery(Entity::class) {
+            where(spec)
+            select(table.fetch(EntityListView::class))
+        }
 
     /**
      * 根据提供的查询参数分页查询comment。
@@ -70,8 +69,11 @@ class EntityService(
     @PostMapping("/page")
     @SaCheckPermission("entity:list")
     @Throws(AuthorizeException::class)
-    fun page(@RequestBody query: PageQuery<EntitySpec>) = 
-        sqlClient.queryPage(EntityListView::class, query)
+    fun page(@RequestBody query: PageQuery<EntitySpec>): Page<EntityListView> =
+        sqlClient.createQuery(Entity::class) {
+            where(query.spec)
+            select(table.fetch(EntityListView::class))
+        }.fetchPage(query.pageIndex, query.pageSize)
 
     /**
      * 根据提供的查询参数列出comment选项。
@@ -82,8 +84,11 @@ class EntityService(
     @PostMapping("/list/options")
     @SaCheckPermission("entity:select")
     @Throws(AuthorizeException::class)
-    fun listOptions(@RequestBody spec: EntitySpec) = 
-        sqlClient.query(EntityOptionView::class, spec)
+    fun listOptions(@RequestBody spec: EntitySpec): List<EntityOptionView> =
+        sqlClient.executeQuery(Entity::class) {
+            where(spec)
+            select(table.fetch(EntityOptionView::class))
+        }
 
     /**
      * 插入新的comment。
@@ -93,9 +98,9 @@ class EntityService(
      */
     @PostMapping
     @SaCheckPermission("entity:insert")
-    @Transactional
     @Throws(AuthorizeException::class)
-    fun insert(@RequestBody input: EntityInsertInput) = 
+    @Transactional
+    fun insert(@RequestBody input: EntityInsertInput): Int =
         sqlClient.insert(input).modifiedEntity.id
 
     /**
@@ -107,7 +112,7 @@ class EntityService(
     @GetMapping("/{id}/forUpdate")
     @SaCheckPermission("entity:update")
     @Throws(AuthorizeException::class)
-    fun getForUpdate(@PathVariable id: Int) = 
+    fun getForUpdate(@PathVariable id: Int): EntityUpdateFillView? =
         sqlClient.findById(EntityUpdateFillView::class, id)
 
     /**
@@ -118,9 +123,9 @@ class EntityService(
      */
     @PutMapping
     @SaCheckPermission("entity:update")
-    @Transactional
     @Throws(AuthorizeException::class)
-    fun update(@RequestBody input: EntityUpdateInput) = 
+    @Transactional
+    fun update(@RequestBody input: EntityUpdateInput): Int =
         sqlClient.update(input, AssociatedSaveMode.REPLACE).modifiedEntity.id
 
     /**
@@ -131,9 +136,9 @@ class EntityService(
      */
     @DeleteMapping
     @SaCheckPermission("entity:delete")
-    @Transactional
     @Throws(AuthorizeException::class)
-    fun delete(@RequestParam ids: List<Int>) = 
+    @Transactional
+    fun delete(@RequestParam ids: List<Int>): Int =
         sqlClient.deleteByIds(Entity::class, ids).affectedRowCount(Entity::class)
 })
 """
@@ -141,10 +146,24 @@ class EntityService(
 const val javaResult = """
 (EntityPackage/EntityService.java, package EntityPackage;
 
+import EntityPackage.AuthorizeException;
+import EntityPackage.Entity;
+import EntityPackage.Tables;
+import EntityPackage.dto.EntityDetailView;
+import EntityPackage.dto.EntityInsertInput;
+import EntityPackage.dto.EntityListView;
+import EntityPackage.dto.EntityOptionView;
+import EntityPackage.dto.EntitySpec;
+import EntityPackage.dto.EntityUpdateFillView;
+import EntityPackage.dto.EntityUpdateInput;
+import EntityPackage.query.PageQuery;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import jakarta.annotation.Nullable;
+import java.util.List;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -155,20 +174,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import EntityPackage.Entity;
-import EntityPackage.Tables;
-import EntityPackage.dto.EntityListView;
-import EntityPackage.dto.EntityDetailView;
-import EntityPackage.dto.EntityInsertInput;
-import EntityPackage.dto.EntityUpdateInput;
-import EntityPackage.dto.EntityUpdateFillView;
-import EntityPackage.dto.EntitySpec;
-import EntityPackage.dto.EntityOptionView;
-import EntityPackage.query.PageQuery;
-import EntityPackage.AuthorizeException;
-import org.jetbrains.annotations.NotNull;
-import jakarta.annotation.Nullable;
-import java.util.List;
 
 @RestController
 @RequestMapping("/entity")

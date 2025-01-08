@@ -25,6 +25,11 @@ class TestSelfAssociation {
 SelfAssociationEntityListView {
     #allScalars
     id(parent)
+}
+
+SelfAssociationEntityTreeView {
+    #allScalars
+    id(parent)
     children*
 }
 
@@ -35,9 +40,9 @@ SelfAssociationEntityDetailView {
 }
 
 SelfAssociationEntityOptionView {
+    id(parent)
     id
     label
-    id(parent)
 }
 
 input SelfAssociationEntityInsertInput {
@@ -653,8 +658,6 @@ const formData = ref<SelfAssociationEntityAddFormType>(createDefaultSelfAssociat
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
-const pageSizeStore = usePageSizeStore()
-
 // 校验
 const handleValidate = async (): Promise<boolean> => {
     return await formRef.value?.validate().catch(() => false) ?? false
@@ -788,8 +791,6 @@ defineSlots<{
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
-
-const pageSizeStore = usePageSizeStore()
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
@@ -1142,11 +1143,12 @@ import EntityPackage.dto.SelfAssociationEntityInsertInput
 import EntityPackage.dto.SelfAssociationEntityListView
 import EntityPackage.dto.SelfAssociationEntityOptionView
 import EntityPackage.dto.SelfAssociationEntitySpec
+import EntityPackage.dto.SelfAssociationEntityTreeView
 import EntityPackage.dto.SelfAssociationEntityUpdateFillView
 import EntityPackage.dto.SelfAssociationEntityUpdateInput
 import EntityPackage.query.PageQuery
 import cn.dev33.satoken.annotation.SaCheckPermission
-import org.babyfish.jimmer.View
+import org.babyfish.jimmer.Page
 import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.springframework.transaction.annotation.Transactional
@@ -1173,6 +1175,7 @@ class SelfAssociationEntityService(
      */
     @GetMapping("/{id}")
     @SaCheckPermission("selfAssociationEntity:get")
+    @Throws(AuthorizeException::class)
     fun get(@PathVariable id: Int): SelfAssociationEntityDetailView? =
         sqlClient.findById(SelfAssociationEntityDetailView::class, id)
 
@@ -1180,55 +1183,68 @@ class SelfAssociationEntityService(
      * 根据提供的查询参数列出树节点。
      *
      * @param spec 查询参数。
-     * @param tree 是否以树形结构返回。
      * @return 树节点列表数据。
      */
     @PostMapping("/list")
     @SaCheckPermission("selfAssociationEntity:list")
-    fun list(
-        @RequestBody spec: SelfAssociationEntitySpec,
-        @RequestParam tree: Boolean
-    ): List<SelfAssociationEntityListView> =
-        if (tree) {
-            sqlClient.executeQuery(SelfAssociationEntity::class) {
-                where(spec)
-                where(table.parentId.isNull())
-                select(table.fetch(SelfAssociationEntityListView::class))
-            }
-        } else {
-            sqlClient.executeQuery(SelfAssociationEntity::class) {
-                where(spec)
-                select(table.fetch(SelfAssociationEntityListView.METADATA.getFetcher().remove("children")))
-            }.map { SelfAssociationEntityListView(it) }
+    @Throws(AuthorizeException::class)
+    fun list(@RequestBody spec: SelfAssociationEntitySpec): List<SelfAssociationEntityListView> =
+        sqlClient.executeQuery(SelfAssociationEntity::class) {
+            where(spec)
+            select(table.fetch(SelfAssociationEntityListView::class))
         }
 
     /**
      * 根据提供的查询参数分页查询树节点。
      *
      * @param query 分页查询参数。
-     * @param tree 是否以树形结构返回。
      * @return 树节点分页数据。
      */
     @PostMapping("/page")
     @SaCheckPermission("selfAssociationEntity:list")
-    fun page(
-        @RequestBody query: PageQuery<SelfAssociationEntitySpec>,
-        @RequestParam tree: Boolean
-    ): Page<SelfAssociationEntityListView> =
-        if (tree) {
-            sqlClient.createQuery(SelfAssociationEntity::class) {
-                where(query.spec)
-                where(table.parentId.isNull())
-                select(table.fetch(SelfAssociationEntityListView::class))
-            }.fetchPage(query.pageIndex - 1, query.pageSize)
-        } else {
-            val page = sqlClient.createQuery(SelfAssociationEntity::class) {
-                where(query.spec)
-                select(table.fetch(SelfAssociationEntityListView.METADATA.getFetcher().remove("children")))
-            }.fetchPage(query.pageIndex - 1, query.pageSize)
+    @Throws(AuthorizeException::class)
+    fun page(@RequestBody query: PageQuery<SelfAssociationEntitySpec>): Page<SelfAssociationEntityListView> =
+        sqlClient.createQuery(SelfAssociationEntity::class) {
+            where(query.spec)
+            select(table.fetch(SelfAssociationEntityListView::class))
+        }.fetchPage(query.pageIndex, query.pageSize)
 
-            Page(page.rows.map { SelfAssociationEntityListView(it) }, page.totalRowCount, page.totalPageCount)
+    private fun buildTree(
+        list: List<SelfAssociationEntityTreeView>,
+    ): List<SelfAssociationEntityTreeView> {
+        val idMap = list.associateBy { it.id }
+        val parentMap = list.groupBy { it.parentId }
+
+        fun buildSubTree(node: SelfAssociationEntityTreeView): SelfAssociationEntityTreeView {
+            val children = parentMap[node.id]?.map { buildSubTree(it) } ?: emptyList()
+            return node.copy(children = children)
         }
+
+        val roots = list
+            .filter { it.parentId == null || it.parentId !in idMap }
+            .map { buildSubTree(it) }
+
+        return roots
+    }
+
+    /**
+     * 根据提供的查询参数列出树形的树节点。
+     *
+     * @param spec 查询参数。
+     * @return 树节点列表数据。
+     */
+    @PostMapping("/tree")
+    @SaCheckPermission("selfAssociationEntity:list")
+    @Throws(AuthorizeException::class)
+    fun tree(
+        @RequestBody spec: SelfAssociationEntitySpec,
+    ): List<SelfAssociationEntityTreeView> =
+        sqlClient.executeQuery(SelfAssociationEntity::class) {
+            where(spec)
+            select(table.fetch(SelfAssociationEntityTreeView.METADATA.fetcher.remove("children")))
+        }
+            .map { SelfAssociationEntityTreeView(it) }
+            .let { buildTree(it) }
 
     /**
      * 根据提供的查询参数列出树节点选项。
@@ -1238,6 +1254,7 @@ class SelfAssociationEntityService(
      */
     @PostMapping("/list/options")
     @SaCheckPermission("selfAssociationEntity:select")
+    @Throws(AuthorizeException::class)
     fun listOptions(@RequestBody spec: SelfAssociationEntitySpec): List<SelfAssociationEntityOptionView> =
         sqlClient.executeQuery(SelfAssociationEntity::class) {
             where(spec)
@@ -1252,6 +1269,7 @@ class SelfAssociationEntityService(
      */
     @PostMapping
     @SaCheckPermission("selfAssociationEntity:insert")
+    @Throws(AuthorizeException::class)
     @Transactional
     fun insert(@RequestBody input: SelfAssociationEntityInsertInput): Int =
         sqlClient.insert(input).modifiedEntity.id
@@ -1264,6 +1282,7 @@ class SelfAssociationEntityService(
      */
     @GetMapping("/{id}/forUpdate")
     @SaCheckPermission("selfAssociationEntity:update")
+    @Throws(AuthorizeException::class)
     fun getForUpdate(@PathVariable id: Int): SelfAssociationEntityUpdateFillView? =
         sqlClient.findById(SelfAssociationEntityUpdateFillView::class, id)
 
@@ -1275,6 +1294,7 @@ class SelfAssociationEntityService(
      */
     @PutMapping
     @SaCheckPermission("selfAssociationEntity:update")
+    @Throws(AuthorizeException::class)
     @Transactional
     fun update(@RequestBody input: SelfAssociationEntityUpdateInput): Int =
         sqlClient.update(input, AssociatedSaveMode.REPLACE).modifiedEntity.id
@@ -1287,6 +1307,7 @@ class SelfAssociationEntityService(
      */
     @DeleteMapping
     @SaCheckPermission("selfAssociationEntity:delete")
+    @Throws(AuthorizeException::class)
     @Transactional
     fun delete(@RequestParam ids: List<Int>): Int =
         sqlClient.deleteByIds(SelfAssociationEntity::class, ids).affectedRowCount(SelfAssociationEntity::class)
@@ -1312,6 +1333,7 @@ import EntityPackage.dto.SelfAssociationEntityInsertInput;
 import EntityPackage.dto.SelfAssociationEntityListView;
 import EntityPackage.dto.SelfAssociationEntityOptionView;
 import EntityPackage.dto.SelfAssociationEntitySpec;
+import EntityPackage.dto.SelfAssociationEntityTreeView;
 import EntityPackage.dto.SelfAssociationEntityUpdateFillView;
 import EntityPackage.dto.SelfAssociationEntityUpdateInput;
 import EntityPackage.query.PageQuery;
@@ -1364,23 +1386,11 @@ public class SelfAssociationEntityService implements Tables {
     @PostMapping("/list")
     @SaCheckPermission("selfAssociationEntity:list")
     @NotNull
-    public List<@NotNull SelfAssociationEntityListView> list(
-        @RequestBody @NotNull SelfAssociationEntitySpec spec,
-        @RequestParam boolean tree
-    ) throws AuthorizeException {
-        if (tree) {
-            return sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
-                    .where(spec)
-                    .where(SELF_ASSOCIATION_ENTITY_TABLE.parentId().isNull())
-                    .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityListView.class))
-                    .execute();
-        } else {
-            return sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
-                    .where(spec)
-                    .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityListView.METADATA.getFetcher().remove("children")))
-                    .execute()
-                    .stream().map(SelfAssociationEntityListView::new).toList();
-        }
+    public List<@NotNull SelfAssociationEntityListView> list(@RequestBody @NotNull SelfAssociationEntitySpec spec) throws AuthorizeException {
+        return sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
+                .where(spec)
+                .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityListView.class))
+                .execute();
     }
 
     /**
@@ -1392,28 +1402,58 @@ public class SelfAssociationEntityService implements Tables {
     @PostMapping("/page")
     @SaCheckPermission("selfAssociationEntity:list")
     @NotNull
-    public Page<@NotNull SelfAssociationEntityListView> page(
-        @RequestBody @NotNull PageQuery<SelfAssociationEntitySpec> query,
-        @RequestParam boolean tree
-    ) throws AuthorizeException {
-        if (tree) {
-            return sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
-                    .where(query.getSpec())
-                    .where(SELF_ASSOCIATION_ENTITY_TABLE.parentId().isNull())
-                    .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityListView.class))
-                    .fetchPage(query.getPageIndex(), query.getPageSize());
-        } else {
-            Page<Menu> page = sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
-                    .where(query.getSpec())
-                    .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityListView.METADATA.getFetcher().remove("children")))
-                    .fetchPage(query.getPageIndex(), query.getPageSize());
+    public Page<@NotNull SelfAssociationEntityListView> page(@RequestBody @NotNull PageQuery<SelfAssociationEntitySpec> query) throws AuthorizeException {
+        return sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
+                .where(query.getSpec())
+                .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityListView.class))
+                .fetchPage(query.getPageIndex(), query.getPageSize());
+    }
 
-            return new Page<>(
-                    page.getRows().stream().map(SelfAssociationEntityListView::new).toList(),
-                    page.getTotalRowCount(),
-                    page.getTotalPageCount()
-            );
+    @NotNull
+    private List<@NotNull SelfAssociationEntityTreeView> buildTree(
+            @NotNull List<@NotNull SelfAssociationEntityTreeView> list
+    ) {
+        Map<int, SelfAssociationEntityTreeView> map = new HashMap<>();
+        for (SelfAssociationEntityTreeView node : list) {
+            map.put(node.id, node);
         }
+
+        List<@NotNull SelfAssociationEntityTreeView> roots = new ArrayList<>();
+
+        for (SelfAssociationEntityTreeView node : list) {
+            SelfAssociationEntityTreeView parent = map.get(node.parentId);
+            if (parent == null)
+                roots.add(node);
+            } else {
+                if (parent.children == null) {
+                    parent.setChildren(new ArrayList<>());
+                }
+                parent.children.add(node);
+            }
+        }
+
+        return roots;
+    }
+
+    /**
+     * 根据提供的查询参数列出树形的树节点。
+     *
+     * @param spec 查询参数。
+     * @return 树节点列表数据。
+     */
+    @PostMapping("/tree")
+    @SaCheckPermission("selfAssociationEntity:list")
+    @NotNull
+    public List<@NotNull SelfAssociationEntityTreeView> tree(
+            @RequestBody @NotNull SelfAssociationEntitySpec spec,
+    ) throws AuthorizeException {
+        List<@NotNull SelfAssociationEntityTreeView> list = sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
+                .where(spec)
+                .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityTreeView.METADATA.getFetcher().remove("children")))
+                .execute()
+                .stream().map(SelfAssociationEntityTreeView::new).toList();
+
+        return buildTree(list);
     }
 
     /**

@@ -1,13 +1,13 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
 import top.potmot.core.business.property.EntityPropertyCategories
+import top.potmot.core.business.utils.entity.idProperty
 import top.potmot.core.business.utils.mark.apiServiceName
 import top.potmot.core.business.utils.mark.components
 import top.potmot.core.business.utils.mark.constants
 import top.potmot.core.business.utils.mark.dir
 import top.potmot.core.business.utils.mark.dto
 import top.potmot.core.business.utils.mark.enums
-import top.potmot.core.business.utils.entity.idProperty
 import top.potmot.core.business.utils.mark.permissions
 import top.potmot.core.business.utils.mark.rules
 import top.potmot.core.business.utils.type.typeStrToTypeScriptType
@@ -528,7 +528,9 @@ object Vue3ElementPlusViewGenerator :
                 if (!entity.canDelete) null else Import("$utilPath/confirm", "deleteConfirm"),
                 Import("$utilPath/loading", "useLoading"),
                 if (queryByPage) Import("$utilPath/legalPage", "useLegalPage") else null,
-            ) + listOfNotNull(
+            )
+
+            imports += listOfNotNull(
                 table,
                 if (!entity.canAdd) null else addForm,
                 if (!entity.canEdit) null else editForm,
@@ -545,7 +547,7 @@ object Vue3ElementPlusViewGenerator :
             )
 
             if (queryByPage) {
-                script += listOfNotNull(
+                script += listOf(
                     ConstVariable("pageData", null, "ref<Page<${dataType}>>()\n"),
                     commentLine("分页查询"),
                     ConstVariable(
@@ -581,7 +583,8 @@ object Vue3ElementPlusViewGenerator :
                 script += listOf(
                     ConstVariable("rows", null, "ref<Array<${dataType}>>()\n"),
                     commentLine("数据查询"),
-                    ConstVariable("spec", null,
+                    ConstVariable(
+                        "spec", null,
                         "ref<$spec>({})\n"
                     ),
                     ConstVariable("queryRows", null,
@@ -605,74 +608,88 @@ object Vue3ElementPlusViewGenerator :
                 imports += Import("vue", "onMounted")
             }
 
-            script += listOfNotNull(
-                if (!entity.canAdd) null else ConstVariable(
-                    "add${entity.name}",
-                    null,
-                    if (selfOptionPairs.isNotEmpty()) {
-                        buildScopeString {
-                            line("withLoading(async (body: $insertInput) => {")
-                            scope {
-                                line("const result = await api.$apiServiceName.insert({body})")
-                                selfOptionPairs.forEach {
-                                    line("await set${it.second.upperName}()")
+            if (entity.canAdd) {
+                script += listOf(
+                    ConstVariable(
+                        "add${entity.name}",
+                        null,
+                        if (selfOptionPairs.isNotEmpty()) {
+                            buildScopeString {
+                                line("withLoading(async (body: $insertInput) => {")
+                                scope {
+                                    line("const result = await api.$apiServiceName.insert({body})")
+                                    selfOptionPairs.forEach {
+                                        line("await set${it.second.upperName}()")
+                                    }
+                                    line("return result")
                                 }
-                                line("return result")
+                                append("})")
                             }
-                            append("})")
+                        } else {
+                            "withLoading((body: $insertInput) => api.$apiServiceName.insert({body}))"
                         }
-                    } else {
-                        "withLoading((body: $insertInput) => api.$apiServiceName.insert({body}))"
-                    }
-                ),
-                emptyLineCode,
-                if (!entity.canEdit) null else ConstVariable(
-                    "get${entity.name}ForUpdate",
-                    null,
-                    "withLoading((id: $idType) => api.$apiServiceName.getForUpdate({id}))"
-                ),
-                emptyLineCode,
-                if (!entity.canEdit) null else ConstVariable(
-                    "edit${entity.name}",
-                    null,
-                    if (isTree) {
-                        buildScopeString {
-                            line("withLoading(async (body: $updateInput) => {")
-                            scope {
-                                line("const result = await api.$apiServiceName.update({body})")
-                                selfOptionPairs.forEach {
-                                    line("await set${it.second.upperName}()")
-                                }
-                                line("return result")
-                            }
-                            append("})")
-                        }
-                    } else {
-                        "withLoading((body: $updateInput) => api.$apiServiceName.update({body}))"
-                    }
-                ),
-                emptyLineCode,
-                if (!entity.canDelete) null else ConstVariable(
-                    "delete${entity.name}",
-                    null,
-                    if (isTree) {
-                        buildScopeString {
-                            line("withLoading(async (ids: Array<$idType>) => {")
-                            scope {
-                                line("const result = await api.$apiServiceName.delete({ids})")
-                                selfOptionPairs.forEach {
-                                    line("await set${it.second.upperName}()")
-                                }
-                                line("return result")
-                            }
-                            append("})")
-                        }
-                    } else {
-                        "withLoading((ids: Array<$idType>) => api.$apiServiceName.delete({ids}))"
-                    }
-                ),
-                emptyLineCode,
+                    ),
+                    emptyLineCode,
+                )
+            }
 
+            if (entity.canEdit) {
+                script += listOf(
+                    ConstVariable(
+                        "get${entity.name}ForUpdate",
+                        null,
+                        "withLoading((id: $idType) => api.$apiServiceName.getForUpdate({id}))"
+                    ),
+                    emptyLineCode,
+                    ConstVariable(
+                        "edit${entity.name}",
+                        null,
+                        if (isTree) {
+                            buildScopeString {
+                                line("withLoading(async (body: $updateInput) => {")
+                                scope {
+                                    line("const result = await api.$apiServiceName.update({body})")
+                                    selfOptionPairs.forEach {
+                                        line("await set${it.second.upperName}()")
+                                    }
+                                    line("return result")
+                                }
+                                append("})")
+                            }
+                        } else {
+                            "withLoading((body: $updateInput) => api.$apiServiceName.update({body}))"
+                        }
+                    ),
+                    emptyLineCode,
+                )
+            }
+
+            if (entity.canDelete) {
+                script += listOf(
+                    ConstVariable(
+                        "delete${entity.name}",
+                        null,
+                        if (isTree) {
+                            buildScopeString {
+                                line("withLoading(async (ids: Array<$idType>) => {")
+                                scope {
+                                    line("const result = await api.$apiServiceName.delete({ids})")
+                                    selfOptionPairs.forEach {
+                                        line("await set${it.second.upperName}()")
+                                    }
+                                    line("return result")
+                                }
+                                append("})")
+                            }
+                        } else {
+                            "withLoading((ids: Array<$idType>) => api.$apiServiceName.delete({ids}))"
+                        }
+                    ),
+                    emptyLineCode,
+                )
+            }
+
+            script += listOf(
                 commentLine("多选"),
                 ConstVariable("selection", null, "ref<${dataType}[]>([])"),
                 emptyLineCode,
@@ -681,11 +698,13 @@ object Vue3ElementPlusViewGenerator :
                     args = listOf(FunctionArg("newSelection", "Array<$dataType>")),
                     content = arrayOf("selection.value = newSelection")
                 ),
-                emptyLineCode,
+                emptyLineCode
+            )
 
-                *optionQueries.map { it.second }.join(listOf(emptyLineCode)).flatten().toTypedArray(),
+            script += optionQueries.map { it.second }.join(listOf(emptyLineCode)).flatten()
 
-                *if (!entity.canAdd) emptyArray() else arrayOf(
+            if (entity.canAdd) {
+                script += listOf(
                     emptyLineCode,
                     commentLine("新增"),
                     ConstVariable("addDialogVisible", null, "ref<boolean>(false)"),
@@ -720,9 +739,11 @@ object Vue3ElementPlusViewGenerator :
                         name = "cancelAdd",
                         content = arrayOf("addDialogVisible.value = false")
                     ),
-                ),
+                )
+            }
 
-                *if (!entity.canEdit) emptyArray() else arrayOf(
+            if (entity.canEdit) {
+                script += listOf(
                     emptyLineCode,
                     commentLine("修改"),
                     ConstVariable("editDialogVisible", null, "ref(false)"),
@@ -772,9 +793,11 @@ object Vue3ElementPlusViewGenerator :
                             CodeBlock("editDialogVisible.value = false\nupdateInput.value = undefined")
                         )
                     ),
-                ),
+                )
+            }
 
-                *if (!entity.canDelete) emptyArray() else arrayOf(
+            if (entity.canDelete) {
+                script += listOf(
                     emptyLineCode,
                     commentLine("删除"),
                     Function(
@@ -800,7 +823,8 @@ object Vue3ElementPlusViewGenerator :
                         },
                     )
                 )
-            )
+            }
+
             template += listOf(
                 TagElement(
                     "el-card",
@@ -839,6 +863,7 @@ object Vue3ElementPlusViewGenerator :
                                     directives += VIf("userStore.permissions.includes('${permission.insert}')")
                                     events += EventBind("click", "startAdd")
                                 },
+
                                 if (!entity.canDelete) null else button(
                                     content = "删除",
                                     type = ElementPlus.Type.DANGER,

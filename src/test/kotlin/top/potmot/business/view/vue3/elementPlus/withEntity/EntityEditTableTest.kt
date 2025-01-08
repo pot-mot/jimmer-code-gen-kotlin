@@ -49,10 +49,12 @@ import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityAddFormType, ToOneEntityOptionView} from "@/api/__generated/model/static"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
-import {useRules} from "@/rules/EntityEditTableRules"
+import {useRules} from "@/rules/entity/EntityEditTableRules"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
 import {Plus, Delete} from "@element-plus/icons-vue"
-import EnumSelect from "@/components/enum/EnumSelect.vue"
-import EnumNullableSelect from "@/components/enum/EnumNullableSelect.vue"
+import {deleteConfirm} from "@/utils/confirm"
+import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
+import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 
 const rows = defineModel<Array<EntityAddFormType>>({
@@ -92,6 +94,8 @@ defineSlots<{
 
 const formRef = ref<FormInstance>()
 const rules = useRules(rows)
+
+const pageSizeStore = usePageSizeStore()
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
@@ -198,7 +202,7 @@ defineExpose<FormExpose>({
                         label="enumProperty"
                         :rule="rules.enumProperty"
                     >
-                        <EnumSelect v-model="rows.enumProperty"/>
+                        <EnumSelect v-model="scope.row.enumProperty"/>
                     </el-form-item>
                 </template>
             </el-table-column>
@@ -212,7 +216,7 @@ defineExpose<FormExpose>({
                         label="enumNullableProperty"
                         :rule="rules.enumNullableProperty"
                     >
-                        <EnumNullableSelect v-model="rows.enumNullableProperty"/>
+                        <EnumNullableSelect v-model="scope.row.enumNullableProperty"/>
                     </el-form-item>
                 </template>
             </el-table-column>
@@ -227,7 +231,7 @@ defineExpose<FormExpose>({
                         :rule="rules.toOnePropertyId"
                     >
                         <ToOneEntityIdSelect
-                            v-model="rows.toOnePropertyId"
+                            v-model="scope.row.toOnePropertyId"
                             :options="toOnePropertyIdOptions"
                         />
                     </el-form-item>
@@ -244,7 +248,7 @@ defineExpose<FormExpose>({
                         :rule="rules.toOneNullablePropertyId"
                     >
                         <ToOneEntityIdSelect
-                            v-model="rows.toOneNullablePropertyId"
+                            v-model="scope.row.toOneNullablePropertyId"
                             :options="toOneNullablePropertyIdOptions"
                         />
                     </el-form-item>

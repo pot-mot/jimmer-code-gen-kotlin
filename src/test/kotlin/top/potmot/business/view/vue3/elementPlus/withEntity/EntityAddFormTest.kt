@@ -50,9 +50,10 @@ export const createDefaultEntity = (): EntityAddFormType => {
             """
 import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
+import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
 
-export const useRules = (_: Ref<EntityInsertInput>): FormRules<EntityInsertInput> => {
+export const useRules = (_: Ref<EntityAddFormType>): FormRules<EntityInsertInput> => {
     return {
         enumProperty: [
             {required: true, message: "enumProperty不能为空", trigger: "blur"},

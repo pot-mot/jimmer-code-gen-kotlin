@@ -92,7 +92,7 @@ watch(() => [modelValue.value, props.options], () => {
             v-for="option in options"
             :key="option.id"
             :value="option.id"
-            :label="`${'$'}{option.label1}_${'$'}{option.label2}`"
+            :label="`${'$'}{option.label1} ${'$'}{option.label2}`"
         />
     </el-select>
 </template>
@@ -136,7 +136,7 @@ watch(() => [modelValue.value, props.options], () => {
             v-for="option in options"
             :key="option.id"
             :value="option.id"
-            :label="`${'$'}{option.label1}_${'$'}{option.label2}`"
+            :label="`${'$'}{option.label1} ${'$'}{option.label2}`"
         />
     </el-select>
 </template>
