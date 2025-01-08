@@ -77,6 +77,8 @@ fun viewTable(
     showId: Boolean = false,
     showIndex: Boolean = true,
     showSelection: Boolean = true,
+    border: Boolean = true,
+    stripe: Boolean = true,
 ) = Component(
     imports = listOf(
         ImportType(typePath, type),
@@ -118,6 +120,8 @@ fun viewTable(
             data = data,
             rowKey = idPropertyName,
             childrenProp = childrenProp,
+            border = border,
+            stripe = stripe,
             columns = tableUtilColumns(idPropertyName) + content.map { (property, tableColumnData) ->
                 tableColumn(
                     property.name,

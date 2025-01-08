@@ -212,6 +212,7 @@ object Vue3ElementPlusViewGenerator :
                 data = rows,
                 type = if (isTree) dto.treeView else dto.listView,
                 typePath = staticPath,
+                stripe = !isTree,
                 idPropertyName = entity.idProperty.name,
                 content = entity.tableProperties.flatMap { it.tableColumnDataList() },
                 childrenProp = childrenProp,
