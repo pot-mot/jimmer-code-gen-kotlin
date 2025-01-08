@@ -180,30 +180,19 @@ fun page(@RequestBody query: PageQuery<$spec>): Page<$listView> =
                     block(
                         """
 private fun buildTree(
-    list: List<${treeView}>
+    list: List<${treeView}>,
 ): List<${treeView}> {
-    val map = list.associateBy { it.${idName} }.toMutableMap()
+    val idMap = list.associateBy { it.$idName }
+    val parentMap = list.groupBy { it.${parentIdProperty.name} }
 
-    val roots = mutableListOf<${treeView}>()
-    
-    for (node in list) {
-        val parent = map[node.${parentIdProperty.name}]
-        if (parent == null) {
-            roots.add(node)
-        } else {
-            val newParent =
-                if (parent.${childrenProperty.name} == null) {
-                    parent.copy(${childrenProperty.name} = listOf(node))
-                } else {
-                    parent.copy(${childrenProperty.name} = parent.${childrenProperty.name} + node)
-                }
-
-            map[newParent.id] = newParent
-            roots.replaceAll {
-                if (it.id == parent.id) newParent else it
-            }
-        }
+    fun buildSubTree(node: ${treeView}): $treeView {
+        val children = parentMap[node.$idName]?.map { buildSubTree(it) } ?: emptyList()
+        return node.copy(${childrenProperty.name} = children)
     }
+
+    val roots = list
+        .filter { it.${parentIdProperty.name} == null || it.${parentIdProperty.name} !in idMap }
+        .map { buildSubTree(it) }
 
     return roots
 }
