@@ -263,9 +263,11 @@ const filterNodeMethod = (value: string | undefined, data: TreeNode) => {
         assertEquals(
             """
 [(pages/selfAssociationEntity/SelfAssociationEntityPage.vue, <script setup lang="ts">
-import {ref, onBeforeMount, onMounted} from "vue"
+import {ref, onBeforeMount} from "vue"
 import {Plus, EditPen, Delete} from "@element-plus/icons-vue"
 import type {
+    Page,
+    PageQuery,
     SelfAssociationEntityTreeView,
     SelfAssociationEntityInsertInput,
     SelfAssociationEntityUpdateInput,
@@ -277,6 +279,7 @@ import {sendMessage} from "@/utils/message"
 import {useUserStore} from "@/stores/userStore"
 import {deleteConfirm} from "@/utils/confirm"
 import {useLoading} from "@/utils/loading"
+import {useLegalPage} from "@/utils/legalPage"
 import SelfAssociationEntityTable from "@/components/selfAssociationEntity/SelfAssociationEntityTable.vue"
 import SelfAssociationEntityAddForm from "@/components/selfAssociationEntity/SelfAssociationEntityAddForm.vue"
 import SelfAssociationEntityEditForm from "@/components/selfAssociationEntity/SelfAssociationEntityEditForm.vue"
@@ -286,18 +289,20 @@ const userStore = useUserStore()
 
 const {isLoading, withLoading} = useLoading()
 
-const rows = ref<Array<SelfAssociationEntityTreeView>>()
+const pageData = ref<Page<SelfAssociationEntityTreeView>>()
 
-// 数据查询
-const spec = ref<SelfAssociationEntitySpec>({})
-
-const queryRows = withLoading(async () => {
-    rows.value = await api.selfAssociationEntityService.tree({body: spec.value})
+// 分页查询
+const queryInfo = ref<PageQuery<SelfAssociationEntitySpec>>({
+    spec: {},
+    pageIndex: 0,
+    pageSize: 5
 })
 
-onMounted(async () => {
-    await queryRows()
-})
+const {queryPage, currentPage} = useLegalPage(
+    pageData,
+    queryInfo,
+    withLoading(api.selfAssociationEntityService.treePage)
+)
 
 const addSelfAssociationEntity = withLoading(async (body: SelfAssociationEntityInsertInput) => {
     const result = await api.selfAssociationEntityService.insert({body})
@@ -351,7 +356,7 @@ const submitAdd = async (
 ): Promise<void> => {
     try {
         await addSelfAssociationEntity(insertInput)
-        await queryRows()
+        await queryPage()
         addDialogVisible.value = false
 
         sendMessage('新增树节点成功', 'success')
@@ -383,7 +388,7 @@ const submitEdit = async (
 ): Promise<void> => {
     try {
         await editSelfAssociationEntity(updateInput)
-        await queryRows()
+        await queryPage()
         editDialogVisible.value = false
 
         sendMessage('编辑树节点成功', 'success')
@@ -404,7 +409,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
 
     try {
         await deleteSelfAssociationEntity(ids)
-        await queryRows()
+        await queryPage()
 
         sendMessage('删除树节点成功', 'success')
     } catch (e) {
@@ -416,10 +421,10 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
 <template>
     <el-card v-loading="isLoading">
         <SelfAssociationEntityQueryForm
-            v-model="spec"
+            v-model="queryInfo.spec"
             v-if="parentIdOptions"
             :parentIdOptions="parentIdOptions"
-            @query="queryRows"
+            @query="queryPage"
         />
 
         <div class="page-operations">
@@ -446,9 +451,9 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
             </el-button>
         </div>
 
-        <template v-if="rows">
+        <template v-if="pageData">
             <SelfAssociationEntityTable
-                :rows="rows"
+                :rows="pageData.rows"
                 @selectionChange="handleSelectionChange"
             >
                 <template #operations="{row}">
@@ -476,6 +481,14 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
                     </el-button>
                 </template>
             </SelfAssociationEntityTable>
+
+            <el-pagination
+                v-model:current-page="currentPage"
+                v-model:page-size="queryInfo.pageSize"
+                :total="pageData.totalRowCount"
+                :page-sizes="[5, 10, 20]"
+                layout="total, sizes, prev, pager, next, jumper"
+            />
         </template>
     </el-card>
 
@@ -1146,11 +1159,15 @@ import EntityPackage.dto.SelfAssociationEntitySpec
 import EntityPackage.dto.SelfAssociationEntityTreeView
 import EntityPackage.dto.SelfAssociationEntityUpdateFillView
 import EntityPackage.dto.SelfAssociationEntityUpdateInput
+import EntityPackage.id
+import EntityPackage.parentId
 import EntityPackage.query.PageQuery
 import cn.dev33.satoken.annotation.SaCheckPermission
 import org.babyfish.jimmer.Page
 import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
+import org.babyfish.jimmer.sql.ast.tuple.Tuple2
 import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -1246,6 +1263,68 @@ class SelfAssociationEntityService(
             .map { SelfAssociationEntityTreeView(it) }
             .let { buildTree(it) }
 
+        private fun buildIdTree(
+            idParentIdList: List<Tuple2<Int, Int?>>,
+        ): List<SelfAssociationEntity> {
+            val idMap = idParentIdList.associateBy { it._1 }
+            val parentMap = idParentIdList.groupBy { it._2 }
+
+            fun buildSubTree(node: Tuple2<Int, Int?>): SelfAssociationEntity {
+                return SelfAssociationEntity {
+                    id = node._1
+                    children = parentMap[node._1]?.map { buildSubTree(it) } ?: emptyList()
+                }
+            }
+
+            val roots = idParentIdList
+                .filter { it._2 == null || it._2 !in idMap }
+                .map { buildSubTree(it) }
+
+            return roots
+        }
+
+        private fun flatIds(
+            list: List<SelfAssociationEntity>
+        ): List<Int> {
+            val result = mutableListOf<Int>()
+            result += list.map { it.id } + list.flatMap { flatIds(it.children) }
+            return result
+        }
+
+        /**
+         * 根据提供的查询参数分页查询树形的树节点。
+         *
+         * @param query 分页查询参数。
+         * @return 树节点树状分页数据。
+         */
+        @PostMapping("/tree/page")
+        @SaCheckPermission("selfAssociationEntity:list")
+        @Throws(AuthorizeException::class)
+        fun treePage(
+            @RequestBody query: PageQuery<SelfAssociationEntitySpec>
+        ): Page<SelfAssociationEntityTreeView> {
+            val list = sqlClient.executeQuery(SelfAssociationEntity::class) {
+                where(query.spec)
+                select(table.id, table.parentId)
+            }
+                .let { buildIdTree(it) }
+
+            val startIndex = minOf(query.pageIndex * query.pageSize, list.size)
+            val endIndex = minOf((query.pageIndex + 1) * query.pageSize, list.size)
+
+            val idList = list
+                .subList(startIndex, endIndex)
+                .let { flatIds(it) }
+
+            return sqlClient.executeQuery(SelfAssociationEntity::class) {
+                where(table.id valueIn idList)
+                select(table.fetch(SelfAssociationEntityTreeView.METADATA.fetcher.remove("children")))
+            }
+                .map { SelfAssociationEntityTreeView(it) }
+                .let { buildTree(it) }
+                .let { Page(it, list.size.toLong(), (list.size / query.pageSize).toLong()) }
+        }
+
     /**
      * 根据提供的查询参数列出树节点选项。
      *
@@ -1327,6 +1406,7 @@ package EntityPackage;
 
 import EntityPackage.AuthorizeException;
 import EntityPackage.SelfAssociationEntity;
+import EntityPackage.SelfAssociationEntityDraft;
 import EntityPackage.Tables;
 import EntityPackage.dto.SelfAssociationEntityDetailView;
 import EntityPackage.dto.SelfAssociationEntityInsertInput;
@@ -1340,6 +1420,8 @@ import EntityPackage.query.PageQuery;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import jakarta.annotation.Nullable;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.babyfish.jimmer.Page;
 import org.babyfish.jimmer.sql.JSqlClient;
 import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode;
@@ -1413,22 +1495,22 @@ public class SelfAssociationEntityService implements Tables {
     private List<@NotNull SelfAssociationEntityTreeView> buildTree(
             @NotNull List<@NotNull SelfAssociationEntityTreeView> list
     ) {
-        Map<int, SelfAssociationEntityTreeView> map = new HashMap<>();
+        Map<Integer, SelfAssociationEntityTreeView> map = new HashMap<>();
         for (SelfAssociationEntityTreeView node : list) {
-            map.put(node.id, node);
+            map.put(node.getId(), node);
         }
 
         List<@NotNull SelfAssociationEntityTreeView> roots = new ArrayList<>();
 
         for (SelfAssociationEntityTreeView node : list) {
-            SelfAssociationEntityTreeView parent = map.get(node.parentId);
-            if (parent == null)
+            SelfAssociationEntityTreeView parent = map.get(node.getParentId());
+            if (parent == null) {
                 roots.add(node);
             } else {
-                if (parent.children == null) {
+                if (parent.getChildren() == null) {
                     parent.setChildren(new ArrayList<>());
                 }
-                parent.children.add(node);
+                parent.getChildren().add(node);
             }
         }
 
@@ -1445,7 +1527,7 @@ public class SelfAssociationEntityService implements Tables {
     @SaCheckPermission("selfAssociationEntity:list")
     @NotNull
     public List<@NotNull SelfAssociationEntityTreeView> tree(
-            @RequestBody @NotNull SelfAssociationEntitySpec spec,
+            @RequestBody @NotNull SelfAssociationEntitySpec spec
     ) throws AuthorizeException {
         List<@NotNull SelfAssociationEntityTreeView> list = sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
                 .where(spec)
@@ -1454,6 +1536,85 @@ public class SelfAssociationEntityService implements Tables {
                 .stream().map(SelfAssociationEntityTreeView::new).toList();
 
         return buildTree(list);
+    }
+
+    private List<SelfAssociationEntity> buildIdTree(
+            List<Tuple2<Integer, Integer>> idParentIdList
+    ) {
+        Map<Integer, Tuple2<Integer, Integer>> idMap = new HashMap<>();
+        Map<Integer, List<Tuple2<Integer, Integer>>> parentMap = new HashMap<>();
+
+        for (Tuple2<Integer, Integer> tuple : idParentIdList) {
+            idMap.put(tuple.get_1(), tuple);
+            parentMap.computeIfAbsent(tuple.get_2(), k -> new ArrayList<>()).add(tuple);
+        }
+
+        Function<Tuple2<Integer, Integer>, SelfAssociationEntity> buildSubTree = new Function<>() {
+            @Override
+            public SelfAssociationEntity apply(Tuple2<Integer, Integer> node) {
+                List<SelfAssociationEntity> children = parentMap.getOrDefault(node.get_1(), Collections.emptyList())
+                        .stream()
+                        .map(this)
+                        .collect(Collectors.toList());
+                return SelfAssociationEntityDraft.${'$'}.produce(draft -> draft
+                        .setId(node.get_1())
+                        .setChildren(children)
+                );
+            }
+        };
+
+        List<SelfAssociationEntity> roots = idParentIdList.stream()
+                .filter(tuple -> tuple.get_2() == null || !idMap.containsKey(tuple.get_2()))
+                .map(buildSubTree)
+                .collect(Collectors.toList());
+
+        return roots;
+    }
+
+    private List<Integer> flatIds(List<SelfAssociationEntity> list) {
+        List<Integer> result = new ArrayList<>();
+        for (SelfAssociationEntity entity : list) {
+            result.add(entity.id());
+            result.addAll(flatIds(entity.children()));
+        }
+        return result;
+    }
+
+    /**
+     * 根据提供的查询参数分页查询树形的树节点。
+     *
+     * @param query 分页查询参数。
+     * @return 树节点树状分页数据。
+     */
+    @PostMapping("/tree/page")
+    @SaCheckPermission("selfAssociationEntity:list")
+    @NotNull
+    public Page<@NotNull SelfAssociationEntityTreeView> treePage(
+            @RequestBody @NotNull PageQuery<SelfAssociationEntitySpec> query
+    ) throws AuthorizeException {
+        List<Tuple2<Integer, Integer>> idParentIdList = sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
+                .where(query.getSpec())
+                .select(SELF_ASSOCIATION_ENTITY_TABLE.id(), SELF_ASSOCIATION_ENTITY_TABLE.parentId())
+                .execute();
+
+        List<SelfAssociationEntity> idTreeList = buildIdTree(idParentIdList);
+
+        int startIndex = Math.min(query.getPageIndex() * query.getPageSize(), idTreeList.size());
+        int endIndex = Math.min((query.getPageIndex() + 1) * query.getPageSize(), idTreeList.size());
+
+        List<Integer> idList = flatIds(idTreeList.subList(startIndex, endIndex));
+
+        List<SelfAssociationEntityTreeView> list = sqlClient.createQuery(SELF_ASSOCIATION_ENTITY_TABLE)
+                .where(SELF_ASSOCIATION_ENTITY_TABLE.id().in(idList))
+                .select(SELF_ASSOCIATION_ENTITY_TABLE.fetch(SelfAssociationEntityTreeView.METADATA.getFetcher().remove("children")))
+                .execute()
+                .stream()
+                .map(SelfAssociationEntityTreeView::new)
+                .collect(Collectors.toList());
+
+        List<@NotNull SelfAssociationEntityTreeView> treeList = buildTree(list);
+
+        return new Page<>(treeList, idTreeList.size(), idTreeList.size() / query.getPageSize());
     }
 
     /**

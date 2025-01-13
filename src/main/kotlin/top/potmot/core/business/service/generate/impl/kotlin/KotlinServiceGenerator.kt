@@ -79,6 +79,10 @@ object KotlinServiceGenerator : ServiceGenerator() {
             if (isTreeEntity) {
                 imports += listOf(
                     "${packages.dto}.${treeView}",
+                    "org.babyfish.jimmer.sql.ast.tuple.Tuple2",
+                    "org.babyfish.jimmer.sql.kt.ast.expression.valueIn",
+                    "${packages.entity}.${idName}",
+                    "${packages.entity}.${parentIdProperty.name}",
                 )
             }
 
@@ -196,12 +200,7 @@ private fun buildTree(
 
     return roots
 }
-                        """.trimIndent()
-                    )
 
-                    line()
-                    block(
-                        """
 /**
  * 根据提供的查询参数列出树形的${comment}。
  *
@@ -220,6 +219,68 @@ fun tree(
     }
         .map { ${treeView}(it) }
         .let { buildTree(it) }
+
+    private fun buildIdTree(
+        idParentIdList: List<Tuple2<$idType, $idType?>>,
+    ): List<${name}> {
+        val idMap = idParentIdList.associateBy { it._1 }
+        val parentMap = idParentIdList.groupBy { it._2 }
+
+        fun buildSubTree(node: Tuple2<Int, Int?>): $name {
+            return $name {
+                id = node._1
+                ${childrenProperty.name} = parentMap[node._1]?.map { buildSubTree(it) } ?: emptyList()
+            }
+        }
+
+        val roots = idParentIdList
+            .filter { it._2 == null || it._2 !in idMap }
+            .map { buildSubTree(it) }
+
+        return roots
+    }
+
+    private fun flatIds(
+        list: List<${name}>
+    ): List<Int> {
+        val result = mutableListOf<Int>()
+        result += list.map { it.id } + list.flatMap { flatIds(it.${childrenProperty.name}) }
+        return result
+    }
+
+    /**
+     * 根据提供的查询参数分页查询树形的${comment}。
+     *
+     * @param query 分页查询参数。
+     * @return ${comment}树状分页数据。
+     */
+    @PostMapping("/tree/page")
+    @SaCheckPermission("${permissions.list}")
+    @Throws(AuthorizeException::class)
+    fun treePage(
+        @RequestBody query: PageQuery<$spec>
+    ): Page<$treeView> {
+        val list = sqlClient.executeQuery(${name}::class) {
+            where(query.spec)
+            select(table.id, table.${parentIdProperty.name})
+        }
+            .let { buildIdTree(it) }
+
+        val startIndex = minOf(query.pageIndex * query.pageSize, list.size)
+        val endIndex = minOf((query.pageIndex + 1) * query.pageSize, list.size)
+
+        val idList = list
+            .subList(startIndex, endIndex)
+            .let { flatIds(it) }
+
+        return sqlClient.executeQuery(${name}::class) {
+            where(table.id valueIn idList)
+            select(table.fetch(${treeView}.METADATA.fetcher.remove("${childrenProperty.name}")))
+        }
+            .map { ${treeView}(it) }
+            .let { buildTree(it) }
+            .let { Page(it, list.size.toLong(), (list.size / query.pageSize).toLong()) }
+    }
                         """.trimIndent()
                     )
                 }

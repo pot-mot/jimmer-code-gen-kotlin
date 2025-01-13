@@ -46,6 +46,7 @@ object JavaServiceGenerator : ServiceGenerator() {
         val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToJavaType(idProperty.type, idProperty.typeNotNull)
+        val idNullableType = typeStrToJavaType(idProperty.type, false)
 
         val isTreeEntity = entity.isTreeEntity()
         val parentIdProperty by lazy {
@@ -89,6 +90,9 @@ object JavaServiceGenerator : ServiceGenerator() {
             if (isTreeEntity) {
                 imports += listOf(
                     "${packages.dto}.${treeView}",
+                    "${packages.entity}.${name}Draft",
+                    "java.util.function.Function",
+                    "java.util.stream.Collectors",
                 )
             }
 
@@ -198,33 +202,28 @@ public Page<@NotNull ${listView}> page(@RequestBody @NotNull PageQuery<${spec}> 
 private List<@NotNull ${treeView}> buildTree(
         @NotNull List<@NotNull ${treeView}> list
 ) {
-    Map<$idType, ${treeView}> map = new HashMap<>();
+    Map<$idNullableType, ${treeView}> map = new HashMap<>();
     for (${treeView} node : list) {
-        map.put(node.${idName}, node);
+        map.put(node.get${idProperty.upperName}(), node);
     }
 
     List<@NotNull ${treeView}> roots = new ArrayList<>();
 
     for (${treeView} node : list) {
-        $treeView parent = map.get(node.${parentIdProperty.name});
-        if (parent == null)
+        $treeView parent = map.get(node.get${parentIdProperty.upperName}());
+        if (parent == null) {
             roots.add(node);
         } else {
-            if (parent.${childrenProperty.name} == null) {
+            if (parent.get${childrenProperty.upperName}() == null) {
                 parent.set${childrenProperty.upperName}(new ArrayList<>());
             }
-            parent.${childrenProperty.name}.add(node);
+            parent.get${childrenProperty.upperName}().add(node);
         }
     }
 
     return roots;
 }
-                        """.trimIndent()
-                    )
 
-                    line()
-                    block(
-                        """
 /**
  * 根据提供的查询参数列出树形的${comment}。
  *
@@ -235,7 +234,7 @@ private List<@NotNull ${treeView}> buildTree(
 @SaCheckPermission("${permissions.list}")
 @NotNull
 public List<@NotNull ${treeView}> tree(
-        @RequestBody @NotNull $spec spec,
+        @RequestBody @NotNull $spec spec
 ) throws AuthorizeException {
     List<@NotNull ${treeView}> list = sqlClient.createQuery($tableProxy)
             .where(spec)
@@ -244,6 +243,85 @@ public List<@NotNull ${treeView}> tree(
             .stream().map(${treeView}::new).toList();
 
     return buildTree(list);
+}
+
+private List<${name}> buildIdTree(
+        List<Tuple2<$idNullableType, $idNullableType>> idParentIdList
+) {
+    Map<$idNullableType, Tuple2<$idNullableType, $idNullableType>> idMap = new HashMap<>();
+    Map<$idNullableType, List<Tuple2<$idNullableType, $idNullableType>>> parentMap = new HashMap<>();
+
+    for (Tuple2<$idNullableType, $idNullableType> tuple : idParentIdList) {
+        idMap.put(tuple.get_1(), tuple);
+        parentMap.computeIfAbsent(tuple.get_2(), k -> new ArrayList<>()).add(tuple);
+    }
+
+    Function<Tuple2<$idNullableType, $idNullableType>, ${name}> buildSubTree = new Function<>() {
+        @Override
+        public $name apply(Tuple2<$idNullableType, $idNullableType> node) {
+            List<$name> children = parentMap.getOrDefault(node.get_1(), Collections.emptyList())
+                    .stream()
+                    .map(this)
+                    .collect(Collectors.toList());
+            return ${name}Draft.${'$'}.produce(draft -> draft
+                    .setId(node.get_1())
+                    .set${childrenProperty.upperName}(children)
+            );
+        }
+    };
+
+    List<${name}> roots = idParentIdList.stream()
+            .filter(tuple -> tuple.get_2() == null || !idMap.containsKey(tuple.get_2()))
+            .map(buildSubTree)
+            .collect(Collectors.toList());
+
+    return roots;
+}
+
+private List<$idNullableType> flatIds(List<${name}> list) {
+    List<$idNullableType> result = new ArrayList<>();
+    for (${name} entity : list) {
+        result.add(entity.${idName}());
+        result.addAll(flatIds(entity.${childrenProperty.name}()));
+    }
+    return result;
+}
+
+/**
+ * 根据提供的查询参数分页查询树形的${comment}。
+ *
+ * @param query 分页查询参数。
+ * @return ${comment}树状分页数据。
+ */
+@PostMapping("/tree/page")
+@SaCheckPermission("${permissions.list}")
+@NotNull
+public Page<@NotNull ${treeView}> treePage(
+        @RequestBody @NotNull PageQuery<${spec}> query
+) throws AuthorizeException {
+    List<Tuple2<$idNullableType, $idNullableType>> idParentIdList = sqlClient.createQuery($tableProxy)
+            .where(query.getSpec())
+            .select($tableProxy.$idName(), $tableProxy.${parentIdProperty.name}())
+            .execute();
+
+    List<${name}> idTreeList = buildIdTree(idParentIdList);
+
+    int startIndex = Math.min(query.getPageIndex() * query.getPageSize(), idTreeList.size());
+    int endIndex = Math.min((query.getPageIndex() + 1) * query.getPageSize(), idTreeList.size());
+
+    List<$idNullableType> idList = flatIds(idTreeList.subList(startIndex, endIndex));
+
+    List<${treeView}> list = sqlClient.createQuery($tableProxy)
+            .where($tableProxy.${idName}().in(idList))
+            .select($tableProxy.fetch(${treeView}.METADATA.getFetcher().remove("${childrenProperty.name}")))
+            .execute()
+            .stream()
+            .map(${treeView}::new)
+            .collect(Collectors.toList());
+
+    List<@NotNull ${treeView}> treeList = buildTree(list);
+
+    return new Page<>(treeList, idTreeList.size(), idTreeList.size() / query.getPageSize());
 }
                         """.trimIndent()
                     )

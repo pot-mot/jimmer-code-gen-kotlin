@@ -469,6 +469,9 @@ object Vue3ElementPlusViewGenerator :
         )
     )
 
+    // FIXME 移动至 entity 内
+    private val queryByPage: Boolean = true
+
     override fun stringifyPage(entity: GenEntityBusinessView): String {
         val dir = entity.dir
         val (table, addForm, editForm, queryForm) = entity.components
@@ -499,7 +502,6 @@ object Vue3ElementPlusViewGenerator :
         val isTree = entity.isTreeEntity()
         val dataType = if (isTree) treeView else listView
 
-        val queryByPage = !isTree
         val queryFn = if (queryByPage) "queryPage" else "queryRows"
 
         val component = Component {
@@ -573,7 +575,7 @@ object Vue3ElementPlusViewGenerator :
                                     "pageData,",
                                     "queryInfo,"
                                 )
-                                block("withLoading(api.$apiServiceName.page)")
+                                block("withLoading(api.$apiServiceName.${if (isTree) "treePage" else "page"})")
                             }
                             line(")")
                         },

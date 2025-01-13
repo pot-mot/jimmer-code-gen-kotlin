@@ -12,6 +12,9 @@ val GenerateItem.lowerName
 val GenEntityBusinessView.TargetOf_properties.upperName
     get() = name.replaceFirstChar { it.uppercaseChar() }
 
+val GenEntityBusinessView.TargetOf_idProperties.upperName
+    get() = name.replaceFirstChar { it.uppercaseChar() }
+
 val GenerateEnum.dir
     get() = "enums/$lowerName"
 
