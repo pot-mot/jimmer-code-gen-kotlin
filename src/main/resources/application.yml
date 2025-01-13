@@ -32,7 +32,6 @@ jimmer:
     ts:
       path: /ts.zip
       mutable: true
-      null-render-mode: null_or_undefined
 
   show-sql: true
   pretty-sql: true
