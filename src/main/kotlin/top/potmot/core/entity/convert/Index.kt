@@ -165,7 +165,7 @@ private fun GenTableConvertView.toGenEntity(
             // 处理这些 unMergeProperties 的 orderKey，使它们不和 mergedProperties 冲突
             it.toEntity {
                 if (orderKey >= minOrderKey) {
-                    orderKey = (maxOrderKey + index).toLong()
+                    orderKey = (maxOrderKey + index + 1).toLong()
                 }
             }
         }
