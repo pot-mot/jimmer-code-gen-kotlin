@@ -90,25 +90,16 @@ fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations(
     outAssociationMetas.forEach {
         val allTargetLeafTables = it.targetTable.allLeafTables()
 
-        if (allTargetLeafTables.size == 1) {
-            newOutAssociations += it
-        } else {
-            newOutAssociations +=
-                allTargetLeafTables.map { targetTable ->
-                    it.copy(targetTable = targetTable, targetEntity = tableIdEntityMap[targetTable.id])
-                }
+        newOutAssociations += allTargetLeafTables.map { targetTable ->
+            it.copy(targetTable = targetTable, targetEntity = tableIdEntityMap[targetTable.id])
         }
     }
 
     inAssociationMetas.forEach {
         val allSourceLeafTables = it.sourceTable.allLeafTables()
 
-        if (allSourceLeafTables.size == 1) {
-            newInAssociations += it
-        } else {
-            newInAssociations += allSourceLeafTables.map { sourceTable ->
-                it.copy(sourceTable = sourceTable, sourceEntity = tableIdEntityMap[sourceTable.id])
-            }
+        newInAssociations += allSourceLeafTables.map { sourceTable ->
+            it.copy(sourceTable = sourceTable, sourceEntity = tableIdEntityMap[sourceTable.id])
         }
     }
 

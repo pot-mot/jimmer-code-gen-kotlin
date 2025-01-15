@@ -45,7 +45,7 @@ fun createIdViewProperty(
 
         val language = getContextOrGlobal().language
 
-        if (typeTable.pkColumns.size != 1)
+        if (typeTable.pkColumns.size > 1)
             throw ConvertException.idViewMultiplePkNotSupported(
                 "IdView Property [${name}] cannot parse from multi pkColumn Table [${typeTable.name}]",
                 idViewProperty = name,
