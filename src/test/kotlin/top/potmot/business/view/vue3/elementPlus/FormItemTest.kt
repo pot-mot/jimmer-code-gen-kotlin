@@ -1,5 +1,6 @@
 package top.potmot.business.view.vue3.elementPlus
 
+import java.sql.Types
 import java.time.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -163,7 +164,7 @@ class FormItemTest : FormItem {
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9, numericPrecision = 0)).result,
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9, numericPrecision = 0, typeCode = Types.INTEGER)).result,
         )
 
         assertEquals(
@@ -177,7 +178,7 @@ class FormItemTest : FormItem {
     :value-on-clear="undefined"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", typeNotNull = false, column = TargetOf_column(dataSize = 9, numericPrecision = 0)).result,
+            baseProperty.copy(type = "kotlin.Int", typeNotNull = false, column = TargetOf_column(dataSize = 9, numericPrecision = 0, typeCode = Types.INTEGER)).result,
         )
 
         assertEquals(
@@ -187,11 +188,11 @@ class FormItemTest : FormItem {
     placeholder="请输入comment"
     :precision="0"
     :min="0"
-    :max="9999999999"
+    :max="2147483647"
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 10, numericPrecision = 0)).result,
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 10, numericPrecision = 0, typeCode = Types.INTEGER)).result,
         )
 
         assertEquals(
@@ -205,7 +206,7 @@ class FormItemTest : FormItem {
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 12, numericPrecision = 0)).result,
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 12, numericPrecision = 0, typeCode = Types.BIGINT)).result,
         )
 
         assertEquals(
@@ -215,11 +216,38 @@ class FormItemTest : FormItem {
     placeholder="请输入comment"
     :precision="0"
     :min="0"
-    :max="999999999999999"
+    :max="9223372036854775807"
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 20, numericPrecision = 0)).result,
+            baseProperty.copy(type = "kotlin.Long", column = TargetOf_column(dataSize = 20, numericPrecision = 0, typeCode = Types.BIGINT)).result,
+        )
+    }
+
+    @Test
+    fun `test int with default`() {
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="0"
+    :max="2147483647"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 0, numericPrecision = 0, typeCode = Types.INTEGER)).result,
+        )
+
+        assertEquals(
+            """
+<el-input-number
+    v-model.number="formData.name"
+    placeholder="请输入comment"
+    :precision="0"
+    :max="9223372036854775807"
+/>
+            """.trimIndent(),
+            baseProperty.copy(type = "kotlin.Long", column = TargetOf_column(dataSize = 0, numericPrecision = 0, typeCode = Types.BIGINT)).result,
         )
     }
 
@@ -248,7 +276,7 @@ class FormItemTest : FormItem {
             """.trimIndent(),
             baseProperty.copy(
                 type = "kotlin.Float",
-                column = TargetOf_column(dataSize = 10, numericPrecision = 2)
+                column = TargetOf_column(dataSize = 10, numericPrecision = 2, typeCode = Types.FLOAT)
             ).result,
         )
 
@@ -266,7 +294,7 @@ class FormItemTest : FormItem {
             baseProperty.copy(
                 type = "kotlin.Float",
                 typeNotNull = false,
-                column = TargetOf_column(dataSize = 10, numericPrecision = 2)
+                column = TargetOf_column(dataSize = 10, numericPrecision = 2, typeCode = Types.FLOAT)
             ).result,
         )
     }
@@ -296,7 +324,7 @@ class FormItemTest : FormItem {
             """.trimIndent(),
             baseProperty.copy(
                 type = "kotlin.Double",
-                column = TargetOf_column(dataSize = 10, numericPrecision = 2)
+                column = TargetOf_column(dataSize = 10, numericPrecision = 2, typeCode = Types.DOUBLE)
             ).result,
         )
     }
@@ -326,7 +354,7 @@ class FormItemTest : FormItem {
             """.trimIndent(),
             baseProperty.copy(
                 type = "java.math.BigDecimal",
-                column = TargetOf_column(dataSize = 10, numericPrecision = 2)
+                column = TargetOf_column(dataSize = 10, numericPrecision = 2, typeCode = Types.DECIMAL)
             ).result,
         )
     }

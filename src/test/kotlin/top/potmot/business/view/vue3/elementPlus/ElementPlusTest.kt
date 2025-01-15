@@ -41,8 +41,8 @@ class ElementPlusTest : ElementPlus {
             comment = "testComment",
             placeholder = { "testPlaceholder" },
             precision = 2,
-            min = 0.0,
-            max = 100.0,
+            min = "0.00",
+            max = "100.00",
             valueOnClear = "null"
         )
 

@@ -879,10 +879,6 @@ import type {SelfAssociationEntityUpdateInput} from "@/api/__generated/model/sta
 
 export const useRules = (_: Ref<SelfAssociationEntityUpdateInput>): FormRules<SelfAssociationEntityUpdateInput> => {
     return {
-        id: [
-            {required: true, message: "id不能为空", trigger: "blur"},
-            {type: "integer", message: "id必须是整数", trigger: "blur"},
-        ],
         label: [
             {required: true, message: "标签不能为空", trigger: "blur"},
         ],

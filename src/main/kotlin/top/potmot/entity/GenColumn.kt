@@ -73,12 +73,12 @@ interface GenColumn : BaseEntity {
     /**
      * 长度
      */
-    val dataSize: Long
+    val dataSize: Int
 
     /**
      * 精度
      */
-    val numericPrecision: Long
+    val numericPrecision: Int
 
     /**
      * 默认值

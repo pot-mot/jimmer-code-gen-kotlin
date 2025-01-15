@@ -1467,10 +1467,6 @@ import type {EntityUpdateInput} from "@/api/__generated/model/static"
 
 export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput> => {
     return {
-        id: [
-            {required: true, message: "id不能为空", trigger: "blur"},
-            {type: "integer", message: "id必须是整数", trigger: "blur"},
-        ],
         enumProperty: [
             {required: true, message: "enumProperty不能为空", trigger: "blur"},
             {type: "enum", enum: ["item1"], message: "enumProperty必须是item1", trigger: "blur"},

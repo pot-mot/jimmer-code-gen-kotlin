@@ -13,9 +13,9 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.switch
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.timePicker
-import top.potmot.core.business.view.generate.meta.rules.numberMax
-import top.potmot.core.business.view.generate.meta.rules.numberMin
-import top.potmot.core.business.view.generate.meta.rules.numberPrecision
+import top.potmot.core.business.property.numberMax
+import top.potmot.core.business.property.numberMin
+import top.potmot.core.business.property.numberPrecision
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
@@ -32,8 +32,8 @@ interface FormItem {
         idName: String? = null,
     ): FormItemData {
         val modelValue = "$formData.${name}"
-        val numberMin = numberMin
-        val numberMax = numberMax
+        val numberMin by lazy { numberMin }
+        val numberMax by lazy { numberMax }
 
         return when (formType) {
             PropertyFormType.ASSOCIATION_ID,
@@ -130,7 +130,7 @@ interface FormItem {
                             precision = 0,
                             min = numberMin,
                             max = numberMax,
-                            valueOnClear = numberMin?.toString(),
+                            valueOnClear = numberMin,
                             disabled = disabled,
                         )
                     else
@@ -153,7 +153,7 @@ interface FormItem {
                             precision = numberPrecision,
                             min = numberMin,
                             max = numberMax,
-                            valueOnClear = numberMin?.toString(),
+                            valueOnClear = numberMin,
                             disabled = disabled,
                         )
                     else

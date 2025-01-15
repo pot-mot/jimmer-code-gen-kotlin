@@ -5,7 +5,7 @@ interface ColumnTypeMeta {
     val overwriteByRaw: Boolean
     val rawType: String
     val typeNotNull: Boolean
-    val dataSize: Long
-    val numericPrecision: Long
+    val dataSize: Int
+    val numericPrecision: Int
     val autoIncrement: Boolean
 }

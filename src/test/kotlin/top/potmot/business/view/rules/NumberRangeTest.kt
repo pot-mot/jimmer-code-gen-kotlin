@@ -1,10 +1,11 @@
 package top.potmot.business.view.rules
 
+import java.sql.Types
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.core.business.view.generate.meta.rules.numberMax
-import top.potmot.core.business.view.generate.meta.rules.numberMin
-import top.potmot.core.business.view.generate.meta.rules.numberPrecision
+import top.potmot.core.business.property.numberMax
+import top.potmot.core.business.property.numberMin
+import top.potmot.core.business.property.numberPrecision
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.business.baseProperty
 
@@ -12,7 +13,7 @@ class NumberRangeTest {
     @Test
     fun `test numberPrecision when column is not null`() {
         val property = baseProperty.copy(
-            column = TargetOf_column(numericPrecision = 10, dataSize = 20)
+            column = TargetOf_column(numericPrecision = 10, dataSize = 20, typeCode = Types.DECIMAL)
         )
         assertEquals(10, property.numberPrecision)
     }
@@ -28,9 +29,9 @@ class NumberRangeTest {
     @Test
     fun `test numberMin when column is not null`() {
         val property = baseProperty.copy(
-            column = TargetOf_column(numericPrecision = 10, dataSize = 20)
+            column = TargetOf_column(numericPrecision = 10, dataSize = 20, typeCode = Types.DECIMAL)
         )
-        assertEquals(0.0, property.numberMin)
+        assertEquals("0.0000000000", property.numberMin)
     }
 
     @Test
@@ -44,17 +45,17 @@ class NumberRangeTest {
     @Test
     fun `test numberMax when column is not null and within range`() {
         val property = baseProperty.copy(
-            column = TargetOf_column(dataSize = 20, numericPrecision = 2)
+            column = TargetOf_column(dataSize = 20, numericPrecision = 2, typeCode = Types.DECIMAL)
         )
-        assertEquals(999999999999999.99, property.numberMax)
+        assertEquals("999999999999999999.99", property.numberMax)
     }
 
     @Test
     fun `test numberMax when column is not null and exceeds range`() {
         val property = baseProperty.copy(
-            column = TargetOf_column(dataSize = 30, numericPrecision = 10)
+            column = TargetOf_column(dataSize = 30, numericPrecision = 10, typeCode = Types.DECIMAL)
         )
-        assertEquals(999999999999999.9999999999, property.numberMax)
+        assertEquals("99999999999999999999.9999999999", property.numberMax)
     }
 
     @Test

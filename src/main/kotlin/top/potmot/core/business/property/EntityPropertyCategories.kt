@@ -197,6 +197,7 @@ interface EntityPropertyCategories {
 
     val GenEntityBusinessView.editFormRulesProperties
         get() = updateInputProperties
+            .filter { !it.idProperty }
             .forceConvertIdView()
 
 

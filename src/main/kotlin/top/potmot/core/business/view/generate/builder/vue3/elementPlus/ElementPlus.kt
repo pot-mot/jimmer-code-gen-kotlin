@@ -8,7 +8,6 @@ import top.potmot.core.business.view.generate.meta.vue3.VFor
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
 import top.potmot.core.business.view.generate.meta.vue3.toPropBind
-import top.potmot.utils.number.format
 import top.potmot.utils.number.formatIfDouble
 
 interface ElementPlus {
@@ -63,8 +62,8 @@ interface ElementPlus {
         comment: String = "",
         placeholder: (comment: String) -> String? = { "请输入$it" },
         precision: Int? = null,
-        min: Double? = null,
-        max: Double? = null,
+        min: String? = null,
+        max: String? = null,
         valueOnClear: String? = "undefined",
         disabled: Boolean = false,
     ) = TagElement(
@@ -75,8 +74,8 @@ interface ElementPlus {
         props = listOfNotNull(
             placeholder(comment).toPropBind("placeholder", true),
             precision.toPropBind("precision"),
-            min.toPropBind("min") { format(precision) },
-            max.toPropBind("max") { format(precision) },
+            min.toPropBind("min"),
+            max.toPropBind("max"),
             formatIfDouble(valueOnClear, precision).toPropBind("value-on-clear"),
             disabled.toPropBind("disabled"),
         )

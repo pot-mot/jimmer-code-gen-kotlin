@@ -75,13 +75,13 @@ class RulesTest {
 
     @Test
     fun testIntSizeRule() {
-        val rule1 = IntSizeRule("年龄", 18.0, 60.0)
+        val rule1 = IntSizeRule("年龄", "18.0", "60.0")
         assertEquals("{type: \"integer\", min: 18.0, max: 60.0, message: \"年龄必须在18.0-60.0之间\", trigger: \"blur\"}", rule1.stringify())
 
-        val rule2 = IntSizeRule("年龄", 18.0, null)
+        val rule2 = IntSizeRule("年龄", "18.0", null)
         assertEquals("{type: \"integer\", min: 18.0, message: \"年龄必须大于18.0\", trigger: \"blur\"}", rule2.stringify())
 
-        val rule3 = IntSizeRule("年龄", null, 60.0)
+        val rule3 = IntSizeRule("年龄", null, "60.0")
         assertEquals("{type: \"integer\", max: 60.0, message: \"年龄必须小于60.0\", trigger: \"blur\"}", rule3.stringify())
 
         val rule4 = IntSizeRule("年龄", null, null)
@@ -90,13 +90,13 @@ class RulesTest {
 
     @Test
     fun testNumberSizeRule() {
-        val rule1 = NumberSizeRule("金额", 100.0, 1000.0)
+        val rule1 = NumberSizeRule("金额", "100.0", "1000.0")
         assertEquals("{type: \"number\", min: 100.0, max: 1000.0, message: \"金额必须在100.0-1000.0之间\", trigger: \"blur\"}", rule1.stringify())
 
-        val rule2 = NumberSizeRule("金额", 100.0, null)
+        val rule2 = NumberSizeRule("金额", "100.0", null)
         assertEquals("{type: \"number\", min: 100.0, message: \"金额必须大于100.0\", trigger: \"blur\"}", rule2.stringify())
 
-        val rule3 = NumberSizeRule("金额", null, 1000.0)
+        val rule3 = NumberSizeRule("金额", null, "1000.0")
         assertEquals("{type: \"number\", max: 1000.0, message: \"金额必须小于1000.0\", trigger: \"blur\"}", rule3.stringify())
 
         val rule4 = NumberSizeRule("金额", null, null)

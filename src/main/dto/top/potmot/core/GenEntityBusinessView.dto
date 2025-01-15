@@ -17,6 +17,7 @@ GenEntityBusinessView implements GenerateEntity {
         id(entity)
 
         column {
+            typeCode
             dataSize
             numericPrecision
         }
@@ -37,6 +38,7 @@ GenEntityBusinessView implements GenerateEntity {
                     #allScalars
 
                     column {
+                        typeCode
                         dataSize
                         numericPrecision
                     }
@@ -80,6 +82,7 @@ GenEntityBusinessView implements GenerateEntity {
         id(entity)
 
         column {
+            typeCode
             dataSize
             numericPrecision
         }

@@ -16,9 +16,9 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.timePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
-import top.potmot.core.business.view.generate.meta.rules.numberMax
-import top.potmot.core.business.view.generate.meta.rules.numberMin
-import top.potmot.core.business.view.generate.meta.rules.numberPrecision
+import top.potmot.core.business.property.numberMax
+import top.potmot.core.business.property.numberMin
+import top.potmot.core.business.property.numberPrecision
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
@@ -33,8 +33,8 @@ interface QueryFormItem {
         val rangeModelValue = "${name}Range"
         val minModelValue = "$spec.min${upperName}"
         val maxModelValue = "$spec.max${upperName}"
-        val numberMin = numberMin
-        val numberMax = numberMax
+        val numberMin by lazy { numberMin }
+        val numberMax by lazy { numberMax }
 
         val rangeComputed by lazy {
             CodeBlock(

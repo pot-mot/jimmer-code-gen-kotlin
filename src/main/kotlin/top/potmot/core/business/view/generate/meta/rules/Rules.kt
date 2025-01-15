@@ -41,8 +41,8 @@ data class EnumRule(
 
 data class StringLengthRule(
     val comment: String,
-    val min: Long?,
-    val max: Long?,
+    val min: Int?,
+    val max: Int?,
     val message: String =
         if (max == null && min == null)
             "${comment}必须是字符串"
@@ -96,8 +96,8 @@ data class NumberRule(
 
 data class IntSizeRule(
     val comment: String,
-    val min: Double?,
-    val max: Double?,
+    val min: String?,
+    val max: String?,
     val message: String =
         if (max == null && min == null)
             "${comment}必须是整数"
@@ -115,8 +115,8 @@ data class IntSizeRule(
 
 data class NumberSizeRule(
     val comment: String,
-    val min: Double?,
-    val max: Double?,
+    val min: String?,
+    val max: String?,
     val message: String =
         if (max == null && min == null)
             "${comment}必须是数字"

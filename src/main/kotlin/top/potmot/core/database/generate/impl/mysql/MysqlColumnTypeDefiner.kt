@@ -32,9 +32,9 @@ object MysqlColumnTypeDefiner : ColumnTypeDefiner {
 
     override fun requiredNumericPrecision(typeCode: Int): Boolean = needNumericPrecision(typeCode)
 
-    override fun defaultDataSize(typeCode: Int): Long? = null
+    override fun defaultDataSize(typeCode: Int): Int? = null
 
-    override fun defaultNumericPrecision(typeCode: Int): Long? = null
+    override fun defaultNumericPrecision(typeCode: Int): Int? = null
     override fun getTypeName(typeMeta: ColumnTypeMeta): String {
         if (typeMeta.overwriteByRaw) return typeMeta.rawType
 

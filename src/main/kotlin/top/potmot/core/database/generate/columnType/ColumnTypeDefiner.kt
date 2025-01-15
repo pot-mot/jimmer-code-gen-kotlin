@@ -18,9 +18,9 @@ interface ColumnTypeDefiner {
 
     fun requiredNumericPrecision(typeCode: Int): Boolean
 
-    fun defaultDataSize(typeCode: Int): Long?
+    fun defaultDataSize(typeCode: Int): Int?
 
-    fun defaultNumericPrecision(typeCode: Int): Long?
+    fun defaultNumericPrecision(typeCode: Int): Int?
 
     @Throws(ColumnTypeException::class)
     fun getTypeDefine(typeMeta: ColumnTypeMeta): String =
@@ -35,11 +35,11 @@ interface ColumnTypeDefiner {
     @Throws(ColumnTypeException.MissRequiredParam::class)
     fun getTypeDataSizeAndNumericPrecision(
         typeCode: Int,
-        dataSize: Long? = null,
-        numericPrecision: Long? = null
+        dataSize: Int? = null,
+        numericPrecision: Int? = null
     ): String =
         buildString {
-            var tempDataSize: Long? = null
+            var tempDataSize: Int? = null
 
             val isNeedDataSize = needDataSize(typeCode)
             val isRequiredDataSize = requiredDataSize(typeCode)
@@ -56,7 +56,7 @@ interface ColumnTypeDefiner {
                 }
             }
 
-            var tempNumericPrecision: Long? = null
+            var tempNumericPrecision: Int? = null
 
             val isNeedNumericPrecision = needNumericPrecision(typeCode)
             val isRequiredNumericPrecision = requiredNumericPrecision(typeCode)

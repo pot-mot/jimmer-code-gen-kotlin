@@ -1,5 +1,6 @@
 package top.potmot.business.view.vue3.elementPlus
 
+import java.sql.Types
 import java.time.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -222,7 +223,7 @@ const nameRange = computed<[string | undefined, string | undefined]>({
     :value-on-clear="undefined"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9, numericPrecision = 0)).result,
+            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9, numericPrecision = 0, typeCode = Types.INTEGER)).result,
         )
     }
 
@@ -267,7 +268,7 @@ const nameRange = computed<[string | undefined, string | undefined]>({
             """.trimIndent(),
             baseProperty.copy(
                 type = "kotlin.Float",
-                column = TargetOf_column(dataSize = 10, numericPrecision = 2)
+                column = TargetOf_column(dataSize = 10, numericPrecision = 2, typeCode = Types.DECIMAL)
             ).result,
         )
     }

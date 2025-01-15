@@ -14,8 +14,8 @@ import top.potmot.core.business.view.generate.meta.rules.PatternRule
 import top.potmot.core.business.view.generate.meta.rules.RequiredRule
 import top.potmot.core.business.view.generate.meta.rules.Rule
 import top.potmot.core.business.view.generate.meta.rules.StringLengthRule
-import top.potmot.core.business.view.generate.meta.rules.numberMax
-import top.potmot.core.business.view.generate.meta.rules.numberMin
+import top.potmot.core.business.property.numberMax
+import top.potmot.core.business.property.numberMin
 import top.potmot.entity.dto.GenEntityBusinessView
 
 val GenEntityBusinessView.TargetOf_properties.rules: List<Rule>
@@ -57,7 +57,7 @@ val GenEntityBusinessView.TargetOf_properties.rules: List<Rule>
                 }
 
                 if (column != null) {
-                    if (column.dataSize != 0L) {
+                    if (column.dataSize != 0) {
                         when (formType) {
                             PropertyFormType.INT -> {
                                 val min = numberMin

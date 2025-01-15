@@ -29,22 +29,22 @@ object PostgresColumnTypeDefiner : ColumnTypeDefiner {
 
     override fun requiredNumericPrecision(typeCode: Int): Boolean = false
 
-    override fun defaultDataSize(typeCode: Int): Long? =
+    override fun defaultDataSize(typeCode: Int): Int? =
         when (typeCode) {
-            Types.CHAR, Types.BIT -> 1L
+            Types.CHAR, Types.BIT -> 1
 
             else -> null
         }
 
-    override fun defaultNumericPrecision(typeCode: Int): Long? =
+    override fun defaultNumericPrecision(typeCode: Int): Int? =
         when (typeCode) {
             Types.REAL,
             Types.FLOAT, Types.DOUBLE,
-            Types.DECIMAL, Types.NUMERIC -> 0L
+            Types.DECIMAL, Types.NUMERIC -> 0
 
             Types.DATE,
             Types.TIME, Types.TIME_WITH_TIMEZONE,
-            Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> 6L
+            Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> 6
 
             else -> null
         }
