@@ -52,7 +52,7 @@ private fun GenEntityModelView.toConfigInput(
                 )
 
             val matchProperties = column.properties.filter {
-                (if (it.overwriteName) true else it.name == property.name)
+                (if (it.overwriteName || property.overwriteName) true else it.name == property.name)
                         && it.type == property.type
                         && it.typeNotNull == property.typeNotNull
                         && it.typeTable?.name == property.typeTable?.name
