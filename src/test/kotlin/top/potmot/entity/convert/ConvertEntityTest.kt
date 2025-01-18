@@ -332,6 +332,8 @@ class ConvertEntityTest {
 
             properties = entity1.properties.map { property ->
                 property.toEntity {
+                    unload(this, GenProperty::column)
+
                     name = property.name + " changed"
                     overwriteName = true
                     comment = property.comment + " changed"
@@ -350,6 +352,8 @@ class ConvertEntityTest {
                 }
             } + baseProperty.toEntity {
                 unload(this, GenProperty::id)
+                unload(this, GenProperty::column)
+
                 name = "newProperty"
                 orderKey = -2
                 typeTable = null

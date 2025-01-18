@@ -1259,67 +1259,67 @@ class SelfAssociationEntityService(
             .map { SelfAssociationEntityTreeView(it) }
             .let { buildTree(it) }
 
-        private fun buildIdTree(
-            idParentIdList: List<Tuple2<Int, Int?>>,
-        ): List<SelfAssociationEntity> {
-            val idMap = idParentIdList.associateBy { it._1 }
-            val parentMap = idParentIdList.groupBy { it._2 }
+    private fun buildIdTree(
+        idParentIdList: List<Tuple2<Int, Int?>>,
+    ): List<SelfAssociationEntity> {
+        val idMap = idParentIdList.associateBy { it._1 }
+        val parentMap = idParentIdList.groupBy { it._2 }
 
-            fun buildSubTree(node: Tuple2<Int, Int?>): SelfAssociationEntity {
-                return SelfAssociationEntity {
-                    id = node._1
-                    children = parentMap[node._1]?.map { buildSubTree(it) } ?: emptyList()
-                }
+        fun buildSubTree(node: Tuple2<Int, Int?>): SelfAssociationEntity {
+            return SelfAssociationEntity {
+                id = node._1
+                children = parentMap[node._1]?.map { buildSubTree(it) } ?: emptyList()
             }
-
-            val roots = idParentIdList
-                .filter { it._2 == null || it._2 !in idMap }
-                .map { buildSubTree(it) }
-
-            return roots
         }
 
-        private fun flatIds(
-            list: List<SelfAssociationEntity>
-        ): List<Int> {
-            val result = mutableListOf<Int>()
-            result += list.map { it.id } + list.flatMap { flatIds(it.children) }
-            return result
+        val roots = idParentIdList
+            .filter { it._2 == null || it._2 !in idMap }
+            .map { buildSubTree(it) }
+
+        return roots
+    }
+
+    private fun flatIds(
+        list: List<SelfAssociationEntity>
+    ): List<Int> {
+        val result = mutableListOf<Int>()
+        result += list.map { it.id } + list.flatMap { flatIds(it.children) }
+        return result
+    }
+
+    /**
+     * 根据提供的查询参数分页查询树形的树节点。
+     *
+     * @param query 分页查询参数。
+     * @return 树节点树状分页数据。
+     */
+    @PostMapping("/tree/page")
+    @SaCheckPermission("selfAssociationEntity:list")
+    @Throws(AuthorizeException::class)
+    fun treePage(
+        @RequestBody query: PageQuery<SelfAssociationEntitySpec>
+    ): Page<SelfAssociationEntityTreeView> {
+        val list = sqlClient.executeQuery(SelfAssociationEntity::class) {
+            where(query.spec)
+            select(table.id, table.parentId)
         }
+            .let { buildIdTree(it) }
 
-        /**
-         * 根据提供的查询参数分页查询树形的树节点。
-         *
-         * @param query 分页查询参数。
-         * @return 树节点树状分页数据。
-         */
-        @PostMapping("/tree/page")
-        @SaCheckPermission("selfAssociationEntity:list")
-        @Throws(AuthorizeException::class)
-        fun treePage(
-            @RequestBody query: PageQuery<SelfAssociationEntitySpec>
-        ): Page<SelfAssociationEntityTreeView> {
-            val list = sqlClient.executeQuery(SelfAssociationEntity::class) {
-                where(query.spec)
-                select(table.id, table.parentId)
-            }
-                .let { buildIdTree(it) }
+        val startIndex = minOf(query.pageIndex * query.pageSize, list.size)
+        val endIndex = minOf((query.pageIndex + 1) * query.pageSize, list.size)
 
-            val startIndex = minOf(query.pageIndex * query.pageSize, list.size)
-            val endIndex = minOf((query.pageIndex + 1) * query.pageSize, list.size)
+        val idList = list
+            .subList(startIndex, endIndex)
+            .let { flatIds(it) }
 
-            val idList = list
-                .subList(startIndex, endIndex)
-                .let { flatIds(it) }
-
-            return sqlClient.executeQuery(SelfAssociationEntity::class) {
-                where(table.id valueIn idList)
-                select(table.fetch(SelfAssociationEntityTreeView.METADATA.fetcher.remove("children")))
-            }
-                .map { SelfAssociationEntityTreeView(it) }
-                .let { buildTree(it) }
-                .let { Page(it, list.size.toLong(), (list.size / query.pageSize).toLong()) }
+        return sqlClient.executeQuery(SelfAssociationEntity::class) {
+            where(table.id valueIn idList)
+            select(table.fetch(SelfAssociationEntityTreeView.METADATA.fetcher.remove("children")))
         }
+            .map { SelfAssociationEntityTreeView(it) }
+            .let { buildTree(it) }
+            .let { Page(it, list.size.toLong(), (list.size / query.pageSize).toLong()) }
+    }
 
     /**
      * 根据提供的查询参数列出树节点选项。

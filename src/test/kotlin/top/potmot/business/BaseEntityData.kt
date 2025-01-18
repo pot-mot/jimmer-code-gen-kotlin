@@ -1,10 +1,12 @@
 package top.potmot.business
 
+import java.sql.Types
 import java.time.LocalDateTime
 import top.potmot.core.business.utils.entity.idProperty
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_idProperties
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
+import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity
 import top.potmot.enumeration.AssociationType
@@ -44,7 +46,7 @@ val baseProperty = TargetOf_properties(
     inLongAssociationView = true,
     inLongAssociationInput = true,
     entityId = 0,
-    column = null,
+    column = TargetOf_column(typeCode = Types.VARCHAR, dataSize = 0, numericPrecision = 0),
     enum = null,
     typeEntity = null,
     createdTime = LocalDateTime.now(),
@@ -60,6 +62,7 @@ val idProperty = baseProperty.copy(
     type = "kotlin.Int",
     inInsertInput = false,
     inOptionView = true,
+    column = TargetOf_column(typeCode = Types.INTEGER, dataSize = 0, numericPrecision = 0),
 )
 
 val enumProperty = baseProperty.copy(
@@ -97,6 +100,7 @@ val toOneProperty = baseProperty.copy(
     type = "ToOneEntity",
     comment = "toOneProperty",
     associationType = AssociationType.MANY_TO_ONE,
+    column = TargetOf_column(typeCode = Types.INTEGER, dataSize = 0, numericPrecision = 0),
     typeEntity = TargetOf_typeEntity(
         id = testId++,
         name = "ToOneEntity",
@@ -137,6 +141,7 @@ val toManyProperty = baseProperty.copy(
     inShortAssociationView = false,
     inLongAssociationView = false,
     inLongAssociationInput = false,
+    column = TargetOf_column(typeCode = Types.INTEGER, dataSize = 0, numericPrecision = 0),
     typeEntity = TargetOf_typeEntity(
         id = testId++,
         name = "ToManyEntity",
