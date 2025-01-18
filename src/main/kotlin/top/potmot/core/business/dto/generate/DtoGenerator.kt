@@ -23,6 +23,11 @@ object DtoGenerator : EntityPropertyCategories {
     ): String =
         "${entity.name}.dto"
 
+    private fun Iterable<TargetOf_properties>.insect(
+        includeProperties: Collection<TargetOf_properties>,
+    ) =
+        filter { it in includeProperties }
+
     private fun Iterable<TargetOf_properties>.exclude(
         includeProperties: Collection<TargetOf_properties>,
     ) =
@@ -75,6 +80,9 @@ object DtoGenerator : EntityPropertyCategories {
                     line(it.associationIdExpress)
                 }
             }
+            entity.noColumnProperty.insect(listViewProperties).forEach {
+                line(it.name)
+            }
         }
         line("}")
     }
@@ -105,6 +113,9 @@ object DtoGenerator : EntityPropertyCategories {
                 } else {
                     line(it.associationIdExpress)
                 }
+            }
+            entity.noColumnProperty.insect(listViewProperties).forEach {
+                line(it.name)
             }
         }
         line("}")
@@ -147,6 +158,9 @@ object DtoGenerator : EntityPropertyCategories {
                     line(it.associationIdExpress)
                 }
             }
+            entity.noColumnProperty.insect(detailViewProperties).forEach {
+                line(it.name)
+            }
         }
         line("}")
     }
@@ -166,6 +180,9 @@ object DtoGenerator : EntityPropertyCategories {
                 line("-${it.name}")
             }
             lines(entity.copy(properties = insertInputProperties).associationIdExpress)
+            entity.noColumnProperty.insect(insertInputProperties).forEach {
+                line(it.name)
+            }
         }
         line("}")
     }
@@ -180,6 +197,9 @@ object DtoGenerator : EntityPropertyCategories {
                 line("-${it.name}")
             }
             lines(entity.copy(properties = updateInputProperties).associationIdExpress)
+            entity.noColumnProperty.insect(updateInputProperties).forEach {
+                line(it.name)
+            }
         }
         line("}")
     }
@@ -197,6 +217,9 @@ object DtoGenerator : EntityPropertyCategories {
                 line("-${it.name}")
             }
             lines(entity.copy(properties = updateInputProperties).associationIdExpress)
+            entity.noColumnProperty.insect(updateInputProperties).forEach {
+                line(it.name)
+            }
         }
         line("}")
     }

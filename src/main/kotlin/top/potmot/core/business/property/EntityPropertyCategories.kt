@@ -17,18 +17,31 @@ fun Iterable<TargetOf_properties>.createIdViewTargetMap() =
 
 
 interface EntityPropertyCategories {
-    val GenEntityBusinessView.scalarProperties
+    val GenEntityBusinessView.columnProperty
         get() = properties.filter {
-            !it.idProperty && it.associationType == null
+            it.column != null
         }
 
-    val GenEntityBusinessView.associationProperties
+
+    val GenEntityBusinessView.noColumnProperty
         get() = properties.filter {
+            it.column == null
+        }
+
+
+    val GenEntityBusinessView.scalarProperties
+        get() = columnProperty.filter {
+            !it.idProperty && !it.logicalDelete && it.associationType == null
+        }
+
+
+    val GenEntityBusinessView.associationProperties
+        get() = columnProperty.filter {
             it.associationType != null
         }
 
     val GenEntityBusinessView.targetOneProperties
-        get() = properties.filter {
+        get() = columnProperty.filter {
             it.associationType in targetOneAssociationTypes
         }
 
