@@ -10,3 +10,11 @@ data class OutAssociationMeta(
     val targetTable: GenTableGenerateView.TargetOf_outAssociations.TargetOf_targetTable,
     val targetColumns: List<GenTableGenerateView.TargetOf_outAssociations.TargetOf_columnReferences.TargetOf_targetColumn>,
 )
+
+data class InAssociationMeta(
+    val association: GenAssociationSimpleView,
+    val sourceTable: GenTableGenerateView.TargetOf_inAssociations.TargetOf_sourceTable,
+    val sourceColumns: List<GenTableGenerateView.TargetOf_inAssociations.TargetOf_columnReferences.TargetOf_sourceColumn>,
+    val targetTable: GenTableGenerateView,
+    val targetColumns: List<GenTableGenerateView.TargetOf_columns>,
+)

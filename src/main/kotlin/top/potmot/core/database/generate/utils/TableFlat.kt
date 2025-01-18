@@ -16,12 +16,12 @@ fun GenTableGenerateView.toFlat(): GenTableGenerateView {
         logicalDelete = logicalDelete || allSuperTables.any { it.logicalDelete },
         superTables = emptyList(),
         columns = columns + allSuperTables.flatMap { it.columns },
-        inAssociations = inAssociations + allSuperTables.flatMap {
-            it.inAssociations.flatMap { inAssociation ->
-                inAssociation.getLeafAssociations().map { leafAssociation ->
+        outAssociations = outAssociations.flatMap { it.getLeafAssociations() } + allSuperTables.flatMap {
+            it.outAssociations.flatMap { outAssociation ->
+                outAssociation.getLeafAssociations().map { leafAssociation ->
                     leafAssociation.copy(
                         name = leafAssociation.name.replaceFirstOrAppend(
-                            TARGET_INHERIT_PLACEHOLDER,
+                            SOURCE_INHERIT_PLACEHOLDER,
                             tableName,
                             ignoreCase = true
                         )
@@ -29,12 +29,12 @@ fun GenTableGenerateView.toFlat(): GenTableGenerateView {
                 }
             }
         },
-        outAssociations = outAssociations + allSuperTables.flatMap {
-            it.outAssociations.flatMap { outAssociation ->
-                outAssociation.getLeafAssociations().map { leafAssociation ->
+        inAssociations = inAssociations.flatMap { it.getLeafAssociations() } + allSuperTables.flatMap {
+            it.inAssociations.flatMap { inAssociation ->
+                inAssociation.getLeafAssociations().map { leafAssociation ->
                     leafAssociation.copy(
                         name = leafAssociation.name.replaceFirstOrAppend(
-                            SOURCE_INHERIT_PLACEHOLDER,
+                            TARGET_INHERIT_PLACEHOLDER,
                             tableName,
                             ignoreCase = true
                         )

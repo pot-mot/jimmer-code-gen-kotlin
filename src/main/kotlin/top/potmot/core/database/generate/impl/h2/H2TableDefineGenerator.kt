@@ -6,7 +6,7 @@ import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
 object H2TableDefineGenerator : TableDefineGenerator() {
-    val builder = H2TableDefineBuilder
+    private val builder = H2TableDefineBuilder
 
     override fun stringify(
         tables: Iterable<GenTableGenerateView>,
@@ -30,8 +30,9 @@ object H2TableDefineGenerator : TableDefineGenerator() {
             if (commentLines.isNotEmpty()) appendLine()
         }
 
-        tables.forEach { table ->
-            appendLines(builder.associationsStringify(table)) { "$it;\n" }
+        val associationStrings = tables.flatMap { table ->
+            builder.associationsStringify(table)
         }
+        appendLines(associationStrings.distinct()) { "$it;\n" }
     }
 }

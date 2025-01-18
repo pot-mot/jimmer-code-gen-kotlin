@@ -25,23 +25,23 @@ abstract class TableDefineGenerator {
     ): List<GenerateFile> {
         val result = mutableListOf<GenerateFile>()
 
-        val flatTablePairs = tables
+        val flatTables = tables
             .filter { it.type != TableType.SUPER_TABLE }
             .sortedBy { it.name }
-            .map { it to it.toFlat() }
+            .map { it.toFlat() }
 
         result += createGenerateFileByTables(
-            tables,
+            flatTables,
             "ddl/${formatFileName(allTableFileName)}",
-            stringify(flatTablePairs.map { it.second }),
+            stringify(flatTables),
             listOf(GenerateTag.BackEnd, GenerateTag.Table)
         )
 
-        flatTablePairs.forEach { (table, flatTable) ->
+        flatTables.forEach {
             result += GenerateFile(
-                table,
-                "ddl/${formatFileName(table.name)}",
-                stringify(listOf(flatTable)),
+                it,
+                "ddl/${formatFileName(it.name)}",
+                stringify(listOf(it)),
                 listOf(GenerateTag.BackEnd, GenerateTag.Table)
             )
         }

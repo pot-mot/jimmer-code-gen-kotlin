@@ -4,6 +4,7 @@ import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
 import top.potmot.core.database.generate.identifier.IdentifierProcessor
 import top.potmot.core.database.meta.ForeignKeyMeta
 import top.potmot.core.database.meta.MappingTableMeta
+import top.potmot.core.database.meta.inAssociationMetas
 import top.potmot.core.database.meta.outAssociationMetas
 import top.potmot.core.database.meta.reversed
 import top.potmot.core.database.meta.toFkMeta
@@ -263,17 +264,65 @@ abstract class TableDefineBuilder(
     ): List<String> {
         val list = mutableListOf<String>()
 
-        val outAssociationMetas = table.outAssociationMetas()
+        table.outAssociationMetas().forEach { meta ->
+            val association = meta.association
+            val sourceColumns = meta.sourceColumns
 
-        outAssociationMetas.forEach { meta ->
-            val (association, _, sourceColumns) = meta
-
-            val fkMeta = meta.toFkMeta()
+            val fkMeta by lazy {
+                meta.toFkMeta()
+            }
 
             when (association.type) {
                 ONE_TO_ONE -> {
                     createFkConstraint(
                         if (sourceColumns.all { it.partOfPk }) fkMeta.reversed() else fkMeta,
+                        fake = association.fake,
+                    ).let {
+                        list += it
+                    }
+                }
+
+                MANY_TO_ONE -> {
+                    createFkConstraint(
+                        fkMeta,
+                        fake = association.fake,
+                    ).let {
+                        list += it
+                    }
+                }
+
+                ONE_TO_MANY -> {
+                    createFkConstraint(
+                        fkMeta.reversed(),
+                        fake = association.fake
+                    ).let {
+                        list += it
+                    }
+                }
+
+                MANY_TO_MANY -> {
+                    createMappingTable(
+                        meta.toMappingTableMeta(),
+                        fake = association.fake
+                    ).let {
+                        list += it
+                    }
+                }
+            }
+        }
+
+        table.inAssociationMetas().forEach { meta ->
+            val association = meta.association
+            val targetColumns = meta.targetColumns
+
+            val fkMeta by lazy {
+                meta.toFkMeta()
+            }
+
+            when (association.type) {
+                ONE_TO_ONE -> {
+                    createFkConstraint(
+                        if (targetColumns.all { it.partOfPk }) fkMeta else fkMeta.reversed(),
                         fake = association.fake,
                     ).let {
                         list += it

@@ -85,6 +85,18 @@ fun OutAssociationMeta.toMappingTableMeta() =
         columnTypes = sourceColumns.map { it },
     )
 
+fun InAssociationMeta.toMappingTableMeta() =
+    MappingTableMeta(
+        name = association.name,
+        sourceTableName = sourceTable.name,
+        targetTableName = targetTable.name,
+        sourceTableComment = sourceTable.comment,
+        targetTableComment = targetTable.comment,
+        sourceColumnNames = sourceColumns.map { it.name },
+        targetColumnNames = targetColumns.map { it.name },
+        columnTypes = targetColumns.map { it },
+    )
+
 private fun createMappingTableColumn(
     name: String,
     type: ColumnTypeMeta

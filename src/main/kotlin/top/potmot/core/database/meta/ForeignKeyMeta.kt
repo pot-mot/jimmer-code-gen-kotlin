@@ -31,3 +31,14 @@ fun OutAssociationMeta.toFkMeta(): ForeignKeyMeta =
         onUpdate = association.updateAction,
         onDelete = association.deleteAction,
     )
+
+fun InAssociationMeta.toFkMeta(): ForeignKeyMeta =
+    ForeignKeyMeta(
+        name = association.name,
+        sourceTableName = this.sourceTable.name,
+        sourceColumnNames = sourceColumns.map { it.name },
+        targetTableName = this.targetTable.name,
+        targetColumnNames = targetColumns.map { it.name },
+        onUpdate = association.updateAction,
+        onDelete = association.deleteAction,
+    )

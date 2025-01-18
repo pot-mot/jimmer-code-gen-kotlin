@@ -29,4 +29,11 @@ enum class GenerateErrorCode {
     @ErrorField(name = "targetTable", type = IdName::class)
     @ErrorField(name = "targetColumn", type = IdName::class)
     OUT_ASSOCIATION_CANNOT_FOUNT_SOURCE_COLUMN,
+
+    @ErrorField(name = "association", type = IdName::class)
+    @ErrorField(name = "sourceTable", type = IdName::class)
+    @ErrorField(name = "sourceColumn", type = IdName::class)
+    @ErrorField(name = "targetTable", type = IdName::class)
+    @ErrorField(name = "targetColumn", type = IdNullableName::class)
+    IN_ASSOCIATION_CANNOT_FOUNT_TARGET_COLUMN,
 }

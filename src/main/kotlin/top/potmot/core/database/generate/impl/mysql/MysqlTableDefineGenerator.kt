@@ -6,7 +6,7 @@ import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
 object MysqlTableDefineGenerator : TableDefineGenerator() {
-    val builder = MysqlTableDefineBuilder
+    private val builder = MysqlTableDefineBuilder
 
     override fun stringify(
         tables: Iterable<GenTableGenerateView>,
@@ -26,8 +26,9 @@ object MysqlTableDefineGenerator : TableDefineGenerator() {
             if (indexLines.isNotEmpty()) appendLine()
         }
 
-        tables.forEach { table ->
-            appendLines(builder.associationsStringify(table)) { "$it;\n" }
+        val associationStrings = tables.flatMap { table ->
+            builder.associationsStringify(table)
         }
+        appendLines(associationStrings.distinct()) { "$it;\n" }
     }
 }

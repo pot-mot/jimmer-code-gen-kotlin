@@ -35,3 +35,30 @@ fun GenTableGenerateView.outAssociationMetas() = outAssociations.map { outAssoci
         targetColumns = targetColumns,
     )
 }
+
+@Throws(GenerateException::class)
+fun GenTableGenerateView.inAssociationMetas() = inAssociations.map { inAssociation ->
+    val targetColumns =
+        inAssociation.columnReferences.map { columnReference ->
+            columnMap[columnReference.targetColumn.id] ?: throw GenerateException.inAssociationCannotFountTargetColumn(
+                "InAssociation [${inAssociation.name}] create fail: " +
+                        " targetColumn [${columnReference.targetColumn.id}] not found in table [$name]",
+                association = IdName(inAssociation.id, inAssociation.name),
+                sourceTable = IdName(inAssociation.sourceTable.id, inAssociation.sourceTable.name),
+                sourceColumn = IdName(columnReference.sourceColumn.id, columnReference.sourceColumn.name),
+                targetTable = IdName(id, name),
+                targetColumn = IdNullableName(columnReference.sourceColumn.id, null)
+            )
+        }
+
+    val sourceColumns =
+        inAssociation.columnReferences.map { it.sourceColumn }
+
+    InAssociationMeta(
+        association = GenAssociationSimpleView(inAssociation.toEntity()),
+        sourceTable = inAssociation.sourceTable,
+        sourceColumns = sourceColumns,
+        targetTable = this,
+        targetColumns = targetColumns,
+    )
+}
