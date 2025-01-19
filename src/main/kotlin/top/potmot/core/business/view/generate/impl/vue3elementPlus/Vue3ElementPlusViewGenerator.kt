@@ -2,6 +2,7 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
 import top.potmot.core.business.property.EntityPropertyCategories
 import top.potmot.core.business.utils.entity.idProperty
+import top.potmot.core.business.utils.entity.toFlat
 import top.potmot.core.business.utils.mark.apiServiceName
 import top.potmot.core.business.utils.mark.components
 import top.potmot.core.business.utils.mark.constants
@@ -58,6 +59,8 @@ import top.potmot.core.business.view.generate.storePath
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEnumGenerateView
+import top.potmot.entity.dto.GenerateFile
+import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
 import top.potmot.utils.list.join
 import top.potmot.utils.map.iterableMapOf
@@ -74,16 +77,23 @@ object Vue3ElementPlusViewGenerator :
     QueryFormItem,
     AddFormDefault,
     AddFormType {
-    private val builder = Vue3ComponentBuilder()
+    private val componentBuilder = Vue3ComponentBuilder()
+    
+    fun stringify(component: Component) = componentBuilder.build(component)
 
-    private val indent = builder.indent
-    private val wrapThreshold = builder.wrapThreshold
+    private val indent = componentBuilder.indent
+    private val wrapThreshold = componentBuilder.wrapThreshold
 
     private val rulesBuilder = Vue3ElementPlusRuleBuilder(indent, wrapThreshold)
 
-    override fun getFileSuffix() = "vue"
+    private val GenEntityBusinessView.addFormDataType
+        get() = "${name}AddFormType"
 
-    override fun stringifyEnumView(enum: GenEnumGenerateView): String {
+    val GenEntityBusinessView.addFormCreateDefault
+        get() = "createDefault${name}"
+
+
+    fun EnumView(enum: GenEnumGenerateView): Component {
         val items = enum.items.mapIndexed { index, it ->
             val ifExpression = "value === '${it.name}'"
 
@@ -92,7 +102,7 @@ object Vue3ElementPlusViewGenerator :
             }
         }
 
-        val component = Component(
+        return Component(
             imports = listOf(
                 ImportType(enumPath, enum.name),
             ),
@@ -101,11 +111,9 @@ object Vue3ElementPlusViewGenerator :
             ),
             template = items
         )
-
-        return builder.build(component)
     }
 
-    private fun createEnumSelectElement(
+    fun EnumSelect(
         enum: GenEnumGenerateView,
         nullable: Boolean,
     ): Component {
@@ -160,12 +168,6 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
-    override fun stringifyEnumSelect(enum: GenEnumGenerateView) =
-        builder.build(createEnumSelectElement(enum, nullable = false))
-
-    override fun stringifyEnumNullableSelect(enum: GenEnumGenerateView) =
-        builder.build(createEnumSelectElement(enum, nullable = true))
-
     private val Iterable<GenEntityBusinessView.TargetOf_properties>.selectOptionPairs
         get() = mapNotNull {
             if (it.typeEntity == null)
@@ -181,23 +183,21 @@ object Vue3ElementPlusViewGenerator :
     private val Iterable<GenEntityBusinessView.TargetOf_properties>.selectOptions
         get() = selectOptionPairs.map { it.second }
 
-    override fun stringifyQueryForm(entity: GenEntityBusinessView): String {
+    fun QueryForm(entity: GenEntityBusinessView): Component {
         val spec = "spec"
 
-        return builder.build(
-            queryForm(
-                spec = spec,
-                specType = entity.dto.spec,
-                specTypePath = staticPath,
-                selectOptions = entity.specificationSelectProperties.selectOptions,
-                content = entity.queryProperties
-                    .associateWith { it.createQueryFormItem(spec) }
-            )
+        return queryForm(
+            spec = spec,
+            specType = entity.dto.spec,
+            specTypePath = staticPath,
+            selectOptions = entity.specificationSelectProperties.selectOptions,
+            content = entity.queryProperties
+                .associateWith { it.createQueryFormItem(spec) }
         )
     }
 
     @Throws(ModelException.TreeEntityCannotFoundChildrenProperty::class)
-    override fun stringifyTable(entity: GenEntityBusinessView): String {
+    fun ViewTable(entity: GenEntityBusinessView): Component {
         val rows = "rows"
 
         val childrenProp = takeIf { entity.isTreeEntity() }?.let {
@@ -207,28 +207,26 @@ object Vue3ElementPlusViewGenerator :
         val dto = entity.dto
         val isTree = entity.isTreeEntity()
 
-        return builder.build(
-            viewTable(
-                data = rows,
-                type = if (isTree) dto.treeView else dto.listView,
-                typePath = staticPath,
-                stripe = !isTree,
-                idPropertyName = entity.idProperty.name,
-                content = entity.tableProperties.flatMap { it.tableColumnDataList() },
-                childrenProp = childrenProp,
-                showIndex = !isTree,
-            )
+        return viewTable(
+            data = rows,
+            type = if (isTree) dto.treeView else dto.listView,
+            typePath = staticPath,
+            stripe = !isTree,
+            idPropertyName = entity.idProperty.name,
+            content = entity.tableProperties.flatMap { it.tableColumnDataList() },
+            childrenProp = childrenProp,
+            showIndex = !isTree,
         )
     }
 
-    override fun stringifyAddFormType(entity: GenEntityBusinessView): String {
+    fun AddFormTypeDeclare(entity: GenEntityBusinessView): String {
         val context = entity.addFormProperties.associateWith { it.addFormType }
         val enumImports = entity.enums.map {
             ImportType(enumPath, it.name)
         }
 
         return buildScopeString(indent) {
-            builder.apply {
+            componentBuilder.apply {
                 lines(enumImports.stringifyImports())
             }
 
@@ -245,7 +243,7 @@ object Vue3ElementPlusViewGenerator :
     }
 
     @Throws(ModelException.DefaultItemNotFound::class)
-    override fun stringifyAddFormCreateDefault(entity: GenEntityBusinessView): String {
+    fun AddFormDefaultFunction(entity: GenEntityBusinessView): String {
         val content = entity.addFormProperties.associateWith { it.addFormDefault }
         val type = entity.addFormDataType
 
@@ -271,7 +269,7 @@ object Vue3ElementPlusViewGenerator :
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    override fun stringifyAddFormRules(entity: GenEntityBusinessView): String {
+    fun AddFormRules(entity: GenEntityBusinessView): String {
         val addFormRulesProperties = entity.addFormRulesProperties
         val rules = iterableMapOf(
             addFormRulesProperties.associateWith { it.rules },
@@ -288,7 +286,7 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
-    override fun stringifyAddForm(entity: GenEntityBusinessView): String {
+    fun AddForm(entity: GenEntityBusinessView): Component {
         val formData = "formData"
 
         val nullableDiffProperties = entity.addFormEditNullableProperty
@@ -306,28 +304,26 @@ object Vue3ElementPlusViewGenerator :
             }
         }
 
-        return builder.build(
-            addForm(
-                submitType = entity.dto.insertInput,
-                submitTypePath = staticPath,
-                dataType = entity.addFormDataType,
-                dataTypePath = componentPath + "/" + entity.dir + "/" + entity.addFormDataType,
-                createDefault = entity.addFormCreateDefault,
-                defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormCreateDefault,
-                useRules = "useRules",
-                useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.addFormRules,
-                formData = formData,
-                indent = indent,
-                selectOptions = entity.insertSelectProperties.selectOptions,
-                afterValidCodes = afterValidCodes,
-                content = entity.addFormProperties
-                    .associateWith { it.createFormItem(formData) }
-            ).merge {
-                if (hasNullableDiffProperties) {
-                    imports += Import("$utilPath/message", "sendMessage")
-                }
+        return addForm(
+            submitType = entity.dto.insertInput,
+            submitTypePath = staticPath,
+            dataType = entity.addFormDataType,
+            dataTypePath = componentPath + "/" + entity.dir + "/" + entity.addFormDataType,
+            createDefault = entity.addFormCreateDefault,
+            defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormCreateDefault,
+            useRules = "useRules",
+            useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.addFormRules,
+            formData = formData,
+            indent = indent,
+            selectOptions = entity.insertSelectProperties.selectOptions,
+            afterValidCodes = afterValidCodes,
+            content = entity.addFormProperties
+                .associateWith { it.createFormItem(formData) }
+        ).merge {
+            if (hasNullableDiffProperties) {
+                imports += Import("$utilPath/message", "sendMessage")
             }
-        )
+        }
     }
 
     @Throws(
@@ -335,7 +331,7 @@ object Vue3ElementPlusViewGenerator :
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    override fun stringifyEditFormRules(entity: GenEntityBusinessView): String {
+    fun EditFormRules(entity: GenEntityBusinessView): String {
         val editFormRulesProperties = entity.editFormRulesProperties
         val rules = iterableMapOf(
             editFormRulesProperties.associateWith { it.rules },
@@ -350,28 +346,26 @@ object Vue3ElementPlusViewGenerator :
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    override fun stringifyEditForm(entity: GenEntityBusinessView): String {
+    fun EditForm(entity: GenEntityBusinessView): Component {
         val formData = "formData"
 
-        return builder.build(
-            editForm(
-                formData = formData,
-                type = entity.dto.updateInput,
-                typePath = staticPath,
-                useRules = "useRules",
-                useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.editFormRules,
-                indent = indent,
-                selectOptions = entity.updateSelectProperties.selectOptions,
-                content = entity.editFormProperties
-                    .associateWith {
-                        it.createFormItem(
-                            formData,
-                            excludeSelf = true,
-                            entityId = entity.id,
-                            idName = entity.idProperty.name
-                        )
-                    }
-            )
+        return editForm(
+            formData = formData,
+            type = entity.dto.updateInput,
+            typePath = staticPath,
+            useRules = "useRules",
+            useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.editFormRules,
+            indent = indent,
+            selectOptions = entity.updateSelectProperties.selectOptions,
+            content = entity.editFormProperties
+                .associateWith {
+                    it.createFormItem(
+                        formData,
+                        excludeSelf = true,
+                        entityId = entity.id,
+                        idName = entity.idProperty.name
+                    )
+                }
         )
     }
 
@@ -380,7 +374,7 @@ object Vue3ElementPlusViewGenerator :
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    override fun stringifyEditTableRules(entity: GenEntityBusinessView): String {
+    fun EditTableRules(entity: GenEntityBusinessView): String {
         val editTableRulesProperties = entity.editTableRulesProperties
         val rules = iterableMapOf(
             editTableRulesProperties.associateWith { it.rules },
@@ -396,54 +390,42 @@ object Vue3ElementPlusViewGenerator :
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    override fun stringifyEditTable(entity: GenEntityBusinessView): String {
+    fun EditTable(entity: GenEntityBusinessView): Component {
         val rows = "rows"
 
-        return builder.build(
-            editTable(
-                formData = rows,
-                type = entity.addFormDataType,
-                typePath = staticPath,
-                useRules = "useRules",
-                createDefault = entity.addFormCreateDefault,
-                defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormCreateDefault,
-                useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.editTableRules,
-                indent = indent,
-                idPropertyName = entity.idProperty.name,
-                comment = entity.comment,
-                selectOptions = entity.editTableSelectProperties.selectOptions,
-                content = entity.editTableProperties
-                    .associateWith {
-                        it.createFormItem(
-                            "scope.row",
-                            excludeSelf = true,
-                            entityId = entity.id,
-                            idName = entity.idProperty.name
-                        )
-                    }
-            )
+        return editTable(
+            formData = rows,
+            type = entity.addFormDataType,
+            typePath = staticPath,
+            useRules = "useRules",
+            createDefault = entity.addFormCreateDefault,
+            defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormCreateDefault,
+            useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.editTableRules,
+            indent = indent,
+            idPropertyName = entity.idProperty.name,
+            comment = entity.comment,
+            selectOptions = entity.editTableSelectProperties.selectOptions,
+            content = entity.editTableProperties
+                .associateWith {
+                    it.createFormItem(
+                        "scope.row",
+                        excludeSelf = true,
+                        entityId = entity.id,
+                        idName = entity.idProperty.name
+                    )
+                }
         )
     }
 
     @Throws(ModelException.TreeEntityCannotFoundParentProperty::class)
-    override fun stringifyIdSelect(entity: GenEntityBusinessView) = builder.build(
+    fun IdSelect(entity: GenEntityBusinessView, multiple: Boolean): Component =
         if (entity.isTreeEntity()) {
-            createIdTreeSelect(entity, false)
+            createIdTreeSelect(entity, multiple)
         } else {
-            createIdSelect(entity, false)
+            createIdSelect(entity, multiple)
         }
-    )
 
-    @Throws(ModelException.TreeEntityCannotFoundParentProperty::class)
-    override fun stringifyIdMultiSelect(entity: GenEntityBusinessView) = builder.build(
-        if (entity.isTreeEntity()) {
-            createIdTreeSelect(entity, true)
-        } else {
-            createIdSelect(entity, true)
-        }
-    )
-
-    private fun createOptionQuery(
+    private fun optionQueryCodes(
         comment: String,
         selectOption: SelectOption,
     ) = mutableListOf(
@@ -470,9 +452,9 @@ object Vue3ElementPlusViewGenerator :
     )
 
     // FIXME 移动至 entity 内
-    private val queryByPage: Boolean = true
+    private const val queryByPage: Boolean = true
 
-    override fun stringifyPage(entity: GenEntityBusinessView): String {
+    fun Page(entity: GenEntityBusinessView): Component {
         val dir = entity.dir
         val (table, addForm, editForm, queryForm) = entity.components
         val (listView, treeView, _, insertInput, _, updateInput, spec) = entity.dto
@@ -492,7 +474,7 @@ object Vue3ElementPlusViewGenerator :
                 property.typeEntity?.id == entity.id
             }
         val optionQueries = selectOptionPairs.map {
-            createOptionQuery(it.first.comment, it.second)
+            optionQueryCodes(it.first.comment, it.second)
         }
 
         val insertSelectNames = entity.insertSelectProperties.selectOptions.map { it.name }
@@ -971,6 +953,148 @@ object Vue3ElementPlusViewGenerator :
             )
         }
 
-        return builder.build(component)
+        return component
+    }
+
+    override fun generateEnum(
+        enum: GenEnumGenerateView,
+    ): List<GenerateFile> {
+        val dir = enum.dir
+        val (view, select, nullableSelect) = enum.components
+
+        return listOf(
+            GenerateFile(
+                enum,
+                "components/${dir}/${view}.vue",
+                stringify(EnumView(enum)),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumView),
+            ),
+            GenerateFile(
+                enum,
+                "components/${dir}/${select}.vue",
+                stringify(EnumSelect(enum, nullable = false)),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumSelect),
+            ),
+            GenerateFile(
+                enum,
+                "components/${dir}/${nullableSelect}.vue",
+                stringify(EnumSelect(enum, nullable = true)),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumNullableSelect),
+            )
+        )
+    }
+
+    @Throws(ModelException::class)
+    override fun generateView(
+        entity: GenEntityBusinessView,
+        entityIdMap: Map<Long, GenEntityBusinessView>,
+    ): List<GenerateFile> {
+        val flatEntity = entity.toFlat()
+
+        val dir = flatEntity.dir
+        val (table, addForm, editForm, queryForm, page, idSelect, idMultiSelect, editTable) = flatEntity.components
+        val (addFormRules, editFormRules, editTableRules) = entity.rules
+
+        val result = mutableListOf<GenerateFile>()
+
+        result += GenerateFile(
+            entity,
+            "components/${dir}/${table}.vue",
+            stringify(ViewTable(flatEntity)),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Table),
+        )
+
+        if (entity.canAdd) {
+            val addFormDataType = flatEntity.addFormDataType
+            val defaultAddFormData = flatEntity.addFormCreateDefault
+
+            result += GenerateFile(
+                entity,
+                "components/${dir}/${addFormDataType}.d.ts",
+                AddFormTypeDeclare(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.AddFormDataType),
+            )
+            result += GenerateFile(
+                entity,
+                "components/${dir}/${defaultAddFormData}.ts",
+                AddFormDefaultFunction(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.DefaultAddFormData),
+            )
+            result += GenerateFile(
+                entity,
+                "components/${dir}/${addForm}.vue",
+                stringify(AddForm(flatEntity)),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.AddForm),
+            )
+            result += GenerateFile(
+                entity,
+                "rules/${dir}/${addFormRules}.ts",
+                AddFormRules(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.AddFormRules, GenerateTag.AddForm),
+            )
+        }
+
+        if (entity.canEdit) {
+            result += GenerateFile(
+                entity,
+                "components/${dir}/${editForm}.vue",
+                stringify(EditForm(flatEntity)),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EditForm),
+            )
+            result += GenerateFile(
+                entity,
+                "rules/${dir}/${editFormRules}.ts",
+                EditFormRules(flatEntity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditFormRules, GenerateTag.EditForm),
+            )
+        }
+
+        if (entity.canQuery) {
+            result += GenerateFile(
+                entity,
+                "components/${dir}/${queryForm}.vue",
+                stringify(QueryForm(flatEntity)),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.QueryForm),
+            )
+        }
+
+        if (entity.hasPage) {
+            result += GenerateFile(
+                entity,
+                "pages/${dir}/${page}.vue",
+                stringify(Page(flatEntity)),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Page),
+            )
+        }
+
+// TODO when short association
+        result += GenerateFile(
+            entity,
+            "components/${dir}/${idSelect}.vue",
+            stringify(IdSelect(flatEntity, multiple = false)),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.IdSelect),
+        )
+        result += GenerateFile(
+            entity,
+            "components/${dir}/${idMultiSelect}.vue",
+            stringify(IdSelect(flatEntity, multiple = true)),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.IdMultiSelect),
+        )
+
+// TODO when long association
+        result += GenerateFile(
+            entity,
+            "components/${dir}/${editTable}.vue",
+            stringify(EditTable(flatEntity)),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.EditTable),
+        )
+        result += GenerateFile(
+            entity,
+            "rules/${dir}/${editTableRules}.ts",
+            EditTableRules(flatEntity),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditTableRules, GenerateTag.EditTable),
+        )
+
+        return result
     }
 }

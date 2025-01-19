@@ -252,7 +252,7 @@ const filterNodeMethod = (value: string | undefined, data: TreeNode) => {
 </template>
 )]
             """.trimIndent().trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
                 .filter { GenerateTag.IdSelect in it.tags || GenerateTag.IdMultiSelect in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -530,7 +530,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
 </template>
 )]
             """.trimIndent().trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
                 .filter { GenerateTag.Page in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -619,7 +619,7 @@ const handleSelectionChange = (
 </template>
 )]
             """.trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
                 .filter { GenerateTag.Table in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -753,7 +753,7 @@ export const useRules = (_: Ref<SelfAssociationEntityAddFormType>): FormRules<Se
     }
 })]
             """.trimIndent().trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
                 .filter { GenerateTag.AddForm in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -887,7 +887,7 @@ export const useRules = (_: Ref<SelfAssociationEntityUpdateInput>): FormRules<Se
     }
 })]
             """.trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
                 .filter { GenerateTag.EditForm in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -1133,7 +1133,7 @@ export const useRules = (
     }
 })]
             """.trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
                 .filter { GenerateTag.EditTable in it.tags }
                 .map { it.path to it.content }.toString()
         )

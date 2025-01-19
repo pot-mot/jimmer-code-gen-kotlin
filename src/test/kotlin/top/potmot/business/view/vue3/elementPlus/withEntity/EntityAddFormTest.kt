@@ -21,7 +21,7 @@ export type EntityAddFormType = {
     toOneNullablePropertyId: number | undefined
 }
             """.trimIndent(),
-            generator.stringifyAddFormType(testEntity).trim()
+            generator.AddFormTypeDeclare(testEntity).trim()
         )
     }
 
@@ -40,7 +40,7 @@ export const createDefaultEntity = (): EntityAddFormType => {
     }
 }
             """.trimIndent(),
-            generator.stringifyAddFormCreateDefault(testEntity).trim()
+            generator.AddFormDefaultFunction(testEntity).trim()
         )
     }
 
@@ -70,7 +70,7 @@ export const useRules = (_: Ref<EntityAddFormType>): FormRules<EntityInsertInput
     }
 }
             """.trimIndent(),
-            generator.stringifyAddFormRules(testEntity).trim()
+            generator.AddFormRules(testEntity).trim()
         )
     }
 
@@ -214,7 +214,7 @@ defineExpose<FormExpose>({
     </el-form>
 </template>
             """.trimIndent(),
-            generator.stringifyAddForm(testEntity).trim()
+            generator.stringify(generator.AddForm(testEntity)).trim()
         )
     }
 }

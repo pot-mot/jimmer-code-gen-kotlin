@@ -33,7 +33,7 @@ export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput
     }
 }
             """.trimIndent(),
-            generator.stringifyEditFormRules(testEntity).trim()
+            generator.EditFormRules(testEntity).trim()
         )
     }
 
@@ -165,7 +165,7 @@ defineExpose<FormExpose>({
     </el-form>
 </template>
             """.trimIndent(),
-            generator.stringifyEditForm(testEntity).trim()
+            generator.stringify(generator.EditForm(testEntity)).trim()
         )
     }
 }

@@ -142,7 +142,7 @@ watch(() => [modelValue.value, props.options], () => {
 </template>
 )]
             """.trimIndent(),
-            Vue3ElementPlusViewGenerator.generateView(shortAssociationEntity)
+            Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationEntity))
                 .filter { GenerateTag.IdSelect in it.tags || GenerateTag.IdMultiSelect in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -202,7 +202,7 @@ specification EntitySpec {
 
     @Test
     fun `test shortAssociationTarget view`() {
-        val viewItems = Vue3ElementPlusViewGenerator.generateView(shortAssociationTargetEntity)
+        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationTargetEntity))
 
         assertEquals(
             """
@@ -353,7 +353,7 @@ specification EntitySpec {
 
     @Test
     fun `test shortAssociationTargetIdView view`() {
-        val viewItems = Vue3ElementPlusViewGenerator.generateView(shortAssociationTargetIdViewEntity)
+        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationTargetIdViewEntity))
 
         assertEquals(
             """
