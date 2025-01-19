@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.context.useContext
 import top.potmot.core.business.dto.generate.DtoGenerator.generateDto
 import top.potmot.core.business.permission.generate.PermissionGenerator
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.core.business.route.generate.DynamicRouteGenerator
 import top.potmot.core.business.service.generate.getServiceGenerator
+import top.potmot.core.business.utils.entity.toFlat
 import top.potmot.core.business.view.generate.getViewGenerator
 import top.potmot.core.database.generate.getTableDefineGenerator
 import top.potmot.core.entity.generate.getEntityGenerator
@@ -73,10 +75,12 @@ class GenerateService(
                 sqlClient.listEntity<GenEntityGenerateView>(id)
             }
             val entityGenerateViews by lazyEntityGenerateView
-            val entityBusinessViews by lazy {
-                sqlClient.listEntity<GenEntityBusinessView>(id) {
+            val entityBusinessList by lazy {
+                val entityBusinessViews = sqlClient.listEntity<GenEntityBusinessView>(id) {
                     where(table.table.type ne TableType.SUPER_TABLE)
                 }
+                val entityBusinessIdMap = entityBusinessViews.associateBy { it.id }
+                entityBusinessViews.map { EntityBusiness(it.toFlat(), entityBusinessIdMap) }
             }
             val enums by lazy {
                 sqlClient.listEnum(id)
@@ -114,24 +118,24 @@ class GenerateService(
                 }
             }
             if (containsAll || containsBackEnd || GenerateType.Service in typeSet) {
-                serviceGenerator.generateService(entityBusinessViews).forEach {
+                serviceGenerator.generateService(entityBusinessList).forEach {
                     files += it.copy(path = "${languageDir}/${it.path}")
                 }
             }
             if (containsAll || containsBackEnd || GenerateType.DTO in typeSet) {
-                files += generateDto(entityBusinessViews)
+                files += generateDto(entityBusinessList)
             }
             if (containsAll || containsBackEnd || GenerateType.Permission in typeSet) {
-                files += PermissionGenerator.generate(entityBusinessViews)
+                files += PermissionGenerator.generate(entityBusinessList)
             }
             if (containsAll || containsBackEnd || GenerateType.Route in typeSet) {
-                files += DynamicRouteGenerator.generate(entityBusinessViews)
+                files += DynamicRouteGenerator.generate(entityBusinessList)
             }
             if (containsAll || containsFrontEnd || GenerateType.EnumComponent in typeSet) {
                 files += viewGenerator.generateEnum(enums)
             }
             if (containsAll || containsFrontEnd || GenerateType.View in typeSet) {
-                files += viewGenerator.generateView(entityBusinessViews)
+                files += viewGenerator.generateView(entityBusinessList)
             }
 
             val tableEntityPairs =

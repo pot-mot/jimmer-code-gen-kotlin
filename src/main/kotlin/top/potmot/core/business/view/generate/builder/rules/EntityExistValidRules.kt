@@ -1,5 +1,8 @@
 package top.potmot.core.business.view.generate.builder.rules
 
+import top.potmot.core.business.property.AssociationProperty
+import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.property.PropertyBusiness
 import top.potmot.core.business.utils.entity.ExistValidItem
 import top.potmot.core.business.utils.mark.apiServiceName
 import top.potmot.core.business.utils.entity.existValidItems
@@ -10,7 +13,6 @@ import top.potmot.core.business.view.generate.apiPath
 import top.potmot.core.business.view.generate.meta.rules.ExistValidRule
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.utilPath
-import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.ModelException
 import top.potmot.utils.string.trimBlankLine
 
@@ -23,23 +25,23 @@ val existValidRuleImport = listOf(
 
 private data class EntityExistValidRule(
     val item: ExistValidItem,
-    val property: GenEntityBusinessView.TargetOf_properties,
-    val entity: GenEntityBusinessView,
+    val propertyBusiness: PropertyBusiness,
+    val entityBusiness: EntityBusiness,
     val withId: Boolean,
     val trigger: Collection<String> = listOf("blur"),
 ) : ExistValidRule() {
-    private val Pair<GenEntityBusinessView.TargetOf_properties, GenEntityBusinessView.TargetOf_properties?>.nameOrWithId
-        get() = if (second != null) second!!.name else first.nameOrWithId
-
     @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringify(): String {
-        val idProperty = entity.idProperty
+        val property = propertyBusiness.property
+
+        val entity = entityBusiness.entity
+        val idProperty = entityBusiness.idProperty
         val idName = idProperty.name
 
         val propertyName = property.nameOrWithId
         val propertyType =
-            if (property.typeEntity != null) {
-                val typeEntityIdProperty = property.typeEntity.idProperty
+            if (propertyBusiness is AssociationProperty) {
+                val typeEntityIdProperty = propertyBusiness.typeEntity.idProperty
                 typeStrToTypeScriptType(typeEntityIdProperty.type, property.typeNotNull)
             } else {
                 typeStrToTypeScriptType(property.type, property.typeNotNull)
@@ -58,7 +60,7 @@ private data class EntityExistValidRule(
                     .map {
                         "${it.name}: formData.value.${it.name},"
                     } +
-                item.associationPropertyPairs
+                item.associationProperties
                     .mapNotNull {
                         val nameOrWithId = it.nameOrWithId
 
@@ -84,7 +86,7 @@ ${properties.joinToString(",\n") { "    ".repeat(4) + it }}
 }
 
 /**
- * 将 existValidItem 转换为 ExistValidRule
+ * 将 ExistValidItem 转换为 ExistValidRule
  *
  */
 @Throws(
@@ -92,16 +94,16 @@ ${properties.joinToString(",\n") { "    ".repeat(4) + it }}
     ModelException.IndexRefPropertyNotFound::class,
     ModelException.IndexRefPropertyCannotBeList::class
 )
-fun GenEntityBusinessView.existValidRules(
+fun EntityBusiness.existValidRules(
     withId: Boolean,
-    filterProperties: List<GenEntityBusinessView.TargetOf_properties> = properties,
-): Map<GenEntityBusinessView.TargetOf_properties, List<ExistValidRule>> {
-    val currentPropertyIds = filterProperties.map { it.id }.toSet()
+    filterProperties: List<PropertyBusiness> = propertyBusiness,
+): Map<PropertyBusiness, List<ExistValidRule>> {
+    val filterPropertyIds = filterProperties.map { it.property.id }.toSet()
 
     return existValidItems
         .flatMap { item ->
             item.properties.mapNotNull { property ->
-                if (property.id !in currentPropertyIds)
+                if (property.id !in filterPropertyIds)
                     null
                 else
                     EntityExistValidRule(
@@ -112,5 +114,5 @@ fun GenEntityBusinessView.existValidRules(
                     )
             }
         }
-        .groupBy { it.property }
+        .groupBy { it.propertyBusiness }
 }

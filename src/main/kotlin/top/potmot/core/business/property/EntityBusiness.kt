@@ -1,5 +1,19 @@
 package top.potmot.core.business.property
 
+import top.potmot.core.business.utils.entity.idProperty
+import top.potmot.core.business.utils.mark.apiServiceName
+import top.potmot.core.business.utils.mark.components
+import top.potmot.core.business.utils.mark.dir
+import top.potmot.core.business.utils.mark.dto
+import top.potmot.core.business.utils.mark.enums
+import top.potmot.core.business.utils.mark.lowerName
+import top.potmot.core.business.utils.mark.packages
+import top.potmot.core.business.utils.mark.permissionStrList
+import top.potmot.core.business.utils.mark.permissions
+import top.potmot.core.business.utils.mark.requestPath
+import top.potmot.core.business.utils.mark.rules
+import top.potmot.core.business.utils.mark.serviceFilePath
+import top.potmot.core.business.utils.mark.serviceName
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.IdName
 import top.potmot.enumeration.AssociationType
@@ -10,48 +24,119 @@ class EntityBusiness(
     val entity: GenEntityBusinessView,
     entityIdMap: Map<Long, GenEntityBusinessView>,
 ) {
+    val id = entity.id
+
+    val name = entity.name
+
+    val lowerName = entity.lowerName
+
+    val comment = entity.comment
+
+    val canAdd = entity.canAdd
+
+    val canEdit = entity.canEdit
+
+    val canDelete = entity.canDelete
+
+    val canQuery = entity.canQuery
+
+    val hasPage = entity.hasPage
+
+    val packagePath = entity.packagePath
+
+    val dto by lazy {
+        entity.dto
+    }
+
+    val dir by lazy {
+        entity.dir
+    }
+
+    val packages by lazy {
+        entity.packages
+    }
+
+    val components by lazy {
+        entity.components
+    }
+
+    val rules by lazy {
+        entity.rules
+    }
+
+    val permissions by lazy {
+        entity.permissions
+    }
+
+    val permissionStrList by lazy {
+        entity.permissionStrList
+    }
+
+    val enums by lazy {
+        entity.enums
+    }
+
+    val serviceFilePath by lazy {
+        entity.serviceFilePath
+    }
+
+    val requestPath by lazy {
+        entity.requestPath
+    }
+
+    val serviceName by lazy {
+        entity.serviceName
+    }
+
+    val apiServiceName by lazy {
+        entity.apiServiceName
+    }
+
     val properties = entity.properties
 
-    // 具有列的属性
-    val columnProperty by lazy {
-        properties
-            .filter { it.column != null }
+    val idProperty by lazy {
+        entity.idProperty
     }
 
-    // 不具有列的属性
-    val noColumnProperty by lazy {
-        properties
-            .filter { it.column == null }
-    }
-
-    // 标量属性
-    val scalarProperties by lazy {
-        columnProperty
-            .filter {
-                !it.idProperty && !it.logicalDelete && it.associationType == null
-            }
-    }
-
-    // 关联属性
-    val associationProperties by lazy {
-        columnProperty
-            .filter { it.associationType != null }
-    }
-
-    // 目标唯一属性
-    val targetOneProperties by lazy {
-        associationProperties
-            .filter { it.associationType in targetOneAssociationTypes }
-    }
 
     val propertyBusiness by lazy {
         entity.getPropertyBusiness(entityIdMap)
+    }
+
+    val propertyBusinessIdMap by lazy {
+        val map = mutableMapOf<Long, PropertyBusiness>()
+
+        for (propertyBusiness in propertyBusiness) {
+            map[propertyBusiness.id] = propertyBusiness
+            if (propertyBusiness is AssociationProperty && propertyBusiness.idView != null) {
+                map[propertyBusiness.idView.id] = propertyBusiness
+            }
+        }
+
+        map
     }
 
     // 关联属性
     val associationPropertyBusiness by lazy {
         propertyBusiness.filterIsInstance<AssociationProperty>()
     }
+
+
+    val scalarPropertyBusiness by lazy {
+        propertyBusiness
+            .filter {
+                !it.property.idProperty && !it.property.logicalDelete && it.property.associationType == null
+            }
+    }
+
+
+    val noColumnPropertyBusiness by lazy {
+        propertyBusiness
+            .filter {
+                it.property.column == null
+            }
+    }
+
 
     val isTree by lazy {
         entity.properties.any {
@@ -76,7 +161,7 @@ class EntityBusiness(
     }
 
     val parentIdProperty by lazy {
-        parentPropertyBusiness.forceToIdView()
+        parentPropertyBusiness.forceToIdViewProperty()
     }
 
 
@@ -96,67 +181,69 @@ class EntityBusiness(
         childrenPropertyBusiness.property
     }
 
-    val childIdProperty by lazy {
-        childrenPropertyBusiness.forceToIdView()
+    val childIdsProperty by lazy {
+        childrenPropertyBusiness.forceToIdViewProperty()
     }
 
 
-    val specificationSelectProperties by lazy {
+    val specificationSelectPropertyBusiness by lazy {
         associationPropertyBusiness
             .filter { it.inSpecification && it.associationType in targetOneAssociationTypes }
-            .map { it.forceToIdView() }
+            .forceIdView()
     }
 
-    val insertSelectProperties by lazy {
+    val insertSelectPropertyBusiness by lazy {
         associationPropertyBusiness
             .filter { it.inInsertInput }
-            .map { it.forceToIdView() }
+            .forceIdView()
     }
 
-    val updateSelectProperties by lazy {
+    val updateSelectPropertyBusiness by lazy {
         associationPropertyBusiness
             .filter { it.inUpdateInput }
-            .map { it.forceToIdView() }
+            .forceIdView()
     }
 
-    val pageSelectProperties by lazy {
+    val pageSelectPropertyBusiness by lazy {
         associationPropertyBusiness
             .filter {
                 (it.inSpecification && it.associationType in targetOneAssociationTypes) || it.inInsertInput || it.inUpdateInput
             }
-            .map { it.forceToIdView() }
+            .forceIdView()
     }
 
-    val editTableSelectProperties by lazy {
+    val editTableSelectPropertyBusiness by lazy {
         associationPropertyBusiness
             .filter { it.inLongAssociationInput }
-            .map { it.forceToIdView() }
+            .forceIdView()
     }
 
 
-    val optionViewProperties by lazy {
+    val optionViewPropertyBusiness by lazy {
         propertyBusiness
             .filter { it.inOptionView }
     }
 
     val optionLabelProperties by lazy {
-        val optionViewProperties = optionViewProperties.selfOrForceIdView()
+        val optionViewProperties = optionViewPropertyBusiness.selfOrForceIdViewProperties()
 
         if (optionViewProperties.size > 1) {
-            optionViewProperties.filter { !it.idProperty }
+            optionViewProperties.filter {
+                !it.idProperty && it.typeEntityId != entity.id
+            }
         } else {
             optionViewProperties
         }
     }
 
 
-    val listViewProperties by lazy {
+    val listViewPropertyBusiness by lazy {
         propertyBusiness
             .filter { it.inListView }
     }
 
-    val tableProperties by lazy {
-        listViewProperties
+    val tablePropertyBusiness by lazy {
+        listViewPropertyBusiness
             .filter {
                 val notParentProperty =
                     if (isTree) {
@@ -167,35 +254,43 @@ class EntityBusiness(
 
                 !it.property.idProperty && notParentProperty
             }
+            .selfOrForceIdView()
     }
 
-    val detailViewProperties by lazy {
+    val detailViewPropertyBusiness by lazy {
         propertyBusiness
             .filter { it.inDetailView }
     }
 
-    val viewFormProperties by lazy {
-        detailViewProperties
+    val viewFormPropertyBusiness by lazy {
+        detailViewPropertyBusiness
             .filter { !it.property.idProperty }
+            .selfOrForceIdView()
     }
 
 
-    val specificationProperties by lazy {
-        properties
-            .filter { it.inSpecification && !it.idView }
-    }
-
-    val queryProperties by lazy {
+    val specificationPropertyBusiness by lazy {
         propertyBusiness
+            .filter { it.inSpecification }
+    }
+
+    val queryPropertyBusiness by lazy {
+        specificationPropertyBusiness
             .filter {
-                it.inSpecification
+                !it.property.idProperty &&
+                        (it.property.associationType == null || it.property.associationType in targetOneAssociationTypes)
+            }
+            .map {
+                when (it) {
+                    is CommonProperty -> it.copy(property = it.property.copy(typeNotNull = false))
+                    is AssociationProperty -> it.copy(
+                        property = it.property.copy(typeNotNull = false),
+                        idView = it.idView?.copy(typeNotNull = false)
+                    )
+                    is ForceIdViewProperty -> it.copy(property = it.property.copy(typeNotNull = false))
+                }
             }
             .selfOrForceIdView()
-            .filter {
-                !it.idProperty &&
-                        (it.associationType == null || it.associationType in targetOneAssociationTypes)
-            }
-            .map { it.copy(typeNotNull = false) }
     }
 
 
@@ -213,73 +308,80 @@ class EntityBusiness(
         }
 
 
-    val insertInputProperties by lazy {
+    val insertInputPropertyBusiness by lazy {
         propertyBusiness
             .filter { it.inInsertInput }
     }
 
-    val addFormProperties by lazy {
-        insertInputProperties
+    val addFormPropertyBusiness by lazy {
+        insertInputPropertyBusiness
             .produceEditNullable()
+            .selfOrForceIdView()
     }
 
-    val addFormEditNullableProperty by lazy {
-        insertInputProperties
+    val addFormEditNullablePropertyBusiness by lazy {
+        insertInputPropertyBusiness
             .filter { it.isEditNullable }
+            .selfOrForceIdView()
     }
 
-    val addFormRulesProperties by lazy {
-        insertInputProperties
+    val addFormRulesPropertyBusiness by lazy {
+        insertInputPropertyBusiness
             .selfOrForceIdView()
     }
 
 
-    val updateInputProperties by lazy {
+    val updateInputPropertyBusiness by lazy {
         propertyBusiness
             .filter { it.inUpdateInput }
     }
 
-    val editFormProperties by lazy {
-        updateInputProperties
+    val editFormPropertyBusiness by lazy {
+        updateInputPropertyBusiness
             .filter { !it.property.idProperty }
+            .selfOrForceIdView()
     }
 
-    val editFormRulesProperties by lazy {
-        updateInputProperties
+    val editFormRulesPropertyBusiness by lazy {
+        updateInputPropertyBusiness
             .filter { !it.property.idProperty }
+            .selfOrForceIdView()
     }
 
 
-    val shortViewProperties by lazy {
+    val shortViewPropertyBusiness by lazy {
         propertyBusiness
             .filter { it.inShortAssociationView }
     }
 
 
-    val longAssociationInputProperties by lazy {
+    val longAssociationInputPropertyBusiness by lazy {
         propertyBusiness
             .filter { it.inLongAssociationInput }
     }
 
-    val editTableProperties by lazy {
-        longAssociationInputProperties
+    val editTablePropertyBusiness by lazy {
+        longAssociationInputPropertyBusiness
             .filter { !it.property.idProperty }
             .produceEditNullable()
+            .selfOrForceIdView()
     }
 
-    val editTableRulesProperties by lazy {
-        longAssociationInputProperties
+    val editTableRulesPropertyBusiness by lazy {
+        longAssociationInputPropertyBusiness
             .filter { !it.property.idProperty }
+            .selfOrForceIdView()
     }
 
 
-    val longAssociationViewProperties by lazy {
+    val longAssociationViewPropertyBusiness by lazy {
         propertyBusiness
             .filter { it.inLongAssociationView }
     }
 
-    val viewSubTableProperties by lazy {
-        longAssociationViewProperties
+    val viewSubTablePropertyBusiness by lazy {
+        longAssociationViewPropertyBusiness
             .filter { !it.property.idProperty }
+            .selfOrForceIdView()
     }
 }

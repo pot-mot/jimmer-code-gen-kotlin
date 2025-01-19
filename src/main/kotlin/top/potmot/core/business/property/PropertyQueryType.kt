@@ -64,7 +64,9 @@ private val dateTimeRangeType = setOf(
 
 val GenEntityBusinessView.TargetOf_properties.queryType: PropertyQueryType
     get() =
-        if (associationType != null) {
+        if (idProperty) {
+            PropertyQueryType.EQ
+        } else if (associationType != null) {
             when (associationType) {
                 AssociationType.MANY_TO_ONE, AssociationType.ONE_TO_ONE ->
                     PropertyQueryType.ASSOCIATION_ID_EQ

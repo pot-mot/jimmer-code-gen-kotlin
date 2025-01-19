@@ -1,15 +1,17 @@
 package top.potmot.business.shortAssociation
 
+import top.potmot.business.baseEntity
 import top.potmot.business.baseProperty
 import top.potmot.business.idProperty
-import top.potmot.business.testEntity
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_idProperties
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity
 import top.potmot.enumeration.AssociationType
 
 private const val shortAssociationEntityId = -1L
 
 private const val shortAssociationTargetEntityId = -2L
+
+private const val shortAssociationTargetIdViewEntityId = -3L
 
 private val label1Property = baseProperty.copy(
     name = "label1",
@@ -25,7 +27,7 @@ private val label2Property = baseProperty.copy(
     inOptionView = true,
 )
 
-val shortAssociationEntity = testEntity.copy(
+val shortAssociationEntity = baseEntity.copy(
     id = shortAssociationEntityId,
     name = "ShortAssociationEntity",
     comment = "shortAssociationEntityComment",
@@ -38,33 +40,31 @@ val shortAssociationEntity = testEntity.copy(
         label1Property,
         label2Property
     )
-)
+).let {
+    EntityBusiness(it, mapOf(shortAssociationEntityId to it))
+}
 
 private val shortAssociationProperty = baseProperty.copy(
     name = "shortAssociationProperty",
     type = shortAssociationEntity.name,
     associationType = AssociationType.MANY_TO_ONE,
-    typeEntity = TargetOf_typeEntity(
-        id = shortAssociationEntityId,
-        packagePath = shortAssociationEntity.packagePath,
-        name = shortAssociationEntity.name,
-        comment = shortAssociationEntity.comment,
-        idProperties = listOf(
-            TargetOf_typeEntity.TargetOf_idProperties(idProperty.toEntity())
-        ),
-        shortViewProperties = listOf(
-            TargetOf_typeEntity.TargetOf_shortViewProperties(label1Property.toEntity()),
-            TargetOf_typeEntity.TargetOf_shortViewProperties(label2Property.toEntity()),
-        )
-    )
+    typeEntityId = shortAssociationEntityId
 )
 
-val shortAssociationTargetEntity = testEntity.copy(
+val shortAssociationTargetEntity = baseEntity.copy(
+    id = shortAssociationTargetEntityId,
     properties = listOf(
         idProperty,
         shortAssociationProperty
     )
-)
+).let {
+    EntityBusiness(
+        it, mapOf(
+            shortAssociationEntityId to shortAssociationEntity.entity,
+            shortAssociationTargetEntityId to it
+        )
+    )
+}
 
 private val shortAssociationIdViewProperty = baseProperty.copy(
     id = shortAssociationEntityId,
@@ -74,11 +74,18 @@ private val shortAssociationIdViewProperty = baseProperty.copy(
     idViewTarget = shortAssociationProperty.name
 )
 
-val shortAssociationTargetIdViewEntity = testEntity.copy(
-    id = shortAssociationTargetEntityId,
+val shortAssociationTargetIdViewEntity = baseEntity.copy(
+    id = shortAssociationTargetIdViewEntityId,
     properties = listOf(
         idProperty,
         shortAssociationProperty,
         shortAssociationIdViewProperty
     )
-)
+).let {
+    EntityBusiness(
+        it, mapOf(
+            shortAssociationEntityId to shortAssociationEntity.entity,
+            shortAssociationTargetIdViewEntityId to it
+        )
+    )
+}

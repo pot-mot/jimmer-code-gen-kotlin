@@ -12,7 +12,7 @@ GenEntityBusinessView implements GenerateEntity {
 
     superEntities*
 
-    notLongProperties as properties implements GenerateProperty {
+    properties implements GenerateProperty {
         #allScalars
         id(entity)
 
@@ -23,42 +23,7 @@ GenEntityBusinessView implements GenerateEntity {
         }
 
         flat(typeTable) {
-            entity as typeEntity implements GenerateEntity {
-                id
-                packagePath
-                name
-                comment
-                idProperties {
-                    id
-                    name
-                    type
-                    typeNotNull
-                }
-                shortViewProperties implements GenerateProperty {
-                    #allScalars
-
-                    column {
-                        typeCode
-                        dataSize
-                        numericPrecision
-                    }
-
-                    enum implements GenerateEnum {
-                        id
-                        packagePath
-                        name
-                        comment
-
-                        items {
-                            id
-                            name
-                            comment
-                            orderKey
-                            defaultItem
-                        }
-                    }
-                }
-            }
+            entityId as typeEntityId
         }
 
         enum implements GenerateEnum {
@@ -73,23 +38,6 @@ GenEntityBusinessView implements GenerateEntity {
                 comment
                 orderKey
                 defaultItem
-            }
-        }
-    }
-
-    longProperties implements GenerateProperty {
-        #allScalars
-        id(entity)
-
-        column {
-            typeCode
-            dataSize
-            numericPrecision
-        }
-
-        flat(typeTable) {
-            flat(entity) {
-                id as typeEntityId
             }
         }
     }

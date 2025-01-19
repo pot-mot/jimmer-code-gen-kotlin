@@ -3,7 +3,7 @@ package top.potmot.business.view.vue3.elementPlus.withEntity
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.business.testEntity
+import top.potmot.business.testEntityBusiness
 
 class EntityAddFormTest {
     private val generator = Vue3ElementPlusViewGenerator
@@ -21,7 +21,7 @@ export type EntityAddFormType = {
     toOneNullablePropertyId: number | undefined
 }
             """.trimIndent(),
-            generator.AddFormTypeDeclare(testEntity).trim()
+            generator.AddFormTypeDeclare(testEntityBusiness).trim()
         )
     }
 
@@ -40,7 +40,7 @@ export const createDefaultEntity = (): EntityAddFormType => {
     }
 }
             """.trimIndent(),
-            generator.AddFormDefaultFunction(testEntity).trim()
+            generator.AddFormDefaultFunction(testEntityBusiness).trim()
         )
     }
 
@@ -70,7 +70,7 @@ export const useRules = (_: Ref<EntityAddFormType>): FormRules<EntityInsertInput
     }
 }
             """.trimIndent(),
-            generator.AddFormRules(testEntity).trim()
+            generator.AddFormRules(testEntityBusiness).trim()
         )
     }
 
@@ -214,7 +214,7 @@ defineExpose<FormExpose>({
     </el-form>
 </template>
             """.trimIndent(),
-            generator.stringify(generator.AddForm(testEntity)).trim()
+            generator.stringify(generator.AddForm(testEntityBusiness)).trim()
         )
     }
 }

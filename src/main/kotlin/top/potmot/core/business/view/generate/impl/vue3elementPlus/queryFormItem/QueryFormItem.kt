@@ -1,12 +1,12 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem
 
+import top.potmot.core.business.property.AssociationProperty
+import top.potmot.core.business.property.PropertyBusiness
 import top.potmot.core.business.property.PropertyFormType
 import top.potmot.core.business.property.PropertyQueryType
+import top.potmot.core.business.property.TypeEntityProperty
 import top.potmot.core.business.utils.mark.components
 import top.potmot.core.business.utils.mark.dir
-import top.potmot.core.business.property.formType
-import top.potmot.core.business.property.queryType
-import top.potmot.core.business.utils.mark.upperName
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.dateTimePickerRange
@@ -16,25 +16,19 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.timePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
-import top.potmot.core.business.property.numberMax
-import top.potmot.core.business.property.numberMin
-import top.potmot.core.business.property.numberPrecision
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VModel
-import top.potmot.entity.dto.GenEntityBusinessView
 
 interface QueryFormItem {
-    fun GenEntityBusinessView.TargetOf_properties.createQueryFormItem(spec: String): FormItemData {
+    fun PropertyBusiness.createQueryFormItem(spec: String): FormItemData {
         val modelValue = "$spec.${name}"
         val rangeModelValue = "${name}Range"
         val minModelValue = "$spec.min${upperName}"
         val maxModelValue = "$spec.max${upperName}"
-        val numberMin by lazy { numberMin }
-        val numberMax by lazy { numberMax }
 
         val rangeComputed by lazy {
             CodeBlock(
@@ -57,7 +51,7 @@ interface QueryFormItem {
 
         return when (queryType) {
             PropertyQueryType.ASSOCIATION_ID_EQ ->
-                if (typeEntity == null) {
+                if (this !is TypeEntityProperty) {
                     FormItemData()
                 } else {
                     val components = typeEntity.components
@@ -83,7 +77,7 @@ interface QueryFormItem {
                 }
 
             PropertyQueryType.ASSOCIATION_ID_IN ->
-                if (typeEntity == null) {
+                if (this !is AssociationProperty) {
                     FormItemData()
                 } else {
                     val dir = typeEntity.dir
@@ -107,7 +101,9 @@ interface QueryFormItem {
                     )
                 }
 
-            PropertyQueryType.ENUM_SELECT ->
+            PropertyQueryType.ENUM_SELECT -> {
+                val enum = property.enum
+
                 if (enum == null) {
                     FormItemData()
                 } else {
@@ -129,6 +125,7 @@ interface QueryFormItem {
                         )
                     )
                 }
+            }
 
             PropertyQueryType.INT_RANGE ->
                 FormItemData(

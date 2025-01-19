@@ -1,9 +1,10 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem
 
+import top.potmot.core.business.property.PropertyBusiness
 import top.potmot.core.business.property.PropertyFormType
+import top.potmot.core.business.property.TypeEntityProperty
 import top.potmot.core.business.utils.mark.components
 import top.potmot.core.business.utils.mark.dir
-import top.potmot.core.business.property.formType
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.dateTimePicker
@@ -13,18 +14,14 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.switch
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.timePicker
-import top.potmot.core.business.property.numberMax
-import top.potmot.core.business.property.numberMin
-import top.potmot.core.business.property.numberPrecision
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.toPropBind
-import top.potmot.entity.dto.GenEntityBusinessView
 
 interface FormItem {
-    fun GenEntityBusinessView.TargetOf_properties.createFormItem(
+    fun PropertyBusiness.createFormItem(
         formData: String,
         disabled: Boolean = false,
         excludeSelf: Boolean = false,
@@ -32,14 +29,12 @@ interface FormItem {
         idName: String? = null,
     ): FormItemData {
         val modelValue = "$formData.${name}"
-        val numberMin by lazy { numberMin }
-        val numberMax by lazy { numberMax }
 
         return when (formType) {
             PropertyFormType.ASSOCIATION_ID,
             PropertyFormType.ASSOCIATION_ID_LIST,
             ->
-                if (typeEntity == null) {
+                if (this !is TypeEntityProperty) {
                     FormItemData()
                 } else {
                     val components = typeEntity.components
@@ -73,7 +68,9 @@ interface FormItem {
                     )
                 }
 
-            PropertyFormType.ENUM ->
+            PropertyFormType.ENUM -> {
+                val enum = property.enum
+
                 if (enum == null) {
                     FormItemData()
                 } else {
@@ -99,6 +96,8 @@ interface FormItem {
                         )
                     )
                 }
+            }
+
 
 
             PropertyFormType.SWITCH ->

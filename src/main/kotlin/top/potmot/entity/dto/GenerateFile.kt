@@ -1,5 +1,6 @@
 package top.potmot.entity.dto
 
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
 import top.potmot.entity.extension.allSuperTables
@@ -140,7 +141,7 @@ fun GenerateFile(
 )
 
 fun GenerateFile(
-    entity: GenEntityBusinessView,
+    entityBusiness: EntityBusiness,
     path: String,
     content: String,
     tags: List<GenerateTag>,
@@ -148,18 +149,18 @@ fun GenerateFile(
     path = path,
     content = content,
     tags = tags,
-    main = MainIdName(MainType.Entity, entity.idName),
-    tableEntities = entity.properties
-        .mapNotNull { it.typeEntity?.idName }
+    main = MainIdName(MainType.Entity, entityBusiness.entity.idName),
+    tableEntities = entityBusiness.associationPropertyBusiness
+        .map { it.typeEntity.idName }
         .distinctBy { it.id }
         .map { TableEntityPair(entity = it) },
-    enums = entity.properties
+    enums = entityBusiness.properties
         .mapNotNull { it.enum?.idName }
         .distinctBy { it.id }
 )
 
 fun createGenerateFileByEntities(
-    entities: Iterable<GenerateEntity>,
+    entities: Iterable<EntityBusiness>,
     path: String,
     content: String,
     tags: List<GenerateTag>,

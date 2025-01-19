@@ -1,5 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
+import top.potmot.core.business.property.PropertyBusiness
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.button
@@ -35,7 +36,6 @@ import top.potmot.core.business.view.generate.meta.vue3.slotElement
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.storePath
 import top.potmot.core.business.view.generate.utilPath
-import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.utils.string.buildScopeString
 
 private const val formExposeType = "FormExpose"
@@ -235,7 +235,7 @@ fun addForm(
     subValidateItems: Collection<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
     afterValidCodes: String? = null,
-    content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
+    content: Map<PropertyBusiness, FormItemData>,
 ) = Component(
     imports = listOf(
         Import("vue", "ref"),
@@ -314,7 +314,7 @@ fun editForm(
     subValidateItems: Collection<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
     afterValidCodes: String? = null,
-    content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
+    content: Map<PropertyBusiness, FormItemData>,
 ) = Component(
     imports = listOf(
         Import("vue", "ref"),
@@ -396,7 +396,7 @@ fun editTable(
     subValidateItems: Collection<SubValidateItem> = emptyList(),
     selectOptions: Iterable<SelectOption> = emptyList(),
     afterValidCodes: String? = null,
-    content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
+    content: Map<PropertyBusiness, FormItemData>,
 ) = Component(
     imports = listOf(
         Import("vue", "ref"),

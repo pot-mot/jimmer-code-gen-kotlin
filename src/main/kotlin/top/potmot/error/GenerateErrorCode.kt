@@ -10,7 +10,7 @@ enum class GenerateErrorCode {
     @ErrorField(name = "modelId", type = Long::class)
     MODEL_NOT_FOUND,
 
-    @ErrorField(name = "entityId", type = Long::class)
+    @ErrorField(name = "entityId", type = Long::class, nullable = true)
     ENTITY_NOT_FOUND,
 
     @ErrorField(name = "index", type = IdName::class)

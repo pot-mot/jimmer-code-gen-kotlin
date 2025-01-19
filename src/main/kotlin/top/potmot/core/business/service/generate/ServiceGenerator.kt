@@ -1,9 +1,6 @@
 package top.potmot.core.business.service.generate
 
-import top.potmot.core.business.utils.mark.serviceFilePath
-import top.potmot.core.business.utils.mark.serviceName
-import top.potmot.core.business.utils.entity.toFlat
-import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 import top.potmot.error.GenerateException
@@ -11,27 +8,24 @@ import top.potmot.error.GenerateException
 abstract class ServiceGenerator {
     abstract fun getFileSuffix(): String
 
-    protected abstract fun stringifyService(entity: GenEntityBusinessView): String
+    protected abstract fun stringifyService(entity: EntityBusiness): String
 
     @Throws(GenerateException::class)
     fun generateService(
-        entity: GenEntityBusinessView,
-    ): GenerateFile {
-        val flatEntity = entity.toFlat()
-
-        return GenerateFile(
-            entity,
-            "${flatEntity.serviceFilePath}${entity.serviceName}${getFileSuffix()}",
-            stringifyService(flatEntity),
-            listOf(GenerateTag.BackEnd, GenerateTag.Service)
-        )
-    }
+        entityBusiness: EntityBusiness,
+    ) = GenerateFile(
+        entityBusiness,
+        "${entityBusiness.serviceFilePath}${entityBusiness.serviceName}${getFileSuffix()}",
+        stringifyService(entityBusiness),
+        listOf(GenerateTag.BackEnd, GenerateTag.Service)
+    )
 
     @Throws(GenerateException::class)
     fun generateService(
-        entities: Iterable<GenEntityBusinessView>,
+        entityBusinessList: Iterable<EntityBusiness>,
     ): List<GenerateFile> =
-        entities
+        entityBusinessList
             .map { generateService(it) }
+            .distinctBy { it.path }
             .sortedBy { it.path }
 }

@@ -1,15 +1,10 @@
 package top.potmot.core.business.dto.generate
 
-import top.potmot.core.business.property.EntityPropertyCategories
-import top.potmot.core.business.property.isShortAssociation
+import top.potmot.core.business.property.AssociationProperty
+import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.property.PropertyBusiness
 import top.potmot.core.business.property.PropertyQueryType
-import top.potmot.core.business.utils.mark.dto
 import top.potmot.core.business.utils.entity.existValidItems
-import top.potmot.core.business.utils.entity.idProperty
-import top.potmot.core.business.property.queryType
-import top.potmot.core.business.utils.entity.toFlat
-import top.potmot.entity.dto.GenEntityBusinessView
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
@@ -17,41 +12,40 @@ import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.toSingular
 
-object DtoGenerator : EntityPropertyCategories {
+object DtoGenerator {
     private fun formatFileName(
-        entity: GenEntityBusinessView,
+        entity: EntityBusiness,
     ): String =
         "${entity.name}.dto"
 
-    private fun Iterable<TargetOf_properties>.insect(
-        includeProperties: Collection<TargetOf_properties>,
+    private fun Iterable<PropertyBusiness>.insect(
+        includeProperties: Collection<PropertyBusiness>,
     ) =
         filter { it in includeProperties }
 
-    private fun Iterable<TargetOf_properties>.exclude(
-        includeProperties: Collection<TargetOf_properties>,
+    private fun Iterable<PropertyBusiness>.exclude(
+        includeProperties: Collection<PropertyBusiness>,
     ) =
         filter { it !in includeProperties }
 
-    private val TargetOf_properties.associationIdExpress
+    private val AssociationProperty.associationIdExpress
         get() =
-            if (idView)
-                name
-            else {
-                if (listType) {
+            idView?.name
+                ?: if (property.listType) {
                     "id(${name}) as ${name.toSingular()}Ids"
                 } else {
                     "id(${name})"
                 }
-            }
 
-    private fun TargetOf_properties.extractShortAssociation(): String = buildScopeString {
-        if (typeEntity == null || typeEntity.shortViewProperties.isEmpty()) {
+    private fun AssociationProperty.extractShortView(): String = buildScopeString {
+        val shortViewProperties = typeEntity.properties.filter { it.inShortAssociationView }
+
+        if (shortViewProperties.isEmpty()) {
             append(associationIdExpress)
         } else {
             line("$name {")
             scope {
-                typeEntity.shortViewProperties.forEach {
+                shortViewProperties.forEach {
                     line(it.name)
                 }
             }
@@ -59,36 +53,32 @@ object DtoGenerator : EntityPropertyCategories {
         }
     }
 
-    private val GenEntityBusinessView.associationIdExpress: List<String>
-        get() = associationProperties.map {
-            it.associationIdExpress
-        }
 
-    private fun generateListView(entity: GenEntityBusinessView) = buildScopeString {
-        val listViewProperties = entity.listViewProperties
+    private fun generateListView(entity: EntityBusiness) = buildScopeString {
+        val listViewProperties = entity.listViewPropertyBusiness
 
         line("${entity.dto.listView} {")
         scope {
             line("#allScalars")
-            entity.scalarProperties.exclude(listViewProperties).forEach {
+            entity.scalarPropertyBusiness.exclude(listViewProperties).forEach {
                 line("-${it.name}")
             }
-            listViewProperties.filter { it.associationType != null }.forEach {
-                if (it.isShortAssociation) {
-                    block(it.extractShortAssociation())
+            listViewProperties.filterIsInstance<AssociationProperty>().forEach {
+                if (it.isShortView) {
+                    block(it.extractShortView())
                 } else {
                     line(it.associationIdExpress)
                 }
             }
-            entity.noColumnProperty.insect(listViewProperties).forEach {
+            entity.noColumnPropertyBusiness.insect(listViewProperties).forEach {
                 line(it.name)
             }
         }
         line("}")
     }
 
-    private fun generateTreeView(entity: GenEntityBusinessView) = buildScopeString {
-        val listViewProperties = entity.listViewProperties
+    private fun generateTreeView(entity: EntityBusiness) = buildScopeString {
+        val listViewProperties = entity.listViewPropertyBusiness
 
         val parentProperty = entity.parentProperty
         val childrenProperty = entity.childrenProperty
@@ -96,44 +86,42 @@ object DtoGenerator : EntityPropertyCategories {
         line("${entity.dto.treeView} {")
         scope {
             line("#allScalars")
-            entity.scalarProperties.exclude(listViewProperties).forEach {
+            entity.scalarPropertyBusiness.exclude(listViewProperties).forEach {
                 line("-${it.name}")
             }
             line("id(${parentProperty.name})")
             line("${childrenProperty.name}*")
-            listViewProperties.filter {
-                it.associationType != null &&
-                        it.id != parentProperty.id &&
-                        it.id != childrenProperty.id &&
-                        it.idViewTarget != parentProperty.name &&
-                        it.idViewTarget != childrenProperty.name
-            }.forEach {
-                if (it.isShortAssociation) {
-                    block(it.extractShortAssociation())
-                } else {
-                    line(it.associationIdExpress)
+            listViewProperties.filterIsInstance<AssociationProperty>()
+                .filter {
+                    it.id != parentProperty.id && it.id != childrenProperty.id
                 }
-            }
-            entity.noColumnProperty.insect(listViewProperties).forEach {
+                .forEach {
+                    if (it.isShortView) {
+                        block(it.extractShortView())
+                    } else {
+                        line(it.associationIdExpress)
+                    }
+                }
+            entity.noColumnPropertyBusiness.insect(listViewProperties).forEach {
                 line(it.name)
             }
         }
         line("}")
     }
 
-    private fun generateOptionView(entity: GenEntityBusinessView) = buildScopeString {
-        val optionViewProperties = entity.optionViewProperties
+    private fun generateOptionView(entity: EntityBusiness) = buildScopeString {
+        val optionViewProperties = entity.optionViewPropertyBusiness
 
         line("${entity.dto.optionView} {")
         scope {
-            if (entity.isTreeEntity()) {
+            if (entity.isTree) {
                 line("id(${entity.parentProperty.name})")
             }
-            optionViewProperties.filter {
-                it.typeEntity?.id != entity.id
-            }.forEach {
-                if (it.associationType != null) {
-                    line(it.associationIdExpress)
+            optionViewProperties.forEach {
+                if (it is AssociationProperty) {
+                    if (it.typeEntity.id != entity.id) {
+                        line(it.associationIdExpress)
+                    }
                 } else {
                     line(it.name)
                 }
@@ -142,23 +130,23 @@ object DtoGenerator : EntityPropertyCategories {
         line("}")
     }
 
-    private fun generateDetailView(entity: GenEntityBusinessView) = buildScopeString {
-        val detailViewProperties = entity.detailViewProperties
+    private fun generateDetailView(entity: EntityBusiness) = buildScopeString {
+        val detailViewProperties = entity.detailViewPropertyBusiness
 
         line("${entity.dto.detailView} {")
         scope {
             line("#allScalars")
-            entity.scalarProperties.exclude(detailViewProperties).forEach {
+            entity.scalarPropertyBusiness.exclude(detailViewProperties).forEach {
                 line("-${it.name}")
             }
-            detailViewProperties.filter { it.associationType != null }.forEach {
-                if (it.isShortAssociation) {
-                    block(it.extractShortAssociation())
+            detailViewProperties.filterIsInstance<AssociationProperty>().forEach {
+                if (it.isShortView) {
+                    block(it.extractShortView())
                 } else {
                     line(it.associationIdExpress)
                 }
             }
-            entity.noColumnProperty.insect(detailViewProperties).forEach {
+            entity.noColumnPropertyBusiness.insect(detailViewProperties).forEach {
                 line(it.name)
             }
         }
@@ -166,8 +154,8 @@ object DtoGenerator : EntityPropertyCategories {
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun generateInsertInput(entity: GenEntityBusinessView) = buildScopeString {
-        val insertInputProperties = entity.insertInputProperties
+    private fun generateInsertInput(entity: EntityBusiness) = buildScopeString {
+        val insertInputProperties = entity.insertInputPropertyBusiness
         val idProperty = entity.idProperty
 
         line("input ${entity.dto.insertInput} {")
@@ -176,59 +164,63 @@ object DtoGenerator : EntityPropertyCategories {
             if (!idProperty.idGenerationAnnotation.isNullOrBlank()) {
                 line("-${idProperty.name}")
             }
-            entity.scalarProperties.exclude(insertInputProperties).forEach {
+            entity.scalarPropertyBusiness.exclude(insertInputProperties).forEach {
                 line("-${it.name}")
             }
-            lines(entity.copy(properties = insertInputProperties).associationIdExpress)
-            entity.noColumnProperty.insect(insertInputProperties).forEach {
+            insertInputProperties.filterIsInstance<AssociationProperty>().forEach {
+                line(it.associationIdExpress)
+            }
+            entity.noColumnPropertyBusiness.insect(insertInputProperties).forEach {
                 line(it.name)
             }
         }
         line("}")
     }
 
-    private fun generateUpdateFillView(entity: GenEntityBusinessView) = buildScopeString {
-        val updateInputProperties = entity.updateInputProperties
+    private fun generateUpdateFillView(entity: EntityBusiness) = buildScopeString {
+        val updateInputProperties = entity.updateInputPropertyBusiness
 
         line("${entity.dto.updateFillView} {")
         scope {
             line("#allScalars")
-            entity.scalarProperties.exclude(updateInputProperties).forEach {
+            entity.scalarPropertyBusiness.exclude(updateInputProperties).forEach {
                 line("-${it.name}")
             }
-            lines(entity.copy(properties = updateInputProperties).associationIdExpress)
-            entity.noColumnProperty.insect(updateInputProperties).forEach {
+            updateInputProperties.filterIsInstance<AssociationProperty>().forEach {
+                line(it.associationIdExpress)
+            }
+            entity.noColumnPropertyBusiness.insect(updateInputProperties).forEach {
                 line(it.name)
             }
         }
         line("}")
     }
 
-    private fun generateUpdateInput(entity: GenEntityBusinessView) = buildScopeString {
-        val updateInputProperties = entity.updateInputProperties
+    private fun generateUpdateInput(entity: EntityBusiness) = buildScopeString {
+        val updateInputProperties = entity.updateInputPropertyBusiness
 
         line("input ${entity.dto.updateInput} {")
         scope {
             line("#allScalars")
-            updateInputProperties.firstOrNull { it.idProperty }?.let {
+            updateInputProperties.firstOrNull { it.property.idProperty }?.let {
                 line("${it.name}!")
             }
-            entity.scalarProperties.exclude(updateInputProperties).forEach {
+            entity.scalarPropertyBusiness.exclude(updateInputProperties).forEach {
                 line("-${it.name}")
             }
-            lines(entity.copy(properties = updateInputProperties).associationIdExpress)
-            entity.noColumnProperty.insect(updateInputProperties).forEach {
+            updateInputProperties.filterIsInstance<AssociationProperty>().forEach {
+                line(it.associationIdExpress)
+            }
+            entity.noColumnPropertyBusiness.insect(updateInputProperties).forEach {
                 line(it.name)
             }
         }
         line("}")
     }
 
-    private val TargetOf_properties.specExpression
+    private val PropertyBusiness.specExpression
         get() =
-            if (idProperty)
-                listOf("eq(${name})")
-            else when (queryType) {
+            when (queryType) {
                 PropertyQueryType.EQ,
                 PropertyQueryType.ENUM_SELECT,
                 ->
@@ -252,15 +244,15 @@ object DtoGenerator : EntityPropertyCategories {
                     listOf("associatedIdIn(${name}) as ${name.toSingular()}Ids")
             }
 
-    private fun generateSpec(entity: GenEntityBusinessView) = buildScopeString {
+    private fun generateSpec(entity: EntityBusiness) = buildScopeString {
         line("specification ${entity.dto.spec} {")
         scope {
-            lines(entity.specificationProperties.flatMap { it.specExpression })
+            lines(entity.specificationPropertyBusiness.flatMap { it.specExpression })
         }
         line("}")
     }
 
-    private fun generateExistValidDto(entity: GenEntityBusinessView): String {
+    private fun generateExistValidDto(entity: EntityBusiness): String {
         val idProperty = entity.idProperty
         val idName = idProperty.name
 
@@ -272,8 +264,8 @@ object DtoGenerator : EntityPropertyCategories {
                     item.scalarProperties.forEach {
                         line("eq(${it.name})")
                     }
-                    item.associationPropertyPairs.forEach {
-                        line("associatedIdEq(${it.first.name})")
+                    item.associationProperties.forEach {
+                        line("associatedIdEq(${it.property.name})")
                     }
                 }
                 append("}")
@@ -283,12 +275,12 @@ object DtoGenerator : EntityPropertyCategories {
 
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun stringify(entity: GenEntityBusinessView) = buildString {
+    private fun stringify(entity: EntityBusiness) = buildString {
         appendLine("export ${entity.packagePath}.${entity.name}")
         appendLine()
 
         appendBlock(generateListView(entity))
-        if (entity.isTreeEntity()) appendBlock(generateTreeView(entity))
+        if (entity.isTree) appendBlock(generateTreeView(entity))
         if (entity.canEdit) appendBlock(generateDetailView(entity))
         appendBlock(generateOptionView(entity))
         if (entity.canAdd) appendBlock(generateInsertInput(entity))
@@ -302,23 +294,20 @@ object DtoGenerator : EntityPropertyCategories {
 
     @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
-        entity: GenEntityBusinessView,
-    ): GenerateFile {
-        val flatEntity = entity.toFlat()
-
-        return GenerateFile(
-            entity,
-            "dto/${formatFileName(entity)}",
-            stringify(flatEntity),
-            listOf(GenerateTag.BackEnd, GenerateTag.DTO)
-        )
-    }
+        entityBusiness: EntityBusiness,
+    ) = GenerateFile(
+        entityBusiness,
+        "dto/${formatFileName(entityBusiness)}",
+        stringify(entityBusiness),
+        listOf(GenerateTag.BackEnd, GenerateTag.DTO)
+    )
 
     @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
-        entities: Iterable<GenEntityBusinessView>,
+        entityBusinessList: Iterable<EntityBusiness>,
     ): List<GenerateFile> =
-        entities
+        entityBusinessList
             .map { generateDto(it) }
+            .distinctBy { it.path }
             .sortedBy { it.path }
 }

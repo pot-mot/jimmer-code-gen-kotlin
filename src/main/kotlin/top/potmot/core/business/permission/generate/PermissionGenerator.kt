@@ -1,8 +1,6 @@
 package top.potmot.core.business.permission.generate
 
-import top.potmot.core.business.utils.mark.lowerName
-import top.potmot.core.business.utils.mark.permissionStrList
-import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.createGenerateFileByEntities
 import top.potmot.enumeration.GenerateTag
@@ -12,7 +10,7 @@ import top.potmot.utils.string.trimBlankLine
 private const val allPermissionFile = "all-permissions"
 
 object PermissionGenerator {
-    fun generate(entities: Iterable<GenEntityBusinessView>): List<GenerateFile> {
+    fun generate(entities: Iterable<EntityBusiness>): List<GenerateFile> {
         val items = entities.map {
             GenerateFile(
                 it,

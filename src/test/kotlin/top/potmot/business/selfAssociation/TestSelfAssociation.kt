@@ -3,17 +3,17 @@ package top.potmot.business.selfAssociation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.dto.generate.DtoGenerator
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.core.business.service.generate.impl.java.JavaServiceGenerator
 import top.potmot.core.business.service.generate.impl.kotlin.KotlinServiceGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.enumeration.GenerateTag
 import top.potmot.utils.string.trimBlankLine
 
 class TestSelfAssociation {
     private val index = "${'$'}index"
 
-    private val GenEntityBusinessView.result
+    private val EntityBusiness.result
         get() = DtoGenerator.generateDto(this).let { it.path to it.content }.toString()
 
     @Test
@@ -24,7 +24,9 @@ class TestSelfAssociation {
 
 SelfAssociationEntityListView {
     #allScalars
-    id(parent)
+    parent {
+        label
+    }
 }
 
 SelfAssociationEntityTreeView {
@@ -35,8 +37,12 @@ SelfAssociationEntityTreeView {
 
 SelfAssociationEntityDetailView {
     #allScalars
-    id(parent)
-    id(children) as childIds
+    parent {
+        label
+    }
+    children {
+        label
+    }
 }
 
 SelfAssociationEntityOptionView {

@@ -2,13 +2,14 @@ package top.potmot.business
 
 import java.sql.Types
 import java.time.LocalDateTime
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.core.business.utils.entity.idProperty
+import top.potmot.core.business.utils.entity.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_idProperties
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity
 import top.potmot.enumeration.AssociationType
 import top.potmot.utils.string.toSingular
 
@@ -48,7 +49,7 @@ val baseProperty = TargetOf_properties(
     entityId = 0,
     column = TargetOf_column(typeCode = Types.VARCHAR, dataSize = 0, numericPrecision = 0),
     enum = null,
-    typeEntity = null,
+    typeEntityId = null,
     createdTime = LocalDateTime.now(),
     modifiedTime = LocalDateTime.now(),
 )
@@ -63,6 +64,27 @@ val idProperty = baseProperty.copy(
     inInsertInput = false,
     inOptionView = true,
     column = TargetOf_column(typeCode = Types.INTEGER, dataSize = 0, numericPrecision = 0),
+)
+
+val baseEntity = GenEntityBusinessView(
+    id = testId++,
+    name = "Entity",
+    comment = "comment",
+    author = "author",
+    canQuery = true,
+    canAdd = true,
+    canEdit = true,
+    canDelete = true,
+    hasPage = true,
+    remark = "remark",
+    packagePath = "EntityPackage",
+    createdTime = LocalDateTime.now(),
+    modifiedTime = LocalDateTime.now(),
+    idProperties = listOf(
+        TargetOf_idProperties(idProperty.toEntity())
+    ),
+    properties = emptyList(),
+    indexes = emptyList(),
 )
 
 val enumProperty = baseProperty.copy(
@@ -94,6 +116,18 @@ val enumNullableProperty = enumProperty.copy(
     comment = "enumNullableProperty",
 )
 
+val toOneEntity = baseEntity.copy(
+    id = testId++,
+    name = "ToOneEntity",
+    packagePath = "ToOneEntityPackagePath",
+    comment = "comment",
+    properties = listOf(
+        idProperty.copy(
+            id = testId++,
+        ),
+    ),
+)
+
 val toOneProperty = baseProperty.copy(
     id = testId++,
     name = "toOneProperty",
@@ -101,21 +135,7 @@ val toOneProperty = baseProperty.copy(
     comment = "toOneProperty",
     associationType = AssociationType.MANY_TO_ONE,
     column = TargetOf_column(typeCode = Types.INTEGER, dataSize = 0, numericPrecision = 0),
-    typeEntity = TargetOf_typeEntity(
-        id = testId++,
-        name = "ToOneEntity",
-        packagePath = "ToOneEntityPackagePath",
-        comment = "comment",
-        idProperties = listOf(
-            TargetOf_typeEntity.TargetOf_idProperties(
-                id = testId++,
-                name = "id",
-                type = "kotlin.Long",
-                typeNotNull = true,
-            )
-        ),
-        shortViewProperties = emptyList()
-    )
+    typeEntityId = toOneEntity.id
 )
 
 val toOneNullableProperty = toOneProperty.copy(
@@ -123,6 +143,19 @@ val toOneNullableProperty = toOneProperty.copy(
     name = "toOneNullableProperty",
     typeNotNull = false,
     comment = "toOneNullableProperty",
+)
+
+
+val toManyEntity = baseEntity.copy(
+    id = testId++,
+    name = "ToManyEntity",
+    packagePath = "ToManyEntityPackagePath",
+    comment = "comment",
+    properties = listOf(
+        idProperty.copy(
+            id = testId++,
+        ),
+    ),
 )
 
 val toManyProperty = baseProperty.copy(
@@ -142,40 +175,11 @@ val toManyProperty = baseProperty.copy(
     inLongAssociationView = false,
     inLongAssociationInput = false,
     column = TargetOf_column(typeCode = Types.INTEGER, dataSize = 0, numericPrecision = 0),
-    typeEntity = TargetOf_typeEntity(
-        id = testId++,
-        name = "ToManyEntity",
-        packagePath = "ToManyEntityPackagePath",
-        comment = "comment",
-        idProperties = listOf(
-            TargetOf_typeEntity.TargetOf_idProperties(
-                id = testId++,
-                name = "id",
-                type = "kotlin.Long",
-                typeNotNull = true,
-            )
-        ),
-        shortViewProperties = emptyList()
-    )
+    typeEntityId = toManyEntity.id
 )
 
-val testEntity = GenEntityBusinessView(
+val testEntity = baseEntity.copy(
     id = testId++,
-    name = "Entity",
-    comment = "comment",
-    author = "author",
-    canQuery = true,
-    canAdd = true,
-    canEdit = true,
-    canDelete = true,
-    hasPage = true,
-    remark = "remark",
-    packagePath = "EntityPackage",
-    createdTime = LocalDateTime.now(),
-    modifiedTime = LocalDateTime.now(),
-    idProperties = listOf(
-        TargetOf_idProperties(idProperty.toEntity())
-    ),
     properties = listOf(
         idProperty,
         enumProperty,
@@ -184,8 +188,6 @@ val testEntity = GenEntityBusinessView(
         toOneNullableProperty,
         toManyProperty,
     ),
-    indexes = emptyList(),
-    longProperties = emptyList()
 )
 
 val toOneIdView = toOneProperty.copy(
@@ -193,8 +195,8 @@ val toOneIdView = toOneProperty.copy(
     name = toOneProperty.name + "Id",
     idView = true,
     idViewTarget = toOneProperty.name,
-    typeEntity = null,
-    type = toOneProperty.typeEntity!!.idProperty.type,
+    typeEntityId = null,
+    type = toOneEntity.idProperty.type,
 )
 
 val toOneNullableIdView = toOneNullableProperty.copy(
@@ -202,8 +204,8 @@ val toOneNullableIdView = toOneNullableProperty.copy(
     name = toOneNullableProperty.name + "Id",
     idView = true,
     idViewTarget = toOneNullableProperty.name,
-    typeEntity = null,
-    type = toOneNullableProperty.typeEntity!!.idProperty.type,
+    typeEntityId = null,
+    type = toOneEntity.idProperty.type,
 
     )
 
@@ -212,11 +214,11 @@ val toManyIdView = toManyProperty.copy(
     name = toManyProperty.name.toSingular() + "Ids",
     idView = true,
     idViewTarget = toManyProperty.name,
-    typeEntity = null,
-    type = toManyProperty.typeEntity!!.idProperty.type,
+    typeEntityId = null,
+    type = toManyEntity.idProperty.type,
 )
 
-val idViewTestEntity = testEntity.copy(
+val idViewTestEntity = baseEntity.copy(
     properties = listOf(
         idProperty,
         enumProperty,
@@ -231,7 +233,7 @@ val idViewTestEntity = testEntity.copy(
 )
 
 
-private val superTestEntity = testEntity.copy(
+private val superTestEntity = baseEntity.copy(
     id = testId++,
     name = "BASE_ENTITY",
     idProperties = listOf(),
@@ -249,3 +251,17 @@ val withSuperTestEntity = testEntity.copy(
         superTestEntity
     )
 )
+
+val entityIdMap = mapOf(
+    testEntity.id to testEntity,
+    toOneEntity.id to toOneEntity,
+    toManyEntity.id to toManyEntity,
+    idViewTestEntity.id to idViewTestEntity,
+    withSuperTestEntity.id to withSuperTestEntity,
+)
+
+val testEntityBusiness = EntityBusiness(testEntity, entityIdMap)
+
+val idViewTestEntityBusiness = EntityBusiness(idViewTestEntity, entityIdMap)
+
+val withSuperTestEntityBusiness = EntityBusiness(withSuperTestEntity.toFlat(), entityIdMap)

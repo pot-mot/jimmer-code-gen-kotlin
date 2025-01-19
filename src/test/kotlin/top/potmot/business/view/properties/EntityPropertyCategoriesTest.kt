@@ -2,29 +2,35 @@ package top.potmot.business.view.properties
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.business.idViewTestEntity
-import top.potmot.business.testEntity
-import top.potmot.core.business.property.EntityPropertyCategories
+import top.potmot.business.idViewTestEntityBusiness
+import top.potmot.business.testEntityBusiness
+import top.potmot.core.business.property.PropertyBusiness
+import top.potmot.entity.dto.GenEntityBusinessView
 
-class EntityPropertyCategoriesTest : EntityPropertyCategories {
-    private val testEntities = listOf(testEntity, idViewTestEntity)
+class EntityPropertyCategoriesTest {
+    private val testEntities = listOf(testEntityBusiness, idViewTestEntityBusiness)
+
+    private val Iterable<PropertyBusiness>.extract: List<GenEntityBusinessView.TargetOf_properties>
+        get() = map {
+            it.property
+        }
 
     @Test
     fun `test pageSelectProperties`() {
         testEntities.forEach { testEntity ->
-            val selectProperties = testEntity.pageSelectProperties
+            val selectProperties = testEntity.pageSelectPropertyBusiness.extract
             assertEquals(2, selectProperties.size)
 
             val toOneProperty = selectProperties[0]
             assertEquals("toOnePropertyId", toOneProperty.name)
-            assertEquals("kotlin.Long", toOneProperty.type)
+            assertEquals("kotlin.Int", toOneProperty.type)
             assertEquals("toOneProperty", toOneProperty.comment)
             assertEquals(true, toOneProperty.idView)
             assertEquals(true, toOneProperty.typeNotNull)
 
             val toOneNullableProperty = selectProperties[1]
             assertEquals("toOneNullablePropertyId", toOneNullableProperty.name)
-            assertEquals("kotlin.Long", toOneNullableProperty.type)
+            assertEquals("kotlin.Int", toOneNullableProperty.type)
             assertEquals("toOneNullableProperty", toOneNullableProperty.comment)
             assertEquals(true, toOneNullableProperty.idView)
             assertEquals(false, toOneNullableProperty.typeNotNull)
@@ -34,7 +40,7 @@ class EntityPropertyCategoriesTest : EntityPropertyCategories {
     @Test
     fun `test tableProperties`() {
         testEntities.forEach { testEntity ->
-            val tableProperties = testEntity.tableProperties
+            val tableProperties = testEntity.tablePropertyBusiness.extract
             assertEquals(4, tableProperties.size)
 
             val enumProperty = tableProperties[0]
@@ -51,14 +57,14 @@ class EntityPropertyCategoriesTest : EntityPropertyCategories {
 
             val toOneProperty = tableProperties[2]
             assertEquals("toOnePropertyId", toOneProperty.name)
-            assertEquals("kotlin.Long", toOneProperty.type)
+            assertEquals("kotlin.Int", toOneProperty.type)
             assertEquals("toOneProperty", toOneProperty.comment)
             assertEquals(true, toOneProperty.idView)
             assertEquals(true, toOneProperty.typeNotNull)
 
             val toOneNullableProperty = tableProperties[3]
             assertEquals("toOneNullablePropertyId", toOneNullableProperty.name)
-            assertEquals("kotlin.Long", toOneNullableProperty.type)
+            assertEquals("kotlin.Int", toOneNullableProperty.type)
             assertEquals("toOneNullableProperty", toOneNullableProperty.comment)
             assertEquals(true, toOneNullableProperty.idView)
             assertEquals(false, toOneNullableProperty.typeNotNull)
@@ -68,7 +74,7 @@ class EntityPropertyCategoriesTest : EntityPropertyCategories {
     @Test
     fun `test queryProperties`() {
         testEntities.forEach { testEntity ->
-            val queryProperties = testEntity.queryProperties
+            val queryProperties = testEntity.queryPropertyBusiness.extract
             assertEquals(4, queryProperties.size)
 
             val enumProperty = queryProperties[0]
@@ -85,14 +91,14 @@ class EntityPropertyCategoriesTest : EntityPropertyCategories {
 
             val toOneProperty = queryProperties[2]
             assertEquals("toOnePropertyId", toOneProperty.name)
-            assertEquals("kotlin.Long", toOneProperty.type)
+            assertEquals("kotlin.Int", toOneProperty.type)
             assertEquals("toOneProperty", toOneProperty.comment)
             assertEquals(true, toOneProperty.idView)
             assertEquals(false, toOneProperty.typeNotNull)
 
             val toOneNullableProperty = queryProperties[3]
             assertEquals("toOneNullablePropertyId", toOneNullableProperty.name)
-            assertEquals("kotlin.Long", toOneNullableProperty.type)
+            assertEquals("kotlin.Int", toOneNullableProperty.type)
             assertEquals("toOneNullableProperty", toOneNullableProperty.comment)
             assertEquals(true, toOneNullableProperty.idView)
             assertEquals(false, toOneNullableProperty.typeNotNull)
@@ -102,7 +108,7 @@ class EntityPropertyCategoriesTest : EntityPropertyCategories {
     @Test
     fun `test addFormProperties`() {
         testEntities.forEach { testEntity ->
-            val addFormProperties = testEntity.addFormProperties
+            val addFormProperties = testEntity.addFormPropertyBusiness.extract
             assertEquals(4, addFormProperties.size)
 
             val enumProperty = addFormProperties[0]
@@ -119,14 +125,14 @@ class EntityPropertyCategoriesTest : EntityPropertyCategories {
 
             val toOneProperty = addFormProperties[2]
             assertEquals("toOnePropertyId", toOneProperty.name)
-            assertEquals("kotlin.Long", toOneProperty.type)
+            assertEquals("kotlin.Int", toOneProperty.type)
             assertEquals("toOneProperty", toOneProperty.comment)
             assertEquals(true, toOneProperty.idView)
             assertEquals(false, toOneProperty.typeNotNull)
 
             val toOneNullableProperty = addFormProperties[3]
             assertEquals("toOneNullablePropertyId", toOneNullableProperty.name)
-            assertEquals("kotlin.Long", toOneNullableProperty.type)
+            assertEquals("kotlin.Int", toOneNullableProperty.type)
             assertEquals("toOneNullableProperty", toOneNullableProperty.comment)
             assertEquals(true, toOneNullableProperty.idView)
             assertEquals(false, toOneNullableProperty.typeNotNull)
@@ -136,7 +142,7 @@ class EntityPropertyCategoriesTest : EntityPropertyCategories {
     @Test
     fun `test editFormProperties`() {
         testEntities.forEach { testEntity ->
-            val editFormProperties = testEntity.editFormProperties
+            val editFormProperties = testEntity.editFormPropertyBusiness.extract
             assertEquals(4, editFormProperties.size)
 
             val enumProperty = editFormProperties[0]
@@ -153,14 +159,14 @@ class EntityPropertyCategoriesTest : EntityPropertyCategories {
 
             val toOneProperty = editFormProperties[2]
             assertEquals("toOnePropertyId", toOneProperty.name)
-            assertEquals("kotlin.Long", toOneProperty.type)
+            assertEquals("kotlin.Int", toOneProperty.type)
             assertEquals("toOneProperty", toOneProperty.comment)
             assertEquals(true, toOneProperty.idView)
             assertEquals(true, toOneProperty.typeNotNull)
 
             val toOneNullableProperty = editFormProperties[3]
             assertEquals("toOneNullablePropertyId", toOneNullableProperty.name)
-            assertEquals("kotlin.Long", toOneNullableProperty.type)
+            assertEquals("kotlin.Int", toOneNullableProperty.type)
             assertEquals("toOneNullableProperty", toOneNullableProperty.comment)
             assertEquals(true, toOneNullableProperty.idView)
             assertEquals(false, toOneNullableProperty.typeNotNull)
@@ -170,7 +176,7 @@ class EntityPropertyCategoriesTest : EntityPropertyCategories {
     @Test
     fun `test editTableProperties`() {
         testEntities.forEach { testEntity ->
-            val editTableProperties = testEntity.editTableProperties
+            val editTableProperties = testEntity.editTablePropertyBusiness.extract
             assertEquals(4, editTableProperties.size)
 
             val enumProperty = editTableProperties[0]
@@ -187,14 +193,14 @@ class EntityPropertyCategoriesTest : EntityPropertyCategories {
 
             val toOneProperty = editTableProperties[2]
             assertEquals("toOnePropertyId", toOneProperty.name)
-            assertEquals("kotlin.Long", toOneProperty.type)
+            assertEquals("kotlin.Int", toOneProperty.type)
             assertEquals("toOneProperty", toOneProperty.comment)
             assertEquals(true, toOneProperty.idView)
             assertEquals(false, toOneProperty.typeNotNull)
 
             val toOneNullableProperty = editTableProperties[3]
             assertEquals("toOneNullablePropertyId", toOneNullableProperty.name)
-            assertEquals("kotlin.Long", toOneNullableProperty.type)
+            assertEquals("kotlin.Int", toOneNullableProperty.type)
             assertEquals("toOneNullableProperty", toOneNullableProperty.comment)
             assertEquals(true, toOneNullableProperty.idView)
             assertEquals(false, toOneNullableProperty.typeNotNull)

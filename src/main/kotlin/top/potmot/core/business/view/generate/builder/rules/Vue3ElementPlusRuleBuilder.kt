@@ -1,6 +1,7 @@
 package top.potmot.core.business.view.generate.builder.rules
 
-import top.potmot.core.business.property.nameOrWithId
+import top.potmot.core.business.property.AssociationProperty
+import top.potmot.core.business.property.PropertyBusiness
 import top.potmot.core.business.view.generate.builder.typescript.TypeScriptBuilder
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.meta.rules.ExistValidRule
@@ -11,7 +12,6 @@ import top.potmot.core.business.view.generate.meta.typescript.FunctionArg
 import top.potmot.core.business.view.generate.meta.typescript.ImportItem
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.staticPath
-import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.ModelException
 import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.trimBlankLine
@@ -28,7 +28,7 @@ class Vue3ElementPlusRuleBuilder(
         formDataTypePath: String = staticPath,
         ruleDataType: String = formDataType,
         ruleDataTypePath: String = formDataTypePath,
-        propertyRules: Map<GenEntityBusinessView.TargetOf_properties, Iterable<Rule>>,
+        propertyRules: Map<PropertyBusiness, Iterable<Rule>>,
         isArray: Boolean = false,
     ): String {
         val imports = mutableListOf<ImportItem>(
@@ -43,8 +43,14 @@ class Vue3ElementPlusRuleBuilder(
         val body = buildScopeString(indent) {
             line("return {")
             scope {
-                propertyRules.forEach { (property, rules) ->
-                    line("${property.nameOrWithId}: [")
+                propertyRules.forEach { (propertyBusiness, rules) ->
+                    val name = if (propertyBusiness is AssociationProperty) {
+                        propertyBusiness.nameOrWithId
+                    } else {
+                        propertyBusiness.property.name
+                    }
+
+                    line("${name}: [")
                     rules.forEach { rule ->
                         if (!hasExistValidRule) hasExistValidRule = rule is ExistValidRule
                         scope {
@@ -60,7 +66,8 @@ class Vue3ElementPlusRuleBuilder(
         if (hasExistValidRule) {
             imports += existValidRuleImport
         }
-        propertyRules.forEach { (property, rules) ->
+        propertyRules.forEach { (propertyBusiness, rules) ->
+            val property = propertyBusiness.property
             if (property.enum != null) {
                 val enumName = property.enum.name
                 if (rules.map { it.stringify() }.toString().contains(enumName)) {

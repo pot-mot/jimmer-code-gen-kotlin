@@ -5,14 +5,14 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import top.potmot.core.business.dto.generate.DtoGenerator
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.core.business.service.generate.getServiceGenerator
 import top.potmot.core.business.view.generate.getViewGenerator
-import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.ViewType
 
 abstract class AbstractEntityTest {
-    abstract fun getTestEntity(): GenEntityBusinessView
+    abstract fun getTestEntity(): EntityBusiness
 
     abstract fun getDtoResult(): String
 
@@ -37,7 +37,7 @@ abstract class AbstractEntityTest {
 
         assertEquals(
             getViewResult(viewType).trim(),
-            viewType.getViewGenerator().generateView(listOf(entity)).map { it.path to it.content }.toString()
+            viewType.getViewGenerator().generateView(entity).map { it.path to it.content }.toString()
         )
     }
 

@@ -1,5 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm
 
+import top.potmot.core.business.property.PropertyBusiness
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.button
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.col
@@ -18,9 +19,8 @@ import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.entity.dto.GenEntityBusinessView
 
-private fun createCol(property: GenEntityBusinessView.TargetOf_properties, elements: Collection<Element>) =
+private fun createCol(property: PropertyBusiness, elements: Collection<Element>) =
     col(
         span = 8,
         xs = 24,
@@ -46,7 +46,7 @@ fun queryForm(
     specType: String,
     specTypePath: String,
     selectOptions: Iterable<SelectOption> = emptyList(),
-    content: Map<GenEntityBusinessView.TargetOf_properties, FormItemData>,
+    content: Map<PropertyBusiness, FormItemData>,
 ) = Component(
     imports = listOf(
         Import("@element-plus/icons-vue", "Search"),

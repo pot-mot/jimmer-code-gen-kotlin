@@ -1,12 +1,12 @@
 package top.potmot.business.superTable
 
 import top.potmot.business.AbstractEntityTest
-import top.potmot.business.withSuperTestEntity
+import top.potmot.business.withSuperTestEntityBusiness
 import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.ViewType
 
 class TestWithSuperTable : AbstractEntityTest() {
-    override fun getTestEntity() = withSuperTestEntity
+    override fun getTestEntity() = withSuperTestEntityBusiness
 
     override fun getDtoResult() = dtoResult
 

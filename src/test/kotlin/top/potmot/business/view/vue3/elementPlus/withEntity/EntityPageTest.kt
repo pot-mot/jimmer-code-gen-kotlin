@@ -3,7 +3,7 @@ package top.potmot.business.view.vue3.elementPlus.withEntity
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.business.testEntity
+import top.potmot.business.testEntityBusiness
 
 class EntityPageTest {
     private val generator = Vue3ElementPlusViewGenerator
@@ -280,7 +280,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
     </el-dialog>
 </template>
             """.trimIndent(),
-            generator.stringify(generator.Page(testEntity)).trim()
+            generator.stringify(generator.Page(testEntityBusiness)).trim()
         )
     }
 }

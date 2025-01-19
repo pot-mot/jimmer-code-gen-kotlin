@@ -1,6 +1,6 @@
 package top.potmot.core.business.view.generate
 
-import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenerateFile
 
@@ -15,22 +15,16 @@ interface ViewGenerator {
         enums
             .flatMap { generateEnum(it) }
             .distinctBy { it.path }
-            .sortedBy { it.path }
 
 
     fun generateView(
-        entity: GenEntityBusinessView,
-        entityIdMap: Map<Long, GenEntityBusinessView>
+        entityBusiness: EntityBusiness,
     ): List<GenerateFile>
 
     fun generateView(
-        entities: Iterable<GenEntityBusinessView>,
-    ): List<GenerateFile> {
-        val entityIdMap = entities.associateBy { it.id }
-
-        return entities
-            .flatMap { generateView(it, entityIdMap) }
+        entityBusinessList: Iterable<EntityBusiness>,
+    ): List<GenerateFile> =
+        entityBusinessList
+            .flatMap { generateView(it) }
             .distinctBy { it.path }
-            .sortedBy { it.path }
-    }
 }

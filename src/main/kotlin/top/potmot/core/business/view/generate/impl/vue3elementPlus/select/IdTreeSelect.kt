@@ -1,7 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
 
-import top.potmot.core.business.utils.mark.dto
-import top.potmot.core.business.utils.entity.idProperty
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.core.business.utils.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
@@ -11,12 +10,11 @@ import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.staticPath
-import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.ModelException
 
 interface IdTreeSelect : IdSelect {
     @Throws(ModelException.TreeEntityCannotFoundParentProperty::class)
-    fun createIdTreeSelect(entity: GenEntityBusinessView, multiple: Boolean): Component {
+    fun createIdTreeSelect(entity: EntityBusiness, multiple: Boolean): Component {
         val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)

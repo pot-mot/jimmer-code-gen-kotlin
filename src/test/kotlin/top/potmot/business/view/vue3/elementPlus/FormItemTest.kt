@@ -4,12 +4,14 @@ import java.sql.Types
 import java.time.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import top.potmot.business.baseEntity
+import top.potmot.core.business.property.AssociationProperty
+import top.potmot.core.business.property.CommonProperty
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity
 import top.potmot.enumeration.AssociationType
 
 class FormItemTest : FormItem {
@@ -33,7 +35,7 @@ class FormItemTest : FormItem {
     private val builder = Vue3ComponentBuilder()
 
     private val GenEntityBusinessView.TargetOf_properties.result: String
-        get() = createFormItem(formData, disabled).let {
+        get() = CommonProperty(this).createFormItem(formData, disabled).let {
             var result: String
             builder.apply {
                 result =
@@ -379,6 +381,17 @@ import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
 
     }
 
+
+    private val GenEntityBusinessView.TargetOf_properties.associationResult: String
+        get() = AssociationProperty(this, null, baseEntity).createFormItem(formData, disabled).let {
+            var result: String
+            builder.apply {
+                result =
+                    (it.imports.stringifyImports() + it.elements.stringifyElements()).joinToString("\n")
+            }
+            result
+        }
+
     @Test
     fun `test to one association`() {
         val expect = """
@@ -392,19 +405,12 @@ import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
         val manyToOneProperty = baseProperty.copy(
             type = "kotlin.Int",
             associationType = AssociationType.MANY_TO_ONE,
-            typeEntity = TargetOf_typeEntity(
-                id = 0,
-                packagePath = "",
-                name = "Entity",
-                comment = "comment",
-                idProperties = emptyList(),
-                shortViewProperties = emptyList(),
-            )
+            typeEntityId = baseEntity.id
         )
 
         assertEquals(
             expect,
-            manyToOneProperty.result,
+            manyToOneProperty.associationResult,
         )
 
         val oneToOneProperty = manyToOneProperty.copy(
@@ -413,7 +419,7 @@ import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
 
         assertEquals(
             expect,
-            oneToOneProperty.result,
+            oneToOneProperty.associationResult,
         )
     }
 
@@ -431,19 +437,12 @@ import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
             type = "kotlin.Int",
             associationType = AssociationType.MANY_TO_MANY,
             listType = true,
-            typeEntity = TargetOf_typeEntity(
-                id = 0,
-                packagePath = "",
-                name = "Entity",
-                comment = "comment",
-                idProperties = emptyList(),
-                shortViewProperties = emptyList(),
-            )
+            typeEntityId = baseEntity.id
         )
 
         assertEquals(
             expect,
-            manyToManyProperty.result,
+            manyToManyProperty.associationResult,
         )
 
         val oneToOneProperty = manyToManyProperty.copy(
@@ -452,7 +451,7 @@ import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
 
         assertEquals(
             expect,
-            oneToOneProperty.result,
+            oneToOneProperty.associationResult,
         )
     }
 }

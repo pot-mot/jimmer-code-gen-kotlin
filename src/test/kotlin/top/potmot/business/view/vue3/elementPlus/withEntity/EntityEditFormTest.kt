@@ -3,7 +3,7 @@ package top.potmot.business.view.vue3.elementPlus.withEntity
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.business.testEntity
+import top.potmot.business.testEntityBusiness
 
 class EntityEditFormTest {
     private val generator = Vue3ElementPlusViewGenerator
@@ -33,7 +33,7 @@ export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput
     }
 }
             """.trimIndent(),
-            generator.EditFormRules(testEntity).trim()
+            generator.EditFormRules(testEntityBusiness).trim()
         )
     }
 
@@ -165,7 +165,7 @@ defineExpose<FormExpose>({
     </el-form>
 </template>
             """.trimIndent(),
-            generator.stringify(generator.EditForm(testEntity)).trim()
+            generator.stringify(generator.EditForm(testEntityBusiness)).trim()
         )
     }
 }

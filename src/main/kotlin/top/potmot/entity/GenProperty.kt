@@ -205,7 +205,7 @@ interface GenProperty : BaseEntity {
      */
     val orderKey: Long
 
-        /**
+    /**
      * 是否在列表视图DTO中
      */
     val inListView: Boolean

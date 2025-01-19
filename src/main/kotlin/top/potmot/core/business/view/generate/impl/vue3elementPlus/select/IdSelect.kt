@@ -1,8 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
 
-import top.potmot.core.business.property.EntityPropertyCategories
-import top.potmot.core.business.utils.entity.idProperty
-import top.potmot.core.business.utils.mark.dto
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.core.business.utils.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
@@ -14,7 +12,7 @@ import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.entity.dto.GenEntityBusinessView
 
-interface IdSelect : ElementPlus, EntityPropertyCategories {
+interface IdSelect : ElementPlus {
     fun createModelValueType(
         modelValue: String,
         multiple: Boolean,
@@ -91,7 +89,7 @@ interface IdSelect : ElementPlus, EntityPropertyCategories {
         }
     }
 
-    fun createIdSelect(entity: GenEntityBusinessView, multiple: Boolean): Component {
+    fun createIdSelect(entity: EntityBusiness, multiple: Boolean): Component {
         val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)

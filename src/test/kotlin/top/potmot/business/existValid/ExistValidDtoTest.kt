@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import top.potmot.core.business.dto.generate.DtoGenerator
-import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.error.ModelException
 
 class ExistValidDtoTest {
-    private val GenEntityBusinessView.result
+    private val EntityBusiness.result
         get() = DtoGenerator.generateDto(this).let { it.path to it.content }.toString()
 
     @Test
@@ -116,7 +116,7 @@ EntityDetailView {
     #allScalars
     toOnePropertyId
     toOneNullablePropertyId
-    id(toManyProperties) as toManyPropertyIds
+    toManyPropertyIds
 }
 
 EntityOptionView {

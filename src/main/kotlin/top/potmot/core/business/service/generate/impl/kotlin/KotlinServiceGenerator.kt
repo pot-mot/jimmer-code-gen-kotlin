@@ -1,18 +1,9 @@
 package top.potmot.core.business.service.generate.impl.kotlin
 
-import top.potmot.core.business.dto.generate.DtoGenerator.isTreeEntity
-import top.potmot.core.business.dto.generate.DtoGenerator.parentIdProperty
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.core.business.service.generate.ServiceGenerator
-import top.potmot.core.business.utils.mark.dto
 import top.potmot.core.business.utils.entity.existValidItems
-import top.potmot.core.business.utils.entity.idProperty
-import top.potmot.core.business.utils.mark.packages
-import top.potmot.core.business.utils.mark.permissions
-import top.potmot.core.business.utils.mark.requestPath
-import top.potmot.core.business.utils.mark.serviceName
 import top.potmot.core.business.utils.type.typeStrToKotlinType
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.childrenProperty
-import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.clearBlankLine
@@ -23,7 +14,7 @@ object KotlinServiceGenerator : ServiceGenerator() {
 
     @Throws(GenerateException::class)
     override fun stringifyService(
-        entity: GenEntityBusinessView,
+        entity: EntityBusiness,
     ): String {
         val name = entity.name
         val comment = entity.comment
@@ -41,7 +32,7 @@ object KotlinServiceGenerator : ServiceGenerator() {
         val idName = idProperty.name
         val idType = typeStrToKotlinType(idProperty.type, idProperty.typeNotNull)
 
-        val isTreeEntity = entity.isTreeEntity()
+        val isTreeEntity = entity.isTree
         val parentIdProperty by lazy {
             entity.parentIdProperty
         }

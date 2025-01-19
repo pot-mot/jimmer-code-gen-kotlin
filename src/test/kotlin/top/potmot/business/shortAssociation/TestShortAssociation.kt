@@ -3,14 +3,14 @@ package top.potmot.business.shortAssociation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.dto.generate.DtoGenerator
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.enumeration.GenerateTag
 
 class TestShortAssociation {
     private val index = "${'$'}index"
 
-    private val GenEntityBusinessView.result
+    private val EntityBusiness.result
         get() = DtoGenerator.generateDto(this).let { it.path to it.content }.toString()
 
     @Test

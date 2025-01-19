@@ -3,20 +3,21 @@ package top.potmot.business.existValid
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.property.PropertyBusiness
 import top.potmot.core.business.view.generate.builder.rules.existValidRules
 import top.potmot.core.business.view.generate.builder.rules.Vue3ElementPlusRuleBuilder
 import top.potmot.core.business.view.generate.meta.rules.Rule
-import top.potmot.entity.dto.GenEntityBusinessView
 
 class ExistValidRulesTest {
     private val builder = Vue3ElementPlusRuleBuilder()
 
-    private val Map<GenEntityBusinessView.TargetOf_properties, List<Rule>>.result
+    private val Map<PropertyBusiness, List<Rule>>.result
         get() = builder.createFormRules("useRules", "formData", "EntityDto", propertyRules = this)
 
     @ParameterizedTest
     @MethodSource("entities")
-    fun `test existValidRules`(testEntity: GenEntityBusinessView) {
+    fun `test existValidRules`(testEntity: EntityBusiness) {
         val existValidRulesWithoutId = testEntity.existValidRules(withId = false)
 
         assertEquals(
@@ -91,7 +92,7 @@ export const useRules = (formData: Ref<EntityDto>): FormRules<EntityDto> => {
 
     @ParameterizedTest
     @MethodSource("entities")
-    fun `test existValidRules withId`(testEntity: GenEntityBusinessView) {
+    fun `test existValidRules withId`(testEntity: EntityBusiness) {
         val existValidRulesWithoutId = testEntity.existValidRules(withId = true)
 
         assertEquals(

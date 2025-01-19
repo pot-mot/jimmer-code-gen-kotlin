@@ -1,11 +1,14 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn
 
 import top.potmot.config.tableColumnWithDateTimeFormat
-import top.potmot.core.business.property.isShortAssociation
+import top.potmot.core.business.property.AssociationProperty
+import top.potmot.core.business.property.ForceIdViewProperty
+import top.potmot.core.business.property.PropertyBusiness
 import top.potmot.core.business.property.PropertyFormType
+import top.potmot.core.business.property.TypeEntityProperty
+import top.potmot.core.business.property.formType
 import top.potmot.core.business.utils.mark.components
 import top.potmot.core.business.utils.mark.dir
-import top.potmot.core.business.property.formType
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
@@ -31,40 +34,10 @@ private const val formatTableColumnDate = "formatTableColumnDate"
 private const val formatTableColumnTime = "formatTableColumnTime"
 private const val formatTableColumnDateTime = "formatTableColumnDateTime"
 
-private fun GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity.TargetOf_shortViewProperties.toProperty(
-    entityId: Long,
-) =
-    GenEntityBusinessView.TargetOf_properties(
-        toEntity {
-            entity {
-                id = entityId
-            }
-            typeTable {
-                entity = null
-            }
-        }
-    )
-
 interface TableColumn {
     fun GenEntityBusinessView.TargetOf_properties.tableColumnDataList(
-        withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat
+        withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat,
     ): List<Pair<GenerateProperty, TableColumnData>> {
-        if (isShortAssociation) {
-            if (associationType in targetOneAssociationTypes) {
-                return typeEntity!!.shortViewProperties.flatMap { shortViewProperty ->
-                    shortViewProperty.toProperty(entityId = typeEntity.id).tableColumnDataList().map {
-                        GeneratePropertyData(
-                            id = id,
-                            name = "${name}.${shortViewProperty.name}",
-                            comment = "${comment}${shortViewProperty.comment}"
-                        ) to it.second
-                    }
-                }
-            } else {
-                // TODO 完成对多短关联的翻译
-            }
-        }
-
         if (enum != null) {
             val componentName = enum.components.view
 
@@ -135,5 +108,31 @@ interface TableColumn {
                 else -> defaultTableColumnData
             }
         )
+    }
+
+    fun PropertyBusiness.tableColumnDataList(
+        withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat,
+    ): List<Pair<GenerateProperty, TableColumnData>> {
+        if (this is TypeEntityProperty && isShortView) {
+            if (associationType in targetOneAssociationTypes) {
+                return typeEntity.properties.filter { it.inShortAssociationView }.flatMap { shortViewProperty ->
+                    shortViewProperty.tableColumnDataList(withDateTimeFormat).map {
+                        GeneratePropertyData(
+                            id = id,
+                            name = "${
+                                when (this) {
+                                    is AssociationProperty -> name
+                                    is ForceIdViewProperty -> associationProperty.name
+                                }
+                            }.${shortViewProperty.name}",
+                            comment = "${comment}${shortViewProperty.comment}"
+                        ) to it.second
+                    }
+                }
+            } else {
+                // TODO 完成对多短关联的翻译
+            }
+        }
+        return property.tableColumnDataList(withDateTimeFormat)
     }
 }

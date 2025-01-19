@@ -1,10 +1,10 @@
 package top.potmot.business.selfAssociation
 
+import top.potmot.business.baseEntity
 import top.potmot.business.baseProperty
 import top.potmot.business.idProperty
-import top.potmot.business.testEntity
+import top.potmot.core.business.property.EntityBusiness
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_idProperties
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_typeEntity
 import top.potmot.enumeration.AssociationType
 
 private const val entityId = -1L
@@ -19,22 +19,11 @@ private val labelProperty = baseProperty.copy(
     inOptionView = true,
 )
 
-private val typeEntity = TargetOf_typeEntity(
-    id = entityId,
-    packagePath = testEntity.packagePath,
-    name = entityName,
-    comment = entityComment,
-    idProperties = listOf(
-        TargetOf_typeEntity.TargetOf_idProperties(idProperty.toEntity())
-    ),
-    shortViewProperties = emptyList()
-)
-
 private val parentProperty = idProperty.copy(
     name = "parent",
     comment = "父节点",
     associationType = AssociationType.MANY_TO_ONE,
-    typeEntity = typeEntity,
+    typeEntityId = entityId,
     typeNotNull = false,
     idProperty = false,
     inInsertInput = true,
@@ -47,7 +36,7 @@ private val childrenProperty = idProperty.copy(
     comment = "子节点",
     associationType = AssociationType.ONE_TO_MANY,
     mappedBy = "parent",
-    typeEntity = typeEntity,
+    typeEntityId = entityId,
     listType = true,
     idProperty = false,
     inListView = false,
@@ -58,7 +47,7 @@ private val childrenProperty = idProperty.copy(
     inLongAssociationInput = false,
 )
 
-val selfAssociationEntity = testEntity.copy(
+val selfAssociationEntity = baseEntity.copy(
     id = entityId,
     name = entityName,
     comment = entityComment,
@@ -72,4 +61,6 @@ val selfAssociationEntity = testEntity.copy(
         parentProperty,
         childrenProperty,
     )
-)
+).let {
+    EntityBusiness(it, mapOf(entityId to it))
+}
