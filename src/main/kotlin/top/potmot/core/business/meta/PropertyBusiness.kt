@@ -6,10 +6,11 @@ import top.potmot.core.business.utils.property.nameOrWithId
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.enumeration.AssociationType
-import top.potmot.error.GenerateException
 import top.potmot.utils.string.toSingular
 
 sealed interface PropertyBusiness {
+    val entityBusiness: EntityBusiness
+
     val property: TargetOf_properties
 
     val formType: PropertyFormType
@@ -79,6 +80,7 @@ sealed interface PropertyBusiness {
 }
 
 data class CommonProperty(
+    override val entityBusiness: EntityBusiness,
     override val property: TargetOf_properties,
     override val id: Long = property.id,
     override val name: String = property.name,
@@ -105,9 +107,11 @@ sealed interface TypeEntityProperty {
     val typeEntity: GenEntityBusinessView
     val associationType: AssociationType
     val isShortView: Boolean
+    val typeEntityBusiness: EntityBusiness
 }
 
 data class AssociationProperty(
+    override val entityBusiness: EntityBusiness,
     override val property: TargetOf_properties,
     val idView: TargetOf_properties?,
     override val typeEntity: GenEntityBusinessView,
@@ -138,6 +142,10 @@ data class AssociationProperty(
     val nameOrWithId =
         idView?.name ?: property.nameOrWithId
 
+    override val typeEntityBusiness by lazy {
+        EntityBusiness(typeEntity, entityIdMap = entityBusiness.entityIdMap)
+    }
+
     // 将关联属性强制转换为 IdView，保留关联属性 comment 和 typeEntityId
     fun forceToIdViewProperty(): TargetOf_properties {
         if (idView != null) {
@@ -161,6 +169,7 @@ data class AssociationProperty(
 
     fun forceToIdView(): ForceIdViewProperty {
         return ForceIdViewProperty(
+            entityBusiness = entityBusiness,
             property = forceToIdViewProperty(),
             typeEntity = typeEntity,
             associationProperty = this,
@@ -169,6 +178,7 @@ data class AssociationProperty(
 }
 
 data class ForceIdViewProperty(
+    override val entityBusiness: EntityBusiness,
     override val property: TargetOf_properties,
     override val typeEntity: GenEntityBusinessView,
     val associationProperty: AssociationProperty,
@@ -193,7 +203,11 @@ data class ForceIdViewProperty(
     override val inShortAssociationView: Boolean = property.inShortAssociationView,
     override val inLongAssociationView: Boolean = property.inLongAssociationView,
     override val inLongAssociationInput: Boolean = property.inLongAssociationInput,
-): PropertyBusiness, TypeEntityProperty
+): PropertyBusiness, TypeEntityProperty {
+    override val typeEntityBusiness by lazy {
+        associationProperty.typeEntityBusiness
+    }
+}
 
 
 fun Iterable<PropertyBusiness>.selfOrForceIdViewProperties() = map {
@@ -214,29 +228,4 @@ fun Iterable<PropertyBusiness>.selfOrForceIdView() = map {
 
 fun Iterable<AssociationProperty>.forceIdView() = map {
     it.forceToIdView()
-}
-
-@Throws(GenerateException.EntityNotFound::class)
-fun GenEntityBusinessView.getPropertyBusiness(
-    entityIdMap: Map<Long, GenEntityBusinessView>,
-): List<PropertyBusiness> {
-    val result = mutableListOf<PropertyBusiness>()
-    val idViewTargetMap = properties.filter { it.idView }.associateBy { it.idViewTarget }
-
-    properties.forEach {
-        if (it.associationType == null) {
-            result += CommonProperty(it)
-        } else if (!it.idView) {
-            result += AssociationProperty(
-                it,
-                idViewTargetMap[it.name],
-                entityIdMap[it.typeEntityId] ?: throw GenerateException.EntityNotFound(
-                    message = "Entity [${it.typeEntityId}] Not Found",
-                    entityId = it.typeEntityId
-                )
-            )
-        }
-    }
-
-    return result
 }

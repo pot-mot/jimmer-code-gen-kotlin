@@ -13,17 +13,3 @@ interface GenerateItem {
 interface GenerateEntity : GenerateItem
 
 interface GenerateEnum : GenerateItem
-
-interface GenerateProperty {
-    val id: Long
-
-    val name: String
-
-    val comment: String
-}
-
-data class GeneratePropertyData(
-    override val id: Long,
-    override val name: String,
-    override val comment: String
-): GenerateProperty

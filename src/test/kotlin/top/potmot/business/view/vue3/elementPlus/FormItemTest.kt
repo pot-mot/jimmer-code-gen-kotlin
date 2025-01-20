@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import top.potmot.business.baseEntity
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
 import top.potmot.entity.dto.GenEntityBusinessView
@@ -34,8 +35,14 @@ class FormItemTest : FormItem {
 
     private val builder = Vue3ComponentBuilder()
 
+    private val GenEntityBusinessView.TargetOf_properties.mockEntityBusiness
+        get() = EntityBusiness(
+            entity = baseEntity.copy(properties = listOf(this)),
+            entityIdMap = emptyMap()
+        )
+
     private val GenEntityBusinessView.TargetOf_properties.result: String
-        get() = CommonProperty(this).createFormItem(formData, disabled).let {
+        get() = CommonProperty(mockEntityBusiness, this).createFormItem(formData, disabled).let {
             var result: String
             builder.apply {
                 result =
@@ -166,7 +173,10 @@ class FormItemTest : FormItem {
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9, numericPrecision = 0, typeCode = Types.INTEGER)).result,
+            baseProperty.copy(
+                type = "kotlin.Int",
+                column = TargetOf_column(dataSize = 9, numericPrecision = 0, typeCode = Types.INTEGER)
+            ).result,
         )
 
         assertEquals(
@@ -180,7 +190,11 @@ class FormItemTest : FormItem {
     :value-on-clear="undefined"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", typeNotNull = false, column = TargetOf_column(dataSize = 9, numericPrecision = 0, typeCode = Types.INTEGER)).result,
+            baseProperty.copy(
+                type = "kotlin.Int",
+                typeNotNull = false,
+                column = TargetOf_column(dataSize = 9, numericPrecision = 0, typeCode = Types.INTEGER)
+            ).result,
         )
 
         assertEquals(
@@ -194,7 +208,10 @@ class FormItemTest : FormItem {
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 10, numericPrecision = 0, typeCode = Types.INTEGER)).result,
+            baseProperty.copy(
+                type = "kotlin.Int",
+                column = TargetOf_column(dataSize = 10, numericPrecision = 0, typeCode = Types.INTEGER)
+            ).result,
         )
 
         assertEquals(
@@ -208,7 +225,10 @@ class FormItemTest : FormItem {
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 12, numericPrecision = 0, typeCode = Types.BIGINT)).result,
+            baseProperty.copy(
+                type = "kotlin.Int",
+                column = TargetOf_column(dataSize = 12, numericPrecision = 0, typeCode = Types.BIGINT)
+            ).result,
         )
 
         assertEquals(
@@ -222,7 +242,10 @@ class FormItemTest : FormItem {
     :value-on-clear="0"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Long", column = TargetOf_column(dataSize = 20, numericPrecision = 0, typeCode = Types.BIGINT)).result,
+            baseProperty.copy(
+                type = "kotlin.Long",
+                column = TargetOf_column(dataSize = 20, numericPrecision = 0, typeCode = Types.BIGINT)
+            ).result,
         )
     }
 
@@ -237,7 +260,10 @@ class FormItemTest : FormItem {
     :max="2147483647"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 0, numericPrecision = 0, typeCode = Types.INTEGER)).result,
+            baseProperty.copy(
+                type = "kotlin.Int",
+                column = TargetOf_column(dataSize = 0, numericPrecision = 0, typeCode = Types.INTEGER)
+            ).result,
         )
 
         assertEquals(
@@ -249,7 +275,10 @@ class FormItemTest : FormItem {
     :max="9223372036854775807"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Long", column = TargetOf_column(dataSize = 0, numericPrecision = 0, typeCode = Types.BIGINT)).result,
+            baseProperty.copy(
+                type = "kotlin.Long",
+                column = TargetOf_column(dataSize = 0, numericPrecision = 0, typeCode = Types.BIGINT)
+            ).result,
         )
     }
 
@@ -383,7 +412,7 @@ import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
 
 
     private val GenEntityBusinessView.TargetOf_properties.associationResult: String
-        get() = AssociationProperty(this, null, baseEntity).createFormItem(formData, disabled).let {
+        get() = AssociationProperty(mockEntityBusiness, this, null, baseEntity).createFormItem(formData, disabled).let {
             var result: String
             builder.apply {
                 result =

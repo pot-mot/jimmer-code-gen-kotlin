@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import top.potmot.business.baseEntity
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
 import top.potmot.entity.dto.GenEntityBusinessView
@@ -32,8 +33,14 @@ class QueryFormItemTest : QueryFormItem {
 
     private val builder = Vue3ComponentBuilder()
 
+    private val GenEntityBusinessView.TargetOf_properties.mockEntityBusiness
+        get() = EntityBusiness(
+            entity = baseEntity.copy(properties = listOf(this)),
+            entityIdMap = emptyMap()
+        )
+
     private val GenEntityBusinessView.TargetOf_properties.result: String
-        get() = CommonProperty(this).createQueryFormItem(spec).let {
+        get() = CommonProperty(mockEntityBusiness, this).createQueryFormItem(spec).let {
             var result: String
             builder.apply {
                 result =
@@ -225,7 +232,10 @@ const nameRange = computed<[string | undefined, string | undefined]>({
     :value-on-clear="undefined"
 />
             """.trimIndent(),
-            baseProperty.copy(type = "kotlin.Int", column = TargetOf_column(dataSize = 9, numericPrecision = 0, typeCode = Types.INTEGER)).result,
+            baseProperty.copy(
+                type = "kotlin.Int",
+                column = TargetOf_column(dataSize = 9, numericPrecision = 0, typeCode = Types.INTEGER)
+            ).result,
         )
     }
 
@@ -297,7 +307,7 @@ import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 
 
     private val GenEntityBusinessView.TargetOf_properties.associationResult: String
-        get() = AssociationProperty(this, null, baseEntity).createQueryFormItem(spec).let {
+        get() = AssociationProperty(mockEntityBusiness, this, null, baseEntity).createQueryFormItem(spec).let {
             var result: String
             builder.apply {
                 result =

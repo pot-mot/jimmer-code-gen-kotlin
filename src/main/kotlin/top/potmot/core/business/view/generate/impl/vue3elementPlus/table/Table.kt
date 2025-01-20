@@ -3,6 +3,7 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.tableColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumnData
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumnPropertyKey
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
@@ -22,7 +23,6 @@ import top.potmot.core.business.view.generate.meta.vue3.SlotProp
 import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.slotElement
 import top.potmot.core.business.view.generate.storePath
-import top.potmot.entity.dto.share.GenerateProperty
 
 private const val idColumn = "idColumn"
 private const val indexColumn = "indexColumn"
@@ -72,7 +72,7 @@ fun viewTable(
     type: String,
     typePath: String,
     idPropertyName: String,
-    content: List<Pair<GenerateProperty, TableColumnData>>,
+    content: List<Pair<TableColumnPropertyKey, TableColumnData>>,
     childrenProp: String? = null,
     showId: Boolean = false,
     showIndex: Boolean = true,

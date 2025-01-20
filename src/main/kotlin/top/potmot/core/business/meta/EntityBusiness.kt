@@ -18,11 +18,12 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.IdName
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.targetOneAssociationTypes
+import top.potmot.error.GenerateException
 import top.potmot.error.ModelException
 
-class EntityBusiness(
+data class EntityBusiness(
     val entity: GenEntityBusinessView,
-    entityIdMap: Map<Long, GenEntityBusinessView>,
+    val entityIdMap: Map<Long, GenEntityBusinessView>,
 ) {
     val id = entity.id
 
@@ -100,7 +101,26 @@ class EntityBusiness(
 
 
     val propertyBusiness by lazy {
-        entity.getPropertyBusiness(entityIdMap)
+        val result = mutableListOf<PropertyBusiness>()
+        val idViewTargetMap = properties.filter { it.idView }.associateBy { it.idViewTarget }
+
+        properties.forEach {
+            if (it.associationType == null) {
+                result += CommonProperty(this, it)
+            } else if (!it.idView) {
+                result += AssociationProperty(
+                    this,
+                    it,
+                    idViewTargetMap[it.name],
+                    entityIdMap[it.typeEntityId] ?: throw GenerateException.EntityNotFound(
+                        message = "Entity [${it.typeEntityId}] Not Found",
+                        entityId = it.typeEntityId
+                    )
+                )
+            }
+        }
+
+        result
     }
 
     val propertyBusinessIdMap by lazy {

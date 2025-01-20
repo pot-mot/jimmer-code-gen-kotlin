@@ -18,14 +18,18 @@ import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
-import top.potmot.entity.dto.share.GenerateProperty
-import top.potmot.entity.dto.share.GeneratePropertyData
 import top.potmot.enumeration.targetOneAssociationTypes
 
 data class TableColumnData(
     val elements: Collection<Element> = emptyList(),
     val imports: Collection<ImportItem> = emptyList(),
     val props: Collection<PropBind> = emptyList(),
+)
+
+data class TableColumnPropertyKey(
+    val id: Long,
+    val name: String,
+    val comment: String
 )
 
 private val defaultTableColumnData = TableColumnData()
@@ -37,12 +41,18 @@ private const val formatTableColumnDateTime = "formatTableColumnDateTime"
 interface TableColumn {
     fun GenEntityBusinessView.TargetOf_properties.tableColumnDataList(
         withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat,
-    ): List<Pair<GenerateProperty, TableColumnData>> {
+    ): List<Pair<TableColumnPropertyKey, TableColumnData>> {
+        val key = TableColumnPropertyKey(
+            id = id,
+            name = name,
+            comment = comment
+        )
+
         if (enum != null) {
             val componentName = enum.components.view
 
             return listOf(
-                this to TableColumnData(
+                key to TableColumnData(
                     elements = listOf(
                         TagElement(
                             componentName,
@@ -62,7 +72,7 @@ interface TableColumn {
         }
 
         return listOf(
-            this to when (formType) {
+            key to when (formType) {
                 PropertyFormType.DATE -> {
                     if (!withDateTimeFormat)
                         defaultTableColumnData
@@ -112,12 +122,12 @@ interface TableColumn {
 
     fun PropertyBusiness.tableColumnDataList(
         withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat,
-    ): List<Pair<GenerateProperty, TableColumnData>> {
+    ): List<Pair<TableColumnPropertyKey, TableColumnData>> {
         if (this is TypeEntityProperty && isShortView) {
             if (associationType in targetOneAssociationTypes) {
-                return typeEntity.properties.filter { it.inShortAssociationView }.flatMap { shortViewProperty ->
+                return typeEntityBusiness.shortViewPropertyBusiness.flatMap { shortViewProperty ->
                     shortViewProperty.tableColumnDataList(withDateTimeFormat).map {
-                        GeneratePropertyData(
+                        TableColumnPropertyKey(
                             id = id,
                             name = "${
                                 when (this) {

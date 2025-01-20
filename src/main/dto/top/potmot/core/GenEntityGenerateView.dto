@@ -2,7 +2,6 @@ export top.potmot.entity.GenEntity
 
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
-import top.potmot.entity.dto.share.GenerateProperty
 
 GenEntityGenerateFileFillView {
     id
