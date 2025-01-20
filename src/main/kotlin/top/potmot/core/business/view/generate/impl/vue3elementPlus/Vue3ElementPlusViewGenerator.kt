@@ -1,7 +1,7 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
-import top.potmot.core.business.property.EntityBusiness
-import top.potmot.core.business.property.ForceIdViewProperty
+import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.utils.mark.apiServiceName
 import top.potmot.core.business.utils.mark.components
 import top.potmot.core.business.utils.mark.constants

@@ -1,4 +1,4 @@
-package top.potmot.core.business.property
+package top.potmot.core.business.meta
 
 import java.math.BigDecimal
 import java.math.RoundingMode

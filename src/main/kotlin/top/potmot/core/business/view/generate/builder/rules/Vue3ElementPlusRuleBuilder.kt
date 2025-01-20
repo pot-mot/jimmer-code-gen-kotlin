@@ -1,7 +1,7 @@
 package top.potmot.core.business.view.generate.builder.rules
 
-import top.potmot.core.business.property.AssociationProperty
-import top.potmot.core.business.property.PropertyBusiness
+import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.builder.typescript.TypeScriptBuilder
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.meta.rules.ExistValidRule

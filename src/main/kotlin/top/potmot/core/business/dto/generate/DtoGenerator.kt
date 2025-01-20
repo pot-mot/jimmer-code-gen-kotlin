@@ -1,10 +1,10 @@
 package top.potmot.core.business.dto.generate
 
-import top.potmot.core.business.property.AssociationProperty
-import top.potmot.core.business.property.EntityBusiness
-import top.potmot.core.business.property.PropertyBusiness
-import top.potmot.core.business.property.PropertyQueryType
-import top.potmot.core.business.utils.entity.existValidItems
+import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.meta.PropertyQueryType
+import top.potmot.core.business.view.generate.builder.rules.existValidItems
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException

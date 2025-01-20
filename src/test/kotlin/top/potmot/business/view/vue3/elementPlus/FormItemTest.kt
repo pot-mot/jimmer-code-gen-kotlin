@@ -5,8 +5,8 @@ import java.time.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.business.baseEntity
-import top.potmot.core.business.property.AssociationProperty
-import top.potmot.core.business.property.CommonProperty
+import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
 import top.potmot.entity.dto.GenEntityBusinessView

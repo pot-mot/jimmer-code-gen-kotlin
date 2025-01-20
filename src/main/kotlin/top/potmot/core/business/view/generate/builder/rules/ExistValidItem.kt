@@ -1,10 +1,10 @@
-package top.potmot.core.business.utils.entity
+package top.potmot.core.business.view.generate.builder.rules
 
-import top.potmot.core.business.property.AssociationProperty
-import top.potmot.core.business.property.CommonProperty
-import top.potmot.core.business.property.EntityBusiness
-import top.potmot.core.business.property.ForceIdViewProperty
-import top.potmot.core.business.property.PropertyBusiness
+import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.CommonProperty
+import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.ForceIdViewProperty
+import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.entity.dto.IdName
 import top.potmot.error.ModelException
 
@@ -65,15 +65,15 @@ val EntityBusiness.existValidItems: List<ExistValidItem>
                     return@mapNotNull null
                 }
 
-                val validProperties = (scalarProperties + associationProperties)
+                val validProperties = (scalarProperties + associationProperties).sortedBy { it.property.orderKey }
                 val upperNameJoin = validProperties.joinToString("And") { it.upperName }
 
                 ExistValidItem(
                     "${entity.name}ExistBy${upperNameJoin}Spec",
                     "existBy$upperNameJoin",
-                    scalarProperties.sortedBy { it.id },
-                    associationProperties.sortedBy { it.id },
-                    validProperties.sortedBy { it.id }
+                    scalarProperties.sortedBy { it.property.orderKey },
+                    associationProperties.sortedBy { it.property.orderKey },
+                    validProperties
                 )
             }
             .distinctBy {

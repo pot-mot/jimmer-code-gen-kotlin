@@ -1,6 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
 
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.utils.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import

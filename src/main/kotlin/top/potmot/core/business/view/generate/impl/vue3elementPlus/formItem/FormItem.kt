@@ -1,8 +1,8 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem
 
-import top.potmot.core.business.property.PropertyBusiness
-import top.potmot.core.business.property.PropertyFormType
-import top.potmot.core.business.property.TypeEntityProperty
+import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.meta.PropertyFormType
+import top.potmot.core.business.meta.TypeEntityProperty
 import top.potmot.core.business.utils.mark.components
 import top.potmot.core.business.utils.mark.dir
 import top.potmot.core.business.view.generate.componentPath

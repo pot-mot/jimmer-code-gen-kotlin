@@ -1,7 +1,8 @@
-package top.potmot.core.business.property
+package top.potmot.core.business.meta
 
 import top.potmot.core.business.utils.entity.idProperty
 import top.potmot.core.business.utils.mark.upperName
+import top.potmot.core.business.utils.property.nameOrWithId
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.enumeration.AssociationType
@@ -137,10 +138,10 @@ data class AssociationProperty(
     val nameOrWithId =
         idView?.name ?: property.nameOrWithId
 
-    // 将关联属性强行转换为 IdView
+    // 将关联属性强制转换为 IdView，保留关联属性 comment 和 typeEntityId
     fun forceToIdViewProperty(): TargetOf_properties {
         if (idView != null) {
-            return idView
+            return idView.copy(comment = property.comment, typeEntityId = property.typeEntityId)
         }
 
         return if (property.listType) {

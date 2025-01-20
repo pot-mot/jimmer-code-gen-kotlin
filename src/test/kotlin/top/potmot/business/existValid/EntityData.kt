@@ -3,7 +3,7 @@ package top.potmot.business.existValid
 import top.potmot.business.entityIdMap
 import top.potmot.business.testEntity
 import top.potmot.business.idViewTestEntity
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 
 val toOneAndEnumEntity = testEntity.copy(
     indexes = listOf(toOneUniqueIndex, enumUniqueIndex)

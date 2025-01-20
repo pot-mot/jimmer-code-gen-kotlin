@@ -1,8 +1,8 @@
 package top.potmot.core.business.service.generate.impl.java
 
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.service.generate.ServiceGenerator
-import top.potmot.core.business.utils.entity.existValidItems
+import top.potmot.core.business.view.generate.builder.rules.existValidItems
 import top.potmot.core.business.utils.type.typeStrToJavaType
 import top.potmot.core.business.utils.mark.upperName
 import top.potmot.error.GenerateException

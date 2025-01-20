@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import top.potmot.core.business.dto.generate.DtoGenerator
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.error.ModelException
 
 class ExistValidDtoTest {

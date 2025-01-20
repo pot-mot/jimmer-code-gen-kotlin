@@ -3,7 +3,7 @@ package top.potmot.business.selfAssociation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.dto.generate.DtoGenerator
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.service.generate.impl.java.JavaServiceGenerator
 import top.potmot.core.business.service.generate.impl.kotlin.KotlinServiceGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator

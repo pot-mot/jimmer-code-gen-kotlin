@@ -1,6 +1,6 @@
 package top.potmot.entity.dto
 
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.entity.dto.share.GenerateEntity
 import top.potmot.entity.dto.share.GenerateEnum
 import top.potmot.entity.extension.allSuperTables

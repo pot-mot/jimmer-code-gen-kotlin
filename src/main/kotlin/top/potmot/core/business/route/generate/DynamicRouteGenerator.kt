@@ -1,6 +1,6 @@
 package top.potmot.core.business.route.generate
 
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.createGenerateFileByEntities
 import top.potmot.enumeration.GenerateTag

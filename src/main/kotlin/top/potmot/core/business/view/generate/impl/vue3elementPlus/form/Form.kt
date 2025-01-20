@@ -1,6 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
-import top.potmot.core.business.property.PropertyBusiness
+import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.button

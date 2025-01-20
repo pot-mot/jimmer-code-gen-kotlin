@@ -1,6 +1,6 @@
 package top.potmot.core.business.view.generate
 
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenerateFile
 

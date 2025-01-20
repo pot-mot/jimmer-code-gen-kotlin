@@ -3,8 +3,8 @@ package top.potmot.business.existValid
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
-import top.potmot.core.business.property.EntityBusiness
-import top.potmot.core.business.property.PropertyBusiness
+import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.builder.rules.existValidRules
 import top.potmot.core.business.view.generate.builder.rules.Vue3ElementPlusRuleBuilder
 import top.potmot.core.business.view.generate.meta.rules.Rule

@@ -3,7 +3,7 @@ package top.potmot.business.shortAssociation
 import top.potmot.business.baseEntity
 import top.potmot.business.baseProperty
 import top.potmot.business.idProperty
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_idProperties
 import top.potmot.enumeration.AssociationType
 

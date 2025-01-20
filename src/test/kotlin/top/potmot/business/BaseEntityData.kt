@@ -2,7 +2,7 @@ package top.potmot.business
 
 import java.sql.Types
 import java.time.LocalDateTime
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.utils.entity.idProperty
 import top.potmot.core.business.utils.entity.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView

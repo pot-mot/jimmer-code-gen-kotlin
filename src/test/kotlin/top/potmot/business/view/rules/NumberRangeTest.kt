@@ -3,9 +3,9 @@ package top.potmot.business.view.rules
 import java.sql.Types
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.core.business.property.numberMax
-import top.potmot.core.business.property.numberMin
-import top.potmot.core.business.property.numberPrecision
+import top.potmot.core.business.meta.numberMax
+import top.potmot.core.business.meta.numberMin
+import top.potmot.core.business.meta.numberPrecision
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.business.baseProperty
 

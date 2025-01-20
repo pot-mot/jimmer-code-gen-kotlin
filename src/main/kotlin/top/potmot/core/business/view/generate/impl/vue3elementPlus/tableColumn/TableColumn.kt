@@ -1,12 +1,12 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn
 
 import top.potmot.config.tableColumnWithDateTimeFormat
-import top.potmot.core.business.property.AssociationProperty
-import top.potmot.core.business.property.ForceIdViewProperty
-import top.potmot.core.business.property.PropertyBusiness
-import top.potmot.core.business.property.PropertyFormType
-import top.potmot.core.business.property.TypeEntityProperty
-import top.potmot.core.business.property.formType
+import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.ForceIdViewProperty
+import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.meta.PropertyFormType
+import top.potmot.core.business.meta.TypeEntityProperty
+import top.potmot.core.business.meta.formType
 import top.potmot.core.business.utils.mark.components
 import top.potmot.core.business.utils.mark.dir
 import top.potmot.core.business.view.generate.componentPath

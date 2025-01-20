@@ -1,4 +1,4 @@
-package top.potmot.core.business.property
+package top.potmot.core.business.meta
 
 import top.potmot.core.business.utils.entity.idProperty
 import top.potmot.core.business.utils.mark.apiServiceName
@@ -125,7 +125,7 @@ class EntityBusiness(
     val scalarPropertyBusiness by lazy {
         propertyBusiness
             .filter {
-                !it.property.idProperty && !it.property.logicalDelete && it.property.associationType == null
+                !it.property.idProperty && !it.property.logicalDelete && it.property.column != null && it.property.associationType == null
             }
     }
 

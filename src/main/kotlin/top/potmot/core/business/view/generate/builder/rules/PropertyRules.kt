@@ -1,7 +1,7 @@
 package top.potmot.core.business.view.generate.builder.rules
 
-import top.potmot.core.business.property.PropertyFormType
-import top.potmot.core.business.property.formType
+import top.potmot.core.business.meta.PropertyFormType
+import top.potmot.core.business.meta.formType
 import top.potmot.core.business.view.generate.meta.rules.ArrayRule
 import top.potmot.core.business.view.generate.meta.rules.BooleanRule
 import top.potmot.core.business.view.generate.meta.rules.DateRule
@@ -14,8 +14,8 @@ import top.potmot.core.business.view.generate.meta.rules.PatternRule
 import top.potmot.core.business.view.generate.meta.rules.RequiredRule
 import top.potmot.core.business.view.generate.meta.rules.Rule
 import top.potmot.core.business.view.generate.meta.rules.StringLengthRule
-import top.potmot.core.business.property.numberMax
-import top.potmot.core.business.property.numberMin
+import top.potmot.core.business.meta.numberMax
+import top.potmot.core.business.meta.numberMin
 import top.potmot.entity.dto.GenEntityBusinessView
 
 val GenEntityBusinessView.TargetOf_properties.rules: List<Rule>

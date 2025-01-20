@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.business.idViewTestEntityBusiness
 import top.potmot.business.testEntityBusiness
-import top.potmot.core.business.property.PropertyBusiness
+import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.entity.dto.GenEntityBusinessView
 
 class EntityPropertyCategoriesTest {

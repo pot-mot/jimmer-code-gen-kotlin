@@ -2,7 +2,7 @@ package top.potmot.business.crudPart
 
 import top.potmot.business.entityIdMap
 import top.potmot.business.testEntity
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 
 private val canNothingEntity = testEntity.copy(
     canEdit = false,

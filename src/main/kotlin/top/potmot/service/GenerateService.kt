@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.context.useContext
 import top.potmot.core.business.dto.generate.DtoGenerator.generateDto
 import top.potmot.core.business.permission.generate.PermissionGenerator
-import top.potmot.core.business.property.EntityBusiness
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.route.generate.DynamicRouteGenerator
 import top.potmot.core.business.service.generate.getServiceGenerator
 import top.potmot.core.business.utils.entity.toFlat
