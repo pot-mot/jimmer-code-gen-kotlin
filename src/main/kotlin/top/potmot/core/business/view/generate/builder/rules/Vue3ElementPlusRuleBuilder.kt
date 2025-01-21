@@ -46,7 +46,7 @@ class Vue3ElementPlusRuleBuilder(
             scope {
                 propertyRules.forEach { (propertyBusiness, rules) ->
                     val name = if (propertyBusiness is AssociationProperty) {
-                        propertyBusiness.nameOrWithId
+                        propertyBusiness.nameWithId
                     } else {
                         propertyBusiness.property.name
                     }

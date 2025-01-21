@@ -39,7 +39,6 @@ val longAssociationEntity = baseEntity.copy(
 private val longAssociationToOneProperty = baseProperty.copy(
     name = "longAssociationToOneProperty",
     type = longAssociationEntity.name,
-    listType = true,
     associationType = AssociationType.MANY_TO_ONE,
     typeEntityId = longAssociationEntityId,
     longAssociation = true
@@ -68,7 +67,8 @@ private val longAssociationToManyProperty = baseProperty.copy(
     type = longAssociationEntity.name,
     associationType = AssociationType.ONE_TO_MANY,
     typeEntityId = longAssociationEntityId,
-    longAssociation = true
+    longAssociation = true,
+    listType = true,
 )
 
 

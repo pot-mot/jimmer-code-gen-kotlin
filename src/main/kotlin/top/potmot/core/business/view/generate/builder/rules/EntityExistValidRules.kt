@@ -32,7 +32,7 @@ private data class EntityExistValidRule(
 
         val propertyName =
             if (property is AssociationProperty) {
-                property.nameOrWithId
+                property.nameWithId
             } else {
                 property.name
             }
@@ -59,7 +59,7 @@ private data class EntityExistValidRule(
                     } +
                 item.associationProperties
                     .mapNotNull {
-                        val nameOrWithId = it.nameOrWithId
+                        val nameOrWithId = it.nameWithId
 
                         if (nameOrWithId != propertyName && nameOrWithId != idName)
                             "${nameOrWithId}: formData.value.${nameOrWithId},"

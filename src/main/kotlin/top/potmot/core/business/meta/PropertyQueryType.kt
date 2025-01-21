@@ -6,7 +6,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import top.potmot.entity.dto.GenEntityBusinessView
-import top.potmot.enumeration.AssociationType
 
 enum class PropertyQueryType {
     EQ,
@@ -16,9 +15,6 @@ enum class PropertyQueryType {
     TIME_RANGE,
     DATE_RANGE,
     DATETIME_RANGE,
-    ENUM_SELECT,
-    ASSOCIATION_ID_EQ,
-    ASSOCIATION_ID_IN,
 }
 
 private val intRangeType = setOf(
@@ -66,18 +62,8 @@ val GenEntityBusinessView.TargetOf_properties.queryType: PropertyQueryType
     get() =
         if (idProperty) {
             PropertyQueryType.EQ
-        } else if (associationType != null) {
-            when (associationType) {
-                AssociationType.MANY_TO_ONE, AssociationType.ONE_TO_ONE ->
-                    PropertyQueryType.ASSOCIATION_ID_EQ
-
-                AssociationType.ONE_TO_MANY, AssociationType.MANY_TO_MANY ->
-                    PropertyQueryType.ASSOCIATION_ID_IN
-            }
-        } else if (enumId != null) {
-            PropertyQueryType.ENUM_SELECT
         } else {
-            when(type) {
+            when (type) {
                 in likeType -> PropertyQueryType.LIKE
                 in intRangeType -> PropertyQueryType.INT_RANGE
                 in floatRangeType -> PropertyQueryType.FLOAT_RANGE

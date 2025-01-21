@@ -2,6 +2,8 @@ package top.potmot.core.business.dto.generate
 
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.EnumProperty
+import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyQueryType
 import top.potmot.core.business.view.generate.builder.rules.existValidItems
@@ -10,7 +12,6 @@ import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
 import top.potmot.utils.string.StringIndentScopeBuilder
 import top.potmot.utils.string.buildScopeString
-import top.potmot.utils.string.toSingular
 
 object DtoGenerator {
     private fun formatFileName(
@@ -40,7 +41,7 @@ object DtoGenerator {
         get() =
             idView?.name
                 ?: if (property.listType) {
-                    "id(${name}) as ${name.toSingular()}Ids"
+                    "id(${name}) as $nameWithId"
                 } else {
                     "id(${name})"
                 }
@@ -238,28 +239,37 @@ object DtoGenerator {
 
     private val PropertyBusiness.specExpression
         get() =
-            when (queryType) {
-                PropertyQueryType.EQ,
-                PropertyQueryType.ENUM_SELECT,
-                ->
+            when (this) {
+                is AssociationProperty ->
+                    if (listType)
+                        listOf("associatedIdIn(${name}) as $nameWithId")
+                    else
+                        listOf("associatedIdEq(${name})")
+
+                is ForceIdViewProperty ->
+                    if (listType)
+                        listOf("associatedIdIn(${associationProperty.name}) as $name")
+                    else
+                        listOf("associatedIdEq(${associationProperty.name})")
+
+                is EnumProperty ->
                     listOf("eq(${name})")
 
-                PropertyQueryType.DATE_RANGE,
-                PropertyQueryType.TIME_RANGE,
-                PropertyQueryType.DATETIME_RANGE,
-                PropertyQueryType.INT_RANGE,
-                PropertyQueryType.FLOAT_RANGE,
-                ->
-                    listOf("le(${name})", "ge(${name})")
+                else -> when (queryType) {
+                    PropertyQueryType.EQ ->
+                        listOf("eq(${name})")
 
-                PropertyQueryType.LIKE ->
-                    listOf("like/i(${name})")
+                    PropertyQueryType.DATE_RANGE,
+                    PropertyQueryType.TIME_RANGE,
+                    PropertyQueryType.DATETIME_RANGE,
+                    PropertyQueryType.INT_RANGE,
+                    PropertyQueryType.FLOAT_RANGE,
+                    ->
+                        listOf("le(${name})", "ge(${name})")
 
-                PropertyQueryType.ASSOCIATION_ID_EQ ->
-                    listOf("associatedIdEq(${name})")
-
-                PropertyQueryType.ASSOCIATION_ID_IN ->
-                    listOf("associatedIdIn(${name}) as ${name.toSingular()}Ids")
+                    PropertyQueryType.LIKE ->
+                        listOf("like/i(${name})")
+                }
             }
 
     private fun StringIndentScopeBuilder.generateSpecBody(entity: EntityBusiness) {

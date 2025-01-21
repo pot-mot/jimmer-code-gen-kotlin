@@ -4,6 +4,7 @@ import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.IdName
 import top.potmot.enumeration.AssociationType
+import top.potmot.utils.string.toSingular
 
 sealed class PropertyBusiness(
     open val entityBusiness: EntityBusiness,
@@ -84,8 +85,8 @@ data class AssociationProperty(
     inLongAssociationView = property.inLongAssociationView || idView?.inLongAssociationView ?: false,
     inLongAssociationInput = property.inLongAssociationInput || idView?.inLongAssociationInput ?: false,
 ), TypeEntityProperty {
-    val nameOrWithId =
-        idView?.name ?: "${property.name}${if (listType) "Ids" else "Id"}"
+    val nameWithId =
+        idView?.name ?: "${if (listType) property.name.toSingular() else property.name}${if (listType) "Ids" else "Id"}"
 
     override val isTargetOne: Boolean = associationType.isTargetOne
 
@@ -167,8 +168,4 @@ fun Iterable<PropertyBusiness>.selfOrForceIdView() = map {
     } else {
         it
     }
-}
-
-fun Iterable<AssociationProperty>.forceIdView() = map {
-    it.forceToIdView()
 }

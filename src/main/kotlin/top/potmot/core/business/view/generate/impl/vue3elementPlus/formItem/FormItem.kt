@@ -29,201 +29,190 @@ interface FormItem {
     ): FormItemData {
         val modelValue = "$formData.${name}"
 
-        return when (formType) {
-            PropertyFormType.ASSOCIATION_ID,
-            PropertyFormType.ASSOCIATION_ID_LIST,
-            ->
-                if (this !is TypeEntityProperty) {
-                    FormItemData()
-                } else {
-                    val components = typeEntityBusiness.components
-                    val dir = typeEntityBusiness.dir
-                    val componentName =
-                        if (formType == PropertyFormType.ASSOCIATION_ID_LIST)
-                            components.idMultiSelect
-                        else
-                            components.idSelect
-                    FormItemData(
-                        elements = listOf(
-                            TagElement(
-                                componentName,
-                                directives = listOf(VModel(modelValue)),
-                                props = listOfNotNull(
-                                    PropBind("options", "${name}Options"),
-                                    if (excludeSelf && typeEntity.id == entityId && idName != null)
-                                        PropBind("exclude-ids", "[${formData}.${idName}]")
-                                    else
-                                        null,
-                                    disabled.toPropBind("disabled"),
-                                ),
-                            )
-                        ),
-                        imports = listOf(
-                            ImportDefault(
-                                "$componentPath/$dir/$componentName.vue",
-                                componentName,
-                            )
+        return when (this) {
+            is TypeEntityProperty -> {
+                val components = typeEntityBusiness.components
+                val dir = typeEntityBusiness.dir
+                val componentName = if (listType) components.idMultiSelect else components.idSelect
+                FormItemData(
+                    elements = listOf(
+                        TagElement(
+                            componentName,
+                            directives = listOf(VModel(modelValue)),
+                            props = listOfNotNull(
+                                PropBind("options", "${name}Options"),
+                                if (excludeSelf && typeEntity.id == entityId && idName != null)
+                                    PropBind("exclude-ids", "[${formData}.${idName}]")
+                                else
+                                    null,
+                                disabled.toPropBind("disabled"),
+                            ),
+                        )
+                    ),
+                    imports = listOf(
+                        ImportDefault(
+                            "$componentPath/$dir/$componentName.vue",
+                            componentName,
                         )
                     )
-                }
-
-            PropertyFormType.ENUM -> {
-                if (this !is EnumProperty) {
-                    FormItemData()
-                } else {
-                    val components = enum.components
-                    val dir = enum.dir
-                    val componentName = if (typeNotNull) components.select else components.nullableSelect
-
-                    FormItemData(
-                        elements = listOf(
-                            TagElement(
-                                componentName,
-                                directives = listOf(VModel(modelValue)),
-                                props = listOfNotNull(
-                                    disabled.toPropBind("disabled")
-                                ),
-                            )
-                        ),
-                        imports = listOf(
-                            ImportDefault(
-                                "$componentPath/$dir/$componentName.vue",
-                                componentName,
-                            )
-                        )
-                    )
-                }
+                )
             }
 
+            is EnumProperty -> {
+                val components = enum.components
+                val dir = enum.dir
+                val componentName = if (typeNotNull) components.select else components.nullableSelect
 
-
-            PropertyFormType.SWITCH ->
                 FormItemData(
-                    if (typeNotNull)
-                        switch(
-                            modelValue,
-                            disabled = disabled,
+                    elements = listOf(
+                        TagElement(
+                            componentName,
+                            directives = listOf(VModel(modelValue)),
+                            props = listOfNotNull(
+                                disabled.toPropBind("disabled")
+                            ),
                         )
-                    else
-                        select(
-                            modelValue,
-                            comment = comment,
-                            filterable = false,
-                            disabled = disabled,
-                            content = listOf(
-                                option("true", "是", true),
-                                option("false", "否", true)
-                            )
+                    ),
+                    imports = listOf(
+                        ImportDefault(
+                            "$componentPath/$dir/$componentName.vue",
+                            componentName,
                         )
-                )
-
-            PropertyFormType.INT ->
-                FormItemData(
-                    if (typeNotNull)
-                        inputNumber(
-                            modelValue,
-                            comment = comment,
-                            precision = 0,
-                            min = numberMin,
-                            max = numberMax,
-                            valueOnClear = numberMin,
-                            disabled = disabled,
-                        )
-                    else
-                        inputNumber(
-                            modelValue,
-                            comment = comment,
-                            precision = 0,
-                            min = numberMin,
-                            max = numberMax,
-                            disabled = disabled,
-                        )
-                )
-
-            PropertyFormType.FLOAT ->
-                FormItemData(
-                    if (typeNotNull)
-                        inputNumber(
-                            modelValue,
-                            comment = comment,
-                            precision = numericPrecision,
-                            min = numberMin,
-                            max = numberMax,
-                            valueOnClear = numberMin,
-                            disabled = disabled,
-                        )
-                    else
-                        inputNumber(
-                            modelValue,
-                            comment = comment,
-                            precision = numericPrecision,
-                            min = numberMin,
-                            max = numberMax,
-                            disabled = disabled,
-                        )
-                )
-
-
-            PropertyFormType.TIME ->
-                FormItemData(
-                    if (typeNotNull)
-                        timePicker(
-                            modelValue,
-                            comment = comment,
-                            disabled = disabled,
-                        )
-                    else
-                        timePicker(
-                            modelValue,
-                            comment = comment,
-                            clearable = true,
-                            disabled = disabled,
-                        )
-                )
-
-            PropertyFormType.DATE ->
-                FormItemData(
-                    if (typeNotNull)
-                        datePicker(
-                            modelValue,
-                            comment = comment,
-                            disabled = disabled,
-                        )
-                    else
-                        datePicker(
-                            modelValue,
-                            comment = comment,
-                            clearable = true,
-                            disabled = disabled,
-                        )
-                )
-
-            PropertyFormType.DATETIME ->
-                FormItemData(
-                    if (typeNotNull)
-                        dateTimePicker(
-                            modelValue,
-                            comment = comment,
-                            disabled = disabled,
-                        )
-                    else
-                        dateTimePicker(
-                            modelValue,
-                            comment = comment,
-                            clearable = true,
-                            disabled = disabled,
-                        )
-                )
-
-            else ->
-                FormItemData(
-                    input(
-                        modelValue,
-                        comment = comment,
-                        clearable = true,
-                        disabled = disabled,
                     )
                 )
+            }
+
+            else -> {
+                when (formType) {
+                    PropertyFormType.SWITCH ->
+                        FormItemData(
+                            if (typeNotNull)
+                                switch(
+                                    modelValue,
+                                    disabled = disabled,
+                                )
+                            else
+                                select(
+                                    modelValue,
+                                    comment = comment,
+                                    filterable = false,
+                                    disabled = disabled,
+                                    content = listOf(
+                                        option("true", "是", true),
+                                        option("false", "否", true)
+                                    )
+                                )
+                        )
+
+                    PropertyFormType.INT ->
+                        FormItemData(
+                            if (typeNotNull)
+                                inputNumber(
+                                    modelValue,
+                                    comment = comment,
+                                    precision = 0,
+                                    min = numberMin,
+                                    max = numberMax,
+                                    valueOnClear = numberMin,
+                                    disabled = disabled,
+                                )
+                            else
+                                inputNumber(
+                                    modelValue,
+                                    comment = comment,
+                                    precision = 0,
+                                    min = numberMin,
+                                    max = numberMax,
+                                    disabled = disabled,
+                                )
+                        )
+
+                    PropertyFormType.FLOAT ->
+                        FormItemData(
+                            if (typeNotNull)
+                                inputNumber(
+                                    modelValue,
+                                    comment = comment,
+                                    precision = numericPrecision,
+                                    min = numberMin,
+                                    max = numberMax,
+                                    valueOnClear = numberMin,
+                                    disabled = disabled,
+                                )
+                            else
+                                inputNumber(
+                                    modelValue,
+                                    comment = comment,
+                                    precision = numericPrecision,
+                                    min = numberMin,
+                                    max = numberMax,
+                                    disabled = disabled,
+                                )
+                        )
+
+
+                    PropertyFormType.TIME ->
+                        FormItemData(
+                            if (typeNotNull)
+                                timePicker(
+                                    modelValue,
+                                    comment = comment,
+                                    disabled = disabled,
+                                )
+                            else
+                                timePicker(
+                                    modelValue,
+                                    comment = comment,
+                                    clearable = true,
+                                    disabled = disabled,
+                                )
+                        )
+
+                    PropertyFormType.DATE ->
+                        FormItemData(
+                            if (typeNotNull)
+                                datePicker(
+                                    modelValue,
+                                    comment = comment,
+                                    disabled = disabled,
+                                )
+                            else
+                                datePicker(
+                                    modelValue,
+                                    comment = comment,
+                                    clearable = true,
+                                    disabled = disabled,
+                                )
+                        )
+
+                    PropertyFormType.DATETIME ->
+                        FormItemData(
+                            if (typeNotNull)
+                                dateTimePicker(
+                                    modelValue,
+                                    comment = comment,
+                                    disabled = disabled,
+                                )
+                            else
+                                dateTimePicker(
+                                    modelValue,
+                                    comment = comment,
+                                    clearable = true,
+                                    disabled = disabled,
+                                )
+                        )
+
+                    PropertyFormType.INPUT ->
+                        FormItemData(
+                            input(
+                                modelValue,
+                                comment = comment,
+                                clearable = true,
+                                disabled = disabled,
+                            )
+                        )
+                }
+            }
         }
     }
 }

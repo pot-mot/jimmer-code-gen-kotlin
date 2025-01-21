@@ -1,6 +1,5 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem
 
-import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
@@ -48,168 +47,136 @@ interface QueryFormItem {
             )
         }
 
-        return when (queryType) {
-            PropertyQueryType.ASSOCIATION_ID_EQ ->
-                if (this !is TypeEntityProperty) {
-                    FormItemData()
-                } else {
-                    val components = typeEntityBusiness.components
-                    val dir = typeEntityBusiness.dir
-                    val componentName = components.idSelect
-                    FormItemData(
-                        elements = listOf(
-                            TagElement(
-                                componentName,
-                                directives = listOf(VModel(modelValue)),
-                                props = listOf(
-                                    PropBind("options", "${name}Options"),
-                                )
-                            )
-                        ),
-                        imports = listOf(
-                            ImportDefault(
-                                "$componentPath/$dir/$componentName.vue",
-                                componentName,
+        return when (this) {
+            is TypeEntityProperty -> {
+                val components = typeEntityBusiness.components
+                val dir = typeEntityBusiness.dir
+                val componentName = if (listType) components.idMultiSelect else components.idSelect
+                FormItemData(
+                    elements = listOf(
+                        TagElement(
+                            componentName,
+                            directives = listOf(VModel(modelValue)),
+                            props = listOf(
+                                PropBind("options", "${name}Options"),
                             )
                         )
-                    )
-                }
-
-            PropertyQueryType.ASSOCIATION_ID_IN ->
-                if (this !is AssociationProperty) {
-                    FormItemData()
-                } else {
-                    val dir = typeEntityBusiness.dir
-                    val componentName = typeEntityBusiness.components.idMultiSelect
-                    FormItemData(
-                        elements = listOf(
-                            TagElement(
-                                componentName,
-                                directives = listOf(VModel(modelValue)),
-                                props = listOf(
-                                    PropBind("options", "${name}Options"),
-                                )
-                            )
-                        ),
-                        imports = listOf(
-                            ImportDefault(
-                                "$componentPath/$dir/$componentName.vue",
-                                componentName,
-                            )
+                    ),
+                    imports = listOf(
+                        ImportDefault(
+                            "$componentPath/$dir/$componentName.vue",
+                            componentName,
                         )
                     )
-                }
-
-            PropertyQueryType.ENUM_SELECT -> {
-                if (this !is EnumProperty) {
-                    FormItemData()
-                } else {
-                    val dir = enum.dir
-                    val componentName = enum.components.nullableSelect
-
-                    FormItemData(
-                        elements = listOf(
-                            TagElement(
-                                componentName,
-                                directives = listOf(VModel(modelValue)),
-                            )
-                        ),
-                        imports = listOf(
-                            ImportDefault(
-                                "$componentPath/$dir/$componentName.vue",
-                                componentName,
-                            )
-                        )
-                    )
-                }
+                )
             }
 
-            PropertyQueryType.INT_RANGE ->
-                FormItemData(
-                    inputNumber(
-                        minModelValue,
-                        placeholder = { "最小" },
-                        precision = 0,
-                        min = numberMin,
-                        max = numberMax,
-                    ),
-                    inputNumber(
-                        maxModelValue,
-                        placeholder = { "最大" },
-                        precision = 0,
-                        min = numberMin,
-                        max = numberMax,
-                    )
-                )
+            is EnumProperty -> {
+                val dir = enum.dir
+                val componentName = enum.components.nullableSelect
 
-            PropertyQueryType.FLOAT_RANGE ->
                 FormItemData(
-                    inputNumber(
-                        minModelValue,
-                        placeholder = { "最小" },
-                        precision = numericPrecision ?: 0,
-                        min = numberMin,
-                        max = numberMax,
-                    ),
-                    inputNumber(
-                        maxModelValue,
-                        placeholder = { "最大" },
-                        precision = numericPrecision ?: 0,
-                        min = numberMin,
-                        max = numberMax,
-                    )
-                )
-
-            PropertyQueryType.TIME_RANGE ->
-                FormItemData(
-                    imports = listOf(
-                        Import("vue", "computed")
-                    ),
-                    scripts = listOf(
-                        rangeComputed
-                    ),
                     elements = listOf(
-                        timePickerRange(
-                            rangeModelValue,
-                            comment = comment,
+                        TagElement(
+                            componentName,
+                            directives = listOf(VModel(modelValue)),
+                        )
+                    ),
+                    imports = listOf(
+                        ImportDefault(
+                            "$componentPath/$dir/$componentName.vue",
+                            componentName,
                         )
                     )
                 )
+            }
 
-            PropertyQueryType.DATE_RANGE ->
-                FormItemData(
-                    imports = listOf(
-                        Import("vue", "computed")
-                    ),
-                    scripts = listOf(
-                        rangeComputed
-                    ),
-                    elements = listOf(
-                        datePickerRange(
-                            rangeModelValue,
-                            comment = comment,
+            else -> when (queryType) {
+                PropertyQueryType.INT_RANGE ->
+                    FormItemData(
+                        inputNumber(
+                            minModelValue,
+                            placeholder = { "最小" },
+                            precision = 0,
+                            min = numberMin,
+                            max = numberMax,
+                        ),
+                        inputNumber(
+                            maxModelValue,
+                            placeholder = { "最大" },
+                            precision = 0,
+                            min = numberMin,
+                            max = numberMax,
                         )
                     )
-                )
 
-            PropertyQueryType.DATETIME_RANGE ->
-                FormItemData(
-                    imports = listOf(
-                        Import("vue", "computed")
-                    ),
-                    scripts = listOf(
-                        rangeComputed
-                    ),
-                    elements = listOf(
-                        dateTimePickerRange(
-                            rangeModelValue,
-                            comment = comment,
+                PropertyQueryType.FLOAT_RANGE ->
+                    FormItemData(
+                        inputNumber(
+                            minModelValue,
+                            placeholder = { "最小" },
+                            precision = numericPrecision ?: 0,
+                            min = numberMin,
+                            max = numberMax,
+                        ),
+                        inputNumber(
+                            maxModelValue,
+                            placeholder = { "最大" },
+                            precision = numericPrecision ?: 0,
+                            min = numberMin,
+                            max = numberMax,
                         )
                     )
-                )
 
-            else ->
-                when (formType) {
+                PropertyQueryType.TIME_RANGE ->
+                    FormItemData(
+                        imports = listOf(
+                            Import("vue", "computed")
+                        ),
+                        scripts = listOf(
+                            rangeComputed
+                        ),
+                        elements = listOf(
+                            timePickerRange(
+                                rangeModelValue,
+                                comment = comment,
+                            )
+                        )
+                    )
+
+                PropertyQueryType.DATE_RANGE ->
+                    FormItemData(
+                        imports = listOf(
+                            Import("vue", "computed")
+                        ),
+                        scripts = listOf(
+                            rangeComputed
+                        ),
+                        elements = listOf(
+                            datePickerRange(
+                                rangeModelValue,
+                                comment = comment,
+                            )
+                        )
+                    )
+
+                PropertyQueryType.DATETIME_RANGE ->
+                    FormItemData(
+                        imports = listOf(
+                            Import("vue", "computed")
+                        ),
+                        scripts = listOf(
+                            rangeComputed
+                        ),
+                        elements = listOf(
+                            dateTimePickerRange(
+                                rangeModelValue,
+                                comment = comment,
+                            )
+                        )
+                    )
+
+                else -> when (formType) {
                     PropertyFormType.SWITCH ->
                         FormItemData(
                             select(
@@ -231,6 +198,7 @@ interface QueryFormItem {
                             )
                         )
                 }
+            }
         }
     }
 }

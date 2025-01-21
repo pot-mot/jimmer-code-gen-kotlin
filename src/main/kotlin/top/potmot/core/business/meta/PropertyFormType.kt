@@ -16,9 +16,6 @@ enum class PropertyFormType {
     TIME,
     DATE,
     DATETIME,
-    ENUM,
-    ASSOCIATION_ID,
-    ASSOCIATION_ID_LIST,
 }
 
 private val intType = setOf(
@@ -65,23 +62,12 @@ private val dateTimeType = setOf(
 )
 
 val GenEntityBusinessView.TargetOf_properties.formType: PropertyFormType
-    get() =
-        if (associationType != null) {
-            if (listType) {
-                PropertyFormType.ASSOCIATION_ID_LIST
-            } else {
-                PropertyFormType.ASSOCIATION_ID
-            }
-        } else if (enumId != null) {
-            PropertyFormType.ENUM
-        } else {
-            when (type) {
-                in intType -> PropertyFormType.INT
-                in floatType -> PropertyFormType.FLOAT
-                in switchType -> PropertyFormType.SWITCH
-                in dateType -> PropertyFormType.DATE
-                in timeType -> PropertyFormType.TIME
-                in dateTimeType -> PropertyFormType.DATETIME
-                else -> PropertyFormType.INPUT
-            }
-        }
+    get() = when (type) {
+        in intType -> PropertyFormType.INT
+        in floatType -> PropertyFormType.FLOAT
+        in switchType -> PropertyFormType.SWITCH
+        in dateType -> PropertyFormType.DATE
+        in timeType -> PropertyFormType.TIME
+        in dateTimeType -> PropertyFormType.DATETIME
+        else -> PropertyFormType.INPUT
+    }

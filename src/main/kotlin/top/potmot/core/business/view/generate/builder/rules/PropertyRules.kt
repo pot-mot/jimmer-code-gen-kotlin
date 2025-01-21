@@ -3,6 +3,7 @@ package top.potmot.core.business.view.generate.builder.rules
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
+import top.potmot.core.business.meta.TypeEntityProperty
 import top.potmot.core.business.view.generate.meta.rules.ArrayRule
 import top.potmot.core.business.view.generate.meta.rules.BooleanRule
 import top.potmot.core.business.view.generate.meta.rules.DateRule
@@ -27,9 +28,9 @@ val PropertyBusiness.rules: List<Rule>
         if (listType) {
             rules += ArrayRule(comment)
         } else {
-            if (this is EnumProperty) {
+             if (this is EnumProperty) {
                 rules += EnumRule(comment, enum.items.map { it.name })
-            } else {
+            } else if (this !is TypeEntityProperty) {
                 val formType = formType
 
                 when (formType) {
