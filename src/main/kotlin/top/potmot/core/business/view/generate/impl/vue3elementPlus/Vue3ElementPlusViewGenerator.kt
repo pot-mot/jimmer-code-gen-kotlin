@@ -162,17 +162,15 @@ object Vue3ElementPlusViewGenerator :
         )
     }
 
-    private val Iterable<ForceIdViewProperty>.selectOptionPairs
-        get() = map {
-            it to SelectOption(
-                it.name + "Options",
-                it.typeEntity.dto.optionView,
-                it.typeEntity.apiServiceName
-            )
-        }
+    private val ForceIdViewProperty.selectOption
+        get() = SelectOption(
+            name + "Options",
+            typeEntity.dto.optionView,
+            typeEntity.apiServiceName
+        )
 
     private val Iterable<ForceIdViewProperty>.selectOptions
-        get() = selectOptionPairs.map { it.second }
+        get() = map { it.selectOption }
 
     fun QueryForm(entity: EntityBusiness): Component {
         val spec = "spec"
@@ -457,7 +455,7 @@ object Vue3ElementPlusViewGenerator :
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
         val apiServiceName = entity.apiServiceName
 
-        val selectOptionPairs = entity.pageSelectPropertyBusiness.selectOptionPairs
+        val selectOptionPairs = entity.pageSelectPropertyBusiness.map { it to it.selectOption }
         val selfOptionPairs = selectOptionPairs
             .filter { (property, _) ->
                 property.typeEntity.id == entity.id
