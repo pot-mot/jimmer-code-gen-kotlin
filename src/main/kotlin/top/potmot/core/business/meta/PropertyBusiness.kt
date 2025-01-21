@@ -15,11 +15,7 @@ sealed class PropertyBusiness(
     val listType: Boolean = property.listType,
     val dataSize: Int? = property.column?.dataSize,
     val numericPrecision: Int? = property.column?.numericPrecision,
-    val formType: PropertyFormType = property.formType,
-    val queryType: PropertyQueryType = property.queryType,
     val upperName: String = property.name.replaceFirstChar { it.uppercaseChar() },
-    val numberMin: String? = property.numberMin,
-    val numberMax: String? = property.numberMax,
     val inListView: Boolean = property.inListView,
     val inDetailView: Boolean = property.inDetailView,
     val inInsertInput: Boolean = property.inInsertInput,
@@ -29,7 +25,23 @@ sealed class PropertyBusiness(
     val inShortAssociationView: Boolean = property.inShortAssociationView,
     val inLongAssociationView: Boolean = property.inLongAssociationView,
     val inLongAssociationInput: Boolean = property.inLongAssociationInput,
-)
+) {
+    val numberMin by lazy {
+        property.numberMin
+    }
+
+    val numberMax by lazy {
+        property.numberMax
+    }
+
+    val formType by lazy {
+        property.formType
+    }
+
+    val queryType by lazy {
+        property.queryType
+    }
+}
 
 data class CommonProperty(
     override val entityBusiness: EntityBusiness,

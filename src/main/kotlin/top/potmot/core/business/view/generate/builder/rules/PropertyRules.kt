@@ -58,15 +58,11 @@ val PropertyBusiness.rules: List<Rule>
                 if (dataSize != null && dataSize != 0) {
                     when (formType) {
                         PropertyFormType.INT -> {
-                            val min = numberMin
-                            val max = numberMax
-                            rules += IntSizeRule(comment, min, max)
+                            rules += IntSizeRule(comment, numberMin, numberMax)
                         }
 
                         PropertyFormType.FLOAT -> {
-                            val min = numberMin
-                            val max = numberMax
-                            rules += NumberSizeRule(comment, min, max)
+                            rules += NumberSizeRule(comment, numberMin, numberMax)
                         }
 
                         PropertyFormType.INPUT -> {
