@@ -215,6 +215,10 @@ data class EntityBusiness(
             it.typeEntityBusiness
         }
     }
+    
+    val longAssociationEntities by lazy {
+        longAssociationPropertyEntityMap.values
+    }
 
 
     val scalarProperties by lazy {
@@ -273,39 +277,6 @@ data class EntityBusiness(
     }
 
 
-    val specificationSelectProperties by lazy {
-        associationProperties
-            .filter { it.inSpecification && it.associationType.isTargetOne }
-            .forceIdView()
-    }
-
-    val insertSelectProperties by lazy {
-        associationProperties
-            .filter { it.inInsertInput }
-            .forceIdView()
-    }
-
-    val updateSelectProperties by lazy {
-        associationProperties
-            .filter { it.inUpdateInput }
-            .forceIdView()
-    }
-
-    val pageSelectProperties by lazy {
-        associationProperties
-            .filter {
-                (it.inSpecification && it.associationType.isTargetOne) || it.inInsertInput || it.inUpdateInput
-            }
-            .forceIdView()
-    }
-
-    val editTableSelectProperties by lazy {
-        associationProperties
-            .filter { it.inLongAssociationInput }
-            .forceIdView()
-    }
-
-
     val optionViewProperties by lazy {
         properties
             .filter { it.inOptionView }
@@ -359,25 +330,28 @@ data class EntityBusiness(
             .filter { it.inSpecification }
     }
 
-    val queryProperties by lazy {
+    private val `queryFormProperties nullable not change` by lazy {
         specificationProperties
             .filter {
                 !it.property.idProperty &&
                         (it.property.associationType == null || it.property.associationType!!.isTargetOne)
             }
-            .map {
-                when (it) {
-                    is CommonProperty -> it.copy(property = it.property.copy(typeNotNull = false))
-                    is EnumProperty -> it.copy(property = it.property.copy(typeNotNull = false))
-                    is AssociationProperty -> it.copy(
-                        property = it.property.copy(typeNotNull = false),
-                        idView = it.idView?.copy(typeNotNull = false)
-                    )
-
-                    is ForceIdViewProperty -> it.copy(property = it.property.copy(typeNotNull = false))
-                }
-            }
             .selfOrForceIdView()
+    }
+
+    val queryFormProperties by lazy {
+        `queryFormProperties nullable not change`.map {
+            when (it) {
+                is CommonProperty -> it.copy(property = it.property.copy(typeNotNull = false))
+                is EnumProperty -> it.copy(property = it.property.copy(typeNotNull = false))
+                is AssociationProperty -> it.copy(
+                    property = it.property.copy(typeNotNull = false),
+                    idView = it.idView?.copy(typeNotNull = false)
+                )
+
+                is ForceIdViewProperty -> it.copy(property = it.property.copy(typeNotNull = false))
+            }
+        }
     }
 
 
@@ -400,6 +374,11 @@ data class EntityBusiness(
             .filter { it.inInsertInput }
     }
 
+    private val `addFormProperties nullable not change` by lazy {
+        insertInputProperties
+            .selfOrForceIdView()
+    }
+
     val addFormProperties by lazy {
         insertInputProperties
             .produceEditNullable()
@@ -413,8 +392,7 @@ data class EntityBusiness(
     }
 
     val addFormRulesProperties by lazy {
-        insertInputProperties
-            .selfOrForceIdView()
+        `addFormProperties nullable not change`
     }
 
 
@@ -447,17 +425,21 @@ data class EntityBusiness(
             .filter { it.inLongAssociationInput }
     }
 
-    val editTableProperties by lazy {
+    private val `subFormProperties nullable not change` by lazy {
+        longAssociationInputProperties
+            .filter { !it.property.idProperty }
+            .selfOrForceIdView()
+    }
+
+    val subFormProperties by lazy {
         longAssociationInputProperties
             .filter { !it.property.idProperty }
             .produceEditNullable()
             .selfOrForceIdView()
     }
 
-    val editTableRulesProperties by lazy {
-        longAssociationInputProperties
-            .filter { !it.property.idProperty }
-            .selfOrForceIdView()
+    val subFormRulesProperties by lazy {
+        `subFormProperties nullable not change`
     }
 
 
@@ -470,5 +452,42 @@ data class EntityBusiness(
         longAssociationViewProperties
             .filter { !it.property.idProperty }
             .selfOrForceIdView()
+    }
+
+
+
+    val subFormSelectProperties: List<ForceIdViewProperty> by lazy {
+        `subFormProperties nullable not change`
+            .filterIsInstance<ForceIdViewProperty>() +
+                longAssociationEntities
+                    .flatMap { it.subFormSelectProperties }
+    }
+
+    val specificationSelectProperties: List<ForceIdViewProperty> by lazy {
+        `queryFormProperties nullable not change`
+            .filterIsInstance<ForceIdViewProperty>() +
+                longAssociationEntities
+                    .flatMap { it.subFormSelectProperties }
+    }
+
+    val insertSelectProperties: List<ForceIdViewProperty> by lazy {
+        `addFormProperties nullable not change`
+            .filterIsInstance<ForceIdViewProperty>() +
+                longAssociationEntities
+                    .flatMap { it.subFormSelectProperties }
+    }
+
+    val updateSelectProperties: List<ForceIdViewProperty> by lazy {
+        editFormProperties
+            .filterIsInstance<ForceIdViewProperty>() +
+                longAssociationEntities
+                    .flatMap { it.subFormSelectProperties }
+    }
+
+    val pageSelectProperties: List<ForceIdViewProperty> by lazy {
+        (insertSelectProperties + updateSelectProperties + specificationSelectProperties)
+            .distinctBy { it.property.id } +
+                longAssociationEntities
+                    .flatMap { it.subFormSelectProperties }
     }
 }

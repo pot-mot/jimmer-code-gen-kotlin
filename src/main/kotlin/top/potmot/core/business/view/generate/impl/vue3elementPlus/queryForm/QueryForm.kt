@@ -7,8 +7,8 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.row
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.vue3.Component

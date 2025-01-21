@@ -15,7 +15,6 @@ import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.AddFormDefault
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.AddFormType
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.addForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTable
@@ -24,6 +23,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.que
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.select.IdSelect
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.select.IdTreeSelect
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
@@ -175,7 +175,7 @@ object Vue3ElementPlusViewGenerator :
             specType = entity.dto.spec,
             specTypePath = staticPath,
             selectOptions = entity.specificationSelectProperties.selectOptions,
-            content = entity.queryProperties
+            content = entity.queryFormProperties
                 .associateWith { it.createQueryFormItem(spec) }
         )
     }
@@ -357,7 +357,7 @@ object Vue3ElementPlusViewGenerator :
         ModelException.IndexRefPropertyCannotBeList::class
     )
     fun EditTableRules(entity: EntityBusiness): String {
-        val editTableRulesProperties = entity.editTableRulesProperties
+        val editTableRulesProperties = entity.subFormRulesProperties
         val rules = iterableMapOf(
             editTableRulesProperties.associateWith { it.rules },
             entity.existValidRules(withId = false, editTableRulesProperties),
@@ -386,8 +386,8 @@ object Vue3ElementPlusViewGenerator :
             indent = indent,
             idPropertyName = entity.idProperty.name,
             comment = entity.comment,
-            selectOptions = entity.editTableSelectProperties.selectOptions,
-            content = entity.editTableProperties
+            selectOptions = entity.subFormSelectProperties.selectOptions,
+            content = entity.subFormProperties
                 .associateWith {
                     it.createFormItem(
                         "scope.row",

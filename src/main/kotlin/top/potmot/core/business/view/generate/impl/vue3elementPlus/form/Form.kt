@@ -9,6 +9,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPl
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.tableColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.operationsColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilColumns
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilProps
@@ -33,7 +34,6 @@ import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
 import top.potmot.core.business.view.generate.meta.vue3.slotElement
-import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.storePath
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.utils.string.buildScopeString
@@ -116,23 +116,6 @@ private fun exposeValid(indent: String) = CodeBlock(
 private const val submitEventName = "submit"
 private const val handleSubmitFnName = "handleSubmit"
 
-data class SelectOption(
-    val name: String,
-    val type: String,
-    val apiServiceName: String,
-    val typePath: String = staticPath,
-) {
-    val upperName: String = name.replaceFirstChar { it.uppercaseChar() }
-
-    fun toImport() =
-        ImportType(typePath, type)
-
-    fun toProp() =
-        Prop(name, "Array<$type>")
-
-    fun toVariable() =
-        ConstVariable(name, null, "ref<Array<$type>>()")
-}
 
 private val submitEvent = { formData: String, formDataType: String ->
     Event(

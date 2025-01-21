@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.componentPath
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubValidateItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.addForm
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
 
