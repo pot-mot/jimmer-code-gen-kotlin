@@ -121,16 +121,16 @@ input EntityUpdateInput {
 
 specification EntitySpec {
     eq(id)
-    associatedIdEq(longAssociationToOneProperty)
+    associatedIdIn(longAssociationToOneProperty) as longAssociationToOnePropertyIds
 })
             """.trimIndent(),
-            DtoGenerator.generateDto(longAssociationToOneTargetEntity).let { it.path to it.content }.toString()
+            DtoGenerator.generateDto(longAssociationToManyTargetEntity).let { it.path to it.content }.toString()
         )
     }
 
     @Test
     fun `test longAssociationTarget toMany view`() {
-        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(longAssociationToOneTargetEntity))
+        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(longAssociationToManyTargetEntity))
 
         TODO()
     }

@@ -12,6 +12,7 @@ import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.EnumProperty
+import top.potmot.core.business.meta.emptyAssociationPath
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
 import top.potmot.entity.dto.GenEntityBusinessView
@@ -40,6 +41,7 @@ class FormItemTest : FormItem {
 
     private val GenEntityBusinessView.TargetOf_properties.mockEntityBusiness
         get() = EntityBusiness(
+            path = emptyAssociationPath,
             entity = baseEntity.copy(properties = listOf(this)),
             entityIdMap = mapOf(baseEntity.id to baseEntity),
             enumIdMap = emptyMap(),
@@ -420,7 +422,7 @@ import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
 
 
     private val GenEntityBusinessView.TargetOf_properties.associationResult: String
-        get() = AssociationProperty(mockEntityBusiness, this, null, baseEntity, associationType!!).createFormItem(formData, disabled).let {
+        get() = AssociationProperty(emptyAssociationPath, mockEntityBusiness, this, null, baseEntity, associationType!!).createFormItem(formData, disabled).let {
             var result: String
             builder.apply {
                 result =

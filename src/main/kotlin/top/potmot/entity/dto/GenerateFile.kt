@@ -174,7 +174,7 @@ fun GenerateFile(
     content = content,
     tags = tags,
     main = MainIdName(MainType.Entity, entityBusiness.entity.idName),
-    tableEntities = entityBusiness.associationProperty
+    tableEntities = entityBusiness.associationProperties
         .map { it.typeEntity.idName }
         .distinctBy { it.id }
         .map { TableEntityPair(entity = it) },

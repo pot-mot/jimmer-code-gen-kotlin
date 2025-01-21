@@ -7,9 +7,10 @@ import top.potmot.error.GenerateException
 import top.potmot.error.ModelException
 
 data class EntityBusiness(
+    val path: AssociationPath,
     val entity: GenEntityBusinessView,
     val entityIdMap: Map<Long, GenEntityBusinessView>,
-    val enumIdMap: Map<Long, EnumBusiness>
+    val enumIdMap: Map<Long, EnumBusiness>,
 ) {
     val id = entity.id
 
@@ -119,6 +120,13 @@ data class EntityBusiness(
 
     val apiServiceName = "${lowerName}Service"
 
+
+    val isSelfAssociated by lazy {
+        entity.properties.any {
+            it.typeEntityId == entity.id
+        }
+    }
+
     val properties by lazy {
         val properties = entity.properties
         val result = mutableListOf<PropertyBusiness>()
@@ -137,6 +145,12 @@ data class EntityBusiness(
                 }
             } else if (!it.idView) {
                 result += AssociationProperty(
+                    path = path.append(
+                        entity = IdName(id, name),
+                        property = IdName(it.id, it.name),
+                        type = AssociationPathItemType.PROPERTY,
+                        isSelfAssociated = isSelfAssociated
+                    ),
                     entityBusiness = this,
                     property = it,
                     idView = idViewTargetMap[it.name],
@@ -188,24 +202,17 @@ data class EntityBusiness(
     }
 
     // 关联属性
-    val associationProperty by lazy {
+    val associationProperties by lazy {
         properties.filterIsInstance<AssociationProperty>()
     }
 
-    val longAssociationProperty by lazy {
-        associationProperty.filter { it.isLongAssociation }
+    val longAssociationProperties by lazy {
+        associationProperties.filter { it.isLongAssociation }
     }
 
     val longAssociationPropertyEntityMap by lazy {
-        longAssociationProperty.associateWith { longAssociationProperty ->
-            val typeEntity = longAssociationProperty.typeEntity
-
-            val fkProperty = typeEntity.properties.first {
-                it.mappedBy == longAssociationProperty.property.name || longAssociationProperty.property.mappedBy == it.name
-            }
-            val filterFkProperties = typeEntity.properties.filter { it != fkProperty }
-
-            EntityBusiness(typeEntity.copy(properties = filterFkProperties), entityIdMap, enumIdMap)
+        longAssociationProperties.associateWith {
+            it.typeEntityBusiness
         }
     }
 
@@ -227,13 +234,13 @@ data class EntityBusiness(
 
 
     val isTree by lazy {
-        entity.properties.any {
-            it.typeEntityId == entity.id && (it.associationType == AssociationType.MANY_TO_ONE || it.associationType == AssociationType.ONE_TO_MANY)
+        associationProperties.any {
+            it.property.typeEntityId == entity.id && (it.associationType == AssociationType.MANY_TO_ONE || it.associationType == AssociationType.ONE_TO_MANY)
         }
     }
 
     val parentProperty: AssociationProperty by lazy {
-        associationProperty.firstOrNull {
+        associationProperties.firstOrNull {
             it.typeEntity.id == entity.id && !it.property.listType
         }
             ?: throw ModelException.treeEntityCannotFoundParentProperty(
@@ -250,7 +257,7 @@ data class EntityBusiness(
 
 
     val childrenProperty: AssociationProperty by lazy {
-        associationProperty.firstOrNull {
+        associationProperties.firstOrNull {
             it.typeEntity.id == entity.id && it.property.listType
         }
             ?: throw ModelException.treeEntityCannotFoundParentProperty(
@@ -267,25 +274,25 @@ data class EntityBusiness(
 
 
     val specificationSelectProperties by lazy {
-        associationProperty
+        associationProperties
             .filter { it.inSpecification && it.associationType.isTargetOne }
             .forceIdView()
     }
 
     val insertSelectProperties by lazy {
-        associationProperty
+        associationProperties
             .filter { it.inInsertInput }
             .forceIdView()
     }
 
     val updateSelectProperties by lazy {
-        associationProperty
+        associationProperties
             .filter { it.inUpdateInput }
             .forceIdView()
     }
 
     val pageSelectProperties by lazy {
-        associationProperty
+        associationProperties
             .filter {
                 (it.inSpecification && it.associationType.isTargetOne) || it.inInsertInput || it.inUpdateInput
             }
@@ -293,7 +300,7 @@ data class EntityBusiness(
     }
 
     val editTableSelectProperties by lazy {
-        associationProperty
+        associationProperties
             .filter { it.inLongAssociationInput }
             .forceIdView()
     }

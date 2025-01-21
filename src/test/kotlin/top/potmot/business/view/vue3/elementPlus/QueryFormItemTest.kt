@@ -12,6 +12,7 @@ import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.EnumProperty
+import top.potmot.core.business.meta.emptyAssociationPath
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
 import top.potmot.entity.dto.GenEntityBusinessView
@@ -38,6 +39,7 @@ class QueryFormItemTest : QueryFormItem {
 
     private val GenEntityBusinessView.TargetOf_properties.mockEntityBusiness
         get() = EntityBusiness(
+            path = emptyAssociationPath,
             entity = baseEntity.copy(properties = listOf(this)),
             entityIdMap = mapOf(baseEntity.id to baseEntity),
             enumIdMap = emptyMap(),
@@ -314,7 +316,7 @@ import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 
 
     private val GenEntityBusinessView.TargetOf_properties.associationResult: String
-        get() = AssociationProperty(mockEntityBusiness, this, null, baseEntity, associationType!!).createQueryFormItem(spec).let {
+        get() = AssociationProperty(emptyAssociationPath, mockEntityBusiness, this, null, baseEntity, associationType!!).createQueryFormItem(spec).let {
             var result: String
             builder.apply {
                 result =

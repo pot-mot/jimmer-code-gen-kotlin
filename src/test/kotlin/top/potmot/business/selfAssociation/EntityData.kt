@@ -4,14 +4,20 @@ import top.potmot.business.baseEntity
 import top.potmot.business.baseProperty
 import top.potmot.business.idProperty
 import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.emptyAssociationPath
 import top.potmot.enumeration.AssociationType
 
 private const val entityId = -1L
+
+private const val labelPropertyId = -1L
+private const val parentPropertyId = -2L
+private const val childrenPropertyId = -3L
 
 private const val entityName = "SelfAssociationEntity"
 private const val entityComment = "树节点"
 
 private val labelProperty = baseProperty.copy(
+    id = labelPropertyId,
     name = "label",
     comment = "标签",
     inShortAssociationView = true,
@@ -19,6 +25,7 @@ private val labelProperty = baseProperty.copy(
 )
 
 private val parentProperty = idProperty.copy(
+    id = parentPropertyId,
     name = "parent",
     comment = "父节点",
     associationType = AssociationType.MANY_TO_ONE,
@@ -31,6 +38,7 @@ private val parentProperty = idProperty.copy(
 )
 
 private val childrenProperty = idProperty.copy(
+    id = childrenPropertyId,
     name = "children",
     comment = "子节点",
     associationType = AssociationType.ONE_TO_MANY,
@@ -58,5 +66,5 @@ val selfAssociationEntity = baseEntity.copy(
         childrenProperty,
     )
 ).let {
-    EntityBusiness(it, mapOf(entityId to it), emptyMap())
+    EntityBusiness(emptyAssociationPath, it, mapOf(entityId to it), emptyMap())
 }

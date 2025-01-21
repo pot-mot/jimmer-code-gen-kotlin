@@ -2,6 +2,7 @@ package top.potmot.core.business.meta
 
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
+import top.potmot.entity.dto.IdName
 import top.potmot.enumeration.AssociationType
 
 sealed class PropertyBusiness(
@@ -51,10 +52,11 @@ data class CommonProperty(
 data class EnumProperty(
     override val entityBusiness: EntityBusiness,
     override val property: TargetOf_properties,
-    val enum: EnumBusiness
+    val enum: EnumBusiness,
 ) : PropertyBusiness(entityBusiness, property)
 
 sealed interface TypeEntityProperty {
+    val path: AssociationPath
     val typeEntity: GenEntityBusinessView
     val associationType: AssociationType
     val isTargetOne: Boolean
@@ -63,11 +65,12 @@ sealed interface TypeEntityProperty {
 }
 
 data class AssociationProperty(
+    override val path: AssociationPath,
     override val entityBusiness: EntityBusiness,
     override val property: TargetOf_properties,
     val idView: TargetOf_properties?,
     override val typeEntity: GenEntityBusinessView,
-    override val associationType: AssociationType
+    override val associationType: AssociationType,
 ) : PropertyBusiness(
     entityBusiness,
     property,
@@ -91,8 +94,23 @@ data class AssociationProperty(
     val isLongAssociation: Boolean = property.longAssociation
 
     override val typeEntityBusiness by lazy {
+        val fkProperty = typeEntity.properties.firstOrNull {
+            it.mappedBy == property.name || property.mappedBy == it.name
+        }
+
+        val filteredEntity = if (fkProperty != null)
+            typeEntity.copy(properties = typeEntity.properties.filter { it != fkProperty })
+        else
+            typeEntity
+
         EntityBusiness(
-            typeEntity,
+            path = path.append(
+                entity = IdName(entityBusiness.id, entityBusiness.name),
+                property = IdName(id, name),
+                type = AssociationPathItemType.ENTITY,
+                isSelfAssociated = entityBusiness.isSelfAssociated
+            ),
+            entity = filteredEntity,
             entityIdMap = entityBusiness.entityIdMap,
             enumIdMap = entityBusiness.enumIdMap,
         )
@@ -115,6 +133,7 @@ data class AssociationProperty(
 
     fun forceToIdView(): ForceIdViewProperty {
         return ForceIdViewProperty(
+            path = path,
             entityBusiness = entityBusiness,
             property = forceToIdViewProperty(),
             typeEntity = typeEntity,
@@ -125,6 +144,7 @@ data class AssociationProperty(
 }
 
 data class ForceIdViewProperty(
+    override val path: AssociationPath,
     override val entityBusiness: EntityBusiness,
     override val property: TargetOf_properties,
     override val typeEntity: GenEntityBusinessView,

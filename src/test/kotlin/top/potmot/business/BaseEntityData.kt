@@ -4,6 +4,7 @@ import java.sql.Types
 import java.time.LocalDateTime
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.EnumBusiness
+import top.potmot.core.business.meta.emptyAssociationPath
 import top.potmot.entity.dto.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
@@ -265,8 +266,8 @@ val enumIdMap = mapOf(
     testEnum.id to testEnumBusiness,
 )
 
-val testEntityBusiness = EntityBusiness(testEntity, entityIdMap, enumIdMap)
+val testEntityBusiness = EntityBusiness(emptyAssociationPath, testEntity, entityIdMap, enumIdMap)
 
-val idViewTestEntityBusiness = EntityBusiness(idViewTestEntity, entityIdMap, enumIdMap)
+val idViewTestEntityBusiness = EntityBusiness(emptyAssociationPath, idViewTestEntity, entityIdMap, enumIdMap)
 
-val withSuperTestEntityBusiness = EntityBusiness(withSuperTestEntity.toFlat(), entityIdMap, enumIdMap)
+val withSuperTestEntityBusiness = EntityBusiness(emptyAssociationPath, withSuperTestEntity.toFlat(), entityIdMap, enumIdMap)
