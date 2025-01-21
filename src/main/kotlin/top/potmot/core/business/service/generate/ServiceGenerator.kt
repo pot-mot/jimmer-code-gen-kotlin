@@ -12,19 +12,19 @@ abstract class ServiceGenerator {
 
     @Throws(GenerateException::class)
     fun generateService(
-        entityBusiness: EntityBusiness,
+        entity: EntityBusiness,
     ) = GenerateFile(
-        entityBusiness,
-        "${entityBusiness.serviceFilePath}${entityBusiness.serviceName}${getFileSuffix()}",
-        stringifyService(entityBusiness),
+        entity,
+        "${entity.serviceFilePath}/${entity.serviceName}${getFileSuffix()}",
+        stringifyService(entity),
         listOf(GenerateTag.BackEnd, GenerateTag.Service)
     )
 
     @Throws(GenerateException::class)
     fun generateService(
-        entityBusinessList: Iterable<EntityBusiness>,
+        entities: Iterable<EntityBusiness>,
     ): List<GenerateFile> =
-        entityBusinessList
+        entities
             .map { generateService(it) }
             .distinctBy { it.path }
             .sortedBy { it.path }

@@ -55,12 +55,12 @@ object DtoGenerator {
 
 
     private fun generateListView(entity: EntityBusiness) = buildScopeString {
-        val listViewProperties = entity.listViewPropertyBusiness
+        val listViewProperties = entity.listViewProperties
 
         line("${entity.dto.listView} {")
         scope {
             line("#allScalars")
-            entity.scalarPropertyBusiness.exclude(listViewProperties).forEach {
+            entity.scalarProperty.exclude(listViewProperties).forEach {
                 line("-${it.name}")
             }
             listViewProperties.filterIsInstance<AssociationProperty>().forEach {
@@ -70,7 +70,7 @@ object DtoGenerator {
                     line(it.associationIdExpress)
                 }
             }
-            entity.noColumnPropertyBusiness.insect(listViewProperties).forEach {
+            entity.noColumnProperties.insect(listViewProperties).forEach {
                 line(it.name)
             }
         }
@@ -78,7 +78,7 @@ object DtoGenerator {
     }
 
     private fun generateTreeView(entity: EntityBusiness) = buildScopeString {
-        val listViewProperties = entity.listViewPropertyBusiness
+        val listViewProperties = entity.listViewProperties
 
         val parentProperty = entity.parentProperty
         val childrenProperty = entity.childrenProperty
@@ -86,7 +86,7 @@ object DtoGenerator {
         line("${entity.dto.treeView} {")
         scope {
             line("#allScalars")
-            entity.scalarPropertyBusiness.exclude(listViewProperties).forEach {
+            entity.scalarProperty.exclude(listViewProperties).forEach {
                 line("-${it.name}")
             }
             line("id(${parentProperty.name})")
@@ -102,7 +102,7 @@ object DtoGenerator {
                         line(it.associationIdExpress)
                     }
                 }
-            entity.noColumnPropertyBusiness.insect(listViewProperties).forEach {
+            entity.noColumnProperties.insect(listViewProperties).forEach {
                 line(it.name)
             }
         }
@@ -110,7 +110,7 @@ object DtoGenerator {
     }
 
     private fun generateOptionView(entity: EntityBusiness) = buildScopeString {
-        val optionViewProperties = entity.optionViewPropertyBusiness
+        val optionViewProperties = entity.optionViewProperties
 
         line("${entity.dto.optionView} {")
         scope {
@@ -131,12 +131,12 @@ object DtoGenerator {
     }
 
     private fun generateDetailView(entity: EntityBusiness) = buildScopeString {
-        val detailViewProperties = entity.detailViewPropertyBusiness
+        val detailViewProperties = entity.detailViewProperties
 
         line("${entity.dto.detailView} {")
         scope {
             line("#allScalars")
-            entity.scalarPropertyBusiness.exclude(detailViewProperties).forEach {
+            entity.scalarProperty.exclude(detailViewProperties).forEach {
                 line("-${it.name}")
             }
             detailViewProperties.filterIsInstance<AssociationProperty>().forEach {
@@ -146,7 +146,7 @@ object DtoGenerator {
                     line(it.associationIdExpress)
                 }
             }
-            entity.noColumnPropertyBusiness.insect(detailViewProperties).forEach {
+            entity.noColumnProperties.insect(detailViewProperties).forEach {
                 line(it.name)
             }
         }
@@ -155,22 +155,22 @@ object DtoGenerator {
 
     @Throws(ModelException.IdPropertyNotFound::class)
     private fun generateInsertInput(entity: EntityBusiness) = buildScopeString {
-        val insertInputProperties = entity.insertInputPropertyBusiness
+        val insertInputProperties = entity.insertInputProperties
         val idProperty = entity.idProperty
 
         line("input ${entity.dto.insertInput} {")
         scope {
             line("#allScalars")
-            if (!idProperty.idGenerationAnnotation.isNullOrBlank()) {
+            if (!idProperty.property.idGenerationAnnotation.isNullOrBlank()) {
                 line("-${idProperty.name}")
             }
-            entity.scalarPropertyBusiness.exclude(insertInputProperties).forEach {
+            entity.scalarProperty.exclude(insertInputProperties).forEach {
                 line("-${it.name}")
             }
             insertInputProperties.filterIsInstance<AssociationProperty>().forEach {
                 line(it.associationIdExpress)
             }
-            entity.noColumnPropertyBusiness.insect(insertInputProperties).forEach {
+            entity.noColumnProperties.insect(insertInputProperties).forEach {
                 line(it.name)
             }
         }
@@ -178,18 +178,18 @@ object DtoGenerator {
     }
 
     private fun generateUpdateFillView(entity: EntityBusiness) = buildScopeString {
-        val updateInputProperties = entity.updateInputPropertyBusiness
+        val updateInputProperties = entity.updateInputProperties
 
         line("${entity.dto.updateFillView} {")
         scope {
             line("#allScalars")
-            entity.scalarPropertyBusiness.exclude(updateInputProperties).forEach {
+            entity.scalarProperty.exclude(updateInputProperties).forEach {
                 line("-${it.name}")
             }
             updateInputProperties.filterIsInstance<AssociationProperty>().forEach {
                 line(it.associationIdExpress)
             }
-            entity.noColumnPropertyBusiness.insect(updateInputProperties).forEach {
+            entity.noColumnProperties.insect(updateInputProperties).forEach {
                 line(it.name)
             }
         }
@@ -197,7 +197,7 @@ object DtoGenerator {
     }
 
     private fun generateUpdateInput(entity: EntityBusiness) = buildScopeString {
-        val updateInputProperties = entity.updateInputPropertyBusiness
+        val updateInputProperties = entity.updateInputProperties
 
         line("input ${entity.dto.updateInput} {")
         scope {
@@ -205,13 +205,13 @@ object DtoGenerator {
             updateInputProperties.firstOrNull { it.property.idProperty }?.let {
                 line("${it.name}!")
             }
-            entity.scalarPropertyBusiness.exclude(updateInputProperties).forEach {
+            entity.scalarProperty.exclude(updateInputProperties).forEach {
                 line("-${it.name}")
             }
             updateInputProperties.filterIsInstance<AssociationProperty>().forEach {
                 line(it.associationIdExpress)
             }
-            entity.noColumnPropertyBusiness.insect(updateInputProperties).forEach {
+            entity.noColumnProperties.insect(updateInputProperties).forEach {
                 line(it.name)
             }
         }
@@ -247,7 +247,7 @@ object DtoGenerator {
     private fun generateSpec(entity: EntityBusiness) = buildScopeString {
         line("specification ${entity.dto.spec} {")
         scope {
-            lines(entity.specificationPropertyBusiness.flatMap { it.specExpression })
+            lines(entity.specificationProperties.flatMap { it.specExpression })
         }
         line("}")
     }
@@ -294,19 +294,19 @@ object DtoGenerator {
 
     @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
-        entityBusiness: EntityBusiness,
+        entity: EntityBusiness,
     ) = GenerateFile(
-        entityBusiness,
-        "dto/${formatFileName(entityBusiness)}",
-        stringify(entityBusiness),
+        entity,
+        "dto/${formatFileName(entity)}",
+        stringify(entity),
         listOf(GenerateTag.BackEnd, GenerateTag.DTO)
     )
 
     @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
-        entityBusinessList: Iterable<EntityBusiness>,
+        entities: Iterable<EntityBusiness>,
     ): List<GenerateFile> =
-        entityBusinessList
+        entities
             .map { generateDto(it) }
             .distinctBy { it.path }
             .sortedBy { it.path }

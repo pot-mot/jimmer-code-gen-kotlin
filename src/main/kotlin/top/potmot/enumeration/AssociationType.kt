@@ -6,11 +6,14 @@ import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
 import kotlin.reflect.KClass
 
-enum class AssociationType {
-    ONE_TO_ONE,
-    MANY_TO_ONE,
-    ONE_TO_MANY,
-    MANY_TO_MANY;
+enum class AssociationType(
+    val isTargetOne: Boolean,
+    val isTargetMany: Boolean = !isTargetOne
+) {
+    ONE_TO_ONE(true),
+    MANY_TO_ONE(true),
+    ONE_TO_MANY(false),
+    MANY_TO_MANY(false);
 
     fun toAnnotation(): KClass<out Annotation> =
         when (this) {
@@ -28,6 +31,3 @@ enum class AssociationType {
             MANY_TO_MANY -> MANY_TO_MANY
         }
 }
-
-val targetOneAssociationTypes =
-    setOf(AssociationType.ONE_TO_ONE, AssociationType.MANY_TO_ONE)

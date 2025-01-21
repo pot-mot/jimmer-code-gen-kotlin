@@ -1,19 +1,23 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
-import top.potmot.core.business.utils.enums.defaultItem
-import top.potmot.core.business.utils.type.typeStrToTypeScriptDefault
-import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.EnumProperty
+import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.type.typeStrToTypeScriptDefault
 import top.potmot.error.ModelException
 
 interface AddFormDefault {
-    val GenEntityBusinessView.TargetOf_properties.addFormDefault
+    val PropertyBusiness.addFormDefault
         @Throws(ModelException.DefaultItemNotFound::class)
         get() =
             if (listType) {
                 "[]"
-            } else if (enum != null && typeNotNull) {
+            } else if (this is EnumProperty && typeNotNull) {
                 "\"${enum.defaultItem.name}\""
             } else {
-                typeStrToTypeScriptDefault(type, typeNotNull)
+                if (this is AssociationProperty && isLongAssociation)
+                    TODO("longAssociation addForm default")
+                else
+                    typeStrToTypeScriptDefault(type, typeNotNull)
             }
 }

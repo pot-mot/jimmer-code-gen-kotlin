@@ -13,6 +13,10 @@ enum class ModelErrorCode {
     ID_PROPERTY_NOT_FOUND,
 
     @ErrorField(name = "entity", type = IdName::class)
+    @ErrorField(name = "idProperties", type = IdName::class, list = true)
+    ID_PROPERTY_MORE_THAN_ONE,
+
+    @ErrorField(name = "entity", type = IdName::class)
     @ErrorField(name = "entityProperties", type = IdName::class, list = true)
     @ErrorField(name = "index", type = IdName::class)
     @ErrorField(name = "indexPropertyIds", type = Long::class, list = true)

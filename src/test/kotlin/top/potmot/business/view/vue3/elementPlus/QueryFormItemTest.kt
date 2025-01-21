@@ -5,14 +5,17 @@ import java.time.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.business.baseEntity
+import top.potmot.business.enumIdMap
+import top.potmot.business.testEnum
+import top.potmot.business.testEnumBusiness
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
 import top.potmot.enumeration.AssociationType
 
 class QueryFormItemTest : QueryFormItem {
@@ -36,7 +39,8 @@ class QueryFormItemTest : QueryFormItem {
     private val GenEntityBusinessView.TargetOf_properties.mockEntityBusiness
         get() = EntityBusiness(
             entity = baseEntity.copy(properties = listOf(this)),
-            entityIdMap = emptyMap()
+            entityIdMap = mapOf(baseEntity.id to baseEntity),
+            enumIdMap = emptyMap(),
         )
 
     private val GenEntityBusinessView.TargetOf_properties.result: String
@@ -285,29 +289,32 @@ const nameRange = computed<[string | undefined, string | undefined]>({
         )
     }
 
+    private val GenEntityBusinessView.TargetOf_properties.enumResult: String
+        get() = EnumProperty(mockEntityBusiness.copy(enumIdMap = enumIdMap), this, testEnumBusiness).createQueryFormItem(spec).let {
+            var result: String
+            builder.apply {
+                result =
+                    (it.imports.stringifyImports() + it.elements.stringifyElements()).joinToString("\n")
+            }
+            result
+        }
+
     @Test
     fun `test enum`() {
         assertEquals(
             """
 import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
-
 <EnumNullableSelect v-model="spec.name"/>
             """.trimIndent(),
             baseProperty.copy(
-                type = "kotlin.String", enum = TargetOf_enum(
-                    id = 0,
-                    packagePath = "",
-                    name = "Enum",
-                    comment = "comment",
-                    items = emptyList(),
-                )
-            ).result,
+                type = "kotlin.String", enumId = testEnum.id
+            ).enumResult,
         )
     }
 
 
     private val GenEntityBusinessView.TargetOf_properties.associationResult: String
-        get() = AssociationProperty(mockEntityBusiness, this, null, baseEntity).createQueryFormItem(spec).let {
+        get() = AssociationProperty(mockEntityBusiness, this, null, baseEntity, associationType!!).createQueryFormItem(spec).let {
             var result: String
             builder.apply {
                 result =

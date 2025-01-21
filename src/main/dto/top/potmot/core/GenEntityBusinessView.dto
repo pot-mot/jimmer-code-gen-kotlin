@@ -1,13 +1,7 @@
 export top.potmot.entity.GenEntity
 
-import top.potmot.entity.dto.share.GenerateEntity
-import top.potmot.entity.dto.share.GenerateEnum
-
-GenEntityBusinessView implements GenerateEntity {
+GenEntityBusinessView {
     #allScalars
-    idProperties {
-        #allScalars
-    }
 
     superEntities*
 
@@ -25,20 +19,7 @@ GenEntityBusinessView implements GenerateEntity {
             entityId as typeEntityId
         }
 
-        enum implements GenerateEnum {
-            id
-            packagePath
-            name
-            comment
-
-            items {
-                id
-                name
-                comment
-                orderKey
-                defaultItem
-            }
-        }
+        enumId
     }
 
     flat(table) {

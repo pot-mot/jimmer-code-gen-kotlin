@@ -5,27 +5,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.meta.numberMax
 import top.potmot.core.business.meta.numberMin
-import top.potmot.core.business.meta.numberPrecision
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.business.baseProperty
 
 class NumberRangeTest {
-    @Test
-    fun `test numberPrecision when column is not null`() {
-        val property = baseProperty.copy(
-            column = TargetOf_column(numericPrecision = 10, dataSize = 20, typeCode = Types.DECIMAL)
-        )
-        assertEquals(10, property.numberPrecision)
-    }
-
-    @Test
-    fun `test numberPrecision when column is null`() {
-        val property = baseProperty.copy(
-            column = null
-        )
-        assertEquals(null, property.numberPrecision)
-    }
-
     @Test
     fun `test numberMin when column is not null`() {
         val property = baseProperty.copy(

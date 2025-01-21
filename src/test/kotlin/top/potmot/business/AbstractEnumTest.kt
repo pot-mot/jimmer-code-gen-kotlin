@@ -3,6 +3,7 @@ package top.potmot.business
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
+import top.potmot.core.business.meta.EnumBusiness
 import top.potmot.core.business.view.generate.getViewGenerator
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.enumeration.ViewType
@@ -20,7 +21,7 @@ abstract class AbstractEnumTest {
 
         assertEquals(
             getViewResult(viewType).trim(),
-            viewType.getViewGenerator().generateEnum(enum).map { it.path to it.content }.toString()
+            viewType.getViewGenerator().generateEnum(EnumBusiness(enum)).map { it.path to it.content }.toString()
         )
     }
 

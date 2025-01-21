@@ -1,16 +1,16 @@
 package top.potmot.core.business.view.generate
 
 import top.potmot.core.business.meta.EntityBusiness
-import top.potmot.entity.dto.GenEnumGenerateView
+import top.potmot.core.business.meta.EnumBusiness
 import top.potmot.entity.dto.GenerateFile
 
 interface ViewGenerator {
     fun generateEnum(
-        enum: GenEnumGenerateView,
+        enum: EnumBusiness,
     ): List<GenerateFile>
 
     fun generateEnum(
-        enums: Iterable<GenEnumGenerateView>,
+        enums: Iterable<EnumBusiness>,
     ): List<GenerateFile> =
         enums
             .flatMap { generateEnum(it) }
@@ -18,13 +18,13 @@ interface ViewGenerator {
 
 
     fun generateView(
-        entityBusiness: EntityBusiness,
+        entity: EntityBusiness,
     ): List<GenerateFile>
 
     fun generateView(
-        entityBusinessList: Iterable<EntityBusiness>,
+        entities: Iterable<EntityBusiness>,
     ): List<GenerateFile> =
-        entityBusinessList
+        entities
             .flatMap { generateView(it) }
             .distinctBy { it.path }
 }

@@ -1,12 +1,11 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem
 
 import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.PropertyQueryType
 import top.potmot.core.business.meta.TypeEntityProperty
-import top.potmot.core.business.utils.mark.components
-import top.potmot.core.business.utils.mark.dir
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.dateTimePickerRange
@@ -54,8 +53,8 @@ interface QueryFormItem {
                 if (this !is TypeEntityProperty) {
                     FormItemData()
                 } else {
-                    val components = typeEntity.components
-                    val dir = typeEntity.dir
+                    val components = typeEntityBusiness.components
+                    val dir = typeEntityBusiness.dir
                     val componentName = components.idSelect
                     FormItemData(
                         elements = listOf(
@@ -80,8 +79,8 @@ interface QueryFormItem {
                 if (this !is AssociationProperty) {
                     FormItemData()
                 } else {
-                    val dir = typeEntity.dir
-                    val componentName = typeEntity.components.idMultiSelect
+                    val dir = typeEntityBusiness.dir
+                    val componentName = typeEntityBusiness.components.idMultiSelect
                     FormItemData(
                         elements = listOf(
                             TagElement(
@@ -102,9 +101,7 @@ interface QueryFormItem {
                 }
 
             PropertyQueryType.ENUM_SELECT -> {
-                val enum = property.enum
-
-                if (enum == null) {
+                if (this !is EnumProperty) {
                     FormItemData()
                 } else {
                     val dir = enum.dir
@@ -150,14 +147,14 @@ interface QueryFormItem {
                     inputNumber(
                         minModelValue,
                         placeholder = { "最小" },
-                        precision = numberPrecision ?: 0,
+                        precision = numericPrecision ?: 0,
                         min = numberMin,
                         max = numberMax,
                     ),
                     inputNumber(
                         maxModelValue,
                         placeholder = { "最大" },
-                        precision = numberPrecision ?: 0,
+                        precision = numericPrecision ?: 0,
                         min = numberMin,
                         max = numberMax,
                     )

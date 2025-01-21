@@ -74,7 +74,7 @@ val GenEntityBusinessView.TargetOf_properties.queryType: PropertyQueryType
                 AssociationType.ONE_TO_MANY, AssociationType.MANY_TO_MANY ->
                     PropertyQueryType.ASSOCIATION_ID_IN
             }
-        } else if (enum != null) {
+        } else if (enumId != null) {
             PropertyQueryType.ENUM_SELECT
         } else {
             when(type) {

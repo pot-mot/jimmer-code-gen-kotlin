@@ -2,13 +2,12 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn
 
 import top.potmot.config.tableColumnWithDateTimeFormat
 import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.TypeEntityProperty
 import top.potmot.core.business.meta.formType
-import top.potmot.core.business.utils.mark.components
-import top.potmot.core.business.utils.mark.dir
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
@@ -18,7 +17,6 @@ import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.entity.dto.GenEntityBusinessView
-import top.potmot.enumeration.targetOneAssociationTypes
 
 data class TableColumnData(
     val elements: Collection<Element> = emptyList(),
@@ -29,7 +27,19 @@ data class TableColumnData(
 data class TableColumnPropertyKey(
     val id: Long,
     val name: String,
-    val comment: String
+    val comment: String,
+)
+
+fun TableColumnPropertyKey(property: GenEntityBusinessView.TargetOf_properties) = TableColumnPropertyKey(
+    id = property.id,
+    name = property.name,
+    comment = property.comment
+)
+
+fun TableColumnPropertyKey(property: PropertyBusiness) = TableColumnPropertyKey(
+    id = property.id,
+    name = property.name,
+    comment = property.comment
 )
 
 private val defaultTableColumnData = TableColumnData()
@@ -39,20 +49,79 @@ private const val formatTableColumnTime = "formatTableColumnTime"
 private const val formatTableColumnDateTime = "formatTableColumnDateTime"
 
 interface TableColumn {
-    fun GenEntityBusinessView.TargetOf_properties.tableColumnDataList(
+    fun GenEntityBusinessView.TargetOf_properties.tableColumnDataPair(
         withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat,
-    ): List<Pair<TableColumnPropertyKey, TableColumnData>> {
-        val key = TableColumnPropertyKey(
-            id = id,
-            name = name,
-            comment = comment
-        )
+    ): Pair<TableColumnPropertyKey, TableColumnData> =
+        TableColumnPropertyKey(this) to when (formType) {
+            PropertyFormType.DATE -> {
+                if (!withDateTimeFormat)
+                    defaultTableColumnData
+                else
+                    TableColumnData(
+                        imports = listOf(
+                            Import("$utilPath/timeFormat", formatTableColumnDate)
+                        ),
+                        props = listOf(
+                            PropBind("formatter", formatTableColumnDate)
+                        )
+                    )
+            }
 
-        if (enum != null) {
+            PropertyFormType.TIME -> {
+                if (!withDateTimeFormat)
+                    defaultTableColumnData
+                else
+                    TableColumnData(
+                        imports = listOf(
+                            Import("$utilPath/timeFormat", formatTableColumnTime)
+                        ),
+                        props = listOf(
+                            PropBind("formatter", formatTableColumnTime)
+                        )
+                    )
+            }
+
+            PropertyFormType.DATETIME -> {
+                if (!withDateTimeFormat)
+                    defaultTableColumnData
+                else
+                    TableColumnData(
+                        imports = listOf(
+                            Import("$utilPath/timeFormat", formatTableColumnDateTime)
+                        ),
+                        props = listOf(
+                            PropBind("formatter", formatTableColumnDateTime)
+                        )
+                    )
+            }
+
+            else -> defaultTableColumnData
+        }
+
+
+    fun PropertyBusiness.tableColumnDataPairs(
+        withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat,
+    ): List<Pair<TableColumnPropertyKey, TableColumnData>> =
+        if (this is TypeEntityProperty && isShortView && isTargetOne) {
+            typeEntityBusiness.shortViewProperties.flatMap { shortViewProperty ->
+                shortViewProperty.tableColumnDataPairs(withDateTimeFormat).map {
+                    TableColumnPropertyKey(
+                        id = id,
+                        name = "${
+                            when (this) {
+                                is AssociationProperty -> name
+                                is ForceIdViewProperty -> associationProperty.name
+                            }
+                        }.${shortViewProperty.name}",
+                        comment = "${comment}${shortViewProperty.comment}"
+                    ) to it.second
+                }
+            }
+        } else if (this is EnumProperty) {
             val componentName = enum.components.view
 
-            return listOf(
-                key to TableColumnData(
+            listOf(
+                TableColumnPropertyKey(this) to TableColumnData(
                     elements = listOf(
                         TagElement(
                             componentName,
@@ -69,80 +138,7 @@ interface TableColumn {
                     )
                 )
             )
+        } else {
+            listOf(property.tableColumnDataPair(withDateTimeFormat))
         }
-
-        return listOf(
-            key to when (formType) {
-                PropertyFormType.DATE -> {
-                    if (!withDateTimeFormat)
-                        defaultTableColumnData
-                    else
-                        TableColumnData(
-                            imports = listOf(
-                                Import("$utilPath/timeFormat", formatTableColumnDate)
-                            ),
-                            props = listOf(
-                                PropBind("formatter", formatTableColumnDate)
-                            )
-                        )
-                }
-
-                PropertyFormType.TIME -> {
-                    if (!withDateTimeFormat)
-                        defaultTableColumnData
-                    else
-                        TableColumnData(
-                            imports = listOf(
-                                Import("$utilPath/timeFormat", formatTableColumnTime)
-                            ),
-                            props = listOf(
-                                PropBind("formatter", formatTableColumnTime)
-                            )
-                        )
-                }
-
-                PropertyFormType.DATETIME -> {
-                    if (!withDateTimeFormat)
-                        defaultTableColumnData
-                    else
-                        TableColumnData(
-                            imports = listOf(
-                                Import("$utilPath/timeFormat", formatTableColumnDateTime)
-                            ),
-                            props = listOf(
-                                PropBind("formatter", formatTableColumnDateTime)
-                            )
-                        )
-                }
-
-                else -> defaultTableColumnData
-            }
-        )
-    }
-
-    fun PropertyBusiness.tableColumnDataList(
-        withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat,
-    ): List<Pair<TableColumnPropertyKey, TableColumnData>> {
-        if (this is TypeEntityProperty && isShortView) {
-            if (associationType in targetOneAssociationTypes) {
-                return typeEntityBusiness.shortViewPropertyBusiness.flatMap { shortViewProperty ->
-                    shortViewProperty.tableColumnDataList(withDateTimeFormat).map {
-                        TableColumnPropertyKey(
-                            id = id,
-                            name = "${
-                                when (this) {
-                                    is AssociationProperty -> name
-                                    is ForceIdViewProperty -> associationProperty.name
-                                }
-                            }.${shortViewProperty.name}",
-                            comment = "${comment}${shortViewProperty.comment}"
-                        ) to it.second
-                    }
-                }
-            } else {
-                // TODO 完成对多短关联的翻译
-            }
-        }
-        return property.tableColumnDataList(withDateTimeFormat)
-    }
 }

@@ -1,8 +1,5 @@
 export top.potmot.entity.GenEntity
 
-import top.potmot.entity.dto.share.GenerateEntity
-import top.potmot.entity.dto.share.GenerateEnum
-
 GenEntityGenerateFileFillView {
     id
     name
@@ -13,7 +10,7 @@ GenEntityGenerateFileFillView {
     }
 }
 
-GenEntityGenerateView implements GenerateEntity {
+GenEntityGenerateView {
     #allScalars
 
     table {
@@ -41,7 +38,7 @@ GenEntityGenerateView implements GenerateEntity {
         typeTable {
             id
 
-            entity implements GenerateEntity {
+            entity {
                 id
                 packagePath
                 name
@@ -49,7 +46,7 @@ GenEntityGenerateView implements GenerateEntity {
             }
         }
 
-        enum implements GenerateEnum {
+        enum {
             id
             packagePath
             name

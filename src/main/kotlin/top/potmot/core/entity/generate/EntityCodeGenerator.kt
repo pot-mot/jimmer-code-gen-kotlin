@@ -1,6 +1,5 @@
 package top.potmot.core.entity.generate
 
-import top.potmot.core.utils.filePath
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenerateFile
@@ -19,7 +18,7 @@ abstract class EntityCodeGenerator {
         entity: GenEntityGenerateView,
     ) = GenerateFile(
         entity,
-        "${entity.filePath}${entity.name}${getFileSuffix()}",
+        "${entity.packagePath.replace(".", "/")}/${entity.name}${getFileSuffix()}",
         stringify(entity),
         listOf(GenerateTag.BackEnd, GenerateTag.Entity)
     )
@@ -36,7 +35,7 @@ abstract class EntityCodeGenerator {
         enum: GenEnumGenerateView,
     ) = GenerateFile(
         enum,
-       "${enum.filePath}${enum.name}${getFileSuffix()}",
+       "${enum.packagePath.replace(".", "/")}/${enum.name}${getFileSuffix()}",
         stringify(enum),
         listOf(GenerateTag.BackEnd, GenerateTag.Enum)
     )

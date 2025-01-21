@@ -4,7 +4,6 @@ import top.potmot.business.baseEntity
 import top.potmot.business.baseProperty
 import top.potmot.business.idProperty
 import top.potmot.core.business.meta.EntityBusiness
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_idProperties
 import top.potmot.enumeration.AssociationType
 
 private const val entityId = -1L
@@ -52,9 +51,6 @@ val selfAssociationEntity = baseEntity.copy(
     name = entityName,
     comment = entityComment,
     remark = "selfAssociationEntityRemark",
-    idProperties = listOf(
-        TargetOf_idProperties(idProperty.toEntity())
-    ),
     properties = listOf(
         idProperty,
         labelProperty,
@@ -62,5 +58,5 @@ val selfAssociationEntity = baseEntity.copy(
         childrenProperty,
     )
 ).let {
-    EntityBusiness(it, mapOf(entityId to it))
+    EntityBusiness(it, mapOf(entityId to it), emptyMap())
 }

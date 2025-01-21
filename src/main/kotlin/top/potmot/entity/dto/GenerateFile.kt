@@ -1,8 +1,7 @@
 package top.potmot.entity.dto
 
 import top.potmot.core.business.meta.EntityBusiness
-import top.potmot.entity.dto.share.GenerateEntity
-import top.potmot.entity.dto.share.GenerateEnum
+import top.potmot.core.business.meta.EnumBusiness
 import top.potmot.entity.extension.allSuperTables
 import top.potmot.enumeration.GenerateTag
 
@@ -102,7 +101,7 @@ fun createGenerateFileByTables(
     )
 }
 
-private val GenerateEnum.idName
+private val GenEnumGenerateView.idName
     get() = IdName(id, name)
 
 fun GenerateFile(
@@ -118,7 +117,29 @@ fun GenerateFile(
     enums = listOf(enum.idName),
 )
 
-private val GenerateEntity.idName
+private val EnumBusiness.idName
+    get() = IdName(id, name)
+
+fun GenerateFile(
+    enum: EnumBusiness,
+    path: String,
+    content: String,
+    tags: List<GenerateTag>,
+) = GenerateFile(
+    path = path,
+    content = content,
+    tags = tags,
+    main = MainIdName(MainType.Enum, enum.idName),
+    enums = listOf(enum.idName),
+)
+
+private val GenEntityGenerateView.idName
+    get() = IdName(id, name)
+
+private val GenEntityGenerateView.TargetOf_properties.TargetOf_typeTable.TargetOf_entity.idName
+    get() = IdName(id, name)
+
+private val GenEntityGenerateView.TargetOf_properties.TargetOf_enum.idName
     get() = IdName(id, name)
 
 fun GenerateFile(
@@ -140,6 +161,9 @@ fun GenerateFile(
         .distinctBy { it.id }
 )
 
+private val GenEntityBusinessView.idName
+    get() = IdName(id, name)
+
 fun GenerateFile(
     entityBusiness: EntityBusiness,
     path: String,
@@ -150,12 +174,12 @@ fun GenerateFile(
     content = content,
     tags = tags,
     main = MainIdName(MainType.Entity, entityBusiness.entity.idName),
-    tableEntities = entityBusiness.associationPropertyBusiness
+    tableEntities = entityBusiness.associationProperty
         .map { it.typeEntity.idName }
         .distinctBy { it.id }
         .map { TableEntityPair(entity = it) },
-    enums = entityBusiness.properties
-        .mapNotNull { it.enum?.idName }
+    enums = entityBusiness.enums
+        .map { it.idName }
         .distinctBy { it.id }
 )
 

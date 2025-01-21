@@ -20,7 +20,8 @@ private const val enumJson = """
             "mappedValue": "",
             "comment": "选项1",
             "remark": "",
-            "defaultItem": true
+            "defaultItem": true,
+            "orderKey": 1
         },
         {
             "id": 2,
@@ -28,7 +29,8 @@ private const val enumJson = """
             "mappedValue": "",
             "comment": "选项2",
             "remark": "",
-            "defaultItem": false
+            "defaultItem": false,
+            "orderKey": 2
         },
         {
             "id": 3,
@@ -36,7 +38,8 @@ private const val enumJson = """
             "mappedValue": "",
             "comment": "选项3",
             "remark": "",
-            "defaultItem": false
+            "defaultItem": false,
+            "orderKey": 3
         }
     ]
 }

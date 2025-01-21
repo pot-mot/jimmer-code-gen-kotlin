@@ -4,7 +4,6 @@ import top.potmot.business.baseEntity
 import top.potmot.business.baseProperty
 import top.potmot.business.idProperty
 import top.potmot.core.business.meta.EntityBusiness
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_idProperties
 import top.potmot.enumeration.AssociationType
 
 private const val shortAssociationEntityId = -1L
@@ -32,16 +31,13 @@ val shortAssociationEntity = baseEntity.copy(
     name = "ShortAssociationEntity",
     comment = "shortAssociationEntityComment",
     remark = "shortAssociationEntityRemark",
-    idProperties = listOf(
-        TargetOf_idProperties(idProperty.toEntity())
-    ),
     properties = listOf(
         idProperty,
         label1Property,
         label2Property
     )
 ).let {
-    EntityBusiness(it, mapOf(shortAssociationEntityId to it))
+    EntityBusiness(it, mapOf(shortAssociationEntityId to it), emptyMap())
 }
 
 private val shortAssociationProperty = baseProperty.copy(
@@ -59,10 +55,12 @@ val shortAssociationTargetEntity = baseEntity.copy(
     )
 ).let {
     EntityBusiness(
-        it, mapOf(
+        entity = it,
+        entityIdMap = mapOf(
             shortAssociationEntityId to shortAssociationEntity.entity,
             shortAssociationTargetEntityId to it
-        )
+        ),
+        enumIdMap = emptyMap()
     )
 }
 
@@ -83,9 +81,11 @@ val shortAssociationTargetIdViewEntity = baseEntity.copy(
     )
 ).let {
     EntityBusiness(
-        it, mapOf(
+        entity = it,
+        entityIdMap = mapOf(
             shortAssociationEntityId to shortAssociationEntity.entity,
             shortAssociationTargetIdViewEntityId to it
-        )
+        ),
+        enumIdMap = emptyMap()
     )
 }

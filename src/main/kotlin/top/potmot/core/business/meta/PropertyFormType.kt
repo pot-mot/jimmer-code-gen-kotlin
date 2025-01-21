@@ -72,7 +72,7 @@ val GenEntityBusinessView.TargetOf_properties.formType: PropertyFormType
             } else {
                 PropertyFormType.ASSOCIATION_ID
             }
-        } else if (enum != null) {
+        } else if (enumId != null) {
             PropertyFormType.ENUM
         } else {
             when (type) {

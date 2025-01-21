@@ -3,6 +3,7 @@ package top.potmot.core.business.view.generate.builder.rules
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.entity.dto.IdName
@@ -11,7 +12,7 @@ import top.potmot.error.ModelException
 data class ExistValidItem(
     val dtoName: String,
     val functionName: String,
-    val scalarProperties: List<CommonProperty>,
+    val scalarProperties: List<PropertyBusiness>,
     val associationProperties: List<AssociationProperty>,
     val properties: List<PropertyBusiness>,
 )
@@ -30,11 +31,11 @@ val EntityBusiness.existValidItems: List<ExistValidItem>
                     column.properties.map { it.id }
                 }
 
-                val scalarProperties = mutableSetOf<CommonProperty>()
+                val scalarProperties = mutableSetOf<PropertyBusiness>()
                 val associationProperties = mutableSetOf<AssociationProperty>()
 
                 indexPropertyIds.forEach { propertyId ->
-                    val propertyBusiness = propertyBusinessIdMap[propertyId]
+                    val propertyBusiness = propertyIdMap[propertyId]
                         ?: throw ModelException.indexRefPropertyNotFound(
                             entity = IdName(entity.id, entity.name),
                             entityProperties = properties.map { IdName(it.id, it.name) },
@@ -54,8 +55,8 @@ val EntityBusiness.existValidItems: List<ExistValidItem>
                         )
                     }
 
-                    when(propertyBusiness) {
-                        is CommonProperty -> scalarProperties += propertyBusiness
+                    when (propertyBusiness) {
+                        is CommonProperty, is EnumProperty -> scalarProperties += propertyBusiness
                         is AssociationProperty -> associationProperties += propertyBusiness
                         is ForceIdViewProperty -> associationProperties += propertyBusiness.associationProperty
                     }

@@ -18,7 +18,7 @@ class EntityPropertyCategoriesTest {
     @Test
     fun `test pageSelectProperties`() {
         testEntities.forEach { testEntity ->
-            val selectProperties = testEntity.pageSelectPropertyBusiness.extract
+            val selectProperties = testEntity.pageSelectProperties.extract
             assertEquals(2, selectProperties.size)
 
             val toOneProperty = selectProperties[0]
@@ -40,7 +40,7 @@ class EntityPropertyCategoriesTest {
     @Test
     fun `test tableProperties`() {
         testEntities.forEach { testEntity ->
-            val tableProperties = testEntity.tablePropertyBusiness.extract
+            val tableProperties = testEntity.tableProperties.extract
             assertEquals(4, tableProperties.size)
 
             val enumProperty = tableProperties[0]
@@ -74,7 +74,7 @@ class EntityPropertyCategoriesTest {
     @Test
     fun `test queryProperties`() {
         testEntities.forEach { testEntity ->
-            val queryProperties = testEntity.queryPropertyBusiness.extract
+            val queryProperties = testEntity.queryProperties.extract
             assertEquals(4, queryProperties.size)
 
             val enumProperty = queryProperties[0]
@@ -108,7 +108,7 @@ class EntityPropertyCategoriesTest {
     @Test
     fun `test addFormProperties`() {
         testEntities.forEach { testEntity ->
-            val addFormProperties = testEntity.addFormPropertyBusiness.extract
+            val addFormProperties = testEntity.addFormProperties.extract
             assertEquals(4, addFormProperties.size)
 
             val enumProperty = addFormProperties[0]
@@ -142,7 +142,7 @@ class EntityPropertyCategoriesTest {
     @Test
     fun `test editFormProperties`() {
         testEntities.forEach { testEntity ->
-            val editFormProperties = testEntity.editFormPropertyBusiness.extract
+            val editFormProperties = testEntity.editFormProperties.extract
             assertEquals(4, editFormProperties.size)
 
             val enumProperty = editFormProperties[0]
@@ -176,7 +176,7 @@ class EntityPropertyCategoriesTest {
     @Test
     fun `test editTableProperties`() {
         testEntities.forEach { testEntity ->
-            val editTableProperties = testEntity.editTablePropertyBusiness.extract
+            val editTableProperties = testEntity.editTableProperties.extract
             assertEquals(4, editTableProperties.size)
 
             val enumProperty = editTableProperties[0]

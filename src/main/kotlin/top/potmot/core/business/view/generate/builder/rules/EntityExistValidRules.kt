@@ -3,10 +3,7 @@ package top.potmot.core.business.view.generate.builder.rules
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.PropertyBusiness
-import top.potmot.core.business.utils.mark.apiServiceName
-import top.potmot.core.business.utils.entity.idProperty
-import top.potmot.core.business.utils.property.nameOrWithId
-import top.potmot.core.business.utils.type.typeStrToTypeScriptType
+import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.apiPath
 import top.potmot.core.business.view.generate.meta.rules.ExistValidRule
 import top.potmot.core.business.view.generate.meta.typescript.Import
@@ -23,23 +20,25 @@ val existValidRuleImport = listOf(
 
 private data class EntityExistValidRule(
     val item: ExistValidItem,
-    val propertyBusiness: PropertyBusiness,
-    val entityBusiness: EntityBusiness,
+    val property: PropertyBusiness,
+    val entity: EntityBusiness,
     val withId: Boolean,
     val trigger: Collection<String> = listOf("blur"),
 ) : ExistValidRule() {
     @Throws(ModelException.IdPropertyNotFound::class)
     override fun stringify(): String {
-        val property = propertyBusiness.property
-
-        val entity = entityBusiness.entity
-        val idProperty = entityBusiness.idProperty
+        val idProperty = entity.idProperty
         val idName = idProperty.name
 
-        val propertyName = property.nameOrWithId
+        val propertyName =
+            if (property is AssociationProperty) {
+                property.nameOrWithId
+            } else {
+                property.name
+            }
         val propertyType =
-            if (propertyBusiness is AssociationProperty) {
-                val typeEntityIdProperty = propertyBusiness.typeEntity.idProperty
+            if (property is AssociationProperty) {
+                val typeEntityIdProperty = property.typeEntityBusiness.idProperty
                 typeStrToTypeScriptType(typeEntityIdProperty.type, property.typeNotNull)
             } else {
                 typeStrToTypeScriptType(property.type, property.typeNotNull)
@@ -94,7 +93,7 @@ ${properties.joinToString(",\n") { "    ".repeat(4) + it }}
 )
 fun EntityBusiness.existValidRules(
     withId: Boolean,
-    filterProperties: List<PropertyBusiness> = propertyBusiness,
+    filterProperties: List<PropertyBusiness> = properties,
 ): Map<PropertyBusiness, List<ExistValidRule>> {
     val filterPropertyIds = filterProperties.map { it.property.id }.toSet()
 
@@ -112,5 +111,5 @@ fun EntityBusiness.existValidRules(
                     )
             }
         }
-        .groupBy { it.propertyBusiness }
+        .groupBy { it.property }
 }

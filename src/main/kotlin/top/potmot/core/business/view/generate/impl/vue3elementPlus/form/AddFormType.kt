@@ -1,17 +1,19 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
-import top.potmot.core.business.utils.type.typeStrToTypeScriptType
-import top.potmot.entity.dto.GenEntityBusinessView
+import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.EnumProperty
+import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.type.typeStrToTypeScriptType
 
 interface AddFormType {
-    val GenEntityBusinessView.TargetOf_properties.addFormType: String
+    val PropertyBusiness.addFormType: String
         get() {
-            if (enum != null) {
+            if (this is EnumProperty) {
                 return typeStrToTypeScriptType(enum.name, typeNotNull)
             }
 
-            val baseType = if (associationType == null)
-                typeStrToTypeScriptType(type, typeNotNull)
+            val baseType = if (this is AssociationProperty && isLongAssociation)
+                TODO("longAssociation addForm type")
             else
                 typeStrToTypeScriptType(type, typeNotNull)
 

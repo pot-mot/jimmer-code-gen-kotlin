@@ -1,10 +1,9 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem
 
+import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.TypeEntityProperty
-import top.potmot.core.business.utils.mark.components
-import top.potmot.core.business.utils.mark.dir
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.datePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.dateTimePicker
@@ -37,8 +36,8 @@ interface FormItem {
                 if (this !is TypeEntityProperty) {
                     FormItemData()
                 } else {
-                    val components = typeEntity.components
-                    val dir = typeEntity.dir
+                    val components = typeEntityBusiness.components
+                    val dir = typeEntityBusiness.dir
                     val componentName =
                         if (formType == PropertyFormType.ASSOCIATION_ID_LIST)
                             components.idMultiSelect
@@ -69,9 +68,7 @@ interface FormItem {
                 }
 
             PropertyFormType.ENUM -> {
-                val enum = property.enum
-
-                if (enum == null) {
+                if (this !is EnumProperty) {
                     FormItemData()
                 } else {
                     val components = enum.components
@@ -149,7 +146,7 @@ interface FormItem {
                         inputNumber(
                             modelValue,
                             comment = comment,
-                            precision = numberPrecision,
+                            precision = numericPrecision,
                             min = numberMin,
                             max = numberMax,
                             valueOnClear = numberMin,
@@ -159,7 +156,7 @@ interface FormItem {
                         inputNumber(
                             modelValue,
                             comment = comment,
-                            precision = numberPrecision,
+                            precision = numericPrecision,
                             min = numberMin,
                             max = numberMax,
                             disabled = disabled,

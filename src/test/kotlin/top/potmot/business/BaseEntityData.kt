@@ -3,13 +3,12 @@ package top.potmot.business
 import java.sql.Types
 import java.time.LocalDateTime
 import top.potmot.core.business.meta.EntityBusiness
-import top.potmot.core.business.utils.entity.idProperty
-import top.potmot.core.business.utils.entity.toFlat
+import top.potmot.core.business.meta.EnumBusiness
+import top.potmot.entity.dto.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_idProperties
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
+import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.enumeration.AssociationType
 import top.potmot.utils.string.toSingular
 
@@ -48,7 +47,7 @@ val baseProperty = TargetOf_properties(
     inLongAssociationInput = true,
     entityId = 0,
     column = TargetOf_column(typeCode = Types.VARCHAR, dataSize = 0, numericPrecision = 0),
-    enum = null,
+    enumId = null,
     typeEntityId = null,
     createdTime = LocalDateTime.now(),
     modifiedTime = LocalDateTime.now(),
@@ -80,33 +79,37 @@ val baseEntity = GenEntityBusinessView(
     packagePath = "EntityPackage",
     createdTime = LocalDateTime.now(),
     modifiedTime = LocalDateTime.now(),
-    idProperties = listOf(
-        TargetOf_idProperties(idProperty.toEntity())
-    ),
-    properties = emptyList(),
+    properties = listOf(idProperty),
     indexes = emptyList(),
 )
+
+val testEnum = GenEnumGenerateView(
+    id = testId++,
+    name = "Enum",
+    packagePath = "EnumPackagePath",
+    comment = "enum",
+    remark = "remark",
+    items = listOf(
+        GenEnumGenerateView.TargetOf_items(
+            id = testId++,
+            name = "item1",
+            comment = "comment1",
+            mappedValue = "item1",
+            orderKey = 0,
+            remark = "remark",
+            defaultItem = true
+        ),
+    )
+)
+
+val testEnumBusiness = EnumBusiness(testEnum)
 
 val enumProperty = baseProperty.copy(
     id = testId++,
     name = "enumProperty",
-    type = "Enum",
+    type = testEnum.name,
     comment = "enumProperty",
-    enum = TargetOf_enum(
-        id = testId++,
-        name = "Enum",
-        packagePath = "EnumPackagePath",
-        comment = "enum",
-        items = listOf(
-            TargetOf_enum.TargetOf_items(
-                id = testId++,
-                name = "item1",
-                comment = "comment1",
-                orderKey = 0,
-                defaultItem = true
-            ),
-        )
-    )
+    enumId = testEnum.id
 )
 
 val enumNullableProperty = enumProperty.copy(
@@ -196,7 +199,7 @@ val toOneIdView = toOneProperty.copy(
     idView = true,
     idViewTarget = toOneProperty.name,
     typeEntityId = null,
-    type = toOneEntity.idProperty.type,
+    type = idProperty.type,
 )
 
 val toOneNullableIdView = toOneNullableProperty.copy(
@@ -205,9 +208,8 @@ val toOneNullableIdView = toOneNullableProperty.copy(
     idView = true,
     idViewTarget = toOneNullableProperty.name,
     typeEntityId = null,
-    type = toOneEntity.idProperty.type,
-
-    )
+    type = idProperty.type,
+)
 
 val toManyIdView = toManyProperty.copy(
     id = testId++,
@@ -215,7 +217,7 @@ val toManyIdView = toManyProperty.copy(
     idView = true,
     idViewTarget = toManyProperty.name,
     typeEntityId = null,
-    type = toManyEntity.idProperty.type,
+    type = idProperty.type,
 )
 
 val idViewTestEntity = baseEntity.copy(
@@ -236,7 +238,6 @@ val idViewTestEntity = baseEntity.copy(
 private val superTestEntity = baseEntity.copy(
     id = testId++,
     name = "BASE_ENTITY",
-    idProperties = listOf(),
     properties = listOf(
         toOneProperty.copy(
             id = testId++,
@@ -260,8 +261,12 @@ val entityIdMap = mapOf(
     withSuperTestEntity.id to withSuperTestEntity,
 )
 
-val testEntityBusiness = EntityBusiness(testEntity, entityIdMap)
+val enumIdMap = mapOf(
+    testEnum.id to testEnumBusiness,
+)
 
-val idViewTestEntityBusiness = EntityBusiness(idViewTestEntity, entityIdMap)
+val testEntityBusiness = EntityBusiness(testEntity, entityIdMap, enumIdMap)
 
-val withSuperTestEntityBusiness = EntityBusiness(withSuperTestEntity.toFlat(), entityIdMap)
+val idViewTestEntityBusiness = EntityBusiness(idViewTestEntity, entityIdMap, enumIdMap)
+
+val withSuperTestEntityBusiness = EntityBusiness(withSuperTestEntity.toFlat(), entityIdMap, enumIdMap)

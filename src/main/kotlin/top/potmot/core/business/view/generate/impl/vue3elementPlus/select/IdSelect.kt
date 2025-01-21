@@ -1,7 +1,8 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
 
 import top.potmot.core.business.meta.EntityBusiness
-import top.potmot.core.business.utils.type.typeStrToTypeScriptType
+import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
@@ -10,7 +11,6 @@ import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.staticPath
-import top.potmot.entity.dto.GenEntityBusinessView
 
 interface IdSelect : ElementPlus {
     fun createModelValueType(
@@ -66,8 +66,8 @@ interface IdSelect : ElementPlus {
 
     fun createLabelExpression(
         item: String,
-        labelProperties: List<GenEntityBusinessView.TargetOf_properties>,
-        idProperty: GenEntityBusinessView.TargetOf_idProperties,
+        labelProperties: List<PropertyBusiness>,
+        idProperty: PropertyBusiness,
     ): String {
         val idExpression by lazy {
             val tsType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)

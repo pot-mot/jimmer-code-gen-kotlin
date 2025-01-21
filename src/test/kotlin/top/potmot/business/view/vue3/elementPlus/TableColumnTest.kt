@@ -3,19 +3,23 @@ package top.potmot.business.view.vue3.elementPlus
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.business.baseProperty
+import top.potmot.business.testEntityBusiness
+import top.potmot.business.testEnum
+import top.potmot.business.testEnumBusiness
+import top.potmot.core.business.meta.CommonProperty
+import top.potmot.core.business.meta.EnumProperty
+import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.entity.dto.GenEntityBusinessView
-import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_enum
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
 class TableColumnTest : TableColumn {
     private val builder = Vue3ComponentBuilder()
 
-    private val GenEntityBusinessView.TargetOf_properties.result: String
-        get() = tableColumnDataList(withDateTimeFormat = true)
+    private val PropertyBusiness.result: String
+        get() = tableColumnDataPairs(withDateTimeFormat = true)
             .map { it.second }
             .joinToString("\n") {
                 buildString {
@@ -38,7 +42,7 @@ class TableColumnTest : TableColumn {
     fun `test base table column`() {
         assertEquals(
             "<el-table-item/>",
-            baseProperty.result,
+            CommonProperty(testEntityBusiness, baseProperty).result,
         )
     }
 
@@ -51,15 +55,14 @@ import EnumView from "@/components/enums/enum/EnumView.vue"
     <EnumView :value="scope.row.property"/>
 </el-table-item>
             """.trimIndent(),
-            baseProperty.copy(
-                enum = TargetOf_enum(
-                    id = 0,
-                    packagePath = "",
-                    name = "Enum",
-                    comment = "comment",
-                    items = emptyList(),
-                )
-            ).result,
+            EnumProperty(
+                testEntityBusiness,
+                baseProperty.copy(
+                    enumId = testEnum.id
+                ),
+                testEnumBusiness
+            )
+                .result,
         )
     }
 
@@ -75,7 +78,7 @@ import EnumView from "@/components/enums/enum/EnumView.vue"
 import {formatTableColumnDate} from "@/utils/timeFormat"
 <el-table-item :formatter="formatTableColumnDate"/>
                 """.trimIndent(),
-                it.result,
+                CommonProperty(testEntityBusiness, it).result,
             )
         }
     }
@@ -92,7 +95,7 @@ import {formatTableColumnDate} from "@/utils/timeFormat"
 import {formatTableColumnTime} from "@/utils/timeFormat"
 <el-table-item :formatter="formatTableColumnTime"/>
                 """.trimIndent(),
-                it.result,
+                CommonProperty(testEntityBusiness, it).result,
             )
         }
     }
@@ -109,7 +112,7 @@ import {formatTableColumnTime} from "@/utils/timeFormat"
 import {formatTableColumnDateTime} from "@/utils/timeFormat"
 <el-table-item :formatter="formatTableColumnDateTime"/>
                 """.trimIndent(),
-                it.result,
+                CommonProperty(testEntityBusiness, it).result,
             )
         }
     }

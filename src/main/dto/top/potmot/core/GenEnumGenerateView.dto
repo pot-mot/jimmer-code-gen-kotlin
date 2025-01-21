@@ -1,8 +1,6 @@
 export top.potmot.entity.GenEnum
 
-import top.potmot.entity.dto.share.GenerateEnum
-
-GenEnumGenerateView implements GenerateEnum {
+GenEnumGenerateView {
     id
     packagePath
     name
@@ -17,5 +15,6 @@ GenEnumGenerateView implements GenerateEnum {
         comment
         defaultItem
         remark
+        orderKey
     }
 }

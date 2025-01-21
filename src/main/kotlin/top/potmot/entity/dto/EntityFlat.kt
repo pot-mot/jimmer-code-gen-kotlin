@@ -1,6 +1,5 @@
-package top.potmot.core.business.utils.entity
+package top.potmot.entity.dto
 
-import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.extension.allSuperEntities
 
 fun GenEntityBusinessView.toFlat(): GenEntityBusinessView {

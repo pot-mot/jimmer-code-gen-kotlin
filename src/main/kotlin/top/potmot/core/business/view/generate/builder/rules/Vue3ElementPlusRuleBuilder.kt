@@ -1,6 +1,7 @@
 package top.potmot.core.business.view.generate.builder.rules
 
 import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.builder.typescript.TypeScriptBuilder
 import top.potmot.core.business.view.generate.enumPath
@@ -66,9 +67,8 @@ class Vue3ElementPlusRuleBuilder(
         if (hasExistValidRule) {
             imports += existValidRuleImport
         }
-        propertyRules.forEach { (propertyBusiness, rules) ->
-            val property = propertyBusiness.property
-            if (property.enum != null) {
+        propertyRules.forEach { (property, rules) ->
+            if (property is EnumProperty) {
                 val enumName = property.enum.name
                 if (rules.map { it.stringify() }.toString().contains(enumName)) {
                     imports += ImportType(enumPath, enumName)

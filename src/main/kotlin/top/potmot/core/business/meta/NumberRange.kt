@@ -17,9 +17,6 @@ private val numberTypeSet = setOf(
     Types.DECIMAL, Types.NUMERIC
 )
 
-val GenEntityBusinessView.TargetOf_properties.numberPrecision: Int?
-    get() = column?.numericPrecision
-
 val GenEntityBusinessView.TargetOf_properties.numberMin: String?
     get() = if (column == null)
         null
