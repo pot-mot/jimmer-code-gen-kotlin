@@ -8,7 +8,7 @@ import top.potmot.core.business.view.generate.builder.rules.existValidItems
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
-import top.potmot.utils.string.appendBlock
+import top.potmot.utils.string.StringIndentScopeBuilder
 import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.toSingular
 
@@ -17,6 +17,14 @@ object DtoGenerator {
         entity: EntityBusiness,
     ): String =
         "${entity.name}.dto"
+
+    private fun StringIndentScopeBuilder.dtoBlock(name: String, body: StringIndentScopeBuilder.() -> Unit) {
+        line("$name {")
+        scope {
+            this.body()
+        }
+        line("}")
+    }
 
     private fun Iterable<PropertyBusiness>.insect(
         includeProperties: Collection<PropertyBusiness>,
@@ -37,185 +45,195 @@ object DtoGenerator {
                     "id(${name})"
                 }
 
-    private fun AssociationProperty.extractShortView(): String = buildScopeString {
-        val shortViewProperties = typeEntity.properties.filter { it.inShortAssociationView }
+    private fun StringIndentScopeBuilder.extractShortView(property: AssociationProperty) {
+        val shortViewProperties = property.typeEntityBusiness.shortViewProperties
 
         if (shortViewProperties.isEmpty()) {
-            append(associationIdExpress)
+            append(property.associationIdExpress)
         } else {
-            line("$name {")
-            scope {
+            dtoBlock(property.name) {
                 shortViewProperties.forEach {
                     line(it.name)
                 }
             }
-            append("}")
+        }
+    }
+
+    private fun StringIndentScopeBuilder.extractLong(
+        property: AssociationProperty,
+        block: StringIndentScopeBuilder.(typeEntity: EntityBusiness) -> Unit
+    ) {
+        dtoBlock(property.name) {
+            block(property.typeEntityBusiness)
         }
     }
 
 
-    private fun generateListView(entity: EntityBusiness) = buildScopeString {
+    private fun StringIndentScopeBuilder.generateListViewBody(entity: EntityBusiness) {
         val listViewProperties = entity.listViewProperties
 
-        line("${entity.dto.listView} {")
-        scope {
-            line("#allScalars")
-            entity.scalarProperty.exclude(listViewProperties).forEach {
-                line("-${it.name}")
-            }
-            listViewProperties.filterIsInstance<AssociationProperty>().forEach {
-                if (it.isShortView) {
-                    block(it.extractShortView())
-                } else {
-                    line(it.associationIdExpress)
-                }
-            }
-            entity.noColumnProperties.insect(listViewProperties).forEach {
-                line(it.name)
+        line("#allScalars")
+        entity.scalarProperties.exclude(listViewProperties).forEach {
+            line("-${it.name}")
+        }
+        listViewProperties.filterIsInstance<AssociationProperty>().forEach {
+            if (it.isShortView) {
+                extractShortView(it)
+            } else {
+                line(it.associationIdExpress)
             }
         }
-        line("}")
+        entity.noColumnProperties.insect(listViewProperties).forEach {
+            line(it.name)
+        }
     }
 
-    private fun generateTreeView(entity: EntityBusiness) = buildScopeString {
+    private fun StringIndentScopeBuilder.generateTreeViewBody(entity: EntityBusiness) {
         val listViewProperties = entity.listViewProperties
 
         val parentProperty = entity.parentProperty
         val childrenProperty = entity.childrenProperty
 
-        line("${entity.dto.treeView} {")
-        scope {
-            line("#allScalars")
-            entity.scalarProperty.exclude(listViewProperties).forEach {
-                line("-${it.name}")
-            }
-            line("id(${parentProperty.name})")
-            line("${childrenProperty.name}*")
-            listViewProperties.filterIsInstance<AssociationProperty>()
-                .filter {
-                    it.id != parentProperty.id && it.id != childrenProperty.id
-                }
-                .forEach {
-                    if (it.isShortView) {
-                        block(it.extractShortView())
-                    } else {
-                        line(it.associationIdExpress)
-                    }
-                }
-            entity.noColumnProperties.insect(listViewProperties).forEach {
-                line(it.name)
-            }
+        line("#allScalars")
+        entity.scalarProperties.exclude(listViewProperties).forEach {
+            line("-${it.name}")
         }
-        line("}")
-    }
-
-    private fun generateOptionView(entity: EntityBusiness) = buildScopeString {
-        val optionViewProperties = entity.optionViewProperties
-
-        line("${entity.dto.optionView} {")
-        scope {
-            if (entity.isTree) {
-                line("id(${entity.parentProperty.name})")
+        line("id(${parentProperty.name})")
+        line("${childrenProperty.name}*")
+        listViewProperties.filterIsInstance<AssociationProperty>()
+            .filter {
+                it.id != parentProperty.id && it.id != childrenProperty.id
             }
-            optionViewProperties.forEach {
-                if (it is AssociationProperty) {
-                    if (it.typeEntity.id != entity.id) {
-                        line(it.associationIdExpress)
-                    }
-                } else {
-                    line(it.name)
-                }
-            }
-        }
-        line("}")
-    }
-
-    private fun generateDetailView(entity: EntityBusiness) = buildScopeString {
-        val detailViewProperties = entity.detailViewProperties
-
-        line("${entity.dto.detailView} {")
-        scope {
-            line("#allScalars")
-            entity.scalarProperty.exclude(detailViewProperties).forEach {
-                line("-${it.name}")
-            }
-            detailViewProperties.filterIsInstance<AssociationProperty>().forEach {
+            .forEach {
                 if (it.isShortView) {
-                    block(it.extractShortView())
+                    extractShortView(it)
                 } else {
                     line(it.associationIdExpress)
                 }
             }
-            entity.noColumnProperties.insect(detailViewProperties).forEach {
+        entity.noColumnProperties.insect(listViewProperties).forEach {
+            line(it.name)
+        }
+    }
+
+    private fun StringIndentScopeBuilder.generateOptionViewBody(entity: EntityBusiness) {
+        val optionViewProperties = entity.optionViewProperties
+
+        if (entity.isTree) {
+            line("id(${entity.parentProperty.name})")
+        }
+        optionViewProperties.forEach {
+            if (it is AssociationProperty) {
+                if (it.typeEntity.id != entity.id) {
+                    line(it.associationIdExpress)
+                }
+            } else {
                 line(it.name)
             }
         }
-        line("}")
+    }
+
+    private fun StringIndentScopeBuilder.generateDetailViewBody(entity: EntityBusiness) {
+        val detailViewProperties = entity.detailViewProperties
+
+        line("#allScalars")
+        entity.scalarProperties.exclude(detailViewProperties).forEach {
+            line("-${it.name}")
+        }
+        detailViewProperties.filterIsInstance<AssociationProperty>().forEach {
+            if (it.isLongAssociation) {
+                extractLong(it) { typeEntity ->
+                    generateDetailViewBody(typeEntity)
+                }
+            } else if (it.isShortView) {
+                extractShortView(it)
+            } else {
+                line(it.associationIdExpress)
+            }
+        }
+        entity.noColumnProperties.insect(detailViewProperties).forEach {
+            line(it.name)
+        }
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun generateInsertInput(entity: EntityBusiness) = buildScopeString {
+    private fun StringIndentScopeBuilder.generateInsertInputBody(entity: EntityBusiness) {
         val insertInputProperties = entity.insertInputProperties
         val idProperty = entity.idProperty
 
-        line("input ${entity.dto.insertInput} {")
-        scope {
-            line("#allScalars")
-            if (!idProperty.property.idGenerationAnnotation.isNullOrBlank()) {
-                line("-${idProperty.name}")
-            }
-            entity.scalarProperty.exclude(insertInputProperties).forEach {
-                line("-${it.name}")
-            }
-            insertInputProperties.filterIsInstance<AssociationProperty>().forEach {
+        line("#allScalars")
+        if (!idProperty.property.idGenerationAnnotation.isNullOrBlank()) {
+            line("-${idProperty.name}")
+        }
+        entity.scalarProperties.exclude(insertInputProperties).forEach {
+            line("-${it.name}")
+        }
+        insertInputProperties.filterIsInstance<AssociationProperty>().forEach {
+            if (it.isLongAssociation) {
+                extractLong(it) { typeEntity ->
+                    generateInsertInputBody(typeEntity)
+                }
+            } else {
                 line(it.associationIdExpress)
             }
-            entity.noColumnProperties.insect(insertInputProperties).forEach {
-                line(it.name)
-            }
         }
-        line("}")
+        entity.noColumnProperties.insect(insertInputProperties).forEach {
+            line(it.name)
+        }
     }
 
-    private fun generateUpdateFillView(entity: EntityBusiness) = buildScopeString {
+    private fun StringIndentScopeBuilder.generateUpdateFillViewBody(entity: EntityBusiness) {
         val updateInputProperties = entity.updateInputProperties
 
-        line("${entity.dto.updateFillView} {")
-        scope {
-            line("#allScalars")
-            entity.scalarProperty.exclude(updateInputProperties).forEach {
-                line("-${it.name}")
-            }
-            updateInputProperties.filterIsInstance<AssociationProperty>().forEach {
+        line("#allScalars")
+        entity.scalarProperties.exclude(updateInputProperties).forEach {
+            line("-${it.name}")
+        }
+        updateInputProperties.filterIsInstance<AssociationProperty>().forEach {
+            if (it.isLongAssociation) {
+                extractLong(it) { typeEntity ->
+                    generateUpdateFillViewBody(typeEntity)
+                }
+            } else {
                 line(it.associationIdExpress)
             }
-            entity.noColumnProperties.insect(updateInputProperties).forEach {
-                line(it.name)
-            }
         }
-        line("}")
+        entity.noColumnProperties.insect(updateInputProperties).forEach {
+            line(it.name)
+        }
     }
 
-    private fun generateUpdateInput(entity: EntityBusiness) = buildScopeString {
-        val updateInputProperties = entity.updateInputProperties
+    enum class UpdateIdStrategy {
+        FORCE_NOT_NULL,
+        DEFAULT,
+    }
 
-        line("input ${entity.dto.updateInput} {")
-        scope {
-            line("#allScalars")
-            updateInputProperties.firstOrNull { it.property.idProperty }?.let {
-                line("${it.name}!")
-            }
-            entity.scalarProperty.exclude(updateInputProperties).forEach {
-                line("-${it.name}")
-            }
-            updateInputProperties.filterIsInstance<AssociationProperty>().forEach {
+    private fun StringIndentScopeBuilder.generateUpdateInputBody(
+        entity: EntityBusiness,
+        idStrategy: UpdateIdStrategy = UpdateIdStrategy.FORCE_NOT_NULL
+    ) {
+        val updateInputProperties = entity.updateInputProperties
+        val idProperty = entity.idProperty
+
+        line("#allScalars")
+        if (idStrategy == UpdateIdStrategy.FORCE_NOT_NULL) {
+            line(idProperty.name + "!")
+        }
+        entity.scalarProperties.exclude(updateInputProperties).forEach {
+            line("-${it.name}")
+        }
+        updateInputProperties.filterIsInstance<AssociationProperty>().forEach {
+            if (it.isLongAssociation) {
+                extractLong(it) { typeEntity ->
+                    generateUpdateInputBody(typeEntity, UpdateIdStrategy.DEFAULT)
+                }
+            } else {
                 line(it.associationIdExpress)
             }
-            entity.noColumnProperties.insect(updateInputProperties).forEach {
-                line(it.name)
-            }
         }
-        line("}")
+        entity.noColumnProperties.insect(updateInputProperties).forEach {
+            line(it.name)
+        }
     }
 
     private val PropertyBusiness.specExpression
@@ -244,52 +262,82 @@ object DtoGenerator {
                     listOf("associatedIdIn(${name}) as ${name.toSingular()}Ids")
             }
 
-    private fun generateSpec(entity: EntityBusiness) = buildScopeString {
-        line("specification ${entity.dto.spec} {")
-        scope {
-            lines(entity.specificationProperties.flatMap { it.specExpression })
-        }
-        line("}")
+    private fun StringIndentScopeBuilder.generateSpecBody(entity: EntityBusiness) {
+        lines(entity.specificationProperties.flatMap { it.specExpression })
     }
 
-    private fun generateExistValidDto(entity: EntityBusiness): String {
+    private fun StringIndentScopeBuilder.generateExistValidDto(entity: EntityBusiness) {
         val idProperty = entity.idProperty
         val idName = idProperty.name
 
-        return entity.existValidItems.joinToString("\n\n") { item ->
-            buildScopeString {
-                line("specification ${item.dtoName} {")
-                scope {
-                    line("ne($idName) as $idName")
-                    item.scalarProperties.forEach {
-                        line("eq(${it.name})")
-                    }
-                    item.associationProperties.forEach {
-                        line("associatedIdEq(${it.property.name})")
-                    }
+        entity.existValidItems.forEach { item ->
+            dtoBlock("specification ${item.dtoName}") {
+                line("ne($idName) as $idName")
+                item.scalarProperties.forEach {
+                    line("eq(${it.name})")
                 }
-                append("}")
+                item.associationProperties.forEach {
+                    line("associatedIdEq(${it.property.name})")
+                }
             }
+            line()
         }
     }
 
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun stringify(entity: EntityBusiness) = buildString {
-        appendLine("export ${entity.packagePath}.${entity.name}")
-        appendLine()
+    private fun stringify(entity: EntityBusiness) = buildScopeString {
+        val dto = entity.dto
 
-        appendBlock(generateListView(entity))
-        if (entity.isTree) appendBlock(generateTreeView(entity))
-        if (entity.canEdit) appendBlock(generateDetailView(entity))
-        appendBlock(generateOptionView(entity))
-        if (entity.canAdd) appendBlock(generateInsertInput(entity))
-        if (entity.canEdit) {
-            appendBlock(generateUpdateFillView(entity))
-            appendBlock(generateUpdateInput(entity))
+        line("export ${entity.packagePath}.${entity.name}")
+        line()
+
+        dtoBlock(dto.listView) {
+            generateListViewBody(entity)
         }
-        appendBlock(generateSpec(entity))
-        appendBlock(generateExistValidDto(entity))
+        line()
+
+        if (entity.isTree) {
+            dtoBlock(dto.treeView) {
+                generateTreeViewBody(entity)
+            }
+            line()
+        }
+
+        dtoBlock(dto.detailView) {
+            generateDetailViewBody(entity)
+        }
+        line()
+
+        dtoBlock(dto.optionView) {
+            generateOptionViewBody(entity)
+        }
+        line()
+
+        if (entity.canAdd) {
+            dtoBlock("input ${dto.insertInput}") {
+                generateInsertInputBody(entity)
+            }
+            line()
+        }
+        if (entity.canEdit) {
+            dtoBlock(dto.updateFillView) {
+                generateUpdateFillViewBody(entity)
+            }
+            line()
+
+            dtoBlock("input ${dto.updateInput}") {
+                generateUpdateInputBody(entity)
+            }
+            line()
+        }
+
+        dtoBlock("specification ${dto.spec}") {
+            generateSpecBody(entity)
+        }
+        line()
+
+        generateExistValidDto(entity)
     }.trim()
 
     @Throws(ModelException.IdPropertyNotFound::class)

@@ -210,7 +210,7 @@ data class EntityBusiness(
     }
 
 
-    val scalarProperty by lazy {
+    val scalarProperties by lazy {
         properties
             .filter {
                 !it.property.idProperty && !it.property.logicalDelete && it.property.column != null && it.property.associationType == null

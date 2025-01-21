@@ -12,16 +12,22 @@ private const val shortAssociationTargetEntityId = -2L
 
 private const val shortAssociationTargetIdViewEntityId = -3L
 
+private const val label1PropertyId = -1L
+
+private const val label2PropertyId = -2L
+
 private val label1Property = baseProperty.copy(
+    id = label1PropertyId,
     name = "label1",
-    comment = "label1",
+    comment = "label1 comment",
     inShortAssociationView = true,
     inOptionView = true,
 )
 
 private val label2Property = baseProperty.copy(
+    id = label2PropertyId,
     name = "label2",
-    comment = "label2",
+    comment = "label2 comment",
     inShortAssociationView = true,
     inOptionView = true,
 )
@@ -58,7 +64,7 @@ val shortAssociationTargetEntity = baseEntity.copy(
         entity = it,
         entityIdMap = mapOf(
             shortAssociationEntityId to shortAssociationEntity.entity,
-            shortAssociationTargetEntityId to it
+            it.id to it
         ),
         enumIdMap = emptyMap()
     )
@@ -67,6 +73,7 @@ val shortAssociationTargetEntity = baseEntity.copy(
 private val shortAssociationIdViewProperty = baseProperty.copy(
     id = shortAssociationEntityId,
     name = shortAssociationProperty.name + "Id",
+    comment = shortAssociationProperty.comment + " Id View",
     associationType = AssociationType.MANY_TO_ONE,
     idView = true,
     idViewTarget = shortAssociationProperty.name
@@ -84,7 +91,7 @@ val shortAssociationTargetIdViewEntity = baseEntity.copy(
         entity = it,
         entityIdMap = mapOf(
             shortAssociationEntityId to shortAssociationEntity.entity,
-            shortAssociationTargetIdViewEntityId to it
+            it.id to it
         ),
         enumIdMap = emptyMap()
     )

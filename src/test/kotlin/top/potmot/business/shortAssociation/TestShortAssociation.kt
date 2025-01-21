@@ -265,11 +265,11 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         />
         <el-table-column
             prop="shortAssociationProperty.label1"
-            label="commentlabel1"
+            label="commentlabel1 comment"
         />
         <el-table-column
             prop="shortAssociationProperty.label2"
-            label="commentlabel2"
+            label="commentlabel2 comment"
         />
         <el-table-column
             label="操作"
@@ -300,7 +300,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     }
 
     @Test
-    fun `test shortAssociationTargetIdView dto`() {
+    fun `test shortAssociationTarget idView dto`() {
         assertEquals(
             """
 (dto/Entity.dto, export EntityPackage.Entity
@@ -352,7 +352,7 @@ specification EntitySpec {
     }
 
     @Test
-    fun `test shortAssociationTargetIdView view`() {
+    fun `test shortAssociationTarget idView view`() {
         val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationTargetIdViewEntity))
 
         assertEquals(
@@ -416,11 +416,11 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         />
         <el-table-column
             prop="shortAssociationProperty.label1"
-            label="commentlabel1"
+            label="commentlabel1 comment"
         />
         <el-table-column
             prop="shortAssociationProperty.label2"
-            label="commentlabel2"
+            label="commentlabel2 comment"
         />
         <el-table-column
             label="操作"

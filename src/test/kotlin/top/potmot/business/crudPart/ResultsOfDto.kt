@@ -9,6 +9,13 @@ EntityListView {
     id(toOneNullableProperty)
 }
 
+EntityDetailView {
+    #allScalars
+    id(toOneProperty)
+    id(toOneNullableProperty)
+    id(toManyProperties) as toManyPropertyIds
+}
+
 EntityOptionView {
     id
 }
@@ -82,6 +89,13 @@ EntityListView {
     id(toOneNullableProperty)
 }
 
+EntityDetailView {
+    #allScalars
+    id(toOneProperty)
+    id(toOneNullableProperty)
+    id(toManyProperties) as toManyPropertyIds
+}
+
 EntityOptionView {
     id
 }
@@ -103,6 +117,13 @@ EntityListView {
     #allScalars
     id(toOneProperty)
     id(toOneNullableProperty)
+}
+
+EntityDetailView {
+    #allScalars
+    id(toOneProperty)
+    id(toOneNullableProperty)
+    id(toManyProperties) as toManyPropertyIds
 }
 
 EntityOptionView {
