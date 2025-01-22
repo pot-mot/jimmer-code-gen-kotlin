@@ -2,29 +2,40 @@ package top.potmot.enumeration
 
 enum class GenerateTag {
     BackEnd,
-    Table,
+    DDL,
     Enum,
     Entity,
     DTO,
     Permission,
     Route,
     Service,
+
     FrontEnd,
     Component,
+    Rules,
+
     EnumView,
     EnumSelect,
     EnumNullableSelect,
+
     IdSelect,
     IdMultiSelect,
+
     Page,
+
+    Form,
+    ViewForm,
+    SubForm,
     AddForm,
-    EditForm,
-    EditTable,
-    QueryForm,
     AddFormDataType,
     DefaultAddFormData,
-    Rules,
     AddFormRules,
+    EditForm,
     EditFormRules,
+    QueryForm,
+
+    Table,
+    ViewTable,
+    EditTable,
     EditTableRules,
 }

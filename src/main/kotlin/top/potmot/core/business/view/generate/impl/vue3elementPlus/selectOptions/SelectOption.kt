@@ -1,5 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions
 
+import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.vue3.Prop
@@ -22,3 +23,13 @@ data class SelectOption(
     fun toVariable() =
         ConstVariable(name, null, "ref<Array<$type>>()")
 }
+
+val ForceIdViewProperty.selectOption
+    get() = SelectOption(
+        name + "Options",
+        typeEntityBusiness.dto.optionView,
+        typeEntityBusiness.apiServiceName
+    )
+
+val Iterable<ForceIdViewProperty>.selectOptions
+    get() = map { it.selectOption }

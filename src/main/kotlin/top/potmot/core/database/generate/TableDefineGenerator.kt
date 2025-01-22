@@ -34,7 +34,7 @@ abstract class TableDefineGenerator {
             flatTables,
             "ddl/${formatFileName(allTableFileName)}",
             stringify(flatTables),
-            listOf(GenerateTag.BackEnd, GenerateTag.Table)
+            listOf(GenerateTag.BackEnd, GenerateTag.DDL)
         )
 
         flatTables.forEach {
@@ -42,7 +42,7 @@ abstract class TableDefineGenerator {
                 it,
                 "ddl/${formatFileName(it.name)}",
                 stringify(listOf(it)),
-                listOf(GenerateTag.BackEnd, GenerateTag.Table)
+                listOf(GenerateTag.BackEnd, GenerateTag.DDL)
             )
         }
 
