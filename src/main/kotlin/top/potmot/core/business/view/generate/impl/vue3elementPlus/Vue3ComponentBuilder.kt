@@ -2,6 +2,8 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
 import top.potmot.core.business.view.generate.builder.component.ComponentBuilder
 import top.potmot.core.business.view.generate.meta.style.StyleClass
+import top.potmot.core.business.view.generate.meta.typescript.ObjectProperty
+import top.potmot.core.business.view.generate.meta.typescript.TsObject
 import top.potmot.core.business.view.generate.meta.typescript.inlineOrWarpLines
 import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.core.business.view.generate.meta.vue3.Component
@@ -27,9 +29,8 @@ class Vue3ComponentBuilder(
     val indent: String,
     val wrapThreshold: Int,
 ) : ComponentBuilder {
-    fun Collection<ModelProp>.stringifyModels(currentIndent: String = indent): List<String> {
+    fun Collection<ModelProp>.stringifyModels(): List<String> {
         val withName = size > 1
-        val withNameIndent = if (withName) currentIndent else ""
 
         return map {
             val withModifier = it.modifier.isNotEmpty()
@@ -37,18 +38,23 @@ class Vue3ComponentBuilder(
             val type = if (withModifier) "${it.type}, ${it.modifier.joinToString(" | ")}" else it.type
             val variable = if (withModifier) "[${it.name}, ${it.name}Modifier]" else it.name
 
-            val data = buildString {
+            val defineObject = TsObject(
+                properties = listOfNotNull(
+                    ObjectProperty("required", it.required.toString()),
+                    it.defaultValue?.let { value -> ObjectProperty("defaultValue", value) }
+                )
+            )
+
+            val data = buildScopeString(indent) {
                 if (withName) {
-                    appendLine("\n${currentIndent}\"${it.name}\",")
-                }
-                append("$withNameIndent{")
-                appendLine("\n$withNameIndent${currentIndent}required: ${it.required}")
-                if (it.defaultValue != null) {
-                    appendLine(",\n$withNameIndent${currentIndent}default: ${it.defaultValue}")
-                }
-                append("$withNameIndent}")
-                if (withName) {
-                    append("\n")
+                    line()
+                    scope {
+                        line("\"${it.name}\",")
+                        defineObject.stringify(this)
+                    }
+                    line()
+                } else {
+                    defineObject.stringify(this)
                 }
             }
 
@@ -101,14 +107,15 @@ class Vue3ComponentBuilder(
     private fun Component.needEmitsDeclare(): Boolean =
         refContextContent.contains("emits")
 
-    fun Iterable<Event>.stringifyEmits(currentIndent: String = indent): String {
+    fun Iterable<Event>.stringifyEmits(): String {
         val emits = map { emit ->
             val args = (
                     listOf("event" to "\"${emit.event}\"") +
                             emit.args.map { it.name to it.type }
-                    ).map {
-                    "${it.first}: ${it.second}"
-                }.inlineOrWarpLines(indent, wrapThreshold).replace("\n", "\n$currentIndent")
+                    )
+                .map { "${it.first}: ${it.second}" }
+                .inlineOrWarpLines(indent, wrapThreshold)
+                .replace("\n", "\n$indent")
             "(${args}): void"
         }.inlineOrWarpLines(indent, wrapThreshold)
 
@@ -156,11 +163,7 @@ class Vue3ComponentBuilder(
                     element.directives.forEach { directive ->
                         when (directive) {
                             is VModel -> {
-                                directives +=
-                                    "v-model${if (directive.propName == null) "" else ":${directive.propName}"}${
-                                        if (directive.modifier.isEmpty()) "" else "." +
-                                                directive.modifier.joinToString(".")
-                                    }=\"${directive.value}\""
+                                directives += directive.stringify()
                             }
 
                             is VIf -> {
@@ -180,8 +183,7 @@ class Vue3ComponentBuilder(
                             }
 
                             is VFor -> {
-                                val item = if (directive.withIndex) "(${directive.item}, index)" else directive.item
-                                directives += "v-for=\"$item in ${directive.list}\""
+                                directives += directive.stringify()
                             }
                         }
                     }
@@ -276,7 +278,7 @@ class Vue3ComponentBuilder(
 
     fun Iterable<StyleClass>.stringifyStyleClass(): String =
         joinToString("\n\n") { styleClass ->
-            buildScopeString {
+            buildScopeString(indent) {
                 line("${styleClass.selector} {")
                 scope {
                     styleClass.properties.entries.forEach { (key, value) ->

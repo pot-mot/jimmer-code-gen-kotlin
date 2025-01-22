@@ -17,39 +17,32 @@ data class RawType(
 fun TsTypeProperty(
     name: String, type: String
 ) = TsTypeProperty(
-    name,
-    RawType(type)
+    name, RawType(type)
 )
 
 data class ComplexType(
-    val properties: Iterable<TsTypeProperty>,
+    val properties: Collection<TsTypeProperty>,
 ): TsType {
-    private fun extractBody(builder: StringIndentScopeBuilder) {
-        properties.forEach {
-            builder.append(it.name)
-            builder.append(": ")
+    fun stringify(builder: StringIndentScopeBuilder) {
+        builder.line("{")
+        builder.scope {
+            properties.forEachIndexed { index, it ->
+                builder.append(it.name)
+                builder.append(": ")
 
-            when(it.type) {
-                is RawType -> builder.line(it.type.value)
-                is ComplexType -> {
-                    builder.line("{")
-                    builder.scope {
-                        it.type.extractBody(builder)
-                    }
-                    builder.append("}")
+                when(it.type) {
+                    is RawType -> builder.append(it.type.value)
+                    is ComplexType -> it.type.stringify(builder)
                 }
-            }
 
-            builder.line(",")
+                builder.line(if (index != properties.size - 1) "," else "")
+            }
         }
+        builder.append("}")
     }
 
     fun stringify(indent: String) = buildScopeString(indent) {
-        line("{")
-        scope {
-            extractBody(this)
-        }
-        line("}")
+        stringify(this)
     }
 }
 

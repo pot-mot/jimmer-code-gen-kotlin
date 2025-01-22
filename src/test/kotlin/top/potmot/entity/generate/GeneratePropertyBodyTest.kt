@@ -14,10 +14,12 @@ import top.potmot.entity.dto.GenPropertyView
 import top.potmot.entity.property.PropertyBody
 import top.potmot.util.replaceSinceTimeComment
 import java.time.LocalDateTime
+import org.springframework.boot.test.context.SpringBootTest
 
 /**
  * 验证 EntityGenerate 的基本功能
  */
+@SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class GeneratePropertyBodyTest {
     @Test

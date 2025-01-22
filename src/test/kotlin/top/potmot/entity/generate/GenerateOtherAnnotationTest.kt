@@ -13,7 +13,9 @@ import top.potmot.entity.dto.GenPropertyView
 import top.potmot.entity.property.OtherAnnotation
 import top.potmot.util.replaceSinceTimeComment
 import java.time.LocalDateTime
+import org.springframework.boot.test.context.SpringBootTest
 
+@SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class GenerateOtherAnnotationTest {
     @Test

@@ -2,18 +2,20 @@ package top.potmot.core.business.view.generate.meta.vue3
 
 import top.potmot.core.business.view.generate.meta.style.StyleClass
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
-import top.potmot.core.business.view.generate.meta.typescript.TsCode
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
-import top.potmot.core.business.view.generate.meta.typescript.TsImport
 import top.potmot.core.business.view.generate.meta.typescript.LetVariable
+import top.potmot.core.business.view.generate.meta.typescript.RawPropertyValue
+import top.potmot.core.business.view.generate.meta.typescript.TsCode
+import top.potmot.core.business.view.generate.meta.typescript.TsImport
+import top.potmot.core.business.view.generate.meta.typescript.TsObject
 
 data class Prop(
     val name: String,
     val type: String,
     val required: Boolean = true,
     val defaultValue: String? = null,
-    val defaultAsFunction: Boolean = false
+    val defaultAsFunction: Boolean = false,
 )
 
 data class ModelProp(
@@ -52,22 +54,22 @@ data class PropBind(
 
 fun String?.toPropBind(
     name: String,
-    isLiteral: Boolean = false
+    isLiteral: Boolean = false,
 ) = if (this != null) PropBind(name, this, isLiteral) else null
 
 fun Int?.toPropBind(
     name: String,
-    format: Int.() -> String = { toString() }
+    format: Int.() -> String = { toString() },
 ) = if (this != null) PropBind(name, this.format()) else null
 
 fun Long?.toPropBind(
     name: String,
-    format: Long.() -> String = { toString() }
+    format: Long.() -> String = { toString() },
 ) = if (this != null) PropBind(name, this.format()) else null
 
 fun Double?.toPropBind(
     name: String,
-    format: Double.() -> String = { toString() }
+    format: Double.() -> String = { toString() },
 ) = if (this != null) PropBind(name, this.format()) else null
 
 fun classProp(classNames: Iterable<String>) = PropBind(
@@ -111,24 +113,33 @@ data class VModel(
     val value: String,
     val propName: String? = null,
     val modifier: Collection<String> = emptyList(),
-) : Directive
+) : Directive {
+    fun stringify() =
+        "v-model${if (propName == null) "" else ":${propName}"}${
+            if (modifier.isEmpty()) "" else "." +
+                    modifier.joinToString(".")
+        }=\"${value}\""
+}
 
 data class VIf(
     val expression: String,
-    val isElse: Boolean = false
+    val isElse: Boolean = false,
 ) : Directive
 
 data object VElse : Directive
 
 data class VShow(
-    val expression: String
+    val expression: String,
 ) : Directive
 
 data class VFor(
     val item: String,
     val list: String,
-    val withIndex: Boolean = false
-) : Directive
+    val withIndex: Boolean = false,
+) : Directive {
+    fun stringify() =
+        "v-for=\"${if (withIndex) "(${item}, index)" else item} in ${list}\""
+}
 
 open class TagElementAttributes(
     open val directives: Iterable<Directive> = emptyList(),
@@ -140,7 +151,7 @@ open class TagElementAttributes(
         var directives: MutableList<Directive> = mutableListOf(),
         var props: MutableList<PropBind> = mutableListOf(),
         var events: MutableList<EventBind> = mutableListOf(),
-        var children: MutableList<Element> = mutableListOf()
+        var children: MutableList<Element> = mutableListOf(),
     ) {
         fun build() = TagElementAttributes(
             directives = directives,
@@ -221,9 +232,18 @@ fun slotTemplate(
     children = content
 )
 
+private fun TsObject.getRefContextContent(): String =
+    properties.joinToString("\n") {
+        when (it.value) {
+            is RawPropertyValue -> it.value.value
+            is TsObject -> it.value.getRefContextContent()
+        }
+    }
+
 private fun TsCode.getRefContextContent(): String =
     when (this) {
         is CodeBlock -> content
+        is TsObject -> getRefContextContent()
         is Function -> body.joinToString("\n") {
             it.getRefContextContent()
         }
@@ -247,6 +267,7 @@ private fun Element.getRefContextContent(): String =
                     events.joinToString { it.fn } +
                     directives.joinToString { it.getRefContextContent() } +
                     children.joinToString { it.getRefContextContent() }
+
         else -> ""
     }
 
@@ -262,7 +283,7 @@ data class Component(
 
     val refContextContent: String =
         script.joinToString { it.getRefContextContent() } +
-                template.joinToString { it.getRefContextContent() }
+                template.joinToString { it.getRefContextContent() },
 ) {
     class Builder(
         var imports: MutableList<TsImport> = mutableListOf(),

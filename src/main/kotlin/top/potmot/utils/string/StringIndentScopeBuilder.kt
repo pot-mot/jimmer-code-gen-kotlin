@@ -25,7 +25,9 @@ class StringIndentScopeBuilder(
     }
 
     fun line(content: String) {
-        stringBuilder.append(currentIndent)
+        if (stringBuilder.endsWith('\n')) {
+            stringBuilder.append(currentIndent)
+        }
         stringBuilder.appendLine(content)
     }
 
