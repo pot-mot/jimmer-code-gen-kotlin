@@ -280,7 +280,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
     </el-dialog>
 </template>
             """.trimIndent(),
-            generator.stringify(generator.pageComponent(testEntityBusiness)).trim()
+            generator.pageFile(testEntityBusiness).content.trim()
         )
     }
 }

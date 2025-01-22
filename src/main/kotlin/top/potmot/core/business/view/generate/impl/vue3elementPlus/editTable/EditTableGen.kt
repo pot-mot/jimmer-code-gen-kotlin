@@ -10,6 +10,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.tableColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.*
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubValidateItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.cancelEvent
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.exposeValid
@@ -51,6 +52,8 @@ import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.storePath
 import top.potmot.core.business.view.generate.utilPath
+import top.potmot.entity.dto.GenerateFile
+import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
 import top.potmot.utils.map.iterableMapOf
 
@@ -233,7 +236,7 @@ interface EditTableGen : Generator, FormItem {
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    fun editTableRules(entity: EntityBusiness): Rules {
+    private fun editTableRules(entity: EntityBusiness): Rules {
         val editTableRulesProperties = entity.subFormRulesProperties
         val rules = iterableMapOf(
             editTableRulesProperties.associateWith { it.rules },
@@ -250,16 +253,16 @@ interface EditTableGen : Generator, FormItem {
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    fun editTableComponent(entity: EntityBusiness): Component {
+    private fun editTableComponent(entity: EntityBusiness): Component {
         val rows = "rows"
 
         return editTable(
             formData = rows,
-            type = entity.addFormDataType,
+            type = entity.addFormType,
             typePath = staticPath,
             useRules = "useRules",
-            createDefault = entity.addFormCreateDefault,
-            defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormCreateDefault,
+            createDefault = entity.addFormDefault,
+            defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormDefault,
             useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.editTableRules,
             indent = indent,
             idPropertyName = entity.idProperty.name,
@@ -276,4 +279,19 @@ interface EditTableGen : Generator, FormItem {
                 }
         )
     }
+
+    fun editTableFiles(entity: EntityBusiness) = listOf(
+        GenerateFile(
+            entity,
+            "components/${entity.dir}/${entity.components.editTable}.vue",
+            Vue3ElementPlusViewGenerator.stringify(editTableComponent(entity)),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.Table, GenerateTag.EditTable),
+        ),
+        GenerateFile(
+            entity,
+            "rules/${entity.dir}/${entity.rules.editTableRules}.ts",
+            stringify(editTableRules(entity)),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditTableRules, GenerateTag.EditTable),
+        )
+    )
 }

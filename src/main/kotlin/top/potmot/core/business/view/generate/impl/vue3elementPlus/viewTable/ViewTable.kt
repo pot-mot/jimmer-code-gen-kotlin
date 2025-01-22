@@ -3,6 +3,7 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.viewTable
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.tableColumn
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.stringify
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.operationsColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilColumns
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilProps
@@ -27,6 +28,8 @@ import top.potmot.core.business.view.generate.meta.vue3.SlotProp
 import top.potmot.core.business.view.generate.meta.vue3.slotElement
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.storePath
+import top.potmot.entity.dto.GenerateFile
+import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
 
 fun viewTable(
@@ -111,7 +114,7 @@ fun viewTable(
 
 interface ViewTableGen: TableColumn {
     @Throws(ModelException.TreeEntityCannotFoundChildrenProperty::class)
-    fun viewTableComponent(entity: EntityBusiness): Component {
+    private fun viewTableComponent(entity: EntityBusiness): Component {
         val rows = "rows"
 
         val childrenProp = takeIf { entity.isTree }?.let {
@@ -132,4 +135,11 @@ interface ViewTableGen: TableColumn {
             showIndex = !isTree,
         )
     }
+
+    fun viewTableFile(entity: EntityBusiness) = GenerateFile(
+        entity,
+        "components/${entity.dir}/${entity.components.table}.vue",
+        stringify(viewTableComponent(entity)),
+        listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Table, GenerateTag.ViewTable),
+    )
 }

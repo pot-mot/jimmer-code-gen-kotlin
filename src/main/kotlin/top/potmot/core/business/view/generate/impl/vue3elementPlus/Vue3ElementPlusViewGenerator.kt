@@ -14,7 +14,6 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.select.IdSele
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.viewTable.ViewTableGen
 import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.entity.dto.GenerateFile
-import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
 
 object Vue3ElementPlusViewGenerator :
@@ -53,116 +52,31 @@ object Vue3ElementPlusViewGenerator :
     override fun generateView(
         entity: EntityBusiness,
     ): List<GenerateFile> {
-        val dir = entity.dir
-        val (table, addForm, editForm, queryForm, page, idSelect, idMultiSelect, editTable) = entity.components
-        val (addFormRules, editFormRules, editTableRules) = entity.rules
-
         val result = mutableListOf<GenerateFile>()
 
-        result += GenerateFile(
-            entity,
-            "components/${dir}/${table}.vue",
-            stringify(viewTableComponent(entity)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Table, GenerateTag.ViewTable),
-        )
+        result += viewTableFile(entity)
 
         if (entity.canAdd) {
-            val addFormDataType = entity.addFormDataType
-            val defaultAddFormData = entity.addFormCreateDefault
-
-            result += GenerateFile(
-                entity,
-                "components/${dir}/${addFormDataType}.d.ts",
-                addFormType(entity),
-                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.AddFormDataType),
-            )
-            result += GenerateFile(
-                entity,
-                "components/${dir}/${defaultAddFormData}.ts",
-                addFormDefault(entity),
-                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.DefaultAddFormData),
-            )
-            result += GenerateFile(
-                entity,
-                "components/${dir}/${addForm}.vue",
-                stringify(addFormComponent(entity)),
-                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.AddForm),
-            )
+            result += addFormFiles(entity)
         }
 
         if (entity.canEdit) {
-            result += GenerateFile(
-                entity,
-                "components/${dir}/${editForm}.vue",
-                stringify(editFormComponent(entity)),
-                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.EditForm),
-            )
+            result += editFormFiles(entity)
         }
 
         // TODO when long association
-        result += GenerateFile(
-            entity,
-            "components/${dir}/${editTable}.vue",
-            stringify(editTableComponent(entity)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.Table, GenerateTag.EditTable),
-        )
+        result += editTableFiles(entity)
 
         if (entity.canQuery) {
-            result += GenerateFile(
-                entity,
-                "components/${dir}/${queryForm}.vue",
-                stringify(queryFormComponent(entity)),
-                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.QueryForm),
-            )
+            result += queryFormFile(entity)
         }
 
         if (entity.hasPage) {
-            result += GenerateFile(
-                entity,
-                "pages/${dir}/${page}.vue",
-                stringify(pageComponent(entity)),
-                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Page),
-            )
+            result += pageFile(entity)
         }
 
         // TODO when short association
-        result += GenerateFile(
-            entity,
-            "components/${dir}/${idSelect}.vue",
-            stringify(idSelectComponent(entity, multiple = false)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.IdSelect),
-        )
-        result += GenerateFile(
-            entity,
-            "components/${dir}/${idMultiSelect}.vue",
-            stringify(idSelectComponent(entity, multiple = true)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.IdMultiSelect),
-        )
-
-        if (entity.canAdd) {
-            result += GenerateFile(
-                entity,
-                "rules/${dir}/${addFormRules}.ts",
-                stringify(addFormRules(entity)),
-                listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.AddFormRules, GenerateTag.AddForm),
-            )
-        }
-
-        if (entity.canEdit) {
-            result += GenerateFile(
-                entity,
-                "rules/${dir}/${editFormRules}.ts",
-                stringify(editFormRules(entity)),
-                listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditFormRules, GenerateTag.EditForm),
-            )
-        }
-
-        result += GenerateFile(
-            entity,
-            "rules/${dir}/${editTableRules}.ts",
-            stringify(editTableRules(entity)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditTableRules, GenerateTag.EditTable),
-        )
+        result += idSelectFiles(entity)
 
         return result
     }

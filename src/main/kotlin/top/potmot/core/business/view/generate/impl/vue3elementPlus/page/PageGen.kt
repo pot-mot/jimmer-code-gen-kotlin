@@ -9,6 +9,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dialog
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.pagination
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
@@ -32,6 +33,8 @@ import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.storePath
 import top.potmot.core.business.view.generate.utilPath
+import top.potmot.entity.dto.GenerateFile
+import top.potmot.enumeration.GenerateTag
 import top.potmot.utils.list.join
 import top.potmot.utils.string.StringIndentScopeBuilder
 import top.potmot.utils.string.buildScopeString
@@ -78,7 +81,7 @@ interface PageGen : Generator {
         )
     )
 
-    fun pageComponent(entity: EntityBusiness): Component {
+    private fun pageComponent(entity: EntityBusiness): Component {
         val dir = entity.dir
         val (table, addForm, editForm, queryForm) = entity.components
         val (listView, treeView, _, insertInput, _, updateInput, spec) = entity.dto
@@ -579,4 +582,11 @@ interface PageGen : Generator {
 
         return component
     }
+
+    fun pageFile(entity: EntityBusiness) = GenerateFile(
+        entity,
+        "pages/${entity.dir}/${entity.components.page}.vue",
+        Vue3ElementPlusViewGenerator.stringify(pageComponent(entity)),
+        listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Page),
+    )
 }

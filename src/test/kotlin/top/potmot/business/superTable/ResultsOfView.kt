@@ -265,7 +265,30 @@ defineExpose<FormExpose>({
         </slot>
     </el-form>
 </template>
-), (components/entity/EntityEditForm.vue, <script setup lang="ts">
+), (rules/entity/EntityAddFormRules.ts, import type {Ref} from "vue"
+import type {FormRules} from "element-plus"
+import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
+import type {EntityInsertInput} from "@/api/__generated/model/static"
+
+export const useRules = (_: Ref<EntityAddFormType>): FormRules<EntityInsertInput> => {
+    return {
+        enumProperty: [
+            {required: true, message: "enumProperty不能为空", trigger: "blur"},
+            {type: "enum", enum: ["item1"], message: "enumProperty必须是item1", trigger: "blur"},
+        ],
+        enumNullableProperty: [
+            {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
+        ],
+        toOnePropertyId: [
+            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
+        ],
+        toOneNullablePropertyId: [
+        ],
+        createdById: [
+            {required: true, message: "createdBy不能为空", trigger: "blur"},
+        ],
+    }
+}), (components/entity/EntityEditForm.vue, <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
@@ -395,7 +418,29 @@ defineExpose<FormExpose>({
         </slot>
     </el-form>
 </template>
-), (components/entity/EntityEditTable.vue, <script setup lang="ts">
+), (rules/entity/EntityEditFormRules.ts, import type {Ref} from "vue"
+import type {FormRules} from "element-plus"
+import type {EntityUpdateInput} from "@/api/__generated/model/static"
+
+export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput> => {
+    return {
+        enumProperty: [
+            {required: true, message: "enumProperty不能为空", trigger: "blur"},
+            {type: "enum", enum: ["item1"], message: "enumProperty必须是item1", trigger: "blur"},
+        ],
+        enumNullableProperty: [
+            {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
+        ],
+        toOnePropertyId: [
+            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
+        ],
+        toOneNullablePropertyId: [
+        ],
+        createdById: [
+            {required: true, message: "createdBy不能为空", trigger: "blur"},
+        ],
+    }
+}), (components/entity/EntityEditTable.vue, <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
@@ -657,7 +702,29 @@ defineExpose<FormExpose>({
         </slot>
     </el-form>
 </template>
-), (components/entity/EntityQueryForm.vue, <script setup lang="ts">
+), (rules/entity/EntityEditTableRules.ts, import type {Ref} from "vue"
+import type {FormRules} from "element-plus"
+import type {EntityUpdateInput} from "@/api/__generated/model/static"
+
+export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpdateInput> => {
+    return {
+        enumProperty: [
+            {required: true, message: "enumProperty不能为空", trigger: "blur"},
+            {type: "enum", enum: ["item1"], message: "enumProperty必须是item1", trigger: "blur"},
+        ],
+        enumNullableProperty: [
+            {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
+        ],
+        toOnePropertyId: [
+            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
+        ],
+        toOneNullablePropertyId: [
+        ],
+        createdById: [
+            {required: true, message: "createdBy不能为空", trigger: "blur"},
+        ],
+    }
+}), (components/entity/EntityQueryForm.vue, <script setup lang="ts">
 import {Search} from "@element-plus/icons-vue"
 import type {EntitySpec, ToOneEntityOptionView} from "@/api/__generated/model/static"
 import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
@@ -1105,72 +1172,5 @@ watch(() => [modelValue.value, props.options], () => {
         />
     </el-select>
 </template>
-), (rules/entity/EntityAddFormRules.ts, import type {Ref} from "vue"
-import type {FormRules} from "element-plus"
-import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
-import type {EntityInsertInput} from "@/api/__generated/model/static"
-
-export const useRules = (_: Ref<EntityAddFormType>): FormRules<EntityInsertInput> => {
-    return {
-        enumProperty: [
-            {required: true, message: "enumProperty不能为空", trigger: "blur"},
-            {type: "enum", enum: ["item1"], message: "enumProperty必须是item1", trigger: "blur"},
-        ],
-        enumNullableProperty: [
-            {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
-        ],
-        toOnePropertyId: [
-            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
-        ],
-        toOneNullablePropertyId: [
-        ],
-        createdById: [
-            {required: true, message: "createdBy不能为空", trigger: "blur"},
-        ],
-    }
-}), (rules/entity/EntityEditFormRules.ts, import type {Ref} from "vue"
-import type {FormRules} from "element-plus"
-import type {EntityUpdateInput} from "@/api/__generated/model/static"
-
-export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput> => {
-    return {
-        enumProperty: [
-            {required: true, message: "enumProperty不能为空", trigger: "blur"},
-            {type: "enum", enum: ["item1"], message: "enumProperty必须是item1", trigger: "blur"},
-        ],
-        enumNullableProperty: [
-            {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
-        ],
-        toOnePropertyId: [
-            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
-        ],
-        toOneNullablePropertyId: [
-        ],
-        createdById: [
-            {required: true, message: "createdBy不能为空", trigger: "blur"},
-        ],
-    }
-}), (rules/entity/EntityEditTableRules.ts, import type {Ref} from "vue"
-import type {FormRules} from "element-plus"
-import type {EntityUpdateInput} from "@/api/__generated/model/static"
-
-export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpdateInput> => {
-    return {
-        enumProperty: [
-            {required: true, message: "enumProperty不能为空", trigger: "blur"},
-            {type: "enum", enum: ["item1"], message: "enumProperty必须是item1", trigger: "blur"},
-        ],
-        enumNullableProperty: [
-            {type: "enum", enum: ["item1"], message: "enumNullableProperty必须是item1", trigger: "blur"},
-        ],
-        toOnePropertyId: [
-            {required: true, message: "toOneProperty不能为空", trigger: "blur"},
-        ],
-        toOneNullablePropertyId: [
-        ],
-        createdById: [
-            {required: true, message: "createdBy不能为空", trigger: "blur"},
-        ],
-    }
-})]
+)]
 """

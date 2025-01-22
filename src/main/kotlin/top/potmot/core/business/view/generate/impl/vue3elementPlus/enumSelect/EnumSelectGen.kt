@@ -17,62 +17,62 @@ import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 
-fun enumSelectComponent(
-    enum: EnumBusiness,
-    nullable: Boolean,
-): Component {
-    val dir = enum.dir
-    val view = enum.components.view
-
-    val modelValue = "modelValue"
-    val options = enum.constants
-    val option = "option"
-
-    val selectElement = ElementPlusComponents.select(
-        comment = enum.comment,
-        clearable = nullable,
-        valueOnClear = if (nullable) "undefined" else null,
-        content = listOf(
-            ElementPlusComponents.options(
-                options = options,
-                option = option,
-                value = { option },
-                label = { null },
-                content = listOf(
-                    TagElement(
-                        view,
-                        props = listOf(PropBind("value", option))
-                    )
-                )
-            ),
-            slotTemplate(
-                "label", content = listOf(
-                    TagElement(
-                        view,
-                        props = listOf(PropBind("value", modelValue)),
-                        directives = listOfNotNull(if (nullable) VIf(modelValue) else null)
-                    ),
-                )
-            ),
-        )
-    )
-
-    return Component(
-        imports = listOf(
-            Import(enumPath, options),
-            ImportType(enumPath, enum.name),
-            ImportDefault("$componentPath/$dir/$view.vue", view)
-        ),
-        models = listOf(
-            ModelProp(modelValue, if (nullable) "${enum.name} | undefined" else enum.name)
-        ),
-        template = listOf(
-            selectElement
-        )
-    )
-}
-
 interface EnumSelectGen: Generator {
+    fun enumSelectComponent(
+        enum: EnumBusiness,
+        nullable: Boolean,
+    ): Component {
+        val dir = enum.dir
+        val view = enum.components.view
+
+        val modelValue = "modelValue"
+        val options = enum.constants
+        val option = "option"
+
+        val selectElement = ElementPlusComponents.select(
+            comment = enum.comment,
+            clearable = nullable,
+            valueOnClear = if (nullable) "undefined" else null,
+            content = listOf(
+                ElementPlusComponents.options(
+                    options = options,
+                    option = option,
+                    value = { option },
+                    label = { null },
+                    content = listOf(
+                        TagElement(
+                            view,
+                            props = listOf(PropBind("value", option))
+                        )
+                    )
+                ),
+                slotTemplate(
+                    "label", content = listOf(
+                        TagElement(
+                            view,
+                            props = listOf(PropBind("value", modelValue)),
+                            directives = listOfNotNull(if (nullable) VIf(modelValue) else null)
+                        ),
+                    )
+                ),
+            )
+        )
+
+        return Component(
+            imports = listOf(
+                Import(enumPath, options),
+                ImportType(enumPath, enum.name),
+                ImportDefault("$componentPath/$dir/$view.vue", view)
+            ),
+            models = listOf(
+                ModelProp(modelValue, if (nullable) "${enum.name} | undefined" else enum.name)
+            ),
+            template = listOf(
+                selectElement
+            )
+        )
+    }
+
     fun enumSelectFile(enum: EnumBusiness) = listOf(
         GenerateFile(
             enum,

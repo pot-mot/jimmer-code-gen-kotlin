@@ -34,7 +34,11 @@ data class GenerateFile(
     val tableEntities: List<TableEntityPair> = emptyList(),
     val enums: List<IdName> = emptyList(),
     val associations: List<IdName> = emptyList(),
-)
+) {
+    val name by lazy {
+        path.substringAfterLast("/")
+    }
+}
 
 data class GenerateResult(
     val files: List<GenerateFile>,

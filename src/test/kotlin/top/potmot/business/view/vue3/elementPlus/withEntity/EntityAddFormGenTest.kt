@@ -21,7 +21,7 @@ export type EntityAddFormType = {
     toOneNullablePropertyId: number | undefined
 }
             """.trimIndent(),
-            generator.addFormType(testEntityBusiness).trim()
+            generator.addFormFiles(testEntityBusiness).first { it.name == "EntityAddFormType.d.ts" }.content.trim()
         )
     }
 
@@ -40,7 +40,7 @@ export const createDefaultEntity = (): EntityAddFormType => {
     }
 }
             """.trimIndent(),
-            generator.addFormDefault(testEntityBusiness).trim()
+            generator.addFormFiles(testEntityBusiness).first { it.name == "createDefaultEntity.ts" }.content.trim()
         )
     }
 
@@ -70,7 +70,7 @@ export const useRules = (_: Ref<EntityAddFormType>): FormRules<EntityInsertInput
     }
 }
             """.trimIndent(),
-            generator.stringify(generator.addFormRules(testEntityBusiness)).trim()
+            generator.addFormFiles(testEntityBusiness).first { it.name == "EntityAddFormRules.ts" }.content.trim()
         )
     }
 
@@ -214,7 +214,7 @@ defineExpose<FormExpose>({
     </el-form>
 </template>
             """.trimIndent(),
-            generator.stringify(generator.addFormComponent(testEntityBusiness)).trim()
+            generator.addFormFiles(testEntityBusiness).first { it.name == "EntityAddForm.vue" }.content.trim()
         )
     }
 }

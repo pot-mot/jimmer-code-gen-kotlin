@@ -33,7 +33,7 @@ export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput
     }
 }
             """.trimIndent(),
-            generator.stringify(generator.editFormRules(testEntityBusiness)).trim()
+            generator.editFormFiles(testEntityBusiness).first { it.name == "EntityEditFormRules.ts" }.content.trim()
         )
     }
 
@@ -165,7 +165,7 @@ defineExpose<FormExpose>({
     </el-form>
 </template>
             """.trimIndent(),
-            generator.stringify(generator.editFormComponent(testEntityBusiness)).trim()
+            generator.editFormFiles(testEntityBusiness).first { it.name == "EntityEditForm.vue" }.content.trim()
         )
     }
 }

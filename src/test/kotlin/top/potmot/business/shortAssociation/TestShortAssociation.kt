@@ -289,7 +289,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             viewItems.filter { GenerateTag.Table in it.tags }[0].content.trim()
         )
 
-        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Rules !in it.tags }.forEach {
+        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Component in it.tags }.forEach {
             assert(it.content.contains("shortAssociationPropertyIdOptions"))
             assert(it.content.contains("ShortAssociationEntityIdSelect"))
         }
@@ -440,7 +440,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             viewItems.filter { GenerateTag.Table in it.tags }[0].content.trim()
         )
 
-        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Rules !in it.tags }.forEach {
+        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Component in it.tags }.forEach {
             assert(it.content.contains("shortAssociationPropertyIdOptions"))
             assert(it.content.contains("ShortAssociationEntityIdSelect"))
         }

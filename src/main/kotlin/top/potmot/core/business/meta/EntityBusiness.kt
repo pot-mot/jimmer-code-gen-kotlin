@@ -120,9 +120,9 @@ data class EntityBusiness(
 
     val apiServiceName = "${lowerName}Service"
 
-    val addFormDataType = "${name}AddFormType"
+    val addFormType = "${name}AddFormType"
 
-    val addFormCreateDefault = "createDefault${name}"
+    val addFormDefault = "createDefault${name}"
 
 
     val isSelfAssociated by lazy {

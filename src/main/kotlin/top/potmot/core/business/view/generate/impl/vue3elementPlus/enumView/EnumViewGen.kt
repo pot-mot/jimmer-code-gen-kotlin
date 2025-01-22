@@ -11,27 +11,27 @@ import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 
-fun enumViewComponent(enum: EnumBusiness): Component {
-    val items = enum.items.mapIndexed { index, it ->
-        val ifExpression = "value === '${it.name}'"
+interface EnumViewGen : Generator {
+    fun enumViewComponent(enum: EnumBusiness): Component {
+        val items = enum.items.mapIndexed { index, it ->
+            val ifExpression = "value === '${it.name}'"
 
-        ElementPlusComponents.text(it.comment).merge {
-            directives += VIf(expression = ifExpression, index != 0)
+            ElementPlusComponents.text(it.comment).merge {
+                directives += VIf(expression = ifExpression, index != 0)
+            }
         }
+
+        return Component(
+            imports = listOf(
+                ImportType(enumPath, enum.name),
+            ),
+            props = listOf(
+                Prop("value", enum.name)
+            ),
+            template = items
+        )
     }
 
-    return Component(
-        imports = listOf(
-            ImportType(enumPath, enum.name),
-        ),
-        props = listOf(
-            Prop("value", enum.name)
-        ),
-        template = items
-    )
-}
-
-interface EnumViewGen : Generator {
     fun enumViewFile(enum: EnumBusiness) =
         GenerateFile(
             enum,

@@ -4,9 +4,9 @@ import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.enumPath
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.formItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubValidateItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.cancelEvent
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.exposeValid
@@ -39,6 +39,8 @@ import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
 import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.utilPath
+import top.potmot.entity.dto.GenerateFile
+import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
 import top.potmot.utils.map.iterableMapOf
 import top.potmot.utils.string.buildScopeString
@@ -127,7 +129,7 @@ fun addForm(
 )
 
 interface AddFormGen : Generator, FormItem, AddFormType, AddFormDefault {
-    fun addFormType(entity: EntityBusiness): String {
+    private fun addFormType(entity: EntityBusiness): String {
         val enumImports = entity.enums.map {
             ImportType(enumPath, it.name)
         }
@@ -137,7 +139,7 @@ interface AddFormGen : Generator, FormItem, AddFormType, AddFormDefault {
 
             if (enumImports.isNotEmpty()) line()
 
-            line("export type ${entity.addFormDataType} = {")
+            line("export type ${entity.addFormType} = {")
             scope {
                 entity.addFormProperties.forEach {
                     line("${it.property.name}: ${it.addFormType}")
@@ -148,13 +150,13 @@ interface AddFormGen : Generator, FormItem, AddFormType, AddFormDefault {
     }
 
     @Throws(ModelException.DefaultItemNotFound::class)
-    fun addFormDefault(entity: EntityBusiness): String {
-        val type = entity.addFormDataType
+    private fun addFormDefault(entity: EntityBusiness): String {
+        val type = entity.addFormType
 
         return buildScopeString(indent) {
-            line("import type {$type} from \"./${entity.addFormDataType}\"")
+            line("import type {$type} from \"./${entity.addFormType}\"")
             line()
-            line("export const ${entity.addFormCreateDefault} = (): $type => {")
+            line("export const ${entity.addFormDefault} = (): $type => {")
             scope {
                 line("return {")
                 scope {
@@ -173,7 +175,7 @@ interface AddFormGen : Generator, FormItem, AddFormType, AddFormDefault {
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    fun addFormRules(entity: EntityBusiness): Rules {
+    private fun addFormRules(entity: EntityBusiness): Rules {
         val addFormRulesProperties = entity.addFormRulesProperties
         val rules = iterableMapOf(
             addFormRulesProperties.associateWith { it.rules },
@@ -182,15 +184,15 @@ interface AddFormGen : Generator, FormItem, AddFormType, AddFormDefault {
         return Rules(
             functionName = "useRules",
             formData = "formData",
-            formDataType = entity.addFormDataType,
-            formDataTypePath = componentPath + "/" + entity.dir + "/" + entity.addFormDataType,
+            formDataType = entity.addFormType,
+            formDataTypePath = componentPath + "/" + entity.dir + "/" + entity.addFormType,
             ruleDataType = entity.dto.insertInput,
             ruleDataTypePath = staticPath,
             propertyRules = rules
         )
     }
 
-    fun addFormComponent(entity: EntityBusiness): Component {
+    private fun addFormComponent(entity: EntityBusiness): Component {
         val formData = "formData"
 
         val nullableDiffProperties = entity.addFormEditNullableProperties
@@ -211,10 +213,10 @@ interface AddFormGen : Generator, FormItem, AddFormType, AddFormDefault {
         return addForm(
             submitType = entity.dto.insertInput,
             submitTypePath = staticPath,
-            dataType = entity.addFormDataType,
-            dataTypePath = componentPath + "/" + entity.dir + "/" + entity.addFormDataType,
-            createDefault = entity.addFormCreateDefault,
-            defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormCreateDefault,
+            dataType = entity.addFormType,
+            dataTypePath = componentPath + "/" + entity.dir + "/" + entity.addFormType,
+            createDefault = entity.addFormDefault,
+            defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormDefault,
             useRules = "useRules",
             useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.addFormRules,
             formData = formData,
@@ -229,4 +231,31 @@ interface AddFormGen : Generator, FormItem, AddFormType, AddFormDefault {
             }
         }
     }
+
+    fun addFormFiles(entity: EntityBusiness) = listOf(
+        GenerateFile(
+            entity,
+            "components/${entity.dir}/${entity.addFormType}.d.ts",
+            addFormType(entity),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.AddForm, GenerateTag.AddFormType),
+        ),
+        GenerateFile(
+            entity,
+            "components/${entity.dir}/${entity.addFormDefault}.ts",
+            addFormDefault(entity),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.AddForm, GenerateTag.AddFormDefault),
+        ),
+        GenerateFile(
+            entity,
+            "components/${entity.dir}/${entity.components.addForm}.vue",
+            stringify(addFormComponent(entity)),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.AddForm),
+        ),
+        GenerateFile(
+            entity,
+            "rules/${entity.dir}/${entity.rules.addFormRules}.ts",
+            stringify(addFormRules(entity)),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.AddFormRules, GenerateTag.AddForm),
+        )
+    )
 }

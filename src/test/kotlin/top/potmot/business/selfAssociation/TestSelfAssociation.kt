@@ -635,7 +635,19 @@ const handleSelectionChange = (
     fun `test selfAssociation addForm`() {
         assertEquals(
             """
-[(components/selfAssociationEntity/SelfAssociationEntityAddForm.vue, <script setup lang="ts">
+[(components/selfAssociationEntity/SelfAssociationEntityAddFormType.d.ts, export type SelfAssociationEntityAddFormType = {
+    label: string
+    parentId: number | undefined
+}
+), (components/selfAssociationEntity/createDefaultSelfAssociationEntity.ts, import type {SelfAssociationEntityAddFormType} from "./SelfAssociationEntityAddFormType"
+
+export const createDefaultSelfAssociationEntity = (): SelfAssociationEntityAddFormType => {
+    return {
+        label: "",
+        parentId: undefined,
+    }
+}
+), (components/selfAssociationEntity/SelfAssociationEntityAddForm.vue, <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"

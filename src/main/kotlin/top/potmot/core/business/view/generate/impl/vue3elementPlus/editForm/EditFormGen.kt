@@ -36,6 +36,8 @@ import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
 import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
+import top.potmot.entity.dto.GenerateFile
+import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
 import top.potmot.utils.map.iterableMapOf
 
@@ -123,7 +125,7 @@ interface EditFormGen : Generator, FormItem {
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    fun editFormRules(entity: EntityBusiness): Rules {
+    private fun editFormRules(entity: EntityBusiness): Rules {
         val editFormRulesProperties = entity.editFormRulesProperties
         val rules = iterableMapOf(
             editFormRulesProperties.associateWith { it.rules },
@@ -139,7 +141,7 @@ interface EditFormGen : Generator, FormItem {
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    fun editFormComponent(entity: EntityBusiness): Component {
+    private fun editFormComponent(entity: EntityBusiness): Component {
         val formData = "formData"
 
         return editForm(
@@ -161,4 +163,19 @@ interface EditFormGen : Generator, FormItem {
                 }
         )
     }
+
+    fun editFormFiles(entity: EntityBusiness) = listOf(
+        GenerateFile(
+            entity,
+            "components/${entity.dir}/${entity.components.editForm}.vue",
+            stringify(editFormComponent(entity)),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.EditForm),
+        ),
+        GenerateFile(
+            entity,
+            "rules/${entity.dir}/${entity.rules.editFormRules}.ts",
+            stringify(editFormRules(entity)),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditFormRules, GenerateTag.EditForm),
+        ),
+    )
 }
