@@ -1,10 +1,7 @@
 package top.potmot.entity.generate
 
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestMethodOrder
 import top.potmot.core.entity.generate.impl.java.JavaEntityCodeGenerator
 import top.potmot.core.entity.generate.impl.kotlin.KotlinEntityCodeGenerator
 import top.potmot.enumeration.TableType
@@ -14,12 +11,12 @@ import top.potmot.entity.property.OtherAnnotation
 import top.potmot.util.replaceSinceTimeComment
 import java.time.LocalDateTime
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
-@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
+@ActiveProfiles("test", "h2", "hide-sql")
 class GenerateOtherAnnotationTest {
     @Test
-    @Order(1)
     fun testJavaEntityGenerate() {
         assertEquals(
             javaExpected,
@@ -29,7 +26,6 @@ class GenerateOtherAnnotationTest {
     }
 
     @Test
-    @Order(2)
     fun testKotlinEntityGenerate() {
         assertEquals(
             kotlinExpected,
