@@ -2,7 +2,7 @@ package top.potmot.core.business.service.generate.impl.java
 
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.service.generate.ServiceGenerator
-import top.potmot.core.business.view.generate.builder.rules.existValidItems
+import top.potmot.core.business.view.generate.meta.rules.existValidItems
 import top.potmot.core.business.type.typeStrToJavaType
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.buildScopeString

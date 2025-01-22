@@ -6,7 +6,7 @@ import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyQueryType
-import top.potmot.core.business.view.generate.builder.rules.existValidItems
+import top.potmot.core.business.view.generate.meta.rules.existValidItems
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException

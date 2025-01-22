@@ -1,11 +1,10 @@
-package top.potmot.core.business.view.generate.builder.rules
+package top.potmot.core.business.view.generate.meta.rules
 
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.apiPath
-import top.potmot.core.business.view.generate.meta.rules.ExistValidRule
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.error.ModelException

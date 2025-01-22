@@ -5,18 +5,55 @@ import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.business.testEntityBusiness
 
-class EntityEditFormTest {
+class EntityAddFormGenTest {
     private val generator = Vue3ElementPlusViewGenerator
 
     @Test
-    fun `test editFormRules`() {
+    fun `test addFormType`() {
+        assertEquals(
+            """
+import type {Enum} from "@/api/__generated/model/enums"
+
+export type EntityAddFormType = {
+    enumProperty: Enum
+    enumNullableProperty: Enum | undefined
+    toOnePropertyId: number | undefined
+    toOneNullablePropertyId: number | undefined
+}
+            """.trimIndent(),
+            generator.addFormType(testEntityBusiness).trim()
+        )
+    }
+
+    @Test
+    fun `test addFormDefault`() {
+        assertEquals(
+            """
+import type {EntityAddFormType} from "./EntityAddFormType"
+
+export const createDefaultEntity = (): EntityAddFormType => {
+    return {
+        enumProperty: "item1",
+        enumNullableProperty: undefined,
+        toOnePropertyId: undefined,
+        toOneNullablePropertyId: undefined,
+    }
+}
+            """.trimIndent(),
+            generator.addFormDefault(testEntityBusiness).trim()
+        )
+    }
+
+    @Test
+    fun `test addFormRules`() {
         assertEquals(
             """
 import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
-import type {EntityUpdateInput} from "@/api/__generated/model/static"
+import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
+import type {EntityInsertInput} from "@/api/__generated/model/static"
 
-export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput> => {
+export const useRules = (_: Ref<EntityAddFormType>): FormRules<EntityInsertInput> => {
     return {
         enumProperty: [
             {required: true, message: "enumProperty不能为空", trigger: "blur"},
@@ -33,27 +70,26 @@ export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput
     }
 }
             """.trimIndent(),
-            generator.EditFormRules(testEntityBusiness).trim()
+            generator.stringify(generator.addFormRules(testEntityBusiness)).trim()
         )
     }
 
     @Test
-    fun `test editForm`() {
+    fun `test addForm`() {
         assertEquals(
             """
 <script setup lang="ts">
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
-import type {EntityUpdateInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
-import {useRules} from "@/rules/entity/EntityEditFormRules"
+import type {EntityInsertInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
+import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
+import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
+import {useRules} from "@/rules/entity/EntityAddFormRules"
 import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
 import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
-
-const formData = defineModel<EntityUpdateInput>({
-    required: true
-})
+import {sendMessage} from "@/utils/message"
 
 const props = withDefaults(defineProps<{
     withOperations?: boolean | undefined,
@@ -68,7 +104,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "submit",
-        formData: EntityUpdateInput
+        formData: EntityInsertInput
     ): void,
     (event: "cancel"): void
 }>()
@@ -80,12 +116,25 @@ defineSlots<{
     }): any
 }>()
 
+const formData = ref<EntityAddFormType>(createDefaultEntity())
+
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
-    return await formRef.value?.validate().catch(() => false) ?? false
+    const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
+
+    if (formValid) {
+        if (formData.value.toOnePropertyId === undefined) {
+            sendMessage("toOneProperty不可为空", "warning")
+            return false
+        }
+
+        return true
+    } else {
+        return false
+    }
 }
 
 // 提交
@@ -94,7 +143,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", formData.value as EntityInsertInput)
     }
 }
 
@@ -165,7 +214,7 @@ defineExpose<FormExpose>({
     </el-form>
 </template>
             """.trimIndent(),
-            generator.stringify(generator.EditForm(testEntityBusiness)).trim()
+            generator.stringify(generator.addFormComponent(testEntityBusiness)).trim()
         )
     }
 }

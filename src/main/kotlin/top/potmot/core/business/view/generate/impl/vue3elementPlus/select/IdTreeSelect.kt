@@ -2,6 +2,7 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
 
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.type.typeStrToTypeScriptType
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.treeSelect
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
@@ -25,7 +26,7 @@ interface IdTreeSelect : IdSelect {
         val options = "options"
         val excludeIds = "excludeIds"
 
-        val modelValueType = createModelValueType(
+        val modelValueType = modelValueType(
             modelValue, multiple, idType
         )
 
@@ -83,7 +84,7 @@ interface IdTreeSelect : IdSelect {
             """.trimIndent()
         )
 
-        val keepModelValueLegal = createKeepModelValueLegal(
+        val keepModelValueLegal = keepModelValueLegal(
             modelValue, multiple, options, idName, idType
         )
 

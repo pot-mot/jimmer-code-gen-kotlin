@@ -626,7 +626,7 @@ const handleSelectionChange = (
 )]
             """.trimBlankLine(),
             Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
-                .filter { GenerateTag.Table in it.tags }
+                .filter { GenerateTag.ViewTable in it.tags }
                 .map { it.path to it.content }.toString()
         )
     }

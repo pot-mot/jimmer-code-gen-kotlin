@@ -1,21 +1,9 @@
-package top.potmot.core.business.view.generate.builder.rules
+package top.potmot.core.business.view.generate.meta.rules
 
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.TypeEntityProperty
-import top.potmot.core.business.view.generate.meta.rules.ArrayRule
-import top.potmot.core.business.view.generate.meta.rules.BooleanRule
-import top.potmot.core.business.view.generate.meta.rules.DateRule
-import top.potmot.core.business.view.generate.meta.rules.EnumRule
-import top.potmot.core.business.view.generate.meta.rules.IntRule
-import top.potmot.core.business.view.generate.meta.rules.IntSizeRule
-import top.potmot.core.business.view.generate.meta.rules.NumberRule
-import top.potmot.core.business.view.generate.meta.rules.NumberSizeRule
-import top.potmot.core.business.view.generate.meta.rules.PatternRule
-import top.potmot.core.business.view.generate.meta.rules.RequiredRule
-import top.potmot.core.business.view.generate.meta.rules.Rule
-import top.potmot.core.business.view.generate.meta.rules.StringLengthRule
 
 val PropertyBusiness.rules: List<Rule>
     get() {

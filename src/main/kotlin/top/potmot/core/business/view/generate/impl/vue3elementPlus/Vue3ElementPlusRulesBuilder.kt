@@ -1,38 +1,43 @@
-package top.potmot.core.business.view.generate.builder.rules
+package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EnumProperty
-import top.potmot.core.business.meta.PropertyBusiness
-import top.potmot.core.business.view.generate.builder.typescript.TypeScriptBuilder
+import top.potmot.core.business.view.generate.builder.rules.RulesBuilder
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.meta.rules.ExistValidRule
-import top.potmot.core.business.view.generate.meta.rules.Rule
+import top.potmot.core.business.view.generate.meta.rules.Rules
+import top.potmot.core.business.view.generate.meta.rules.existValidRuleImport
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Function
 import top.potmot.core.business.view.generate.meta.typescript.FunctionArg
-import top.potmot.core.business.view.generate.meta.typescript.ImportItem
+import top.potmot.core.business.view.generate.meta.typescript.TsImport
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
-import top.potmot.core.business.view.generate.staticPath
+import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.error.ModelException
 import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.trimBlankLine
 
-class Vue3ElementPlusRuleBuilder(
-    override val indent: String = "    ",
-    override val wrapThreshold: Int = 40,
-) : TypeScriptBuilder {
+class Vue3ElementPlusRulesBuilder(
+    val indent: String,
+    val wrapThreshold: Int,
+) : RulesBuilder {
     @Throws(ModelException.IdPropertyNotFound::class)
-    fun createFormRules(
-        functionName: String,
-        formData: String,
-        formDataType: String,
-        formDataTypePath: String = staticPath,
-        ruleDataType: String = formDataType,
-        ruleDataTypePath: String = formDataTypePath,
-        propertyRules: Map<PropertyBusiness, Iterable<Rule>>,
-        isArray: Boolean = false,
-    ): String {
-        val imports = mutableListOf<ImportItem>(
+    override fun build(rules: Rules): String {
+        val (
+            functionName,
+
+            isPlural,
+            formData,
+            formDataType,
+            formDataTypePath,
+
+            ruleDataType,
+            ruleDataTypePath,
+
+            propertyRules,
+        ) = rules
+
+        val imports = mutableListOf<TsImport>(
             ImportType("vue", "Ref"),
             ImportType("element-plus", "FormRules"),
             ImportType(formDataTypePath, formDataType),
@@ -78,24 +83,25 @@ class Vue3ElementPlusRuleBuilder(
 
         val withFormDataProp = body.contains(formData)
 
-        val codes = listOf(
+        val functionCode =
             Function(
                 name = functionName,
                 args = listOf(
                     FunctionArg(
                         name = if (withFormDataProp) formData else "_",
-                        type = "Ref<${if (isArray) "Array<${formDataType}>" else formDataType}>"
+                        type = "Ref<${if (isPlural) "Array<${formDataType}>" else formDataType}>"
                     ),
                 ),
                 returnType = "FormRules<${ruleDataType}>",
                 body = listOf(CodeBlock(body))
             )
-        ).stringifyCodes()
+                .stringify(indent, wrapThreshold)
 
-        return """
-${imports.stringifyImports().joinToString("\n")}
-
-export $codes
-        """.trimBlankLine()
+        return buildScopeString {
+            lines(imports.stringify(indent, wrapThreshold))
+            line()
+            append("export ")
+            append(functionCode)
+        }.trimBlankLine()
     }
 }

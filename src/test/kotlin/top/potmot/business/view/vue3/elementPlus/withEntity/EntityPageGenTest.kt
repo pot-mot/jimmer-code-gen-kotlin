@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.business.testEntityBusiness
 
-class EntityPageTest {
+class EntityPageGenTest {
     private val generator = Vue3ElementPlusViewGenerator
 
     @Test
@@ -280,7 +280,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
     </el-dialog>
 </template>
             """.trimIndent(),
-            generator.stringify(generator.Page(testEntityBusiness)).trim()
+            generator.stringify(generator.pageComponent(testEntityBusiness)).trim()
         )
     }
 }

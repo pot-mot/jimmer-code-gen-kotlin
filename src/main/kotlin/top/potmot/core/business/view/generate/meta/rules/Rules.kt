@@ -1,5 +1,7 @@
 package top.potmot.core.business.view.generate.meta.rules
 
+import top.potmot.core.business.meta.PropertyBusiness
+
 sealed interface Rule {
     fun stringify(): String
 
@@ -142,3 +144,17 @@ data class PatternRule(
 }
 
 abstract class ExistValidRule : Rule
+
+data class Rules(
+    val functionName: String,
+
+    val isPlural: Boolean = false,
+    val formData: String,
+    val formDataType: String,
+    val formDataTypePath: String,
+
+    val ruleDataType: String = formDataType,
+    val ruleDataTypePath: String = formDataTypePath,
+
+    val propertyRules: Map<PropertyBusiness, Iterable<Rule>>,
+)

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.business.testEntityBusiness
 
-class EntityEditTableTest {
+class EntityEditTableGenTest {
     private val index = "${'$'}index"
 
     private val generator = Vue3ElementPlusViewGenerator
@@ -35,7 +35,7 @@ export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpda
     }
 }
             """.trimIndent(),
-            generator.EditTableRules(testEntityBusiness).trim()
+            generator.stringify(generator.editTableRules(testEntityBusiness)).trim()
         )
     }
 
@@ -291,7 +291,7 @@ defineExpose<FormExpose>({
     </el-form>
 </template>
             """.trimIndent(),
-            generator.stringify(generator.EditTable(testEntityBusiness)).trim()
+            generator.stringify(generator.editTableComponent(testEntityBusiness)).trim()
         )
     }
 }

@@ -13,8 +13,9 @@ import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.emptyAssociationPath
-import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
+import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.enumeration.AssociationType
@@ -37,7 +38,7 @@ class FormItemTest : FormItem {
         entityId = 0,
     )
 
-    private val builder = Vue3ComponentBuilder()
+    private val builder = Vue3ElementPlusViewGenerator.componentBuilder
 
     private val GenEntityBusinessView.TargetOf_properties.mockEntityBusiness
         get() = EntityBusiness(
@@ -52,7 +53,7 @@ class FormItemTest : FormItem {
             var result: String
             builder.apply {
                 result =
-                    (it.imports.stringifyImports() + it.elements.stringifyElements()).joinToString("\n")
+                    (it.imports.stringify(builder.indent, builder.wrapThreshold) + it.elements.stringifyElements()).joinToString("\n")
             }
             result
         }
@@ -401,7 +402,7 @@ class FormItemTest : FormItem {
             var result: String
             builder.apply {
                 result =
-                    (it.imports.stringifyImports() + it.elements.stringifyElements()).joinToString("\n")
+                    (it.imports.stringify(builder.indent, builder.wrapThreshold) + it.elements.stringifyElements()).joinToString("\n")
             }
             result
         }
@@ -426,7 +427,7 @@ import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
             var result: String
             builder.apply {
                 result =
-                    (it.imports.stringifyImports() + it.elements.stringifyElements()).joinToString("\n")
+                    (it.imports.stringify(builder.indent, builder.wrapThreshold) + it.elements.stringifyElements()).joinToString("\n")
             }
             result
         }

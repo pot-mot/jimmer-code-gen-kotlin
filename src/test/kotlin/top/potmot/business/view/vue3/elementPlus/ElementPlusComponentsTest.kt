@@ -4,13 +4,33 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
-import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
-import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.col
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.datePicker
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.datePickerRange
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dateTimePicker
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dateTimePickerRange
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dialog
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.formItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.input
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.inputNumber
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.options
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.row
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.switch
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.table
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.tableColumn
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.text
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.timePicker
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.timePickerRange
 import top.potmot.core.business.view.generate.meta.vue3.TextElement
 import top.potmot.utils.string.trimBlankLine
 
-class ElementPlusTest : ElementPlus {
-    private val builder = Vue3ComponentBuilder()
+class ElementPlusComponentsTest {
+    private val builder = Vue3ElementPlusViewGenerator.componentBuilder
 
     @Test
     fun testInput() {
@@ -425,7 +445,7 @@ class ElementPlusTest : ElementPlus {
             )
         }
 
-        val elementWithType = text("Hello, World!", type = ElementPlus.Type.PRIMARY)
+        val elementWithType = text("Hello, World!", type = ElementPlusComponents.Type.PRIMARY)
         builder.apply {
             assertEquals(
                 """
@@ -520,7 +540,7 @@ class ElementPlusTest : ElementPlus {
             )
         }
 
-        val elementWithType = button(content = "Click Me", type = ElementPlus.Type.WARNING)
+        val elementWithType = button(content = "Click Me", type = ElementPlusComponents.Type.WARNING)
         builder.apply {
             assertEquals(
                 """
@@ -587,7 +607,7 @@ class ElementPlusTest : ElementPlus {
         val elementWithAllProps = button(
             content = "Click Me",
             disabled = true,
-            type = ElementPlus.Type.INFO,
+            type = ElementPlusComponents.Type.INFO,
             icon = "Search",
             plain = true,
             link = true,

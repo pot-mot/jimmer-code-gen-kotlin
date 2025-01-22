@@ -1,7 +1,9 @@
-package top.potmot.core.business.view.generate.builder.vue3
+package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
-import top.potmot.core.business.view.generate.builder.typescript.TypeScriptBuilder
+import top.potmot.core.business.view.generate.builder.component.ComponentBuilder
 import top.potmot.core.business.view.generate.meta.style.StyleClass
+import top.potmot.core.business.view.generate.meta.typescript.inlineOrWarpLines
+import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.Event
@@ -22,9 +24,9 @@ import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.clearBlankLine
 
 class Vue3ComponentBuilder(
-    override val indent: String = "    ",
-    override val wrapThreshold: Int = 40,
-) : TypeScriptBuilder {
+    val indent: String,
+    val wrapThreshold: Int,
+) : ComponentBuilder {
     fun Collection<ModelProp>.stringifyModels(currentIndent: String = indent): List<String> {
         val withName = size > 1
         val withNameIndent = if (withName) currentIndent else ""
@@ -71,7 +73,7 @@ class Vue3ComponentBuilder(
             val required = if (prop.required) "" else "?"
             val type = if (prop.required) prop.type else "${prop.type} | undefined"
             "${prop.name}$required: $type"
-        }.inlineOrWarpLines(currentWrapThreshold = wrapThreshold - "withDefaults(".length)
+        }.inlineOrWarpLines(indent, wrapThreshold - "withDefaults(".length)
 
         append(props)
 
@@ -106,9 +108,9 @@ class Vue3ComponentBuilder(
                             emit.args.map { it.name to it.type }
                     ).map {
                     "${it.first}: ${it.second}"
-                }.inlineOrWarpLines().replace("\n", "\n$currentIndent")
+                }.inlineOrWarpLines(indent, wrapThreshold).replace("\n", "\n$currentIndent")
             "(${args}): void"
-        }.inlineOrWarpLines()
+        }.inlineOrWarpLines(indent, wrapThreshold)
 
         return "defineEmits<{${emits}}>()"
     }
@@ -117,14 +119,14 @@ class Vue3ComponentBuilder(
         val slots = map { slot ->
             var props = slot.props.map { prop ->
                 "${prop.name}: ${prop.type}"
-            }.inlineOrWarpLines()
+            }.inlineOrWarpLines(indent, wrapThreshold)
 
             if (props.length > wrapThreshold) {
                 props = props.replace("\n", "\n$indent")
             }
 
             "${slot.name}(props: {${props}}): any"
-        }.inlineOrWarpLines()
+        }.inlineOrWarpLines(indent, wrapThreshold)
 
         return "defineSlots<{${slots}}>()"
     }
@@ -188,7 +190,7 @@ class Vue3ComponentBuilder(
                         val vIfExpressions = vIfDirections.map { it.expression }
                         firstVIfIndex?.let { index ->
                             val vIf = "v-${if (vIfDirections.any { it.isElse }) "else-if" else "if"}=\"" +
-                                    vIfExpressions.inlineOrWarpLines(" &&") +
+                                    vIfExpressions.inlineOrWarpLines(indent, wrapThreshold, " &&") +
                                     "\""
                             directives.add(index, vIf)
                         }
@@ -197,7 +199,7 @@ class Vue3ComponentBuilder(
                         val vShowExpressions = vIfDirections.map { it.expression }
                         firstVShowIndex?.let { index ->
                             val vShow = "v-show=\"" +
-                                    vShowExpressions.inlineOrWarpLines(" &&") +
+                                    vShowExpressions.inlineOrWarpLines(indent, wrapThreshold, " &&") +
                                     "\""
                             directives.add(index, vShow)
                         }
@@ -285,41 +287,41 @@ class Vue3ComponentBuilder(
             }
         }
 
-    fun build(vueComponentPart: Component) = buildString {
+    override fun build(component: Component) = buildString {
         appendLine("<script setup lang=\"ts\">")
 
         val scriptParts = mutableListOf<String>()
 
-        scriptParts += vueComponentPart.imports.stringifyImports().joinToString("\n")
+        scriptParts += component.imports.stringify(indent, wrapThreshold).joinToString("\n")
 
-        scriptParts += vueComponentPart.models.stringifyModels()
+        scriptParts += component.models.stringifyModels()
 
-        if (vueComponentPart.props.isNotEmpty()) {
-            val stringifyProps = vueComponentPart.props.stringifyProps()
+        if (component.props.isNotEmpty()) {
+            val stringifyProps = component.props.stringifyProps()
             scriptParts +=
-                if (stringifyProps.isNotEmpty() && vueComponentPart.needPropsDeclare()) {
+                if (stringifyProps.isNotEmpty() && component.needPropsDeclare()) {
                     "const props = $stringifyProps"
                 } else {
                     stringifyProps
                 }
         }
 
-        if (vueComponentPart.emits.isNotEmpty()) {
-            val stringifyEmits = vueComponentPart.emits.stringifyEmits()
+        if (component.emits.isNotEmpty()) {
+            val stringifyEmits = component.emits.stringifyEmits()
             scriptParts +=
-                if (stringifyEmits.isNotEmpty() && vueComponentPart.needEmitsDeclare()) {
+                if (stringifyEmits.isNotEmpty() && component.needEmitsDeclare()) {
                     "const emits = $stringifyEmits"
                 } else {
                     stringifyEmits
                 }
         }
 
-        if (vueComponentPart.slots.isNotEmpty()) {
-            scriptParts += vueComponentPart.slots.stringifySlots()
+        if (component.slots.isNotEmpty()) {
+            scriptParts += component.slots.stringifySlots()
         }
 
-        if (vueComponentPart.script.isNotEmpty()) {
-            scriptParts += vueComponentPart.script.stringifyCodes()
+        if (component.script.isNotEmpty()) {
+            scriptParts += component.script.stringify(indent, wrapThreshold)
         }
 
         for (scriptPart in scriptParts.join("")) {
@@ -330,16 +332,16 @@ class Vue3ComponentBuilder(
         appendLine()
         appendLine("<template>")
 
-        val stringifyElements = vueComponentPart.template.stringifyElements(indent)
+        val stringifyElements = component.template.stringifyElements(indent)
         appendBlock(stringifyElements)
 
         appendLine("</template>")
 
-        if (vueComponentPart.style.isNotEmpty()) {
+        if (component.style.isNotEmpty()) {
             appendLine()
             appendLine("<style scoped>")
 
-            val stringifyClasses = vueComponentPart.style.stringifyStyleClass()
+            val stringifyClasses = component.style.stringifyStyleClass()
             appendLine(stringifyClasses)
 
             appendLine("</style>")

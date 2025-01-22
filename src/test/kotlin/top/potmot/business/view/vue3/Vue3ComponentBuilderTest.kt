@@ -13,7 +13,8 @@ import top.potmot.core.business.view.generate.meta.style.StyleClass
 import top.potmot.core.business.view.generate.meta.typescript.Function
 import top.potmot.core.business.view.generate.meta.typescript.FunctionArg
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
-import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
+import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.core.business.view.generate.meta.vue3.Event
 import top.potmot.core.business.view.generate.meta.vue3.EventArg
@@ -30,10 +31,10 @@ import top.potmot.error.GenerateException
 import top.potmot.utils.string.trimBlankLine
 
 class Vue3ComponentBuilderTest {
-    private val builder = Vue3ComponentBuilder()
+    val builder = Vue3ElementPlusViewGenerator.componentBuilder
 
     @Test
-    fun `test stringifyImports with common and type only imports`() {
+    fun `test stringify with common and type only imports`() {
         val importItems = listOf(
             Import("path1", listOf("item1", "item2")),
             ImportType("path1", listOf("ItemType1", "ItemType2")),
@@ -46,22 +47,18 @@ class Vue3ComponentBuilderTest {
             "import defaultItem from \"path2\""
         )
 
-        builder.apply {
-            assertEquals(expected, importItems.stringifyImports())
-        }
+        assertEquals(expected, importItems.stringify(builder.indent, builder.wrapThreshold))
     }
 
     @Test
-    fun `test stringifyImports with multiple default imports for the same path should throw exception`() {
+    fun `test stringify with multiple default imports for the same path should throw exception`() {
         val importItems = listOf(
             ImportDefault("path1", "defaultItem1"),
             ImportDefault("path1", "defaultItem2")
         )
 
-        builder.apply {
-            assertThrows<GenerateException> {
-                importItems.stringifyImports()
-            }
+        assertThrows<GenerateException> {
+            importItems.stringify(builder.indent, builder.wrapThreshold)
         }
     }
 
@@ -160,7 +157,7 @@ defineSlots<{
         val codeBlocks = listOf(
             ConstVariable("const1", "string", "\"value1\""),
             LetVariable("let1", "number", "0"),
-            Function("func1", listOf(FunctionArg("arg1", "string")), listOf(CodeBlock("console.log(arg1)"))),
+            Function(name = "func1", args = listOf(FunctionArg("arg1", "string")), body = listOf(CodeBlock("console.log(arg1)"))),
             CodeBlock("console.log('Hello, World!')")
         )
 
@@ -174,7 +171,7 @@ console.log('Hello, World!')
            """.trimBlankLine()
 
         builder.apply {
-            assertEquals(expected, codeBlocks.stringifyCodes())
+            assertEquals(expected, codeBlocks.stringify(builder.indent, builder.wrapThreshold))
         }
     }
 

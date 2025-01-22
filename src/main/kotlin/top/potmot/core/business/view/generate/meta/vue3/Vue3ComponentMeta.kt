@@ -2,10 +2,10 @@ package top.potmot.core.business.view.generate.meta.vue3
 
 import top.potmot.core.business.view.generate.meta.style.StyleClass
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
-import top.potmot.core.business.view.generate.meta.typescript.CodeItem
+import top.potmot.core.business.view.generate.meta.typescript.TsCode
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
-import top.potmot.core.business.view.generate.meta.typescript.ImportItem
+import top.potmot.core.business.view.generate.meta.typescript.TsImport
 import top.potmot.core.business.view.generate.meta.typescript.LetVariable
 
 data class Prop(
@@ -221,7 +221,7 @@ fun slotTemplate(
     children = content
 )
 
-private fun CodeItem.getRefContextContent(): String =
+private fun TsCode.getRefContextContent(): String =
     when (this) {
         is CodeBlock -> content
         is Function -> body.joinToString("\n") {
@@ -251,12 +251,12 @@ private fun Element.getRefContextContent(): String =
     }
 
 data class Component(
-    val imports: Collection<ImportItem> = emptyList(),
+    val imports: Collection<TsImport> = emptyList(),
     val models: Collection<ModelProp> = emptyList(),
     val props: Collection<Prop> = emptyList(),
     val emits: Collection<Event> = emptyList(),
     val slots: Collection<Slot> = emptyList(),
-    val script: Collection<CodeItem> = emptyList(),
+    val script: Collection<TsCode> = emptyList(),
     val template: Iterable<Element> = emptyList(),
     val style: Collection<StyleClass> = emptyList(),
 
@@ -265,12 +265,12 @@ data class Component(
                 template.joinToString { it.getRefContextContent() }
 ) {
     class Builder(
-        var imports: MutableList<ImportItem> = mutableListOf(),
+        var imports: MutableList<TsImport> = mutableListOf(),
         var models: MutableList<ModelProp> = mutableListOf(),
         var props: MutableList<Prop> = mutableListOf(),
         var emits: MutableList<Event> = mutableListOf(),
         var slots: MutableList<Slot> = mutableListOf(),
-        var script: MutableList<CodeItem> = mutableListOf(),
+        var script: MutableList<TsCode> = mutableListOf(),
         var template: MutableList<Element> = mutableListOf(),
         var style: MutableList<StyleClass> = mutableListOf(),
     ) {

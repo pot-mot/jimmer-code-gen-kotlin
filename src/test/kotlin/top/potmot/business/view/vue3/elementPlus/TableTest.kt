@@ -2,12 +2,12 @@ package top.potmot.business.view.vue3.elementPlus
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.viewTable
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.viewTable.viewTable
 import top.potmot.core.business.view.generate.staticPath
 
 class TableTest {
-    private val builder = Vue3ComponentBuilder()
+    private val builder = Vue3ElementPlusViewGenerator.componentBuilder
 
     @Test
     fun `test base table`() {

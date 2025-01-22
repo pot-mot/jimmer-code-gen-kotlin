@@ -3,7 +3,9 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.type.typeStrToTypeScriptType
-import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.options
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
@@ -12,8 +14,8 @@ import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.staticPath
 
-interface IdSelect : ElementPlus {
-    fun createModelValueType(
+interface IdSelect : Generator {
+    fun modelValueType(
         modelValue: String,
         multiple: Boolean,
         idType: String,
@@ -23,7 +25,7 @@ interface IdSelect : ElementPlus {
         else
             "$idType | undefined"
 
-    fun createKeepModelValueLegal(
+    fun keepModelValueLegal(
         modelValue: String,
         multiple: Boolean,
         options: String,
@@ -100,10 +102,10 @@ interface IdSelect : ElementPlus {
         val options = "options"
         val option = "option"
 
-        val modelValueType = createModelValueType(
+        val modelValueType = modelValueType(
             modelValue, multiple, idType
         )
-        val keepModelValueLegal = createKeepModelValueLegal(
+        val keepModelValueLegal = keepModelValueLegal(
             modelValue, multiple, options, idName, idType
         )
 

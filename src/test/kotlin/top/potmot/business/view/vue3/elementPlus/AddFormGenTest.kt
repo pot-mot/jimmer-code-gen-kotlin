@@ -2,21 +2,26 @@ package top.potmot.business.view.vue3.elementPlus
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.editForm.EditForm
+import top.potmot.core.business.view.generate.componentPath
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.addForm.addForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubValidateItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
 
-class EditFormTest : EditForm {
-    private val builder = Vue3ComponentBuilder()
+class AddFormGenTest {
+    private val builder = Vue3ElementPlusViewGenerator.componentBuilder
 
     @Test
-    fun `test editForm`() {
-        val component = editForm(
-            "EntityUpdateInput",
+    fun `test addForm`() {
+        val component = addForm(
+            "EntityInsertInput",
             staticPath,
+            "EntityAddFormDataType",
+            "$componentPath/entity/EntityAddFormDataType",
+            "createDefaultEntityAddFormData",
+            "$componentPath/entity/createDefaultEntityAddFormData",
             "useRules",
             "$rulePath/entity",
             indent = "    ",
@@ -29,12 +34,10 @@ class EditFormTest : EditForm {
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
-import type {EntityUpdateInput} from "@/api/__generated/model/static"
+import type {EntityInsertInput} from "@/api/__generated/model/static"
+import type {EntityAddFormDataType} from "@/components/entity/EntityAddFormDataType"
+import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
-
-const formData = defineModel<EntityUpdateInput>({
-    required: true
-})
 
 const props = withDefaults(defineProps<{
     withOperations?: boolean | undefined,
@@ -47,7 +50,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "submit",
-        formData: EntityUpdateInput
+        formData: EntityInsertInput
     ): void,
     (event: "cancel"): void
 }>()
@@ -58,6 +61,8 @@ defineSlots<{
         handleCancel: () => void
     }): any
 }>()
+
+const formData = ref<EntityAddFormDataType>(createDefaultEntityAddFormData())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -73,7 +78,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", formData.value as EntityInsertInput)
     }
 }
 
@@ -122,10 +127,14 @@ defineExpose<FormExpose>({
     }
 
     @Test
-    fun `test editForm with validateItems`() {
-        val component = editForm(
-            "EntityUpdateInput",
+    fun `test addForm with validateItems`() {
+        val component = addForm(
+            "EntityInsertInput",
             staticPath,
+            "EntityAddFormDataType",
+            "$componentPath/entity/EntityAddFormDataType",
+            "createDefaultEntityAddFormData",
+            "$componentPath/entity/createDefaultEntityAddFormData",
             "useRules",
             "$rulePath/entity",
             indent = "    ",
@@ -142,12 +151,10 @@ defineExpose<FormExpose>({
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
-import type {EntityUpdateInput} from "@/api/__generated/model/static"
+import type {EntityInsertInput} from "@/api/__generated/model/static"
+import type {EntityAddFormDataType} from "@/components/entity/EntityAddFormDataType"
+import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
-
-const formData = defineModel<EntityUpdateInput>({
-    required: true
-})
 
 const props = withDefaults(defineProps<{
     withOperations?: boolean | undefined,
@@ -160,7 +167,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "submit",
-        formData: EntityUpdateInput
+        formData: EntityInsertInput
     ): void,
     (event: "cancel"): void
 }>()
@@ -171,6 +178,8 @@ defineSlots<{
         handleCancel: () => void
     }): any
 }>()
+
+const formData = ref<EntityAddFormDataType>(createDefaultEntityAddFormData())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -197,7 +206,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", formData.value as EntityInsertInput)
     }
 }
 
@@ -246,10 +255,14 @@ defineExpose<FormExpose>({
     }
 
     @Test
-    fun `test editForm with selectOptions`() {
-        val component = editForm(
-            "EntityUpdateInput",
+    fun `test addForm with selectOptions`() {
+        val component = addForm(
+            "EntityInsertInput",
             staticPath,
+            "EntityAddFormDataType",
+            "$componentPath/entity/EntityAddFormDataType",
+            "createDefaultEntityAddFormData",
+            "$componentPath/entity/createDefaultEntityAddFormData",
             "useRules",
             "$rulePath/entity",
             indent = "    ",
@@ -267,15 +280,13 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {
-    EntityUpdateInput,
+    EntityInsertInput,
     CustomerOptionView,
     TypeOptionView
 } from "@/api/__generated/model/static"
+import type {EntityAddFormDataType} from "@/components/entity/EntityAddFormDataType"
+import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
-
-const formData = defineModel<EntityUpdateInput>({
-    required: true
-})
 
 const props = withDefaults(defineProps<{
     withOperations?: boolean | undefined,
@@ -290,7 +301,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "submit",
-        formData: EntityUpdateInput
+        formData: EntityInsertInput
     ): void,
     (event: "cancel"): void
 }>()
@@ -301,6 +312,8 @@ defineSlots<{
         handleCancel: () => void
     }): any
 }>()
+
+const formData = ref<EntityAddFormDataType>(createDefaultEntityAddFormData())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -316,7 +329,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", formData.value as EntityInsertInput)
     }
 }
 

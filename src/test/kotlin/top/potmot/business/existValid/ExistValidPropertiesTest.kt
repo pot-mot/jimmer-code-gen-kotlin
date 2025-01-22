@@ -7,7 +7,7 @@ import top.potmot.business.enumNullableProperty
 import top.potmot.business.enumProperty
 import top.potmot.business.toOneNullableProperty
 import top.potmot.business.toOneProperty
-import top.potmot.core.business.view.generate.builder.rules.existValidItems
+import top.potmot.core.business.view.generate.meta.rules.existValidItems
 import top.potmot.error.ModelException
 
 class ExistValidPropertiesTest {

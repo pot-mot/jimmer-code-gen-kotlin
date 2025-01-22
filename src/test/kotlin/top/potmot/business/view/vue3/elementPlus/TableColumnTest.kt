@@ -9,14 +9,15 @@ import top.potmot.business.testEnumBusiness
 import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
-import top.potmot.core.business.view.generate.builder.vue3.Vue3ComponentBuilder
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
+import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
 class TableColumnTest : TableColumn {
-    private val builder = Vue3ComponentBuilder()
+    private val builder = Vue3ElementPlusViewGenerator.componentBuilder
 
     private val PropertyBusiness.result: String
         get() = tableColumnDataPairs(withDateTimeFormat = true)
@@ -24,7 +25,7 @@ class TableColumnTest : TableColumn {
             .joinToString("\n") {
                 buildString {
                     builder.apply {
-                        appendLines(it.imports.stringifyImports())
+                        appendLines(it.imports.stringify(builder.indent, builder.wrapThreshold))
                         appendBlock(
                             listOf(
                                 TagElement(

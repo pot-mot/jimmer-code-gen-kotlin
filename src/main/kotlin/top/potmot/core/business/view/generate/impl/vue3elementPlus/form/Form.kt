@@ -1,8 +1,8 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
-import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.componentPath
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.button
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.*
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
@@ -59,10 +59,10 @@ val operationsSlotElement = slotElement(
             "div",
             props = listOf(PropBind("class", "form-operations", isLiteral = true)),
             children = listOf(
-                button(content = "取消", type = ElementPlus.Type.WARNING).merge {
+                button(content = "取消", type = WARNING).merge {
                     events += cancelEventBind
                 },
-                button(content = "提交", type = ElementPlus.Type.PRIMARY).merge {
+                button(content = "提交", type = PRIMARY).merge {
                     props += PropBind("loading", submitLoading)
                     events += submitEventBind
                 },

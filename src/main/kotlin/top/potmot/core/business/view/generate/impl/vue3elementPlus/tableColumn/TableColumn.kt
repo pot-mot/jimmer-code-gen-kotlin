@@ -11,7 +11,7 @@ import top.potmot.core.business.meta.formType
 import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
-import top.potmot.core.business.view.generate.meta.typescript.ImportItem
+import top.potmot.core.business.view.generate.meta.typescript.TsImport
 import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
@@ -20,7 +20,7 @@ import top.potmot.entity.dto.GenEntityBusinessView
 
 data class TableColumnData(
     val elements: Collection<Element> = emptyList(),
-    val imports: Collection<ImportItem> = emptyList(),
+    val imports: Collection<TsImport> = emptyList(),
     val props: Collection<PropBind> = emptyList(),
 )
 

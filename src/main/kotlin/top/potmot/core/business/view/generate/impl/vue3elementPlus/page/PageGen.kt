@@ -3,11 +3,12 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.page
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.apiPath
-import top.potmot.core.business.view.generate.builder.vue3.elementPlus.ElementPlus
 import top.potmot.core.business.view.generate.componentPath
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.button
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.dialog
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.pagination
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dialog
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.pagination
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
@@ -32,14 +33,13 @@ import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.storePath
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.utils.list.join
+import top.potmot.utils.string.StringIndentScopeBuilder
 import top.potmot.utils.string.buildScopeString
 
 // FIXME 移动至 entity 内
 private const val queryByPage: Boolean = true
 
-interface Page {
-    val indent: String
-
+interface PageGen : Generator {
     private fun optionQueryCodes(
         comment: String,
         selectOption: SelectOption,
@@ -54,9 +54,11 @@ interface Page {
         ConstVariable(
             "set${selectOption.upperName}",
             null,
-            "withLoading(async () => {\n",
-            "${indent}${selectOption.name}.value = await api.${selectOption.apiServiceName}.listOptions({body: {}})\n",
-            "})",
+            buildScopeString(indent) {
+                line("withLoading(async () => {")
+                scope { line("${selectOption.name}.value = await api.${selectOption.apiServiceName}.listOptions({body: {}})") }
+                append("})")
+            }
         ),
         emptyLineCode,
         CodeBlock(
@@ -66,7 +68,17 @@ interface Page {
         )
     )
 
-    fun Page(entity: EntityBusiness): Component {
+    private fun functionBody(vararg body: String) = body.map { CodeBlock(it) }
+
+    private fun buildFunctionBody(indent: String, body: StringIndentScopeBuilder.() -> Unit) = listOf(
+        CodeBlock(
+            buildScopeString(indent) {
+                body()
+            }
+        )
+    )
+
+    fun pageComponent(entity: EntityBusiness): Component {
         val dir = entity.dir
         val (table, addForm, editForm, queryForm) = entity.components
         val (listView, treeView, _, insertInput, _, updateInput, spec) = entity.dto
@@ -292,7 +304,7 @@ interface Page {
                 Function(
                     name = "handleSelectionChange",
                     args = listOf(FunctionArg("newSelection", "Array<$dataType>")),
-                    content = arrayOf("selection.value = newSelection")
+                    body = functionBody("selection.value = newSelection")
                 ),
                 emptyLineCode
             )
@@ -307,14 +319,14 @@ interface Page {
                     emptyLineCode,
                     Function(
                         name = "startAdd",
-                        content = arrayOf("addDialogVisible.value = true")
+                        body = functionBody("addDialogVisible.value = true")
                     ),
                     emptyLineCode,
                     Function(
                         async = true,
                         name = "submitAdd",
                         args = listOf(FunctionArg("insertInput", insertInput)),
-                        buildScopeString(indent) {
+                        body = buildFunctionBody(indent) {
                             line("try {")
                             scope {
                                 line("await add${entity.name}(insertInput)")
@@ -333,7 +345,7 @@ interface Page {
                     emptyLineCode,
                     Function(
                         name = "cancelAdd",
-                        content = arrayOf("addDialogVisible.value = false")
+                        body = functionBody("addDialogVisible.value = false")
                     ),
                 )
             }
@@ -350,7 +362,7 @@ interface Page {
                         async = true,
                         name = "startEdit",
                         args = listOf(FunctionArg("id", idType)),
-                        buildScopeString {
+                        body = buildFunctionBody(indent) {
                             line("updateInput.value = await get${entity.name}ForUpdate(id)")
                             line("if (updateInput.value === undefined) {")
                             scope {
@@ -366,7 +378,7 @@ interface Page {
                         async = true,
                         name = "submitEdit",
                         args = listOf(FunctionArg("updateInput", "${entity.name}UpdateInput")),
-                        buildScopeString {
+                        body = buildFunctionBody(indent) {
                             line("try {")
                             scope {
                                 line("await edit${entity.name}(updateInput)")
@@ -400,7 +412,7 @@ interface Page {
                         async = true,
                         name = "handleDelete",
                         args = listOf(FunctionArg("ids", "Array<${idType}>")),
-                        buildScopeString {
+                        body = buildFunctionBody(indent) {
                             line("const result = await deleteConfirm('${entity.comment}')")
                             line("if (!result) return")
                             line()
@@ -453,7 +465,7 @@ interface Page {
                             children = listOfNotNull(
                                 if (!entity.canAdd) null else button(
                                     content = "新增",
-                                    type = ElementPlus.Type.PRIMARY,
+                                    type = ElementPlusComponents.Type.PRIMARY,
                                     icon = "Plus",
                                 ).merge {
                                     directives += VIf("userStore.permissions.includes('${permission.insert}')")
@@ -462,7 +474,7 @@ interface Page {
 
                                 if (!entity.canDelete) null else button(
                                     content = "删除",
-                                    type = ElementPlus.Type.DANGER,
+                                    type = ElementPlusComponents.Type.DANGER,
                                     icon = "Delete",
                                 ).merge {
                                     directives += VIf("userStore.permissions.includes('${permission.delete}')")
@@ -491,7 +503,7 @@ interface Page {
                                             content = listOfNotNull(
                                                 if (!entity.canEdit) null else button(
                                                     content = "编辑",
-                                                    type = ElementPlus.Type.WARNING,
+                                                    type = ElementPlusComponents.Type.WARNING,
                                                     icon = "EditPen",
                                                     link = true,
                                                 ).merge {
@@ -500,7 +512,7 @@ interface Page {
                                                 },
                                                 if (!entity.canDelete) null else button(
                                                     content = "删除",
-                                                    type = ElementPlus.Type.DANGER,
+                                                    type = ElementPlusComponents.Type.DANGER,
                                                     icon = "Delete",
                                                     link = true,
                                                 ).merge {
