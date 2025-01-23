@@ -44,27 +44,27 @@ data class LetVariable(
 }
 
 
-sealed interface ObjectPropertyValue
+sealed interface TsValue
 
-data class ObjectProperty(
+data class TsProperty(
     val name: String,
-    val value: ObjectPropertyValue,
+    val value: TsValue,
 )
 
-fun ObjectProperty(
+fun TsProperty(
     name: String,
     value: String,
-) = ObjectProperty(
-    name, RawPropertyValue(value)
+) = TsProperty(
+    name, TsRawValue(value)
 )
 
-data class RawPropertyValue(
+data class TsRawValue(
     val value: String
-): ObjectPropertyValue
+): TsValue
 
 data class TsObject(
-    val properties: Collection<ObjectProperty>
-): TsCode, ObjectPropertyValue {
+    val properties: Collection<TsProperty>
+): TsCode, TsValue {
     fun stringify(builder: StringIndentScopeBuilder) {
         builder.line("{")
         builder.scope {
@@ -73,14 +73,39 @@ data class TsObject(
                 builder.append(": ")
 
                 when (it.value) {
-                    is RawPropertyValue -> builder.append(it.value.value)
+                    is TsRawValue -> builder.append(it.value.value)
                     is TsObject -> it.value.stringify(builder)
+                    is TsArray -> it.value.stringify(builder)
                 }
 
                 builder.line(if (index != properties.size - 1) "," else "")
             }
         }
         builder.append("}")
+    }
+
+    fun stringify(indent: String) = buildScopeString(indent) {
+        stringify(this)
+    }
+}
+
+data class TsArray(
+    val items: Collection<TsValue>
+): TsCode, TsValue {
+    fun stringify(builder: StringIndentScopeBuilder) {
+        builder.line("[")
+        builder.scope {
+            items.forEachIndexed { index, it ->
+                when (it) {
+                    is TsRawValue -> builder.append(it.value)
+                    is TsObject -> it.stringify(builder)
+                    is TsArray -> it.stringify(builder)
+                }
+
+                builder.line(if (index != items.size - 1) "," else "")
+            }
+        }
+        builder.append("]")
     }
 
     fun stringify(indent: String) = buildScopeString(indent) {
@@ -130,6 +155,7 @@ fun Iterable<TsCode>.stringify(
         is ConstVariable -> item.stringify()
         is LetVariable -> item.stringify()
         is TsObject -> item.stringify(indent)
+        is TsArray -> item.stringify(indent)
         is Function -> item.stringify(indent, wrapThreshold)
         is CodeBlock -> item.content
     }

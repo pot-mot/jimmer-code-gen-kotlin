@@ -20,10 +20,10 @@ data class EnumBusiness(
     val constants = "${name}_CONSTANTS"
 
     val components by lazy {
-        EnumComponentNames(
-            view = "${enum.name}View",
-            select = "${enum.name}Select",
-            nullableSelect = "${enum.name}NullableSelect",
+        EnumComponentFiles(
+            view = NamePath("${enum.name}View", "vue", "components/${dir}"),
+            select = NamePath("${enum.name}Select", "vue", "components/${dir}"),
+            nullableSelect = NamePath("${enum.name}NullableSelect", "vue", "components/${dir}"),
         )
     }
 

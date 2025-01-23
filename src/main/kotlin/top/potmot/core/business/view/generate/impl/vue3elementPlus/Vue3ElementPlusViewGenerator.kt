@@ -1,17 +1,17 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
-import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.EnumBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.view.generate.ViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.addForm.AddFormGen
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.editForm.EditFormGen
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.editTable.EditTableGen
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.AddFormGen
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.EditFormGen
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.enumSelect.EnumSelectGen
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.enumView.EnumViewGen
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubFormGen
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.page.PageGen
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.QueryFormGen
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.select.IdSelectGen
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.viewTable.ViewTableGen
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.ViewTableGen
 import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.error.ModelException
@@ -25,7 +25,7 @@ object Vue3ElementPlusViewGenerator :
     QueryFormGen,
     AddFormGen,
     EditFormGen,
-    EditTableGen,
+    SubFormGen,
     PageGen {
     override val indent = "    "
 
@@ -50,7 +50,7 @@ object Vue3ElementPlusViewGenerator :
 
     @Throws(ModelException::class)
     override fun generateView(
-        entity: EntityBusiness,
+        entity: RootEntityBusiness
     ): List<GenerateFile> {
         val result = mutableListOf<GenerateFile>()
 
@@ -64,20 +64,22 @@ object Vue3ElementPlusViewGenerator :
             result += editFormFiles(entity)
         }
 
-        // TODO when long association
-        result += editTableFiles(entity)
+        if (entity.canAdd || entity.canEdit) {
+            result += deepSubFormFiles(entity)
+        }
 
         if (entity.canQuery) {
             result += queryFormFile(entity)
+        }
+
+        if (entity.canAdd || entity.canEdit || entity.canQuery) {
+            result += idSelectFiles(entity)
         }
 
         if (entity.hasPage) {
             result += pageFile(entity)
         }
 
-        // TODO when short association
-        result += idSelectFiles(entity)
-
-        return result
+        return result.distinct()
     }
 }

@@ -1,23 +1,10 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.editForm
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
-import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.formItem
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubValidateItem
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.cancelEvent
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.exposeValid
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.formExposeImport
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.handleCancel
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.handleSubmit
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.handleValidate
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.operationsSlot
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.operationsSlotElement
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.submitEvent
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.submitLoadingProp
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
 import top.potmot.core.business.view.generate.meta.rules.Rules
@@ -34,7 +21,6 @@ import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
-import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
@@ -125,7 +111,7 @@ interface EditFormGen : Generator, FormItem {
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    private fun editFormRules(entity: EntityBusiness): Rules {
+    private fun editFormRules(entity: RootEntityBusiness): Rules {
         val editFormRulesProperties = entity.editFormRulesProperties
         val rules = iterableMapOf(
             editFormRulesProperties.associateWith { it.rules },
@@ -141,7 +127,7 @@ interface EditFormGen : Generator, FormItem {
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun editFormComponent(entity: EntityBusiness): Component {
+    private fun editFormComponent(entity: RootEntityBusiness): Component {
         val formData = "formData"
 
         return editForm(
@@ -149,7 +135,7 @@ interface EditFormGen : Generator, FormItem {
             type = entity.dto.updateInput,
             typePath = staticPath,
             useRules = "useRules",
-            useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.editFormRules,
+            useRulesPath = "@/" + entity.rules.editFormRules.fullPathNoSuffix,
             indent = indent,
             selectOptions = entity.updateSelectProperties.selectOptions,
             content = entity.editFormProperties
@@ -164,18 +150,18 @@ interface EditFormGen : Generator, FormItem {
         )
     }
 
-    fun editFormFiles(entity: EntityBusiness) = listOf(
+    fun editFormFiles(entity: RootEntityBusiness) = listOf(
         GenerateFile(
             entity,
-            "components/${entity.dir}/${entity.components.editForm}.vue",
+            entity.components.editForm.fullPath,
             stringify(editFormComponent(entity)),
             listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.EditForm),
         ),
         GenerateFile(
             entity,
-            "rules/${entity.dir}/${entity.rules.editFormRules}.ts",
+            entity.rules.editFormRules.fullPath,
             stringify(editFormRules(entity)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditFormRules, GenerateTag.EditForm),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.FormRules, GenerateTag.EditForm),
         ),
     )
 }

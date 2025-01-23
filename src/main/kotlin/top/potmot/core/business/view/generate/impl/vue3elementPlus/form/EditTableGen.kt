@@ -1,29 +1,15 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.editTable
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
-import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.PropertyBusiness
-import top.potmot.core.business.view.generate.componentPath
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
+import top.potmot.core.business.meta.SubEntityBusiness
+import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.tableColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.*
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubValidateItem
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.cancelEvent
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.exposeValid
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.formExposeImport
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.handleCancel
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.handleSubmit
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.handleValidate
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.operationsSlot
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.operationsSlotElement
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.submitEvent
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.submitLoadingProp
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItem
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.operationsColumn
@@ -40,6 +26,7 @@ import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.typescript.commentLine
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
+import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
@@ -48,7 +35,6 @@ import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
-import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.storePath
 import top.potmot.core.business.view.generate.utilPath
@@ -56,6 +42,7 @@ import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
 import top.potmot.utils.map.iterableMapOf
+import top.potmot.utils.string.buildScopeString
 
 fun editTable(
     type: String,
@@ -230,13 +217,51 @@ fun editTable(
     )
 )
 
-interface EditTableGen : Generator, FormItem {
+interface EditTableGen : Generator, FormItem, FormType, FormDefault {
+    private fun editTableType(entity: SubEntityBusiness): String {
+        val enumImports = entity.enums.map {
+            ImportType(enumPath, it.name)
+        }
+
+        return buildScopeString(indent) {
+            lines(enumImports.stringify(indent, wrapThreshold))
+
+            if (enumImports.isNotEmpty()) line()
+
+            append("export type ${entity.components.editTableType.name} = ")
+            entity.subFormProperties
+                .formType { it.subFormProperties }
+                .stringify(this)
+            line()
+        }
+    }
+
+    @Throws(ModelException.DefaultItemNotFound::class)
+    private fun editTableDefault(entity: SubEntityBusiness): String {
+        val type = entity.components.editTableType.name
+        val createDefault = entity.components.subFormDefault.name
+
+        return buildScopeString(indent) {
+            line("import type {$type} from \"./${type}\"")
+            line()
+            line("export const $createDefault = (): $type => {")
+            scope {
+                append("return ")
+                entity.subFormProperties
+                    .formDefault { it.subFormProperties }
+                    .stringify(this)
+                line()
+            }
+            line("}")
+        }
+    }
+
     @Throws(
         ModelException.IdPropertyNotFound::class,
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    private fun editTableRules(entity: EntityBusiness): Rules {
+    private fun editTableRules(entity: SubEntityBusiness): Rules {
         val editTableRulesProperties = entity.subFormRulesProperties
         val rules = iterableMapOf(
             editTableRulesProperties.associateWith { it.rules },
@@ -253,17 +278,17 @@ interface EditTableGen : Generator, FormItem {
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun editTableComponent(entity: EntityBusiness): Component {
+    private fun editTableComponent(entity: SubEntityBusiness): Component {
         val rows = "rows"
 
         return editTable(
             formData = rows,
-            type = entity.addFormType,
+            type = entity.components.editTableType.name,
             typePath = staticPath,
             useRules = "useRules",
-            createDefault = entity.addFormDefault,
-            defaultPath = componentPath + "/" + entity.dir + "/" + entity.addFormDefault,
-            useRulesPath = rulePath + "/" + entity.dir + "/" + entity.rules.editTableRules,
+            createDefault = entity.components.subFormDefault.name,
+            defaultPath = "@/" + entity.components.subFormDefault.fullPathNoSuffix,
+            useRulesPath = "@/" + entity.rules.editTableRules.fullPathNoSuffix,
             indent = indent,
             idPropertyName = entity.idProperty.name,
             comment = entity.comment,
@@ -280,18 +305,30 @@ interface EditTableGen : Generator, FormItem {
         )
     }
 
-    fun editTableFiles(entity: EntityBusiness) = listOf(
+    fun editTableFiles(entity: SubEntityBusiness) = listOf(
         GenerateFile(
             entity,
-            "components/${entity.dir}/${entity.components.editTable}.vue",
-            Vue3ElementPlusViewGenerator.stringify(editTableComponent(entity)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.Table, GenerateTag.EditTable),
+            entity.components.editTableType.fullPath,
+            editTableType(entity),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.AddForm, GenerateTag.FormType),
         ),
         GenerateFile(
             entity,
-            "rules/${entity.dir}/${entity.rules.editTableRules}.ts",
+            entity.components.subFormDefault.fullPath,
+            editTableDefault(entity),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.AddForm, GenerateTag.FormDefault),
+        ),
+        GenerateFile(
+            entity,
+            entity.components.editTable.fullPath,
+            stringify(editTableComponent(entity)),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.EditTable),
+        ),
+        GenerateFile(
+            entity,
+            entity.rules.editTableRules.fullPath,
             stringify(editTableRules(entity)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.EditTableRules, GenerateTag.EditTable),
+            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.FormRules, GenerateTag.EditTable),
         )
     )
 }

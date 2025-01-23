@@ -1,6 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
 
-import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.treeSelect
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
@@ -15,7 +15,7 @@ import top.potmot.error.ModelException
 
 interface IdTreeSelect : IdSelect {
     @Throws(ModelException.TreeEntityCannotFoundParentProperty::class)
-    fun createIdTreeSelect(entity: EntityBusiness, multiple: Boolean): Component {
+    fun createIdTreeSelect(entity: SubEntityBusiness, multiple: Boolean): Component {
         val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)

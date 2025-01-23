@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.context.useContext
 import top.potmot.core.business.dto.generate.DtoGenerator.generateDto
 import top.potmot.core.business.permission.generate.PermissionGenerator
-import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.EnumBusiness
-import top.potmot.core.business.meta.emptyAssociationPath
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.route.generate.DynamicRouteGenerator
 import top.potmot.core.business.service.generate.getServiceGenerator
 import top.potmot.entity.dto.toFlat
@@ -93,7 +92,7 @@ class GenerateService(
                     where(table.table.type ne TableType.SUPER_TABLE)
                 }.map { it.toFlat() }
                 val entityBusinessIdMap = entityBusinessViews.associateBy { it.id }
-                entityBusinessViews.map { EntityBusiness(emptyAssociationPath, it, entityBusinessIdMap, enumBusinessIdMap) }
+                entityBusinessViews.map { RootEntityBusiness(it, entityBusinessIdMap, enumBusinessIdMap) }
             }
 
             val typeSet = types.toSet()

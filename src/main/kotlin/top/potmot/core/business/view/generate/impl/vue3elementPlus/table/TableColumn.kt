@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.table
 
 import top.potmot.config.tableColumnWithDateTimeFormat
 import top.potmot.core.business.meta.AssociationProperty
@@ -8,7 +8,6 @@ import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.TypeEntityProperty
 import top.potmot.core.business.meta.formType
-import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.typescript.TsImport
@@ -118,13 +117,13 @@ interface TableColumn {
                 }
             }
         } else if (this is EnumProperty) {
-            val componentName = enum.components.view
+            val component = enum.components.view
 
             listOf(
                 TableColumnPropertyKey(this) to TableColumnData(
                     elements = listOf(
                         TagElement(
-                            componentName,
+                            component.name,
                             props = listOf(
                                 PropBind("value", "scope.row.$name")
                             )
@@ -132,8 +131,8 @@ interface TableColumn {
                     ),
                     imports = listOf(
                         ImportDefault(
-                            componentPath + "/" + enum.dir + "/" + componentName + ".vue",
-                            componentName,
+                            "@/" + component.fullPath,
+                            component.name,
                         )
                     )
                 )

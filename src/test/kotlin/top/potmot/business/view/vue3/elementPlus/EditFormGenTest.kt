@@ -3,10 +3,9 @@ package top.potmot.business.view.vue3.elementPlus
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.editForm.editForm
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubValidateItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
-import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
 
 class EditFormGenTest {
@@ -18,7 +17,7 @@ class EditFormGenTest {
             "EntityUpdateInput",
             staticPath,
             "useRules",
-            "$rulePath/entity",
+            "@/rules/entity",
             indent = "    ",
             content = mapOf()
         )
@@ -127,7 +126,7 @@ defineExpose<FormExpose>({
             "EntityUpdateInput",
             staticPath,
             "useRules",
-            "$rulePath/entity",
+            "@/rules/entity",
             indent = "    ",
             content = mapOf(),
             subValidateItems = listOf(
@@ -251,7 +250,7 @@ defineExpose<FormExpose>({
             "EntityUpdateInput",
             staticPath,
             "useRules",
-            "$rulePath/entity",
+            "@/rules/entity",
             indent = "    ",
             content = mapOf(),
             selectOptions = listOf(

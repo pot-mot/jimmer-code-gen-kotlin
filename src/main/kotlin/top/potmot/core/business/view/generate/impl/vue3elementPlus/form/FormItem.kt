@@ -1,10 +1,10 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
+import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.TypeEntityProperty
-import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.datePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dateTimePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.input
@@ -13,6 +13,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.switch
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.timePicker
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
@@ -32,41 +33,64 @@ interface FormItem {
         return when (this) {
             is TypeEntityProperty -> {
                 val components = typeEntityBusiness.components
-                val dir = typeEntityBusiness.dir
-                val componentName = if (listType) components.idMultiSelect else components.idSelect
-                FormItemData(
-                    elements = listOf(
-                        TagElement(
-                            componentName,
-                            directives = listOf(VModel(modelValue)),
-                            props = listOfNotNull(
-                                PropBind("options", "${name}Options"),
-                                if (excludeSelf && typeEntity.id == entityId && idName != null)
-                                    PropBind("exclude-ids", "[${formData}.${idName}]")
-                                else
-                                    null,
-                                disabled.toPropBind("disabled"),
-                            ),
-                        )
-                    ),
-                    imports = listOf(
-                        ImportDefault(
-                            "$componentPath/$dir/$componentName.vue",
-                            componentName,
+
+                if (this is AssociationProperty && isLongAssociation) {
+                    val component = if (listType) components.editTable else components.subForm
+                    val selectOptions = typeEntityBusiness.subFormSelectProperties.selectOptions
+                    FormItemData(
+                        elements = listOf(
+                            TagElement(
+                                component.name,
+                                directives = listOf(VModel(modelValue)),
+                                props = listOfNotNull(
+                                    disabled.toPropBind("disabled"),
+                                ) + selectOptions.map {
+                                    PropBind(it.name, it.name)
+                                },
+                            )
+                        ),
+                        imports = listOf(
+                            ImportDefault(
+                                "@/" + component.fullPath,
+                                component.name,
+                            )
                         )
                     )
-                )
+                } else {
+                    val component = if (listType) components.idMultiSelect else components.idSelect
+                    FormItemData(
+                        elements = listOf(
+                            TagElement(
+                                component.name,
+                                directives = listOf(VModel(modelValue)),
+                                props = listOfNotNull(
+                                    PropBind("options", "${name}Options"),
+                                    if (excludeSelf && typeEntity.id == entityId && idName != null)
+                                        PropBind("exclude-ids", "[${formData}.${idName}]")
+                                    else
+                                        null,
+                                    disabled.toPropBind("disabled"),
+                                ),
+                            )
+                        ),
+                        imports = listOf(
+                            ImportDefault(
+                                "@/" + component.fullPath,
+                                component.name,
+                            )
+                        )
+                    )
+                }
             }
 
             is EnumProperty -> {
                 val components = enum.components
-                val dir = enum.dir
-                val componentName = if (typeNotNull) components.select else components.nullableSelect
+                val component = if (typeNotNull) components.select else components.nullableSelect
 
                 FormItemData(
                     elements = listOf(
                         TagElement(
-                            componentName,
+                            component.name,
                             directives = listOf(VModel(modelValue)),
                             props = listOfNotNull(
                                 disabled.toPropBind("disabled")
@@ -75,8 +99,8 @@ interface FormItem {
                     ),
                     imports = listOf(
                         ImportDefault(
-                            "$componentPath/$dir/$componentName.vue",
-                            componentName,
+                            "@/" + component.fullPath,
+                            component.name,
                         )
                     )
                 )

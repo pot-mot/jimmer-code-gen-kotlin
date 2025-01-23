@@ -114,7 +114,7 @@ export const createDefaultEntity = (): EntityAddFormType => {
         enumNullableProperty: undefined,
         toOnePropertyId: undefined,
         toOneNullablePropertyId: undefined,
-        createdById: undefined,
+        createdById: undefined
     }
 }
 ), (components/entity/EntityAddForm.vue, <script setup lang="ts">

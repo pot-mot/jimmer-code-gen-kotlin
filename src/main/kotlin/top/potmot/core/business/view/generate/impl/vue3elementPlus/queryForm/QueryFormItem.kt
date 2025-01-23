@@ -1,11 +1,10 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm
 
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.PropertyQueryType
 import top.potmot.core.business.meta.TypeEntityProperty
-import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.datePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dateTimePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.input
@@ -13,7 +12,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.option
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.timePickerRange
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormItemData
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
@@ -50,12 +49,11 @@ interface QueryFormItem {
         return when (this) {
             is TypeEntityProperty -> {
                 val components = typeEntityBusiness.components
-                val dir = typeEntityBusiness.dir
-                val componentName = if (listType) components.idMultiSelect else components.idSelect
+                val component = if (listType) components.idMultiSelect else components.idSelect
                 FormItemData(
                     elements = listOf(
                         TagElement(
-                            componentName,
+                            component.name,
                             directives = listOf(VModel(modelValue)),
                             props = listOf(
                                 PropBind("options", "${name}Options"),
@@ -64,28 +62,27 @@ interface QueryFormItem {
                     ),
                     imports = listOf(
                         ImportDefault(
-                            "$componentPath/$dir/$componentName.vue",
-                            componentName,
+                            "@/${component.fullPath}",
+                            component.name,
                         )
                     )
                 )
             }
 
             is EnumProperty -> {
-                val dir = enum.dir
-                val componentName = enum.components.nullableSelect
+                val component = enum.components.nullableSelect
 
                 FormItemData(
                     elements = listOf(
                         TagElement(
-                            componentName,
+                            component.name,
                             directives = listOf(VModel(modelValue)),
                         )
                     ),
                     imports = listOf(
                         ImportDefault(
-                            "$componentPath/$dir/$componentName.vue",
-                            componentName,
+                            "@/${component.fullPath}",
+                            component.name,
                         )
                     )
                 )

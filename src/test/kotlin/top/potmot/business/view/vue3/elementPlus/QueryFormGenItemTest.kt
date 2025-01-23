@@ -10,11 +10,11 @@ import top.potmot.business.testEnum
 import top.potmot.business.testEnumBusiness
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
-import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.EnumProperty
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.meta.emptyAssociationPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.QueryFormItem
 import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
@@ -39,11 +39,10 @@ class QueryFormGenItemTest : QueryFormItem {
     private val builder = Vue3ElementPlusViewGenerator.componentBuilder
 
     private val GenEntityBusinessView.TargetOf_properties.mockEntityBusiness
-        get() = EntityBusiness(
-            path = emptyAssociationPath,
+        get() = RootEntityBusiness(
             entity = baseEntity.copy(properties = listOf(this)),
             entityIdMap = mapOf(baseEntity.id to baseEntity),
-            enumIdMap = emptyMap(),
+            enumIdMap = enumIdMap,
         )
 
     private val GenEntityBusinessView.TargetOf_properties.result: String
@@ -293,7 +292,7 @@ const nameRange = computed<[string | undefined, string | undefined]>({
     }
 
     private val GenEntityBusinessView.TargetOf_properties.enumResult: String
-        get() = EnumProperty(mockEntityBusiness.copy(enumIdMap = enumIdMap), this, testEnumBusiness).createQueryFormItem(spec).let {
+        get() = EnumProperty(mockEntityBusiness, this, testEnumBusiness).createQueryFormItem(spec).let {
             var result: String
             builder.apply {
                 result =

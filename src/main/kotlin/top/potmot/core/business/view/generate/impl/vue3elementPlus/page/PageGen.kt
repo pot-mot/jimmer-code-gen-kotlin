@@ -1,15 +1,13 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.page
 
-import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.apiPath
-import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dialog
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.pagination
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
@@ -81,9 +79,8 @@ interface PageGen : Generator {
         )
     )
 
-    private fun pageComponent(entity: EntityBusiness): Component {
-        val dir = entity.dir
-        val (table, addForm, editForm, queryForm) = entity.components
+    private fun pageComponent(entity: RootEntityBusiness): Component {
+        val (table, addForm, _, _, editForm, queryForm) = entity.components
         val (listView, treeView, _, insertInput, _, updateInput, spec) = entity.dto
         val permission = entity.permissions
 
@@ -147,7 +144,7 @@ interface PageGen : Generator {
                 if (!entity.canEdit) null else editForm,
                 if (!entity.canQuery) null else queryForm
             ).map {
-                ImportDefault("$componentPath/$dir/$it.vue", it)
+                ImportDefault("@/${it.fullPath}", it.name)
             }
 
             imports += optionQueries.flatMap { it.first }
@@ -445,7 +442,7 @@ interface PageGen : Generator {
                     children = listOf(
                         *if (!entity.canQuery) emptyArray() else arrayOf(
                             TagElement(
-                                queryForm,
+                                queryForm.name,
                                 directives = listOf(
                                     VModel(if (queryByPage) "queryInfo.spec" else "spec")
                                 ),
@@ -492,7 +489,7 @@ interface PageGen : Generator {
                             directives = listOf(VIf(if (queryByPage) "pageData" else "rows")),
                             children = listOf(
                                 TagElement(
-                                    table,
+                                    table.name,
                                     props = listOf(
                                         PropBind("rows", if (queryByPage) "pageData.rows" else "rows"),
                                     ),
@@ -543,7 +540,7 @@ interface PageGen : Generator {
                         modelValue = "addDialogVisible",
                         content = listOf(
                             TagElement(
-                                addForm
+                                addForm.name
                             ).merge {
                                 props += insertSelectNames.map { PropBind(it, it) }
                                 props += PropBind("submitLoading", "isLoading")
@@ -562,7 +559,7 @@ interface PageGen : Generator {
                         modelValue = "editDialogVisible",
                         content = listOf(
                             TagElement(
-                                editForm
+                                editForm.name
                             ).merge {
                                 directives += VIf("updateInput !== undefined")
                                 directives += VModel("updateInput")
@@ -583,10 +580,10 @@ interface PageGen : Generator {
         return component
     }
 
-    fun pageFile(entity: EntityBusiness) = GenerateFile(
+    fun pageFile(entity: RootEntityBusiness) = GenerateFile(
         entity,
-        "pages/${entity.dir}/${entity.components.page}.vue",
-        Vue3ElementPlusViewGenerator.stringify(pageComponent(entity)),
+        entity.components.page.fullPath,
+        stringify(pageComponent(entity)),
         listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Page),
     )
 }

@@ -10,7 +10,7 @@ import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.TableColumn
 import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.utils.string.appendBlock

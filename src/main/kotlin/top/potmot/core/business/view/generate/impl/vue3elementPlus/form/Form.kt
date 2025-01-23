@@ -1,6 +1,5 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
-import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.*
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
@@ -20,7 +19,7 @@ import top.potmot.utils.string.buildScopeString
 
 private const val formExposeType = "FormExpose"
 
-private const val formExposePath = "$componentPath/form/$formExposeType"
+private const val formExposePath = "@/components/form/$formExposeType"
 
 val formExposeImport = ImportType(formExposePath, formExposeType)
 

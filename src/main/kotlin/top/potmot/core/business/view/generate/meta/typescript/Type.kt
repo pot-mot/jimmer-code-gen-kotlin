@@ -10,35 +10,34 @@ data class TsTypeProperty(
     val type: TsType,
 )
 
-data class RawType(
+data class TsRawType(
     val value: String
 ): TsType
 
 fun TsTypeProperty(
     name: String, type: String
 ) = TsTypeProperty(
-    name, RawType(type)
+    name, TsRawType(type)
 )
 
-data class ComplexType(
-    val properties: Collection<TsTypeProperty>,
+data class TsWithGenericType(
+    val name: String,
+    val genericTypes: Collection<TsType>
 ): TsType {
     fun stringify(builder: StringIndentScopeBuilder) {
-        builder.line("{")
+        builder.append("$name<")
         builder.scope {
-            properties.forEachIndexed { index, it ->
-                builder.append(it.name)
-                builder.append(": ")
-
-                when(it.type) {
-                    is RawType -> builder.append(it.type.value)
-                    is ComplexType -> it.type.stringify(builder)
+            genericTypes.forEach {
+                when(it) {
+                    is TsRawType -> builder.append(it.value)
+                    is TsWithGenericType -> it.stringify(builder)
+                    is TsComplexType -> it.stringify(builder)
                 }
 
-                builder.line(if (index != properties.size - 1) "," else "")
+                builder.line()
             }
         }
-        builder.append("}")
+        builder.append(">")
     }
 
     fun stringify(indent: String) = buildScopeString(indent) {
@@ -46,9 +45,40 @@ data class ComplexType(
     }
 }
 
-data class ComplexTypeDeclare(
-    val name: String,
-    val type: ComplexType,
-) {
-    fun stringify(indent: String) = "type $name = ${type.stringify(indent)}"
+fun TsWithGenericType(
+    name: String, vararg genericTypes: TsType
+) = TsWithGenericType(
+    name, genericTypes.asList()
+)
+
+data class TsComplexType(
+    val properties: Collection<TsTypeProperty>,
+    val canUndefined: Boolean,
+): TsType {
+    fun stringify(builder: StringIndentScopeBuilder) {
+        builder.line("{")
+        builder.scope {
+            properties.forEach {
+                builder.append(it.name)
+                builder.append(": ")
+
+                when(it.type) {
+                    is TsRawType -> builder.append(it.type.value)
+                    is TsWithGenericType -> it.type.stringify(builder)
+                    is TsComplexType -> it.type.stringify(builder)
+                }
+
+                builder.line()
+            }
+        }
+        builder.append("}")
+
+        if (canUndefined) {
+            builder.append(" | undefined")
+        }
+    }
+
+    fun stringify(indent: String) = buildScopeString(indent) {
+        stringify(this)
+    }
 }

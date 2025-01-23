@@ -3,8 +3,7 @@ package top.potmot.business.shortAssociation
 import top.potmot.business.baseEntity
 import top.potmot.business.baseProperty
 import top.potmot.business.idProperty
-import top.potmot.core.business.meta.EntityBusiness
-import top.potmot.core.business.meta.emptyAssociationPath
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.enumeration.AssociationType
 
 private const val shortAssociationEntityId = -1L
@@ -44,25 +43,24 @@ val shortAssociationEntity = baseEntity.copy(
         label2Property
     )
 ).let {
-    EntityBusiness(emptyAssociationPath, it, mapOf(shortAssociationEntityId to it), emptyMap())
+    RootEntityBusiness(it, mapOf(shortAssociationEntityId to it), emptyMap())
 }
 
-private val shortAssociationProperty = baseProperty.copy(
+private val shortAssociationToOneProperty = baseProperty.copy(
     name = "shortAssociationProperty",
     type = shortAssociationEntity.name,
     associationType = AssociationType.MANY_TO_ONE,
     typeEntityId = shortAssociationEntityId
 )
 
-val shortAssociationTargetEntity = baseEntity.copy(
+val shortAssociationToOneTargetEntity = baseEntity.copy(
     id = shortAssociationTargetEntityId,
     properties = listOf(
         idProperty,
-        shortAssociationProperty
+        shortAssociationToOneProperty
     )
 ).let {
-    EntityBusiness(
-        path = emptyAssociationPath,
+    RootEntityBusiness(
         entity = it,
         entityIdMap = mapOf(
             shortAssociationEntityId to shortAssociationEntity.entity,
@@ -72,25 +70,77 @@ val shortAssociationTargetEntity = baseEntity.copy(
     )
 }
 
-private val shortAssociationIdViewProperty = baseProperty.copy(
+private val shortAssociationToOneIdViewProperty = baseProperty.copy(
     id = shortAssociationEntityId,
-    name = shortAssociationProperty.name + "Id",
-    comment = shortAssociationProperty.comment + " Id View",
+    name = shortAssociationToOneProperty.name + "Id",
+    comment = shortAssociationToOneProperty.comment + " Id View",
     associationType = AssociationType.MANY_TO_ONE,
     idView = true,
-    idViewTarget = shortAssociationProperty.name
+    idViewTarget = shortAssociationToOneProperty.name
 )
 
-val shortAssociationTargetIdViewEntity = baseEntity.copy(
+val shortAssociationToOneTargetIdViewEntity = baseEntity.copy(
     id = shortAssociationTargetIdViewEntityId,
     properties = listOf(
         idProperty,
-        shortAssociationProperty,
-        shortAssociationIdViewProperty
+        shortAssociationToOneProperty,
+        shortAssociationToOneIdViewProperty
     )
 ).let {
-    EntityBusiness(
-        path = emptyAssociationPath,
+    RootEntityBusiness(
+        entity = it,
+        entityIdMap = mapOf(
+            shortAssociationEntityId to shortAssociationEntity.entity,
+            it.id to it
+        ),
+        enumIdMap = emptyMap()
+    )
+}
+
+private val shortAssociationToManyProperty = baseProperty.copy(
+    name = "shortAssociationProperty",
+    type = shortAssociationEntity.name,
+    listType = true,
+    associationType = AssociationType.MANY_TO_MANY,
+    typeEntityId = shortAssociationEntityId
+)
+
+val shortAssociationToManyTargetEntity = baseEntity.copy(
+    id = shortAssociationTargetEntityId,
+    properties = listOf(
+        idProperty,
+        shortAssociationToManyProperty
+    )
+).let {
+    RootEntityBusiness(
+        entity = it,
+        entityIdMap = mapOf(
+            shortAssociationEntityId to shortAssociationEntity.entity,
+            it.id to it
+        ),
+        enumIdMap = emptyMap()
+    )
+}
+
+private val shortAssociationToManyIdViewProperty = baseProperty.copy(
+    id = shortAssociationEntityId,
+    name = shortAssociationToManyProperty.name + "Ids",
+    comment = shortAssociationToManyProperty.comment + " Id View",
+    listType = true,
+    associationType = AssociationType.MANY_TO_MANY,
+    idView = true,
+    idViewTarget = shortAssociationToManyProperty.name
+)
+
+val shortAssociationToManyTargetIdViewEntity = baseEntity.copy(
+    id = shortAssociationTargetIdViewEntityId,
+    properties = listOf(
+        idProperty,
+        shortAssociationToManyProperty,
+        shortAssociationToManyIdViewProperty
+    )
+).let {
+    RootEntityBusiness(
         entity = it,
         entityIdMap = mapOf(
             shortAssociationEntityId to shortAssociationEntity.entity,

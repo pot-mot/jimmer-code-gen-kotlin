@@ -1,7 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.enumSelect
 
 import top.potmot.core.business.meta.EnumBusiness
-import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
@@ -22,7 +21,6 @@ interface EnumSelectGen: Generator {
         enum: EnumBusiness,
         nullable: Boolean,
     ): Component {
-        val dir = enum.dir
         val view = enum.components.view
 
         val modelValue = "modelValue"
@@ -41,7 +39,7 @@ interface EnumSelectGen: Generator {
                     label = { null },
                     content = listOf(
                         TagElement(
-                            view,
+                            view.name,
                             props = listOf(PropBind("value", option))
                         )
                     )
@@ -49,7 +47,7 @@ interface EnumSelectGen: Generator {
                 slotTemplate(
                     "label", content = listOf(
                         TagElement(
-                            view,
+                            view.name,
                             props = listOf(PropBind("value", modelValue)),
                             directives = listOfNotNull(if (nullable) VIf(modelValue) else null)
                         ),
@@ -62,7 +60,7 @@ interface EnumSelectGen: Generator {
             imports = listOf(
                 Import(enumPath, options),
                 ImportType(enumPath, enum.name),
-                ImportDefault("$componentPath/$dir/$view.vue", view)
+                ImportDefault("@/" + view.fullPath, view.name)
             ),
             models = listOf(
                 ModelProp(modelValue, if (nullable) "${enum.name} | undefined" else enum.name)
@@ -76,13 +74,13 @@ interface EnumSelectGen: Generator {
     fun enumSelectFile(enum: EnumBusiness) = listOf(
         GenerateFile(
             enum,
-            "components/${enum.dir}/${enum.components.select}.vue",
+            enum.components.select.fullPath,
             stringify(enumSelectComponent(enum, nullable = false)),
             listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumSelect),
         ),
         GenerateFile(
             enum,
-            "components/${enum.dir}/${enum.components.nullableSelect}.vue",
+            enum.components.nullableSelect.fullPath,
             stringify(enumSelectComponent(enum, nullable = true)),
             listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumNullableSelect),
         )

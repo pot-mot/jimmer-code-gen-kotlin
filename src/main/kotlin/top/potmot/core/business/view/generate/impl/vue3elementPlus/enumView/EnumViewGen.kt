@@ -35,7 +35,7 @@ interface EnumViewGen : Generator {
     fun enumViewFile(enum: EnumBusiness) =
         GenerateFile(
             enum,
-            "components/${enum.dir}/${enum.components.view}.vue",
+            enum.components.view.fullPath,
             stringify(enumViewComponent(enum)),
             listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumView),
         )

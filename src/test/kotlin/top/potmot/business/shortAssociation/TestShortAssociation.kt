@@ -3,14 +3,14 @@ package top.potmot.business.shortAssociation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.dto.generate.DtoGenerator
-import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.enumeration.GenerateTag
 
 class TestShortAssociation {
     private val index = "${'$'}index"
 
-    private val EntityBusiness.result
+    private val RootEntityBusiness.result
         get() = DtoGenerator.generateDto(this).let { it.path to it.content }.toString()
 
     @Test
@@ -58,10 +58,143 @@ specification ShortAssociationEntitySpec {
     }
 
     @Test
-    fun `test shortAssociation view`() {
+    fun `test shortAssociationToOneTarget dto`() {
         assertEquals(
             """
-[(components/shortAssociationEntity/ShortAssociationEntityIdSelect.vue, <script setup lang="ts">
+(dto/Entity.dto, export EntityPackage.Entity
+
+EntityListView {
+    #allScalars
+    shortAssociationProperty {
+        label1
+        label2
+    }
+}
+
+EntityDetailView {
+    #allScalars
+    shortAssociationProperty {
+        label1
+        label2
+    }
+}
+
+EntityOptionView {
+    id
+}
+
+input EntityInsertInput {
+    #allScalars
+    -id
+    id(shortAssociationProperty)
+}
+
+EntityUpdateFillView {
+    #allScalars
+    id(shortAssociationProperty)
+}
+
+input EntityUpdateInput {
+    #allScalars
+    id!
+    id(shortAssociationProperty)
+}
+
+specification EntitySpec {
+    eq(id)
+    associatedIdEq(shortAssociationProperty)
+})
+            """.trimIndent(),
+            DtoGenerator.generateDto(shortAssociationToOneTargetEntity).let { it.path to it.content }.toString()
+        )
+    }
+
+    @Test
+    fun `test shortAssociationToOneTarget view`() {
+        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationToOneTargetEntity))
+
+        assertEquals(
+            """
+[(components/entity/EntityTable.vue, <script setup lang="ts">
+import type {EntityListView} from "@/api/__generated/model/static"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
+
+withDefaults(defineProps<{
+    rows: Array<EntityListView>,
+    idColumn?: boolean | undefined,
+    indexColumn?: boolean | undefined,
+    multiSelect?: boolean | undefined
+}>(), {
+    idColumn: false,
+    indexColumn: true,
+    multiSelect: true,
+})
+
+const emits = defineEmits<{
+    (
+        event: "selectionChange",
+        selection: Array<EntityListView>
+    ): void
+}>()
+
+defineSlots<{
+    operations(props: {row: EntityListView, index: number}): any
+}>()
+
+const pageSizeStore = usePageSizeStore()
+
+const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
+    emits("selectionChange", newSelection)
+}
+</script>
+
+<template>
+    <el-table
+        :data="rows"
+        row-key="id"
+        border
+        stripe
+        @selection-change="handleSelectionChange"
+    >
+        <el-table-column
+            v-if="idColumn"
+            prop="id"
+            label="ID"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
+        <el-table-column
+            v-if="indexColumn"
+            type="index"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
+        <el-table-column
+            v-if="multiSelect"
+            type="selection"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
+        <el-table-column
+            prop="shortAssociationProperty.label1"
+            label="commentlabel1 comment"
+        />
+        <el-table-column
+            prop="shortAssociationProperty.label2"
+            label="commentlabel2 comment"
+        />
+        <el-table-column
+            label="操作"
+            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+        >
+            <template #default="scope">
+                <slot
+                    name="operations"
+                    :row="scope.row as EntityListView"
+                    :index="scope.$index"
+                />
+            </template>
+        </el-table-column>
+    </el-table>
+</template>
+), (components/shortAssociationEntity/ShortAssociationEntityIdSelect.vue, <script setup lang="ts">
 import {watch} from "vue"
 import type {ShortAssociationEntityOptionView} from "@/api/__generated/model/static"
 
@@ -95,6 +228,341 @@ watch(() => [modelValue.value, props.options], () => {
             :label="`${'$'}{option.label1} ${'$'}{option.label2}`"
         />
     </el-select>
+</template>
+)]
+            """.trimIndent(),
+            viewItems.filter { GenerateTag.Table in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
+        )
+
+        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Component in it.tags }.forEach {
+            assert(it.content.contains("shortAssociationPropertyIdOptions"))
+            assert(it.content.contains("ShortAssociationEntityIdSelect"))
+        }
+
+        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Rules in it.tags }.forEach {
+            assert(it.content.contains("shortAssociationPropertyId: ["))
+        }
+    }
+
+    @Test
+    fun `test shortAssociationToOneTarget idView dto`() {
+        assertEquals(
+            """
+(dto/Entity.dto, export EntityPackage.Entity
+
+EntityListView {
+    #allScalars
+    shortAssociationProperty {
+        label1
+        label2
+    }
+}
+
+EntityDetailView {
+    #allScalars
+    shortAssociationProperty {
+        label1
+        label2
+    }
+}
+
+EntityOptionView {
+    id
+}
+
+input EntityInsertInput {
+    #allScalars
+    -id
+    shortAssociationPropertyId
+}
+
+EntityUpdateFillView {
+    #allScalars
+    shortAssociationPropertyId
+}
+
+input EntityUpdateInput {
+    #allScalars
+    id!
+    shortAssociationPropertyId
+}
+
+specification EntitySpec {
+    eq(id)
+    associatedIdEq(shortAssociationProperty)
+})
+            """.trimIndent(),
+            DtoGenerator.generateDto(shortAssociationToOneTargetIdViewEntity).let { it.path to it.content }.toString()
+        )
+    }
+
+    @Test
+    fun `test shortAssociationToOneTarget idView view`() {
+        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationToOneTargetIdViewEntity))
+
+        assertEquals(
+            """
+[(components/entity/EntityTable.vue, <script setup lang="ts">
+import type {EntityListView} from "@/api/__generated/model/static"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
+
+withDefaults(defineProps<{
+    rows: Array<EntityListView>,
+    idColumn?: boolean | undefined,
+    indexColumn?: boolean | undefined,
+    multiSelect?: boolean | undefined
+}>(), {
+    idColumn: false,
+    indexColumn: true,
+    multiSelect: true,
+})
+
+const emits = defineEmits<{
+    (
+        event: "selectionChange",
+        selection: Array<EntityListView>
+    ): void
+}>()
+
+defineSlots<{
+    operations(props: {row: EntityListView, index: number}): any
+}>()
+
+const pageSizeStore = usePageSizeStore()
+
+const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
+    emits("selectionChange", newSelection)
+}
+</script>
+
+<template>
+    <el-table
+        :data="rows"
+        row-key="id"
+        border
+        stripe
+        @selection-change="handleSelectionChange"
+    >
+        <el-table-column
+            v-if="idColumn"
+            prop="id"
+            label="ID"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
+        <el-table-column
+            v-if="indexColumn"
+            type="index"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
+        <el-table-column
+            v-if="multiSelect"
+            type="selection"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
+        <el-table-column
+            prop="shortAssociationProperty.label1"
+            label="commentlabel1 comment"
+        />
+        <el-table-column
+            prop="shortAssociationProperty.label2"
+            label="commentlabel2 comment"
+        />
+        <el-table-column
+            label="操作"
+            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+        >
+            <template #default="scope">
+                <slot
+                    name="operations"
+                    :row="scope.row as EntityListView"
+                    :index="scope.$index"
+                />
+            </template>
+        </el-table-column>
+    </el-table>
+</template>
+), (components/shortAssociationEntity/ShortAssociationEntityIdSelect.vue, <script setup lang="ts">
+import {watch} from "vue"
+import type {ShortAssociationEntityOptionView} from "@/api/__generated/model/static"
+
+const modelValue = defineModel<number | undefined>({
+    required: true
+})
+
+const props = defineProps<{
+    options: Array<ShortAssociationEntityOptionView>
+}>()
+
+watch(() => [modelValue.value, props.options], () => {
+    if (!(props.options.map(it => it.id) as Array<number | undefined>).includes(modelValue.value)) {
+        modelValue.value = undefined
+    }
+}, {immediate: true})
+</script>
+
+<template>
+    <el-select
+        v-model="modelValue"
+        placeholder="请选择shortAssociationEntityComment"
+        filterable
+        clearable
+        :value-on-clear="undefined"
+    >
+        <el-option
+            v-for="option in options"
+            :key="option.id"
+            :value="option.id"
+            :label="`${'$'}{option.label1} ${'$'}{option.label2}`"
+        />
+    </el-select>
+</template>
+)]
+            """.trimIndent(),
+            viewItems.filter { GenerateTag.Table in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
+        )
+
+        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Component in it.tags }.forEach {
+            assert(it.content.contains("shortAssociationPropertyIdOptions"))
+            assert(it.content.contains("ShortAssociationEntityIdSelect"))
+        }
+
+        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Rules in it.tags }.forEach {
+            assert(it.content.contains("shortAssociationPropertyId: ["))
+        }
+    }
+
+    @Test
+    fun `test shortAssociationToManyTarget dto`() {
+        assertEquals(
+            """
+(dto/Entity.dto, export EntityPackage.Entity
+
+EntityListView {
+    #allScalars
+    shortAssociationProperty {
+        label1
+        label2
+    }
+}
+
+EntityDetailView {
+    #allScalars
+    shortAssociationProperty {
+        label1
+        label2
+    }
+}
+
+EntityOptionView {
+    id
+}
+
+input EntityInsertInput {
+    #allScalars
+    -id
+    id(shortAssociationProperty) as shortAssociationPropertyIds
+}
+
+EntityUpdateFillView {
+    #allScalars
+    id(shortAssociationProperty) as shortAssociationPropertyIds
+}
+
+input EntityUpdateInput {
+    #allScalars
+    id!
+    id(shortAssociationProperty) as shortAssociationPropertyIds
+}
+
+specification EntitySpec {
+    eq(id)
+    associatedIdIn(shortAssociationProperty) as shortAssociationPropertyIds
+})
+            """.trimIndent(),
+            DtoGenerator.generateDto(shortAssociationToManyTargetEntity).let { it.path to it.content }.toString()
+        )
+    }
+
+    @Test
+    fun `test shortAssociationToManyTarget view`() {
+        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationToManyTargetEntity))
+
+        assertEquals(
+            """
+[(components/entity/EntityTable.vue, <script setup lang="ts">
+import type {EntityListView} from "@/api/__generated/model/static"
+import {usePageSizeStore} from "@/stores/pageSizeStore"
+
+withDefaults(defineProps<{
+    rows: Array<EntityListView>,
+    idColumn?: boolean | undefined,
+    indexColumn?: boolean | undefined,
+    multiSelect?: boolean | undefined
+}>(), {
+    idColumn: false,
+    indexColumn: true,
+    multiSelect: true,
+})
+
+const emits = defineEmits<{
+    (
+        event: "selectionChange",
+        selection: Array<EntityListView>
+    ): void
+}>()
+
+defineSlots<{
+    operations(props: {row: EntityListView, index: number}): any
+}>()
+
+const pageSizeStore = usePageSizeStore()
+
+const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
+    emits("selectionChange", newSelection)
+}
+</script>
+
+<template>
+    <el-table
+        :data="rows"
+        row-key="id"
+        border
+        stripe
+        @selection-change="handleSelectionChange"
+    >
+        <el-table-column
+            v-if="idColumn"
+            prop="id"
+            label="ID"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
+        <el-table-column
+            v-if="indexColumn"
+            type="index"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
+        <el-table-column
+            v-if="multiSelect"
+            type="selection"
+            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        />
+        <el-table-column
+            prop="shortAssociationPropertyIds"
+            label="comment"
+        />
+        <el-table-column
+            label="操作"
+            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
+        >
+            <template #default="scope">
+                <slot
+                    name="operations"
+                    :row="scope.row as EntityListView"
+                    :index="scope.$index"
+                />
+            </template>
+        </el-table-column>
+    </el-table>
 </template>
 ), (components/shortAssociationEntity/ShortAssociationEntityIdMultiSelect.vue, <script setup lang="ts">
 import {watch} from "vue"
@@ -142,14 +610,21 @@ watch(() => [modelValue.value, props.options], () => {
 </template>
 )]
             """.trimIndent(),
-            Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationEntity))
-                .filter { GenerateTag.IdSelect in it.tags || GenerateTag.IdMultiSelect in it.tags }
-                .map { it.path to it.content }.toString()
+            viewItems.filter { GenerateTag.Table in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
         )
+
+        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Component in it.tags }.forEach {
+            assert(it.content.contains("shortAssociationPropertyIdsOptions"))
+            assert(it.content.contains("ShortAssociationEntityIdMultiSelect"))
+        }
+
+        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Rules in it.tags }.forEach {
+            assert(it.content.contains("shortAssociationPropertyIds: ["))
+        }
     }
 
     @Test
-    fun `test shortAssociationTarget dto`() {
+    fun `test shortAssociationToManyTarget idView dto`() {
         assertEquals(
             """
 (dto/Entity.dto, export EntityPackage.Entity
@@ -177,36 +652,36 @@ EntityOptionView {
 input EntityInsertInput {
     #allScalars
     -id
-    id(shortAssociationProperty)
+    shortAssociationPropertyIds
 }
 
 EntityUpdateFillView {
     #allScalars
-    id(shortAssociationProperty)
+    shortAssociationPropertyIds
 }
 
 input EntityUpdateInput {
     #allScalars
     id!
-    id(shortAssociationProperty)
+    shortAssociationPropertyIds
 }
 
 specification EntitySpec {
     eq(id)
-    associatedIdEq(shortAssociationProperty)
+    associatedIdIn(shortAssociationProperty) as shortAssociationPropertyIds
 })
             """.trimIndent(),
-            DtoGenerator.generateDto(shortAssociationTargetEntity).let { it.path to it.content }.toString()
+            DtoGenerator.generateDto(shortAssociationToManyTargetIdViewEntity).let { it.path to it.content }.toString()
         )
     }
 
     @Test
-    fun `test shortAssociationTarget view`() {
-        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationTargetEntity))
+    fun `test shortAssociationToManyTarget idView view`() {
+        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationToManyTargetIdViewEntity))
 
         assertEquals(
             """
-<script setup lang="ts">
+[(components/entity/EntityTable.vue, <script setup lang="ts">
 import type {EntityListView} from "@/api/__generated/model/static"
 import {usePageSizeStore} from "@/stores/pageSizeStore"
 
@@ -264,12 +739,8 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
             :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column
-            prop="shortAssociationProperty.label1"
-            label="commentlabel1 comment"
-        />
-        <el-table-column
-            prop="shortAssociationProperty.label2"
-            label="commentlabel2 comment"
+            prop="shortAssociationPropertyIds"
+            label="comment"
         />
         <el-table-column
             label="操作"
@@ -285,168 +756,62 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         </el-table-column>
     </el-table>
 </template>
-            """.trimIndent(),
-            viewItems.filter { GenerateTag.Table in it.tags }[0].content.trim()
-        )
+), (components/shortAssociationEntity/ShortAssociationEntityIdMultiSelect.vue, <script setup lang="ts">
+import {watch} from "vue"
+import type {ShortAssociationEntityOptionView} from "@/api/__generated/model/static"
 
-        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Component in it.tags }.forEach {
-            assert(it.content.contains("shortAssociationPropertyIdOptions"))
-            assert(it.content.contains("ShortAssociationEntityIdSelect"))
-        }
-
-        viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Rules in it.tags }.forEach {
-            assert(it.content.contains("shortAssociationPropertyId: ["))
-        }
-    }
-
-    @Test
-    fun `test shortAssociationTarget idView dto`() {
-        assertEquals(
-            """
-(dto/Entity.dto, export EntityPackage.Entity
-
-EntityListView {
-    #allScalars
-    shortAssociationProperty {
-        label1
-        label2
-    }
-}
-
-EntityDetailView {
-    #allScalars
-    shortAssociationProperty {
-        label1
-        label2
-    }
-}
-
-EntityOptionView {
-    id
-}
-
-input EntityInsertInput {
-    #allScalars
-    -id
-    shortAssociationPropertyId
-}
-
-EntityUpdateFillView {
-    #allScalars
-    shortAssociationPropertyId
-}
-
-input EntityUpdateInput {
-    #allScalars
-    id!
-    shortAssociationPropertyId
-}
-
-specification EntitySpec {
-    eq(id)
-    associatedIdEq(shortAssociationProperty)
-})
-            """.trimIndent(),
-            DtoGenerator.generateDto(shortAssociationTargetIdViewEntity).let { it.path to it.content }.toString()
-        )
-    }
-
-    @Test
-    fun `test shortAssociationTarget idView view`() {
-        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationTargetIdViewEntity))
-
-        assertEquals(
-            """
-<script setup lang="ts">
-import type {EntityListView} from "@/api/__generated/model/static"
-import {usePageSizeStore} from "@/stores/pageSizeStore"
-
-withDefaults(defineProps<{
-    rows: Array<EntityListView>,
-    idColumn?: boolean | undefined,
-    indexColumn?: boolean | undefined,
-    multiSelect?: boolean | undefined
-}>(), {
-    idColumn: false,
-    indexColumn: true,
-    multiSelect: true,
+const modelValue = defineModel<Array<number>>({
+    required: true
 })
 
-const emits = defineEmits<{
-    (
-        event: "selectionChange",
-        selection: Array<EntityListView>
-    ): void
+const props = defineProps<{
+    options: Array<ShortAssociationEntityOptionView>
 }>()
 
-defineSlots<{
-    operations(props: {row: EntityListView, index: number}): any
-}>()
+watch(() => [modelValue.value, props.options], () => {
+    const newModelValue: Array<number> = []
 
-const pageSizeStore = usePageSizeStore()
-
-const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
-    emits("selectionChange", newSelection)
-}
+    for (const item of modelValue.value) {
+        if (props.options.map(it => it.id).includes(item)) {
+            newModelValue.push(item)
+        }
+    }
+    if (modelValue.value.length != newModelValue.length)
+        modelValue.value = newModelValue
+}, {immediate: true})
 </script>
 
 <template>
-    <el-table
-        :data="rows"
-        row-key="id"
-        border
-        stripe
-        @selection-change="handleSelectionChange"
+    <el-select
+        v-model="modelValue"
+        placeholder="请选择shortAssociationEntityComment"
+        filterable
+        clearable
+        :value-on-clear="undefined"
+        multiple
+        collapse-tags
+        collapse-tags-tooltip
     >
-        <el-table-column
-            v-if="idColumn"
-            prop="id"
-            label="ID"
-            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
+        <el-option
+            v-for="option in options"
+            :key="option.id"
+            :value="option.id"
+            :label="`${'$'}{option.label1} ${'$'}{option.label2}`"
         />
-        <el-table-column
-            v-if="indexColumn"
-            type="index"
-            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
-        />
-        <el-table-column
-            v-if="multiSelect"
-            type="selection"
-            :fixed="pageSizeStore.isSmall ? undefined : 'left'"
-        />
-        <el-table-column
-            prop="shortAssociationProperty.label1"
-            label="commentlabel1 comment"
-        />
-        <el-table-column
-            prop="shortAssociationProperty.label2"
-            label="commentlabel2 comment"
-        />
-        <el-table-column
-            label="操作"
-            :fixed="pageSizeStore.isSmall ? undefined : 'right'"
-        >
-            <template #default="scope">
-                <slot
-                    name="operations"
-                    :row="scope.row as EntityListView"
-                    :index="scope.$index"
-                />
-            </template>
-        </el-table-column>
-    </el-table>
+    </el-select>
 </template>
+)]
             """.trimIndent(),
-            viewItems.filter { GenerateTag.Table in it.tags }[0].content.trim()
+            viewItems.filter { GenerateTag.Table in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
         )
 
         viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Component in it.tags }.forEach {
-            assert(it.content.contains("shortAssociationPropertyIdOptions"))
-            assert(it.content.contains("ShortAssociationEntityIdSelect"))
+            assert(it.content.contains("shortAssociationPropertyIdsOptions"))
+            assert(it.content.contains("ShortAssociationEntityIdMultiSelect"))
         }
 
         viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Rules in it.tags }.forEach {
-            assert(it.content.contains("shortAssociationPropertyId: ["))
+            assert(it.content.contains("shortAssociationPropertyIds: ["))
         }
     }
 }

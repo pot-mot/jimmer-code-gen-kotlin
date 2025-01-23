@@ -62,7 +62,7 @@ sealed interface TypeEntityProperty {
     val associationType: AssociationType
     val isTargetOne: Boolean
     val isShortView: Boolean
-    val typeEntityBusiness: EntityBusiness
+    val typeEntityBusiness: SubEntityBusiness
 }
 
 data class AssociationProperty(
@@ -104,7 +104,7 @@ data class AssociationProperty(
         else
             typeEntity
 
-        EntityBusiness(
+        SubEntityBusiness(
             path = path.append(
                 entity = IdName(entityBusiness.id, entityBusiness.name),
                 property = IdName(id, name),
@@ -162,8 +162,8 @@ data class ForceIdViewProperty(
 }
 
 
-fun Iterable<PropertyBusiness>.selfOrForceIdView() = map {
-    if (it is AssociationProperty) {
+fun Iterable<PropertyBusiness>.selfOrShortAssociationToIdView() = map {
+    if (it is AssociationProperty && !it.isLongAssociation) {
         it.forceToIdView()
     } else {
         it

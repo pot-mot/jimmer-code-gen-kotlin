@@ -24,18 +24,15 @@ enum class GenerateTag {
     Page,
 
     Form,
-    ViewForm,
-    SubForm,
+    FormDefault,
+    FormRules,
+    FormType,
     AddForm,
-    AddFormType,
-    AddFormDefault,
-    AddFormRules,
     EditForm,
-    EditFormRules,
+    SubForm,
+    EditTable,
+
     QueryForm,
 
     Table,
-    ViewTable,
-    EditTable,
-    EditTableRules,
 }

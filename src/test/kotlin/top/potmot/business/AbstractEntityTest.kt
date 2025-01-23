@@ -5,14 +5,14 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import top.potmot.core.business.dto.generate.DtoGenerator
-import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.service.generate.getServiceGenerator
 import top.potmot.core.business.view.generate.getViewGenerator
 import top.potmot.enumeration.GenLanguage
 import top.potmot.enumeration.ViewType
 
 abstract class AbstractEntityTest {
-    abstract fun getTestEntity(): EntityBusiness
+    abstract fun getTestEntity(): RootEntityBusiness
 
     abstract fun getDtoResult(): String
 

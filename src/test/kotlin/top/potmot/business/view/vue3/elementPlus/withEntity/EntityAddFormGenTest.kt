@@ -36,7 +36,7 @@ export const createDefaultEntity = (): EntityAddFormType => {
         enumProperty: "item1",
         enumNullableProperty: undefined,
         toOnePropertyId: undefined,
-        toOneNullablePropertyId: undefined,
+        toOneNullablePropertyId: undefined
     }
 }
             """.trimIndent(),

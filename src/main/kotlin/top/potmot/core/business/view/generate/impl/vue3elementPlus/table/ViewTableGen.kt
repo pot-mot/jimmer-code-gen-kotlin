@@ -1,15 +1,10 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.viewTable
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.table
 
 import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.table
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.tableColumn
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.stringify
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.operationsColumn
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilColumns
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilProps
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumn
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumnData
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.tableColumn.TableColumnPropertyKey
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
@@ -112,7 +107,7 @@ fun viewTable(
     )
 )
 
-interface ViewTableGen: TableColumn {
+interface ViewTableGen: Generator, TableColumn {
     @Throws(ModelException.TreeEntityCannotFoundChildrenProperty::class)
     private fun viewTableComponent(entity: EntityBusiness): Component {
         val rows = "rows"
@@ -136,10 +131,10 @@ interface ViewTableGen: TableColumn {
         )
     }
 
-    fun viewTableFile(entity: EntityBusiness) = GenerateFile(
+    fun viewTableFile(entity: RootEntityBusiness) = GenerateFile(
         entity,
-        "components/${entity.dir}/${entity.components.table}.vue",
+        entity.components.table.fullPath,
         stringify(viewTableComponent(entity)),
-        listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Table, GenerateTag.ViewTable),
+        listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Table),
     )
 }

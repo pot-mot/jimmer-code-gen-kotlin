@@ -1,7 +1,7 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
 
-import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.options
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
@@ -91,7 +91,7 @@ interface IdSelect : Generator {
         }
     }
 
-    fun createIdSelect(entity: EntityBusiness, multiple: Boolean): Component {
+    fun createIdSelect(entity: SubEntityBusiness, multiple: Boolean): Component {
         val idProperty = entity.idProperty
         val idName = idProperty.name
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)

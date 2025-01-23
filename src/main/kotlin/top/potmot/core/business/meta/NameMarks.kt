@@ -19,22 +19,49 @@ data class DtoNames(
     val optionView: String
 )
 
-data class EntityComponentNames(
-    val table: String,
-    val addForm: String,
-    val editForm: String,
-    val queryForm: String,
-    val page: String,
-    val idSelect: String,
-    val idMultiSelect: String,
-    val editTable: String,
-)
+data class NamePath(
+    val name: String,
+    val suffix: String,
+    val path: String
+) {
+    val fullPath = "$path/$name.$suffix"
 
-data class EntityRulesNames(
-    val addFormRules: String,
-    val editFormRules: String,
-    val editTableRules: String,
-)
+    val fullPathNoSuffix = "$path/$name"
+}
+
+sealed interface EntityComponentFiles
+
+data class RootEntityComponentFiles(
+    val table: NamePath,
+    val addForm: NamePath,
+    val addFormType: NamePath,
+    val addFormDefault: NamePath,
+    val editForm: NamePath,
+    val queryForm: NamePath,
+    val page: NamePath,
+): EntityComponentFiles
+
+data class SubEntityComponentFiles(
+    val subForm: NamePath,
+    val subFormType: NamePath,
+    val subFormDefault: NamePath,
+    val editTable: NamePath,
+    val editTableType: NamePath,
+    val idSelect: NamePath,
+    val idMultiSelect: NamePath,
+): EntityComponentFiles
+
+sealed interface EntityRuleFiles
+
+data class RootEntityRuleFiles(
+    val addFormRules: NamePath,
+    val editFormRules: NamePath,
+): EntityRuleFiles
+
+data class SubEntityRuleFiles(
+    val subFormRules: NamePath,
+    val editTableRules: NamePath,
+): EntityRuleFiles
 
 data class EntityPermissions(
     val get: String,
@@ -46,8 +73,8 @@ data class EntityPermissions(
     val menu: String,
 )
 
-data class EnumComponentNames(
-    val view: String,
-    val select: String,
-    val nullableSelect: String,
+data class EnumComponentFiles(
+    val view: NamePath,
+    val select: NamePath,
+    val nullableSelect: NamePath,
 )

@@ -1,6 +1,6 @@
 package top.potmot.core.business.service.generate.impl.kotlin
 
-import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.service.generate.ServiceGenerator
 import top.potmot.core.business.view.generate.meta.rules.existValidItems
 import top.potmot.core.business.type.typeStrToKotlinType
@@ -14,7 +14,7 @@ object KotlinServiceGenerator : ServiceGenerator() {
 
     @Throws(GenerateException::class)
     override fun stringifyService(
-        entity: EntityBusiness,
+        entity: RootEntityBusiness,
     ): String {
         val name = entity.name
         val comment = entity.comment

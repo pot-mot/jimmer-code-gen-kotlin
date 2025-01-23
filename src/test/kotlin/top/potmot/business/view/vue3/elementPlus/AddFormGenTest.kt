@@ -2,12 +2,10 @@ package top.potmot.business.view.vue3.elementPlus
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.core.business.view.generate.componentPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.addForm.addForm
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.addForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubValidateItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
-import top.potmot.core.business.view.generate.rulePath
 import top.potmot.core.business.view.generate.staticPath
 
 class AddFormGenTest {
@@ -19,11 +17,11 @@ class AddFormGenTest {
             "EntityInsertInput",
             staticPath,
             "EntityAddFormDataType",
-            "$componentPath/entity/EntityAddFormDataType",
+            "@/components/entity/EntityAddFormDataType",
             "createDefaultEntityAddFormData",
-            "$componentPath/entity/createDefaultEntityAddFormData",
+            "@/components/entity/createDefaultEntityAddFormData",
             "useRules",
-            "$rulePath/entity",
+            "@/rules/entity",
             indent = "    ",
             content = mapOf()
         )
@@ -132,11 +130,11 @@ defineExpose<FormExpose>({
             "EntityInsertInput",
             staticPath,
             "EntityAddFormDataType",
-            "$componentPath/entity/EntityAddFormDataType",
+            "@/components/entity/EntityAddFormDataType",
             "createDefaultEntityAddFormData",
-            "$componentPath/entity/createDefaultEntityAddFormData",
+            "@/components/entity/createDefaultEntityAddFormData",
             "useRules",
-            "$rulePath/entity",
+            "@/rules/entity",
             indent = "    ",
             content = mapOf(),
             subValidateItems = listOf(
@@ -260,11 +258,11 @@ defineExpose<FormExpose>({
             "EntityInsertInput",
             staticPath,
             "EntityAddFormDataType",
-            "$componentPath/entity/EntityAddFormDataType",
+            "@/components/entity/EntityAddFormDataType",
             "createDefaultEntityAddFormData",
-            "$componentPath/entity/createDefaultEntityAddFormData",
+            "@/components/entity/createDefaultEntityAddFormData",
             "useRules",
-            "$rulePath/entity",
+            "@/rules/entity",
             indent = "    ",
             content = mapOf(),
             selectOptions = listOf(

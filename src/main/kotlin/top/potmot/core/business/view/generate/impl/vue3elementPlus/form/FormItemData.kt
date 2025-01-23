@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
 import top.potmot.core.business.view.generate.meta.typescript.TsCode
 import top.potmot.core.business.view.generate.meta.typescript.TsImport

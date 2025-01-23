@@ -3,7 +3,7 @@ package top.potmot.business.selfAssociation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.dto.generate.DtoGenerator
-import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.service.generate.impl.java.JavaServiceGenerator
 import top.potmot.core.business.service.generate.impl.kotlin.KotlinServiceGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
@@ -13,7 +13,7 @@ import top.potmot.utils.string.trimBlankLine
 class TestSelfAssociation {
     private val index = "${'$'}index"
 
-    private val EntityBusiness.result
+    private val RootEntityBusiness.result
         get() = DtoGenerator.generateDto(this).let { it.path to it.content }.toString()
 
     @Test
@@ -258,7 +258,7 @@ const filterNodeMethod = (value: string | undefined, data: TreeNode) => {
 </template>
 )]
             """.trimIndent().trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
+            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
                 .filter { GenerateTag.IdSelect in it.tags || GenerateTag.IdMultiSelect in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -536,7 +536,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
 </template>
 )]
             """.trimIndent().trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
+            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
                 .filter { GenerateTag.Page in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -625,8 +625,8 @@ const handleSelectionChange = (
 </template>
 )]
             """.trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
-                .filter { GenerateTag.ViewTable in it.tags }
+            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+                .filter { GenerateTag.Table in it.tags }
                 .map { it.path to it.content }.toString()
         )
     }
@@ -644,7 +644,7 @@ const handleSelectionChange = (
 export const createDefaultSelfAssociationEntity = (): SelfAssociationEntityAddFormType => {
     return {
         label: "",
-        parentId: undefined,
+        parentId: undefined
     }
 }
 ), (components/selfAssociationEntity/SelfAssociationEntityAddForm.vue, <script setup lang="ts">
@@ -771,7 +771,7 @@ export const useRules = (_: Ref<SelfAssociationEntityAddFormType>): FormRules<Se
     }
 })]
             """.trimIndent().trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
+            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
                 .filter { GenerateTag.AddForm in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -905,254 +905,8 @@ export const useRules = (_: Ref<SelfAssociationEntityUpdateInput>): FormRules<Se
     }
 })]
             """.trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
+            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
                 .filter { GenerateTag.EditForm in it.tags }
-                .map { it.path to it.content }.toString()
-        )
-    }
-
-    @Test
-    fun `test selfAssociation editTable`() {
-        assertEquals(
-            """
-[(components/selfAssociationEntity/SelfAssociationEntityEditTable.vue, <script setup lang="ts">
-import {ref} from "vue"
-import type {FormInstance} from "element-plus"
-import type {FormExpose} from "@/components/form/FormExpose"
-import type {
-    SelfAssociationEntityAddFormType,
-    SelfAssociationEntityOptionView
-} from "@/api/__generated/model/static"
-import {createDefaultSelfAssociationEntity} from "@/components/selfAssociationEntity/createDefaultSelfAssociationEntity"
-import {useRules} from "@/rules/selfAssociationEntity/SelfAssociationEntityEditTableRules"
-import {usePageSizeStore} from "@/stores/pageSizeStore"
-import {Plus, Delete} from "@element-plus/icons-vue"
-import {deleteConfirm} from "@/utils/confirm"
-import SelfAssociationEntityIdSelect from "@/components/selfAssociationEntity/SelfAssociationEntityIdSelect.vue"
-
-const rows = defineModel<Array<SelfAssociationEntityAddFormType>>({
-    required: true
-})
-
-const props = withDefaults(defineProps<{
-    idColumn?: boolean | undefined,
-    indexColumn?: boolean | undefined,
-    multiSelect?: boolean | undefined,
-    withOperations?: boolean | undefined,
-    submitLoading?: boolean | undefined,
-    parentIdOptions: Array<SelfAssociationEntityOptionView>
-}>(), {
-    idColumn: false,
-    indexColumn: false,
-    multiSelect: true,
-    withOperations: false,
-    submitLoading: false,
-})
-
-const emits = defineEmits<{
-    (
-        event: "submit",
-        rows: Array<SelfAssociationEntityAddFormType>
-    ): void,
-    (event: "cancel"): void
-}>()
-
-defineSlots<{
-    operations(props: {
-        handleSubmit: () => Promise<void>,
-        handleCancel: () => void
-    }): any
-}>()
-
-const formRef = ref<FormInstance>()
-const rules = useRules(rows)
-
-const pageSizeStore = usePageSizeStore()
-
-// 校验
-const handleValidate = async (): Promise<boolean> => {
-    return await formRef.value?.validate().catch(() => false) ?? false
-}
-
-// 提交
-const handleSubmit = async (): Promise<void> => {
-    if (props.submitLoading) return
-
-    const validResult = await handleValidate()
-    if (validResult) {
-        emits("submit", rows.value)
-    }
-}
-
-// 取消
-const handleCancel = (): void => {
-    emits("cancel")
-}
-
-// 多选
-const selection = ref<Array<SelfAssociationEntityAddFormType>>([])
-
-const handleSelectionChange = (
-    newSelection: Array<SelfAssociationEntityAddFormType>
-): void => {
-    selection.value = newSelection
-}
-
-// 新增
-const handleAdd = (): void => {
-    rows.value.push(createDefaultSelfAssociationEntity())
-}
-
-// 删除
-const handleBatchDelete = async (): Promise<void> => {
-    const result = await deleteConfirm("这些树节点")
-    if (!result) return
-    rows.value = rows.value.filter(it => !selection.value.includes(it))
-}
-
-const handleSingleDelete = async (index: number): Promise<void> => {
-    const result = await deleteConfirm("该树节点")
-    if (!result) return
-    rows.value = rows.value.filter((_, i) => i !== index)
-}
-
-defineExpose<FormExpose>({
-    validate: handleValidate
-})
-</script>
-
-<template>
-    <el-form
-        :model="rows"
-        ref="formRef"
-        :rules="rules"
-        @submit.prevent
-    >
-        <div>
-            <el-button
-                type="primary"
-                :icon="Plus"
-                @click="handleAdd"
-            >
-                新增
-            </el-button>
-            <el-button
-                type="danger"
-                :icon="Delete"
-                :disabled="selection.length === 0"
-                @click="handleBatchDelete"
-            >
-                删除
-            </el-button>
-        </div>
-
-        <el-table
-            :data="rows"
-            row-key="id"
-            border
-            stripe
-            @selection-change="handleSelectionChange"
-        >
-            <el-table-column
-                v-if="idColumn"
-                prop="id"
-                label="ID"
-                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
-            />
-            <el-table-column
-                v-if="indexColumn"
-                type="index"
-                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
-            />
-            <el-table-column
-                v-if="multiSelect"
-                type="selection"
-                :fixed="pageSizeStore.isSmall ? undefined : 'left'"
-            />
-            <el-table-column prop="label" label="标签">
-                <template #default="scope">
-                    <el-form-item
-                        :prop="[scope.$index, 'label']"
-                        label="标签"
-                        :rule="rules.label"
-                    >
-                        <el-input
-                            v-model="scope.row.label"
-                            placeholder="请输入标签"
-                            clearable
-                        />
-                    </el-form-item>
-                </template>
-            </el-table-column>
-            <el-table-column prop="parentId" label="父节点">
-                <template #default="scope">
-                    <el-form-item
-                        :prop="[scope.$index, 'parentId']"
-                        label="父节点"
-                        :rule="rules.parentId"
-                    >
-                        <SelfAssociationEntityIdSelect
-                            v-model="scope.row.parentId"
-                            :options="parentIdOptions"
-                            :exclude-ids="[scope.row.id]"
-                        />
-                    </el-form-item>
-                </template>
-            </el-table-column>
-            <el-table-column
-                label="操作"
-                :fixed="pageSizeStore.isSmall ? undefined : 'right'"
-            >
-                <template #default="scope">
-                    <el-button
-                        type="danger"
-                        :icon="Delete"
-                        link
-                        @click="handleSingleDelete(scope.$index)"
-                    />
-                </template>
-            </el-table-column>
-        </el-table>
-
-        <slot
-            v-if="withOperations"
-            name="operations"
-            :handleSubmit="handleSubmit"
-            :handleCancel="handleCancel"
-        >
-            <div class="form-operations">
-                <el-button type="warning" @click="handleCancel">
-                    取消
-                </el-button>
-                <el-button
-                    type="primary"
-                    :loading="submitLoading"
-                    @click="handleSubmit"
-                >
-                    提交
-                </el-button>
-            </div>
-        </slot>
-    </el-form>
-</template>
-), (rules/selfAssociationEntity/SelfAssociationEntityEditTableRules.ts, import type {Ref} from "vue"
-import type {FormRules} from "element-plus"
-import type {SelfAssociationEntityUpdateInput} from "@/api/__generated/model/static"
-
-export const useRules = (
-    _: Ref<Array<SelfAssociationEntityUpdateInput>>
-): FormRules<SelfAssociationEntityUpdateInput> => {
-    return {
-        label: [
-            {required: true, message: "标签不能为空", trigger: "blur"},
-        ],
-        parentId: [
-        ],
-    }
-})]
-            """.trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(listOf(selfAssociationEntity))
-                .filter { GenerateTag.EditTable in it.tags }
                 .map { it.path to it.content }.toString()
         )
     }

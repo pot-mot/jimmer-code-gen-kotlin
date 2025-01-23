@@ -2,7 +2,7 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
 import top.potmot.core.business.view.generate.builder.component.ComponentBuilder
 import top.potmot.core.business.view.generate.meta.style.StyleClass
-import top.potmot.core.business.view.generate.meta.typescript.ObjectProperty
+import top.potmot.core.business.view.generate.meta.typescript.TsProperty
 import top.potmot.core.business.view.generate.meta.typescript.TsObject
 import top.potmot.core.business.view.generate.meta.typescript.inlineOrWarpLines
 import top.potmot.core.business.view.generate.meta.typescript.stringify
@@ -40,8 +40,8 @@ class Vue3ComponentBuilder(
 
             val defineObject = TsObject(
                 properties = listOfNotNull(
-                    ObjectProperty("required", it.required.toString()),
-                    it.defaultValue?.let { value -> ObjectProperty("defaultValue", value) }
+                    TsProperty("required", it.required.toString()),
+                    it.defaultValue?.let { value -> TsProperty("defaultValue", value) }
                 )
             )
 

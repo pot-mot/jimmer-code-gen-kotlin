@@ -2,10 +2,12 @@ package top.potmot.core.business.dto.generate
 
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyQueryType
+import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.view.generate.meta.rules.existValidItems
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
@@ -15,7 +17,7 @@ import top.potmot.utils.string.buildScopeString
 
 object DtoGenerator {
     private fun formatFileName(
-        entity: EntityBusiness,
+        entity: RootEntityBusiness,
     ): String =
         "${entity.name}.dto"
 
@@ -62,7 +64,7 @@ object DtoGenerator {
 
     private fun StringIndentScopeBuilder.extractLong(
         property: AssociationProperty,
-        block: StringIndentScopeBuilder.(typeEntity: EntityBusiness) -> Unit
+        block: StringIndentScopeBuilder.(typeEntity: SubEntityBusiness) -> Unit
     ) {
         dtoBlock(property.name) {
             block(property.typeEntityBusiness)
@@ -70,7 +72,7 @@ object DtoGenerator {
     }
 
 
-    private fun StringIndentScopeBuilder.generateListViewBody(entity: EntityBusiness) {
+    private fun StringIndentScopeBuilder.generateListViewBody(entity: RootEntityBusiness) {
         val listViewProperties = entity.listViewProperties
 
         line("#allScalars")
@@ -89,7 +91,7 @@ object DtoGenerator {
         }
     }
 
-    private fun StringIndentScopeBuilder.generateTreeViewBody(entity: EntityBusiness) {
+    private fun StringIndentScopeBuilder.generateTreeViewBody(entity: RootEntityBusiness) {
         val listViewProperties = entity.listViewProperties
 
         val parentProperty = entity.parentProperty
@@ -117,7 +119,7 @@ object DtoGenerator {
         }
     }
 
-    private fun StringIndentScopeBuilder.generateOptionViewBody(entity: EntityBusiness) {
+    private fun StringIndentScopeBuilder.generateOptionViewBody(entity: RootEntityBusiness) {
         val optionViewProperties = entity.optionViewProperties
 
         if (entity.isTree) {
@@ -204,20 +206,14 @@ object DtoGenerator {
         }
     }
 
-    enum class UpdateIdStrategy {
-        FORCE_NOT_NULL,
-        DEFAULT,
-    }
-
     private fun StringIndentScopeBuilder.generateUpdateInputBody(
         entity: EntityBusiness,
-        idStrategy: UpdateIdStrategy = UpdateIdStrategy.FORCE_NOT_NULL
     ) {
         val updateInputProperties = entity.updateInputProperties
         val idProperty = entity.idProperty
 
         line("#allScalars")
-        if (idStrategy == UpdateIdStrategy.FORCE_NOT_NULL) {
+        if (entity is RootEntityBusiness && !idProperty.property.idGenerationAnnotation.isNullOrBlank()) {
             line(idProperty.name + "!")
         }
         entity.scalarProperties.exclude(updateInputProperties).forEach {
@@ -226,7 +222,7 @@ object DtoGenerator {
         updateInputProperties.filterIsInstance<AssociationProperty>().forEach {
             if (it.isLongAssociation) {
                 extractLong(it) { typeEntity ->
-                    generateUpdateInputBody(typeEntity, UpdateIdStrategy.DEFAULT)
+                    generateUpdateInputBody(typeEntity)
                 }
             } else {
                 line(it.associationIdExpress)
@@ -272,11 +268,11 @@ object DtoGenerator {
                 }
             }
 
-    private fun StringIndentScopeBuilder.generateSpecBody(entity: EntityBusiness) {
+    private fun StringIndentScopeBuilder.generateSpecBody(entity: RootEntityBusiness) {
         lines(entity.specificationProperties.flatMap { it.specExpression })
     }
 
-    private fun StringIndentScopeBuilder.generateExistValidDto(entity: EntityBusiness) {
+    private fun StringIndentScopeBuilder.generateExistValidDto(entity: RootEntityBusiness) {
         val idProperty = entity.idProperty
         val idName = idProperty.name
 
@@ -296,7 +292,7 @@ object DtoGenerator {
 
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun stringify(entity: EntityBusiness) = buildScopeString {
+    private fun stringify(entity: RootEntityBusiness) = buildScopeString {
         val dto = entity.dto
 
         line("export ${entity.packagePath}.${entity.name}")
@@ -352,7 +348,7 @@ object DtoGenerator {
 
     @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
-        entity: EntityBusiness,
+        entity: RootEntityBusiness,
     ) = GenerateFile(
         entity,
         "dto/${formatFileName(entity)}",
@@ -362,7 +358,7 @@ object DtoGenerator {
 
     @Throws(ModelException.IdPropertyNotFound::class)
     fun generateDto(
-        entities: Iterable<EntityBusiness>,
+        entities: Iterable<RootEntityBusiness>,
     ): List<GenerateFile> =
         entities
             .map { generateDto(it) }

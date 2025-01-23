@@ -5,7 +5,8 @@ import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
 import top.potmot.core.business.view.generate.meta.typescript.LetVariable
-import top.potmot.core.business.view.generate.meta.typescript.RawPropertyValue
+import top.potmot.core.business.view.generate.meta.typescript.TsArray
+import top.potmot.core.business.view.generate.meta.typescript.TsRawValue
 import top.potmot.core.business.view.generate.meta.typescript.TsCode
 import top.potmot.core.business.view.generate.meta.typescript.TsImport
 import top.potmot.core.business.view.generate.meta.typescript.TsObject
@@ -233,10 +234,20 @@ fun slotTemplate(
 )
 
 private fun TsObject.getRefContextContent(): String =
-    properties.joinToString("\n") {
-        when (it.value) {
-            is RawPropertyValue -> it.value.value
-            is TsObject -> it.value.getRefContextContent()
+    properties.joinToString("\n") { (_, it) ->
+        when (it) {
+            is TsRawValue -> it.value
+            is TsObject -> it.getRefContextContent()
+            is TsArray -> it.getRefContextContent()
+        }
+    }
+
+private fun TsArray.getRefContextContent(): String =
+    items.joinToString("\n") {
+        when (it) {
+            is TsRawValue -> it.value
+            is TsObject -> it.getRefContextContent()
+            is TsArray -> it.getRefContextContent()
         }
     }
 
@@ -244,6 +255,7 @@ private fun TsCode.getRefContextContent(): String =
     when (this) {
         is CodeBlock -> content
         is TsObject -> getRefContextContent()
+        is TsArray -> getRefContextContent()
         is Function -> body.joinToString("\n") {
             it.getRefContextContent()
         }

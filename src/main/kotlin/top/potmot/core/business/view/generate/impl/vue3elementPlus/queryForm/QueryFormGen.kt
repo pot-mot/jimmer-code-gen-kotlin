@@ -1,16 +1,15 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm
 
-import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.col
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.row
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.stringify
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.formItem.FormItemData
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryFormItem.QueryFormItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormItemData
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
 import top.potmot.core.business.view.generate.meta.typescript.Import
@@ -97,8 +96,8 @@ fun queryForm(
     )
 )
 
-interface QueryFormGen : QueryFormItem {
-    private fun queryFormComponent(entity: EntityBusiness): Component {
+interface QueryFormGen : Generator, QueryFormItem {
+    private fun queryFormComponent(entity: RootEntityBusiness): Component {
         val spec = "spec"
 
         return queryForm(
@@ -111,9 +110,9 @@ interface QueryFormGen : QueryFormItem {
         )
     }
 
-    fun queryFormFile(entity: EntityBusiness) = GenerateFile(
+    fun queryFormFile(entity: RootEntityBusiness) = GenerateFile(
         entity,
-        "components/${entity.dir}/${entity.components.queryForm}.vue",
+        entity.components.queryForm.fullPath,
         stringify(queryFormComponent(entity)),
         listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.QueryForm),
     )

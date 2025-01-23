@@ -6,8 +6,7 @@ import top.potmot.enumeration.AssociationType
 import top.potmot.error.GenerateException
 import top.potmot.error.ModelException
 
-data class EntityBusiness(
-    val path: AssociationPath,
+sealed class EntityBusiness(
     val entity: GenEntityBusinessView,
     val entityIdMap: Map<Long, GenEntityBusinessView>,
     val enumIdMap: Map<Long, EnumBusiness>,
@@ -50,39 +49,7 @@ data class EntityBusiness(
         packages.service.replace(".", "/")
     }
 
-    val dto by lazy {
-        DtoNames(
-            listView = "${name}ListView",
-            treeView = "${name}TreeView",
-            detailView = "${name}DetailView",
-            updateFillView = "${name}UpdateFillView",
-            updateInput = "${name}UpdateInput",
-            insertInput = "${name}InsertInput",
-            spec = "${name}Spec",
-            optionView = "${name}OptionView",
-        )
-    }
-
-    val components by lazy {
-        EntityComponentNames(
-            table = "${name}Table",
-            addForm = "${name}AddForm",
-            editForm = "${name}EditForm",
-            queryForm = "${name}QueryForm",
-            page = "${name}Page",
-            idSelect = "${name}IdSelect",
-            idMultiSelect = "${name}IdMultiSelect",
-            editTable = "${name}EditTable",
-        )
-    }
-
-    val rules by lazy {
-        EntityRulesNames(
-            addFormRules = "${name}AddFormRules",
-            editFormRules = "${name}EditFormRules",
-            editTableRules = "${name}EditTableRules",
-        )
-    }
+    abstract val dto: DtoNames
 
     val permissions by lazy {
         EntityPermissions(
@@ -120,10 +87,6 @@ data class EntityBusiness(
 
     val apiServiceName = "${lowerName}Service"
 
-    val addFormType = "${name}AddFormType"
-
-    val addFormDefault = "createDefault${name}"
-
 
     val isSelfAssociated by lazy {
         entity.properties.any {
@@ -149,12 +112,20 @@ data class EntityBusiness(
                 }
             } else if (!it.idView) {
                 result += AssociationProperty(
-                    path = path.append(
-                        entity = IdName(id, name),
-                        property = IdName(it.id, it.name),
-                        type = AssociationPathItemType.PROPERTY,
-                        isSelfAssociated = isSelfAssociated
-                    ),
+                    path = when (this) {
+                        is RootEntityBusiness -> emptyAssociationPath.append(
+                            entity = IdName(id, name),
+                            property = IdName(it.id, it.name),
+                            type = AssociationPathItemType.PROPERTY,
+                            isSelfAssociated = isSelfAssociated
+                        )
+                        is SubEntityBusiness -> path.append(
+                            entity = IdName(id, name),
+                            property = IdName(it.id, it.name),
+                            type = AssociationPathItemType.PROPERTY,
+                            isSelfAssociated = isSelfAssociated
+                        )
+                    },
                     entityBusiness = this,
                     property = it,
                     idView = idViewTargetMap[it.name],
@@ -214,14 +185,14 @@ data class EntityBusiness(
         associationProperties.filter { it.isLongAssociation }
     }
 
-    val longAssociationPropertyEntityMap by lazy {
+    val subEntityMap by lazy {
         longAssociationProperties.associateWith {
             it.typeEntityBusiness
         }
     }
-    
-    val longAssociationEntities by lazy {
-        longAssociationPropertyEntityMap.values
+
+    val subEntities by lazy {
+        subEntityMap.values
     }
 
 
@@ -314,7 +285,7 @@ data class EntityBusiness(
 
                 !it.property.idProperty && notParentProperty
             }
-            .selfOrForceIdView()
+            .selfOrShortAssociationToIdView()
     }
 
     val detailViewProperties by lazy {
@@ -325,7 +296,7 @@ data class EntityBusiness(
     val viewFormProperties by lazy {
         detailViewProperties
             .filter { !it.property.idProperty }
-            .selfOrForceIdView()
+            .selfOrShortAssociationToIdView()
     }
 
 
@@ -340,7 +311,7 @@ data class EntityBusiness(
                 !it.property.idProperty &&
                         (it.property.associationType == null || it.property.associationType!!.isTargetOne)
             }
-            .selfOrForceIdView()
+            .selfOrShortAssociationToIdView()
     }
 
     val queryFormProperties by lazy {
@@ -359,11 +330,11 @@ data class EntityBusiness(
     }
 
 
-    private val PropertyBusiness.isEditNullable
+    protected val PropertyBusiness.isEditNullable
         get() = this is AssociationProperty && associationType.isTargetOne && property.typeNotNull
 
     // 将编辑场景中必须转换为可null的属性处理为可null
-    private fun Iterable<PropertyBusiness>.produceEditNullable(): List<PropertyBusiness> =
+    protected fun Iterable<PropertyBusiness>.produceEditNullable(): List<PropertyBusiness> =
         map {
             if (it is AssociationProperty && it.isEditNullable) {
                 it.copy(property = it.property.copy(typeNotNull = false), idView = it.idView?.copy(typeNotNull = false))
@@ -380,19 +351,19 @@ data class EntityBusiness(
 
     private val `addFormProperties nullable not change` by lazy {
         insertInputProperties
-            .selfOrForceIdView()
+            .selfOrShortAssociationToIdView()
     }
 
     val addFormProperties by lazy {
         insertInputProperties
             .produceEditNullable()
-            .selfOrForceIdView()
+            .selfOrShortAssociationToIdView()
     }
 
     val addFormEditNullableProperties by lazy {
         insertInputProperties
             .filter { it.isEditNullable }
-            .selfOrForceIdView()
+            .selfOrShortAssociationToIdView()
     }
 
     val addFormRulesProperties by lazy {
@@ -408,16 +379,100 @@ data class EntityBusiness(
     val editFormProperties by lazy {
         updateInputProperties
             .filter { !it.property.idProperty }
-            .selfOrForceIdView()
+            .selfOrShortAssociationToIdView()
     }
 
     val editFormRulesProperties by lazy {
         updateInputProperties
             .filter { !it.property.idProperty }
-            .selfOrForceIdView()
+            .selfOrShortAssociationToIdView()
     }
 
+    val specificationSelectProperties: List<ForceIdViewProperty> by lazy {
+        `queryFormProperties nullable not change`
+            .filterIsInstance<ForceIdViewProperty>() +
+                subEntities
+                    .flatMap { it.subFormSelectProperties }
+    }
 
+    val insertSelectProperties: List<ForceIdViewProperty> by lazy {
+        `addFormProperties nullable not change`
+            .filterIsInstance<ForceIdViewProperty>() +
+                subEntities
+                    .flatMap { it.subFormSelectProperties }
+    }
+
+    val updateSelectProperties: List<ForceIdViewProperty> by lazy {
+        editFormProperties
+            .filterIsInstance<ForceIdViewProperty>() +
+                subEntities
+                    .flatMap { it.subFormSelectProperties }
+    }
+
+    val pageSelectProperties: List<ForceIdViewProperty> by lazy {
+        (insertSelectProperties + updateSelectProperties + specificationSelectProperties)
+            .distinctBy { it.property.id } +
+                subEntities
+                    .flatMap { it.subFormSelectProperties }
+    }
+}
+
+class RootEntityBusiness(
+    entity: GenEntityBusinessView,
+    entityIdMap: Map<Long, GenEntityBusinessView>,
+    enumIdMap: Map<Long, EnumBusiness>,
+) : EntityBusiness(
+    entity,
+    entityIdMap,
+    enumIdMap
+) {
+    override val dto: DtoNames by lazy {
+        DtoNames(
+            listView = "${name}ListView",
+            treeView = "${name}TreeView",
+            detailView = "${name}DetailView",
+            updateFillView = "${name}UpdateFillView",
+            updateInput = "${name}UpdateInput",
+            insertInput = "${name}InsertInput",
+            spec = "${name}Spec",
+            optionView = "${name}OptionView",
+        )
+    }
+
+    val components by lazy {
+        RootEntityComponentFiles(
+            table = NamePath("${name}Table", "vue", "components/$dir"),
+            addForm = NamePath("${name}AddForm", "vue", "components/$dir"),
+            addFormType = NamePath("${name}AddFormType", "d.ts", "components/$dir"),
+            addFormDefault = NamePath("createDefault${name}", "ts", "components/$dir"),
+            editForm = NamePath("${name}EditForm", "vue", "components/$dir"),
+            queryForm = NamePath("${name}QueryForm", "vue", "components/$dir"),
+            page = NamePath("${name}Page", "vue", "pages/$dir"),
+        )
+    }
+
+    val rules by lazy {
+        RootEntityRuleFiles(
+            addFormRules = NamePath("${name}AddFormRules", "ts", "rules/$dir"),
+            editFormRules = NamePath("${name}EditFormRules", "ts", "rules/$dir"),
+        )
+    }
+
+    val asSub by lazy {
+        SubEntityBusiness(emptyAssociationPath, entity, entityIdMap, enumIdMap)
+    }
+}
+
+class SubEntityBusiness(
+    val path: AssociationPath,
+    entity: GenEntityBusinessView,
+    entityIdMap: Map<Long, GenEntityBusinessView>,
+    enumIdMap: Map<Long, EnumBusiness>,
+) : EntityBusiness(
+    entity,
+    entityIdMap,
+    enumIdMap
+) {
     val shortViewProperties by lazy {
         properties
             .filter { it.inShortAssociationView }
@@ -432,14 +487,21 @@ data class EntityBusiness(
     private val `subFormProperties nullable not change` by lazy {
         longAssociationInputProperties
             .filter { !it.property.idProperty }
-            .selfOrForceIdView()
+            .selfOrShortAssociationToIdView()
     }
 
     val subFormProperties by lazy {
         longAssociationInputProperties
             .filter { !it.property.idProperty }
             .produceEditNullable()
-            .selfOrForceIdView()
+            .selfOrShortAssociationToIdView()
+    }
+
+    val subFormEditNullableProperties by lazy {
+        longAssociationInputProperties
+            .filter { !it.property.idProperty }
+            .filter { it.isEditNullable }
+            .selfOrShortAssociationToIdView()
     }
 
     val subFormRulesProperties by lazy {
@@ -455,43 +517,56 @@ data class EntityBusiness(
     val viewSubTableProperties by lazy {
         longAssociationViewProperties
             .filter { !it.property.idProperty }
-            .selfOrForceIdView()
+            .selfOrShortAssociationToIdView()
     }
-
-
 
     val subFormSelectProperties: List<ForceIdViewProperty> by lazy {
         `subFormProperties nullable not change`
             .filterIsInstance<ForceIdViewProperty>() +
-                longAssociationEntities
+                subEntities
                     .flatMap { it.subFormSelectProperties }
     }
 
-    val specificationSelectProperties: List<ForceIdViewProperty> by lazy {
-        `queryFormProperties nullable not change`
-            .filterIsInstance<ForceIdViewProperty>() +
-                longAssociationEntities
-                    .flatMap { it.subFormSelectProperties }
+    override val dto by lazy {
+        val rootEntityName = path.rootEntityItem.entity.name
+        val propertyNames = path.propertyItems.map { it.property.name }.joinToString {
+            "_TargetOf_$it"
+        }
+
+        DtoNames(
+            listView = "${rootEntityName}ListView$propertyNames",
+            treeView = "${rootEntityName}TreeView$propertyNames",
+            detailView = "${rootEntityName}DetailView$propertyNames",
+            updateFillView = "${rootEntityName}UpdateFillView$propertyNames",
+            updateInput = "${rootEntityName}UpdateInput$propertyNames",
+            insertInput = "${rootEntityName}InsertInput$propertyNames",
+            spec = "${rootEntityName}Spec$propertyNames",
+            optionView = "${name}OptionView",
+        )
     }
 
-    val insertSelectProperties: List<ForceIdViewProperty> by lazy {
-        `addFormProperties nullable not change`
-            .filterIsInstance<ForceIdViewProperty>() +
-                longAssociationEntities
-                    .flatMap { it.subFormSelectProperties }
+    val components by lazy {
+        val rootEntity = path.rootEntityItem.entity
+        val rootEntityName = rootEntity.name
+        val rootEntityDir = rootEntityName.replaceFirstChar { it.lowercaseChar() }
+        val propertyNames = path.propertyItems.map { it.property.name.replaceFirstChar { it.uppercaseChar() } }.joinToString("")
+
+        SubEntityComponentFiles(
+            subForm = NamePath("${rootEntityName}${propertyNames}SubForm", "vue", "components/$rootEntityDir/$dir"),
+            subFormType = NamePath("${rootEntityName}${propertyNames}SubFormType", "d.ts", "components/$rootEntityDir/$dir"),
+            subFormDefault = NamePath("createDefault${rootEntityName}${propertyNames}", "ts", "components/$rootEntityDir/$dir"),
+            editTable = NamePath("${rootEntityName}${propertyNames}EditTable", "vue", "components/$rootEntityDir/$dir"),
+            editTableType = NamePath("${rootEntityName}${propertyNames}EditTableType", "d.ts", "components/$rootEntityDir/$dir"),
+
+            idSelect = NamePath("${name}IdSelect", "vue", "components/$dir"),
+            idMultiSelect = NamePath("${name}IdMultiSelect", "vue", "components/$dir"),
+        )
     }
 
-    val updateSelectProperties: List<ForceIdViewProperty> by lazy {
-        editFormProperties
-            .filterIsInstance<ForceIdViewProperty>() +
-                longAssociationEntities
-                    .flatMap { it.subFormSelectProperties }
-    }
-
-    val pageSelectProperties: List<ForceIdViewProperty> by lazy {
-        (insertSelectProperties + updateSelectProperties + specificationSelectProperties)
-            .distinctBy { it.property.id } +
-                longAssociationEntities
-                    .flatMap { it.subFormSelectProperties }
+    val rules by lazy {
+        SubEntityRuleFiles(
+            subFormRules = NamePath("${name}SubFormRules", "ts", "rules/$dir"),
+            editTableRules = NamePath("${name}EditTableRules", "ts", "rules/$dir"),
+        )
     }
 }

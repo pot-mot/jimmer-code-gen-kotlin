@@ -3,8 +3,7 @@ package top.potmot.business.selfAssociation
 import top.potmot.business.baseEntity
 import top.potmot.business.baseProperty
 import top.potmot.business.idProperty
-import top.potmot.core.business.meta.EntityBusiness
-import top.potmot.core.business.meta.emptyAssociationPath
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.enumeration.AssociationType
 
 private const val entityId = -1L
@@ -66,5 +65,5 @@ val selfAssociationEntity = baseEntity.copy(
         childrenProperty,
     )
 ).let {
-    EntityBusiness(emptyAssociationPath, it, mapOf(entityId to it), emptyMap())
+    RootEntityBusiness(it, mapOf(entityId to it), emptyMap())
 }

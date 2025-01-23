@@ -3,8 +3,7 @@ package top.potmot.business.longAssociation
 import top.potmot.business.baseEntity
 import top.potmot.business.baseProperty
 import top.potmot.business.idProperty
-import top.potmot.core.business.meta.EntityBusiness
-import top.potmot.core.business.meta.emptyAssociationPath
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.enumeration.AssociationType
 
 private const val longAssociationEntityId = -1L
@@ -33,7 +32,7 @@ val longAssociationEntity = baseEntity.copy(
         nameProperty
     )
 ).let {
-    EntityBusiness(emptyAssociationPath, it, mapOf(longAssociationEntityId to it), emptyMap())
+    RootEntityBusiness(it, mapOf(longAssociationEntityId to it), emptyMap())
 }
 
 private val longAssociationToOneProperty = baseProperty.copy(
@@ -51,8 +50,7 @@ val longAssociationToOneTargetEntity = baseEntity.copy(
         longAssociationToOneProperty
     )
 ).let {
-    EntityBusiness(
-        path = emptyAssociationPath,
+    RootEntityBusiness(
         entity = it,
         entityIdMap = mapOf(
             longAssociationEntityId to longAssociationEntity.entity,
@@ -79,8 +77,7 @@ val longAssociationToManyTargetEntity = baseEntity.copy(
         longAssociationToManyProperty
     )
 ).let {
-    EntityBusiness(
-        path = emptyAssociationPath,
+    RootEntityBusiness(
         entity = it,
         entityIdMap = mapOf(
             longAssociationEntityId to longAssociationEntity.entity,

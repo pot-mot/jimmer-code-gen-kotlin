@@ -9,16 +9,21 @@ enum class AssociationPathItemType {
 }
 
 data class AssociationPathItem(
-    val entityId: Long,
-    val propertyId: Long,
+    val entity: IdName,
+    val property: IdName,
     val type: AssociationPathItemType,
 )
 
 data class AssociationPath(
     val items: List<AssociationPathItem>,
 ) {
-    fun append(entity: IdName, property: IdName, type: AssociationPathItemType, isSelfAssociated: Boolean): AssociationPath {
-        val newPath = AssociationPathItem(entityId = entity.id, propertyId = property.id, type)
+    fun append(
+        entity: IdName,
+        property: IdName,
+        type: AssociationPathItemType,
+        isSelfAssociated: Boolean,
+    ): AssociationPath {
+        val newPath = AssociationPathItem(entity, property, type)
 
         if (
             (!isSelfAssociated && newPath !in items) ||
@@ -27,12 +32,23 @@ data class AssociationPath(
             return AssociationPath(items + newPath)
         } else {
             throw ModelException.longAssociationCircularDependence(
-                message = "entity [${entity.name}] property [${property.name}] become circular dependences\n" +
+                message = "entity [${entity.name}] property [${property.name}] become circular dependence path\n" +
                         "full path: [${(items + newPath)}]",
-                entity = entity,
-                property = property
+                associationPath = AssociationPath(items + newPath)
             )
         }
+    }
+
+    val rootEntityItem by lazy {
+        items.firstOrNull { it.type == AssociationPathItemType.ENTITY }
+            ?: throw ModelException.associationPathExtractNoRoot(
+                message = "full path: [${items}]",
+                associationPath = this
+            )
+    }
+
+    val propertyItems by lazy {
+        items.filter { it.type == AssociationPathItemType.PROPERTY }
     }
 }
 

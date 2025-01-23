@@ -1,13 +1,13 @@
 package top.potmot.core.business.route.generate
 
-import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.createGenerateFileByEntities
 import top.potmot.enumeration.GenerateTag
 import top.potmot.utils.string.trimBlankLine
 
 object DynamicRouteGenerator {
-    fun generate(entities: Iterable<EntityBusiness>): List<GenerateFile> {
+    fun generate(entities: Iterable<RootEntityBusiness>): List<GenerateFile> {
         val items = entities.filter { it.hasPage }.map {
             val lowerName = it.name.lowercase()
             val dir = it.dir

@@ -1,6 +1,6 @@
 package top.potmot.core.business.service.generate.impl.java
 
-import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.service.generate.ServiceGenerator
 import top.potmot.core.business.view.generate.meta.rules.existValidItems
 import top.potmot.core.business.type.typeStrToJavaType
@@ -13,12 +13,12 @@ import top.potmot.utils.string.trimBlankLine
 object JavaServiceGenerator : ServiceGenerator() {
     override fun getFileSuffix() = ".java"
 
-    private val EntityBusiness.tableProxy
+    private val RootEntityBusiness.tableProxy
         get() = entityNameToTableName(name) + "_TABLE"
 
     @Throws(GenerateException::class)
     override fun stringifyService(
-        entity: EntityBusiness,
+        entity: RootEntityBusiness,
     ): String {
         val name = entity.name
         val comment = entity.comment
