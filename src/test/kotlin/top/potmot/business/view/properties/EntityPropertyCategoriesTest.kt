@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.business.idViewTestEntityBusiness
 import top.potmot.business.testEntityBusiness
+import top.potmot.core.business.meta.AssociationPath
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.entity.dto.GenEntityBusinessView
 
 class EntityPropertyCategoriesTest {
@@ -128,7 +131,7 @@ class EntityPropertyCategoriesTest {
             assertEquals("kotlin.Int", toOneProperty.type)
             assertEquals("toOneProperty", toOneProperty.comment)
             assertEquals(true, toOneProperty.idView)
-            assertEquals(false, toOneProperty.typeNotNull)
+            assertEquals(true, toOneProperty.typeNotNull)
 
             val toOneNullableProperty = addFormProperties[3]
             assertEquals("toOneNullablePropertyId", toOneNullableProperty.name)
@@ -173,8 +176,11 @@ class EntityPropertyCategoriesTest {
         }
     }
 
+    private val EntityBusiness.asSub
+        get() = SubEntityBusiness(AssociationPath(this, emptyList()), entity, entityIdMap, enumIdMap)
+
     @Test
-    fun `test editTableProperties`() {
+    fun `test subFormProperties`() {
         testEntities.forEach { testEntity ->
             val editTableProperties = testEntity.asSub.subFormProperties.extract
             assertEquals(4, editTableProperties.size)
@@ -196,7 +202,7 @@ class EntityPropertyCategoriesTest {
             assertEquals("kotlin.Int", toOneProperty.type)
             assertEquals("toOneProperty", toOneProperty.comment)
             assertEquals(true, toOneProperty.idView)
-            assertEquals(false, toOneProperty.typeNotNull)
+            assertEquals(true, toOneProperty.typeNotNull)
 
             val toOneNullableProperty = editTableProperties[3]
             assertEquals("toOneNullablePropertyId", toOneNullableProperty.name)

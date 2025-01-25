@@ -253,12 +253,39 @@ val withSuperTestEntity = testEntity.copy(
     )
 )
 
+val testSubFormEntity = testEntity.copy(
+    id = testId++,
+    properties = listOf(
+        idProperty,
+        toOneProperty.copy(longAssociation = true),
+    )
+)
+
+val testNullableSubFormEntity = testEntity.copy(
+    id = testId++,
+    properties = listOf(
+        idProperty,
+        toOneNullableProperty.copy(longAssociation = true),
+    )
+)
+
+val testEditTableEntity = testEntity.copy(
+    id = testId++,
+    properties = listOf(
+        idProperty,
+        toManyProperty.copy(longAssociation = true)
+    )
+)
+
 val entityIdMap = mapOf(
     testEntity.id to testEntity,
     toOneEntity.id to toOneEntity,
     toManyEntity.id to toManyEntity,
     idViewTestEntity.id to idViewTestEntity,
     withSuperTestEntity.id to withSuperTestEntity,
+    testSubFormEntity.id to testSubFormEntity,
+    testNullableSubFormEntity.id to testNullableSubFormEntity,
+    testEditTableEntity.id to testEditTableEntity,
 )
 
 val enumIdMap = mapOf(
@@ -270,3 +297,10 @@ val testEntityBusiness = RootEntityBusiness(testEntity, entityIdMap, enumIdMap)
 val idViewTestEntityBusiness = RootEntityBusiness(idViewTestEntity, entityIdMap, enumIdMap)
 
 val withSuperTestEntityBusiness = RootEntityBusiness(withSuperTestEntity.toFlat(), entityIdMap, enumIdMap)
+
+
+val testSubFormEntityBusiness = RootEntityBusiness(testSubFormEntity, entityIdMap, enumIdMap)
+
+val testNullableSubFormEntityBusiness = RootEntityBusiness(testNullableSubFormEntity, entityIdMap, enumIdMap)
+
+val testEditTableEntityBusiness = RootEntityBusiness(testEditTableEntity, entityIdMap, enumIdMap)

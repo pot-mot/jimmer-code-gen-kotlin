@@ -80,7 +80,11 @@ interface PageGen : Generator {
     )
 
     private fun pageComponent(entity: RootEntityBusiness): Component {
-        val (table, addForm, _, _, editForm, queryForm) = entity.components
+        val table = entity.components.table
+        val addForm = entity.components.addForm
+        val editForm = entity.components.editForm
+        val queryForm = entity.components.queryForm
+
         val (listView, treeView, _, insertInput, _, updateInput, spec) = entity.dto
         val permission = entity.permissions
 

@@ -4,29 +4,27 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormRefValidateItem
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTable
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.subForm
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.staticPath
 
-class EditTableGenTest {
+class SubFormGenTest {
     private val builder = Vue3ElementPlusViewGenerator.componentBuilder
 
     private val index = "${'$'}index"
 
     @Test
-    fun `test editTable`() {
-        val component = editTable(
+    fun `test subForm`() {
+        val component = subForm(
             listOf("EntityInsertInput_TargetOf_entities", "EntityUpdateInput_TargetOf_entities"),
             staticPath,
-            "EntityEntitiesEditTableData",
-            "@/components/entity/EntityEntitiesEditTableData",
-            "createDefaultEntityEditTableData",
-            "@/components/entity/createDefaultEntityEntitiesEditTableData",
+            "EntityEntitySubFormData",
+            "@/components/entity/EntityEntitySubFormData",
+            "createDefaultEntitySubFormData",
+            "@/components/entity/createDefaultEntityEntitySubFormData",
             "useRules",
-            "@/rules/entity/EntityEntitiesEditTableRules",
+            "@/rules/entity/EntityEntitySubFormRules",
             indent = "    ",
-            idPropertyName = "id",
-            comment = "comment",
             content = mapOf()
         )
 
@@ -36,14 +34,14 @@ class EditTableGenTest {
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
-import type {EntityEditTableData} from "@/api/__generated/model/static"
-import {createDefaultEntityEditTableData} from "@/components/entity/createDefaultEntityEditTableData"
+import type {EntitySubFormData} from "@/api/__generated/model/static"
+import {createDefaultEntitySubFormData} from "@/components/entity/createDefaultEntitySubFormData"
 import {useRules} from "@/rules/entity"
 import {usePageSizeStore} from "@/stores/pageSizeStore"
 import {Plus, Delete} from "@element-plus/icons-vue"
 import {deleteConfirm} from "@/utils/confirm"
 
-const formData = defineModel<Array<EntityEditTableData>>({
+const formData = defineModel<Array<EntitySubFormData>>({
     required: true
 })
 
@@ -64,7 +62,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "submit",
-        formData: Array<EntityEditTableData>
+        formData: Array<EntitySubFormData>
     ): void,
     (event: "cancel"): void
 }>()
@@ -102,15 +100,15 @@ const handleCancel = (): void => {
 }
 
 // 多选
-const selection = ref<Array<EntityEditTableData>>([])
+const selection = ref<Array<EntitySubFormData>>([])
 
-const handleSelectionChange = (newSelection: Array<EntityEditTableData>): void => {
+const handleSelectionChange = (newSelection: Array<EntitySubFormData>): void => {
     selection.value = newSelection
 }
 
 // 新增
 const handleAdd = (): void => {
-    formData.value.push(createDefaultEntityEditTableData())
+    formData.value.push(createDefaultEntitySubFormData())
 }
 
 // 删除
@@ -221,19 +219,17 @@ defineExpose<FormExpose>({
     }
 
     @Test
-    fun `test editTable with validateItems`() {
-        val component = editTable(
+    fun `test subForm with validateItems`() {
+        val component = subForm(
             listOf("EntityInsertInput_TargetOf_entities", "EntityUpdateInput_TargetOf_entities"),
             staticPath,
-            "EntityEntitiesEditTableData",
-            "@/components/entity/EntityEntitiesEditTableData",
-            "createDefaultEntityEditTableData",
-            "@/components/entity/createDefaultEntityEntitiesEditTableData",
+            "EntityEntitySubFormData",
+            "@/components/entity/EntityEntitySubFormData",
+            "createDefaultEntitySubFormData",
+            "@/components/entity/createDefaultEntityEntitySubFormData",
             "useRules",
-            "@/rules/entity/EntityEntitiesEditTableRules",
+            "@/rules/entity/EntityEntitySubFormRules",
             indent = "    ",
-            idPropertyName = "id",
-            comment = "comment",
             content = mapOf(),
             subValidateItems = listOf(
                 FormRefValidateItem("SubTable1"),
@@ -247,14 +243,14 @@ defineExpose<FormExpose>({
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
-import type {EntityEditTableData} from "@/api/__generated/model/static"
-import {createDefaultEntityEditTableData} from "@/components/entity/createDefaultEntityEditTableData"
+import type {EntitySubFormData} from "@/api/__generated/model/static"
+import {createDefaultEntitySubFormData} from "@/components/entity/createDefaultEntitySubFormData"
 import {useRules} from "@/rules/entity"
 import {usePageSizeStore} from "@/stores/pageSizeStore"
 import {Plus, Delete} from "@element-plus/icons-vue"
 import {deleteConfirm} from "@/utils/confirm"
 
-const formData = defineModel<Array<EntityEditTableData>>({
+const formData = defineModel<Array<EntitySubFormData>>({
     required: true
 })
 
@@ -275,7 +271,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "submit",
-        formData: Array<EntityEditTableData>
+        formData: Array<EntitySubFormData>
     ): void,
     (event: "cancel"): void
 }>()
@@ -324,15 +320,15 @@ const handleCancel = (): void => {
 }
 
 // 多选
-const selection = ref<Array<EntityEditTableData>>([])
+const selection = ref<Array<EntitySubFormData>>([])
 
-const handleSelectionChange = (newSelection: Array<EntityEditTableData>): void => {
+const handleSelectionChange = (newSelection: Array<EntitySubFormData>): void => {
     selection.value = newSelection
 }
 
 // 新增
 const handleAdd = (): void => {
-    formData.value.push(createDefaultEntityEditTableData())
+    formData.value.push(createDefaultEntitySubFormData())
 }
 
 // 删除
@@ -443,19 +439,17 @@ defineExpose<FormExpose>({
     }
 
     @Test
-    fun `test editTable with selectOptions`() {
-        val component = editTable(
+    fun `test subForm with selectOptions`() {
+        val component = subForm(
             listOf("EntityInsertInput_TargetOf_entities", "EntityUpdateInput_TargetOf_entities"),
             staticPath,
-            "EntityEntitiesEditTableData",
-            "@/components/entity/EntityEntitiesEditTableData",
-            "createDefaultEntityEditTableData",
-            "@/components/entity/createDefaultEntityEntitiesEditTableData",
+            "EntityEntitySubFormData",
+            "@/components/entity/EntityEntitySubFormData",
+            "createDefaultEntitySubFormData",
+            "@/components/entity/createDefaultEntityEntitySubFormData",
             "useRules",
-            "@/rules/entity/EntityEntitiesEditTableRules",
+            "@/rules/entity/EntityEntitySubFormRules",
             indent = "    ",
-            idPropertyName = "id",
-            comment = "comment",
             content = mapOf(),
             selectOptions = listOf(
                 SelectOption("CustomerOptions", "CustomerOptionView", "customerService"),
@@ -470,17 +464,17 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {
-    EntityEditTableData,
+    EntitySubFormData,
     CustomerOptionView,
     TypeOptionView
 } from "@/api/__generated/model/static"
-import {createDefaultEntityEditTableData} from "@/components/entity/createDefaultEntityEditTableData"
+import {createDefaultEntitySubFormData} from "@/components/entity/createDefaultEntitySubFormData"
 import {useRules} from "@/rules/entity"
 import {usePageSizeStore} from "@/stores/pageSizeStore"
 import {Plus, Delete} from "@element-plus/icons-vue"
 import {deleteConfirm} from "@/utils/confirm"
 
-const formData = defineModel<Array<EntityEditTableData>>({
+const formData = defineModel<Array<EntitySubFormData>>({
     required: true
 })
 
@@ -503,7 +497,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "submit",
-        formData: Array<EntityEditTableData>
+        formData: Array<EntitySubFormData>
     ): void,
     (event: "cancel"): void
 }>()
@@ -541,15 +535,15 @@ const handleCancel = (): void => {
 }
 
 // 多选
-const selection = ref<Array<EntityEditTableData>>([])
+const selection = ref<Array<EntitySubFormData>>([])
 
-const handleSelectionChange = (newSelection: Array<EntityEditTableData>): void => {
+const handleSelectionChange = (newSelection: Array<EntitySubFormData>): void => {
     selection.value = newSelection
 }
 
 // 新增
 const handleAdd = (): void => {
-    formData.value.push(createDefaultEntityEditTableData())
+    formData.value.push(createDefaultEntitySubFormData())
 }
 
 // 删除

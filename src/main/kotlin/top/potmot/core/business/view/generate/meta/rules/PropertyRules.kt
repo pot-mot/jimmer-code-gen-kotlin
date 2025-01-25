@@ -1,9 +1,9 @@
 package top.potmot.core.business.view.generate.meta.rules
 
+import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
-import top.potmot.core.business.meta.TypeEntityProperty
 
 val PropertyBusiness.rules: List<Rule>
     get() {
@@ -18,7 +18,7 @@ val PropertyBusiness.rules: List<Rule>
         } else {
              if (this is EnumProperty) {
                 rules += EnumRule(comment, enum.items.map { it.name })
-            } else if (this !is TypeEntityProperty) {
+            } else if (this is CommonProperty) {
                 val formType = formType
 
                 when (formType) {

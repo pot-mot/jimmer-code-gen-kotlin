@@ -15,6 +15,7 @@ data class AssociationPathItem(
 )
 
 data class AssociationPath(
+    val rootEntity: EntityBusiness,
     val items: List<AssociationPathItem>,
 ) {
     fun append(
@@ -27,30 +28,20 @@ data class AssociationPath(
 
         if (
             (!isSelfAssociated && newPath !in items) ||
-            items.filter { it == newPath }.size <= 2
+            items.filter { it == newPath }.size < 2
         ) {
-            return AssociationPath(items + newPath)
+            return AssociationPath(rootEntity, items + newPath)
         } else {
             throw ModelException.longAssociationCircularDependence(
                 message = "entity [${entity.name}] property [${property.name}] become circular dependence path\n" +
                         "full path: [${(items + newPath)}]",
-                associationPath = AssociationPath(items + newPath)
+                entity = IdName(rootEntity.id, rootEntity.name),
+                associationPath = items + newPath
             )
         }
     }
 
-    val rootEntityItem by lazy {
-        items.firstOrNull { it.type == AssociationPathItemType.ENTITY }
-            ?: throw ModelException.associationPathExtractNoRoot(
-                message = "full path: [${items}]",
-                associationPath = this
-            )
-    }
-
-    val propertyItems by lazy {
+    val properties by lazy {
         items.filter { it.type == AssociationPathItemType.PROPERTY }
     }
 }
-
-
-val emptyAssociationPath = AssociationPath(emptyList())

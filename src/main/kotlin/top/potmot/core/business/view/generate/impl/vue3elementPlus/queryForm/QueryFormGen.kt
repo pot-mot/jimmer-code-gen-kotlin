@@ -51,7 +51,7 @@ fun queryForm(
     spec: String,
     specType: String,
     specTypePath: String,
-    selectOptions: Iterable<SelectOption> = emptyList(),
+    selectOptions: Collection<SelectOption> = emptyList(),
     content: Map<PropertyBusiness, FormItemData>,
 ) = Component(
     imports = listOf(

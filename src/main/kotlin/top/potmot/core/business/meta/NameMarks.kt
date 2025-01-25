@@ -37,6 +37,7 @@ data class RootEntityComponentFiles(
     val addFormType: NamePath,
     val addFormDefault: NamePath,
     val editForm: NamePath,
+    val editFormType: NamePath,
     val queryForm: NamePath,
     val page: NamePath,
 ): EntityComponentFiles

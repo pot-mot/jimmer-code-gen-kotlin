@@ -1,11 +1,13 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.*
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.PRIMARY
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.WARNING
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
+import top.potmot.core.business.view.generate.meta.typescript.TsImport
 import top.potmot.core.business.view.generate.meta.vue3.Event
 import top.potmot.core.business.view.generate.meta.vue3.EventArg
 import top.potmot.core.business.view.generate.meta.vue3.EventBind
@@ -70,64 +72,82 @@ val operationsSlotElement = slotElement(
     )
 )
 
-data class SubValidateItem(
-    val componentName: String,
-    val ref: String = componentName.replaceFirstChar { it.lowercase() } + "Ref",
-    val type: String = formExposeType,
-    val typePath: String = formExposePath,
-    val validateVariable: String = componentName.replaceFirstChar { it.lowercase() } + "Valid",
-) {
-    fun toRef() =
-        ConstVariable(ref, null, "ref<$type>()")
+interface ValidateItem {
+    val imports: List<TsImport>
 
-    fun toImport() =
-        ImportType(typePath, type)
+    val name: String
+
+    val type: String
+
+    val expression: String
+
+    fun toConst() = ConstVariable(
+        name = name,
+        type = type,
+        value = expression
+    )
+}
+
+data class CommonValidateItem(
+    override val name: String,
+    override val type: String,
+    override val expression: String,
+    override val imports: List<TsImport> = emptyList()
+): ValidateItem
+
+data class FormRefValidateItem(
+    val componentName: String,
+): ValidateItem {
+    private val componentLowerName = componentName.replaceFirstChar { it.lowercase() }
+
+    private val refName = "${componentLowerName}Ref"
+
+    val ref = ConstVariable(refName, null, "ref<$formExposeType>()")
+
+    override val name: String = "${componentLowerName}Valid"
+
+    override val type: String = "boolean | undefined"
+
+    override val expression: String = "await ${refName}.value?.validate().catch(() => false)"
+
+    override val imports = listOf(ImportType(formExposePath, formExposeType))
 }
 
 
 fun handleValidate(
     formRef: String,
-    subValidateItems: Collection<SubValidateItem>,
+    subValidateItems: Collection<ValidateItem>,
     indent: String,
-    afterValidCodes: String? = null,
 ) = Function(
     async = true,
     name = handleValidateFnName,
     returnType = "boolean",
     body =
-    if (subValidateItems.isEmpty() && afterValidCodes.isNullOrBlank())
+    if (subValidateItems.isEmpty())
         listOf(
             CodeBlock(
                 "return await $formRef.value?.validate().catch(() => false) ?? false"
             )
         )
-    else listOfNotNull(
-        ConstVariable("formValid", "boolean | undefined", "await $formRef.value?.validate().catch(() => false)"),
-        *subValidateItems.map {
-            ConstVariable(
-                it.validateVariable,
-                "boolean | undefined",
-                "await ${it.ref}.value?.validate().catch(() => false)"
-            )
-        }.toTypedArray(),
-        CodeBlock(
-            buildScopeString(indent) {
-                line()
-                line("if (${(listOf("formValid") + subValidateItems.map { it.validateVariable }).joinToString(" && ")}) {")
-                scope {
-                    afterValidCodes?.let {
-                        block(it)
+    else
+        listOfNotNull(
+            ConstVariable("formValid", "boolean | undefined", "await $formRef.value?.validate().catch(() => false)"),
+            *subValidateItems.map { it.toConst() }.toTypedArray(),
+            CodeBlock(
+                buildScopeString(indent) {
+                    line()
+                    line("if (${(listOf("formValid") + subValidateItems.map { it.name }).joinToString(" && ")}) {")
+                    scope {
+                        line("return true")
                     }
-                    line("return true")
+                    line("} else {")
+                    scope {
+                        line("return false")
+                    }
+                    append("}")
                 }
-                line("} else {")
-                scope {
-                    line("return false")
-                }
-                append("}")
-            }
+            )
         )
-    )
 )
 
 fun exposeValid(indent: String) = CodeBlock(
@@ -153,9 +173,8 @@ val submitEvent = { formData: String, formDataType: String ->
 val submitLoadingProp = Prop(submitLoading, "boolean", false, "false")
 
 fun handleSubmit(
-    formData: String,
+    submitData: String,
     indent: String,
-    emitSubmit: String = "emits(\"submit\", $formData.value)",
 ) = Function(
     async = true,
     name = handleSubmitFnName,
@@ -167,7 +186,7 @@ fun handleSubmit(
                 line("const validResult = await $handleValidateFnName()")
                 line("if (validResult) {")
                 scope {
-                    line(emitSubmit)
+                    line("emits(\"submit\", $submitData)")
                 }
                 append("}")
             }

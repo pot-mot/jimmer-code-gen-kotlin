@@ -26,15 +26,14 @@ data class TsWithGenericType(
 ): TsType {
     fun stringify(builder: StringIndentScopeBuilder) {
         builder.append("$name<")
-        builder.scope {
-            genericTypes.forEach {
-                when(it) {
-                    is TsRawType -> builder.append(it.value)
-                    is TsWithGenericType -> it.stringify(builder)
-                    is TsComplexType -> it.stringify(builder)
-                }
-
-                builder.line()
+        genericTypes.forEachIndexed { index, it ->
+            when(it) {
+                is TsRawType -> builder.append(it.value)
+                is TsWithGenericType -> it.stringify(builder)
+                is TsComplexType -> it.stringify(builder)
+            }
+            if (index != genericTypes.size - 1) {
+                builder.line(", ")
             }
         }
         builder.append(">")

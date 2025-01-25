@@ -24,6 +24,7 @@ import top.potmot.core.business.view.generate.meta.typescript.Function
 import top.potmot.core.business.view.generate.meta.typescript.FunctionArg
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
+import top.potmot.core.business.view.generate.meta.typescript.TsImport
 import top.potmot.core.business.view.generate.meta.typescript.commentLine
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.typescript.stringify
@@ -45,8 +46,10 @@ import top.potmot.utils.map.iterableMapOf
 import top.potmot.utils.string.buildScopeString
 
 fun editTable(
-    type: String,
-    typePath: String,
+    submitTypes: List<String>,
+    submitTypePath: String,
+    dataType: String,
+    dataTypePath: String,
     createDefault: String,
     defaultPath: String,
     useRules: String,
@@ -56,63 +59,89 @@ fun editTable(
     formData: String = "formData",
     formRef: String = "formRef",
     indent: String,
-    subValidateItems: Collection<SubValidateItem> = emptyList(),
-    selectOptions: Iterable<SelectOption> = emptyList(),
-    afterValidCodes: String? = null,
+    subValidateItems: Collection<FormRefValidateItem> = emptyList(),
+    selectOptions: Collection<SelectOption> = emptyList(),
     content: Map<PropertyBusiness, FormItemData>,
-) = Component(
-    imports = listOf(
+) = Component {
+    val submitType = "SubmitType"
+    script += listOf(
+        CodeBlock("type $submitType = ${submitTypes.joinToString(" | ")}"),
+        emptyLineCode,
+    )
+
+    val validateDataForSubmit = "validate${dataType}For$submitType"
+    val assertDataTypeAsSubmitType = "assert${dataType}As$submitType"
+
+    imports += listOf(
         Import("vue", "ref"),
         ImportType("element-plus", "FormInstance"),
         formExposeImport,
-        ImportType(typePath, type),
+        ImportType(submitTypePath, submitTypes),
+        ImportType(dataTypePath, dataType),
+        Import(dataTypePath, validateDataForSubmit, assertDataTypeAsSubmitType),
         Import(defaultPath, createDefault),
         Import(useRulesPath, useRules),
         Import("$storePath/pageSizeStore", "usePageSizeStore"),
         Import("@element-plus/icons-vue", "Plus", "Delete"),
         Import("$utilPath/confirm", "deleteConfirm"),
     )
-            + content.values.flatMap { it.imports }
-            + subValidateItems.map { it.toImport() }
-            + selectOptions.map { it.toImport() },
-    models = listOf(
-        ModelProp(formData, "Array<$type>"),
-    ),
-    props = tableUtilProps(showIndex = false) + listOf(
+    imports += content.values.flatMap { it.imports }
+
+    models += ModelProp(formData, "Array<$dataType>")
+
+    props += tableUtilProps(showIndex = false)
+    props += listOf(
         Prop("withOperations", "boolean", required = false, defaultValue = "false"),
         submitLoadingProp,
-        *selectOptions.map { it.toProp() }.toTypedArray(),
-    ),
-    emits = listOf(
-        submitEvent(formData, "Array<$type>"),
+    )
+    if (selectOptions.isNotEmpty()) {
+        imports += selectOptions.map { it.toImport() }
+        props += selectOptions.map { it.toProp() }
+    }
+
+    emits += listOf(
+        submitEvent(formData, "Array<$submitType>"),
         cancelEvent
-    ),
-    slots = listOf(
-        operationsSlot
-    ),
-    script = listOfNotNull(
+    )
+
+    slots += operationsSlot
+
+    script += listOfNotNull(
         ConstVariable(formRef, null, "ref<FormInstance>()"),
         ConstVariable("rules", null, "$useRules($formData)"),
         emptyLineCode,
         ConstVariable("pageSizeStore", null, "usePageSizeStore()"),
-        emptyLineCode,
-        *subValidateItems.map { it.toRef() }.toTypedArray(),
-        if (subValidateItems.isNotEmpty()) emptyLineCode else null,
+        emptyLineCode
+    )
+
+    if (subValidateItems.isNotEmpty()) {
+        imports += subValidateItems.flatMap { it.imports }
+        script += subValidateItems.map { it.ref }
+        script += emptyLineCode
+    }
+
+    val typeValidateItem = CommonValidateItem(
+        "typeValidate",
+        "boolean",
+        "$validateDataForSubmit($formData.value)"
+    )
+
+    script += listOf(
         commentLine("校验"),
-        handleValidate(formRef, subValidateItems, indent, afterValidCodes),
+        handleValidate(formRef, subValidateItems + typeValidateItem, indent),
         emptyLineCode,
         commentLine("提交"),
-        handleSubmit(formData, indent),
+        handleSubmit("$assertDataTypeAsSubmitType($formData.value)", indent),
         emptyLineCode,
         commentLine("取消"),
         handleCancel,
         emptyLineCode,
         commentLine("多选"),
-        ConstVariable("selection", null, "ref<Array<$type>>([])"),
+        ConstVariable("selection", null, "ref<Array<$dataType>>([])"),
         emptyLineCode,
         Function(
             name = "handleSelectionChange",
-            args = listOf(FunctionArg("newSelection", "Array<$type>")),
+            args = listOf(FunctionArg("newSelection", "Array<$dataType>")),
             body = listOf(CodeBlock("selection.value = newSelection"))
         ),
         emptyLineCode,
@@ -147,92 +176,106 @@ fun editTable(
         ),
         emptyLineCode,
         exposeValid(indent)
-    ),
-    template = listOf(
-        form(
-            model = formData,
-            ref = formRef,
-            rules = "rules",
-            content = listOf(
-                TagElement(
-                    "div",
-                    children = listOf(
-                        button(
-                            content = "新增",
-                            type = PRIMARY,
-                            icon = "Plus"
-                        ).merge {
-                            events += EventBind("click", "handleAdd")
-                        },
-                        button(
-                            content = "删除",
-                            type = DANGER,
-                            icon = "Delete"
-                        ).merge {
-                            events += EventBind("click", "handleBatchDelete")
-                            props += PropBind("disabled", "selection.length === 0")
-                        }
-                    )
-                ),
-                emptyLineElement,
-                table(
-                    data = formData,
-                    rowKey = idPropertyName,
-                    columns = tableUtilColumns(idPropertyName) + content.map { (property, formItemData) ->
-                        tableColumn(
-                            prop = property.name,
-                            label = property.comment,
-                            content = listOf(
-                                formItem(
-                                    prop = "[scope.${'$'}index, '${property.name}']",
-                                    propIsLiteral = false,
-                                    label = property.comment,
-                                    rule = "rules.${property.name}",
-                                    content = formItemData.elements
-                                )
+    )
+
+    template += form(
+        model = formData,
+        ref = formRef,
+        rules = "rules",
+        content = listOf(
+            TagElement(
+                "div",
+                children = listOf(
+                    button(
+                        content = "新增",
+                        type = PRIMARY,
+                        icon = "Plus"
+                    ).merge {
+                        events += EventBind("click", "handleAdd")
+                    },
+                    button(
+                        content = "删除",
+                        type = DANGER,
+                        icon = "Delete"
+                    ).merge {
+                        events += EventBind("click", "handleBatchDelete")
+                        props += PropBind("disabled", "selection.length === 0")
+                    }
+                )
+            ),
+            emptyLineElement,
+            table(
+                data = formData,
+                rowKey = idPropertyName,
+                columns = tableUtilColumns(idPropertyName) + content.map { (property, formItemData) ->
+                    tableColumn(
+                        prop = property.name,
+                        label = property.comment,
+                        content = listOf(
+                            formItem(
+                                prop = "[scope.${'$'}index, '${property.name}']",
+                                propIsLiteral = false,
+                                label = property.comment,
+                                rule = "rules.${property.name}",
+                                content = formItemData.elements
                             )
                         )
-                    } + operationsColumn(
-                        listOf(
-                            button(
-                                icon = "Delete",
-                                type = DANGER,
-                                link = true,
-                            ).merge {
-                                events += EventBind("click", "handleSingleDelete(scope.${'$'}index)")
-                            }
-                        )
                     )
-                ).merge {
-                    events += EventBind("selection-change", "handleSelectionChange")
-                },
-                emptyLineElement,
-                operationsSlotElement.merge {
-                    directives += VIf("withOperations")
-                },
-            ),
-        ).merge {
-            props += PropBind("@submit.prevent", isLiteral = true)
-        }
-    )
-)
+                } + operationsColumn(
+                    listOf(
+                        button(
+                            icon = "Delete",
+                            type = DANGER,
+                            link = true,
+                        ).merge {
+                            events += EventBind("click", "handleSingleDelete(scope.${'$'}index)")
+                        }
+                    )
+                )
+            ).merge {
+                events += EventBind("selection-change", "handleSelectionChange")
+            },
+            emptyLineElement,
+            operationsSlotElement.merge {
+                directives += VIf("withOperations")
+            },
+        ),
+    ).merge {
+        props += PropBind("@submit.prevent", isLiteral = true)
+    }
+}
 
-interface EditTableGen : Generator, FormItem, FormType, FormDefault {
+interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormDefault {
     private fun editTableType(entity: SubEntityBusiness): String {
-        val enumImports = entity.enums.map {
+        val rootEntity = entity.path.rootEntity
+        val dataType = entity.components.editTableType.name
+        val submitTypes = listOfNotNull(
+            if (rootEntity.canAdd) entity.dto.insertInput else null,
+            if (rootEntity.canEdit) entity.dto.updateInput else null
+        )
+        val submitType = submitTypes.joinToString(" | ")
+
+        val imports = mutableListOf<TsImport>()
+
+        imports += Import("$utilPath/message", "sendMessage")
+        imports += Import(staticPath, submitTypes)
+        imports += entity.enums.map {
             ImportType(enumPath, it.name)
         }
 
         return buildScopeString(indent) {
-            lines(enumImports.stringify(indent, wrapThreshold))
+            lines(imports.stringify(indent, wrapThreshold))
+            if (imports.isNotEmpty()) line()
 
-            if (enumImports.isNotEmpty()) line()
-
-            append("export type ${entity.components.editTableType.name} = ")
+            append("export type $dataType = ")
             entity.subFormProperties
                 .formType { it.subFormProperties }
                 .stringify(this)
             line()
+            line()
+
+            entity.subFormProperties
+                .editNullableValid(this, dataType, submitType, listType = true)
         }
     }
 
@@ -262,10 +305,10 @@ interface EditTableGen : Generator, FormItem, FormType, FormDefault {
         ModelException.IndexRefPropertyCannotBeList::class
     )
     private fun editTableRules(entity: SubEntityBusiness): Rules {
-        val editTableRulesProperties = entity.subFormRulesProperties
+        val properties = entity.subFormProperties
         val rules = iterableMapOf(
-            editTableRulesProperties.associateWith { it.rules },
-            entity.existValidRules(withId = false, editTableRulesProperties),
+            properties.associateWith { it.rules },
+            entity.existValidRules(withId = false, properties),
         )
         return Rules(
             functionName = "useRules",
@@ -281,14 +324,24 @@ interface EditTableGen : Generator, FormItem, FormType, FormDefault {
     private fun editTableComponent(entity: SubEntityBusiness): Component {
         val rows = "rows"
 
+        val rootEntity = entity.path.rootEntity
+        val editTableType = entity.components.editTableType
+        val editTableDefault = entity.components.subFormDefault
+        val editTableRules = entity.rules.editTableRules
+
         return editTable(
             formData = rows,
-            type = entity.components.editTableType.name,
-            typePath = staticPath,
+            submitTypes = listOfNotNull(
+                if (rootEntity.canAdd) entity.dto.insertInput else null,
+                if (rootEntity.canEdit) entity.dto.updateInput else null
+            ),
+            submitTypePath = staticPath,
+            dataType = editTableType.name,
+            dataTypePath = "@/" + editTableType.fullPathNoSuffix,
             useRules = "useRules",
-            createDefault = entity.components.subFormDefault.name,
-            defaultPath = "@/" + entity.components.subFormDefault.fullPathNoSuffix,
-            useRulesPath = "@/" + entity.rules.editTableRules.fullPathNoSuffix,
+            createDefault = editTableDefault.name,
+            defaultPath = "@/" + editTableDefault.fullPathNoSuffix,
+            useRulesPath = "@/" + editTableRules.fullPathNoSuffix,
             indent = indent,
             idPropertyName = entity.idProperty.name,
             comment = entity.comment,

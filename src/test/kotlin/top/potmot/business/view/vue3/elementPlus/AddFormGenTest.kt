@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.addForm
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubValidateItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormRefValidateItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.staticPath
 
@@ -16,8 +16,8 @@ class AddFormGenTest {
         val component = addForm(
             "EntityInsertInput",
             staticPath,
-            "EntityAddFormDataType",
-            "@/components/entity/EntityAddFormDataType",
+            "EntityAddFormData",
+            "@/components/entity/EntityAddFormData",
             "createDefaultEntityAddFormData",
             "@/components/entity/createDefaultEntityAddFormData",
             "useRules",
@@ -33,7 +33,7 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
-import type {EntityAddFormDataType} from "@/components/entity/EntityAddFormDataType"
+import type {EntityAddFormData} from "@/components/entity/EntityAddFormData"
 import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 
@@ -60,7 +60,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<EntityAddFormDataType>(createDefaultEntityAddFormData())
+const formData = ref<EntityAddFormData>(createDefaultEntityAddFormData())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -129,8 +129,8 @@ defineExpose<FormExpose>({
         val component = addForm(
             "EntityInsertInput",
             staticPath,
-            "EntityAddFormDataType",
-            "@/components/entity/EntityAddFormDataType",
+            "EntityAddFormData",
+            "@/components/entity/EntityAddFormData",
             "createDefaultEntityAddFormData",
             "@/components/entity/createDefaultEntityAddFormData",
             "useRules",
@@ -138,8 +138,8 @@ defineExpose<FormExpose>({
             indent = "    ",
             content = mapOf(),
             subValidateItems = listOf(
-                SubValidateItem("SubTable1"),
-                SubValidateItem("SubTable2"),
+                FormRefValidateItem("SubTable1"),
+                FormRefValidateItem("SubTable2"),
             )
         )
 
@@ -150,7 +150,7 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
-import type {EntityAddFormDataType} from "@/components/entity/EntityAddFormDataType"
+import type {EntityAddFormData} from "@/components/entity/EntityAddFormData"
 import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 
@@ -177,7 +177,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<EntityAddFormDataType>(createDefaultEntityAddFormData())
+const formData = ref<EntityAddFormData>(createDefaultEntityAddFormData())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -257,8 +257,8 @@ defineExpose<FormExpose>({
         val component = addForm(
             "EntityInsertInput",
             staticPath,
-            "EntityAddFormDataType",
-            "@/components/entity/EntityAddFormDataType",
+            "EntityAddFormData",
+            "@/components/entity/EntityAddFormData",
             "createDefaultEntityAddFormData",
             "@/components/entity/createDefaultEntityAddFormData",
             "useRules",
@@ -282,7 +282,7 @@ import type {
     CustomerOptionView,
     TypeOptionView
 } from "@/api/__generated/model/static"
-import type {EntityAddFormDataType} from "@/components/entity/EntityAddFormDataType"
+import type {EntityAddFormData} from "@/components/entity/EntityAddFormData"
 import {createDefaultEntityAddFormData} from "@/components/entity/createDefaultEntityAddFormData"
 import {useRules} from "@/rules/entity"
 
@@ -311,7 +311,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<EntityAddFormDataType>(createDefaultEntityAddFormData())
+const formData = ref<EntityAddFormData>(createDefaultEntityAddFormData())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)

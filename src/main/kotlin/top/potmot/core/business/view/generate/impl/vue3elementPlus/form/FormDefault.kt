@@ -24,7 +24,9 @@ interface FormDefault {
         } else if (this is EnumProperty && typeNotNull) {
             TsRawValue("\"${enum.defaultItem.name}\"")
         } else {
-            if (this is AssociationProperty && isLongAssociation && typeNotNull)
+            if (editNullable)
+                TsRawValue("undefined")
+            else if (this is AssociationProperty && isLongAssociation && typeNotNull)
                 propertyProducer(typeEntityBusiness).formDefault(propertyProducer)
             else
                 TsRawValue(typeStrToTypeScriptDefault(type, typeNotNull))

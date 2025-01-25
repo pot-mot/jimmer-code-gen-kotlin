@@ -28,7 +28,7 @@ interface IdSelectGen : Generator, IdSelect, IdTreeSelect {
         entity.pageSelectProperties.map {
             idSelectFile(it.typeEntityBusiness, it.listType)
         } +
-                entity.subEntities.flatMap {
+                entity.editSubEntities.flatMap {
                     idSelectFiles(it)
                 }
 }

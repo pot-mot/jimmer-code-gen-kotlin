@@ -28,14 +28,18 @@ sealed class PropertyBusiness(
     val inLongAssociationView: Boolean = property.inLongAssociationView,
     val inLongAssociationInput: Boolean = property.inLongAssociationInput,
 ) {
-    val numberMin by lazy {
-        property.numberMin
+    /**
+     * 在编辑时是否可能为空（因为前端编辑需求，部分属性例如对单短关联 id 就需要可空）
+     */
+    val editNullable by lazy {
+        this is ForceIdViewProperty && associationType.isTargetOne
     }
+}
 
-    val numberMax by lazy {
-        property.numberMax
-    }
-
+data class CommonProperty(
+    override val entityBusiness: EntityBusiness,
+    override val property: TargetOf_properties,
+) : PropertyBusiness(entityBusiness, property) {
     val formType by lazy {
         property.formType
     }
@@ -43,12 +47,15 @@ sealed class PropertyBusiness(
     val queryType by lazy {
         property.queryType
     }
-}
 
-data class CommonProperty(
-    override val entityBusiness: EntityBusiness,
-    override val property: TargetOf_properties,
-) : PropertyBusiness(entityBusiness, property)
+    val numberMin by lazy {
+        property.numberMin
+    }
+
+    val numberMax by lazy {
+        property.numberMax
+    }
+}
 
 data class EnumProperty(
     override val entityBusiness: EntityBusiness,
@@ -169,3 +176,6 @@ fun Iterable<PropertyBusiness>.selfOrShortAssociationToIdView() = map {
         it
     }
 }
+
+val Iterable<PropertyBusiness>.subEntities
+    get() = filterIsInstance<TypeEntityProperty>().map { it.typeEntityBusiness }

@@ -14,6 +14,7 @@ import top.potmot.core.business.view.generate.meta.rules.rules
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
+import top.potmot.core.business.view.generate.meta.typescript.TsImport
 import top.potmot.core.business.view.generate.meta.typescript.commentLine
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.typescript.stringify
@@ -42,93 +43,123 @@ fun addForm(
     formData: String = "formData",
     formRef: String = "formRef",
     indent: String,
-    subValidateItems: Collection<SubValidateItem> = emptyList(),
-    selectOptions: Iterable<SelectOption> = emptyList(),
-    afterValidCodes: String? = null,
+    subValidateItems: Collection<FormRefValidateItem> = emptyList(),
+    selectOptions: Collection<SelectOption> = emptyList(),
     content: Map<PropertyBusiness, FormItemData>,
-) = Component(
-    imports = listOf(
+) = Component {
+    val validateDataForSubmit = "validate${dataType}For$submitType"
+    val assertDataTypeAsSubmitType = "assert${dataType}As$submitType"
+
+    imports += listOf(
         Import("vue", "ref"),
         ImportType("element-plus", "FormInstance"),
         formExposeImport,
         ImportType(submitTypePath, submitType),
         ImportType(dataTypePath, dataType),
+        Import(dataTypePath, validateDataForSubmit, assertDataTypeAsSubmitType),
         Import(defaultPath, createDefault),
         Import(useRulesPath, useRules),
     )
-            + content.values.flatMap { it.imports }
-            + subValidateItems.map { it.toImport() }
-            + selectOptions.map { it.toImport() },
-    props = listOf(
-        Prop("withOperations", "boolean", required = false, defaultValue = "true"),
-        submitLoadingProp,
-        *selectOptions.map { it.toProp() }.toTypedArray(),
-    ),
-    emits = listOf(
-        submitEvent(formData, submitType),
-        cancelEvent
-    ),
-    slots = listOf(
-        operationsSlot
-    ),
-    script = listOfNotNull(
+    imports += content.values.flatMap { it.imports }
+
+    script += listOf(
         ConstVariable(formData, null, "ref<$dataType>($createDefault())"),
         emptyLineCode,
+    )
+    props += listOf(
+        Prop("withOperations", "boolean", required = false, defaultValue = "true"),
+        submitLoadingProp,
+    )
+    if (selectOptions.isNotEmpty()) {
+        imports += selectOptions.map { it.toImport() }
+        props += selectOptions.map { it.toProp() }
+    }
+
+    emits += listOf(
+        submitEvent(formData, submitType),
+        cancelEvent
+    )
+
+    slots += operationsSlot
+
+    script += listOf(
         ConstVariable(formRef, null, "ref<FormInstance>()"),
         ConstVariable("rules", null, "$useRules($formData)"),
-        emptyLineCode,
-        *subValidateItems.map { it.toRef() }.toTypedArray(),
-        if (subValidateItems.isNotEmpty()) emptyLineCode else null,
+        emptyLineCode
+    )
+
+    if (subValidateItems.isNotEmpty()) {
+        imports += subValidateItems.flatMap { it.imports }
+        script += subValidateItems.map { it.ref }
+        script += emptyLineCode
+    }
+
+    val typeValidateItem = CommonValidateItem(
+        "typeValidate",
+        "boolean",
+        "$validateDataForSubmit($formData.value)"
+    )
+
+    script += listOf(
         commentLine("校验"),
-        handleValidate(formRef, subValidateItems, indent, afterValidCodes),
+        handleValidate(formRef, subValidateItems + typeValidateItem, indent),
         emptyLineCode,
         commentLine("提交"),
-        handleSubmit(formData, indent, "emits(\"submit\", $formData.value as $submitType)"),
+        handleSubmit("$assertDataTypeAsSubmitType($formData.value)", indent),
         emptyLineCode,
         commentLine("取消"),
         handleCancel,
         emptyLineCode,
         exposeValid(indent)
-    ),
-    template = listOf(
-        form(
-            model = formData,
-            ref = formRef,
-            rules = "rules",
-            content = content.map { (property, formItemData) ->
-                formItem(
-                    prop = property.name,
-                    label = property.comment,
-                    content = formItemData.elements
-                )
-            } + listOf(
-                emptyLineElement,
-                operationsSlotElement.merge {
-                    directives += VIf("withOperations")
-                },
-            )
-        ).merge {
-            props += PropBind("@submit.prevent", isLiteral = true)
-        }
     )
-)
 
-interface AddFormGen : Generator, FormItem, FormType, FormDefault {
+    template += form(
+        model = formData,
+        ref = formRef,
+        rules = "rules",
+        content = content.map { (property, formItemData) ->
+            formItem(
+                prop = property.name,
+                label = property.comment,
+                content = formItemData.elements
+            )
+        } + listOf(
+            emptyLineElement,
+            operationsSlotElement.merge {
+                directives += VIf("withOperations")
+            },
+        )
+    ).merge {
+        props += PropBind("@submit.prevent", isLiteral = true)
+    }
+}
+
+interface AddFormGen : Generator, FormItem, FormType, EditNullableValid, FormDefault {
     private fun addFormType(entity: RootEntityBusiness): String {
-        val enumImports = entity.enums.map {
+        val dataType = entity.components.addFormType.name
+        val submitType = entity.dto.insertInput
+
+        val imports = mutableListOf<TsImport>()
+
+        imports += Import("$utilPath/message", "sendMessage")
+        imports += Import(staticPath, submitType)
+        imports += entity.enums.map {
             ImportType(enumPath, it.name)
         }
 
         return buildScopeString(indent) {
-            lines(enumImports.stringify(indent, wrapThreshold))
+            lines(imports.stringify(indent, wrapThreshold))
+            if (imports.isNotEmpty()) line()
 
-            if (enumImports.isNotEmpty()) line()
-
-            append("export type ${entity.components.addFormType.name} = ")
+            append("export type $dataType = ")
             entity.addFormProperties
                 .formType { it.subFormProperties }
                 .stringify(this)
             line()
+            line()
+
+            entity.addFormProperties
+                .editNullableValid(this, dataType, submitType)
         }
     }
 
@@ -158,18 +189,18 @@ interface AddFormGen : Generator, FormItem, FormType, FormDefault {
         ModelException.IndexRefPropertyCannotBeList::class
     )
     private fun addFormRules(entity: RootEntityBusiness): Rules {
-        val addFormType = entity.components.addFormType
-        val addFormRulesProperties = entity.addFormRulesProperties
+        val type = entity.components.addFormType
+        val properties = entity.addFormProperties
         val rules = iterableMapOf(
-            addFormRulesProperties.associateWith { it.rules },
-            entity.existValidRules(withId = false, addFormRulesProperties)
+            properties.associateWith { it.rules },
+            entity.existValidRules(withId = false, properties)
         )
 
         return Rules(
             functionName = "useRules",
             formData = "formData",
-            formDataType = addFormType.name,
-            formDataTypePath = "@/" + addFormType.fullPathNoSuffix,
+            formDataType = type.name,
+            formDataTypePath = "@/" + type.fullPathNoSuffix,
             ruleDataType = entity.dto.insertInput,
             ruleDataTypePath = staticPath,
             propertyRules = rules
@@ -178,21 +209,6 @@ interface AddFormGen : Generator, FormItem, FormType, FormDefault {
 
     private fun addFormComponent(entity: RootEntityBusiness): Component {
         val formData = "formData"
-
-        val nullableDiffProperties = entity.addFormEditNullableProperties
-
-        val hasNullableDiffProperties = nullableDiffProperties.isNotEmpty()
-
-        val afterValidCodes = nullableDiffProperties.joinToString("\n\n") {
-            buildScopeString(indent) {
-                line("if (formData.value.${it.name} === undefined) {")
-                scope {
-                    line("sendMessage(\"${it.comment}不可为空\", \"warning\")")
-                    line("return false")
-                }
-                line("}")
-            }
-        }
 
         val addFormType = entity.components.addFormType
         val addFormDefault = entity.components.addFormDefault
@@ -210,14 +226,9 @@ interface AddFormGen : Generator, FormItem, FormType, FormDefault {
             formData = formData,
             indent = indent,
             selectOptions = entity.insertSelectProperties.selectOptions,
-            afterValidCodes = afterValidCodes,
             content = entity.addFormProperties
                 .associateWith { it.createFormItem(formData) }
-        ).merge {
-            if (hasNullableDiffProperties) {
-                imports += Import("$utilPath/message", "sendMessage")
-            }
-        }
+        )
     }
 
     fun addFormFiles(entity: RootEntityBusiness) = listOf(

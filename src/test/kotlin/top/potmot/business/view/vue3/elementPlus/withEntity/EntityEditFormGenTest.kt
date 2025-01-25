@@ -9,6 +9,23 @@ class EntityEditFormGenTest {
     private val generator = Vue3ElementPlusViewGenerator
 
     @Test
+    fun `test editFormType`() {
+        assertEquals(
+            """
+import type {Enum} from "@/api/__generated/model/enums"
+
+export type EntityAddFormType = {
+    enumProperty: Enum
+    enumNullableProperty: Enum | undefined
+    toOnePropertyId: number | undefined
+    toOneNullablePropertyId: number | undefined
+}
+            """.trimIndent(),
+            generator.editFormFiles(testEntityBusiness).first { it.name == "EntityEditFormType.ts" }.content.trim()
+        )
+    }
+
+    @Test
     fun `test editFormRules`() {
         assertEquals(
             """

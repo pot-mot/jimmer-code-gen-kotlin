@@ -1,7 +1,7 @@
 package top.potmot.core.business.dto.generate
 
 import top.potmot.core.business.meta.AssociationProperty
-import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.ForceIdViewProperty
@@ -136,7 +136,30 @@ object DtoGenerator {
         }
     }
 
-    private fun StringIndentScopeBuilder.generateDetailViewBody(entity: EntityBusiness) {
+    private fun StringIndentScopeBuilder.generateLongViewBody(entity: SubEntityBusiness) {
+        val longAssociationViewProperties = entity.longAssociationViewProperties
+
+        line("#allScalars")
+        entity.scalarProperties.exclude(longAssociationViewProperties).forEach {
+            line("-${it.name}")
+        }
+        longAssociationViewProperties.filterIsInstance<AssociationProperty>().forEach {
+            if (it.isLongAssociation) {
+                extractLong(it) { typeEntity ->
+                    generateLongViewBody(typeEntity)
+                }
+            } else if (it.isShortView) {
+                extractShortView(it)
+            } else {
+                line(it.associationIdExpress)
+            }
+        }
+        entity.noColumnProperties.insect(longAssociationViewProperties).forEach {
+            line(it.name)
+        }
+    }
+
+    private fun StringIndentScopeBuilder.generateDetailViewBody(entity: RootEntityBusiness) {
         val detailViewProperties = entity.detailViewProperties
 
         line("#allScalars")
@@ -146,7 +169,7 @@ object DtoGenerator {
         detailViewProperties.filterIsInstance<AssociationProperty>().forEach {
             if (it.isLongAssociation) {
                 extractLong(it) { typeEntity ->
-                    generateDetailViewBody(typeEntity)
+                    generateLongViewBody(typeEntity)
                 }
             } else if (it.isShortView) {
                 extractShortView(it)
@@ -159,8 +182,50 @@ object DtoGenerator {
         }
     }
 
+    private fun StringIndentScopeBuilder.generateLongInputBody(entity: SubEntityBusiness) {
+        val longAssociationInputProperties = entity.longAssociationInputProperties
+
+        line("#allScalars")
+        entity.scalarProperties.exclude(longAssociationInputProperties).forEach {
+            line("-${it.name}")
+        }
+        longAssociationInputProperties.filterIsInstance<AssociationProperty>().forEach {
+            if (it.isLongAssociation) {
+                extractLong(it) { typeEntity ->
+                    generateLongInputBody(typeEntity)
+                }
+            } else {
+                line(it.associationIdExpress)
+            }
+        }
+        entity.noColumnProperties.insect(longAssociationInputProperties).forEach {
+            line(it.name)
+        }
+    }
+
+    private fun StringIndentScopeBuilder.generateLongInputFillViewBody(entity: SubEntityBusiness) {
+        val longAssociationInputProperties = entity.longAssociationInputProperties
+
+        line("#allScalars")
+        entity.scalarProperties.exclude(longAssociationInputProperties).forEach {
+            line("-${it.name}")
+        }
+        longAssociationInputProperties.filterIsInstance<AssociationProperty>().forEach {
+            if (it.isLongAssociation) {
+                extractLong(it) { typeEntity ->
+                    generateLongInputBody(typeEntity)
+                }
+            } else {
+                line(it.associationIdExpress)
+            }
+        }
+        entity.noColumnProperties.insect(longAssociationInputProperties).forEach {
+            line(it.name)
+        }
+    }
+
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun StringIndentScopeBuilder.generateInsertInputBody(entity: EntityBusiness) {
+    private fun StringIndentScopeBuilder.generateInsertInputBody(entity: RootEntityBusiness) {
         val insertInputProperties = entity.insertInputProperties
         val idProperty = entity.idProperty
 
@@ -174,7 +239,7 @@ object DtoGenerator {
         insertInputProperties.filterIsInstance<AssociationProperty>().forEach {
             if (it.isLongAssociation) {
                 extractLong(it) { typeEntity ->
-                    generateInsertInputBody(typeEntity)
+                    generateLongInputBody(typeEntity)
                 }
             } else {
                 line(it.associationIdExpress)
@@ -185,7 +250,7 @@ object DtoGenerator {
         }
     }
 
-    private fun StringIndentScopeBuilder.generateUpdateFillViewBody(entity: EntityBusiness) {
+    private fun StringIndentScopeBuilder.generateUpdateFillViewBody(entity: RootEntityBusiness) {
         val updateInputProperties = entity.updateInputProperties
 
         line("#allScalars")
@@ -195,7 +260,7 @@ object DtoGenerator {
         updateInputProperties.filterIsInstance<AssociationProperty>().forEach {
             if (it.isLongAssociation) {
                 extractLong(it) { typeEntity ->
-                    generateUpdateFillViewBody(typeEntity)
+                    generateLongInputFillViewBody(typeEntity)
                 }
             } else {
                 line(it.associationIdExpress)
@@ -206,14 +271,12 @@ object DtoGenerator {
         }
     }
 
-    private fun StringIndentScopeBuilder.generateUpdateInputBody(
-        entity: EntityBusiness,
-    ) {
+    private fun StringIndentScopeBuilder.generateUpdateInputBody(entity: RootEntityBusiness) {
         val updateInputProperties = entity.updateInputProperties
         val idProperty = entity.idProperty
 
         line("#allScalars")
-        if (entity is RootEntityBusiness && !idProperty.property.idGenerationAnnotation.isNullOrBlank()) {
+        if (!idProperty.property.idGenerationAnnotation.isNullOrBlank()) {
             line(idProperty.name + "!")
         }
         entity.scalarProperties.exclude(updateInputProperties).forEach {
@@ -222,7 +285,7 @@ object DtoGenerator {
         updateInputProperties.filterIsInstance<AssociationProperty>().forEach {
             if (it.isLongAssociation) {
                 extractLong(it) { typeEntity ->
-                    generateUpdateInputBody(typeEntity)
+                    generateLongInputBody(typeEntity)
                 }
             } else {
                 line(it.associationIdExpress)
@@ -251,7 +314,7 @@ object DtoGenerator {
                 is EnumProperty ->
                     listOf("eq(${name})")
 
-                else -> when (queryType) {
+                is CommonProperty -> when (queryType) {
                     PropertyQueryType.EQ ->
                         listOf("eq(${name})")
 

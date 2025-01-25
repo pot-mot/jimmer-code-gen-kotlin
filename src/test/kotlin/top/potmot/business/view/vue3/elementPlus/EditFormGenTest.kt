@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editForm
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubValidateItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormRefValidateItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
 import top.potmot.core.business.view.generate.staticPath
 
@@ -16,8 +16,10 @@ class EditFormGenTest {
         val component = editForm(
             "EntityUpdateInput",
             staticPath,
+            "EntityEditFormData",
+            "@/components/entity/EntityEditFormData",
             "useRules",
-            "@/rules/entity",
+            "@/rules/entity/EntityEditFormRules",
             indent = "    ",
             content = mapOf()
         )
@@ -125,13 +127,15 @@ defineExpose<FormExpose>({
         val component = editForm(
             "EntityUpdateInput",
             staticPath,
+            "EntityEditFormData",
+            "@/components/entity",
             "useRules",
             "@/rules/entity",
             indent = "    ",
             content = mapOf(),
             subValidateItems = listOf(
-                SubValidateItem("SubTable1"),
-                SubValidateItem("SubTable2"),
+                FormRefValidateItem("SubTable1"),
+                FormRefValidateItem("SubTable2"),
             )
         )
 
@@ -249,6 +253,8 @@ defineExpose<FormExpose>({
         val component = editForm(
             "EntityUpdateInput",
             staticPath,
+            "EntityEditFormData",
+            "@/components/entity",
             "useRules",
             "@/rules/entity",
             indent = "    ",

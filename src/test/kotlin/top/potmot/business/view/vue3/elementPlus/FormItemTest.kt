@@ -8,11 +8,11 @@ import top.potmot.business.baseEntity
 import top.potmot.business.enumIdMap
 import top.potmot.business.testEnum
 import top.potmot.business.testEnumBusiness
+import top.potmot.core.business.meta.AssociationPath
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.RootEntityBusiness
-import top.potmot.core.business.meta.emptyAssociationPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormItem
 import top.potmot.core.business.view.generate.meta.typescript.stringify
@@ -422,7 +422,7 @@ import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
 
 
     private val GenEntityBusinessView.TargetOf_properties.associationResult: String
-        get() = AssociationProperty(emptyAssociationPath, mockEntityBusiness, this, null, baseEntity, associationType!!).createFormItem(formData, disabled).let {
+        get() = AssociationProperty(AssociationPath(mockEntityBusiness, emptyList()), mockEntityBusiness, this, null, baseEntity, associationType!!).createFormItem(formData, disabled).let {
             var result: String
             builder.apply {
                 result =

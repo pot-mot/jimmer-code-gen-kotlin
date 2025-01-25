@@ -1,5 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm
 
+import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
@@ -88,7 +89,7 @@ interface QueryFormItem {
                 )
             }
 
-            else -> when (queryType) {
+            is CommonProperty -> when (queryType) {
                 PropertyQueryType.INT_RANGE ->
                     FormItemData(
                         inputNumber(

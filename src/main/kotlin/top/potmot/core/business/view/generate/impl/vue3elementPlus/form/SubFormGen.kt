@@ -12,9 +12,11 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions
 import top.potmot.core.business.view.generate.meta.rules.Rules
 import top.potmot.core.business.view.generate.meta.rules.existValidRules
 import top.potmot.core.business.view.generate.meta.rules.rules
+import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
+import top.potmot.core.business.view.generate.meta.typescript.TsImport
 import top.potmot.core.business.view.generate.meta.typescript.commentLine
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.typescript.stringify
@@ -33,7 +35,7 @@ import top.potmot.utils.map.iterableMapOf
 import top.potmot.utils.string.buildScopeString
 
 fun subForm(
-    submitType: String,
+    submitTypes: List<String>,
     submitTypePath: String,
     dataType: String,
     dataTypePath: String,
@@ -44,87 +46,131 @@ fun subForm(
     formData: String = "formData",
     formRef: String = "formRef",
     indent: String,
-    subValidateItems: Collection<SubValidateItem> = emptyList(),
-    selectOptions: Iterable<SelectOption> = emptyList(),
-    afterValidCodes: String? = null,
+    subValidateItems: Collection<FormRefValidateItem> = emptyList(),
+    selectOptions: Collection<SelectOption> = emptyList(),
     content: Map<PropertyBusiness, FormItemData>,
-) = Component(
-    imports = listOf(
+) = Component {
+    val submitType = "SubmitType"
+    script += listOf(
+        CodeBlock("type $submitType = ${submitTypes.joinToString(" | ")}"),
+        emptyLineCode,
+    )
+
+    val validateDataForSubmit = "validate${dataType}For$submitType"
+    val assertDataTypeAsSubmitType = "assert${dataType}As$submitType"
+
+    imports += listOf(
         Import("vue", "ref"),
         ImportType("element-plus", "FormInstance"),
         formExposeImport,
         ImportType(submitTypePath, submitType),
         ImportType(dataTypePath, dataType),
+        Import(dataTypePath, validateDataForSubmit, assertDataTypeAsSubmitType),
         Import(defaultPath, createDefault),
         Import(useRulesPath, useRules),
     )
-            + content.values.flatMap { it.imports }
-            + subValidateItems.map { it.toImport() }
-            + selectOptions.map { it.toImport() },
-    models = listOf(
-        ModelProp(formData, dataType, required = false, defaultValue = "$createDefault()"),
-    ),
-    props = listOf(
-        Prop("withOperations", "boolean", required = false, defaultValue = "true"),
+    imports += content.values.flatMap { it.imports }
+
+    models += ModelProp(formData, dataType, required = false, defaultValue = "$createDefault()")
+    props += listOf(
+        Prop("withOperations", "boolean", required = false, defaultValue = "false"),
         submitLoadingProp,
-        *selectOptions.map { it.toProp() }.toTypedArray(),
-    ),
-    emits = emptyList(),
-    slots = listOf(
-        operationsSlot
-    ),
-    script = listOfNotNull(
-        ConstVariable(formData, null, "ref<$dataType>($createDefault())"),
-        emptyLineCode,
+    )
+    if (selectOptions.isNotEmpty()) {
+        imports += selectOptions.map { it.toImport() }
+        props += selectOptions.map { it.toProp() }
+    }
+
+    emits += listOf(
+        submitEvent(formData, submitType),
+        cancelEvent
+    )
+
+    slots += operationsSlot
+
+    script += listOf(
         ConstVariable(formRef, null, "ref<FormInstance>()"),
         ConstVariable("rules", null, "$useRules($formData)"),
-        emptyLineCode,
-        *subValidateItems.map { it.toRef() }.toTypedArray(),
-        if (subValidateItems.isNotEmpty()) emptyLineCode else null,
+        emptyLineCode
+    )
+
+    if (subValidateItems.isNotEmpty()) {
+        imports += subValidateItems.flatMap { it.imports }
+        script += subValidateItems.map { it.ref }
+        script += emptyLineCode
+    }
+
+    val typeValidateItem = CommonValidateItem(
+        "typeValidate",
+        "boolean",
+        "$validateDataForSubmit($formData.value)"
+    )
+
+    script += listOf(
         commentLine("校验"),
-        handleValidate(formRef, subValidateItems, indent, afterValidCodes),
+        handleValidate(formRef, subValidateItems + typeValidateItem, indent),
+        emptyLineCode,
+        commentLine("提交"),
+        handleSubmit("$assertDataTypeAsSubmitType($formData.value)", indent),
+        emptyLineCode,
+        commentLine("取消"),
+        handleCancel,
         emptyLineCode,
         exposeValid(indent)
-    ),
-    template = listOf(
-        form(
-            model = formData,
-            ref = formRef,
-            rules = "rules",
-            content = content.map { (property, formItemData) ->
-                formItem(
-                    prop = property.name,
-                    label = property.comment,
-                    content = formItemData.elements
-                )
-            } + listOf(
-                emptyLineElement,
-                operationsSlotElement.merge {
-                    directives += VIf("withOperations")
-                },
-            )
-        ).merge {
-            props += PropBind("@submit.prevent", isLiteral = true)
-        }
     )
-)
 
-interface SubFormGen : Generator, FormItem, FormType, FormDefault, EditTableGen {
+    template += form(
+        model = formData,
+        ref = formRef,
+        rules = "rules",
+        content = content.map { (property, formItemData) ->
+            formItem(
+                prop = property.name,
+                label = property.comment,
+                content = formItemData.elements
+            )
+        } + listOf(
+            emptyLineElement,
+            operationsSlotElement.merge {
+                directives += VIf("withOperations")
+            },
+        )
+    ).merge {
+        props += PropBind("@submit.prevent", isLiteral = true)
+    }
+}
+
+interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDefault, EditTableGen {
     private fun subFormType(entity: SubEntityBusiness): String {
-        val enumImports = entity.enums.map {
+        val rootEntity = entity.path.rootEntity
+        val dataType = entity.components.editTableType.name
+        val submitTypes = listOfNotNull(
+            if (rootEntity.canAdd) entity.dto.insertInput else null,
+            if (rootEntity.canEdit) entity.dto.updateInput else null
+        )
+        val submitType = submitTypes.joinToString(" | ")
+
+        val imports = mutableListOf<TsImport>()
+
+        imports += Import("$utilPath/message", "sendMessage")
+        imports += Import(staticPath, submitTypes)
+        imports += entity.enums.map {
             ImportType(enumPath, it.name)
         }
 
         return buildScopeString(indent) {
-            lines(enumImports.stringify(indent, wrapThreshold))
+            lines(imports.stringify(indent, wrapThreshold))
+            if (imports.isNotEmpty()) line()
 
-            if (enumImports.isNotEmpty()) line()
-
-            append("export type ${entity.components.subFormType.name} = ")
+            append("export type $dataType = ")
             entity.subFormProperties
                 .formType { it.subFormProperties }
                 .stringify(this)
             line()
+            line()
+
+            entity.subFormProperties
+                .editNullableValid(this, dataType, submitType)
         }
     }
 
@@ -154,18 +200,18 @@ interface SubFormGen : Generator, FormItem, FormType, FormDefault, EditTableGen 
         ModelException.IndexRefPropertyCannotBeList::class
     )
     private fun subFormRules(entity: SubEntityBusiness): Rules {
-        val subFormType = entity.components.subFormType
-        val subFormRulesProperties = entity.subFormRulesProperties
+        val type = entity.components.subFormType
+        val properties = entity.subFormProperties
         val rules = iterableMapOf(
-            subFormRulesProperties.associateWith { it.rules },
-            entity.existValidRules(withId = false, subFormRulesProperties)
+            properties.associateWith { it.rules },
+            entity.existValidRules(withId = false, properties)
         )
 
         return Rules(
             functionName = "useRules",
             formData = "formData",
-            formDataType = subFormType.name,
-            formDataTypePath = "@/" + subFormType.fullPathNoSuffix,
+            formDataType = type.name,
+            formDataTypePath = "@/" + type.fullPathNoSuffix,
             ruleDataType = entity.dto.insertInput,
             ruleDataTypePath = staticPath,
             propertyRules = rules
@@ -175,27 +221,16 @@ interface SubFormGen : Generator, FormItem, FormType, FormDefault, EditTableGen 
     private fun subFormComponent(entity: SubEntityBusiness): Component {
         val formData = "formData"
 
-        val nullableDiffProperties = entity.subFormEditNullableProperties
-
-        val hasNullableDiffProperties = nullableDiffProperties.isNotEmpty()
-
-        val afterValidCodes = nullableDiffProperties.joinToString("\n\n") {
-            buildScopeString(indent) {
-                line("if (formData.value.${it.name} === undefined) {")
-                scope {
-                    line("sendMessage(\"${it.comment}不可为空\", \"warning\")")
-                    line("return false")
-                }
-                line("}")
-            }
-        }
-
+        val rootEntity = entity.path.rootEntity
         val subFormType = entity.components.subFormType
         val subFormDefault = entity.components.subFormDefault
         val subFormRules = entity.rules.subFormRules
 
         return subForm(
-            submitType = entity.dto.insertInput,
+            submitTypes = listOfNotNull(
+                if (rootEntity.canAdd) entity.dto.insertInput else null,
+                if (rootEntity.canEdit) entity.dto.updateInput else null
+            ),
             submitTypePath = staticPath,
             dataType = subFormType.name,
             dataTypePath = "@/" + subFormType.fullPathNoSuffix,
@@ -206,24 +241,19 @@ interface SubFormGen : Generator, FormItem, FormType, FormDefault, EditTableGen 
             formData = formData,
             indent = indent,
             selectOptions = entity.insertSelectProperties.selectOptions,
-            afterValidCodes = afterValidCodes,
             content = entity.subFormProperties
                 .associateWith { it.createFormItem(formData) }
-        ).merge {
-            if (hasNullableDiffProperties) {
-                imports += Import("$utilPath/message", "sendMessage")
-            }
-        }
+        )
     }
 
-    private fun subFormFiles(entity: SubEntityBusiness) = listOf(
+    private fun subFormFiles(entity: SubEntityBusiness, typeNotNull: Boolean) = listOfNotNull(
         GenerateFile(
             entity,
             entity.components.subFormType.fullPath,
             subFormType(entity),
             listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubForm, GenerateTag.FormType),
         ),
-        GenerateFile(
+        if (typeNotNull) null else GenerateFile(
             entity,
             entity.components.subFormDefault.fullPath,
             subFormDefault(entity),
@@ -246,12 +276,12 @@ interface SubFormGen : Generator, FormItem, FormType, FormDefault, EditTableGen 
     fun deepSubFormFiles(entity: EntityBusiness): List<GenerateFile> {
         val result = mutableListOf<GenerateFile>()
 
-        entity.subEntityMap.forEach { (property, entity) ->
+        entity.editSubEntityMap.forEach { (property, entity) ->
             result +=
                 if (property.listType) {
                     editTableFiles(entity)
                 } else {
-                    subFormFiles(entity)
+                    subFormFiles(entity, property.typeNotNull)
                 }
 
             result += deepSubFormFiles(entity)

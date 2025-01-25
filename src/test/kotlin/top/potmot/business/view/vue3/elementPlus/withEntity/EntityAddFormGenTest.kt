@@ -21,7 +21,7 @@ export type EntityAddFormType = {
     toOneNullablePropertyId: number | undefined
 }
             """.trimIndent(),
-            generator.addFormFiles(testEntityBusiness).first { it.name == "EntityAddFormType.d.ts" }.content.trim()
+            generator.addFormFiles(testEntityBusiness).first { it.name == "EntityAddFormType.ts" }.content.trim()
         )
     }
 

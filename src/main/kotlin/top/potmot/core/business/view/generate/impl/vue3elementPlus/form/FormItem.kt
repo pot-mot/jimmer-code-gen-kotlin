@@ -1,6 +1,7 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
 import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
@@ -106,7 +107,7 @@ interface FormItem {
                 )
             }
 
-            else -> {
+            is CommonProperty -> {
                 when (formType) {
                     PropertyFormType.SWITCH ->
                         FormItemData(

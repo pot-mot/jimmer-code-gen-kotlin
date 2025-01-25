@@ -165,7 +165,7 @@ class GenerateService(
                 }
 
             GenerateResult(
-                files,
+                files.sortedBy { it.path },
                 tableEntityPairs
             )
         }
