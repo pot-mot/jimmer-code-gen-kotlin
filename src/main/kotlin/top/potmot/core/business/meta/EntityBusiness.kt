@@ -6,6 +6,33 @@ import top.potmot.enumeration.AssociationType
 import top.potmot.error.GenerateException
 import top.potmot.error.ModelException
 
+// 不是长关联就转换成 IdView，适用于查询场景
+private fun Iterable<PropertyBusiness>.`force to IdView`() = map {
+    if (it is AssociationProperty) {
+        it.forceToIdView()
+    } else {
+        it
+    }
+}
+
+// 不是长关联就转换成 IdView，适用于编辑场景
+private fun Iterable<PropertyBusiness>.`notLong force to IdView`() = map {
+    if (it is AssociationProperty && !it.isLongAssociation) {
+        it.forceToIdView()
+    } else {
+        it
+    }
+}
+
+// 不是长关联且不是短关联视图才转换成 IdView，适用于视图场景
+private fun Iterable<PropertyBusiness>.`notLong and notShortView force to IdView`() = map {
+    if (it is AssociationProperty && !it.isLongAssociation && !it.isShortView) {
+        it.forceToIdView()
+    } else {
+        it
+    }
+}
+
 sealed class EntityBusiness(
     val entity: GenEntityBusinessView,
     val entityIdMap: Map<Long, GenEntityBusinessView>,
@@ -266,17 +293,18 @@ sealed class EntityBusiness(
 
     val optionViewProperties by lazy {
         properties
-            .filter { it.inOptionView }
+            .filter { it.inOptionView && (if (isTree) it.id != parentProperty.id else true) }
     }
 
     val optionLabelProperties by lazy {
         if (optionViewProperties.size > 1) {
             optionViewProperties.filter {
-                !it.property.idProperty && it.property.typeEntityId != entity.id
+                !it.property.idProperty
             }
         } else {
             optionViewProperties
         }
+            .`notLong and notShortView force to IdView`()
     }
 
 
@@ -297,7 +325,7 @@ sealed class EntityBusiness(
 
                 !it.property.idProperty && notParentProperty
             }
-            .selfOrShortAssociationToIdView()
+            .`notLong force to IdView`()
     }
 
     val detailViewProperties by lazy {
@@ -308,7 +336,7 @@ sealed class EntityBusiness(
     val viewFormProperties by lazy {
         detailViewProperties
             .filter { !it.property.idProperty }
-            .selfOrShortAssociationToIdView()
+            .`notLong and notShortView force to IdView`()
     }
 
 
@@ -316,28 +344,17 @@ sealed class EntityBusiness(
         properties
             .filter { it.inSpecification }
     }
-
     private val `queryFormProperties nullable not change` by lazy {
         specificationProperties
             .filter {
                 !it.property.idProperty &&
                         (it.property.associationType == null || it.property.associationType!!.isTargetOne)
             }
-            .selfOrShortAssociationToIdView()
+            .`force to IdView`()
     }
-
     val queryFormProperties by lazy {
         `queryFormProperties nullable not change`.map {
-            when (it) {
-                is CommonProperty -> it.copy(property = it.property.copy(typeNotNull = false))
-                is EnumProperty -> it.copy(property = it.property.copy(typeNotNull = false))
-                is AssociationProperty -> it.copy(
-                    property = it.property.copy(typeNotNull = false),
-                    idView = it.idView?.copy(typeNotNull = false)
-                )
-
-                is ForceIdViewProperty -> it.copy(property = it.property.copy(typeNotNull = false))
-            }
+            it.toNullable()
         }
     }
 
@@ -348,7 +365,7 @@ sealed class EntityBusiness(
     }
     val addFormProperties by lazy {
         insertInputProperties
-            .selfOrShortAssociationToIdView()
+            .`notLong force to IdView`()
     }
 
 
@@ -358,8 +375,11 @@ sealed class EntityBusiness(
     }
     val editFormProperties by lazy {
         updateInputProperties
+            .`notLong force to IdView`()
+    }
+    val editFormNoIdProperties by lazy {
+        editFormProperties
             .filter { !it.property.idProperty }
-            .selfOrShortAssociationToIdView()
     }
 
 
@@ -398,7 +418,13 @@ sealed class EntityBusiness(
 
 
     val pageSelectPairs by lazy {
-        (insertSelectPairs + updateSelectPairs + specificationSelectPairs)
+        val result = mutableListOf<Pair<ForceIdViewProperty, SelectOption>>()
+
+        if (entity.canAdd) result += insertSelectPairs
+        if (entity.canEdit) result += updateSelectPairs
+        if (entity.canQuery) result += specificationSelectPairs
+
+        result
             .distinctBy { it.first }
     }
     val pageSelects by lazy {
@@ -469,10 +495,18 @@ class SubEntityBusiness(
         properties
             .filter { it.inLongAssociationInput }
     }
-    val subFormProperties by lazy {
+    val subEditProperties by lazy {
         longAssociationInputProperties
+            .map {
+                if (it.property.idProperty) {
+                    it.toNullable()
+                } else it
+            }
+            .`notLong force to IdView`()
+    }
+    val subEditNoIdProperties by lazy {
+        subEditProperties
             .filter { !it.property.idProperty }
-            .selfOrShortAssociationToIdView()
     }
 
 
@@ -480,17 +514,17 @@ class SubEntityBusiness(
         properties
             .filter { it.inLongAssociationView }
     }
-    val viewSubTableProperties by lazy {
+    val subViewProperties by lazy {
         longAssociationViewProperties
             .filter { !it.property.idProperty }
-            .selfOrShortAssociationToIdView()
+            .`notLong and notShortView force to IdView`()
     }
 
     val subFormSelectPairs: List<Pair<ForceIdViewProperty, SelectOption>> by lazy {
-        subFormProperties
+        subEditProperties
             .filterIsInstance<ForceIdViewProperty>()
             .map { it to it.selectOption } +
-                subFormProperties
+                subEditProperties
                     .filterIsInstance<AssociationProperty>()
                     .filter { it.inLongAssociationInput }
                     .flatMap { it.typeEntityBusiness.subFormSelectPairs }

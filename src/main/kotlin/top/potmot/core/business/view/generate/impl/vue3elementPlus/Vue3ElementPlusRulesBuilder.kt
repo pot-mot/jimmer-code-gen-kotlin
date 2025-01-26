@@ -1,6 +1,5 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
-import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.view.generate.builder.rules.RulesBuilder
 import top.potmot.core.business.view.generate.enumPath
@@ -49,14 +48,8 @@ class Vue3ElementPlusRulesBuilder(
         val body = buildScopeString(indent) {
             line("return {")
             scope {
-                propertyRules.forEach { (propertyBusiness, rules) ->
-                    val name = if (propertyBusiness is AssociationProperty) {
-                        propertyBusiness.nameWithId
-                    } else {
-                        propertyBusiness.property.name
-                    }
-
-                    line("${name}: [")
+                propertyRules.forEach { (property, rules) ->
+                    line("${property.name}: [")
                     rules.forEach { rule ->
                         if (!hasExistValidRule) hasExistValidRule = rule is ExistValidRule
                         scope {

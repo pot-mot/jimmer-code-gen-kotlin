@@ -20,18 +20,19 @@ interface FormType {
 
     fun PropertyBusiness.formType(propertyProducer: (entity: SubEntityBusiness) -> Iterable<PropertyBusiness>): TsType {
         val formItemTypeNotNull = if (editNullable && typeNotNull) false else typeNotNull
+        val canUndefined = !formItemTypeNotNull
 
         if (this is EnumProperty) {
-            return TsRawType(typeStrToTypeScriptType(enum.name, formItemTypeNotNull))
+            return TsRawType(typeStrToTypeScriptType(enum.name, formItemTypeNotNull), canUndefined = canUndefined)
         }
 
         val baseType = if (this is AssociationProperty && isLongAssociation)
-            propertyProducer(typeEntityBusiness).formType(canUndefined = !formItemTypeNotNull, propertyProducer)
+            propertyProducer(typeEntityBusiness).formType(canUndefined, propertyProducer)
         else
-            TsRawType(typeStrToTypeScriptType(type, formItemTypeNotNull))
+            TsRawType(typeStrToTypeScriptType(type, formItemTypeNotNull), canUndefined = canUndefined)
 
         return if (listType) {
-            TsWithGenericType("Array", baseType)
+            TsWithGenericType("Array", baseType, canUndefined = canUndefined)
         } else {
             baseType
         }

@@ -18,15 +18,15 @@ enum class PropertyQueryType {
 }
 
 private val intRangeType = setOf(
+    Short::class.qualifiedName,
+    "short",
+    "java.lang.Short",
     Int::class.qualifiedName,
     "int",
     "java.lang.Integer",
     Long::class.qualifiedName,
     "long",
     "java.lang.Long",
-    Short::class.qualifiedName,
-    "short",
-    "java.lang.Short",
 )
 
 private val floatRangeType = setOf(

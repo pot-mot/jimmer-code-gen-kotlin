@@ -34,6 +34,18 @@ sealed class PropertyBusiness(
     val editNullable by lazy {
         this is ForceIdViewProperty && associationType.isTargetOne
     }
+
+    fun toNullable() = when (this) {
+        is CommonProperty -> copy(property = property.copy(typeNotNull = false))
+        is EnumProperty -> copy(property = property.copy(typeNotNull = false))
+        is AssociationProperty -> copy(
+            property = property.copy(typeNotNull = false),
+            idView = idView?.copy(typeNotNull = false)
+        )
+        is ForceIdViewProperty -> copy(
+            property = property.copy(typeNotNull = false),
+        )
+    }
 }
 
 data class CommonProperty(
@@ -70,6 +82,7 @@ sealed interface TypeEntityProperty {
     val isTargetOne: Boolean
     val isShortView: Boolean
     val typeEntityBusiness: SubEntityBusiness
+    val selectOption: SelectOption
 }
 
 data class AssociationProperty(
@@ -149,6 +162,19 @@ data class AssociationProperty(
             associationType = associationType,
         )
     }
+
+    override val selectOption by lazy {
+        val selectOptionName = path.propertyItems.joinToString("") { it.property.name.replaceFirstChar { c -> c.uppercaseChar() } }.replaceFirstChar { c -> c.lowercaseChar() } + "Options"
+        val selectOptionComment = path.propertyItems.joinToString("-") { it.property.comment } + "选项"
+
+        SelectOption(
+            selectOptionName,
+            selectOptionComment,
+            typeEntityBusiness.dto.optionView,
+            staticPath,
+            typeEntityBusiness.apiServiceName,
+        )
+    }
 }
 
 data class ForceIdViewProperty(
@@ -167,8 +193,8 @@ data class ForceIdViewProperty(
         associationProperty.typeEntityBusiness
     }
 
-    val selectOption by lazy {
-        val selectOptionName = path.propertyItems.joinToString("") { it.property.name } + "Options"
+    override val selectOption by lazy {
+        val selectOptionName = path.propertyItems.joinToString("") { it.property.name.replaceFirstChar { c -> c.uppercaseChar() } }.replaceFirstChar { c -> c.lowercaseChar() } + "Options"
         val selectOptionComment = path.propertyItems.joinToString("-") { it.property.comment } + "选项"
 
         SelectOption(
@@ -178,14 +204,5 @@ data class ForceIdViewProperty(
             staticPath,
             typeEntityBusiness.apiServiceName,
         )
-    }
-}
-
-
-fun Iterable<PropertyBusiness>.selfOrShortAssociationToIdView() = map {
-    if (it is AssociationProperty && !it.isLongAssociation) {
-        it.forceToIdView()
-    } else {
-        it
     }
 }

@@ -51,13 +51,14 @@ interface QueryFormItem {
             is TypeEntityProperty -> {
                 val components = typeEntityBusiness.components
                 val component = if (listType) components.idMultiSelect else components.idSelect
+
                 FormItemData(
                     elements = listOf(
                         TagElement(
                             component.name,
                             directives = listOf(VModel(modelValue)),
                             props = listOf(
-                                PropBind("options", "${name}Options"),
+                                PropBind("options", selectOption.name),
                             )
                         )
                     ),

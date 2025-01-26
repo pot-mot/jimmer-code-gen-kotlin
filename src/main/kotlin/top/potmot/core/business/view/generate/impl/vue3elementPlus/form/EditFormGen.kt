@@ -45,8 +45,8 @@ fun editForm(
     selectOptions: Collection<SelectOption> = emptyList(),
     content: Map<PropertyBusiness, FormItemData>,
 ) = Component {
-    val validateDataForSubmit = "validate${dataType}For$submitType"
-    val assertDataTypeAsSubmitType = "assert${dataType}As$submitType"
+    val validateDataForSubmit = "validate${dataType}ForSubmit"
+    val assertDataTypeAsSubmitType = "assert${dataType}AsSubmitType"
 
     imports += listOf(
         Import("vue", "ref"),
@@ -136,7 +136,7 @@ interface EditFormGen : Generator, FormType, EditNullableValid, FormItem {
         val imports = mutableListOf<TsImport>()
 
         imports += Import("$utilPath/message", "sendMessage")
-        imports += Import(staticPath, submitType)
+        imports += ImportType(staticPath, submitType)
         imports += entity.enums.map {
             ImportType(enumPath, it.name)
         }
@@ -147,7 +147,7 @@ interface EditFormGen : Generator, FormType, EditNullableValid, FormItem {
 
             append("export type $dataType = ")
             entity.editFormProperties
-                .formType { it.subFormProperties }
+                .formType { it.subEditProperties }
                 .stringify(this)
             line()
             line()
@@ -163,7 +163,8 @@ interface EditFormGen : Generator, FormType, EditNullableValid, FormItem {
         ModelException.IndexRefPropertyCannotBeList::class
     )
     private fun editFormRules(entity: RootEntityBusiness): Rules {
-        val properties = entity.editFormProperties
+        val type = entity.components.editFormType
+        val properties = entity.editFormNoIdProperties
         val rules = iterableMapOf(
             properties.associateWith { it.rules },
             entity.existValidRules(withId = true, properties)
@@ -171,8 +172,10 @@ interface EditFormGen : Generator, FormType, EditNullableValid, FormItem {
         return Rules(
             functionName = "useRules",
             formData = "formData",
-            formDataType = entity.dto.updateInput,
-            formDataTypePath = staticPath,
+            formDataType = type.name,
+            formDataTypePath = "@/" + type.fullPathNoSuffix,
+            ruleDataType = entity.dto.updateInput,
+            ruleDataTypePath = staticPath,
             propertyRules = rules
         )
     }
@@ -194,7 +197,7 @@ interface EditFormGen : Generator, FormType, EditNullableValid, FormItem {
             useRulesPath = "@/" + editFormRules.fullPathNoSuffix,
             indent = indent,
             selectOptions = entity.updateSelects,
-            content = entity.editFormProperties
+            content = entity.editFormNoIdProperties
                 .associateWith {
                     it.createFormItem(
                         formData,

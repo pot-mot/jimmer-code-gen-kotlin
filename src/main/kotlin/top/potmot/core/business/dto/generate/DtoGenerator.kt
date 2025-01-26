@@ -56,7 +56,11 @@ object DtoGenerator {
         } else {
             dtoBlock(property.name) {
                 shortViewProperties.forEach {
-                    line(it.name)
+                    if (it is AssociationProperty) {
+                        extractShortView(it)
+                    } else {
+                        line(it.name)
+                    }
                 }
             }
         }
@@ -123,13 +127,15 @@ object DtoGenerator {
         val optionViewProperties = entity.optionViewProperties
 
         if (entity.isTree) {
-            line("id(${entity.parentProperty.name})")
+            if (entity.parentProperty.idView != null) {
+                line(entity.parentIdProperty.name)
+            } else {
+                line("id(${entity.parentProperty.name})")
+            }
         }
         optionViewProperties.forEach {
             if (it is AssociationProperty) {
-                if (it.typeEntity.id != entity.id) {
-                    line(it.associationIdExpress)
-                }
+                extractShortView(it)
             } else {
                 line(it.name)
             }

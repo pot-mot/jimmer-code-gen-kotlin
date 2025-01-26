@@ -38,6 +38,7 @@ fun subForm(
     submitTypePath: String,
     dataType: String,
     dataTypePath: String,
+    typeNotNull: Boolean,
     createDefault: String,
     defaultPath: String,
     useRules: String,
@@ -55,22 +56,27 @@ fun subForm(
         emptyLineCode,
     )
 
-    val validateDataForSubmit = "validate${dataType}For$submitType"
-    val assertDataTypeAsSubmitType = "assert${dataType}As$submitType"
+    val validateDataForSubmit = "validate${dataType}ForSubmit"
+    val assertDataTypeAsSubmitType = "assert${dataType}AsSubmitType"
 
     imports += listOf(
         Import("vue", "ref"),
         ImportType("element-plus", "FormInstance"),
         formExposeImport,
-        ImportType(submitTypePath, submitType),
+        ImportType(submitTypePath, submitTypes),
         ImportType(dataTypePath, dataType),
         Import(dataTypePath, validateDataForSubmit, assertDataTypeAsSubmitType),
-        Import(defaultPath, createDefault),
         Import(useRulesPath, useRules),
     )
     imports += content.values.flatMap { it.imports }
 
-    models += ModelProp(formData, dataType, required = false, defaultValue = "$createDefault()")
+    if (typeNotNull) {
+        models += ModelProp(formData, dataType)
+    } else {
+        imports += Import(defaultPath, createDefault)
+        models += ModelProp(formData, dataType, required = false, defaultValue = "$createDefault()")
+    }
+
     props += listOf(
         Prop("withOperations", "boolean", required = false, defaultValue = "false"),
         submitLoadingProp,
@@ -142,7 +148,7 @@ fun subForm(
 interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDefault, EditTableGen {
     private fun subFormType(entity: SubEntityBusiness): String {
         val rootEntity = entity.path.rootEntity
-        val dataType = entity.components.editTableType.name
+        val dataType = entity.components.subFormType.name
         val submitTypes = listOfNotNull(
             if (rootEntity.canAdd) entity.dto.insertInput else null,
             if (rootEntity.canEdit) entity.dto.updateInput else null
@@ -152,7 +158,7 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
         val imports = mutableListOf<TsImport>()
 
         imports += Import("$utilPath/message", "sendMessage")
-        imports += Import(staticPath, submitTypes)
+        imports += ImportType(staticPath, submitTypes)
         imports += entity.enums.map {
             ImportType(enumPath, it.name)
         }
@@ -162,13 +168,13 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
             if (imports.isNotEmpty()) line()
 
             append("export type $dataType = ")
-            entity.subFormProperties
-                .formType { it.subFormProperties }
+            entity.subEditProperties
+                .formType { it.subEditProperties }
                 .stringify(this)
             line()
             line()
 
-            entity.subFormProperties
+            entity.subEditNoIdProperties
                 .editNullableValid(this, dataType, submitType)
         }
     }
@@ -184,8 +190,8 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
             line("export const $createDefault = (): $type => {")
             scope {
                 append("return ")
-                entity.subFormProperties
-                    .formDefault { it.subFormProperties }
+                entity.subEditProperties
+                    .formDefault { it.subEditProperties }
                     .stringify(this)
                 line()
             }
@@ -200,7 +206,7 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
     )
     private fun subFormRules(entity: SubEntityBusiness): Rules {
         val type = entity.components.subFormType
-        val properties = entity.subFormProperties
+        val properties = entity.subEditNoIdProperties
         val rules = iterableMapOf(
             properties.associateWith { it.rules },
             entity.existValidRules(withId = false, properties)
@@ -217,7 +223,7 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
         )
     }
 
-    private fun subFormComponent(entity: SubEntityBusiness): Component {
+    private fun subFormComponent(entity: SubEntityBusiness, typeNotNull: Boolean): Component {
         val formData = "formData"
 
         val rootEntity = entity.path.rootEntity
@@ -233,6 +239,7 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
             submitTypePath = staticPath,
             dataType = subFormType.name,
             dataTypePath = "@/" + subFormType.fullPathNoSuffix,
+            typeNotNull = typeNotNull,
             createDefault = subFormDefault.name,
             defaultPath = "@/" + subFormDefault.fullPathNoSuffix,
             useRules = "useRules",
@@ -240,32 +247,32 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
             formData = formData,
             indent = indent,
             selectOptions = entity.subFormSelects,
-            content = entity.subFormProperties
+            content = entity.subEditNoIdProperties
                 .associateWith { it.createFormItem(formData) }
         )
     }
 
     private fun subFormFiles(entity: SubEntityBusiness, typeNotNull: Boolean) = listOfNotNull(
         GenerateFile(
-            entity,
+            entity.path.rootEntity,
             entity.components.subFormType.fullPath,
             subFormType(entity),
             listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubForm, GenerateTag.FormType),
         ),
         if (typeNotNull) null else GenerateFile(
-            entity,
+            entity.path.rootEntity,
             entity.components.subFormDefault.fullPath,
             subFormDefault(entity),
             listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubForm, GenerateTag.FormDefault),
         ),
         GenerateFile(
-            entity,
+            entity.path.rootEntity,
             entity.components.subForm.fullPath,
-            stringify(subFormComponent(entity)),
+            stringify(subFormComponent(entity, typeNotNull)),
             listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.SubForm),
         ),
         GenerateFile(
-            entity,
+            entity.path.rootEntity,
             entity.rules.subFormRules.fullPath,
             stringify(subFormRules(entity)),
             listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.FormRules, GenerateTag.SubForm),

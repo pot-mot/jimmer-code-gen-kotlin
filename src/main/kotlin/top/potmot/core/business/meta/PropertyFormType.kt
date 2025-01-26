@@ -19,15 +19,15 @@ enum class PropertyFormType {
 }
 
 private val intType = setOf(
+    Short::class.qualifiedName,
+    "short",
+    "java.lang.Short",
     Int::class.qualifiedName,
     "int",
     "java.lang.Integer",
     Long::class.qualifiedName,
     "long",
     "java.lang.Long",
-    Short::class.qualifiedName,
-    "short",
-    "java.lang.Short",
 )
 
 private val floatType = setOf(

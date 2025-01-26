@@ -3,6 +3,7 @@ package top.potmot.core.business.view.generate.meta.rules
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.meta.TypeEntityProperty
 import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.apiPath
 import top.potmot.core.business.view.generate.meta.typescript.Import
@@ -181,7 +182,7 @@ data class ExistValidRule(
                 property.name
             }
         val propertyType =
-            if (property is AssociationProperty) {
+            if (property is TypeEntityProperty) {
                 val typeEntityIdProperty = property.typeEntityBusiness.idProperty
                 typeStrToTypeScriptType(typeEntityIdProperty.type, property.typeNotNull)
             } else {
@@ -234,8 +235,8 @@ data class Rules(
     val formDataType: String,
     val formDataTypePath: String,
 
-    val ruleDataType: String = formDataType,
-    val ruleDataTypePath: String = formDataTypePath,
+    val ruleDataType: String,
+    val ruleDataTypePath: String,
 
     val propertyRules: Map<PropertyBusiness, Iterable<Rule>>,
 )

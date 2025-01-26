@@ -68,8 +68,8 @@ fun editTable(
         emptyLineCode,
     )
 
-    val validateDataForSubmit = "validate${dataType}For$submitType"
-    val assertDataTypeAsSubmitType = "assert${dataType}As$submitType"
+    val validateDataForSubmit = "validate${dataType}ForSubmit"
+    val assertDataTypeAsSubmitType = "assert${dataType}AsSubmitType"
 
     imports += listOf(
         Import("vue", "ref"),
@@ -257,7 +257,7 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
         val imports = mutableListOf<TsImport>()
 
         imports += Import("$utilPath/message", "sendMessage")
-        imports += Import(staticPath, submitTypes)
+        imports += ImportType(staticPath, submitTypes)
         imports += entity.enums.map {
             ImportType(enumPath, it.name)
         }
@@ -267,13 +267,13 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
             if (imports.isNotEmpty()) line()
 
             append("export type $dataType = ")
-            entity.subFormProperties
-                .formType { it.subFormProperties }
+            entity.subEditProperties
+                .formType { it.subEditProperties }
                 .stringify(this)
             line()
             line()
 
-            entity.subFormProperties
+            entity.subEditNoIdProperties
                 .editNullableValid(this, dataType, submitType, listType = true)
         }
     }
@@ -289,8 +289,8 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
             line("export const $createDefault = (): $type => {")
             scope {
                 append("return ")
-                entity.subFormProperties
-                    .formDefault { it.subFormProperties }
+                entity.subEditProperties
+                    .formDefault { it.subEditProperties }
                     .stringify(this)
                 line()
             }
@@ -304,7 +304,8 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
         ModelException.IndexRefPropertyCannotBeList::class
     )
     private fun editTableRules(entity: SubEntityBusiness): Rules {
-        val properties = entity.subFormProperties
+        val type = entity.components.editTableType
+        val properties = entity.subEditNoIdProperties
         val rules = iterableMapOf(
             properties.associateWith { it.rules },
             entity.existValidRules(withId = false, properties),
@@ -313,8 +314,10 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
             functionName = "useRules",
             isPlural = true,
             formData = "formData",
-            formDataType = entity.dto.updateInput,
-            formDataTypePath = staticPath,
+            formDataType = type.name,
+            formDataTypePath = "@/" + type.fullPathNoSuffix,
+            ruleDataType = entity.dto.updateInput,
+            ruleDataTypePath = staticPath,
             propertyRules = rules,
         )
     }
@@ -345,7 +348,7 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
             idPropertyName = entity.idProperty.name,
             comment = entity.comment,
             selectOptions = entity.subFormSelects,
-            content = entity.subFormProperties
+            content = entity.subEditNoIdProperties
                 .associateWith {
                     it.createFormItem(
                         "scope.row",
@@ -359,25 +362,25 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
 
     fun editTableFiles(entity: SubEntityBusiness) = listOf(
         GenerateFile(
-            entity,
+            entity.path.rootEntity,
             entity.components.editTableType.fullPath,
             editTableType(entity),
             listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.AddForm, GenerateTag.FormType),
         ),
         GenerateFile(
-            entity,
+            entity.path.rootEntity,
             entity.components.subFormDefault.fullPath,
             editTableDefault(entity),
             listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.AddForm, GenerateTag.FormDefault),
         ),
         GenerateFile(
-            entity,
+            entity.path.rootEntity,
             entity.components.editTable.fullPath,
             stringify(editTableComponent(entity)),
             listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.EditTable),
         ),
         GenerateFile(
-            entity,
+            entity.path.rootEntity,
             entity.rules.editTableRules.fullPath,
             stringify(editTableRules(entity)),
             listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.FormRules, GenerateTag.EditTable),

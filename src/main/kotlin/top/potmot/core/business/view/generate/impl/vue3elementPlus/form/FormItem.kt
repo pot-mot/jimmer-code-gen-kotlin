@@ -64,7 +64,7 @@ interface FormItem {
                                 component.name,
                                 directives = listOf(VModel(modelValue)),
                                 props = listOfNotNull(
-                                    PropBind("options", "${name}Options"),
+                                    PropBind("options", selectOption.name),
                                     if (excludeSelf && typeEntity.id == entityId && idName != null)
                                         PropBind("exclude-ids", "[${formData}.${idName}]")
                                     else

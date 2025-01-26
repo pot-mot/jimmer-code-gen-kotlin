@@ -346,12 +346,15 @@ interface PageGen : Generator {
             }
 
             if (entity.canEdit) {
+                val editFormType = entity.components.editFormType
+
+                imports += ImportType("@/" + editFormType.fullPathNoSuffix, editFormType.name)
                 script += listOf(
                     emptyLineCode,
                     commentLine("修改"),
                     ConstVariable("editDialogVisible", null, "ref(false)"),
                     emptyLineCode,
-                    ConstVariable("updateInput", null, "ref<${entity.name}UpdateInput | undefined>(undefined)"),
+                    ConstVariable("updateInput", null, "ref<${editFormType.name} | undefined>(undefined)"),
                     emptyLineCode,
                     Function(
                         async = true,

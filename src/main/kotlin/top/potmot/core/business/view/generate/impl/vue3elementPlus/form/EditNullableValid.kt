@@ -88,11 +88,13 @@ interface EditNullableValid {
         dataType: String,
         submitType: String,
         listType: Boolean = false,
-        validateDataForSubmit: String = "validate${dataType}For$submitType",
-        assertDataTypeAsSubmitType: String = "assert${dataType}As$submitType",
+        validateDataForSubmit: String = "validate${dataType}ForSubmit",
+        assertDataTypeAsSubmitType: String = "assert${dataType}AsSubmitType",
     ) {
         builder.apply {
             val inputType = if (listType) "Array<$dataType>" else dataType
+            val outputType = if (listType) "Array<$submitType>" else submitType
+
             val getUnmatchedMessageList = "getUnmatchedMessageList"
 
             line("const $getUnmatchedMessageList = (data: $inputType): Array<string> => {")
@@ -103,13 +105,13 @@ interface EditNullableValid {
                     line("for (const item of data) {")
                     scope {
                         editNullableValid(this, "item", "messageList", "") {
-                            it.subFormProperties
+                            it.subEditNoIdProperties
                         }
                     }
                     line("}")
                 } else {
                     editNullableValid(this, "data", "messageList", "") {
-                        it.subFormProperties
+                        it.subEditNoIdProperties
                     }
                 }
                 line()
@@ -121,11 +123,11 @@ interface EditNullableValid {
             line("export const $validateDataForSubmit = (data: $inputType): boolean => {")
             scope {
                 line("const messageList = $getUnmatchedMessageList(data)")
-                line("if (messageList.length === 0)")
+                line("if (messageList.length === 0) {")
                 scope {
                     line("return true")
                 }
-                line("else {")
+                line("} else {")
                 scope {
                     line("messageList.forEach(message => sendMessage(message, \"warning\"))")
                     line("return false")
@@ -135,14 +137,14 @@ interface EditNullableValid {
             line("}")
             line()
 
-            line("export const $assertDataTypeAsSubmitType = (data: $inputType): $submitType => {")
+            line("export const $assertDataTypeAsSubmitType = (data: $inputType): $outputType => {")
             scope {
                 line("const messageList = $getUnmatchedMessageList(data)")
-                line("if (messageList.length === 0)")
+                line("if (messageList.length === 0) {")
                 scope {
-                    line("return data as $submitType")
+                    line("return data as $outputType")
                 }
-                line("else")
+                line("} else {")
                 scope {
                     line("messageList.forEach(message => sendMessage(message, \"error\"))")
                     line("throw messageList")

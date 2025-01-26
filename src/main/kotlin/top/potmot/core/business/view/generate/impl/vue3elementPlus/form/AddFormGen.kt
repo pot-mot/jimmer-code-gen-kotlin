@@ -46,8 +46,8 @@ fun addForm(
     selectOptions: Collection<SelectOption> = emptyList(),
     content: Map<PropertyBusiness, FormItemData>,
 ) = Component {
-    val validateDataForSubmit = "validate${dataType}For$submitType"
-    val assertDataTypeAsSubmitType = "assert${dataType}As$submitType"
+    val validateDataForSubmit = "validate${dataType}ForSubmit"
+    val assertDataTypeAsSubmitType = "assert${dataType}AsSubmitType"
 
     imports += listOf(
         Import("vue", "ref"),
@@ -141,7 +141,7 @@ interface AddFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
         val imports = mutableListOf<TsImport>()
 
         imports += Import("$utilPath/message", "sendMessage")
-        imports += Import(staticPath, submitType)
+        imports += ImportType(staticPath, submitType)
         imports += entity.enums.map {
             ImportType(enumPath, it.name)
         }
@@ -152,7 +152,7 @@ interface AddFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
 
             append("export type $dataType = ")
             entity.addFormProperties
-                .formType { it.subFormProperties }
+                .formType { it.subEditNoIdProperties }
                 .stringify(this)
             line()
             line()
@@ -174,7 +174,7 @@ interface AddFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
             scope {
                 append("return ")
                 entity.addFormProperties
-                    .formDefault { it.subFormProperties }
+                    .formDefault { it.subEditNoIdProperties }
                     .stringify(this)
                 line()
             }
