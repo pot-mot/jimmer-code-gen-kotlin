@@ -21,6 +21,7 @@ import top.potmot.entity.dto.GenAssociationConvertView
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
+import top.potmot.enumeration.AssociationType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
 
@@ -124,14 +125,19 @@ private fun GenTableConvertView.toGenEntity(
 
     propertiesMap.values.forEach {
         it.associationPropertyPairs.replaceAll { pair ->
+            // 同步等待合并的属性名称，并记录这些名称以用作后续同步 mappedBy 等其他信息上
             if (pair is AssociationPropertyPairWaitMergeExist) {
                 val mergedPair = pair.mergeExist()
 
                 if (pair.associationProperty.name != mergedPair.associationProperty.name) {
-                    mergeExistChangedAssociationPropertyNameMap["$id ${pair.associationProperty.name}"] = mergedPair.associationProperty.name
+                    mergeExistChangedAssociationPropertyNameMap["$id ${pair.associationProperty.name}"] =
+                        mergedPair.associationProperty.name
                 }
-                if (pair.idView != null && mergedPair.idView != null && pair.idView!!.name != mergedPair.idView.name) {
-                    mergeExistChangedAssociationPropertyNameMap["$id ${pair.idView!!.name}"] = mergedPair.idView.name
+
+                val idView = pair.idView
+                val mergedIdView = mergedPair.idView
+                if (idView != null && mergedIdView != null && idView.name != mergedIdView.name) {
+                    mergeExistChangedAssociationPropertyNameMap["$id ${idView.name}"] = mergedIdView.name
                 }
 
                 mergedPair
@@ -141,10 +147,17 @@ private fun GenTableConvertView.toGenEntity(
         }
     }
 
-    val properties = handleDuplicateName(
-        this,
-        propertiesMap
-    )
+    val properties =
+        handleDuplicateName(
+            this,
+            propertiesMap
+        )
+            // 将 toManyProperties 后置
+            .let { properties ->
+                val (toManyProperties, notToManyProperties) = properties.partition { it.associationType?.isTargetMany ?: false }
+                val (manyToManyProperties, oneToManyProperties) = toManyProperties.partition { it.associationType == AssociationType.MANY_TO_MANY }
+                notToManyProperties + oneToManyProperties + manyToManyProperties
+            }
 
     val propertyNames = properties.map { it.name }
 
