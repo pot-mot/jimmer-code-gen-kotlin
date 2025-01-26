@@ -10,8 +10,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.tableColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.*
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
+import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.operationsColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilColumns
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilProps
@@ -95,8 +94,8 @@ fun editTable(
         submitLoadingProp,
     )
     if (selectOptions.isNotEmpty()) {
-        imports += selectOptions.map { it.toImport() }
-        props += selectOptions.map { it.toProp() }
+        imports += selectOptions.map { it.import }
+        props += selectOptions.map { it.prop }
     }
 
     emits += listOf(
@@ -345,7 +344,7 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
             indent = indent,
             idPropertyName = entity.idProperty.name,
             comment = entity.comment,
-            selectOptions = entity.subFormSelectProperties.selectOptions,
+            selectOptions = entity.subFormSelects,
             content = entity.subFormProperties
                 .associateWith {
                     it.createFormItem(

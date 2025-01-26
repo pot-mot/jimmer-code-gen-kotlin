@@ -14,7 +14,6 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.switch
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.timePicker
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
@@ -37,7 +36,7 @@ interface FormItem {
 
                 if (this is AssociationProperty && isLongAssociation) {
                     val component = if (listType) components.editTable else components.subForm
-                    val selectOptions = typeEntityBusiness.subFormSelectProperties.selectOptions
+                    val selectOptions = typeEntityBusiness.subFormSelects
                     FormItemData(
                         elements = listOf(
                             TagElement(

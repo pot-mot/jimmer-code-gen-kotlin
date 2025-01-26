@@ -8,9 +8,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dialog
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.pagination
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOption
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
+import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
@@ -41,16 +39,15 @@ import top.potmot.utils.string.buildScopeString
 private const val queryByPage: Boolean = true
 
 interface PageGen : Generator {
-    private fun optionQueryCodes(
-        comment: String,
+    private fun selectQueryCodes(
         selectOption: SelectOption,
     ) = mutableListOf(
         ImportType(staticPath, selectOption.type),
         Import("vue", "onBeforeMount"),
         Import("@/api", "api"),
     ) to mutableListOf(
-        commentLine("${comment}选项"),
-        selectOption.toVariable(),
+        commentLine(selectOption.comment),
+        selectOption.variable,
         emptyLineCode,
         ConstVariable(
             "set${selectOption.upperName}",
@@ -96,18 +93,12 @@ interface PageGen : Generator {
         val idType = typeStrToTypeScriptType(idProperty.type, idProperty.typeNotNull)
         val apiServiceName = entity.apiServiceName
 
-        val selectOptionPairs = entity.pageSelectProperties.map { it to it.selectOption }
-        val selfOptionPairs = selectOptionPairs
-            .filter { (property, _) ->
-                property.typeEntity.id == entity.id
-            }
-        val optionQueries = selectOptionPairs.map {
-            optionQueryCodes(it.first.comment, it.second)
-        }
+        val selectQueries = entity.pageSelects.map { selectQueryCodes(it) }
+        val selfSelects = entity.pageSelectPairs.filter { it.first.typeEntity.id == entity.id }.map { it.second }
 
-        val insertSelectNames = entity.insertSelectProperties.selectOptions.map { it.name }
-        val updateSelectNames = entity.updateSelectProperties.selectOptions.map { it.name }
-        val specificationSelectNames = entity.specificationSelectProperties.selectOptions.map { it.name }
+        val insertSelectNames = entity.insertSelects.map { it.name }
+        val updateSelectNames = entity.updateSelects.map { it.name }
+        val specificationSelectNames = entity.specificationSelects.map { it.name }
 
         val isTree = entity.isTree
         val dataType = if (isTree) treeView else listView
@@ -151,7 +142,7 @@ interface PageGen : Generator {
                 ImportDefault("@/${it.fullPath}", it.name)
             }
 
-            imports += optionQueries.flatMap { it.first }
+            imports += selectQueries.flatMap { it.first }
 
             script += listOfNotNull(
                 if (!needUserStore) null else ConstVariable("userStore", null, "useUserStore()\n"),
@@ -225,13 +216,13 @@ interface PageGen : Generator {
                     ConstVariable(
                         "add${entity.name}",
                         null,
-                        if (selfOptionPairs.isNotEmpty()) {
+                        if (selfSelects.isNotEmpty()) {
                             buildScopeString {
                                 line("withLoading(async (body: $insertInput) => {")
                                 scope {
                                     line("const result = await api.$apiServiceName.insert({body})")
-                                    selfOptionPairs.forEach {
-                                        line("await set${it.second.upperName}()")
+                                    selfSelects.forEach {
+                                        line("await set${it.upperName}()")
                                     }
                                     line("return result")
                                 }
@@ -261,8 +252,8 @@ interface PageGen : Generator {
                                 line("withLoading(async (body: $updateInput) => {")
                                 scope {
                                     line("const result = await api.$apiServiceName.update({body})")
-                                    selfOptionPairs.forEach {
-                                        line("await set${it.second.upperName}()")
+                                    selfSelects.forEach {
+                                        line("await set${it.upperName}()")
                                     }
                                     line("return result")
                                 }
@@ -286,8 +277,8 @@ interface PageGen : Generator {
                                 line("withLoading(async (ids: Array<$idType>) => {")
                                 scope {
                                     line("const result = await api.$apiServiceName.delete({ids})")
-                                    selfOptionPairs.forEach {
-                                        line("await set${it.second.upperName}()")
+                                    selfSelects.forEach {
+                                        line("await set${it.upperName}()")
                                     }
                                     line("return result")
                                 }
@@ -313,7 +304,7 @@ interface PageGen : Generator {
                 emptyLineCode
             )
 
-            script += optionQueries.map { it.second }.join(listOf(emptyLineCode)).flatten()
+            script += selectQueries.map { it.second }.join(listOf(emptyLineCode)).flatten()
 
             if (entity.canAdd) {
                 script += listOf(

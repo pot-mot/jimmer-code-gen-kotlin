@@ -6,8 +6,7 @@ import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
+import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.view.generate.meta.rules.Rules
 import top.potmot.core.business.view.generate.meta.rules.existValidRules
 import top.potmot.core.business.view.generate.meta.rules.rules
@@ -64,11 +63,10 @@ fun editForm(
     props += listOf(
         Prop("withOperations", "boolean", required = false, defaultValue = "true"),
         submitLoadingProp,
-        *selectOptions.map { it.toProp() }.toTypedArray(),
     )
     if (selectOptions.isNotEmpty()) {
-        imports += selectOptions.map { it.toImport() }
-        props += selectOptions.map { it.toProp() }
+        imports += selectOptions.map { it.import }
+        props += selectOptions.map { it.prop }
     }
 
     emits += listOf(
@@ -195,7 +193,7 @@ interface EditFormGen : Generator, FormType, EditNullableValid, FormItem {
             useRules = "useRules",
             useRulesPath = "@/" + editFormRules.fullPathNoSuffix,
             indent = indent,
-            selectOptions = entity.updateSelectProperties.selectOptions,
+            selectOptions = entity.updateSelects,
             content = entity.editFormProperties
                 .associateWith {
                     it.createFormItem(

@@ -10,8 +10,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.row
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormItemData
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.selectOptions
+import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.vue3.Component
@@ -59,11 +58,11 @@ fun queryForm(
         ImportType(specTypePath, specType),
     )
             + content.values.flatMap { it.imports }
-            + selectOptions.map { it.toImport() },
+            + selectOptions.map { it.import },
     models = listOf(
         ModelProp(spec, specType)
     ),
-    props = selectOptions.map { it.toProp() },
+    props = selectOptions.map { it.prop },
     emits = listOf(
         Event("query", args = listOf(EventArg("spec", specType)))
     ),
@@ -104,7 +103,7 @@ interface QueryFormGen : Generator, QueryFormItem {
             spec = spec,
             specType = entity.dto.spec,
             specTypePath = staticPath,
-            selectOptions = entity.specificationSelectProperties.selectOptions,
+            selectOptions = entity.specificationSelects,
             content = entity.queryFormProperties
                 .associateWith { it.createQueryFormItem(spec) }
         )

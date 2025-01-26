@@ -1,8 +1,8 @@
 package top.potmot.core.business.meta
 
+import top.potmot.core.business.view.generate.staticPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
-import top.potmot.entity.dto.IdName
 import top.potmot.enumeration.AssociationType
 import top.potmot.utils.string.toSingular
 
@@ -113,8 +113,8 @@ data class AssociationProperty(
 
         SubEntityBusiness(
             path = path.append(
-                entity = IdName(entityBusiness.id, entityBusiness.name),
-                property = IdName(id, name),
+                entity = entityBusiness,
+                property = property,
                 type = AssociationPathItemType.ENTITY,
                 isSelfAssociated = entityBusiness.isSelfAssociated
             ),
@@ -165,6 +165,19 @@ data class ForceIdViewProperty(
 
     override val typeEntityBusiness by lazy {
         associationProperty.typeEntityBusiness
+    }
+
+    val selectOption by lazy {
+        val selectOptionName = path.propertyItems.joinToString("") { it.property.name } + "Options"
+        val selectOptionComment = path.propertyItems.joinToString("-") { it.property.comment } + "选项"
+
+        SelectOption(
+            selectOptionName,
+            selectOptionComment,
+            typeEntityBusiness.dto.optionView,
+            staticPath,
+            typeEntityBusiness.apiServiceName,
+        )
     }
 }
 

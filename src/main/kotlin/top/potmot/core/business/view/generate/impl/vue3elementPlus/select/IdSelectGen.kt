@@ -25,8 +25,8 @@ interface IdSelectGen : Generator, IdSelect, IdTreeSelect {
     )
 
     fun idSelectFiles(entity: EntityBusiness): List<GenerateFile> =
-        entity.pageSelectProperties.map {
-            idSelectFile(it.typeEntityBusiness, it.listType)
+        entity.pageSelectPairs.map { (property) ->
+            idSelectFile(property.typeEntityBusiness, property.listType)
         } +
                 entity.editSubEntities.flatMap {
                     idSelectFiles(it)

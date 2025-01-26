@@ -21,7 +21,7 @@ class EntityPropertyCategoriesTest {
     @Test
     fun `test pageSelectProperties`() {
         testEntities.forEach { testEntity ->
-            val selectProperties = testEntity.pageSelectProperties.extract
+            val selectProperties = testEntity.pageSelectPairs.map { it.first }.extract
             assertEquals(2, selectProperties.size)
 
             val toOneProperty = selectProperties[0]

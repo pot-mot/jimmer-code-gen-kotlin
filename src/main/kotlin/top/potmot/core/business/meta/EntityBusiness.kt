@@ -117,16 +117,16 @@ sealed class EntityBusiness(
                             rootEntity = this,
                             items = listOf(
                                 AssociationPathItem(
-                                    entity = IdName(id, name),
-                                    property = IdName(it.id, it.name),
+                                    entity = this,
+                                    property = it,
                                     type = AssociationPathItemType.PROPERTY,
                                 )
                             )
                         )
 
                         is SubEntityBusiness -> path.append(
-                            entity = IdName(id, name),
-                            property = IdName(it.id, it.name),
+                            entity = this,
+                            property = it,
                             type = AssociationPathItemType.PROPERTY,
                             isSelfAssociated = isSelfAssociated
                         )
@@ -363,30 +363,46 @@ sealed class EntityBusiness(
     }
 
 
-    val specificationSelectProperties: List<ForceIdViewProperty> by lazy {
+    val specificationSelectPairs by lazy {
         `queryFormProperties nullable not change`
             .filterIsInstance<ForceIdViewProperty>()
+            .map { it to it.selectOption }
+    }
+    val specificationSelects by lazy {
+        specificationSelectPairs.map { it.second }
     }
 
-    val insertSelectProperties: List<ForceIdViewProperty> by lazy {
+    val insertSelectPairs: List<Pair<ForceIdViewProperty, SelectOption>> by lazy {
         addFormProperties
-            .filterIsInstance<ForceIdViewProperty>() +
+            .filterIsInstance<ForceIdViewProperty>()
+            .map { it to it.selectOption } +
                 addFormProperties
                     .filterIsInstance<AssociationProperty>()
-                    .flatMap { it.typeEntityBusiness.subFormSelectProperties }
+                    .flatMap { it.typeEntityBusiness.subFormSelectPairs }
+    }
+    val insertSelects by lazy {
+        insertSelectPairs.map { it.second }
     }
 
-    val updateSelectProperties: List<ForceIdViewProperty> by lazy {
+    val updateSelectPairs: List<Pair<ForceIdViewProperty, SelectOption>> by lazy {
         editFormProperties
-            .filterIsInstance<ForceIdViewProperty>() +
+            .filterIsInstance<ForceIdViewProperty>()
+            .map { it to it.selectOption } +
                 editFormProperties
                     .filterIsInstance<AssociationProperty>()
-                    .flatMap { it.typeEntityBusiness.subFormSelectProperties }
+                    .flatMap { it.typeEntityBusiness.subFormSelectPairs }
+    }
+    val updateSelects: List<SelectOption> by lazy {
+        updateSelectPairs.map { it.second }
     }
 
-    val pageSelectProperties: List<ForceIdViewProperty> by lazy {
-        (insertSelectProperties + updateSelectProperties + specificationSelectProperties)
-            .distinctBy { it.property.id }
+
+    val pageSelectPairs by lazy {
+        (insertSelectPairs + updateSelectPairs + specificationSelectPairs)
+            .distinctBy { it.first }
+    }
+    val pageSelects by lazy {
+        pageSelectPairs.map { it.second }
     }
 }
 
@@ -470,18 +486,22 @@ class SubEntityBusiness(
             .selfOrShortAssociationToIdView()
     }
 
-    val subFormSelectProperties: List<ForceIdViewProperty> by lazy {
+    val subFormSelectPairs: List<Pair<ForceIdViewProperty, SelectOption>> by lazy {
         subFormProperties
-            .filterIsInstance<ForceIdViewProperty>() +
+            .filterIsInstance<ForceIdViewProperty>()
+            .map { it to it.selectOption } +
                 subFormProperties
                     .filterIsInstance<AssociationProperty>()
                     .filter { it.inLongAssociationInput }
-                    .flatMap { it.typeEntityBusiness.subFormSelectProperties }
+                    .flatMap { it.typeEntityBusiness.subFormSelectPairs }
+    }
+    val subFormSelects by lazy {
+        subFormSelectPairs.map { it.second }
     }
 
     override val dto by lazy {
         val rootEntityName = path.rootEntity.name
-        val propertyNames = path.properties.map { it.property.name }.joinToString("") {
+        val propertyNames = path.propertyItems.map { it.property.name }.joinToString("") {
             "_TargetOf_$it"
         }
 
@@ -502,12 +522,12 @@ class SubEntityBusiness(
 
         val rootEntityName = rootEntity.name
         val propertyNames =
-            path.properties.map { it.property.name.replaceFirstChar { it.uppercaseChar() } }.joinToString("")
+            path.propertyItems.map { it.property.name.replaceFirstChar { it.uppercaseChar() } }.joinToString("")
         val currentName = rootEntityName + propertyNames
 
         val rootEntityDir = rootEntity.dir
         val propertyDirs =
-            path.properties.map { it.property.name }.joinToString("/")
+            path.propertyItems.map { it.property.name }.joinToString("/")
         val currentPath = "$rootEntityDir/$propertyDirs"
 
         SubEntityComponentFiles(
@@ -525,7 +545,7 @@ class SubEntityBusiness(
         val rootEntity = path.rootEntity
         val rootEntityName = rootEntity.name
         val propertyNames =
-            path.properties.map { it.property.name.replaceFirstChar { it.uppercaseChar() } }.joinToString("")
+            path.propertyItems.joinToString("") { item -> item.property.name.replaceFirstChar { it.uppercaseChar() } }
         val currentName = rootEntityName + propertyNames
 
         SubEntityRuleFiles(

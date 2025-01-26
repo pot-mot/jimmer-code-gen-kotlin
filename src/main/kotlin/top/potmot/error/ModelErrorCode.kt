@@ -2,7 +2,6 @@ package top.potmot.error
 
 import org.babyfish.jimmer.error.ErrorFamily
 import org.babyfish.jimmer.error.ErrorField
-import top.potmot.core.business.meta.AssociationPathItem
 import top.potmot.entity.dto.IdName
 
 @ErrorFamily
@@ -18,7 +17,7 @@ enum class ModelErrorCode {
     ID_PROPERTY_MORE_THAN_ONE,
 
     @ErrorField(name = "entity", type = IdName::class)
-    @ErrorField(name = "associationPath", type = AssociationPathItem::class, list = true)
+    @ErrorField(name = "properties", type = IdName::class, list = true)
     LONG_ASSOCIATION_CIRCULAR_DEPENDENCE,
 
     @ErrorField(name = "entity", type = IdName::class)

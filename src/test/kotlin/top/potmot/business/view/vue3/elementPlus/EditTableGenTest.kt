@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormRefValidateItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTable
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.selectOptions.SelectOption
+import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.view.generate.staticPath
 
 class EditTableGenTest {
@@ -458,8 +458,8 @@ defineExpose<FormExpose>({
             comment = "comment",
             content = mapOf(),
             selectOptions = listOf(
-                SelectOption("CustomerOptions", "CustomerOptionView", "customerService"),
-                SelectOption("TypeOptions", "TypeOptionView", "typeService"),
+                SelectOption("CustomerOptions", "顾客选项", "CustomerOptionView", staticPath, "customerService"),
+                SelectOption("TypeOptions", "种类选项", "TypeOptionView", staticPath, "typeService"),
             )
         )
 
