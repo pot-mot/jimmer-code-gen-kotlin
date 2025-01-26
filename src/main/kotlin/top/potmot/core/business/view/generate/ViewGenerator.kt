@@ -22,5 +22,5 @@ interface ViewGenerator {
     fun generateView(
         entities: Iterable<RootEntityBusiness>,
     ): List<GenerateFile> =
-        entities.flatMap { generateView(it) }
+        entities.flatMap { generateView(it) }.distinctBy { it.path }
 }
