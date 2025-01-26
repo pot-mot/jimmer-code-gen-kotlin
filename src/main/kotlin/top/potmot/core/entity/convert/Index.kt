@@ -21,7 +21,6 @@ import top.potmot.entity.dto.GenAssociationConvertView
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
-import top.potmot.enumeration.AssociationType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
 
@@ -152,11 +151,10 @@ private fun GenTableConvertView.toGenEntity(
             this,
             propertiesMap
         )
-            // 将 toManyProperties 后置
+            // 将 list Properties 后置
             .let { properties ->
-                val (toManyProperties, notToManyProperties) = properties.partition { it.associationType?.isTargetMany ?: false }
-                val (manyToManyProperties, oneToManyProperties) = toManyProperties.partition { it.associationType == AssociationType.MANY_TO_MANY }
-                notToManyProperties + oneToManyProperties + manyToManyProperties
+                val (listProperties, notListProperties) = properties.partition { it.listType }
+                notListProperties + listProperties
             }
 
     val propertyNames = properties.map { it.name }

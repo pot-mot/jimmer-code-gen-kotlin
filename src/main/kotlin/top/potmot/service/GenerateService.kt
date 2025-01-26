@@ -17,7 +17,7 @@ import top.potmot.core.business.meta.EnumBusiness
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.route.generate.DynamicRouteGenerator
 import top.potmot.core.business.service.generate.getServiceGenerator
-import top.potmot.entity.dto.toFlat
+import top.potmot.core.business.meta.toFlat
 import top.potmot.core.business.view.generate.getViewGenerator
 import top.potmot.core.database.generate.getTableDefineGenerator
 import top.potmot.core.entity.generate.getEntityGenerator

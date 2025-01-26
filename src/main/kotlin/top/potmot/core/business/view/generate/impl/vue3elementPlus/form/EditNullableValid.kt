@@ -3,7 +3,6 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.SubEntityBusiness
-import top.potmot.core.business.meta.TypeEntityProperty
 import top.potmot.utils.string.StringIndentScopeBuilder
 
 interface EditNullableValid {
@@ -69,7 +68,7 @@ interface EditNullableValid {
                     } else {
                         line("if ($data.$name === undefined) {")
                         scope {
-                            line("$messageList.push(\"${currentComment}不可为空\", \"warning\")")
+                            line("$messageList.push(\"${currentComment}不可为空\")")
                         }
                         line("} else {")
                         scope {

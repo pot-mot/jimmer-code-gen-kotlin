@@ -176,6 +176,3 @@ fun Iterable<PropertyBusiness>.selfOrShortAssociationToIdView() = map {
         it
     }
 }
-
-val Iterable<PropertyBusiness>.subEntities
-    get() = filterIsInstance<TypeEntityProperty>().map { it.typeEntityBusiness }

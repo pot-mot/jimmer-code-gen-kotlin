@@ -365,36 +365,28 @@ sealed class EntityBusiness(
 
     val specificationSelectProperties: List<ForceIdViewProperty> by lazy {
         `queryFormProperties nullable not change`
-            .filterIsInstance<ForceIdViewProperty>() +
-                `queryFormProperties nullable not change`
-                    .subEntities
-                    .flatMap { it.subFormSelectProperties }
+            .filterIsInstance<ForceIdViewProperty>()
     }
 
     val insertSelectProperties: List<ForceIdViewProperty> by lazy {
         addFormProperties
             .filterIsInstance<ForceIdViewProperty>() +
                 addFormProperties
-                    .subEntities
-                    .flatMap { it.subFormSelectProperties }
+                    .filterIsInstance<AssociationProperty>()
+                    .flatMap { it.typeEntityBusiness.subFormSelectProperties }
     }
 
     val updateSelectProperties: List<ForceIdViewProperty> by lazy {
         editFormProperties
             .filterIsInstance<ForceIdViewProperty>() +
                 editFormProperties
-                    .subEntities
-                    .flatMap { it.subFormSelectProperties }
+                    .filterIsInstance<AssociationProperty>()
+                    .flatMap { it.typeEntityBusiness.subFormSelectProperties }
     }
 
     val pageSelectProperties: List<ForceIdViewProperty> by lazy {
-        val properties = (insertSelectProperties + updateSelectProperties + specificationSelectProperties)
+        (insertSelectProperties + updateSelectProperties + specificationSelectProperties)
             .distinctBy { it.property.id }
-
-        properties +
-                properties
-                    .subEntities
-                    .flatMap { it.subFormSelectProperties }
     }
 }
 
@@ -482,8 +474,9 @@ class SubEntityBusiness(
         subFormProperties
             .filterIsInstance<ForceIdViewProperty>() +
                 subFormProperties
-                    .subEntities
-                    .flatMap { it.subFormSelectProperties }
+                    .filterIsInstance<AssociationProperty>()
+                    .filter { it.inLongAssociationInput }
+                    .flatMap { it.typeEntityBusiness.subFormSelectProperties }
     }
 
     override val dto by lazy {

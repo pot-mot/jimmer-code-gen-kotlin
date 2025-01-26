@@ -240,7 +240,7 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
             useRulesPath = "@/" + subFormRules.fullPathNoSuffix,
             formData = formData,
             indent = indent,
-            selectOptions = entity.insertSelectProperties.selectOptions,
+            selectOptions = entity.subFormSelectProperties.selectOptions,
             content = entity.subFormProperties
                 .associateWith { it.createFormItem(formData) }
         )

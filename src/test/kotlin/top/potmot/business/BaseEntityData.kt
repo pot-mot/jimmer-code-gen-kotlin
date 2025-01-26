@@ -4,7 +4,7 @@ import java.sql.Types
 import java.time.LocalDateTime
 import top.potmot.core.business.meta.EnumBusiness
 import top.potmot.core.business.meta.RootEntityBusiness
-import top.potmot.entity.dto.toFlat
+import top.potmot.core.business.meta.toFlat
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
