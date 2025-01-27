@@ -345,12 +345,16 @@ class ElementPlusComponents {
             model: String,
             ref: String? = null,
             rules: String? = null,
+            labelWidth: String? = "auto",
+            labelWidthIsLiteral: Boolean = true,
             content: Collection<Element>,
         ) = TagElement("el-form") {
             props += listOfNotNull(
                 PropBind("model", model),
                 ref.toPropBind("ref", true),
                 rules.toPropBind("rules"),
+                PropBind("label-width", labelWidth, isLiteral = labelWidthIsLiteral),
+                PropBind("@submit.prevent", isLiteral = true),
             )
             children += content
         }
@@ -359,13 +363,19 @@ class ElementPlusComponents {
             prop: String? = null,
             label: String? = null,
             type: String? = null,
+            width: Int? = null,
+            minWidth: Int? = null,
             fixed: TableColumnFixed? = null,
+            showOverflowTooltip: Boolean = false,
             content: Collection<Element> = emptyList(),
         ) = TagElement("el-table-column") {
             props += listOfNotNull(
                 prop.toPropBind("prop", isLiteral = true),
                 label.toPropBind("label", isLiteral = true),
                 type.toPropBind("type", isLiteral = true),
+                width.toPropBind("width"),
+                minWidth.toPropBind("min-width"),
+                showOverflowTooltip.toPropBind("show-overflow-tooltip"),
                 fixed?.toPropBind()
             )
 

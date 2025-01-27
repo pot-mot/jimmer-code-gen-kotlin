@@ -140,7 +140,6 @@ fun subForm(
             },
         )
     ).merge {
-        props += PropBind("@submit.prevent", isLiteral = true)
         props += PropBind("class", "sub-form", isLiteral = true)
     }
 }

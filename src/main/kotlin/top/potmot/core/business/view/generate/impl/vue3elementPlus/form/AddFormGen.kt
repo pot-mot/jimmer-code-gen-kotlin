@@ -129,7 +129,6 @@ fun addForm(
             },
         )
     ).merge {
-        props += PropBind("@submit.prevent", isLiteral = true)
         props += PropBind("class", "add-form", isLiteral = true)
     }
 }

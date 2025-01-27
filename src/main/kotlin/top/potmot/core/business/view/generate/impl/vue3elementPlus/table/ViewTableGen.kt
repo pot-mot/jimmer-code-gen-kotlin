@@ -86,6 +86,9 @@ fun viewTable(
                 tableColumn(
                     property.name,
                     property.comment,
+                    width = tableColumnData.width,
+                    minWidth = tableColumnData.minWidth,
+                    showOverflowTooltip = tableColumnData.showOverflowTooltip,
                     content = tableColumnData.elements
                 ).merge {
                     props += tableColumnData.props

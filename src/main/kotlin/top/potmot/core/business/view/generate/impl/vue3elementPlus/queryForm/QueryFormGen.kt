@@ -90,7 +90,6 @@ fun queryForm(
                 )
             )
         ).merge {
-            props += PropBind("@submit.prevent", isLiteral = true)
             props += PropBind("class", "query-form", isLiteral = true)
         }
     )

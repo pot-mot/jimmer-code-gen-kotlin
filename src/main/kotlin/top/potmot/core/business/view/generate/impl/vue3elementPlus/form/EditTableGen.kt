@@ -12,6 +12,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.operationsColumn
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableMinWidth
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilColumns
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilProps
 import top.potmot.core.business.view.generate.meta.rules.Rules
@@ -221,6 +222,7 @@ fun editTable(
                     tableColumn(
                         prop = property.name,
                         label = property.comment,
+                        minWidth = property.tableMinWidth,
                         content = listOf(
                             formItem(
                                 prop = "[scope.${'$'}index, '${property.name}']",
@@ -259,7 +261,6 @@ fun editTable(
             },
         ),
     ).merge {
-        props += PropBind("@submit.prevent", isLiteral = true)
         props += PropBind("class", "sub-form", isLiteral = true)
     }
 }

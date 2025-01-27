@@ -2,6 +2,7 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.table
 
 import top.potmot.config.tableColumnWithDateTimeFormat
 import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.meta.PropertyBusiness
@@ -22,6 +23,9 @@ data class TableColumnData(
     val elements: Collection<Element> = emptyList(),
     val imports: Collection<TsImport> = emptyList(),
     val props: Collection<PropBind> = emptyList(),
+    val width: Int? = null,
+    val minWidth: Int? = null,
+    val showOverflowTooltip: Boolean = false,
 )
 
 data class TableColumnPropertyKey(
@@ -47,6 +51,23 @@ private val defaultTableColumnData = TableColumnData()
 private const val formatTableColumnDate = "formatTableColumnDate"
 private const val formatTableColumnTime = "formatTableColumnTime"
 private const val formatTableColumnDateTime = "formatTableColumnDateTime"
+
+val PropertyFormType.tableMinWidth: Int
+    get() = when (this) {
+        PropertyFormType.BOOLEAN -> 43
+        PropertyFormType.DATETIME -> 193
+        PropertyFormType.INT -> 161
+        PropertyFormType.FLOAT -> 161
+        else -> 129
+    }
+
+val PropertyBusiness.tableMinWidth: Int?
+    get() = when (this) {
+        is CommonProperty -> formType.tableMinWidth
+        is EnumProperty -> 161
+        is ForceIdViewProperty -> 161
+        is AssociationProperty -> if (isLongAssociation) null else 129
+    }
 
 interface TableColumn {
     fun GenEntityBusinessView.TargetOf_properties.tableColumnDataPair(
@@ -108,7 +129,7 @@ interface TableColumn {
 
             else -> defaultTableColumnData
         }
-
+            .copy(minWidth = formType.tableMinWidth)
 
     fun PropertyBusiness.tableColumnDataPairs(
         withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat,
@@ -133,6 +154,7 @@ interface TableColumn {
 
             listOf(
                 TableColumnPropertyKey(this) to TableColumnData(
+                    minWidth = 129,
                     elements = listOf(
                         TagElement(
                             component.name,

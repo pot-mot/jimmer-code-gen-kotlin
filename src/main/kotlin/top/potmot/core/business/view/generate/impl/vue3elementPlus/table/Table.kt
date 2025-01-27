@@ -36,6 +36,7 @@ fun tableUtilColumns(idPropertyName: String) = listOf(
     },
     tableColumn(
         type = "selection",
+        width = 43,
     ).merge {
         directives += VIf(multiSelect)
         props += PropBind("fixed", "pageSizeStore.isSmall ? undefined : 'left'")
