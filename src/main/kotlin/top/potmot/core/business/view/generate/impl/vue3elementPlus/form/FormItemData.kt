@@ -8,6 +8,7 @@ data class FormItemData(
     val elements: Collection<Element>,
     val imports: Collection<TsImport> = emptyList(),
     val scripts: Collection<TsCode> = emptyList(),
+    val formItemNotAround: Boolean = false,
 )
 
 fun FormItemData(

@@ -340,7 +340,7 @@ class ElementPlusComponents {
         fun formItem(
             prop: String,
             propIsLiteral: Boolean = true,
-            label: String,
+            label: String?,
             labelIsLiteral: Boolean = true,
             rule: String? = null,
             content: Collection<Element>,
@@ -348,7 +348,7 @@ class ElementPlusComponents {
             "el-form-item",
             props = listOfNotNull(
                 PropBind("prop", prop, isLiteral = propIsLiteral),
-                PropBind("label", label, isLiteral = labelIsLiteral),
+                label.toPropBind("label", isLiteral = labelIsLiteral),
                 rule.toPropBind("rule"),
             ),
             children = content,

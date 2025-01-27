@@ -8,6 +8,7 @@ import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.TypeEntityProperty
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.datePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dateTimePicker
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.input
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.inputNumber
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.option
@@ -15,13 +16,14 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.switch
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.timePicker
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
+import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.toPropBind
 
 interface FormItem {
-    fun PropertyBusiness.createFormItem(
+    fun PropertyBusiness.toFormItemData(
         formData: String,
         disabled: Boolean = false,
         excludeSelf: Boolean = false,
@@ -54,7 +56,8 @@ interface FormItem {
                                 "@/" + component.fullPath,
                                 component.name,
                             )
-                        )
+                        ),
+                        formItemNotAround = true
                     )
                 } else {
                     val components = typeEntityBusiness.components
@@ -240,4 +243,40 @@ interface FormItem {
             }
         }
     }
+
+    fun Map<PropertyBusiness, FormItemData>.toElements(withCommentLabel: Boolean): List<Element> {
+        val result = mutableListOf<Element>()
+
+        forEach { (property, data) ->
+            if (data.formItemNotAround) {
+                result += listOf(
+                    formItem(
+                        prop = property.name,
+                        label = if (withCommentLabel) property.comment else null,
+                        content = listOf(formItemPlaceholder)
+                    ).merge {
+                        props += listOf(
+                            PropBind("class", "sub-form-property-item", isLiteral = true)
+                        )
+                    }
+                )
+                result += data.elements
+            } else {
+                result += formItem(
+                    prop = property.name,
+                    label = if (withCommentLabel) property.comment else null,
+                    content = data.elements
+                )
+            }
+        }
+
+        return result
+    }
 }
+
+private val formItemPlaceholder = TagElement(
+    "div",
+    props = listOf(
+        PropBind("class", "sub-form-property-item-placeholder", isLiteral = true)
+    )
+)

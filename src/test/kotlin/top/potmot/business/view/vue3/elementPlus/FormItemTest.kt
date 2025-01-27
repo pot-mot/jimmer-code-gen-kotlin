@@ -48,7 +48,7 @@ class FormItemTest : FormItem {
         )
 
     private val GenEntityBusinessView.TargetOf_properties.result: String
-        get() = CommonProperty(mockEntityBusiness, this).createFormItem(formData, disabled).let {
+        get() = CommonProperty(mockEntityBusiness, this).toFormItemData(formData, disabled).let {
             var result: String
             builder.apply {
                 result =
@@ -397,7 +397,7 @@ class FormItemTest : FormItem {
     }
 
     private val GenEntityBusinessView.TargetOf_properties.enumResult: String
-        get() = EnumProperty(mockEntityBusiness, this, testEnumBusiness).createFormItem(formData, disabled).let {
+        get() = EnumProperty(mockEntityBusiness, this, testEnumBusiness).toFormItemData(formData, disabled).let {
             var result: String
             builder.apply {
                 result =
@@ -422,7 +422,7 @@ import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
 
 
     private val GenEntityBusinessView.TargetOf_properties.associationResult: String
-        get() = AssociationProperty(AssociationPath(mockEntityBusiness, emptyList()), mockEntityBusiness, this, null, baseEntity, associationType!!).createFormItem(formData, disabled).let {
+        get() = AssociationProperty(AssociationPath(mockEntityBusiness, emptyList()), mockEntityBusiness, this, null, baseEntity, associationType!!).toFormItemData(formData, disabled).let {
             var result: String
             builder.apply {
                 result =

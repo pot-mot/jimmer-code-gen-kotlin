@@ -4,9 +4,9 @@ import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.meta.SelectOption
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.toElements
 import top.potmot.core.business.view.generate.meta.rules.Rules
 import top.potmot.core.business.view.generate.meta.rules.existValidRules
 import top.potmot.core.business.view.generate.meta.rules.rules
@@ -116,13 +116,7 @@ fun editForm(
         model = formData,
         ref = formRef,
         rules = "rules",
-        content = content.map { (property, formItemData) ->
-            formItem(
-                prop = property.name,
-                label = property.comment,
-                content = formItemData.elements
-            )
-        } + listOf(
+        content = content.toElements(withCommentLabel = true) + listOf(
             emptyLineElement,
             operationsSlotElement.merge {
                 directives += VIf("withOperations")
@@ -130,6 +124,7 @@ fun editForm(
         ),
     ).merge {
         props += PropBind("@submit.prevent", isLiteral = true)
+        props += PropBind("class", "edit-form", isLiteral = true)
     }
 }
 
@@ -205,7 +200,7 @@ interface EditFormGen : Generator, FormType, EditNullableValid, FormItem {
             subValidateItems = entity.editFormProperties.toFormRefValidateItems(),
             content = entity.editFormNoIdProperties
                 .associateWith {
-                    it.createFormItem(
+                    it.toFormItemData(
                         formData,
                         excludeSelf = true,
                         entityId = entity.id,

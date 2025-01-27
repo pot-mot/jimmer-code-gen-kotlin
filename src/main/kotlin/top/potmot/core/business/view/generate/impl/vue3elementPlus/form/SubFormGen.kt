@@ -5,9 +5,9 @@ import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.formItem
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.meta.SelectOption
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.toElements
 import top.potmot.core.business.view.generate.meta.rules.Rules
 import top.potmot.core.business.view.generate.meta.rules.existValidRules
 import top.potmot.core.business.view.generate.meta.rules.rules
@@ -133,13 +133,7 @@ fun subForm(
         model = formData,
         ref = formRef,
         rules = "rules",
-        content = content.map { (property, formItemData) ->
-            formItem(
-                prop = property.name,
-                label = property.comment,
-                content = formItemData.elements
-            )
-        } + listOf(
+        content = content.toElements(withCommentLabel = true) + listOf(
             emptyLineElement,
             operationsSlotElement.merge {
                 directives += VIf("withOperations")
@@ -147,6 +141,7 @@ fun subForm(
         )
     ).merge {
         props += PropBind("@submit.prevent", isLiteral = true)
+        props += PropBind("class", "sub-form", isLiteral = true)
     }
 }
 
@@ -254,7 +249,7 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
             selectOptions = entity.subFormSelects,
             subValidateItems = entity.subEditProperties.toFormRefValidateItems(),
             content = entity.subEditNoIdProperties
-                .associateWith { it.createFormItem(formData) }
+                .associateWith { it.toFormItemData(formData) }
         )
     }
 

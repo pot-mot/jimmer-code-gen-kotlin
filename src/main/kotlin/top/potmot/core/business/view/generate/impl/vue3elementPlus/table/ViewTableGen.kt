@@ -102,6 +102,7 @@ fun viewTable(
                 )
             )
         ).merge {
+            props += PropBind("class", "view-table", isLiteral = true)
             events += EventBind("selection-change", "handleSelectionChange")
         }
     )

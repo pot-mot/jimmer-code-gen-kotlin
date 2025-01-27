@@ -152,7 +152,10 @@ fun editTable(
         commentLine("新增"),
         Function(
             name = "handleAdd",
-            body = listOf(CodeBlock("$formData.value.push($createDefault())"))
+            args = listOf(
+                FunctionArg("index", "number")
+            ),
+            body = listOf(CodeBlock("$formData.value.splice(index, 0, $createDefault())"))
         ),
         emptyLineCode,
         commentLine("删除"),
@@ -175,7 +178,7 @@ fun editTable(
             body = listOf(
                 ConstVariable("result", null, "await deleteConfirm(\"该$comment\")"),
                 CodeBlock("if (!result) return"),
-                CodeBlock("$formData.value = $formData.value.filter((_, i) => i !== index)"),
+                CodeBlock("$formData.value.splice(index, 1)"),
             )
         ),
         emptyLineCode,
@@ -189,13 +192,16 @@ fun editTable(
         content = listOf(
             TagElement(
                 "div",
+                props = listOf(
+                    PropBind("class", "edit-table-operations", isLiteral = true)
+                ),
                 children = listOf(
                     button(
                         content = "新增",
                         type = PRIMARY,
                         icon = "Plus"
                     ).merge {
-                        events += EventBind("click", "handleAdd")
+                        events += EventBind("click", "handleAdd($formData.length)")
                     },
                     button(
                         content = "删除",
@@ -219,7 +225,7 @@ fun editTable(
                             formItem(
                                 prop = "[scope.${'$'}index, '${property.name}']",
                                 propIsLiteral = false,
-                                label = property.comment,
+                                label = null,
                                 rule = "rules.${property.name}",
                                 content = formItemData.elements
                             )
@@ -227,6 +233,13 @@ fun editTable(
                     )
                 } + operationsColumn(
                     listOf(
+                        button(
+                            icon = "Plus",
+                            type = INFO,
+                            link = true,
+                        ).merge {
+                            events += EventBind("click", "handleAdd(scope.${'$'}index + 1)")
+                        },
                         button(
                             icon = "Delete",
                             type = DANGER,
@@ -237,6 +250,7 @@ fun editTable(
                     )
                 )
             ).merge {
+                props += PropBind("class", "edit-table", isLiteral = true)
                 events += EventBind("selection-change", "handleSelectionChange")
             },
             emptyLineElement,
@@ -246,6 +260,7 @@ fun editTable(
         ),
     ).merge {
         props += PropBind("@submit.prevent", isLiteral = true)
+        props += PropBind("class", "sub-form", isLiteral = true)
     }
 }
 
@@ -356,7 +371,7 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
             subValidateItems = entity.subEditProperties.toFormRefValidateItems(),
             content = entity.subEditNoIdProperties
                 .associateWith {
-                    it.createFormItem(
+                    it.toFormItemData(
                         "scope.row",
                         excludeSelf = true,
                         entityId = entity.id,
