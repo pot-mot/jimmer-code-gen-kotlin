@@ -6,10 +6,10 @@ import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
 import top.potmot.core.business.view.generate.meta.typescript.LetVariable
 import top.potmot.core.business.view.generate.meta.typescript.TsArray
-import top.potmot.core.business.view.generate.meta.typescript.TsRawValue
 import top.potmot.core.business.view.generate.meta.typescript.TsCode
 import top.potmot.core.business.view.generate.meta.typescript.TsImport
 import top.potmot.core.business.view.generate.meta.typescript.TsObject
+import top.potmot.core.business.view.generate.meta.typescript.TsRawValue
 
 data class Prop(
     val name: String,
@@ -154,6 +154,19 @@ open class TagElementAttributes(
         var events: MutableList<EventBind> = mutableListOf(),
         var children: MutableList<Element> = mutableListOf(),
     ) {
+        fun setModelValue(
+            value: String,
+            doubleBind: Boolean,
+            propName: String? = null,
+            modifier: Collection<String> = emptyList(),
+        ) {
+            if (doubleBind) {
+                directives += VModel(value, propName, modifier = modifier)
+            } else {
+                props += PropBind(propName ?: "modelValue", value)
+            }
+        }
+
         fun build() = TagElementAttributes(
             directives = directives,
             props = props,
@@ -200,6 +213,9 @@ data class TagElement(
         )
     }
 }
+
+fun TagElement(tag: String, block: TagElementAttributes.Builder.() -> Unit) =
+    TagElement(tag).merge(block)
 
 fun slotElement(
     name: String,

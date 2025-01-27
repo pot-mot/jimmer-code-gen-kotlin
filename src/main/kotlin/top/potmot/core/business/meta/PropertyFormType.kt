@@ -1,16 +1,16 @@
 package top.potmot.core.business.meta
 
-import java.math.BigDecimal
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.util.Date
+import top.potmot.core.booleanType
+import top.potmot.core.dateTimeType
+import top.potmot.core.dateType
+import top.potmot.core.intType
+import top.potmot.core.numericType
+import top.potmot.core.timeType
 import top.potmot.entity.dto.GenEntityBusinessView
 
 enum class PropertyFormType {
     INPUT,
-    SWITCH,
+    BOOLEAN,
     INT,
     FLOAT,
     TIME,
@@ -18,54 +18,11 @@ enum class PropertyFormType {
     DATETIME,
 }
 
-private val intType = setOf(
-    Short::class.qualifiedName,
-    "short",
-    "java.lang.Short",
-    Int::class.qualifiedName,
-    "int",
-    "java.lang.Integer",
-    Long::class.qualifiedName,
-    "long",
-    "java.lang.Long",
-)
-
-private val floatType = setOf(
-    BigDecimal::class.java.name,
-
-    Float::class.qualifiedName,
-    "float",
-    "java.lang.Float",
-    Double::class.qualifiedName,
-    "double",
-    "java.lang.Double",
-)
-
-private val switchType = setOf(
-    Boolean::class.qualifiedName,
-    "boolean",
-    "java.lang.Boolean",
-)
-
-private val timeType = setOf(
-    Instant::class.java.name,
-    LocalTime::class.java.name
-)
-
-private val dateType = setOf(
-    LocalDate::class.java.name
-)
-
-private val dateTimeType = setOf(
-    LocalDateTime::class.java.name,
-    Date::class.java.name
-)
-
 val GenEntityBusinessView.TargetOf_properties.formType: PropertyFormType
     get() = when (type) {
         in intType -> PropertyFormType.INT
-        in floatType -> PropertyFormType.FLOAT
-        in switchType -> PropertyFormType.SWITCH
+        in numericType -> PropertyFormType.FLOAT
+        in booleanType -> PropertyFormType.BOOLEAN
         in dateType -> PropertyFormType.DATE
         in timeType -> PropertyFormType.TIME
         in dateTimeType -> PropertyFormType.DATETIME

@@ -37,14 +37,6 @@ class ElementPlusComponents {
 
     companion object {
         fun text(
-            content: String,
-            type: Type? = null,
-        ) = text(
-            listOf(TextElement(content)),
-            type,
-        )
-
-        fun text(
             content: Collection<Element>,
             type: Type? = null,
         ) = TagElement(
@@ -53,26 +45,33 @@ class ElementPlusComponents {
             children = content,
         )
 
+        fun text(
+            content: String,
+            type: Type? = null,
+        ) = text(
+            listOf(TextElement(content)),
+            type,
+        )
+
         fun input(
-            modelValue: String = "modelValue",
+            modelValue: String,
+            doubleBind: Boolean = true,
             comment: String = "",
             placeholder: (comment: String) -> String? = { "请输入$it" },
             clearable: Boolean = true,
             disabled: Boolean = false,
-        ) = TagElement(
-            "el-input",
-            directives = listOf(
-                VModel(modelValue)
-            ),
-            props = listOfNotNull(
+        ) = TagElement("el-input") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
                 placeholder(comment).toPropBind("placeholder", true),
                 clearable.toPropBind("clearable"),
                 disabled.toPropBind("disabled"),
             )
-        )
+        }
 
         fun inputNumber(
-            modelValue: String = "modelValue",
+            modelValue: String,
+            doubleBind: Boolean = true,
             comment: String = "",
             placeholder: (comment: String) -> String? = { "请输入$it" },
             precision: Int? = null,
@@ -80,12 +79,9 @@ class ElementPlusComponents {
             max: String? = null,
             valueOnClear: String? = "undefined",
             disabled: Boolean = false,
-        ) = TagElement(
-            "el-input-number",
-            directives = listOf(
-                VModel(modelValue, modifier = listOf("number"))
-            ),
-            props = listOfNotNull(
+        ) = TagElement("el-input-number") {
+            setModelValue(modelValue, doubleBind, modifier = listOf("number"))
+            props += listOfNotNull(
                 placeholder(comment).toPropBind("placeholder", true),
                 precision.toPropBind("precision"),
                 min.toPropBind("min"),
@@ -93,23 +89,33 @@ class ElementPlusComponents {
                 formatIfDouble(valueOnClear, precision).toPropBind("value-on-clear"),
                 disabled.toPropBind("disabled"),
             )
-        )
+        }
 
         fun switch(
-            modelValue: String = "modelValue",
+            modelValue: String,
+            doubleBind: Boolean = true,
             disabled: Boolean = false,
-        ) = TagElement(
-            "el-switch",
-            directives = listOf(
-                VModel(modelValue)
-            ),
-            props = listOfNotNull(
-                disabled.toPropBind("disabled"),
+        ) = TagElement("el-switch") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
+                disabled.toPropBind("disabled")
             )
-        )
+        }
+
+        fun checkbox(
+            modelValue: String,
+            doubleBind: Boolean = true,
+            disabled: Boolean = false,
+        ) = TagElement("el-checkbox") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
+                disabled.toPropBind("disabled")
+            )
+        }
 
         fun select(
-            modelValue: String = "modelValue",
+            modelValue: String,
+            doubleBind: Boolean = true,
             comment: String = "",
             placeholder: (comment: String) -> String? = { "请选择$it" },
             filterable: Boolean = true,
@@ -118,12 +124,9 @@ class ElementPlusComponents {
             multiple: Boolean = false,
             valueOnClear: String? = "undefined",
             content: Collection<Element> = listOf(),
-        ) = TagElement(
-            "el-select",
-            directives = listOf(
-                VModel(modelValue)
-            ),
-            props = listOfNotNull(
+        ) = TagElement("el-select") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
                 placeholder(comment).toPropBind("placeholder", isLiteral = true),
                 filterable.toPropBind("filterable"),
                 clearable.toPropBind("clearable"),
@@ -132,23 +135,22 @@ class ElementPlusComponents {
                 multiple.toPropBind("multiple"),
                 multiple.toPropBind("collapse-tags"),
                 multiple.toPropBind("collapse-tags-tooltip"),
-            ),
-            children = content,
-        )
+            )
+            children += content
+        }
 
         fun option(
             value: String,
             label: String? = null,
             labelIsLiteral: Boolean = false,
             content: Collection<Element> = emptyList(),
-        ) = TagElement(
-            "el-option",
-            props = listOfNotNull(
+        ) = TagElement("el-option") {
+            props += listOfNotNull(
                 PropBind("value", value),
                 label.toPropBind("label", isLiteral = labelIsLiteral),
-            ),
-            children = content
-        )
+            )
+            children += content
+        }
 
         fun options(
             options: String,
@@ -172,7 +174,8 @@ class ElementPlusComponents {
             labelProp: String,
             childrenProp: String,
             nodeKey: String,
-            modelValue: String = "modelValue",
+            modelValue: String,
+            doubleBind: Boolean = true,
             comment: String = "",
             placeholder: (comment: String) -> String? = { "请选择$it" },
             filterable: Boolean = true,
@@ -183,12 +186,9 @@ class ElementPlusComponents {
             checkStrictly: Boolean = true,
             valueOnClear: String? = "undefined",
             content: Collection<Element> = listOf(),
-        ) = TagElement(
-            "el-tree-select",
-            directives = listOf(
-                VModel(modelValue)
-            ),
-            props = listOfNotNull(
+        ) = TagElement("el-tree-select") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
                 placeholder(comment).toPropBind("placeholder", isLiteral = true),
                 data.toPropBind("data"),
                 PropBind("props", "{label: '${labelProp}', children: '${childrenProp}'}"),
@@ -200,86 +200,78 @@ class ElementPlusComponents {
                 disabled.toPropBind("disabled"),
                 multiple.toPropBind("multiple"),
                 checkStrictly.toPropBind("check-strictly"),
-            ),
-            children = content,
-        )
+            )
+            children += content
+        }
 
         fun timePicker(
-            modelValue: String = "modelValue",
+            modelValue: String,
+            doubleBind: Boolean = true,
             valueFormat: String? = "HH:mm:ss",
             comment: String = "时间",
             placeholder: (comment: String) -> String? = { "请选择$it" },
             clearable: Boolean = true,
             disabled: Boolean = false,
-        ) = TagElement(
-            "el-time-picker",
-            directives = listOf(
-                VModel(modelValue)
-            ),
-            props = listOfNotNull(
+        ) = TagElement("el-time-picker") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
                 valueFormat.toPropBind("value-format", true),
                 placeholder(comment).toPropBind("placeholder", true),
                 clearable.toPropBind("clearable"),
                 disabled.toPropBind("disabled"),
             )
-        )
+        }
 
         fun datePicker(
-            modelValue: String = "modelValue",
+            modelValue: String,
+            doubleBind: Boolean = true,
             valueFormat: String? = "YYYY-MM-DD",
             comment: String = "日期",
             placeholder: (comment: String) -> String? = { "请选择$it" },
             clearable: Boolean = true,
             disabled: Boolean = false,
-        ) = TagElement(
-            "el-date-picker",
-            directives = listOf(
-                VModel(modelValue)
-            ),
-            props = listOfNotNull(
+        ) = TagElement("el-date-picker") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
                 PropBind("type", "date", true),
                 valueFormat.toPropBind("value-format", true),
                 placeholder(comment).toPropBind("placeholder", true),
                 clearable.toPropBind("clearable"),
                 disabled.toPropBind("disabled"),
             )
-        )
+        }
 
         fun dateTimePicker(
-            modelValue: String = "modelValue",
+            modelValue: String,
+            doubleBind: Boolean = true,
             valueFormat: String? = "YYYY-MM-DDTHH:mm:ss",
             comment: String = "日期时间",
             placeholder: (comment: String) -> String? = { "请选择$it" },
             clearable: Boolean = true,
             disabled: Boolean = false,
-        ) = TagElement(
-            "el-date-picker",
-            directives = listOf(
-                VModel(modelValue)
-            ),
-            props = listOfNotNull(
+        ) = TagElement("el-date-picker") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
                 PropBind("type", "datetime", true),
                 valueFormat.toPropBind("value-format", true),
                 placeholder(comment).toPropBind("placeholder", true),
                 clearable.toPropBind("clearable"),
                 disabled.toPropBind("disabled"),
             )
-        )
+        }
 
         fun timePickerRange(
-            modelValue: String = "modelValue",
+            modelValue: String,
+            doubleBind: Boolean = true,
             valueFormat: String? = "HH:mm:ss",
             comment: String = "时间",
             startPlaceholder: (comment: String) -> String? = { "请选择开始$it" },
             endPlaceholder: (comment: String) -> String? = { "请选择结束$it" },
             clearable: Boolean = true,
             disabled: Boolean = false,
-        ) = TagElement(
-            "el-time-picker",
-            directives = listOf(
-                VModel(modelValue)
-            ),
-            props = listOfNotNull(
+        ) = TagElement("el-time-picker") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
                 valueFormat.toPropBind("value-format", true),
                 PropBind("is-range", isLiteral = true),
                 startPlaceholder(comment).toPropBind("start-placeholder", true),
@@ -287,22 +279,20 @@ class ElementPlusComponents {
                 clearable.toPropBind("clearable"),
                 disabled.toPropBind("disabled"),
             )
-        )
+        }
 
         fun datePickerRange(
-            modelValue: String = "modelValue",
+            modelValue: String,
+            doubleBind: Boolean = true,
             valueFormat: String? = "YYYY-MM-DD",
             comment: String = "日期",
             startPlaceholder: (comment: String) -> String? = { "请选择开始$it" },
             endPlaceholder: (comment: String) -> String? = { "请选择结束$it" },
             clearable: Boolean = true,
             disabled: Boolean = false,
-        ) = TagElement(
-            "el-date-picker",
-            directives = listOf(
-                VModel(modelValue)
-            ),
-            props = listOfNotNull(
+        ) = TagElement("el-date-picker") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
                 PropBind("type", "daterange", true),
                 valueFormat.toPropBind("value-format", true),
                 PropBind("unlink-panels", isLiteral = true),
@@ -311,22 +301,20 @@ class ElementPlusComponents {
                 clearable.toPropBind("clearable"),
                 disabled.toPropBind("disabled"),
             )
-        )
+        }
 
         fun dateTimePickerRange(
-            modelValue: String = "modelValue",
+            modelValue: String,
+            doubleBind: Boolean = true,
             valueFormat: String? = "YYYY-MM-DDTHH:mm:ss",
             comment: String = "日期时间",
             startPlaceholder: (comment: String) -> String? = { "请选择开始$it" },
             endPlaceholder: (comment: String) -> String? = { "请选择结束$it" },
             clearable: Boolean = true,
             disabled: Boolean = false,
-        ) = TagElement(
-            "el-date-picker",
-            directives = listOf(
-                VModel(modelValue)
-            ),
-            props = listOfNotNull(
+        ) = TagElement("el-date-picker") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
                 PropBind("type", "datetimerange", true),
                 valueFormat.toPropBind("value-format", true),
                 PropBind("unlink-panels", isLiteral = true),
@@ -335,7 +323,7 @@ class ElementPlusComponents {
                 clearable.toPropBind("clearable"),
                 disabled.toPropBind("disabled"),
             )
-        )
+        }
 
         fun formItem(
             prop: String,
@@ -344,30 +332,28 @@ class ElementPlusComponents {
             labelIsLiteral: Boolean = true,
             rule: String? = null,
             content: Collection<Element>,
-        ) = TagElement(
-            "el-form-item",
-            props = listOfNotNull(
+        ) = TagElement("el-form-item") {
+            props += listOfNotNull(
                 PropBind("prop", prop, isLiteral = propIsLiteral),
                 label.toPropBind("label", isLiteral = labelIsLiteral),
                 rule.toPropBind("rule"),
-            ),
-            children = content,
-        )
+            )
+            children += content
+        }
 
         fun form(
             model: String,
             ref: String? = null,
             rules: String? = null,
             content: Collection<Element>,
-        ) = TagElement(
-            "el-form",
-            props = listOfNotNull(
+        ) = TagElement("el-form") {
+            props += listOfNotNull(
                 PropBind("model", model),
                 ref.toPropBind("ref", true),
                 rules.toPropBind("rules"),
-            ),
-            children = content
-        )
+            )
+            children += content
+        }
 
         fun tableColumn(
             prop: String? = null,
@@ -375,23 +361,21 @@ class ElementPlusComponents {
             type: String? = null,
             fixed: TableColumnFixed? = null,
             content: Collection<Element> = emptyList(),
-        ) = TagElement(
-            "el-table-column",
-            props = listOfNotNull(
+        ) = TagElement("el-table-column") {
+            props += listOfNotNull(
                 prop.toPropBind("prop", isLiteral = true),
                 label.toPropBind("label", isLiteral = true),
                 type.toPropBind("type", isLiteral = true),
                 fixed?.toPropBind()
-            ),
-            children = listOfNotNull(
-                if (content.isEmpty())
-                    null
-                else slotTemplate(
+            )
+
+            if (content.isNotEmpty()) {
+                children += slotTemplate(
                     propScope = "scope",
                     content = content,
                 )
-            )
-        )
+            }
+        }
 
         fun table(
             data: String,
@@ -400,19 +384,18 @@ class ElementPlusComponents {
             stripe: Boolean = true,
             columns: Collection<Element>,
             childrenProp: String? = null,
-        ) = TagElement(
-            "el-table",
-            props = listOfNotNull(
+        ) = TagElement("el-table") {
+            props += listOfNotNull(
                 PropBind("data", data),
                 PropBind("row-key", rowKey, isLiteral = true),
                 border.toPropBind("border"),
                 stripe.toPropBind("stripe"),
-                childrenProp?.let {
-                    PropBind("tree-props", "{children: '${childrenProp}'}")
-                }
-            ),
-            children = columns
-        )
+            )
+            childrenProp?.let {
+                props += PropBind("tree-props", "{children: '${childrenProp}'}")
+            }
+            children += columns
+        }
 
         fun pagination(
             currentPage: String,
@@ -420,35 +403,32 @@ class ElementPlusComponents {
             total: String,
             pageSizes: Iterable<Int> = listOf(5, 10, 20),
             layout: Iterable<String> = listOf("total", "sizes", "prev", "pager", "next", "jumper"),
-        ) = TagElement(
-            "el-pagination",
-            directives = listOf(
+        ) = TagElement("el-pagination") {
+            directives += listOf(
                 VModel(propName = "current-page", value = currentPage),
                 VModel(propName = "page-size", value = pageSize),
-            ),
-            props = listOfNotNull(
+            )
+            props += listOfNotNull(
                 total.toPropBind("total"),
                 PropBind("page-sizes", pageSizes.toString()),
                 PropBind("layout", layout.joinToString(", "), isLiteral = true),
             )
-        )
+        }
 
         fun dialog(
             modelValue: String,
+            doubleBind: Boolean = true,
             destroyOnClose: Boolean = true,
             closeOnClickModal: Boolean = false,
             content: Collection<Element>,
-        ) = TagElement(
-            "el-dialog",
-            directives = listOf(
-                VModel(modelValue),
-            ),
-            props = listOfNotNull(
+        ) = TagElement("el-dialog") {
+            setModelValue(modelValue, doubleBind)
+            props += listOfNotNull(
                 destroyOnClose.toPropBind("destroy-on-close"),
                 closeOnClickModal.toPropBind("close-on-click-modal", default = true),
-            ),
-            children = content
-        )
+            )
+            children += content
+        }
 
         fun col(
             span: Int = 24,
@@ -459,9 +439,8 @@ class ElementPlusComponents {
             xl: Int? = null,
             offset: Int? = null,
             content: Collection<Element>,
-        ) = TagElement(
-            "el-col",
-            props = listOfNotNull(
+        ) = TagElement("el-col") {
+            props += listOfNotNull(
                 span.toPropBind("span"),
                 offset.toPropBind("offset"),
                 xs?.toPropBind("xs"),
@@ -469,20 +448,41 @@ class ElementPlusComponents {
                 md?.toPropBind("md"),
                 lg?.toPropBind("lg"),
                 xl?.toPropBind("xl"),
-            ),
-            children = content
-        )
+            )
+            children += content
+        }
 
         fun row(
             gutter: Int? = null,
             content: Collection<Element>,
-        ) = TagElement(
-            "el-row",
-            props = listOfNotNull(
+        ) = TagElement("el-row") {
+            props += listOfNotNull(
                 gutter.toPropBind("gutter"),
-            ),
-            children = content
-        )
+            )
+            children += content
+        }
+
+        fun button(
+            content: Collection<Element> = emptyList(),
+            disabled: Boolean = false,
+            type: Type? = null,
+            icon: String? = null,
+            plain: Boolean = false,
+            link: Boolean = false,
+            round: Boolean = false,
+            circle: Boolean = false,
+        ) = TagElement("el-button") {
+            props += listOfNotNull(
+                type?.toPropBind(),
+                icon.toPropBind("icon"),
+                plain.toPropBind("plain"),
+                link.toPropBind("link"),
+                round.toPropBind("round"),
+                circle.toPropBind("circle"),
+                disabled.toPropBind("disabled"),
+            )
+            children += content
+        }
 
         fun button(
             content: String,
@@ -502,29 +502,6 @@ class ElementPlusComponents {
             link = link,
             round = round,
             circle = circle,
-        )
-
-        fun button(
-            content: Collection<Element> = emptyList(),
-            disabled: Boolean = false,
-            type: Type? = null,
-            icon: String? = null,
-            plain: Boolean = false,
-            link: Boolean = false,
-            round: Boolean = false,
-            circle: Boolean = false,
-        ) = TagElement(
-            "el-button",
-            props = listOfNotNull(
-                type?.toPropBind(),
-                icon.toPropBind("icon"),
-                plain.toPropBind("plain"),
-                link.toPropBind("link"),
-                round.toPropBind("round"),
-                circle.toPropBind("circle"),
-                disabled.toPropBind("disabled"),
-            ),
-            children = content
         )
     }
 }

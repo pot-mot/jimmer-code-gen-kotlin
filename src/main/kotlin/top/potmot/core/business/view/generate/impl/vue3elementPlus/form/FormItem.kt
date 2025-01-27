@@ -112,7 +112,7 @@ interface FormItem {
 
             is CommonProperty -> {
                 when (formType) {
-                    PropertyFormType.SWITCH ->
+                    PropertyFormType.BOOLEAN ->
                         FormItemData(
                             if (typeNotNull)
                                 switch(

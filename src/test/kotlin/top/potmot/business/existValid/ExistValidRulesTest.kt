@@ -18,8 +18,10 @@ class ExistValidRulesTest {
         get() = builder.build(Rules(
             functionName = "useRules",
             formData = "formData",
-            formDataType = "EntityDto",
-            formDataTypePath = staticPath,
+            formDataType = "EntityDate",
+            formDataTypePath = "@/components/entity",
+            ruleDataType = "EntityDto",
+            ruleDataTypePath = staticPath,
             propertyRules = this
         ))
 

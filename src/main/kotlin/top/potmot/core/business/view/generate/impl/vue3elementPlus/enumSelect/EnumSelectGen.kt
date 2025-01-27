@@ -2,7 +2,8 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.enumSelect
 
 import top.potmot.core.business.meta.EnumBusiness
 import top.potmot.core.business.view.generate.enumPath
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.options
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
@@ -27,12 +28,13 @@ interface EnumSelectGen: Generator {
         val options = enum.constants
         val option = "option"
 
-        val selectElement = ElementPlusComponents.select(
+        val selectElement = select(
+            modelValue = modelValue,
             comment = enum.comment,
             clearable = nullable,
             valueOnClear = if (nullable) "undefined" else null,
             content = listOf(
-                ElementPlusComponents.options(
+                options(
                     options = options,
                     option = option,
                     value = { option },

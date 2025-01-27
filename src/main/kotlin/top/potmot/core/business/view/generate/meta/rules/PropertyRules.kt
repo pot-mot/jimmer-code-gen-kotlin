@@ -38,7 +38,7 @@ val PropertyBusiness.rules: List<Rule>
                     ->
                         rules += DateRule(comment)
 
-                    PropertyFormType.SWITCH ->
+                    PropertyFormType.BOOLEAN ->
                         rules += BooleanRule(comment)
 
                     else -> Unit

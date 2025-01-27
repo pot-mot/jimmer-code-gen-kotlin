@@ -8,6 +8,7 @@ import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.TypeEntityProperty
 import top.potmot.core.business.meta.formType
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.checkbox
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.typescript.TsImport
@@ -52,18 +53,15 @@ interface TableColumn {
         withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat,
     ): Pair<TableColumnPropertyKey, TableColumnData> =
         TableColumnPropertyKey(this) to when (formType) {
-            PropertyFormType.DATE -> {
-                if (!withDateTimeFormat)
-                    defaultTableColumnData
-                else
-                    TableColumnData(
-                        imports = listOf(
-                            Import("$utilPath/timeFormat", formatTableColumnDate)
-                        ),
-                        props = listOf(
-                            PropBind("formatter", formatTableColumnDate)
+            PropertyFormType.BOOLEAN -> {
+                TableColumnData(
+                    elements = listOf(
+                        checkbox(
+                            "scope.row.$name",
+                            doubleBind = false,
                         )
                     )
+                )
             }
 
             PropertyFormType.TIME -> {
@@ -76,6 +74,20 @@ interface TableColumn {
                         ),
                         props = listOf(
                             PropBind("formatter", formatTableColumnTime)
+                        )
+                    )
+            }
+
+            PropertyFormType.DATE -> {
+                if (!withDateTimeFormat)
+                    defaultTableColumnData
+                else
+                    TableColumnData(
+                        imports = listOf(
+                            Import("$utilPath/timeFormat", formatTableColumnDate)
+                        ),
+                        props = listOf(
+                            PropBind("formatter", formatTableColumnDate)
                         )
                     )
             }

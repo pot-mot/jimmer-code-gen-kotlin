@@ -176,7 +176,7 @@ interface QueryFormItem {
                     )
 
                 else -> when (formType) {
-                    PropertyFormType.SWITCH ->
+                    PropertyFormType.BOOLEAN ->
                         FormItemData(
                             select(
                                 modelValue,
