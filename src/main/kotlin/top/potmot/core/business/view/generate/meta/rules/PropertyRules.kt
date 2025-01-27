@@ -9,13 +9,13 @@ val PropertyBusiness.rules: List<Rule>
     get() {
         val rules = mutableListOf<Rule>()
 
-        if (typeNotNull) {
-            rules += RequiredRule(comment)
-        }
-
         if (listType) {
             rules += ArrayRule(comment)
         } else {
+            if (typeNotNull) {
+                rules += RequiredRule(comment)
+            }
+
              if (this is EnumProperty) {
                 rules += EnumRule(comment, enum.items.map { it.name })
             } else if (this is CommonProperty) {
