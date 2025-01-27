@@ -28,7 +28,7 @@ interface EditNullableValid {
             builder.apply {
                 line("if ($data.$name === undefined) {")
                 scope {
-                    line("$messageList.push(\"${currentComment}不可为空\", \"warning\")")
+                    line("$messageList.push(\"${currentComment}不可为空\")")
                 }
                 line("}")
             }
@@ -47,7 +47,7 @@ interface EditNullableValid {
                     } else {
                         line("if ($data.$name === undefined) {")
                         scope {
-                            line("$messageList.push(\"${currentComment}不可为空\", \"warning\")")
+                            line("$messageList.push(\"${currentComment}不可为空\")")
                         }
                         line("} else {")
                         scope {
@@ -123,16 +123,7 @@ interface EditNullableValid {
             line("export const $validateDataForSubmit = (data: $inputType): boolean => {")
             scope {
                 line("const messageList = $getUnmatchedMessageList(data)")
-                line("if (messageList.length === 0) {")
-                scope {
-                    line("return true")
-                }
-                line("} else {")
-                scope {
-                    line("messageList.forEach(message => sendMessage(message, \"warning\"))")
-                    line("return false")
-                }
-                line("}")
+                line("return messageList.length === 0")
             }
             line("}")
             line()

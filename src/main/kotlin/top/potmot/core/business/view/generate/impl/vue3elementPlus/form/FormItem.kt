@@ -32,10 +32,9 @@ interface FormItem {
 
         return when (this) {
             is TypeEntityProperty -> {
-                val components = typeEntityBusiness.components
-
                 if (this is AssociationProperty && isLongAssociation) {
-                    val component = if (listType) components.editTable else components.subForm
+                    val component = longComponent
+                    val refName = longComponentRefName
                     val selectOptions = typeEntityBusiness.subFormSelects
                     FormItemData(
                         elements = listOf(
@@ -43,6 +42,7 @@ interface FormItem {
                                 component.name,
                                 directives = listOf(VModel(modelValue)),
                                 props = listOfNotNull(
+                                    PropBind("ref", refName, isLiteral = true),
                                     disabled.toPropBind("disabled"),
                                 ) + selectOptions.map {
                                     PropBind(it.name, it.name)
@@ -57,6 +57,7 @@ interface FormItem {
                         )
                     )
                 } else {
+                    val components = typeEntityBusiness.components
                     val component = if (listType) components.idMultiSelect else components.idSelect
                     FormItemData(
                         elements = listOf(

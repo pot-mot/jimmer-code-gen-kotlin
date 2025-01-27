@@ -52,6 +52,8 @@ object Vue3ElementPlusViewGenerator :
     override fun generateView(
         entity: RootEntityBusiness
     ): List<GenerateFile> {
+        if (!entity.hasPage) return emptyList()
+
         val result = mutableListOf<GenerateFile>()
 
         result += viewTableFile(entity)
@@ -76,9 +78,7 @@ object Vue3ElementPlusViewGenerator :
             result += idSelectFiles(entity)
         }
 
-        if (entity.hasPage) {
-            result += pageFile(entity)
-        }
+        result += pageFile(entity)
 
         return result.distinct()
     }

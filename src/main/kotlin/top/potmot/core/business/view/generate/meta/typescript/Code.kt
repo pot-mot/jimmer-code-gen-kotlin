@@ -3,6 +3,7 @@ package top.potmot.core.business.view.generate.meta.typescript
 import top.potmot.utils.string.StringIndentScopeBuilder
 import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.clearBlankLine
+import top.potmot.utils.string.trimBlankLine
 
 sealed interface TsCode
 
@@ -141,6 +142,7 @@ data class Function(
 
         val body = body
             .stringify(indent, wrapThreshold)
+            .trimBlankLine()
             .replace("\n", "\n$indent")
 
         return "const $name = ${if (async) "async " else ""}(${argsString}): $returnType => {\n$indent$body\n}"

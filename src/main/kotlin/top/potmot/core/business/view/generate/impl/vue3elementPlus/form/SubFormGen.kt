@@ -99,21 +99,26 @@ fun subForm(
         emptyLineCode
     )
 
+    val validateItems = mutableListOf<ValidateItem>()
+    validateItems += CommonValidateItem(
+        "formValid",
+        "await $formRef.value?.validate().catch(() => false) ?? false"
+    )
     if (subValidateItems.isNotEmpty()) {
         imports += subValidateItems.flatMap { it.imports }
         script += subValidateItems.map { it.ref }
         script += emptyLineCode
+        validateItems += subValidateItems
     }
 
-    val typeValidateItem = CommonValidateItem(
+    validateItems += CommonValidateItem(
         "typeValidate",
-        "boolean",
         "$validateDataForSubmit($formData.value)"
     )
 
     script += listOf(
         commentLine("校验"),
-        handleValidate(formRef, subValidateItems + typeValidateItem, indent),
+        handleValidate(validateItems, indent),
         emptyLineCode,
         commentLine("提交"),
         handleSubmit("$assertDataTypeAsSubmitType($formData.value)", indent),
@@ -247,6 +252,7 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
             formData = formData,
             indent = indent,
             selectOptions = entity.subFormSelects,
+            subValidateItems = entity.subEditProperties.toFormRefValidateItems(),
             content = entity.subEditNoIdProperties
                 .associateWith { it.createFormItem(formData) }
         )
