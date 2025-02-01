@@ -477,6 +477,7 @@ class RootEntityBusiness(
 
 class SubEntityBusiness(
     val path: AssociationPath,
+    val currentFkProperty: GenEntityBusinessView.TargetOf_properties?,
     entity: GenEntityBusinessView,
     entityIdMap: Map<Long, GenEntityBusinessView>,
     enumIdMap: Map<Long, EnumBusiness>,
@@ -493,7 +494,7 @@ class SubEntityBusiness(
 
     val longAssociationInputProperties by lazy {
         properties
-            .filter { it.inLongAssociationInput }
+            .filter { it.inLongAssociationInput && it.property.id != currentFkProperty?.id }
     }
     val subEditProperties by lazy {
         longAssociationInputProperties
@@ -512,7 +513,7 @@ class SubEntityBusiness(
 
     val longAssociationViewProperties by lazy {
         properties
-            .filter { it.inLongAssociationView }
+            .filter { it.inLongAssociationView && it.property.id != currentFkProperty?.id }
     }
     val subViewProperties by lazy {
         longAssociationViewProperties

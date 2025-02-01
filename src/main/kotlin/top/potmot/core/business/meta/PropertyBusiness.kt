@@ -119,11 +119,6 @@ data class AssociationProperty(
             it.mappedBy == property.name || property.mappedBy == it.name
         }
 
-        val filteredEntity = if (fkProperty != null)
-            typeEntity.copy(properties = typeEntity.properties.filter { it != fkProperty })
-        else
-            typeEntity
-
         SubEntityBusiness(
             path = path.append(
                 entity = entityBusiness,
@@ -131,7 +126,8 @@ data class AssociationProperty(
                 type = AssociationPathItemType.ENTITY,
                 isSelfAssociated = entityBusiness.isSelfAssociated
             ),
-            entity = filteredEntity,
+            currentFkProperty = fkProperty,
+            entity = typeEntity,
             entityIdMap = entityBusiness.entityIdMap,
             enumIdMap = entityBusiness.enumIdMap,
         )
