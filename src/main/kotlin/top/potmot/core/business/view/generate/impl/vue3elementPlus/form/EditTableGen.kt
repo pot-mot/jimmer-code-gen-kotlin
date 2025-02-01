@@ -91,7 +91,7 @@ fun editTable(
 
     props += tableUtilProps(showIndex = false)
     props += listOf(
-        Prop("withOperations", "boolean", required = false, defaultValue = "false"),
+        Prop("withOperations", "boolean", required = false, default = "false"),
         submitLoadingProp,
     )
     if (selectOptions.isNotEmpty()) {

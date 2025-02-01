@@ -41,7 +41,7 @@ class Vue3ComponentBuilder(
             val defineObject = TsObject(
                 properties = listOfNotNull(
                     TsProperty("required", it.required.toString()),
-                    it.defaultValue?.let { value -> TsProperty("defaultValue", value) }
+                    it.default?.let { value -> TsProperty("default", value) }
                 )
             )
 
@@ -66,7 +66,7 @@ class Vue3ComponentBuilder(
         refContextContent.contains("props")
 
     fun Iterable<Prop>.stringifyProps(): String = buildScopeString(indent) {
-        val hasDefaultProps = filter { it.defaultValue != null }
+        val hasDefaultProps = filter { it.default != null }
         val withDefaults = hasDefaultProps.isNotEmpty()
 
         if (withDefaults) {
@@ -90,11 +90,11 @@ class Vue3ComponentBuilder(
                     if (it.defaultAsFunction) {
                         line("${it.name}() {")
                         scope {
-                            block(it.defaultValue)
+                            block(it.default)
                         }
                         line("}${if (index != hasDefaultProps.size - 1) "," else ""}")
                     } else {
-                        line("${it.name}: ${it.defaultValue},")
+                        line("${it.name}: ${it.default},")
                     }
                 }
             }

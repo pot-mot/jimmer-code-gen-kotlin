@@ -15,7 +15,7 @@ data class Prop(
     val name: String,
     val type: String,
     val required: Boolean = true,
-    val defaultValue: String? = null,
+    val default: String? = null,
     val defaultAsFunction: Boolean = false,
 )
 
@@ -23,7 +23,7 @@ data class ModelProp(
     val name: String,
     val type: String,
     val required: Boolean = true,
-    val defaultValue: String? = null,
+    val default: String? = null,
     val modifier: Collection<String> = emptyList(),
 )
 

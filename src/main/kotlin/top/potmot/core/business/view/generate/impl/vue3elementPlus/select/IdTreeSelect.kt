@@ -114,7 +114,7 @@ interface IdTreeSelect : IdSelect {
                 Prop(options, "Array<$optionView>"),
                 Prop(
                     excludeIds, "Array<$idType>", required = false,
-                    defaultValue = "return []", defaultAsFunction = true
+                    default = "return []", defaultAsFunction = true
                 )
             ),
             script = listOf(

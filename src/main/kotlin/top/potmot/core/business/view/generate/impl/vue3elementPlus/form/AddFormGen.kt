@@ -66,7 +66,7 @@ fun addForm(
         emptyLineCode,
     )
     props += listOf(
-        Prop("withOperations", "boolean", required = false, defaultValue = "true"),
+        Prop("withOperations", "boolean", required = false, default = "true"),
         submitLoadingProp,
     )
     if (selectOptions.isNotEmpty()) {

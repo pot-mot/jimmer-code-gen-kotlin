@@ -74,11 +74,11 @@ fun subForm(
         models += ModelProp(formData, dataType)
     } else {
         imports += Import(defaultPath, createDefault)
-        models += ModelProp(formData, dataType, required = false, defaultValue = "$createDefault()")
+        models += ModelProp(formData, dataType, required = false, default = "$createDefault()")
     }
 
     props += listOf(
-        Prop("withOperations", "boolean", required = false, defaultValue = "false"),
+        Prop("withOperations", "boolean", required = false, default = "false"),
         submitLoadingProp,
     )
     if (selectOptions.isNotEmpty()) {

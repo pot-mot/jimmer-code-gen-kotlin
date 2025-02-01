@@ -61,7 +61,7 @@ fun editForm(
 
     models += ModelProp(formData, dataType)
     props += listOf(
-        Prop("withOperations", "boolean", required = false, defaultValue = "true"),
+        Prop("withOperations", "boolean", required = false, default = "true"),
         submitLoadingProp,
     )
     if (selectOptions.isNotEmpty()) {
