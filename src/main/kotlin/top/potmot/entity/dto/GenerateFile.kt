@@ -182,8 +182,9 @@ fun GenerateFile(
         .map { it.typeEntity.idName }
         .distinctBy { it.id }
         .map { TableEntityPair(entity = it) },
-    enums = entityBusiness.enums
-        .map { it.idName }
+    enums = entityBusiness.properties
+        .filterIsInstance<EnumBusiness>()
+        .map { it.enum.idName }
         .distinctBy { it.id }
 )
 

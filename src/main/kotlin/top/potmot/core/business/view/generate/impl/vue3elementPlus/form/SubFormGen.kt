@@ -2,11 +2,11 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.PropertyBusiness
+import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
-import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.toElements
 import top.potmot.core.business.view.generate.meta.rules.Rules
 import top.potmot.core.business.view.generate.meta.rules.existValidRules
@@ -158,9 +158,9 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
 
         imports += Import("$utilPath/message", "sendMessage")
         imports += ImportType(staticPath, submitTypes)
-        imports += entity.enums.map {
-            ImportType(enumPath, it.name)
-        }
+        imports += entity.subEditProperties
+            .editEnums { it.subEditProperties }
+            .map { ImportType(enumPath, it.name) }
 
         return buildScopeString(indent) {
             lines(imports.stringify(indent, wrapThreshold))

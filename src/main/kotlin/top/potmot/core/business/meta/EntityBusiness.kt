@@ -114,13 +114,6 @@ sealed class EntityBusiness(
         )
     }
 
-    val enumProperties by lazy {
-        properties.filterIsInstance<EnumProperty>()
-    }
-
-    val enums by lazy {
-        enumProperties.map { it.enum }
-    }
 
     val serviceName = "${name}Service"
 
@@ -225,7 +218,7 @@ sealed class EntityBusiness(
         properties.filterIsInstance<AssociationProperty>()
     }
 
-    private val editLongAssociationProperties by lazy {
+    private val editLongProperties by lazy {
         associationProperties
             .filter {
                 it.isLongAssociation &&
@@ -235,15 +228,33 @@ sealed class EntityBusiness(
                         }
             }
     }
-
     val editSubEntityMap by lazy {
-        editLongAssociationProperties.associateWith {
+        editLongProperties.associateWith {
             it.typeEntityBusiness
         }
     }
-
     val editSubEntities by lazy {
         editSubEntityMap.values
+    }
+
+
+    private val viewLongProperties by lazy {
+        associationProperties
+            .filter {
+                it.isLongAssociation &&
+                        when (this) {
+                            is RootEntityBusiness -> it.inDetailView
+                            is SubEntityBusiness -> it.inLongAssociationView
+                        }
+            }
+    }
+    val viewSubEntityMap by lazy {
+        viewLongProperties.associateWith {
+            it.typeEntityBusiness
+        }
+    }
+    val viewSubEntities by lazy {
+        viewSubEntityMap.values
     }
 
 

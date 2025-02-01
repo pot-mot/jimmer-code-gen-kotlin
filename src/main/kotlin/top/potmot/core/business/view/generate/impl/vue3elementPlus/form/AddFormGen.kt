@@ -142,9 +142,9 @@ interface AddFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
 
         imports += Import("$utilPath/message", "sendMessage")
         imports += ImportType(staticPath, submitType)
-        imports += entity.enums.map {
-            ImportType(enumPath, it.name)
-        }
+        imports += entity.addFormProperties
+            .editEnums { it.subEditNoIdProperties }
+            .map { ImportType(enumPath, it.name) }
 
         return buildScopeString(indent) {
             lines(imports.stringify(indent, wrapThreshold))

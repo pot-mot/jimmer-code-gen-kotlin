@@ -1,6 +1,7 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
 import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.EnumBusiness
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.SubEntityBusiness
@@ -37,4 +38,10 @@ interface FormType {
             baseType
         }
     }
+
+    fun Iterable<PropertyBusiness>.editEnums(propertyProducer: (entity: SubEntityBusiness) -> Iterable<PropertyBusiness>): List<EnumBusiness> =
+        filterIsInstance<EnumProperty>().map { it.enum } +
+                filterIsInstance<AssociationProperty>()
+                    .filter { it.isLongAssociation }
+                    .flatMap { propertyProducer(it.typeEntityBusiness).editEnums(propertyProducer) }
 }
