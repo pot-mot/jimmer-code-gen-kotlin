@@ -90,6 +90,18 @@ sealed class EntityBusiness(
         )
     }
 
+    val allPermissionStrList by lazy {
+        listOf(
+            permissions.get,
+            permissions.list,
+            permissions.select,
+            permissions.menu,
+            permissions.insert,
+            permissions.update,
+            permissions.delete,
+        )
+    }
+
     val permissionStrList by lazy {
         listOfNotNull(
             permissions.get,

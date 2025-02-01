@@ -12,23 +12,52 @@ private const val allPermissionFile = "all-permissions"
 object PermissionGenerator {
     fun generate(entities: Iterable<EntityBusiness>): List<GenerateFile> {
         val items = entities.map {
+            val permissions = it.permissionStrList
+            val allPermissions = it.allPermissionStrList
+
             GenerateFile(
                 it,
                 "sql/permission/${it.lowerName}.sql",
                 buildString {
-                    val permissions = it.permissionStrList
+                    if (allPermissions.isNotEmpty()) {
+                        appendLines(
+                            "DELETE FROM sys_role_sys_permission_mapping WHERE sys_permission_id IN (",
+                            "    SELECT id FROM sys_permission",
+                            "    WHERE name IN (${allPermissions.joinToString(", ") { permission -> "'$permission'" }})",
+                            ");",
+                            "",
+                        )
 
-                    for (permission in permissions) {
-                        appendLine("INSERT INTO sys_permission (name, created_by, created_time, modified_by, modified_time)")
-                        appendLine("VALUES ('${permission}', 1, now(), 1, now());")
+                        appendLines(
+                            "DELETE FROM sys_menu_sys_permission_mapping WHERE sys_permission_id IN (",
+                            "    SELECT id FROM sys_permission",
+                            "    WHERE name IN (${allPermissions.joinToString(", ") { permission -> "'$permission'" }})",
+                            ");",
+                            ""
+                        )
+
+                        appendLines(
+                            "DELETE FROM sys_permission",
+                            "WHERE name IN (${allPermissions.joinToString(", ") { permission -> "'$permission'" }});",
+                            "",
+                        )
                     }
 
-                    appendLines(
-                        "INSERT INTO sys_role_sys_permission_mapping (role_id, permission_id)",
-                        "SELECT 1, id FROM sys_permission ",
-                        "WHERE sys_permission.name IN ",
-                        "(${permissions.joinToString(", ") { permission -> "'$permission'" }});"
-                    )
+                    if (permissions.isNotEmpty()) {
+                        for (permission in permissions) {
+                            appendLines(
+                                "INSERT INTO sys_permission (name, created_by, created_time, modified_by, modified_time)",
+                                "VALUES ('${permission}', 1, now(), 1, now());"
+                            )
+                        }
+
+                        appendLines(
+                            "",
+                            "INSERT INTO sys_role_sys_permission_mapping (sys_role_id, sys_permission_id)",
+                            "SELECT 1, id FROM sys_permission ",
+                            "WHERE sys_permission.name IN (${permissions.joinToString(", ") { permission -> "'$permission'" }});"
+                        )
+                    }
                 }.trimBlankLine(),
                 listOf(GenerateTag.BackEnd, GenerateTag.Permission)
             )
@@ -37,7 +66,7 @@ object PermissionGenerator {
         val allPermissions = createGenerateFileByEntities(
             entities,
             "sql/permission/${allPermissionFile}.sql",
-            items.joinToString("\n\n") { it.content },
+            items.joinToString("\n\n\n") { it.content },
             listOf(GenerateTag.BackEnd, GenerateTag.Permission)
         )
 

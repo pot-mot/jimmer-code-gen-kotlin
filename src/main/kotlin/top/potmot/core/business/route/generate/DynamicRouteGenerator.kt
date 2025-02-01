@@ -9,21 +9,25 @@ import top.potmot.utils.string.trimBlankLine
 object DynamicRouteGenerator {
     fun generate(entities: Iterable<RootEntityBusiness>): List<GenerateFile> {
         val items = entities.filter { it.hasPage }.map {
-            val lowerName = it.name.lowercase()
-            val dir = it.dir
             val page = it.components.page
 
             GenerateFile(
                 it,
-                "sql/menu/${lowerName}.sql",
+                "sql/menu/${it.lowerName}.sql",
                 """
+DELETE FROM sys_menu_sys_permission_mapping WHERE sys_menu_id IN (
+    SELECT id FROM sys_menu WHERE name = '${page.name}'
+);
+
+DELETE FROM sys_menu WHERE name = '${page.name}';
+
 INSERT INTO sys_menu 
 (parent_id, name, path, icon, label, component, order_key, created_by, created_time, modified_by, modified_time)
-VALUES (NULL, '${page}', '/${page}', 'List', '${it.comment}管理', 'pages/${dir}/${page}.vue', 1, 1, now(), 1, now());
+VALUES (NULL, '${page.name}', '/${page.name}', 'List', '${it.comment}', '${page.fullPath}', 1, 1, now(), 1, now());
 
-INSERT INTO sys_permission_sys_menu_mapping (permission_id, menu_id)
+INSERT INTO sys_menu_sys_permission_mapping (sys_permission_id, sys_menu_id)
 SELECT sys_permission.id, sys_menu.id FROM sys_permission, sys_menu 
-WHERE sys_permission.name = '${it.permissions.menu}' AND sys_menu.name = '${page}';
+WHERE sys_permission.name = '${it.permissions.menu}' AND sys_menu.name = '${page.name}';
                 """.trimBlankLine(),
                 listOf(GenerateTag.BackEnd, GenerateTag.Route)
             )
