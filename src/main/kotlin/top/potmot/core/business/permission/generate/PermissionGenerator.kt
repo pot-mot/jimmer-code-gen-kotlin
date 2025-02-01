@@ -4,6 +4,7 @@ import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.createGenerateFileByEntities
 import top.potmot.enumeration.GenerateTag
+import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 import top.potmot.utils.string.trimBlankLine
 
@@ -20,26 +21,21 @@ object PermissionGenerator {
                 "sql/permission/${it.lowerName}.sql",
                 buildString {
                     if (allPermissions.isNotEmpty()) {
-                        appendLines(
-                            "DELETE FROM sys_role_sys_permission_mapping WHERE sys_permission_id IN (",
-                            "    SELECT id FROM sys_permission",
-                            "    WHERE name IN (${allPermissions.joinToString(", ") { permission -> "'$permission'" }})",
-                            ");",
-                            "",
-                        )
+                        appendBlock(
+                            """
+DELETE FROM sys_role_sys_permission_mapping WHERE sys_permission_id IN (
+    SELECT id FROM sys_permission
+    WHERE name IN (${allPermissions.joinToString(", ") { permission -> "'$permission'" }})
+);
 
-                        appendLines(
-                            "DELETE FROM sys_menu_sys_permission_mapping WHERE sys_permission_id IN (",
-                            "    SELECT id FROM sys_permission",
-                            "    WHERE name IN (${allPermissions.joinToString(", ") { permission -> "'$permission'" }})",
-                            ");",
-                            ""
-                        )
+DELETE FROM sys_menu_sys_permission_mapping WHERE sys_permission_id IN (
+    SELECT id FROM sys_permission
+    WHERE name IN (${allPermissions.joinToString(", ") { permission -> "'$permission'" }})
+);
 
-                        appendLines(
-                            "DELETE FROM sys_permission",
-                            "WHERE name IN (${allPermissions.joinToString(", ") { permission -> "'$permission'" }});",
-                            "",
+DELETE FROM sys_permission
+WHERE name IN (${allPermissions.joinToString(", ") { permission -> "'$permission'" }});
+"""
                         )
                     }
 
@@ -51,11 +47,12 @@ object PermissionGenerator {
                             )
                         }
 
-                        appendLines(
-                            "",
-                            "INSERT INTO sys_role_sys_permission_mapping (sys_role_id, sys_permission_id)",
-                            "SELECT 1, id FROM sys_permission ",
-                            "WHERE sys_permission.name IN (${permissions.joinToString(", ") { permission -> "'$permission'" }});"
+                        appendBlock(
+                            """
+INSERT INTO sys_role_sys_permission_mapping (sys_role_id, sys_permission_id)
+SELECT 1, id FROM sys_permission 
+WHERE sys_permission.name IN (${permissions.joinToString(", ") { permission -> "'$permission'" }});
+"""
                         )
                     }
                 }.trimBlankLine(),

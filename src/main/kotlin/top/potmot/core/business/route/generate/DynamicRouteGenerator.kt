@@ -4,23 +4,30 @@ import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.createGenerateFileByEntities
 import top.potmot.enumeration.GenerateTag
-import top.potmot.utils.string.trimBlankLine
+import top.potmot.utils.string.appendBlock
 
 object DynamicRouteGenerator {
     fun generate(entities: Iterable<RootEntityBusiness>): List<GenerateFile> {
-        val items = entities.filter { it.hasPage }.map {
+        val items = entities.map {
             val page = it.components.page
 
             GenerateFile(
                 it,
                 "sql/menu/${it.lowerName}.sql",
-                """
+                buildString {
+                    appendBlock(
+                        """
 DELETE FROM sys_menu_sys_permission_mapping WHERE sys_menu_id IN (
     SELECT id FROM sys_menu WHERE name = '${page.name}'
 );
 
 DELETE FROM sys_menu WHERE name = '${page.name}';
+""".trim()
+                    )
 
+                    if (it.hasPage) {
+                        appendBlock(
+                            """
 INSERT INTO sys_menu 
 (parent_id, name, path, icon, label, component, order_key, created_by, created_time, modified_by, modified_time)
 VALUES (NULL, '${page.name}', '/${page.name}', 'List', '${it.comment}', '${page.fullPath}', 1, 1, now(), 1, now());
@@ -28,7 +35,10 @@ VALUES (NULL, '${page.name}', '/${page.name}', 'List', '${it.comment}', '${page.
 INSERT INTO sys_menu_sys_permission_mapping (sys_permission_id, sys_menu_id)
 SELECT sys_permission.id, sys_menu.id FROM sys_permission, sys_menu 
 WHERE sys_permission.name = '${it.permissions.menu}' AND sys_menu.name = '${page.name}';
-                """.trimBlankLine(),
+""".trimEnd()
+                        )
+                    }
+                },
                 listOf(GenerateTag.BackEnd, GenerateTag.Route)
             )
         }.sortedBy { it.path }
