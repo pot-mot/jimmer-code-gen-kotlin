@@ -9,10 +9,14 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
+import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
+import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.staticPath
+import top.potmot.core.business.view.generate.utilPath
 
 interface IdSelect : Generator {
     fun modelValueType(
@@ -25,6 +29,24 @@ interface IdSelect : Generator {
         else
             "$idType | undefined"
 
+    fun loadIfNot() = CodeBlock(
+        """
+const loadIfNot = async () => {
+    if (props.options.state === 'unload') {
+        await props.options.load()
+    } else if (props.options.data === undefined && props.options.state !== 'loading') {
+        await props.options.load()
+    }
+}
+
+onBeforeMount(async () => {
+    if (modelValue.value !== undefined) {
+        await loadIfNot()
+    }
+})
+""".trim()
+    )
+
     fun keepModelValueLegal(
         modelValue: String,
         multiple: Boolean,
@@ -35,7 +57,10 @@ interface IdSelect : Generator {
         if (!multiple)
             """
             watch(() => [$modelValue.value, props.${options}], () => {
-                if (!(props.${options}.map(it => it.$idName) as Array<$idType | undefined>).includes($modelValue.value)) {
+                if (props.$options.state !== 'loaded') return []
+                if (props.$options.data === undefined) return []
+            
+                if (!(props.$options.data.map(it => it.$idName) as Array<$idType | undefined>).includes($modelValue.value)) {
                     $modelValue.value = undefined
                 }
             }, {immediate: true})
@@ -43,10 +68,13 @@ interface IdSelect : Generator {
         else
             """
             watch(() => [$modelValue.value, props.${options}], () => {
+                if (props.$options.state !== 'loaded') return []
+                if (props.$options.data === undefined) return []
+            
                 const newModelValue: Array<$idType> = []
                 
                 for (const item of $modelValue.value) {
-                    if (props.${options}.map(it => it.$idName).includes(item)) {
+                    if (props.${options}.data.map(it => it.$idName).includes(item)) {
                         newModelValue.push(item)
                     }
                 }
@@ -105,6 +133,7 @@ interface IdSelect : Generator {
         val modelValueType = modelValueType(
             modelValue, multiple, idType
         )
+        val loadIfNot = loadIfNot()
         val keepModelValueLegal = keepModelValueLegal(
             modelValue, multiple, options, idName, idType
         )
@@ -117,27 +146,33 @@ interface IdSelect : Generator {
             multiple = multiple,
             content = listOf(
                 options(
-                    options = options,
+                    options = "$options.data",
                     option = option,
                     key = { "$it.$idName" },
                     value = { "$it.$idName" },
                     label = { createLabelExpression(it, entity.optionLabelProperties, idProperty) },
                 )
             )
-        )
+        ).merge {
+            props += PropBind("loading", "options.state === 'loading'")
+            events += EventBind("focus.once", "loadIfNot")
+        }
 
         return Component(
             imports = listOf(
-                Import("vue", "watch"),
-                ImportType(staticPath, optionView)
+                Import("vue", "onBeforeMount", "watch"),
+                ImportType("$utilPath/lazyOptions", "LazyOptions"),
+                ImportType(staticPath, optionView),
             ),
             models = listOf(
                 ModelProp(modelValue, modelValueType)
             ),
             props = listOf(
-                Prop(options, "Array<$optionView>")
+                Prop(options, "LazyOptions<$optionView>")
             ),
             script = listOf(
+                loadIfNot,
+                emptyLineCode,
                 keepModelValueLegal
             ),
             template = listOf(

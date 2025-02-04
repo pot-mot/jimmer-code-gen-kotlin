@@ -1,6 +1,7 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.page
 
 import top.potmot.core.business.meta.RootEntityBusiness
+import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.apiPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents
@@ -8,7 +9,6 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dialog
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.pagination
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
-import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
 import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
 import top.potmot.core.business.view.generate.meta.typescript.Function
@@ -42,27 +42,14 @@ interface PageGen : Generator {
     private fun selectQueryCodes(
         selectOption: SelectOption,
     ) = mutableListOf(
-        ImportType(staticPath, selectOption.type),
-        Import("vue", "onBeforeMount"),
         Import("@/api", "api"),
+        Import("$utilPath/lazyOptions", "useLazyOptions")
     ) to mutableListOf(
         commentLine(selectOption.comment),
-        selectOption.variable,
-        emptyLineCode,
-        ConstVariable(
-            "set${selectOption.upperName}",
-            null,
-            buildScopeString(indent) {
-                line("withLoading(async () => {")
-                scope { line("${selectOption.name}.value = await api.${selectOption.apiServiceName}.listOptions({body: {}})") }
-                append("})")
-            }
-        ),
-        emptyLineCode,
         CodeBlock(
-            "onBeforeMount(async () => {\n",
-            "${indent}await set${selectOption.upperName}()\n",
-            "})"
+            "const ${selectOption.name} = useLazyOptions(async () => {\n" +
+                    "${indent}return await api.${selectOption.apiServiceName}.listOptions({body: {}})\n" +
+                    "})",
         )
     )
 
@@ -222,7 +209,7 @@ interface PageGen : Generator {
                                 scope {
                                     line("const result = await api.$apiServiceName.insert({body})")
                                     selfSelects.forEach {
-                                        line("await set${it.upperName}()")
+                                        line("await ${it.name}.load()")
                                     }
                                     line("return result")
                                 }
@@ -253,7 +240,7 @@ interface PageGen : Generator {
                                 scope {
                                     line("const result = await api.$apiServiceName.update({body})")
                                     selfSelects.forEach {
-                                        line("await set${it.upperName}()")
+                                        line("await ${it.name}.load()")
                                     }
                                     line("return result")
                                 }
@@ -278,7 +265,7 @@ interface PageGen : Generator {
                                 scope {
                                     line("const result = await api.$apiServiceName.delete({ids})")
                                     selfSelects.forEach {
-                                        line("await set${it.upperName}()")
+                                        line("await ${it.name}.load()")
                                     }
                                     line("return result")
                                 }
@@ -450,9 +437,7 @@ interface PageGen : Generator {
                                 events = listOf(
                                     EventBind("query", queryFn)
                                 )
-                            ).merge {
-                                directives += specificationSelectNames.map { VIf(it) }
-                            },
+                            ),
                             emptyLineElement,
                         ),
                         TagElement(
@@ -548,7 +533,6 @@ interface PageGen : Generator {
                         )
                     ).merge {
                         directives += VIf("userStore.permissions.includes('${permission.insert}')")
-                        directives += insertSelectNames.map { VIf(it) }
                     },
                 ),
                 *if (!entity.canEdit) emptyArray() else arrayOf(
@@ -569,7 +553,6 @@ interface PageGen : Generator {
                         )
                     ).merge {
                         directives += VIf("userStore.permissions.includes('${permission.update}')")
-                        directives += updateSelectNames.map { VIf(it) }
                     }
                 )
             )

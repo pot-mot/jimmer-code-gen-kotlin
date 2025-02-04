@@ -82,6 +82,7 @@ fun subForm(
         submitLoadingProp,
     )
     if (selectOptions.isNotEmpty()) {
+        imports += ImportType("$utilPath/lazyOptions", "LazyOptions")
         imports += selectOptions.map { it.import }
         props += selectOptions.map { it.prop }
     }

@@ -8,9 +8,12 @@ import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
+import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.staticPath
+import top.potmot.core.business.view.generate.utilPath
 import top.potmot.error.ModelException
 
 interface IdTreeSelect : IdSelect {
@@ -42,7 +45,10 @@ interface IdTreeSelect : IdSelect {
             }
             
             const treeOptions = computed<Array<TreeNode>>(() => {
-                const items = props.$options
+                if (props.$options.state !== 'loaded') return []
+                if (props.$options.data === undefined) return []
+
+                const items = props.$options.data
                 const idNodeMap = new Map<number, TreeNode>
                 const roots: Array<TreeNode> = []
             
@@ -84,6 +90,7 @@ interface IdTreeSelect : IdSelect {
             """.trimIndent()
         )
 
+        val loadIfNot = loadIfNot()
         val keepModelValueLegal = keepModelValueLegal(
             modelValue, multiple, options, idName, idType
         )
@@ -99,25 +106,31 @@ interface IdTreeSelect : IdSelect {
             filterNodeMethod = "filterNodeMethod",
             clearable = true,
             multiple = multiple,
-        )
+        ).merge {
+            props += PropBind("loading", "options.state === 'loading'")
+            events += EventBind("focus.once", "loadIfNot")
+        }
 
         return Component(
             imports = listOf(
-                Import("vue", "computed", "watch"),
+                Import("vue", "computed", "onBeforeMount", "watch"),
                 ImportType("element-plus", "ElTreeSelect"),
+                ImportType("$utilPath/lazyOptions", "LazyOptions"),
                 ImportType(staticPath, optionView)
             ),
             models = listOf(
                 ModelProp(modelValue, modelValueType)
             ),
             props = listOf(
-                Prop(options, "Array<$optionView>"),
+                Prop(options, "LazyOptions<$optionView>"),
                 Prop(
                     excludeIds, "Array<$idType>", required = false,
                     default = "return []", defaultAsFunction = true
                 )
             ),
             script = listOf(
+                loadIfNot,
+                emptyLineCode,
                 keepModelValueLegal,
                 emptyLineCode,
                 treeOptions,
