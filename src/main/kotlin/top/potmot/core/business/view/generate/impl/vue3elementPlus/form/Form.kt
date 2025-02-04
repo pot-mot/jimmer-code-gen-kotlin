@@ -85,7 +85,31 @@ fun handleValidate(
                     scope { line(it.expression) }
                 }
                 line()
-                line("return ${(listOf("formValid") + validateItems.map { it.name }).joinToString(" && ")}")
+                line("return ${(validateItems.map { it.name }).joinToString(" && ")}")
+            }
+        )
+    )
+)
+
+fun handleNullableValidate(
+    formData: String,
+    validateItems: Collection<ValidateItem>,
+    indent: String,
+) = Function(
+    async = true,
+    name = handleValidateFnName,
+    returnType = "boolean",
+    body = listOf(
+        CodeBlock(
+            buildScopeString(indent) {
+                line("if ($formData === undefined) return true")
+                line()
+                validateItems.forEach {
+                    line("const ${it.name}: boolean =")
+                    scope { line(it.expression) }
+                }
+                line()
+                line("return ${(validateItems.map { it.name }).joinToString(" && ")}")
             }
         )
     )

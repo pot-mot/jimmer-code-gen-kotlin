@@ -348,11 +348,14 @@ object DtoGenerator {
         entity.existValidItems.forEach { item ->
             dtoBlock("specification ${item.dtoName}") {
                 line("ne($idName) as $idName")
-                item.scalarProperties.forEach {
-                    line("eq(${it.name})")
-                }
-                item.associationProperties.forEach {
-                    line("associatedIdEq(${it.property.name})")
+                item.properties.forEach {
+                    when (it) {
+                        is AssociationProperty ->
+                            line("associatedIdEq(${it.property.name})")
+
+                        else ->
+                            line("eq(${it.name})")
+                    }
                 }
             }
             line()

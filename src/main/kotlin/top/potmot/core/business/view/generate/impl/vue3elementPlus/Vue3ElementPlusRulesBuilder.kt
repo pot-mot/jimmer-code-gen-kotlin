@@ -28,6 +28,7 @@ class Vue3ElementPlusRulesBuilder(
             isPlural,
             formData,
             formDataType,
+            formDataNotNull,
             formDataTypePath,
 
             ruleDataType,
@@ -51,9 +52,13 @@ class Vue3ElementPlusRulesBuilder(
                 propertyRules.forEach { (property, rules) ->
                     line("${property.name}: [")
                     rules.forEach { rule ->
-                        if (!hasExistValidRule) hasExistValidRule = rule is ExistValidRule
                         scope {
-                            block(rule.stringify() + ",")
+                            if (rule is ExistValidRule) {
+                                hasExistValidRule = true
+                                block(rule.stringify(formData, formDataNotNull, indent) + ",")
+                            } else {
+                                block(rule.stringify() + ",")
+                            }
                         }
                     }
                     line("],")
@@ -82,7 +87,7 @@ class Vue3ElementPlusRulesBuilder(
                 args = listOf(
                     FunctionArg(
                         name = if (withFormDataProp) formData else "_",
-                        type = "Ref<${if (isPlural) "Array<${formDataType}>" else formDataType}>"
+                        type = "Ref<${if (isPlural) "Array<${formDataType}>" else formDataType}${if (formDataNotNull) "" else "| undefined"}>"
                     ),
                 ),
                 returnType = "FormRules<${ruleDataType}>",

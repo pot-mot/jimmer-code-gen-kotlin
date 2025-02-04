@@ -5,6 +5,8 @@ import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.view.generate.enumPath
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.toElements
@@ -20,9 +22,12 @@ import top.potmot.core.business.view.generate.meta.typescript.commentLine
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
+import top.potmot.core.business.view.generate.meta.vue3.TagElement
+import top.potmot.core.business.view.generate.meta.vue3.VElse
 import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.emptyLineElement
 import top.potmot.core.business.view.generate.staticPath
@@ -52,7 +57,7 @@ fun subForm(
 ) = Component {
     val submitType = "SubmitType"
     script += listOf(
-        CodeBlock("type $submitType = ${submitTypes.joinToString(" | ")}"),
+        CodeBlock("type $submitType = ${submitTypes.joinToString(" | ")}${if (typeNotNull) "" else " | undefined"}"),
         emptyLineCode,
     )
 
@@ -74,7 +79,20 @@ fun subForm(
         models += ModelProp(formData, dataType)
     } else {
         imports += Import(defaultPath, createDefault)
-        models += ModelProp(formData, dataType, required = false, default = "$createDefault()")
+        models += ModelProp(formData, "$dataType | undefined")
+        script += CodeBlock(
+            """
+// 设置默认值
+const setDefault = () => {
+    formData.value = $createDefault()
+}
+
+// 清除
+const clear = () => {
+    formData.value = undefined
+}
+            """.trimIndent()
+        )
     }
 
     props += listOf(
@@ -119,10 +137,13 @@ fun subForm(
 
     script += listOf(
         commentLine("校验"),
-        handleValidate(validateItems, indent),
+        handleNullableValidate("$formData.value", validateItems, indent),
         emptyLineCode,
         commentLine("提交"),
-        handleSubmit("$assertDataTypeAsSubmitType($formData.value)", indent),
+        handleSubmit("$assertDataTypeAsSubmitType($formData.value)".let {
+            if (typeNotNull) it
+            else "$formData.value !== undefined ? $it : undefined"
+        }, indent),
         emptyLineCode,
         commentLine("取消"),
         handleCancel,
@@ -130,7 +151,7 @@ fun subForm(
         exposeValid(indent)
     )
 
-    template += form(
+    val form = form(
         model = formData,
         ref = formRef,
         rules = "rules",
@@ -142,6 +163,26 @@ fun subForm(
         )
     ).merge {
         props += PropBind("class", "sub-form", isLiteral = true)
+    }
+
+    if (typeNotNull) {
+        template += form
+    } else {
+        imports += Import("@element-plus/icons-vue", "Plus", "Delete")
+
+        template += TagElement("template") {
+            directives += VIf("formData !== undefined")
+            children += button(type = ElementPlusComponents.Type.DANGER, icon = "Delete").merge {
+                events += EventBind("click", "clear")
+            }
+            children += form
+        }
+        template += TagElement("template") {
+            directives += VElse
+            children += button(type = ElementPlusComponents.Type.PRIMARY, icon = "Plus").merge {
+                events += EventBind("click", "setDefault")
+            }
+        }
     }
 }
 
@@ -204,18 +245,19 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    private fun subFormRules(entity: SubEntityBusiness): Rules {
+    private fun subFormRules(entity: SubEntityBusiness, typeNotNull: Boolean): Rules {
         val type = entity.components.subFormType
         val properties = entity.subEditNoIdProperties
         val rules = iterableMapOf(
             properties.associateWith { it.rules },
-            entity.existValidRules(withId = false, properties)
+            entity.existValidRules(withId = true, properties)
         )
 
         return Rules(
             functionName = "useRules",
             formData = "formData",
             formDataType = type.name,
+            formDataNotNull = typeNotNull,
             formDataTypePath = "@/" + type.fullPathNoSuffix,
             ruleDataType = entity.dto.insertInput,
             ruleDataTypePath = staticPath,
@@ -275,7 +317,7 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
         GenerateFile(
             entity.path.rootEntity,
             entity.rules.subFormRules.fullPath,
-            stringify(subFormRules(entity)),
+            stringify(subFormRules(entity, typeNotNull)),
             listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.FormRules, GenerateTag.SubForm),
         )
     )

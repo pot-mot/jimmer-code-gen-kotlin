@@ -8,8 +8,7 @@ import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.apiPath
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.utilPath
-import top.potmot.error.ModelException
-import top.potmot.utils.string.trimBlankLine
+import top.potmot.utils.string.buildScopeString
 
 sealed interface Rule {
     val triggers: Collection<String>
@@ -170,8 +169,7 @@ data class ExistValidRule(
     val withId: Boolean,
     override val triggers: Collection<String> = listOf("blur"),
 ) : Rule {
-    @Throws(ModelException.IdPropertyNotFound::class)
-    override fun stringify(): String {
+    fun stringify(formData: String, formDataNotNull: Boolean, indent: String): String {
         val idProperty = entity.idProperty
         val idName = idProperty.name
 
@@ -181,6 +179,7 @@ data class ExistValidRule(
             } else {
                 property.name
             }
+
         val propertyType =
             if (property is TypeEntityProperty) {
                 val typeEntityIdProperty = property.typeEntityBusiness.idProperty
@@ -189,42 +188,47 @@ data class ExistValidRule(
                 typeStrToTypeScriptType(property.type, property.typeNotNull)
             }
 
-        val properties = listOfNotNull(
-            propertyName,
-            if (withId) {
-                "$idName: formData.value.$idName"
-            } else null,
-        ) +
-                item.scalarProperties
-                    .filter {
-                        it.name != propertyName && it.name != idName
-                    }
-                    .map {
-                        "${it.name}: formData.value.${it.name},"
-                    } +
-                item.associationProperties
-                    .mapNotNull {
-                        val nameOrWithId = it.nameWithId
+        val formDataValue = "$formData.value${if (formDataNotNull) "" else "?"}"
 
-                        if (nameOrWithId != propertyName && nameOrWithId != idName)
-                            "${nameOrWithId}: formData.value.${nameOrWithId},"
-                        else
-                            null
-                    }
+        return buildScopeString(indent) {
+            line("{")
+            scope {
+                line("asyncValidator: $asyncValidExist(\"${property.comment}\", async (${propertyName}: ${propertyType}) => {")
+                scope {
+                    line("return await api.${entity.apiServiceName}.${item.functionName}({")
+                    scope {
+                        line("body: {")
+                        scope {
+                            if (withId) {
+                                line("$idName: $formDataValue.$idName,")
+                            }
+                            item.properties.forEach {
+                                if (it.id != idProperty.id) {
+                                    val name = when (it) {
+                                        is AssociationProperty -> it.nameWithId
+                                        else -> it.name
+                                    }
 
-        return """
-{
-    asyncValidator: $asyncValidExist("${property.comment}", async (${propertyName}: ${propertyType}) => {
-        return await api.${entity.apiServiceName}.${item.functionName}({
-            body: {
-${properties.joinToString(",\n") { "    ".repeat(4) + it }}
+                                    if (name != propertyName) {
+                                        line("$name: $formDataValue.$name,")
+                                    } else {
+                                        line("$name,")
+                                    }
+                                }
+                            }
+                        }
+                        line("}")
+                    }
+                    line("})")
+                }
+                line("}),")
+                line("trigger: $stringifyTriggers")
             }
-        })
-    }),
-    trigger: $stringifyTriggers
-}
-""".trimBlankLine()
+            append("}")
+        }
     }
+
+    override fun stringify(): String = stringify("formData", true, "   ")
 }
 
 data class Rules(
@@ -233,6 +237,7 @@ data class Rules(
     val isPlural: Boolean = false,
     val formData: String,
     val formDataType: String,
+    val formDataNotNull: Boolean = true,
     val formDataTypePath: String,
 
     val ruleDataType: String,

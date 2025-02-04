@@ -330,7 +330,7 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
         val properties = entity.subEditNoIdProperties
         val rules = iterableMapOf(
             properties.associateWith { it.rules },
-            entity.existValidRules(withId = false, properties),
+            entity.existValidRules(withId = true, properties),
         )
         return Rules(
             functionName = "useRules",

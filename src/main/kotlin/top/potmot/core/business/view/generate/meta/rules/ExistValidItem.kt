@@ -1,10 +1,6 @@
 package top.potmot.core.business.view.generate.meta.rules
 
-import top.potmot.core.business.meta.AssociationProperty
-import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EntityBusiness
-import top.potmot.core.business.meta.EnumProperty
-import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.entity.dto.IdName
 import top.potmot.error.ModelException
@@ -12,8 +8,6 @@ import top.potmot.error.ModelException
 data class ExistValidItem(
     val dtoName: String,
     val functionName: String,
-    val scalarProperties: List<PropertyBusiness>,
-    val associationProperties: List<AssociationProperty>,
     val properties: List<PropertyBusiness>,
 )
 
@@ -31,8 +25,7 @@ val EntityBusiness.existValidItems: List<ExistValidItem>
                     column.properties.map { it.id }
                 }
 
-                val scalarProperties = mutableSetOf<PropertyBusiness>()
-                val associationProperties = mutableSetOf<AssociationProperty>()
+                val validProperties = mutableListOf<PropertyBusiness>()
 
                 indexPropertyIds.forEach { propertyId ->
                     val propertyBusiness = propertyIdMap[propertyId]
@@ -55,26 +48,20 @@ val EntityBusiness.existValidItems: List<ExistValidItem>
                         )
                     }
 
-                    when (propertyBusiness) {
-                        is CommonProperty, is EnumProperty -> scalarProperties += propertyBusiness
-                        is AssociationProperty -> associationProperties += propertyBusiness
-                        is ForceIdViewProperty -> associationProperties += propertyBusiness.associationProperty
-                    }
+                    validProperties += propertyBusiness
                 }
 
                 if (scalarProperties.isEmpty() && associationProperties.isEmpty()) {
                     return@mapNotNull null
                 }
 
-                val validProperties = (scalarProperties + associationProperties).sortedBy { it.property.orderKey }
-                val upperNameJoin = validProperties.joinToString("And") { it.upperName }
+                val producedValidProperties = validProperties.distinctBy { it.id }.sortedBy { it.property.orderKey }
+                val upperNameJoin = producedValidProperties.joinToString("And") { it.upperName }
 
                 ExistValidItem(
                     "${entity.name}ExistBy${upperNameJoin}Spec",
                     "existBy$upperNameJoin",
-                    scalarProperties.sortedBy { it.property.orderKey },
-                    associationProperties.sortedBy { it.property.orderKey },
-                    validProperties
+                    producedValidProperties
                 )
             }
             .distinctBy {
