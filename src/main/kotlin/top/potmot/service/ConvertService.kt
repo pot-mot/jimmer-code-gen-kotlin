@@ -80,8 +80,8 @@ class ConvertService(
             val tableEntityIdPairs = mutableListOf<Pair<GenTableConvertView, Long>>()
 
             listOf(
-                sqlClient.insertEntities(insertEntities).items,
-                sqlClient.updateEntities(updateEntities, AssociatedSaveMode.REPLACE).items
+                sqlClient.insertInputs(insertEntities).items,
+                sqlClient.updateInputs(updateEntities, AssociatedSaveMode.REPLACE).items
             ).flatten().forEach {
                 val entity = it.modifiedEntity
                 val table = tableIdMap[entity.tableId]

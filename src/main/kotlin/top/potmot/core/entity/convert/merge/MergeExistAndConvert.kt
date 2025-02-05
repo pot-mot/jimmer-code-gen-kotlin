@@ -1,11 +1,7 @@
 package top.potmot.core.entity.convert.merge
 
-import org.babyfish.jimmer.kt.isLoaded
 import top.potmot.core.entity.meta.AssociationPropertyPair
 import top.potmot.core.entity.meta.AssociationPropertyPairInterface
-import top.potmot.entity.GenEntity
-import top.potmot.entity.GenProperty
-import top.potmot.entity.copy
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenEntityInput
 import top.potmot.entity.dto.GenPropertyInput
@@ -117,30 +113,3 @@ data class AssociationPropertyPairWaitMergeExist(
         return AssociationPropertyPair(associationProperty, idView)
     }
 }
-
-// 根据 在"合并已存在的数据"时变化的关联属性名称，处理实体中的一些属性
-fun produceAssociationPropertyNameChange(
-    entities: Collection<GenEntity>,
-    mergeExistChangedAssociationPropertyNameMap: Map<String, String>,
-): List<GenEntity> =
-    entities.map { entity ->
-        if (isLoaded(entity, GenEntity::properties)) {
-            entity.copy {
-                properties.map { property ->
-                    if (isLoaded(property, GenProperty::mappedBy) && isLoaded(property, GenProperty::typeTableId) && property.mappedBy != null && property.typeTableId != null) {
-                        property.copy {
-                            val changedPropertyName = mergeExistChangedAssociationPropertyNameMap["${property.typeTableId} ${property.mappedBy}"]
-
-                            if (changedPropertyName != null) {
-                                mappedBy = changedPropertyName
-                            }
-                        }
-                    } else {
-                        property
-                    }
-                }
-            }
-        } else {
-            entity
-        }
-    }

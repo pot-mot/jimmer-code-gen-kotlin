@@ -7,8 +7,17 @@ GenEntityDetailView {
     properties {
         #allScalars
         id(column)
-        id(typeTable)
-        id(enum)
+        flat(typeTable) {
+            id as typeTableId
+            entity as typeEntity {
+                id
+                name
+            }
+        }
+        enum {
+            id
+            name
+        }
     }
 }
 
