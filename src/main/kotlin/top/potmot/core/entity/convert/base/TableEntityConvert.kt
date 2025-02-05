@@ -1,13 +1,10 @@
 package top.potmot.core.entity.convert.base
 
 import top.potmot.context.getContextOrGlobal
-import top.potmot.entity.dto.share.ColumnTypeMeta
 import top.potmot.entity.dto.GenEntityInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.utils.string.clearTableComment
 import top.potmot.utils.string.tableNameToEntityName
-
-typealias TypeMapping = (column: ColumnTypeMeta) -> String
 
 /**
  * 表到实体转换
@@ -25,7 +22,7 @@ fun tableToEntity(
         name = tableNameToEntityName(genTable.name),
         comment = genTable.comment.clearTableComment(),
         remark = genTable.remark,
-        packagePath = "${context.packagePath}.entity",
+        packagePath = tableToEntityPackagePath(genTable, context.packagePath),
         superEntityIds = emptyList(),
         properties = emptyList(),
         canAdd = true,
@@ -35,3 +32,10 @@ fun tableToEntity(
         hasPage = true,
     )
 }
+
+// TODO 当未来要添加 subPackagePath 时，调整生成路径
+fun tableToEntityPackagePath(
+    table: GenTableConvertView,
+    modelBasePackagePath: String,
+): String =
+    "${modelBasePackagePath}.entity"

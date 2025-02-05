@@ -10,6 +10,8 @@ import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.utils.string.clearForPropertyComment
 import top.potmot.utils.string.columnNameToPropertyName
 
+typealias TypeMapping = (column: GenTableConvertView.TargetOf_columns) -> String
+
 /**
  * 转换基本属性
  * 返回 Map<columnId, property>
@@ -60,7 +62,7 @@ private fun GenTableConvertView.TargetOf_columns.toBaseProperty(
         keyProperty = column.businessKey,
         keyGroup = column.keyGroup,
         logicalDelete = column.logicalDelete,
-        enumId = column.enumId,
+        enumId = column.enum?.id,
         idView = false,
         idViewTarget = null,
         associationType = null,

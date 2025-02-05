@@ -9,8 +9,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.columnType.getColumnTypeDefiner
+import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
-import top.potmot.entity.dto.share.ColumnTypeMeta
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.error.ColumnTypeException
@@ -71,7 +71,7 @@ private fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
  */
 private fun mappingPropertyType(
     typeDefine: String,
-    typeMappings: Collection<GenTypeMappingView>
+    typeMappings: Collection<GenTypeMappingView>,
 ): String? {
     for (typeMapping in typeMappings) {
         if (typeMapping.typeExpression.isBlank()) {
@@ -108,17 +108,18 @@ private fun mappingPropertyType(
  */
 @Throws(ColumnTypeException::class)
 fun getPropertyType(
-    typeMeta: ColumnTypeMeta,
+    column: GenTableConvertView.TargetOf_columns,
     typeMappings: Collection<GenTypeMappingView> = emptyList(),
     dataSourceType: DataSourceType = getContextOrGlobal().dataSourceType,
     language: GenLanguage = getContextOrGlobal().language,
 ): String =
-    mappingPropertyType(
-        dataSourceType.getColumnTypeDefiner().getTypeDefine(typeMeta),
-        typeMappings.filter { it.language == language && it.dataSourceType == dataSourceType },
-    )
+    column.enum?.let { "${it.packagePath}.${it.name}" }
+        ?: mappingPropertyType(
+            dataSourceType.getColumnTypeDefiner().getTypeDefine(column),
+            typeMappings.filter { it.language == language && it.dataSourceType == dataSourceType },
+        )
         ?: when (language) {
-            GenLanguage.JAVA -> jdbcTypeToJavaType(typeMeta.typeCode, typeMeta.typeNotNull)?.name
-            GenLanguage.KOTLIN -> jdbcTypeToKotlinType(typeMeta.typeCode)?.qualifiedName
+            GenLanguage.JAVA -> jdbcTypeToJavaType(column.typeCode, column.typeNotNull)?.name
+            GenLanguage.KOTLIN -> jdbcTypeToKotlinType(column.typeCode)?.qualifiedName
         }
-        ?: typeMeta.rawType
+        ?: column.rawType

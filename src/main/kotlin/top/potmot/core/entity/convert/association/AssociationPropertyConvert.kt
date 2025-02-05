@@ -5,6 +5,7 @@ import org.babyfish.jimmer.sql.DissociateAction
 import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.entity.convert.base.TypeMapping
+import top.potmot.core.entity.convert.base.tableToEntityPackagePath
 import top.potmot.core.entity.convert.base.toPlural
 import top.potmot.core.entity.convert.business.initAssociationBusinessConfig
 import top.potmot.core.entity.convert.idview.createIdViewProperty
@@ -18,6 +19,7 @@ import top.potmot.entity.GenProperty
 import top.potmot.entity.GenPropertyDraft
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenPropertyInput
+import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.IdName
 import top.potmot.entity.dto.IdNullableName
 import top.potmot.enumeration.AssociationType.MANY_TO_MANY
@@ -142,7 +144,7 @@ fun convertAssociationProperties(
             if (comment.isBlank() || this.idProperty) {
                 comment = targetEntity?.comment ?: targetTable.comment.clearTableComment()
             }
-            type = targetEntity?.name ?: tableNameToEntityName(targetTable.name)
+            type = targetEntity?.let { "${it.packagePath}.${it.name}" } ?: tableToEntityFullPath(targetTable, context.packagePath)
             typeTableId = targetTable.id
             idProperty = false
             idGenerationAnnotation = null
@@ -265,7 +267,7 @@ fun convertAssociationProperties(
             if (comment.isBlank() || this.idProperty) {
                 comment = sourceEntity?.comment ?: sourceTable.comment.clearTableComment()
             }
-            type = sourceEntity?.name ?: tableNameToEntityName(sourceTable.name)
+            type = sourceEntity?.let { "${it.packagePath}.${it.name}" } ?: tableToEntityFullPath(sourceTable, context.packagePath)
             typeTableId = sourceTable.id
             idProperty = false
             idGenerationAnnotation = null
@@ -352,3 +354,9 @@ private fun String.removeLastId(): String =
         slice(0 until length - 2)
     else
         this
+
+private fun tableToEntityFullPath(
+    typeTable: GenTableConvertView,
+    modelBasePackagePath: String,
+): String =
+    "${tableToEntityPackagePath(typeTable, modelBasePackagePath)}.${tableNameToEntityName(typeTable.name)}"
