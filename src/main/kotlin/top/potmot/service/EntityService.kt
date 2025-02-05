@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.entity.business.EntityBusinessConfig
-import top.potmot.core.model.business.EntityModelBusinessInput
+import top.potmot.core.entity.business.EntityModelBusinessInput
 import top.potmot.entity.GenEntity
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.tableId
