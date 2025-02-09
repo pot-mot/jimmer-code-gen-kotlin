@@ -88,9 +88,9 @@ data class AssociationPropertyPairWaitMergeExist(
 
                 if (idView != null) {
                     val idViewMatchedProperties =
-                        sourcePropertyMatchKeyMap[idView.associationMatchKey] ?: sourcePropertyMatchKeyMap[idView.copy(
-                            idViewTarget = mergedAssociationProperty.name
-                        ).associationMatchKey]
+                        sourcePropertyMatchKeyMap[idView.associationMatchKey]
+                            ?: sourcePropertyMatchKeyMap[idView.copy(idViewTarget = mergedAssociationProperty.name).associationMatchKey]
+                            ?: sourcePropertyMatchKeyMap[idView.copy(idViewTarget = associationMatchedProperties[0].name).associationMatchKey]
                     if (idViewMatchedProperties?.size == 1) {
                         val mergedIdView =
                             GenPropertyInput(mergeExistAndConvertProperty(idViewMatchedProperties[0], idView))
