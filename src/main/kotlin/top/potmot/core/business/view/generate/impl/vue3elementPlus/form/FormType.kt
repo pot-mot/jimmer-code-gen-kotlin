@@ -13,7 +13,10 @@ import top.potmot.core.business.view.generate.meta.typescript.TsTypeProperty
 import top.potmot.core.business.view.generate.meta.typescript.TsWithGenericType
 
 interface FormType {
-    fun Iterable<PropertyBusiness>.formType(canUndefined: Boolean = false, propertyProducer: (entity: SubEntityBusiness) -> Iterable<PropertyBusiness>): TsComplexType =
+    fun Iterable<PropertyBusiness>.formType(
+        canUndefined: Boolean = false,
+        propertyProducer: (entity: SubEntityBusiness) -> Iterable<PropertyBusiness>,
+    ): TsComplexType =
         TsComplexType(
             map { TsTypeProperty(it.name, it.formType(propertyProducer)) },
             canUndefined,

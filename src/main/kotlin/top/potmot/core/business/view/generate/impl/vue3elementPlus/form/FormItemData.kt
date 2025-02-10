@@ -12,5 +12,5 @@ data class FormItemData(
 )
 
 fun FormItemData(
-    vararg element: Element?
+    vararg element: Element?,
 ) = FormItemData(element.filterNotNull())

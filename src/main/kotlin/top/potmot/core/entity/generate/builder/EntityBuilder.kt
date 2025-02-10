@@ -1,6 +1,7 @@
 package top.potmot.core.entity.generate.builder
 
 import java.util.UUID
+import kotlin.reflect.KClass
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
@@ -21,10 +22,9 @@ import top.potmot.context.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.IdentifierType
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
-import top.potmot.enumeration.TableType
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenPropertyView
-import kotlin.reflect.KClass
+import top.potmot.enumeration.TableType
 import top.potmot.utils.string.buildScopeString
 
 abstract class EntityBuilder : CodeBuilder() {

@@ -144,7 +144,10 @@ fun convertAssociationProperties(
             if (comment.isBlank() || this.idProperty) {
                 comment = targetEntity?.comment ?: targetTable.comment.clearTableComment()
             }
-            type = targetEntity?.let { "${it.packagePath}.${it.name}" } ?: tableToEntityFullPath(targetTable, context.packagePath)
+            type = targetEntity?.let { "${it.packagePath}.${it.name}" } ?: tableToEntityFullPath(
+                targetTable,
+                context.packagePath
+            )
             typeTableId = targetTable.id
             idProperty = false
             idGenerationAnnotation = null
@@ -267,7 +270,10 @@ fun convertAssociationProperties(
             if (comment.isBlank() || this.idProperty) {
                 comment = sourceEntity?.comment ?: sourceTable.comment.clearTableComment()
             }
-            type = sourceEntity?.let { "${it.packagePath}.${it.name}" } ?: tableToEntityFullPath(sourceTable, context.packagePath)
+            type = sourceEntity?.let { "${it.packagePath}.${it.name}" } ?: tableToEntityFullPath(
+                sourceTable,
+                context.packagePath
+            )
             typeTableId = sourceTable.id
             idProperty = false
             idGenerationAnnotation = null

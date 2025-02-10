@@ -31,11 +31,11 @@ abstract class EntityCodeGenerator {
             .map { generateEntity(it) }
             .sortedBy { it.path }
 
-   fun generateEnum(
+    fun generateEnum(
         enum: GenEnumGenerateView,
     ) = GenerateFile(
         enum,
-       "${enum.packagePath.replace(".", "/")}/${enum.name}${getFileSuffix()}",
+        "${enum.packagePath.replace(".", "/")}/${enum.name}${getFileSuffix()}",
         stringify(enum),
         listOf(GenerateTag.BackEnd, GenerateTag.Enum)
     )

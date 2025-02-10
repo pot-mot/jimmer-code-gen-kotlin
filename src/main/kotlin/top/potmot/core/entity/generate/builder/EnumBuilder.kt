@@ -1,10 +1,10 @@
 package top.potmot.core.entity.generate.builder
 
+import kotlin.reflect.KClass
 import org.babyfish.jimmer.sql.EnumItem
-import top.potmot.enumeration.EnumType
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenEnumItemGenerateView
-import kotlin.reflect.KClass
+import top.potmot.enumeration.EnumType
 import top.potmot.utils.string.buildScopeString
 
 abstract class EnumBuilder : CodeBuilder() {
@@ -78,7 +78,7 @@ abstract class EnumBuilder : CodeBuilder() {
 
     open fun annotationBlock(
         enumItem: GenEnumItemGenerateView,
-        enumType: EnumType?
+        enumType: EnumType?,
     ): String? =
         when (enumType) {
             EnumType.NAME -> "@EnumItem(name = \"${enumItem.mappedValue}\")"

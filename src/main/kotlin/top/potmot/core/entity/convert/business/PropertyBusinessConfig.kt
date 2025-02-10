@@ -33,7 +33,7 @@ fun GenPropertyInput.initBusinessConfig() =
             inLongAssociationView = false,
             inLongAssociationInput = false,
         )
-    }  else if (columnId == null) {
+    } else if (columnId == null) {
         copy(
             inListView = false,
             inDetailView = false,

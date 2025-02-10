@@ -3,10 +3,10 @@ package top.potmot.core.entity.convert.base
 import top.potmot.core.entity.convert.business.initBusinessConfig
 import top.potmot.core.entity.convert.merge.mergeExistAndConvertProperty
 import top.potmot.entity.dto.GenEntityDetailView
-import top.potmot.error.ColumnTypeException
-import top.potmot.error.ConvertException
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
+import top.potmot.error.ColumnTypeException
+import top.potmot.error.ConvertException
 import top.potmot.utils.string.clearForPropertyComment
 import top.potmot.utils.string.columnNameToPropertyName
 
@@ -31,7 +31,8 @@ fun convertBaseProperties(
             .initBusinessConfig()
             .let { property ->
                 if (existEntity != null) {
-                    val matchedProperty = existEntity.properties.firstOrNull { it.columnId == column.id && it.associationType == null }
+                    val matchedProperty =
+                        existEntity.properties.firstOrNull { it.columnId == column.id && it.associationType == null }
                     if (matchedProperty != null) {
                         return@let GenPropertyInput(mergeExistAndConvertProperty(matchedProperty, property))
                     }
@@ -87,7 +88,7 @@ private fun GenTableConvertView.TargetOf_columns.toBaseProperty(
 }
 
 private fun GenPropertyInput.toIdProperty(
-    column: GenTableConvertView.TargetOf_columns
+    column: GenTableConvertView.TargetOf_columns,
 ) =
     copy(
         idProperty = true,

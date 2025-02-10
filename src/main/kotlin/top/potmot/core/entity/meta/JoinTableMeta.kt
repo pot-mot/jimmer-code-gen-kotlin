@@ -14,7 +14,7 @@ data class JoinTableMeta(
 }
 
 fun AssociationMeta.toJoinTable(
-    identifiers: IdentifierProcessor
+    identifiers: IdentifierProcessor,
 ) =
     JoinTableMeta(
         identifiers.process(association.name, IdentifierType.TABLE_NAME),

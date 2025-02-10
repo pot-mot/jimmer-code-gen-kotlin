@@ -8,12 +8,17 @@ import top.potmot.entity.dto.GenPropertyInput
 data class ConvertPropertyMeta(
     val baseProperty: GenPropertyInput,
     val associationPropertyPairs: MutableList<AssociationPropertyPairInterface>,
-    var enableBase: Boolean = true
+    var enableBase: Boolean = true,
 ) {
     val properties: List<GenPropertyInput>
         get() =
             if (enableBase)
-                listOf(baseProperty) + associationPropertyPairs.flatMap { listOfNotNull(it.associationProperty, it.idView) }
+                listOf(baseProperty) + associationPropertyPairs.flatMap {
+                    listOfNotNull(
+                        it.associationProperty,
+                        it.idView
+                    )
+                }
             else
                 associationPropertyPairs.flatMap { listOfNotNull(it.associationProperty, it.idView) }
 }
@@ -29,5 +34,5 @@ interface AssociationPropertyPairInterface {
 
 data class AssociationPropertyPair(
     override val associationProperty: GenPropertyInput,
-    override val idView: GenPropertyInput? = null
-): AssociationPropertyPairInterface
+    override val idView: GenPropertyInput? = null,
+) : AssociationPropertyPairInterface

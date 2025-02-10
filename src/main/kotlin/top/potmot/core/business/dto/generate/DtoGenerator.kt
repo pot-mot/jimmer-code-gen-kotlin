@@ -2,11 +2,11 @@ package top.potmot.core.business.dto.generate
 
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
-import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyQueryType
+import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.view.generate.meta.rules.existValidItems
 import top.potmot.entity.dto.GenerateFile
@@ -68,7 +68,7 @@ object DtoGenerator {
 
     private fun StringIndentScopeBuilder.extractLong(
         property: AssociationProperty,
-        block: StringIndentScopeBuilder.(typeEntity: SubEntityBusiness) -> Unit
+        block: StringIndentScopeBuilder.(typeEntity: SubEntityBusiness) -> Unit,
     ) {
         dtoBlock(property.name) {
             block(property.typeEntityBusiness)

@@ -16,13 +16,13 @@ data class DtoNames(
     val updateFillView: String,
     val updateInput: String,
     val spec: String,
-    val optionView: String
+    val optionView: String,
 )
 
 data class NamePath(
     val name: String,
     val suffix: String,
-    val path: String
+    val path: String,
 ) {
     val fullPath = "$path/$name.$suffix"
 
@@ -40,7 +40,7 @@ data class RootEntityComponentFiles(
     val editFormType: NamePath,
     val queryForm: NamePath,
     val page: NamePath,
-): EntityComponentFiles
+) : EntityComponentFiles
 
 data class SubEntityComponentFiles(
     val subForm: NamePath,
@@ -50,19 +50,19 @@ data class SubEntityComponentFiles(
     val editTableType: NamePath,
     val idSelect: NamePath,
     val idMultiSelect: NamePath,
-): EntityComponentFiles
+) : EntityComponentFiles
 
 sealed interface EntityRuleFiles
 
 data class RootEntityRuleFiles(
     val addFormRules: NamePath,
     val editFormRules: NamePath,
-): EntityRuleFiles
+) : EntityRuleFiles
 
 data class SubEntityRuleFiles(
     val subFormRules: NamePath,
     val editTableRules: NamePath,
-): EntityRuleFiles
+) : EntityRuleFiles
 
 data class EntityPermissions(
     val get: String,

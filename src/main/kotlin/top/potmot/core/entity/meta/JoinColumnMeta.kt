@@ -13,7 +13,7 @@ data class JoinColumnMeta(
 }
 
 fun AssociationMeta.toJoinColumns(
-    identifiers: IdentifierProcessor
+    identifiers: IdentifierProcessor,
 ) =
     sourceColumns.mapIndexed { index, sourceColumn ->
         val targetColumn = targetColumns[index]

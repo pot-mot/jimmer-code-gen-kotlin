@@ -71,7 +71,7 @@ data class AssociationPropertyPairWaitMergeExist(
     override val associationProperty: GenPropertyInput,
     override val idView: GenPropertyInput? = null,
     val existProperties: Collection<GenEntityDetailView.TargetOf_properties>? = null,
-): AssociationPropertyPairInterface {
+) : AssociationPropertyPairInterface {
     private val GenEntityDetailView.TargetOf_properties.associationMatchKey
         get() = "$columnId $typeTableId $associationType $mappedBy $idView $idViewTarget"
 

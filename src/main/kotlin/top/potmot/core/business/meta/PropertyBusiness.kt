@@ -42,6 +42,7 @@ sealed class PropertyBusiness(
             property = property.copy(typeNotNull = false),
             idView = idView?.copy(typeNotNull = false)
         )
+
         is ForceIdViewProperty -> copy(
             property = property.copy(typeNotNull = false),
         )
@@ -160,7 +161,9 @@ data class AssociationProperty(
     }
 
     override val selectOption by lazy {
-        val selectOptionName = path.propertyItems.joinToString("") { it.property.name.replaceFirstChar { c -> c.uppercaseChar() } }.replaceFirstChar { c -> c.lowercaseChar() } + "Options"
+        val selectOptionName =
+            path.propertyItems.joinToString("") { it.property.name.replaceFirstChar { c -> c.uppercaseChar() } }
+                .replaceFirstChar { c -> c.lowercaseChar() } + "Options"
         val selectOptionComment = path.propertyItems.joinToString("-") { it.property.comment } + "选项"
 
         SelectOption(
@@ -201,7 +204,9 @@ data class ForceIdViewProperty(
     }
 
     override val selectOption by lazy {
-        val selectOptionName = path.propertyItems.joinToString("") { it.property.name.replaceFirstChar { c -> c.uppercaseChar() } }.replaceFirstChar { c -> c.lowercaseChar() } + "Options"
+        val selectOptionName =
+            path.propertyItems.joinToString("") { it.property.name.replaceFirstChar { c -> c.uppercaseChar() } }
+                .replaceFirstChar { c -> c.lowercaseChar() } + "Options"
         val selectOptionComment = path.propertyItems.joinToString("-") { it.property.comment } + "选项"
 
         SelectOption(

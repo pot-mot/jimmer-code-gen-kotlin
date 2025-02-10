@@ -78,11 +78,11 @@ private fun JsonNode.toAssociation(modelId: Long): GenAssociationModelInput {
 data class GenTableInputs(
     val table: GenTableInput,
     val indexes: List<GenTableModelInput.TargetOf_indexes>,
-    val superTableNames: List<String>
+    val superTableNames: List<String>,
 )
 
 fun GenTableModelInput.toInputs(
-    enumNameIdMap: Map<String, Long>
+    enumNameIdMap: Map<String, Long>,
 ): GenTableInputs {
     val table = GenTableInput(
         name = name,
@@ -122,7 +122,7 @@ fun GenTableModelInput.toInputs(
 @Throws(LoadFromModelException::class)
 fun GenTableModelInput.TargetOf_indexes.toInput(
     table: GenTableLoadView,
-    columnNameIdMap: Map<String, Long>
+    columnNameIdMap: Map<String, Long>,
 ) =
     GenTableIndexInput(
         name = name,
@@ -143,7 +143,7 @@ fun GenTableModelInput.TargetOf_indexes.toInput(
 
 @Throws(LoadFromModelException::class)
 fun GenAssociationModelInput.toInput(
-    tables: List<GenTableLoadView>
+    tables: List<GenTableLoadView>,
 ): GenAssociationInput {
     val tableMap = tables.associate { it.name to Pair(it.id, it) }
     val sourceTablePair = tableMap[sourceTableName]

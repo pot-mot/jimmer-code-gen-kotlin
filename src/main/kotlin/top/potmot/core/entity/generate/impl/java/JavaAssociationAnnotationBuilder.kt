@@ -8,7 +8,7 @@ object JavaAssociationAnnotationBuilder : AssociationAnnotationBuilder("        
     override fun build(meta: JoinTableMeta) =
         buildScopeString(indent) {
             line("@JoinTable(")
-            
+
             scope {
                 line("name = \"${meta.tableName}\",")
 
@@ -35,7 +35,7 @@ object JavaAssociationAnnotationBuilder : AssociationAnnotationBuilder("        
                     line("}")
                 }
             }
-            
+
             append(")")
         }
 }

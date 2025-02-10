@@ -1,10 +1,10 @@
 package top.potmot.core.entity.generate.impl.java
 
+import kotlin.reflect.KClass
 import org.jetbrains.annotations.Nullable
 import top.potmot.core.entity.generate.builder.EntityBuilder
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenPropertyView
-import kotlin.reflect.KClass
 import top.potmot.utils.string.buildScopeString
 
 object JavaEntityBuilder : EntityBuilder() {

@@ -14,7 +14,7 @@ import top.potmot.error.PropertyNameDuplicateData
 @Throws(ConvertException.PropertyNameDuplicate::class)
 fun handleDuplicateName(
     table: GenTableConvertView,
-    propertiesMap: Map<Long, ConvertPropertyMeta>
+    propertiesMap: Map<Long, ConvertPropertyMeta>,
 ): List<GenPropertyInput> {
     val protectDuplicateItems = mutableListOf<ProtectDuplicateItem>()
 
@@ -22,7 +22,12 @@ fun handleDuplicateName(
         if (meta.enableBase)
             protectDuplicateItems += BaseProtectDuplicateItem(meta.baseProperty, meta)
         meta.associationPropertyPairs.map {
-            protectDuplicateItems += AssociationProtectDuplicateItem(it.associationProperty, it.idView, meta, meta.baseProperty)
+            protectDuplicateItems += AssociationProtectDuplicateItem(
+                it.associationProperty,
+                it.idView,
+                meta,
+                meta.baseProperty
+            )
         }
     }
 
@@ -31,7 +36,7 @@ fun handleDuplicateName(
     val producedMappedByProperties = nameMap.flatMap { produceDuplicateNameMappedBy(it.value) }
 
     producedMappedByProperties.groupBy { it.name }.values.filter { it.size > 1 }.forEach {
-        val propertyNameDuplicateItems = it.map {property ->
+        val propertyNameDuplicateItems = it.map { property ->
             PropertyNameDuplicateData(
                 columnId = property.columnId,
                 name = property.name,
@@ -71,9 +76,10 @@ private fun produceDuplicateNameMappedBy(items: List<ProtectDuplicateItem>): Lis
         }
     } else {
         items.flatMap { item ->
-            when(item) {
+            when (item) {
                 is BaseProtectDuplicateItem ->
                     listOf(item.property)
+
                 is AssociationProtectDuplicateItem -> {
                     val (property, idView) = item
                     val mappedBy = property.mappedBy

@@ -12,7 +12,8 @@ fun GenEntityBusinessView.toFlat(): GenEntityBusinessView {
 
     val idProperties = (properties + allSuperProperties).filter { it.idProperty }
     val (listProperties, nonListProperties) = properties.filter { !it.idProperty }.partition { it.listType }
-    val (superListProperties, superNonListProperties) = allSuperProperties.filter { !it.idProperty }.partition { it.listType }
+    val (superListProperties, superNonListProperties) = allSuperProperties.filter { !it.idProperty }
+        .partition { it.listType }
 
     allProperties += idProperties
     allProperties += superNonListProperties
