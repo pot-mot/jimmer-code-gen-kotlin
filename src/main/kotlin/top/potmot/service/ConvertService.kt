@@ -20,7 +20,7 @@ import top.potmot.entity.GenTable
 import top.potmot.entity.GenTypeMapping
 import top.potmot.entity.dto.GenAssociationConvertView
 import top.potmot.entity.dto.GenConfigProperties
-import top.potmot.entity.dto.GenEntityDetailView
+import top.potmot.entity.dto.GenEntityExistView
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
 import top.potmot.entity.dto.IdName
@@ -141,7 +141,7 @@ class ConvertService(
             where(
                 table.tableId valueIn tableIds
             )
-            select(table.tableId, table.fetch(GenEntityDetailView::class))
+            select(table.tableId, table.fetch(GenEntityExistView::class))
         }
 
     private fun KSqlClient.listTypeMapping(): List<GenTypeMappingView> =

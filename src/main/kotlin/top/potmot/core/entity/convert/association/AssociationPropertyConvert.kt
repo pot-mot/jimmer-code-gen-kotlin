@@ -13,8 +13,6 @@ import top.potmot.core.entity.convert.merge.AssociationPropertyPairWaitMergeExis
 import top.potmot.core.entity.convert.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.convert.meta.ConvertPropertyMeta
 import top.potmot.core.entity.convert.meta.TableAssociationMeta
-import top.potmot.core.entity.meta.toJoinColumns
-import top.potmot.core.entity.meta.toJoinTable
 import top.potmot.entity.GenProperty
 import top.potmot.entity.GenPropertyDraft
 import top.potmot.entity.copy

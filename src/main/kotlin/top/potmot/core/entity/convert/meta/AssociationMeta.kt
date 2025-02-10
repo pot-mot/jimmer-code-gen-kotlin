@@ -1,19 +1,25 @@
-package top.potmot.core.entity.meta
+package top.potmot.core.entity.convert.meta
 
+import org.babyfish.jimmer.sql.ForeignKeyType
+import top.potmot.core.database.generate.identifier.IdentifierProcessor
+import top.potmot.core.database.generate.identifier.IdentifierType
+import top.potmot.core.database.meta.createMappingColumnName
+import top.potmot.core.entity.meta.JoinColumnMeta
+import top.potmot.core.entity.meta.JoinTableMeta
 import top.potmot.entity.dto.GenAssociationConvertView
-import top.potmot.entity.dto.GenEntityDetailView
+import top.potmot.entity.dto.GenEntityExistView
 import top.potmot.entity.dto.GenTableConvertView
 
 data class AssociationMeta(
     val association: GenAssociationConvertView,
     val sourceTable: GenTableConvertView,
-    var sourceEntity: GenEntityDetailView? = null,
+    var sourceEntity: GenEntityExistView? = null,
     val sourceColumns: List<GenTableConvertView.TargetOf_columns>,
-    var sourceProperties: List<GenEntityDetailView.TargetOf_properties>? = null,
+    var sourceProperties: List<GenEntityExistView.TargetOf_properties>? = null,
     val targetTable: GenTableConvertView,
-    var targetEntity: GenEntityDetailView? = null,
+    var targetEntity: GenEntityExistView? = null,
     val targetColumns: List<GenTableConvertView.TargetOf_columns>,
-    var targetProperties: List<GenEntityDetailView.TargetOf_properties>? = null,
+    var targetProperties: List<GenEntityExistView.TargetOf_properties>? = null,
 ) {
     fun reversed() =
         AssociationMeta(
@@ -27,12 +33,43 @@ data class AssociationMeta(
             targetColumns = sourceColumns,
             targetProperties = sourceProperties,
         )
+
+    fun toJoinColumns(
+        identifiers: IdentifierProcessor,
+    ) =
+        sourceColumns.mapIndexed { index, sourceColumn ->
+            val targetColumn = targetColumns[index]
+            JoinColumnMeta(
+                joinColumnName = identifiers.process(sourceColumn.name, IdentifierType.COLUMN_NAME),
+                referencedColumnName = identifiers.process(targetColumn.name, IdentifierType.COLUMN_NAME),
+                foreignKeyType = if (association.fake) ForeignKeyType.FAKE else ForeignKeyType.REAL
+            )
+        }
+
+    fun toJoinTable(
+        identifiers: IdentifierProcessor,
+    ) =
+        JoinTableMeta(
+            identifiers.process(association.name, IdentifierType.TABLE_NAME),
+            sourceColumns.mapIndexed { index, sourceColumn ->
+                val targetColumn = targetColumns[index]
+
+                val sourceColumnName = createMappingColumnName(sourceTable.name, sourceColumn.name)
+                val targetColumnName = createMappingColumnName(targetTable.name, targetColumn.name)
+
+                Pair(
+                    identifiers.process(sourceColumnName, IdentifierType.COLUMN_NAME),
+                    identifiers.process(targetColumnName, IdentifierType.COLUMN_NAME),
+                )
+            },
+            foreignKeyType = if (association.fake) ForeignKeyType.FAKE else ForeignKeyType.REAL
+        )
 }
 
 fun Iterable<GenAssociationConvertView>.toAssociationMetaIdMap(
     tableIdMap: Map<Long, GenTableConvertView>,
     columnIdMap: Map<Long, GenTableConvertView.TargetOf_columns>,
-    tableIdEntityMap: Map<Long, GenEntityDetailView>,
+    tableIdEntityMap: Map<Long, GenEntityExistView>,
 ): Map<Long, AssociationMeta> =
     map { association ->
         val sourceTable = tableIdMap[association.sourceTableId]!!
@@ -68,3 +105,7 @@ fun Iterable<GenAssociationConvertView>.toAssociationMetaIdMap(
         )
     }
         .associateBy { it.association.id }
+
+
+
+

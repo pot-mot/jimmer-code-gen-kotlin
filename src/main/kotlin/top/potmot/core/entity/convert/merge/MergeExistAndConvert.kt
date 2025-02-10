@@ -2,7 +2,7 @@ package top.potmot.core.entity.convert.merge
 
 import top.potmot.core.entity.convert.meta.AssociationPropertyPair
 import top.potmot.core.entity.convert.meta.AssociationPropertyPairInterface
-import top.potmot.entity.dto.GenEntityDetailView
+import top.potmot.entity.dto.GenEntityExistView
 import top.potmot.entity.dto.GenEntityInput
 import top.potmot.entity.dto.GenPropertyInput
 
@@ -11,7 +11,7 @@ import top.potmot.entity.dto.GenPropertyInput
  * 保留原实体的id，注释，备注，业务配置
  */
 fun mergeExistAndConvertEntity(
-    existEntity: GenEntityDetailView,
+    existEntity: GenEntityExistView,
     convertEntity: GenEntityInput,
 ) = convertEntity.toEntity {
     id = existEntity.id
@@ -35,7 +35,7 @@ fun mergeExistAndConvertEntity(
 }
 
 fun mergeExistAndConvertProperty(
-    existProperty: GenEntityDetailView.TargetOf_properties,
+    existProperty: GenEntityExistView.TargetOf_properties,
     convertProperty: GenEntityInput.TargetOf_properties,
 ) = convertProperty.toEntity {
     id = existProperty.id
@@ -70,9 +70,9 @@ fun mergeExistAndConvertProperty(
 data class AssociationPropertyPairWaitMergeExist(
     override val associationProperty: GenPropertyInput,
     override val idView: GenPropertyInput? = null,
-    val existProperties: Collection<GenEntityDetailView.TargetOf_properties>? = null,
+    val existProperties: Collection<GenEntityExistView.TargetOf_properties>? = null,
 ) : AssociationPropertyPairInterface {
-    private val GenEntityDetailView.TargetOf_properties.associationMatchKey
+    private val GenEntityExistView.TargetOf_properties.associationMatchKey
         get() = "$columnId $typeTableId $associationType $mappedBy $idView $idViewTarget"
 
     private val GenEntityInput.TargetOf_properties.associationMatchKey

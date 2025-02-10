@@ -2,7 +2,7 @@ package top.potmot.core.entity.convert.base
 
 import top.potmot.core.entity.convert.business.initBusinessConfig
 import top.potmot.core.entity.convert.merge.mergeExistAndConvertProperty
-import top.potmot.entity.dto.GenEntityDetailView
+import top.potmot.entity.dto.GenEntityExistView
 import top.potmot.entity.dto.GenPropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.error.ColumnTypeException
@@ -19,7 +19,7 @@ typealias TypeMapping = (column: GenTableConvertView.TargetOf_columns) -> String
 @Throws(ConvertException::class, ColumnTypeException::class)
 fun convertBaseProperties(
     table: GenTableConvertView,
-    existEntity: GenEntityDetailView?,
+    existEntity: GenEntityExistView?,
     typeMapping: TypeMapping,
 ) =
     table.columns.associate { column ->

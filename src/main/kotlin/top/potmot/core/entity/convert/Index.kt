@@ -13,9 +13,9 @@ import top.potmot.core.entity.convert.merge.mergeExistAndConvertEntity
 import top.potmot.core.entity.convert.type.getPropertyType
 import top.potmot.core.entity.convert.meta.TableAssociationMeta
 import top.potmot.core.entity.convert.meta.getAssociationMeta
-import top.potmot.core.entity.meta.toAssociationMetaIdMap
+import top.potmot.core.entity.convert.meta.toAssociationMetaIdMap
 import top.potmot.entity.dto.GenAssociationConvertView
-import top.potmot.entity.dto.GenEntityDetailView
+import top.potmot.entity.dto.GenEntityExistView
 import top.potmot.entity.dto.GenEntityInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
@@ -32,7 +32,7 @@ fun convertTableToEntities(
     tableIdMap: Map<Long, GenTableConvertView>,
     columnIdMap: Map<Long, GenTableConvertView.TargetOf_columns>,
     associations: Collection<GenAssociationConvertView>,
-    tableIdEntityMap: Map<Long, GenEntityDetailView>,
+    tableIdEntityMap: Map<Long, GenEntityExistView>,
     typeMappings: Collection<GenTypeMappingView>,
 ): ConvertResult {
     val insertEntities = mutableListOf<GenEntityInput>()
@@ -114,7 +114,7 @@ private fun GenTableConvertView.toGenEntityInput(
     modelId: Long?,
     typeMappings: Collection<GenTypeMappingView>,
     associationMeta: TableAssociationMeta,
-    existEntity: GenEntityDetailView?,
+    existEntity: GenEntityExistView?,
     mergeExistChangedAssociationPropertyNameMap: MutableMap<String, String>,
 ): GenEntityInput {
     val baseEntity = tableToEntity(this, modelId).let {

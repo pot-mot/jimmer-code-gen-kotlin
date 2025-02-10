@@ -1,8 +1,8 @@
 package top.potmot.core.entity.convert.association
 
-import top.potmot.core.entity.meta.AssociationMeta
+import top.potmot.core.entity.convert.meta.AssociationMeta
 import top.potmot.core.entity.convert.meta.TableAssociationMeta
-import top.potmot.entity.dto.GenEntityDetailView
+import top.potmot.entity.dto.GenEntityExistView
 import top.potmot.entity.extension.allLeafTables
 import top.potmot.enumeration.AssociationType
 
@@ -81,7 +81,7 @@ fun TableAssociationMeta.reverseReversedOneToOne(): TableAssociationMeta {
  *          Entity3.createBy -> User.id
  */
 fun TableAssociationMeta.aggregateOtherSideLeafTableAssociations(
-    tableIdEntityMap: Map<Long, GenEntityDetailView>,
+    tableIdEntityMap: Map<Long, GenEntityExistView>,
 ): TableAssociationMeta {
     val newOutAssociations = mutableListOf<AssociationMeta>()
 

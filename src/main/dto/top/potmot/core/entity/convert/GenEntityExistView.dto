@@ -1,0 +1,15 @@
+export top.potmot.entity.GenEntity
+
+GenEntityExistView {
+    #allScalars
+    id(model)
+    id(table)
+    id(superEntities) as superEntityIds
+
+    properties {
+        #allScalars
+        id(column)
+        id(typeTable) as typeTableId
+        enumId
+    }
+}
