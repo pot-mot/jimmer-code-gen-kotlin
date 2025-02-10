@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import top.potmot.business.baseProperty
 import top.potmot.config.GlobalGenConfig
-import top.potmot.core.entity.business.EntityModelBusinessInput
+import top.potmot.core.entity.config.EntityModelBusinessInput
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenModel
 import top.potmot.entity.GenProperty

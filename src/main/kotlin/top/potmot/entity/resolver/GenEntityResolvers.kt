@@ -16,7 +16,7 @@ import top.potmot.entity.orderKey
 
 @Component
 class GenEntityLogicalDeleteResolver(
-    @Autowired val sqlClient: KSqlClient
+    @Autowired val sqlClient: KSqlClient,
 ) : KTransientResolver<Long, Boolean> {
     override fun resolve(ids: Collection<Long>): Map<Long, Boolean> =
         sqlClient.createQuery(GenProperty::class) {
@@ -32,7 +32,7 @@ class GenEntityLogicalDeleteResolver(
 
 @Component
 class GenEntityIdPropertiesResolver(
-    @Autowired val sqlClient: KSqlClient
+    @Autowired val sqlClient: KSqlClient,
 ) : KTransientResolver<Long, List<Long>> {
     override fun resolve(ids: Collection<Long>): Map<Long, List<Long>> =
         sqlClient.createQuery(GenProperty::class) {
@@ -41,5 +41,5 @@ class GenEntityIdPropertiesResolver(
             orderBy(table.orderKey)
             select(table.entityId, table.id)
         }.execute()
-            .groupBy({it._1}) { it._2 }
+            .groupBy({ it._1 }, { it._2 })
 }

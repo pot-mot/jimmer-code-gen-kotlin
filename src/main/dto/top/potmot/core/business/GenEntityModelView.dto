@@ -1,6 +1,8 @@
 export top.potmot.entity.GenEntity
 
 GenEntityModelView {
+    id
+
     flat(table) {
         name as tableName
     }
@@ -19,6 +21,7 @@ GenEntityModelView {
     canDelete
     hasPage
 
+    !where(columnId is not null)
     properties {
         flat(column) {
             name as columnName

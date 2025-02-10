@@ -1,4 +1,4 @@
-package top.potmot.core.entity.business
+package top.potmot.core.entity.config
 
 import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
@@ -242,7 +242,7 @@ interface EntityBusinessConfig {
     @Throws(ModelBusinessInputException::class)
     fun KSqlClient.configEntities(
         modelId: Long,
-        views: List<EntityModelBusinessView>
+        views: List<EntityModelBusinessView>,
     ) {
         val tables = executeQuery(GenTable::class) {
             where(table.modelId eq modelId)
