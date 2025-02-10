@@ -7,7 +7,6 @@ import top.potmot.core.entity.generate.impl.kotlin.KotlinEntityCodeGenerator
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
 import top.potmot.entity.dto.GenEntityGenerateView
-import top.potmot.entity.dto.GenPropertyView
 import top.potmot.util.replaceSinceTimeComment
 import java.time.LocalDateTime
 import org.springframework.boot.test.context.SpringBootTest
@@ -37,7 +36,7 @@ class GenerateEntityTest {
         )
     }
 
-    private val idProperty = GenPropertyView(
+    private val idProperty = GenEntityGenerateView.TargetOf_properties(
         entityId = 1,
         id = 1,
         createdTime = LocalDateTime.now(),
@@ -57,7 +56,7 @@ class GenerateEntityTest {
         orderKey = 1,
     )
 
-    private val manyToOneProperty = GenPropertyView(
+    private val manyToOneProperty = GenEntityGenerateView.TargetOf_properties(
         id = 2,
         createdTime = LocalDateTime.now(),
         modifiedTime = LocalDateTime.now(),

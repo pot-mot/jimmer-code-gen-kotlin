@@ -1,7 +1,7 @@
 package top.potmot.core.entity.convert.association
 
 import top.potmot.core.entity.convert.meta.ConvertPropertyMeta
-import top.potmot.entity.dto.GenPropertyInput
+import top.potmot.core.entity.convert.PropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.IdName
 import top.potmot.error.ConvertException
@@ -15,7 +15,7 @@ import top.potmot.error.PropertyNameDuplicateData
 fun handleDuplicateName(
     table: GenTableConvertView,
     propertiesMap: Map<Long, ConvertPropertyMeta>,
-): List<GenPropertyInput> {
+): List<PropertyInput> {
     val protectDuplicateItems = mutableListOf<ProtectDuplicateItem>()
 
     propertiesMap.values.forEach { meta ->
@@ -65,7 +65,7 @@ fun handleDuplicateName(
     return producedMappedByProperties
 }
 
-private fun produceDuplicateNameMappedBy(items: List<ProtectDuplicateItem>): List<GenPropertyInput> =
+private fun produceDuplicateNameMappedBy(items: List<ProtectDuplicateItem>): List<PropertyInput> =
     if (items.size == 1) {
         when (val item = items.first()) {
             is BaseProtectDuplicateItem ->
@@ -110,7 +110,7 @@ private fun produceDuplicateNameMappedBy(items: List<ProtectDuplicateItem>): Lis
  * 防重名元素
  */
 sealed class ProtectDuplicateItem(
-    open val property: GenPropertyInput,
+    open val property: PropertyInput,
     open val meta: ConvertPropertyMeta,
 )
 
@@ -118,7 +118,7 @@ sealed class ProtectDuplicateItem(
  * 基础属性防重名元素
  */
 data class BaseProtectDuplicateItem(
-    override val property: GenPropertyInput,
+    override val property: PropertyInput,
     override val meta: ConvertPropertyMeta,
 ) : ProtectDuplicateItem(
     property, meta
@@ -128,10 +128,10 @@ data class BaseProtectDuplicateItem(
  * 关联属性防重名元素
  */
 data class AssociationProtectDuplicateItem(
-    override val property: GenPropertyInput,
-    val idView: GenPropertyInput?,
+    override val property: PropertyInput,
+    val idView: PropertyInput?,
     override val meta: ConvertPropertyMeta,
-    val baseProperty: GenPropertyInput,
+    val baseProperty: PropertyInput,
 ) : ProtectDuplicateItem(
     property, meta
 )

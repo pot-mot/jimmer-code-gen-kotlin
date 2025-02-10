@@ -1,16 +1,16 @@
 package top.potmot.core.entity.convert.meta
 
-import top.potmot.entity.dto.GenPropertyInput
+import top.potmot.core.entity.convert.PropertyInput
 
 /**
  * 转换属性过程中的元数据
  */
 data class ConvertPropertyMeta(
-    val baseProperty: GenPropertyInput,
+    val baseProperty: PropertyInput,
     val associationPropertyPairs: MutableList<AssociationPropertyPairInterface>,
     var enableBase: Boolean = true,
 ) {
-    val properties: List<GenPropertyInput>
+    val properties: List<PropertyInput>
         get() =
             if (enableBase)
                 listOf(baseProperty) + associationPropertyPairs.flatMap {
@@ -28,11 +28,11 @@ data class ConvertPropertyMeta(
  * 关联属性对，由原始关联数据和 idView 组成
  */
 interface AssociationPropertyPairInterface {
-    val associationProperty: GenPropertyInput
-    val idView: GenPropertyInput?
+    val associationProperty: PropertyInput
+    val idView: PropertyInput?
 }
 
 data class AssociationPropertyPair(
-    override val associationProperty: GenPropertyInput,
-    override val idView: GenPropertyInput? = null,
+    override val associationProperty: PropertyInput,
+    override val idView: PropertyInput? = null,
 ) : AssociationPropertyPairInterface

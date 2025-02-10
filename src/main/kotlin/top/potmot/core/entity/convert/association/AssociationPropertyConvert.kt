@@ -16,7 +16,7 @@ import top.potmot.core.entity.convert.meta.TableAssociationMeta
 import top.potmot.entity.GenProperty
 import top.potmot.entity.GenPropertyDraft
 import top.potmot.entity.copy
-import top.potmot.entity.dto.GenPropertyInput
+import top.potmot.core.entity.convert.PropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.IdName
 import top.potmot.entity.dto.IdNullableName
@@ -41,7 +41,7 @@ import top.potmot.utils.string.toPlural
  */
 @Throws(ConvertException::class, ColumnTypeException::class)
 fun convertAssociationProperties(
-    basePropertyMap: Map<Long, GenPropertyInput>,
+    basePropertyMap: Map<Long, PropertyInput>,
     typeMapping: TypeMapping,
     associationMeta: TableAssociationMeta,
 ): Map<Long, ConvertPropertyMeta> {
@@ -178,7 +178,7 @@ fun convertAssociationProperties(
                 toPlural()
             }
         }
-            .let { GenPropertyInput(it) }
+            .let { PropertyInput(it) }
             .initAssociationBusinessConfig(tableId = sourceTable.id)
 
         current.associationPropertyPairs +=
@@ -313,7 +313,7 @@ fun convertAssociationProperties(
                 toPlural()
             }
         }
-            .let { GenPropertyInput(it) }
+            .let { PropertyInput(it) }
             .initAssociationBusinessConfig(tableId = targetTable.id)
 
         current.associationPropertyPairs +=

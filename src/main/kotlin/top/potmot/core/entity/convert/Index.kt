@@ -22,9 +22,15 @@ import top.potmot.entity.dto.GenTypeMappingView
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
 
+typealias EntityView = GenEntityExistView
+typealias PropertyView = GenEntityExistView.TargetOf_properties
+
+typealias EntityInput = GenEntityInput
+typealias PropertyInput = GenEntityInput.TargetOf_properties
+
 data class ConvertResult(
-    val insertEntities: List<GenEntityInput>,
-    val updateEntities: List<GenEntityInput>,
+    val insertEntities: List<EntityInput>,
+    val updateEntities: List<EntityInput>,
 )
 
 fun convertTableToEntities(
@@ -32,11 +38,11 @@ fun convertTableToEntities(
     tableIdMap: Map<Long, GenTableConvertView>,
     columnIdMap: Map<Long, GenTableConvertView.TargetOf_columns>,
     associations: Collection<GenAssociationConvertView>,
-    tableIdEntityMap: Map<Long, GenEntityExistView>,
+    tableIdEntityMap: Map<Long, EntityView>,
     typeMappings: Collection<GenTypeMappingView>,
 ): ConvertResult {
-    val insertEntities = mutableListOf<GenEntityInput>()
-    val updateEntities = mutableListOf<GenEntityInput>()
+    val insertEntities = mutableListOf<EntityInput>()
+    val updateEntities = mutableListOf<EntityInput>()
 
     val associationMetaIdMap = associations.toAssociationMetaIdMap(
         tableIdMap, columnIdMap, tableIdEntityMap,
@@ -54,7 +60,7 @@ fun convertTableToEntities(
 
         val existEntity = tableIdEntityMap[table.id]
 
-        val convertEntity = table.toGenEntityInput(
+        val convertEntity = table.toEntityInput(
             modelId,
             typeMappings,
             associationMeta,
@@ -77,9 +83,9 @@ fun convertTableToEntities(
 
 // 根据 在"合并已存在的数据"时变化的关联属性名称，处理实体中的一些属性
 private fun produceAssociationPropertyNameChange(
-    entities: Collection<GenEntityInput>,
+    entities: Collection<EntityInput>,
     mergeExistChangedAssociationPropertyNameMap: Map<String, String>,
-): List<GenEntityInput> =
+): List<EntityInput> =
     entities.map { entity ->
         entity.copy(
             properties = entity.properties.map { property ->
@@ -110,16 +116,16 @@ private fun produceAssociationPropertyNameChange(
  * 最终将 associationProperty 中的数据填充到 baseEntity 中
  */
 @Throws(ConvertException::class, ColumnTypeException::class)
-private fun GenTableConvertView.toGenEntityInput(
+private fun GenTableConvertView.toEntityInput(
     modelId: Long?,
     typeMappings: Collection<GenTypeMappingView>,
     associationMeta: TableAssociationMeta,
-    existEntity: GenEntityExistView?,
+    existEntity: EntityView?,
     mergeExistChangedAssociationPropertyNameMap: MutableMap<String, String>,
-): GenEntityInput {
+): EntityInput {
     val baseEntity = tableToEntity(this, modelId).let {
         if (existEntity != null) {
-            GenEntityInput(mergeExistAndConvertEntity(existEntity, it))
+            EntityInput(mergeExistAndConvertEntity(existEntity, it))
         } else {
             it
         }
@@ -191,7 +197,7 @@ private fun GenTableConvertView.toGenEntityInput(
         ?.sortedBy { it.orderKey }
         ?.mapIndexed { index, it ->
             // 处理这些 unMergeProperties 的 orderKey，使它们不和 mergedProperties 冲突
-            GenEntityInput.TargetOf_properties(it.toEntity {
+            PropertyInput(it.toEntity {
                 typeTable = null
                 if (orderKey >= minOrderKey) {
                     orderKey = (maxOrderKey + index + 1).toLong()

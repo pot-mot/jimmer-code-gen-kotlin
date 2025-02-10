@@ -7,19 +7,20 @@ import top.potmot.core.database.meta.createMappingColumnName
 import top.potmot.core.entity.meta.JoinColumnMeta
 import top.potmot.core.entity.meta.JoinTableMeta
 import top.potmot.entity.dto.GenAssociationConvertView
-import top.potmot.entity.dto.GenEntityExistView
+import top.potmot.core.entity.convert.EntityView
+import top.potmot.core.entity.convert.PropertyView
 import top.potmot.entity.dto.GenTableConvertView
 
 data class AssociationMeta(
     val association: GenAssociationConvertView,
     val sourceTable: GenTableConvertView,
-    var sourceEntity: GenEntityExistView? = null,
+    var sourceEntity: EntityView? = null,
     val sourceColumns: List<GenTableConvertView.TargetOf_columns>,
-    var sourceProperties: List<GenEntityExistView.TargetOf_properties>? = null,
+    var sourceProperties: List<PropertyView>? = null,
     val targetTable: GenTableConvertView,
-    var targetEntity: GenEntityExistView? = null,
+    var targetEntity: EntityView? = null,
     val targetColumns: List<GenTableConvertView.TargetOf_columns>,
-    var targetProperties: List<GenEntityExistView.TargetOf_properties>? = null,
+    var targetProperties: List<PropertyView>? = null,
 ) {
     fun reversed() =
         AssociationMeta(
@@ -69,7 +70,7 @@ data class AssociationMeta(
 fun Iterable<GenAssociationConvertView>.toAssociationMetaIdMap(
     tableIdMap: Map<Long, GenTableConvertView>,
     columnIdMap: Map<Long, GenTableConvertView.TargetOf_columns>,
-    tableIdEntityMap: Map<Long, GenEntityExistView>,
+    tableIdEntityMap: Map<Long, EntityView>,
 ): Map<Long, AssociationMeta> =
     map { association ->
         val sourceTable = tableIdMap[association.sourceTableId]!!

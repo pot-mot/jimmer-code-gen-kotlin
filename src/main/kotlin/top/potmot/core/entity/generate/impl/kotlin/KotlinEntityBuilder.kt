@@ -1,8 +1,8 @@
 package top.potmot.core.entity.generate.impl.kotlin
 
 import top.potmot.core.entity.generate.builder.EntityBuilder
-import top.potmot.entity.dto.GenEntityGenerateView
-import top.potmot.entity.dto.GenPropertyView
+import top.potmot.core.entity.generate.builder.EntityView
+import top.potmot.core.entity.generate.builder.PropertyView
 import top.potmot.utils.string.buildScopeString
 
 object KotlinEntityBuilder : EntityBuilder() {
@@ -10,7 +10,7 @@ object KotlinEntityBuilder : EntityBuilder() {
 
     override fun importLine(item: String): String = "import $item"
 
-    override fun entityLine(entity: GenEntityGenerateView): String =
+    override fun entityLine(entity: EntityView): String =
         buildScopeString {
             append("interface ${entity.name}")
 
@@ -20,7 +20,7 @@ object KotlinEntityBuilder : EntityBuilder() {
             }
         }
 
-    override fun propertyBlock(property: GenPropertyView) =
+    override fun propertyBlock(property: PropertyView) =
         buildScopeString {
             append("val ${property.name}: ${property.shortType()}${if (property.typeNotNull) "" else "?"}")
 

@@ -1,11 +1,11 @@
 package top.potmot.core.entity.convert.business
 
-import top.potmot.entity.dto.GenPropertyInput
+import top.potmot.core.entity.convert.PropertyInput
 
 /**
  * 初始化属性的业务配置
  */
-fun GenPropertyInput.initBusinessConfig() =
+fun PropertyInput.initBusinessConfig() =
     if (idProperty) {
         copy(
             inListView = false,
@@ -49,7 +49,7 @@ fun GenPropertyInput.initBusinessConfig() =
         this
     }
 
-fun GenPropertyInput.initAssociationBusinessConfig(tableId: Long) =
+fun PropertyInput.initAssociationBusinessConfig(tableId: Long) =
     if (associationType != null) {
         val isTargetOne = associationType.isTargetOne
 

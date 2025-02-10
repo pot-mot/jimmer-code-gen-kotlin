@@ -2,17 +2,18 @@ package top.potmot.core.entity.convert.merge
 
 import top.potmot.core.entity.convert.meta.AssociationPropertyPair
 import top.potmot.core.entity.convert.meta.AssociationPropertyPairInterface
-import top.potmot.entity.dto.GenEntityExistView
-import top.potmot.entity.dto.GenEntityInput
-import top.potmot.entity.dto.GenPropertyInput
+import top.potmot.core.entity.convert.EntityView
+import top.potmot.core.entity.convert.EntityInput
+import top.potmot.core.entity.convert.PropertyInput
+import top.potmot.core.entity.convert.PropertyView
 
 /**
  * 对已存在的实体和转换出的实体进行合并
  * 保留原实体的id，注释，备注，业务配置
  */
 fun mergeExistAndConvertEntity(
-    existEntity: GenEntityExistView,
-    convertEntity: GenEntityInput,
+    existEntity: EntityView,
+    convertEntity: EntityInput,
 ) = convertEntity.toEntity {
     id = existEntity.id
     if (existEntity.overwriteName) {
@@ -35,8 +36,8 @@ fun mergeExistAndConvertEntity(
 }
 
 fun mergeExistAndConvertProperty(
-    existProperty: GenEntityExistView.TargetOf_properties,
-    convertProperty: GenEntityInput.TargetOf_properties,
+    existProperty: PropertyView,
+    convertProperty: PropertyInput,
 ) = convertProperty.toEntity {
     id = existProperty.id
     if (existProperty.overwriteName) {
@@ -68,14 +69,14 @@ fun mergeExistAndConvertProperty(
  * 懒合并关联属性和idView对，直到必要合并时才进行合并，用于暴露关联属性在合并前后的差异
  */
 data class AssociationPropertyPairWaitMergeExist(
-    override val associationProperty: GenPropertyInput,
-    override val idView: GenPropertyInput? = null,
-    val existProperties: Collection<GenEntityExistView.TargetOf_properties>? = null,
+    override val associationProperty: PropertyInput,
+    override val idView: PropertyInput? = null,
+    val existProperties: Collection<PropertyView>? = null,
 ) : AssociationPropertyPairInterface {
-    private val GenEntityExistView.TargetOf_properties.associationMatchKey
+    private val PropertyView.associationMatchKey
         get() = "$columnId $typeTableId $associationType $mappedBy $idView $idViewTarget"
 
-    private val GenEntityInput.TargetOf_properties.associationMatchKey
+    private val PropertyInput.associationMatchKey
         get() = "$columnId $typeTableId $associationType $mappedBy $idView $idViewTarget"
 
     fun mergeExist(): AssociationPropertyPair {
@@ -84,7 +85,7 @@ data class AssociationPropertyPairWaitMergeExist(
             val associationMatchedProperties = sourcePropertyMatchKeyMap[associationProperty.associationMatchKey]
             if (associationMatchedProperties?.size == 1) {
                 val mergedAssociationProperty =
-                    GenPropertyInput(mergeExistAndConvertProperty(associationMatchedProperties[0], associationProperty))
+                    PropertyInput(mergeExistAndConvertProperty(associationMatchedProperties[0], associationProperty))
 
                 if (idView != null) {
                     val idViewMatchedProperties =
@@ -93,7 +94,7 @@ data class AssociationPropertyPairWaitMergeExist(
                             ?: sourcePropertyMatchKeyMap[idView.copy(idViewTarget = associationMatchedProperties[0].name).associationMatchKey]
                     if (idViewMatchedProperties?.size == 1) {
                         val mergedIdView =
-                            GenPropertyInput(mergeExistAndConvertProperty(idViewMatchedProperties[0], idView))
+                            PropertyInput(mergeExistAndConvertProperty(idViewMatchedProperties[0], idView))
                         return AssociationPropertyPair(
                             mergedAssociationProperty,
                             mergedIdView.copy(idViewTarget = mergedAssociationProperty.name)

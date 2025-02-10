@@ -3,8 +3,8 @@ package top.potmot.core.entity.generate.impl.java
 import kotlin.reflect.KClass
 import org.jetbrains.annotations.Nullable
 import top.potmot.core.entity.generate.builder.EntityBuilder
-import top.potmot.entity.dto.GenEntityGenerateView
-import top.potmot.entity.dto.GenPropertyView
+import top.potmot.core.entity.generate.builder.EntityView
+import top.potmot.core.entity.generate.builder.PropertyView
 import top.potmot.utils.string.buildScopeString
 
 object JavaEntityBuilder : EntityBuilder() {
@@ -12,7 +12,7 @@ object JavaEntityBuilder : EntityBuilder() {
 
     override fun importLine(item: String): String = "import ${item};"
 
-    override fun entityLine(entity: GenEntityGenerateView): String =
+    override fun entityLine(entity: EntityView): String =
         buildString {
             append("public interface ${entity.name}")
 
@@ -22,7 +22,7 @@ object JavaEntityBuilder : EntityBuilder() {
             }
         }
 
-    override fun propertyBlock(property: GenPropertyView) =
+    override fun propertyBlock(property: PropertyView) =
         buildScopeString {
             if (property.body != null) {
                 append("default ")
@@ -44,7 +44,7 @@ object JavaEntityBuilder : EntityBuilder() {
         return classes.map { it.java.name }.toSet()
     }
 
-    override fun importClasses(property: GenPropertyView): Set<KClass<*>> {
+    override fun importClasses(property: PropertyView): Set<KClass<*>> {
         return super.importClasses(property)
             .let {
                 if (!property.typeNotNull) {
@@ -55,7 +55,7 @@ object JavaEntityBuilder : EntityBuilder() {
             }
     }
 
-    override fun annotationLines(property: GenPropertyView): List<String> {
+    override fun annotationLines(property: PropertyView): List<String> {
         return super.annotationLines(property).let {
             if (!property.typeNotNull) {
                 it + "@Nullable"

@@ -2,8 +2,8 @@ package top.potmot.core.entity.convert.base
 
 import top.potmot.core.entity.convert.business.initBusinessConfig
 import top.potmot.core.entity.convert.merge.mergeExistAndConvertProperty
-import top.potmot.entity.dto.GenEntityExistView
-import top.potmot.entity.dto.GenPropertyInput
+import top.potmot.core.entity.convert.EntityView
+import top.potmot.core.entity.convert.PropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
@@ -19,7 +19,7 @@ typealias TypeMapping = (column: GenTableConvertView.TargetOf_columns) -> String
 @Throws(ConvertException::class, ColumnTypeException::class)
 fun convertBaseProperties(
     table: GenTableConvertView,
-    existEntity: GenEntityExistView?,
+    existEntity: EntityView?,
     typeMapping: TypeMapping,
 ) =
     table.columns.associate { column ->
@@ -34,7 +34,7 @@ fun convertBaseProperties(
                     val matchedProperty =
                         existEntity.properties.firstOrNull { it.columnId == column.id && it.associationType == null }
                     if (matchedProperty != null) {
-                        return@let GenPropertyInput(mergeExistAndConvertProperty(matchedProperty, property))
+                        return@let PropertyInput(mergeExistAndConvertProperty(matchedProperty, property))
                     }
                 }
 
@@ -47,10 +47,10 @@ fun convertBaseProperties(
  */
 private fun GenTableConvertView.TargetOf_columns.toBaseProperty(
     typeMapping: TypeMapping,
-): GenPropertyInput {
+): PropertyInput {
     val column = this
 
-    return GenPropertyInput(
+    return PropertyInput(
         columnId = column.id,
         name = columnNameToPropertyName(column.name),
         comment = column.comment.clearForPropertyComment(),
@@ -87,7 +87,7 @@ private fun GenTableConvertView.TargetOf_columns.toBaseProperty(
     )
 }
 
-private fun GenPropertyInput.toIdProperty(
+private fun PropertyInput.toIdProperty(
     column: GenTableConvertView.TargetOf_columns,
 ) =
     copy(

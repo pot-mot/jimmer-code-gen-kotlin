@@ -6,7 +6,7 @@ import top.potmot.core.entity.convert.base.TypeMapping
 import top.potmot.core.entity.convert.base.toPlural
 import top.potmot.entity.GenProperty
 import top.potmot.entity.copy
-import top.potmot.entity.dto.GenPropertyInput
+import top.potmot.core.entity.convert.PropertyInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.IdName
 import top.potmot.enumeration.GenLanguage
@@ -18,12 +18,12 @@ import top.potmot.error.ConvertException
 @Throws(ConvertException.IdViewMultiplePkNotSupported::class)
 fun createIdViewProperty(
     singularName: String,
-    baseProperty: GenPropertyInput,
+    baseProperty: PropertyInput,
     baseColumn: GenTableConvertView.TargetOf_columns,
-    associationProperty: GenPropertyInput,
+    associationProperty: PropertyInput,
     typeTable: GenTableConvertView,
     typeMapping: TypeMapping,
-): GenPropertyInput =
+): PropertyInput =
     baseProperty.toEntity().copy {
         unload(this, GenProperty::id)
         name = singularName + "Id"
@@ -68,5 +68,5 @@ fun createIdViewProperty(
             )
         )
     }.let {
-        GenPropertyInput(it)
+        PropertyInput(it)
     }

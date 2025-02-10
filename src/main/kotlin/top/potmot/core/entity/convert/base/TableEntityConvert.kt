@@ -1,7 +1,7 @@
 package top.potmot.core.entity.convert.base
 
 import top.potmot.context.getContextOrGlobal
-import top.potmot.entity.dto.GenEntityInput
+import top.potmot.core.entity.convert.EntityInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.utils.string.clearTableComment
 import top.potmot.utils.string.tableNameToEntityName
@@ -12,10 +12,10 @@ import top.potmot.utils.string.tableNameToEntityName
 fun tableToEntity(
     genTable: GenTableConvertView,
     modelId: Long?,
-): GenEntityInput {
+): EntityInput {
     val context = getContextOrGlobal()
 
-    return GenEntityInput(
+    return EntityInput(
         tableId = genTable.id,
         modelId = modelId,
         author = context.author,
