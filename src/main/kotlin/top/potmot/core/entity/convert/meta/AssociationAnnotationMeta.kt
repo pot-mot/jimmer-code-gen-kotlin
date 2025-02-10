@@ -1,5 +1,7 @@
-package top.potmot.core.entity.meta
+package top.potmot.core.entity.convert.meta
 
+import top.potmot.core.entity.meta.JoinColumnMeta
+import top.potmot.core.entity.meta.JoinTableMeta
 import top.potmot.enumeration.AssociationType
 
 data class AssociationAnnotationMeta(

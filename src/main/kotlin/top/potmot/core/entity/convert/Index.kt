@@ -11,8 +11,8 @@ import top.potmot.core.entity.convert.base.tableToEntity
 import top.potmot.core.entity.convert.merge.AssociationPropertyPairWaitMergeExist
 import top.potmot.core.entity.convert.merge.mergeExistAndConvertEntity
 import top.potmot.core.entity.convert.type.getPropertyType
-import top.potmot.core.entity.meta.TableAssociationMeta
-import top.potmot.core.entity.meta.getAssociationMeta
+import top.potmot.core.entity.convert.meta.TableAssociationMeta
+import top.potmot.core.entity.convert.meta.getAssociationMeta
 import top.potmot.core.entity.meta.toAssociationMetaIdMap
 import top.potmot.entity.dto.GenAssociationConvertView
 import top.potmot.entity.dto.GenEntityDetailView

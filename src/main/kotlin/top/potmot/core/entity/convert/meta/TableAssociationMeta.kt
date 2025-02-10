@@ -1,5 +1,6 @@
-package top.potmot.core.entity.meta
+package top.potmot.core.entity.convert.meta
 
+import top.potmot.core.entity.meta.AssociationMeta
 import top.potmot.entity.dto.GenTableConvertView
 
 data class TableAssociationMeta(

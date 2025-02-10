@@ -1,8 +1,8 @@
-package top.potmot.core.entity.meta
+package top.potmot.core.entity.generate.meta
 
 import top.potmot.utils.string.startsWithAny
 
-val kotlinImportedPackage = listOf(
+private val kotlinImportedPackage = listOf(
     "kotlin.annotation",
     "kotlin.collections",
     "kotlin.comparisons",
@@ -13,7 +13,7 @@ val kotlinImportedPackage = listOf(
     "kotlin", // 一定要把较短的后置以使 startWith 正确判断
 )
 
-val javaImportedPackage = listOf(
+private val javaImportedPackage = listOf(
     "java.lang"
 )
 

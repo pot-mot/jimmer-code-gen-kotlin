@@ -1,7 +1,7 @@
 package top.potmot.core.entity.generate.builder
 
 import kotlin.reflect.KClass
-import top.potmot.core.entity.meta.judgeImportPathInDefaultPackage
+import top.potmot.core.entity.generate.meta.judgeImportPathInDefaultPackage
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.toBlockLines

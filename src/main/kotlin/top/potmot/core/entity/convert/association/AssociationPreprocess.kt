@@ -1,7 +1,7 @@
 package top.potmot.core.entity.convert.association
 
 import top.potmot.core.entity.meta.AssociationMeta
-import top.potmot.core.entity.meta.TableAssociationMeta
+import top.potmot.core.entity.convert.meta.TableAssociationMeta
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.extension.allLeafTables
 import top.potmot.enumeration.AssociationType

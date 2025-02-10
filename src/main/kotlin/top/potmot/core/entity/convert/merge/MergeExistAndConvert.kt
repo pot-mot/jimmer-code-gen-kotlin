@@ -1,7 +1,7 @@
 package top.potmot.core.entity.convert.merge
 
-import top.potmot.core.entity.meta.AssociationPropertyPair
-import top.potmot.core.entity.meta.AssociationPropertyPairInterface
+import top.potmot.core.entity.convert.meta.AssociationPropertyPair
+import top.potmot.core.entity.convert.meta.AssociationPropertyPairInterface
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenEntityInput
 import top.potmot.entity.dto.GenPropertyInput
