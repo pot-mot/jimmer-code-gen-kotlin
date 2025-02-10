@@ -5,6 +5,8 @@ import java.sql.Types
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.OffsetTime
+import java.time.ZonedDateTime
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 import top.potmot.context.getContextOrGlobal
@@ -35,8 +37,10 @@ private fun jdbcTypeToJavaType(jdbcType: Int, typeNotNull: Boolean = true): Clas
         Types.DECIMAL, Types.NUMERIC -> BigDecimal::class.java
         Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR, Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR, Types.CLOB, Types.NCLOB, Types.SQLXML, Types.DATALINK -> String::class.java
         Types.DATE -> LocalDate::class.java
-        Types.TIME, Types.TIME_WITH_TIMEZONE -> LocalTime::class.java
-        Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> LocalDateTime::class.java
+        Types.TIME -> LocalTime::class.java
+        Types.TIME_WITH_TIMEZONE -> OffsetTime::class.java
+        Types.TIMESTAMP -> LocalDateTime::class.java
+        Types.TIMESTAMP_WITH_TIMEZONE -> ZonedDateTime::class.java
         Types.BLOB, Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> ByteArray::class.java
         else -> null
     }
@@ -59,8 +63,10 @@ private fun jdbcTypeToKotlinType(jdbcType: Int): KClass<out Any>? {
         Types.DECIMAL, Types.NUMERIC -> BigDecimal::class
         Types.CHAR, Types.VARCHAR, Types.LONGVARCHAR, Types.NCHAR, Types.NVARCHAR, Types.LONGNVARCHAR, Types.CLOB, Types.NCLOB, Types.SQLXML, Types.DATALINK -> String::class
         Types.DATE -> LocalDate::class
-        Types.TIME, Types.TIME_WITH_TIMEZONE -> LocalTime::class
-        Types.TIMESTAMP, Types.TIMESTAMP_WITH_TIMEZONE -> LocalDateTime::class
+        Types.TIME -> LocalTime::class
+        Types.TIME_WITH_TIMEZONE -> OffsetTime::class
+        Types.TIMESTAMP -> LocalDateTime::class
+        Types.TIMESTAMP_WITH_TIMEZONE -> ZonedDateTime::class
         Types.BLOB, Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY -> ByteArray::class
         else -> null
     }

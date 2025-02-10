@@ -5,6 +5,9 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.OffsetTime
+import java.time.ZonedDateTime
 import java.util.Date
 
 val intType = setOf(
@@ -43,6 +46,7 @@ val stringType = setOf(
 
 val timeType = setOf(
     Instant::class.java.name,
+    OffsetTime::class.java.name,
     LocalTime::class.java.name
 )
 
@@ -52,5 +56,7 @@ val dateType = setOf(
 
 val dateTimeType = setOf(
     LocalDateTime::class.java.name,
-    Date::class.java.name
+    OffsetDateTime::class.java.name,
+    ZonedDateTime::class.java.name,
+    Date::class.java.name,
 )
