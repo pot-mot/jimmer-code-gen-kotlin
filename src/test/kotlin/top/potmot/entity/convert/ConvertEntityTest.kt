@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import top.potmot.business.baseProperty
 import top.potmot.config.GlobalGenConfig
-import top.potmot.core.model.business.EntityModelBusinessInput
+import top.potmot.core.entity.business.EntityModelBusinessInput
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenModel
 import top.potmot.entity.GenProperty
@@ -109,7 +109,9 @@ class ConvertEntityTest {
             "comment" : "column comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
@@ -147,7 +149,9 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
@@ -237,7 +241,9 @@ class ConvertEntityTest {
             "comment" : "column comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
@@ -275,7 +281,9 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
@@ -333,6 +341,7 @@ class ConvertEntityTest {
             properties = entity1.properties.map { property ->
                 property.toEntity {
                     unload(this, GenProperty::column)
+                    unload(this, GenProperty::typeTable)
 
                     name = property.name + " changed"
                     overwriteName = true
@@ -400,7 +409,9 @@ class ConvertEntityTest {
             "comment" : "comment",
             "overwriteComment" : false,
             "type" : "kotlin.String",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
@@ -446,7 +457,9 @@ class ConvertEntityTest {
             "comment" : "column comment changed",
             "overwriteComment" : true,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
@@ -484,7 +497,9 @@ class ConvertEntityTest {
             "comment" : "id comment changed",
             "overwriteComment" : true,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
@@ -589,7 +604,9 @@ class ConvertEntityTest {
             "comment" : "column comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
@@ -627,7 +644,9 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
@@ -707,7 +726,9 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
@@ -820,7 +841,9 @@ class ConvertEntityTest {
             "comment" : "column comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
@@ -858,7 +881,9 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
@@ -947,7 +972,9 @@ class ConvertEntityTest {
             "comment" : "column comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
@@ -985,7 +1012,9 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
@@ -1113,7 +1142,9 @@ class ConvertEntityTest {
             "comment" : "comment",
             "overwriteComment" : false,
             "type" : "kotlin.String",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
@@ -1159,7 +1190,9 @@ class ConvertEntityTest {
             "comment" : "column comment changed",
             "overwriteComment" : true,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
@@ -1197,7 +1230,9 @@ class ConvertEntityTest {
             "comment" : "id comment changed",
             "overwriteComment" : true,
             "type" : "kotlin.Int",
-            "typeTable" : null,
+            "typeTable" : {
+                "entity" : null
+            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,

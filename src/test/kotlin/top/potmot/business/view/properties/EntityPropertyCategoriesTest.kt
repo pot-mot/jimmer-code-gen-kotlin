@@ -177,7 +177,7 @@ class EntityPropertyCategoriesTest {
     }
 
     private val EntityBusiness.asSub
-        get() = SubEntityBusiness(AssociationPath(this, emptyList()), entity, entityIdMap, enumIdMap)
+        get() = SubEntityBusiness(AssociationPath(this, emptyList()), null, entity, entityIdMap, enumIdMap)
 
     @Test
     fun `test subFormProperties`() {
