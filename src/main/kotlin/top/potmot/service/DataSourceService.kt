@@ -17,7 +17,7 @@ import top.potmot.constant.defaultDataSources
 import top.potmot.entity.dto.GenDataSourceInput
 import top.potmot.entity.dto.GenDataSourceTemplateView
 import top.potmot.entity.dto.GenDataSourceView
-import top.potmot.entity.extension.test
+import top.potmot.core.database.dataSource.test
 import top.potmot.utils.transaction.executeNotNull
 
 @RestController

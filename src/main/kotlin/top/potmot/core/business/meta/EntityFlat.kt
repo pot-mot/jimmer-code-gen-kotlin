@@ -1,7 +1,14 @@
 package top.potmot.core.business.meta
 
 import top.potmot.entity.dto.GenEntityBusinessView
-import top.potmot.entity.extension.allSuperEntities
+
+/**
+ * 获取全部上级实体
+ */
+private fun GenEntityBusinessView.allSuperEntities(): List<GenEntityBusinessView> {
+    val result = superEntities ?: listOf()
+    return result + result.flatMap { it.allSuperEntities() }
+}
 
 fun GenEntityBusinessView.toFlat(): GenEntityBusinessView {
     val allSuperEntities = allSuperEntities()

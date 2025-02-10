@@ -23,7 +23,7 @@ import top.potmot.core.database.generate.columnType.getColumnTypeDefiner
 import top.potmot.enumeration.AssociationType
 import top.potmot.entity.GenDataSource
 import top.potmot.entity.dto.GenTableLiquibaseView
-import top.potmot.entity.extension.toSource
+import top.potmot.core.database.dataSource.toSource
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException

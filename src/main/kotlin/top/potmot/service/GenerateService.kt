@@ -35,7 +35,7 @@ import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.GenerateResult
 import top.potmot.entity.dto.IdName
 import top.potmot.entity.dto.TableEntityNotNullPair
-import top.potmot.entity.extension.merge
+import top.potmot.core.config.merge
 import top.potmot.entity.id
 import top.potmot.entity.modelId
 import top.potmot.entity.table

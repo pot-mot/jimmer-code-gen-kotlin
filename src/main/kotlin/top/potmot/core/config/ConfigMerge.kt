@@ -1,4 +1,4 @@
-package top.potmot.entity.extension
+package top.potmot.core.config
 
 import top.potmot.entity.dto.GenConfigProperties
 

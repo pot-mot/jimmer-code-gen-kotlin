@@ -17,7 +17,6 @@ import top.potmot.error.ColumnTypeException
 import top.potmot.error.GenerateException
 import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.dto.IdName
-import top.potmot.entity.extension.pkColumns
 
 /**
  * 表定义构建器
@@ -49,9 +48,9 @@ abstract class TableDefineBuilder(
         "ALTER TABLE ${identifiers.tableName(name)}"
 
     open fun createPkLine(
-        table: GenTableGenerateView,
+        pkColumns: List<GenTableGenerateView.TargetOf_columns>
     ) =
-        pkDefine(table.pkColumns().map { it.name })
+        pkDefine(pkColumns.map { it.name })
 
     @Throws(ColumnTypeException::class)
     open fun columnStringify(column: GenTableGenerateView.TargetOf_columns) =
@@ -94,8 +93,9 @@ abstract class TableDefineBuilder(
 
         lines.addAll(table.columns.map { columnStringify(it) })
 
-        if (table.pkColumns().isNotEmpty()) {
-            lines.add(createPkLine(table))
+        val pkColumns = table.columns.filter { it.partOfPk }
+        if (pkColumns.isNotEmpty()) {
+            lines.add(createPkLine(pkColumns))
         }
 
         lines.addAll(otherLines)

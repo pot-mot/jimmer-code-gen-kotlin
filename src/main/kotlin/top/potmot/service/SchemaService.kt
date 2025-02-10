@@ -19,7 +19,7 @@ import top.potmot.entity.GenSchema
 import top.potmot.entity.dataSourceId
 import top.potmot.entity.dto.GenSchemaPreview
 import top.potmot.entity.dto.GenSchemaView
-import top.potmot.entity.extension.use
+import top.potmot.core.database.dataSource.use
 import top.potmot.entity.id
 import top.potmot.error.DataSourceException
 import top.potmot.error.LoadFromDataSourceException

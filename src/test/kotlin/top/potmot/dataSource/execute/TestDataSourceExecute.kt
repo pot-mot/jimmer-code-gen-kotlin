@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles
 import top.potmot.dataSource.h2DataSource
 import top.potmot.dataSource.mysqlDataSource
 import top.potmot.dataSource.postgresDataSource
-import top.potmot.entity.extension.execute
+import top.potmot.core.database.dataSource.execute
 
 /**
  * 校验两种数据源下 sql execute 是否存在问题

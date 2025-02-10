@@ -4,8 +4,15 @@ import top.potmot.constant.INHERIT_PLACEHOLDER
 import top.potmot.constant.SOURCE_INHERIT_PLACEHOLDER
 import top.potmot.constant.TARGET_INHERIT_PLACEHOLDER
 import top.potmot.entity.dto.GenTableGenerateView
-import top.potmot.entity.extension.allSuperTables
 import top.potmot.utils.string.replaceFirstOrAppend
+
+/**
+ * 获取全部上级表
+ */
+private fun GenTableGenerateView.allSuperTables(): List<GenTableGenerateView> {
+    val result = superTables ?: listOf()
+    return result + result.flatMap { it.allSuperTables() }
+}
 
 fun GenTableGenerateView.toFlat(): GenTableGenerateView {
     val allSuperTables = allSuperTables()

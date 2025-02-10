@@ -24,7 +24,7 @@ import top.potmot.entity.dto.GenEntityExistView
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
 import top.potmot.entity.dto.IdName
-import top.potmot.entity.extension.merge
+import top.potmot.core.config.merge
 import top.potmot.entity.id
 import top.potmot.entity.modelId
 import top.potmot.entity.orderKey

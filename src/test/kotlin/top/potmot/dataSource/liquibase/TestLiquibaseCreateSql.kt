@@ -12,7 +12,7 @@ import top.potmot.dataSource.mysqlDataSource
 import top.potmot.dataSource.postgresDataSource
 import top.potmot.enumeration.TableType
 import top.potmot.entity.dto.GenTableLiquibaseView
-import top.potmot.entity.extension.execute
+import top.potmot.core.database.dataSource.execute
 import top.potmot.utils.liquibase.createSql
 import java.sql.Types
 

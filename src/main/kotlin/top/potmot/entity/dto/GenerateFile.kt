@@ -2,7 +2,6 @@ package top.potmot.entity.dto
 
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.EnumBusiness
-import top.potmot.entity.extension.allSuperTables
 import top.potmot.enumeration.GenerateTag
 
 enum class MainType {
@@ -53,6 +52,11 @@ private val GenTableGenerateView.TargetOf_outAssociations.idName
 
 private val GenTableGenerateView.TargetOf_inAssociations.idName
     get() = IdName(id, name)
+
+private fun GenTableGenerateView.allSuperTables(): List<GenTableGenerateView> {
+    val result = superTables ?: listOf()
+    return result + result.flatMap { it.allSuperTables() }
+}
 
 fun GenerateFile(
     table: GenTableGenerateView,

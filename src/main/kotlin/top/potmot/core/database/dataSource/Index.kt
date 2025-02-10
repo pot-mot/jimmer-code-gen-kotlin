@@ -1,4 +1,4 @@
-package top.potmot.entity.extension
+package top.potmot.core.database.dataSource
 
 import top.potmot.enumeration.DataSourceType
 import top.potmot.error.DataSourceException
