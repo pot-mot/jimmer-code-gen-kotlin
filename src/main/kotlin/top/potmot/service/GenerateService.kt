@@ -42,7 +42,6 @@ import top.potmot.entity.table
 import top.potmot.entity.type
 import top.potmot.enumeration.GenerateType
 import top.potmot.enumeration.TableType
-import top.potmot.enumeration.ViewType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.GenerateException
 import top.potmot.error.ModelException
@@ -58,7 +57,6 @@ class GenerateService(
     fun generateModel(
         @RequestParam id: Long,
         @RequestParam types: List<GenerateType>,
-        @RequestParam viewType: ViewType = ViewType.VUE3_ELEMENT_PLUS,
         @RequestParam(required = false) properties: GenConfigProperties? = null,
     ): GenerateResult =
         useContext(
@@ -67,7 +65,8 @@ class GenerateService(
         ) { context ->
             val files = mutableListOf<GenerateFile>()
 
-            val languageDir by lazy { context.language.name.lowercase() }
+            val languageDir by lazy { context.language.dir }
+            val viewDir by lazy { context.viewType.dir }
 
             val tables by lazy {
                 sqlClient.listTable(id)
@@ -110,7 +109,7 @@ class GenerateService(
                 context.language.getServiceGenerator()
             }
             val viewGenerator by lazy {
-                viewType.getViewGenerator()
+                context.viewType.getViewGenerator()
             }
 
             if (containsAll || containsBackEnd || GenerateType.DDL in typeSet) {
@@ -140,11 +139,15 @@ class GenerateService(
             if (containsAll || containsBackEnd || GenerateType.Route in typeSet) {
                 files += DynamicRouteGenerator.generate(entityBusinesses)
             }
-            if (containsAll || containsFrontEnd || GenerateType.EnumComponent in typeSet) {
-                files += viewGenerator.generateEnum(enumBusinesses)
+            if (containsAll || containsFrontEnd|| GenerateType.Enum in typeSet || GenerateType.EnumComponent in typeSet) {
+                viewGenerator.generateEnum(enumBusinesses).forEach {
+                    files += it.copy(path = "${viewDir}/${it.path}")
+                }
             }
             if (containsAll || containsFrontEnd || GenerateType.View in typeSet) {
-                files += viewGenerator.generateView(entityBusinesses)
+                viewGenerator.generateView(entityBusinesses).forEach {
+                    files += it.copy(path = "${viewDir}/${it.path}")
+                }
             }
 
             val tableEntityPairs =

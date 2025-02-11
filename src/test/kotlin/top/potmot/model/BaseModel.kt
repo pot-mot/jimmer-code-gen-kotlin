@@ -1,46 +1,63 @@
 package top.potmot.model
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import top.potmot.entity.dto.GenModelInput
-import top.potmot.utils.json.commonObjectMapper
+import top.potmot.entity.sub.AnnotationWithImports
+import top.potmot.enumeration.DataSourceType
+import top.potmot.enumeration.DatabaseNamingStrategyType
+import top.potmot.enumeration.GenLanguage
+import top.potmot.enumeration.ViewType
 
 fun createBaseModel(
     graphData: String,
-    enumJsons: List<String> = emptyList()
-) =
-    commonObjectMapper.readValue<GenModelInput>(
-        baseModel
-    ).copy(
-        graphData = graphData,
-        enums = enumJsons.map { json -> commonObjectMapper.readValue<GenModelInput.TargetOf_enums>(json) }
-    )
+    enums: List<GenModelInput.TargetOf_enums> = emptyList(),
+) = baseModel.copy(
+    graphData = graphData,
+    enums = enums
+)
 
-private const val baseModel = """
-{
-    "remark": "",
-    "name": "test",
-    "graphData": "",
-    "language": "KOTLIN",
-    "dataSourceType": "MySQL",
-    "author": "",
-    "packagePath": "top.potmot",
-    "tablePath": "",
-    "databaseNamingStrategy": "UPPER_CASE",
-    "realFk": true,
-    "idViewProperty": true,
-    "logicalDeletedAnnotation": "@LogicalDeleted(\"true\")",
-    "tableAnnotation": true,
-    "columnAnnotation": true,
-    "joinTableAnnotation": true,
-    "joinColumnAnnotation": true,
-    "tableNamePrefixes": "",
-    "tableNameSuffixes": "",
-    "tableCommentPrefixes": "",
-    "tableCommentSuffixes": "",
-    "columnNamePrefixes": "",
-    "columnNameSuffixes": "",
-    "columnCommentPrefixes": "",
-    "columnCommentSuffixes": "",
-    "enums": []
-}
-"""
+private val baseModel = GenModelInput(
+    name = "test",
+    graphData = "",
+    language = GenLanguage.KOTLIN,
+    dataSourceType = DataSourceType.PostgreSQL,
+    viewType = ViewType.VUE3_ELEMENT_PLUS,
+    author = "",
+    packagePath = "top.potmot",
+    tablePath = "",
+    databaseNamingStrategy = DatabaseNamingStrategyType.UPPER_CASE,
+    realFk = true,
+    idViewProperty = true,
+    defaultIdType = 4,
+    generatedIdAnnotation = AnnotationWithImports(
+        imports = listOf(
+            "org.babyfish.jimmer.sql.GeneratedValue",
+            "org.babyfish.jimmer.sql.GenerationType",
+        ),
+        annotations = listOf(
+            "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+        )
+    ),
+    logicalDeletedAnnotation = AnnotationWithImports(
+        imports = listOf(
+            "org.babyfish.jimmer.sql.LogicalDeleted",
+        ),
+        annotations = listOf(
+            "@LogicalDeleted"
+        )
+    ),
+    dateTimeFormatInView = false,  // 需要替换为实际的布尔值
+    tableAnnotation = true,
+    columnAnnotation = true,
+    joinTableAnnotation = true,
+    joinColumnAnnotation = true,
+    tableNamePrefixes = "",
+    tableNameSuffixes = "",
+    tableCommentPrefixes = "",
+    tableCommentSuffixes = "",
+    columnNamePrefixes = "",
+    columnNameSuffixes = "",
+    columnCommentPrefixes = "",
+    columnCommentSuffixes = "",
+    remark = "",
+    enums = emptyList()
+)

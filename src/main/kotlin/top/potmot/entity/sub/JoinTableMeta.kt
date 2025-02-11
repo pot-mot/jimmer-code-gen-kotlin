@@ -1,7 +1,9 @@
-package top.potmot.core.entity.meta
+package top.potmot.entity.sub
 
 import org.babyfish.jimmer.sql.ForeignKeyType
+import org.babyfish.jimmer.sql.Serialized
 
+@Serialized
 data class JoinTableMeta(
     val tableName: String,
     val columnNamePairs: List<Pair<String, String>>,

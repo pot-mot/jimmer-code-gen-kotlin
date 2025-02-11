@@ -6,7 +6,7 @@ import top.potmot.enumeration.GenerateTag
 import top.potmot.error.GenerateException
 
 abstract class ServiceGenerator {
-    abstract fun getFileSuffix(): String
+    abstract val suffix: String
 
     protected abstract fun stringifyService(entity: RootEntityBusiness): String
 
@@ -15,7 +15,7 @@ abstract class ServiceGenerator {
         entity: RootEntityBusiness,
     ) = GenerateFile(
         entity,
-        "${entity.serviceFilePath}/${entity.serviceName}${getFileSuffix()}",
+        "${entity.serviceFilePath}/${entity.serviceName}.$suffix",
         stringifyService(entity),
         listOf(GenerateTag.BackEnd, GenerateTag.Service)
     )

@@ -13,12 +13,12 @@ import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Serialized
 import org.babyfish.jimmer.sql.Table
 import top.potmot.core.business.meta.PropertySpecialFormType
-import top.potmot.core.entity.meta.JoinColumnMeta
-import top.potmot.core.entity.meta.JoinTableMeta
+import top.potmot.entity.sub.JoinColumnMeta
+import top.potmot.entity.sub.JoinTableMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.entity.base.BaseEntity
-import top.potmot.entity.property.PropertyBody
-import top.potmot.entity.property.AnnotationWithImports
+import top.potmot.entity.sub.PropertyBody
+import top.potmot.entity.sub.AnnotationWithImports
 
 /**
  * 生成属性
@@ -124,7 +124,7 @@ interface GenProperty : BaseEntity {
     val generatedId: Boolean
 
     /**
-     * Id 生成注解
+     * 生成 ID 注解
      */
     val generatedIdAnnotation: AnnotationWithImports?
 
@@ -191,7 +191,6 @@ interface GenProperty : BaseEntity {
     /**
      * 关联表注解
      */
-    @Serialized
     val joinTableMeta: JoinTableMeta?
 
     /**
@@ -202,13 +201,11 @@ interface GenProperty : BaseEntity {
     /**
      * 其他注解
      */
-    @Serialized
     val otherAnnotation: AnnotationWithImports?
 
     /**
      * 属性方法体
      */
-    @Serialized
     val body: PropertyBody?
 
     /**

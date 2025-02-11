@@ -26,10 +26,16 @@ fun tableToEntity(
         superEntityIds = emptyList(),
         properties = emptyList(),
         canAdd = true,
-        canQuery = true,
         canEdit = true,
+        canQuery = true,
         canDelete = true,
         hasPage = true,
+        pageCanAdd = true,
+        pageCanEdit = true,
+        pageCanViewDetail = false,
+        pageCanQuery = true,
+        pageCanDelete = true,
+        queryByPage = true,
     )
 }
 

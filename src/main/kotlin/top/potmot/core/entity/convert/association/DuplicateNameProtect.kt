@@ -89,12 +89,10 @@ private fun produceDuplicateNameMappedBy(items: List<ProtectDuplicateItem>): Lis
                         listOfNotNull(
                             property.copy(
                                 name = newPropertyName,
-                                comment = "${property.comment} (MappedBy ${property.type}.${mappedBy})"
                             ),
                             idView?.copy(
                                 idViewTarget = newPropertyName,
                                 name = "${idView.name}${suffix}",
-                                comment = "${idView.comment} (MappedBy ${property.type}.${mappedBy})"
                             )
                         )
                     } else {
@@ -105,11 +103,10 @@ private fun produceDuplicateNameMappedBy(items: List<ProtectDuplicateItem>): Lis
         }
     }
 
-
 /**
  * 防重名元素
  */
-sealed class ProtectDuplicateItem(
+private sealed class ProtectDuplicateItem(
     open val property: PropertyInput,
     open val meta: ConvertPropertyMeta,
 )
@@ -117,7 +114,7 @@ sealed class ProtectDuplicateItem(
 /**
  * 基础属性防重名元素
  */
-data class BaseProtectDuplicateItem(
+private data class BaseProtectDuplicateItem(
     override val property: PropertyInput,
     override val meta: ConvertPropertyMeta,
 ) : ProtectDuplicateItem(
@@ -127,7 +124,7 @@ data class BaseProtectDuplicateItem(
 /**
  * 关联属性防重名元素
  */
-data class AssociationProtectDuplicateItem(
+private data class AssociationProtectDuplicateItem(
     override val property: PropertyInput,
     val idView: PropertyInput?,
     override val meta: ConvertPropertyMeta,

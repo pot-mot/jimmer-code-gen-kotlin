@@ -1,7 +1,7 @@
 package top.potmot.core.entity.generate.impl.java
 
 import top.potmot.core.entity.generate.builder.AssociationAnnotationBuilder
-import top.potmot.core.entity.meta.JoinTableMeta
+import top.potmot.entity.sub.JoinTableMeta
 import top.potmot.utils.string.buildScopeString
 
 object JavaAssociationAnnotationBuilder : AssociationAnnotationBuilder("        ") {

@@ -35,13 +35,17 @@ CREATE TABLE "gen_model"
     "graph_data"                 text      NOT NULL,
     "language"                   text      NOT NULL,
     "data_source_type"           text      NOT NULL,
+    "view_type"                  text      NOT NULL,
     "author"                     text      NOT NULL,
     "package_path"               text      NOT NULL,
     "table_path"                 text      NOT NULL,
     "database_naming_strategy"   text      NOT NULL,
     "real_fk"                    boolean   NOT NULL,
     "id_view_property"           boolean   NOT NULL,
-    "logical_deleted_annotation" text      NOT NULL,
+    "default_id_type"            int       NOT NULL,
+    "generated_id_annotation"    jsonb     NOT NULL,
+    "logical_deleted_annotation" jsonb     NOT NULL,
+    "date_time_format_in_view"   boolean   NOT NULL,
     "table_annotation"           boolean   NOT NULL,
     "column_annotation"          boolean   NOT NULL,
     "join_table_annotation"      boolean   NOT NULL,
@@ -66,13 +70,17 @@ COMMENT ON COLUMN "gen_model"."name" IS '名称';
 COMMENT ON COLUMN "gen_model"."graph_data" IS 'Graph 数据';
 COMMENT ON COLUMN "gen_model"."language" IS '语言';
 COMMENT ON COLUMN "gen_model"."data_source_type" IS '数据源类型';
+COMMENT ON COLUMN "gen_model"."view_type" IS '视图类型';
 COMMENT ON COLUMN "gen_model"."author" IS '作者';
 COMMENT ON COLUMN "gen_model"."package_path" IS '包路径';
 COMMENT ON COLUMN "gen_model"."table_path" IS '表路径';
 COMMENT ON COLUMN "gen_model"."database_naming_strategy" IS '数据库命名策略';
 COMMENT ON COLUMN "gen_model"."real_fk" IS '启用真实外键';
 COMMENT ON COLUMN "gen_model"."id_view_property" IS '生成 IdView 属性';
+COMMENT ON COLUMN "gen_model"."default_id_type" IS '默认 Id 类型';
+COMMENT ON COLUMN "gen_model"."generated_id_annotation" IS 'Id 注解';
 COMMENT ON COLUMN "gen_model"."logical_deleted_annotation" IS '逻辑删除注解';
+COMMENT ON COLUMN "gen_model"."date_time_format_in_view" IS '在前端视图中进行日期格式化';
 COMMENT ON COLUMN "gen_model"."table_annotation" IS '生成 Table 注解';
 COMMENT ON COLUMN "gen_model"."column_annotation" IS '生成 Column 注解';
 COMMENT ON COLUMN "gen_model"."join_table_annotation" IS '生成 JoinTable 注解';
@@ -495,24 +503,30 @@ COMMENT ON COLUMN "gen_index_column_mapping"."column_id" IS '列';
 -- ----------------------------
 CREATE TABLE "gen_entity"
 (
-    "id"                bigserial   NOT NULL,
-    "model_id"          bigint      NULL,
-    "package_path"      text        NOT NULL,
-    "table_id"          bigint      NOT NULL,
-    "name"              text        NOT NULL,
-    "overwrite_name"    boolean     NOT NULL,
-    "comment"           text        NOT NULL,
-    "overwrite_comment" boolean     NOT NULL,
-    "author"            text        NOT NULL,
-    "other_annotation"  text        NULL     DEFAULT NULL,
-    "can_add"           boolean     NOT NULL,
-    "can_edit"          boolean     NOT NULL,
-    "can_delete"        boolean     NOT NULL,
-    "can_query"         boolean     NOT NULL,
-    "has_page"          boolean     NOT NULL,
-    "remark"            text        NOT NULL,
-    "created_time"      timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "id"                   bigserial   NOT NULL,
+    "model_id"             bigint      NULL,
+    "package_path"         text        NOT NULL,
+    "table_id"             bigint      NOT NULL,
+    "name"                 text        NOT NULL,
+    "overwrite_name"       boolean     NOT NULL,
+    "comment"              text        NOT NULL,
+    "overwrite_comment"    boolean     NOT NULL,
+    "author"               text        NOT NULL,
+    "other_annotation"     text        NULL     DEFAULT NULL,
+    "can_add"              boolean     NOT NULL,
+    "can_edit"             boolean     NOT NULL,
+    "can_delete"           boolean     NOT NULL,
+    "can_query"            boolean     NOT NULL,
+    "has_page"             boolean     NOT NULL,
+    "page_can_query"       boolean     NOT NULL,
+    "page_can_add"         boolean     NOT NULL,
+    "page_can_edit"        boolean     NOT NULL,
+    "page_can_view_detail" boolean     NOT NULL,
+    "page_can_delete"      boolean     NOT NULL,
+    "query_by_page"        boolean     NOT NULL,
+    "remark"               text        NOT NULL,
+    "created_time"         timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"        timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id"),
     CONSTRAINT "fk_entity_model" FOREIGN KEY ("model_id") REFERENCES "gen_model" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT "fk_entity_table" FOREIGN KEY ("table_id") REFERENCES "gen_table" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT
@@ -538,6 +552,12 @@ COMMENT ON COLUMN "gen_entity"."can_edit" IS '是否可以修改';
 COMMENT ON COLUMN "gen_entity"."can_delete" IS '是否可以删除';
 COMMENT ON COLUMN "gen_entity"."can_query" IS '是否可以查询';
 COMMENT ON COLUMN "gen_entity"."has_page" IS '是否具有页面';
+COMMENT ON COLUMN "gen_entity"."page_can_query" IS '管理端页面中可查询';
+COMMENT ON COLUMN "gen_entity"."page_can_add" IS '管理端页面中可新增';
+COMMENT ON COLUMN "gen_entity"."page_can_edit" IS '管理端页面中可编辑';
+COMMENT ON COLUMN "gen_entity"."page_can_view_detail" IS '管理端页面中可查看详情';
+COMMENT ON COLUMN "gen_entity"."page_can_delete" IS '管理端页面中可删除';
+COMMENT ON COLUMN "gen_entity"."query_by_page" IS '应用分页查询';
 COMMENT ON COLUMN "gen_entity"."remark" IS '备注';
 COMMENT ON COLUMN "gen_entity"."created_time" IS '创建时间';
 COMMENT ON COLUMN "gen_entity"."modified_time" IS '修改时间';
@@ -569,48 +589,50 @@ COMMENT ON COLUMN "gen_super_entity_mapping"."inherit_entity_id" IS '继承实�
 -- ----------------------------
 CREATE TABLE "gen_property"
 (
-    "id"                        BIGSERIAL   NOT NULL,
-    "entity_id"                 bigint      NOT NULL,
-    "column_id"                 bigint      NULL     DEFAULT NULL,
-    "name"                      text        NOT NULL,
-    "overwrite_name"            boolean     NOT NULL,
-    "comment"                   text        NOT NULL,
-    "overwrite_comment"         boolean     NOT NULL,
-    "type"                      text        NOT NULL,
-    "type_table_id"             bigint      NULL     DEFAULT NULL,
-    "list_type"                 boolean     NOT NULL,
-    "type_not_null"             boolean     NOT NULL,
-    "id_property"               boolean     NOT NULL,
-    "id_generation_annotation"  text        NULL     DEFAULT NULL,
-    "key_property"              boolean     NOT NULL,
-    "key_group"                 text        NULL     DEFAULT NULL,
-    "logical_delete"            boolean     NOT NULL,
-    "id_view"                   boolean     NOT NULL,
-    "id_view_target"            text        NULL     DEFAULT NULL,
-    "association_type"          text        NULL     DEFAULT NULL,
-    "long_association"          boolean     NOT NULL,
-    "mapped_by"                 text        NULL     DEFAULT NULL,
-    "input_not_null"            boolean     NULL     DEFAULT NULL,
-    "join_column_metas"         jsonb       NULL     DEFAULT NULL,
-    "join_table_meta"           jsonb       NULL     DEFAULT NULL,
-    "association_annotation"    text        NULL     DEFAULT NULL,
-    "dissociate_annotation"     text        NULL     DEFAULT NULL,
-    "other_annotation"          text        NULL     DEFAULT NULL,
-    "body"                      text        NULL     DEFAULT NULL,
-    "enum_id"                   bigint      NULL     DEFAULT NULL,
-    "order_key"                 bigint      NOT NULL,
-    "in_list_view"              boolean     NOT NULL,
-    "in_detail_view"            boolean     NOT NULL,
-    "in_insert_input"           boolean     NOT NULL,
-    "in_update_input"           boolean     NOT NULL,
-    "in_specification"          boolean     NOT NULL,
-    "in_option_view"            boolean     NOT NULL,
-    "in_short_association_view" boolean     NOT NULL,
-    "in_long_association_view"  boolean     NOT NULL,
-    "in_long_association_input" boolean     NOT NULL,
-    "remark"                    text        NOT NULL,
-    "created_time"              timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"             timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "id"                         BIGSERIAL   NOT NULL,
+    "entity_id"                  bigint      NOT NULL,
+    "column_id"                  bigint      NULL     DEFAULT NULL,
+    "name"                       text        NOT NULL,
+    "overwrite_name"             boolean     NOT NULL,
+    "comment"                    text        NOT NULL,
+    "overwrite_comment"          boolean     NOT NULL,
+    "type"                       text        NOT NULL,
+    "type_table_id"              bigint      NULL     DEFAULT NULL,
+    "list_type"                  boolean     NOT NULL,
+    "type_not_null"              boolean     NOT NULL,
+    "id_property"                boolean     NOT NULL,
+    "generated_id"               boolean     NOT NULL,
+    "generated_id_annotation"    jsonb       NULL     DEFAULT NULL,
+    "key_property"               boolean     NOT NULL,
+    "key_group"                  text        NULL     DEFAULT NULL,
+    "logical_delete"             boolean     NOT NULL,
+    "logical_deleted_annotation" jsonb       NULL     DEFAULT NULL,
+    "id_view"                    boolean     NOT NULL,
+    "id_view_target"             text        NULL     DEFAULT NULL,
+    "association_type"           text        NULL     DEFAULT NULL,
+    "long_association"           boolean     NOT NULL,
+    "mapped_by"                  text        NULL     DEFAULT NULL,
+    "input_not_null"             boolean     NULL     DEFAULT NULL,
+    "join_column_metas"          jsonb       NULL     DEFAULT NULL,
+    "join_table_meta"            jsonb       NULL     DEFAULT NULL,
+    "dissociate_annotation"      text        NULL     DEFAULT NULL,
+    "other_annotation"           text        NULL     DEFAULT NULL,
+    "body"                       text        NULL     DEFAULT NULL,
+    "enum_id"                    bigint      NULL     DEFAULT NULL,
+    "order_key"                  bigint      NOT NULL,
+    "special_form_type"          text        NULL     DEFAULT NULL,
+    "in_list_view"               boolean     NOT NULL,
+    "in_detail_view"             boolean     NOT NULL,
+    "in_insert_input"            boolean     NOT NULL,
+    "in_update_input"            boolean     NOT NULL,
+    "in_specification"           boolean     NOT NULL,
+    "in_option_view"             boolean     NOT NULL,
+    "in_short_association_view"  boolean     NOT NULL,
+    "in_long_association_view"   boolean     NOT NULL,
+    "in_long_association_input"  boolean     NOT NULL,
+    "remark"                     text        NOT NULL,
+    "created_time"               timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"              timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id"),
     CONSTRAINT "fk_property_column" FOREIGN KEY ("column_id") REFERENCES "gen_column" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT "fk_property_entity" FOREIGN KEY ("entity_id") REFERENCES "gen_entity" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT,
@@ -636,11 +658,13 @@ COMMENT ON COLUMN "gen_property"."type_table_id" IS '类型对应表';
 COMMENT ON COLUMN "gen_property"."list_type" IS '是否列表';
 COMMENT ON COLUMN "gen_property"."type_not_null" IS '是否非空';
 COMMENT ON COLUMN "gen_property"."id_property" IS '是否 ID 属性';
-COMMENT ON COLUMN "gen_property"."id_generation_annotation" IS 'ID 生成注解';
+COMMENT ON COLUMN "gen_property"."generated_id" IS '是否是生成式 ID';
+COMMENT ON COLUMN "gen_property"."generated_id_annotation" IS '生成 ID 注解';
 COMMENT ON COLUMN "gen_property"."key_property" IS '是否为业务键属性';
 COMMENT ON COLUMN "gen_property"."key_group" IS '业务键组';
 COMMENT ON COLUMN "gen_property"."logical_delete" IS '是否为逻辑删除属性';
-COMMENT ON COLUMN "gen_property"."id_view" IS '是否为 视图属性';
+COMMENT ON COLUMN "gen_property"."logical_deleted_annotation" IS '逻辑删除注解';
+COMMENT ON COLUMN "gen_property"."id_view" IS '是否为 ID 视图属性';
 COMMENT ON COLUMN "gen_property"."id_view_target" IS 'ID 视图目标';
 COMMENT ON COLUMN "gen_property"."association_type" IS '关联类型';
 COMMENT ON COLUMN "gen_property"."long_association" IS '是否为长关联';
@@ -648,12 +672,12 @@ COMMENT ON COLUMN "gen_property"."mapped_by" IS '映射镜像';
 COMMENT ON COLUMN "gen_property"."input_not_null" IS '输入非空';
 COMMENT ON COLUMN "gen_property"."join_column_metas" IS '关联列元数据';
 COMMENT ON COLUMN "gen_property"."join_table_meta" IS '关联表元数据';
-COMMENT ON COLUMN "gen_property"."association_annotation" IS '关联注解';
 COMMENT ON COLUMN "gen_property"."dissociate_annotation" IS '脱钩注解';
 COMMENT ON COLUMN "gen_property"."other_annotation" IS '其他注解';
-COMMENT ON COLUMN "gen_property"."body" IS '函数方法体';
+COMMENT ON COLUMN "gen_property"."body" IS '属性方法体';
 COMMENT ON COLUMN "gen_property"."enum_id" IS '对应枚举';
 COMMENT ON COLUMN "gen_property"."order_key" IS '排序键';
+COMMENT ON COLUMN "gen_property"."special_form_type" IS '特殊表单类型';
 COMMENT ON COLUMN "gen_property"."in_list_view" IS '是否在列表视图DTO中';
 COMMENT ON COLUMN "gen_property"."in_detail_view" IS '是否在详情视图DTO中';
 COMMENT ON COLUMN "gen_property"."in_insert_input" IS '是否在新增入参DTO中';

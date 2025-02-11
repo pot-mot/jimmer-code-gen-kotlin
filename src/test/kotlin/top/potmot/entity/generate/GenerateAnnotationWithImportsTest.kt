@@ -6,7 +6,7 @@ import top.potmot.core.entity.generate.impl.java.JavaEntityCodeGenerator
 import top.potmot.core.entity.generate.impl.kotlin.KotlinEntityCodeGenerator
 import top.potmot.enumeration.TableType
 import top.potmot.entity.dto.GenEntityGenerateView
-import top.potmot.entity.property.AnnotationWithImports
+import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.utils.replaceSinceTimeComment
 import java.time.LocalDateTime
 import org.springframework.boot.test.context.SpringBootTest

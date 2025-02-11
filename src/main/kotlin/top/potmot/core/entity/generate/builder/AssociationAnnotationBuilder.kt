@@ -2,8 +2,8 @@ package top.potmot.core.entity.generate.builder
 
 import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.core.config.getContextOrGlobal
-import top.potmot.core.entity.meta.JoinColumnMeta
-import top.potmot.core.entity.meta.JoinTableMeta
+import top.potmot.entity.sub.JoinColumnMeta
+import top.potmot.entity.sub.JoinTableMeta
 import top.potmot.utils.string.buildScopeString
 
 open class AssociationAnnotationBuilder(

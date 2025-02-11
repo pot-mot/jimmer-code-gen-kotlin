@@ -2,6 +2,7 @@ package top.potmot.core.business.view.generate.meta.rules
 
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.ExistValidItem
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.TypeEntityProperty
 import top.potmot.core.business.type.typeStrToTypeScriptType

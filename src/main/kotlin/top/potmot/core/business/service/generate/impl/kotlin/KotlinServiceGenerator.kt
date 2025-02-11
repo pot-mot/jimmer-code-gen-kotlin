@@ -2,15 +2,15 @@ package top.potmot.core.business.service.generate.impl.kotlin
 
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.service.generate.ServiceGenerator
-import top.potmot.core.business.view.generate.meta.rules.existValidItems
 import top.potmot.core.business.type.typeStrToKotlinType
+import top.potmot.enumeration.GenLanguage
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.clearBlankLine
 import top.potmot.utils.string.trimBlankLine
 
 object KotlinServiceGenerator : ServiceGenerator() {
-    override fun getFileSuffix() = ".kt"
+    override val suffix = GenLanguage.KOTLIN.suffix
 
     @Throws(GenerateException::class)
     override fun stringifyService(
@@ -373,7 +373,7 @@ fun delete(@RequestParam ids: List<$idType>): Int =
                     block(
                         """
 /**
- * 根据${validItem.properties.joinToString(", ") { it.comment }}校验${comment}是否存在。
+ * 根据 ${validItem.properties.joinToString(" 和 ") { it.comment }} 校验${comment}是否存在。
  *
  * @param spec ${comment}校验规格对象。
  * @return ${comment}是否存在。

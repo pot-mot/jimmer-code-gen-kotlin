@@ -1,5 +1,6 @@
 package top.potmot.core.business.meta
 
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.IdName
 import top.potmot.enumeration.AssociationType
@@ -203,6 +204,58 @@ sealed class EntityBusiness(
         map
     }
 
+
+    val existValidItems: List<ExistValidItem> by lazy {
+        entity.indexes
+            .filter { it.uniqueIndex }
+            .mapNotNull { index ->
+                val indexPropertyIds = index.columns.flatMap { column ->
+                    column.properties.map { it.id }
+                }
+
+                val validProperties = mutableListOf<PropertyBusiness>()
+
+                indexPropertyIds.forEach { propertyId ->
+                    val propertyBusiness = propertyIdMap[propertyId]
+                        ?: throw ModelException.indexRefPropertyNotFound(
+                            entity = IdName(entity.id, entity.name),
+                            entityProperties = properties.map { IdName(it.id, it.name) },
+                            index = IdName(index.id, index.name),
+                            indexPropertyIds = index.columns.flatMap { column -> column.properties.map { it.id } },
+                            notFoundPropertyId = propertyId
+                        )
+
+                    val property = propertyBusiness.property
+                    if (property.listType) {
+                        throw ModelException.indexRefPropertyCannotBeList(
+                            entity = IdName(entity.id, entity.name),
+                            entityProperties = properties.map { IdName(it.id, it.name) },
+                            index = IdName(index.id, index.name),
+                            indexPropertyIds = index.columns.flatMap { column -> column.properties.map { it.id } },
+                            listProperty = IdName(property.id, property.name)
+                        )
+                    }
+
+                    validProperties += propertyBusiness
+                }
+
+                if (scalarProperties.isEmpty() && associationProperties.isEmpty()) {
+                    return@mapNotNull null
+                }
+
+                val producedValidProperties = validProperties.distinctBy { it.id }.sortedBy { it.property.orderKey }
+                val upperNameJoin = producedValidProperties.joinToString("And") { it.upperName }
+
+                ExistValidItem(
+                    "${entity.name}ExistBy${upperNameJoin}Spec",
+                    "existBy$upperNameJoin",
+                    producedValidProperties
+                )
+            }
+            .distinctBy {
+                it.properties.toString()
+            }
+    }
 
     val idProperties by lazy {
         properties.filter { it.property.idProperty }
@@ -490,15 +543,16 @@ class RootEntityBusiness(
     }
 
     val components by lazy {
+        val suffix = getContextOrGlobal().viewType.suffix
         RootEntityComponentFiles(
-            table = NamePath("${name}Table", "vue", "components/$dir"),
-            addForm = NamePath("${name}AddForm", "vue", "components/$dir"),
+            table = NamePath("${name}Table", suffix, "components/$dir"),
+            addForm = NamePath("${name}AddForm", suffix, "components/$dir"),
             addFormType = NamePath("${name}AddData", "ts", "components/$dir"),
             addFormDefault = NamePath("createDefault${name}", "ts", "components/$dir"),
-            editForm = NamePath("${name}EditForm", "vue", "components/$dir"),
+            editForm = NamePath("${name}EditForm", suffix, "components/$dir"),
             editFormType = NamePath("${name}EditData", "ts", "components/$dir"),
-            queryForm = NamePath("${name}QueryForm", "vue", "components/$dir"),
-            page = NamePath("${name}Page", "vue", "pages/$dir"),
+            queryForm = NamePath("${name}QueryForm", suffix, "components/$dir"),
+            page = NamePath("${name}Page", suffix, "pages/$dir"),
         )
     }
 
@@ -588,6 +642,8 @@ class SubEntityBusiness(
     }
 
     val components by lazy {
+        val suffix = getContextOrGlobal().viewType.suffix
+
         val rootEntity = path.rootEntity
 
         val rootEntityName = rootEntity.name
@@ -601,13 +657,13 @@ class SubEntityBusiness(
         val currentPath = "$rootEntityDir/$propertyDirs"
 
         SubEntityComponentFiles(
-            subForm = NamePath("${currentName}SubForm", "vue", "components/$currentPath"),
+            subForm = NamePath("${currentName}SubForm", suffix, "components/$currentPath"),
             subFormType = NamePath("${currentName}SubFormData", "ts", "components/$currentPath"),
             subFormDefault = NamePath("createDefault${currentName}", "ts", "components/$currentPath"),
-            editTable = NamePath("${currentName}EditTable", "vue", "components/$currentPath"),
+            editTable = NamePath("${currentName}EditTable", suffix, "components/$currentPath"),
             editTableType = NamePath("${currentName}EditTableData", "ts", "components/$currentPath"),
-            idSelect = NamePath("${name}IdSelect", "vue", "components/$dir"),
-            idMultiSelect = NamePath("${name}IdMultiSelect", "vue", "components/$dir"),
+            idSelect = NamePath("${name}IdSelect", suffix, "components/$dir"),
+            idMultiSelect = NamePath("${name}IdMultiSelect", suffix, "components/$dir"),
         )
     }
 

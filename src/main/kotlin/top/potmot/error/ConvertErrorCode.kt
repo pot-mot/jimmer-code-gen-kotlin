@@ -2,8 +2,8 @@ package top.potmot.error
 
 import org.babyfish.jimmer.error.ErrorFamily
 import org.babyfish.jimmer.error.ErrorField
-import top.potmot.core.entity.meta.JoinColumnMeta
-import top.potmot.core.entity.meta.JoinTableMeta
+import top.potmot.entity.sub.JoinColumnMeta
+import top.potmot.entity.sub.JoinTableMeta
 import top.potmot.entity.dto.IdName
 import top.potmot.entity.dto.IdNullableName
 import top.potmot.enumeration.AssociationType

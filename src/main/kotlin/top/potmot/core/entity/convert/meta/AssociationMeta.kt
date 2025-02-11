@@ -4,8 +4,8 @@ import org.babyfish.jimmer.sql.ForeignKeyType
 import top.potmot.core.database.generate.identifier.IdentifierProcessor
 import top.potmot.core.database.generate.identifier.IdentifierType
 import top.potmot.core.database.meta.createMappingColumnName
-import top.potmot.core.entity.meta.JoinColumnMeta
-import top.potmot.core.entity.meta.JoinTableMeta
+import top.potmot.entity.sub.JoinColumnMeta
+import top.potmot.entity.sub.JoinTableMeta
 import top.potmot.entity.dto.GenAssociationConvertView
 import top.potmot.core.entity.convert.EntityView
 import top.potmot.core.entity.convert.PropertyView

@@ -12,7 +12,7 @@ import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DatabaseNamingStrategyType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.entity.base.BaseEntity
-import top.potmot.entity.property.AnnotationWithImports
+import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.enumeration.ViewType
 
 /**
@@ -87,12 +87,12 @@ interface GenModel : BaseEntity {
     val idViewProperty: Boolean
 
     /**
-     * 默认 Id 类型
+     * 默认 ID 类型
      */
     val defaultIdType: Int
 
     /**
-     * Id 注解
+     * 生成 ID 注解
      */
     val generatedIdAnnotation: AnnotationWithImports
 

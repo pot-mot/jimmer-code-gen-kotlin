@@ -14,11 +14,10 @@ import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Serialized
 import org.babyfish.jimmer.sql.Table
 import org.babyfish.jimmer.sql.Transient
 import top.potmot.entity.base.BaseEntity
-import top.potmot.entity.property.AnnotationWithImports
+import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.entity.resolver.GenEntityIdPropertiesResolver
 import top.potmot.entity.resolver.GenEntityLogicalDeleteResolver
 
@@ -133,7 +132,6 @@ interface GenEntity : BaseEntity {
     /**
      * 其他注解
      */
-    @Serialized
     val otherAnnotation: AnnotationWithImports?
 
     /**

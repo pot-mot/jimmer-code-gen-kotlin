@@ -7,7 +7,7 @@ import top.potmot.enumeration.GenerateTag
 import top.potmot.error.GenerateException
 
 abstract class EntityCodeGenerator {
-    abstract fun getFileSuffix(): String
+    abstract val suffix: String
 
     protected abstract fun stringify(entity: GenEntityGenerateView): String
 
@@ -18,7 +18,7 @@ abstract class EntityCodeGenerator {
         entity: GenEntityGenerateView,
     ) = GenerateFile(
         entity,
-        "${entity.packagePath.replace(".", "/")}/${entity.name}${getFileSuffix()}",
+        "${entity.packagePath.replace(".", "/")}/${entity.name}.$suffix",
         stringify(entity),
         listOf(GenerateTag.BackEnd, GenerateTag.Entity)
     )
@@ -35,7 +35,7 @@ abstract class EntityCodeGenerator {
         enum: GenEnumGenerateView,
     ) = GenerateFile(
         enum,
-        "${enum.packagePath.replace(".", "/")}/${enum.name}${getFileSuffix()}",
+        "${enum.packagePath.replace(".", "/")}/${enum.name}.$suffix",
         stringify(enum),
         listOf(GenerateTag.BackEnd, GenerateTag.Enum)
     )

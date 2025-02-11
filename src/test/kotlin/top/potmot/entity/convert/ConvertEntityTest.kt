@@ -21,7 +21,7 @@ import top.potmot.entity.dto.GenEntityConfigInput
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenPropertyEntityConfigInput
 import top.potmot.entity.id
-import top.potmot.entity.property.AnnotationWithImports
+import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.entity.tableId
 import top.potmot.service.ConvertService
 import top.potmot.service.EntityService

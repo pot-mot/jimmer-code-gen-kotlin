@@ -4,7 +4,7 @@ import java.sql.Types
 import top.potmot.entity.GenModel
 import top.potmot.entity.dto.GenConfig
 import top.potmot.entity.dto.GenConfigProperties
-import top.potmot.entity.property.AnnotationWithImports
+import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DatabaseNamingStrategyType
 import top.potmot.enumeration.GenLanguage

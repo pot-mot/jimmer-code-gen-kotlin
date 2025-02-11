@@ -8,7 +8,6 @@ import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyQueryType
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.meta.SubEntityBusiness
-import top.potmot.core.business.view.generate.meta.rules.existValidItems
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
@@ -236,7 +235,7 @@ object DtoGenerator {
         val idProperty = entity.idProperty
 
         line("#allScalars")
-        if (!idProperty.property.generatedId) {
+        if (idProperty.property.generatedId) {
             line("-${idProperty.name}")
         }
         entity.scalarProperties.exclude(insertInputProperties).forEach {
@@ -282,7 +281,7 @@ object DtoGenerator {
         val idProperty = entity.idProperty
 
         line("#allScalars")
-        if (!idProperty.property.generatedId) {
+        if (idProperty.property.generatedId) {
             line(idProperty.name + "!")
         }
         entity.scalarProperties.exclude(updateInputProperties).forEach {

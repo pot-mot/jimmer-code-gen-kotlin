@@ -3,9 +3,10 @@ package top.potmot.core.entity.generate.impl.kotlin
 import top.potmot.core.entity.generate.EntityCodeGenerator
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.dto.GenEnumGenerateView
+import top.potmot.enumeration.GenLanguage
 
 object KotlinEntityCodeGenerator : EntityCodeGenerator() {
-    override fun getFileSuffix(): String = ".kt"
+    override val suffix = GenLanguage.JAVA.suffix
 
     override fun stringify(entity: GenEntityGenerateView): String =
         KotlinEntityBuilder.build(entity)

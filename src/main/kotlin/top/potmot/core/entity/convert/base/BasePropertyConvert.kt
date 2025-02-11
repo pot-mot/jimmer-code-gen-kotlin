@@ -6,7 +6,7 @@ import top.potmot.core.entity.convert.PropertyInput
 import top.potmot.core.entity.convert.business.initBusinessConfig
 import top.potmot.core.entity.convert.merge.mergeExistAndConvertProperty
 import top.potmot.entity.dto.GenTableConvertView
-import top.potmot.entity.property.AnnotationWithImports
+import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
 import top.potmot.utils.string.clearForPropertyComment

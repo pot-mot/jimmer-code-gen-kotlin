@@ -93,15 +93,25 @@ abstract class EntityBuilder : CodeBuilder() {
         createBlockComment(
             entity.comment,
             entity.remark,
-            params = mapOf(
-                Pair("author", entity.author.ifEmpty { getContextOrGlobal().author }),
-            )
+            params = entity.author.ifEmpty { getContextOrGlobal().author }.let { author ->
+                if (author.isNotBlank()) {
+                    mapOf(
+                        Pair("author", author),
+                    )
+                } else emptyMap()
+            }
         )
 
     open fun blockComment(property: PropertyView): String? =
         createBlockComment(
             property.comment,
-            property.remark
+            property.remark,
+            params =
+            if (property.mappedBy != null) {
+                mapOf(
+                    Pair("see", property.type + "." + property.mappedBy),
+                )
+            } else emptyMap()
         )
 
     /**

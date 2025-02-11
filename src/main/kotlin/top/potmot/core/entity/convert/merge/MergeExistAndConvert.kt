@@ -33,6 +33,12 @@ fun mergeExistAndConvertEntity(
     canQuery = existEntity.canQuery
     canDelete = existEntity.canDelete
     hasPage = existEntity.hasPage
+    pageCanAdd = existEntity.pageCanAdd
+    pageCanEdit = existEntity.pageCanEdit
+    pageCanViewDetail = existEntity.pageCanViewDetail
+    pageCanQuery = existEntity.pageCanQuery
+    pageCanDelete = existEntity.pageCanDelete
+    queryByPage = existEntity.queryByPage
 }
 
 fun mergeExistAndConvertProperty(
