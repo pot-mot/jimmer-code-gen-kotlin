@@ -52,21 +52,28 @@ private const val formatTableColumnDate = "formatTableColumnDate"
 private const val formatTableColumnTime = "formatTableColumnTime"
 private const val formatTableColumnDateTime = "formatTableColumnDateTime"
 
+private const val BOOLEAN_MIN_WIDTH = 43
+private const val DATETIME_MIN_WIDTH = 193
+private const val NUMBER_MIN_WIDTH = 161
+private const val ENUM_MIN_WIDTH = 161
+private const val ASSOCIATION_ID_MIN_WIDTH = 161
+private const val COMMON_MIN_WIDTH = 129
+
 val PropertyFormType.tableMinWidth: Int
     get() = when (this) {
-        PropertyFormType.BOOLEAN -> 43
-        PropertyFormType.DATETIME -> 193
-        PropertyFormType.INT -> 161
-        PropertyFormType.FLOAT -> 161
-        else -> 129
+        PropertyFormType.BOOLEAN -> BOOLEAN_MIN_WIDTH
+        PropertyFormType.DATETIME -> DATETIME_MIN_WIDTH
+        PropertyFormType.INT -> NUMBER_MIN_WIDTH
+        PropertyFormType.FLOAT -> NUMBER_MIN_WIDTH
+        else -> COMMON_MIN_WIDTH
     }
 
 val PropertyBusiness.tableMinWidth: Int?
     get() = when (this) {
         is CommonProperty -> formType.tableMinWidth
-        is EnumProperty -> 161
-        is ForceIdViewProperty -> 161
-        is AssociationProperty -> if (isLongAssociation) null else 129
+        is EnumProperty -> ENUM_MIN_WIDTH
+        is ForceIdViewProperty -> ASSOCIATION_ID_MIN_WIDTH
+        is AssociationProperty -> if (isLongAssociation) null else COMMON_MIN_WIDTH
     }
 
 interface TableColumn {
@@ -74,6 +81,22 @@ interface TableColumn {
         withDateTimeFormat: Boolean = getContextOrGlobal().dateTimeFormatInView,
     ): Pair<TableColumnPropertyKey, TableColumnData> =
         TableColumnPropertyKey(this) to when (formType) {
+            PropertyFormType.FILE -> {
+                TODO()
+            }
+
+            PropertyFormType.FILE_LIST -> {
+                TODO()
+            }
+
+            PropertyFormType.IMAGE -> {
+                TODO()
+            }
+
+            PropertyFormType.IMAGE_LIST -> {
+                TODO()
+            }
+
             PropertyFormType.BOOLEAN -> {
                 TableColumnData(
                     elements = listOf(
@@ -154,7 +177,7 @@ interface TableColumn {
 
             listOf(
                 TableColumnPropertyKey(this) to TableColumnData(
-                    minWidth = 129,
+                    minWidth = COMMON_MIN_WIDTH,
                     elements = listOf(
                         TagElement(
                             component.name,
