@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.context.useContext
+import top.potmot.core.config.useContext
 import top.potmot.core.business.dto.generate.DtoGenerator.generateDto
 import top.potmot.core.business.permission.generate.PermissionGenerator
 import top.potmot.core.business.meta.EnumBusiness

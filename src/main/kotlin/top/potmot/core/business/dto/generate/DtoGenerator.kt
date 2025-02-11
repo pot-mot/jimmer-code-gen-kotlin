@@ -236,7 +236,7 @@ object DtoGenerator {
         val idProperty = entity.idProperty
 
         line("#allScalars")
-        if (!idProperty.property.idGenerationAnnotation.isNullOrBlank()) {
+        if (!idProperty.property.generatedId) {
             line("-${idProperty.name}")
         }
         entity.scalarProperties.exclude(insertInputProperties).forEach {
@@ -282,7 +282,7 @@ object DtoGenerator {
         val idProperty = entity.idProperty
 
         line("#allScalars")
-        if (!idProperty.property.idGenerationAnnotation.isNullOrBlank()) {
+        if (!idProperty.property.generatedId) {
             line(idProperty.name + "!")
         }
         entity.scalarProperties.exclude(updateInputProperties).forEach {

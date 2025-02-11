@@ -1,6 +1,6 @@
 package top.potmot.core.database.generate.identifier
 
-import top.potmot.context.getContextOrGlobal
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.enumeration.DatabaseNamingStrategyType.LOWER_CASE
 import top.potmot.enumeration.DatabaseNamingStrategyType.RAW
 import top.potmot.enumeration.DatabaseNamingStrategyType.UPPER_CASE

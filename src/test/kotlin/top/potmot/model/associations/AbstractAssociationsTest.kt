@@ -1,6 +1,6 @@
 package top.potmot.model.associations
 
-import top.potmot.context.multiple
+import top.potmot.utils.multiple
 import top.potmot.model.AbstractModelTest
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.model.languageProperties

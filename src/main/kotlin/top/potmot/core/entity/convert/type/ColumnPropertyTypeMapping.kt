@@ -9,7 +9,7 @@ import java.time.OffsetTime
 import java.time.ZonedDateTime
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
-import top.potmot.context.getContextOrGlobal
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.database.generate.columnType.getColumnTypeDefiner
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView

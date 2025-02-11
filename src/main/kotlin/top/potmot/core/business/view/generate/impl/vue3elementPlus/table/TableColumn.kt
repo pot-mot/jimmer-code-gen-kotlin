@@ -1,6 +1,6 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.table
 
-import top.potmot.config.tableColumnWithDateTimeFormat
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
@@ -71,7 +71,7 @@ val PropertyBusiness.tableMinWidth: Int?
 
 interface TableColumn {
     fun GenEntityBusinessView.TargetOf_properties.tableColumnDataPair(
-        withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat,
+        withDateTimeFormat: Boolean = getContextOrGlobal().dateTimeFormatInView,
     ): Pair<TableColumnPropertyKey, TableColumnData> =
         TableColumnPropertyKey(this) to when (formType) {
             PropertyFormType.BOOLEAN -> {
@@ -132,7 +132,7 @@ interface TableColumn {
             .copy(minWidth = formType.tableMinWidth)
 
     fun PropertyBusiness.tableColumnDataPairs(
-        withDateTimeFormat: Boolean = tableColumnWithDateTimeFormat,
+        withDateTimeFormat: Boolean = getContextOrGlobal().dateTimeFormatInView,
     ): List<Pair<TableColumnPropertyKey, TableColumnData>> =
         if (this is TypeEntityProperty && isShortView && isTargetOne) {
             typeEntityBusiness.shortViewProperties.flatMap { shortViewProperty ->

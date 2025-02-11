@@ -64,12 +64,18 @@ private fun GenEntityModelView.toConfigInput(
     comment = comment,
     overwriteComment = overwriteComment,
     remark = remark,
+    otherAnnotation = otherAnnotation,
     canAdd = canAdd,
     canEdit = canEdit,
     canQuery = canQuery,
     canDelete = canDelete,
     hasPage = hasPage,
-    otherAnnotation = otherAnnotation,
+    pageCanAdd = pageCanAdd,
+    pageCanEdit = pageCanEdit,
+    pageCanViewDetail = pageCanViewDetail,
+    pageCanQuery = pageCanQuery,
+    pageCanDelete = pageCanDelete,
+    queryByPage = queryByPage,
     properties = properties.map { property ->
         val column = columnNameMap[property.columnName]
             ?: throw ModelBusinessInputException.propertyCannotMatchColumn(
@@ -115,8 +121,16 @@ private fun GenEntityModelView.toConfigInput(
             comment = property.comment,
             overwriteComment = property.overwriteComment,
             remark = property.remark,
+
+            generatedId = property.generatedId,
+            generatedIdAnnotation = property.generatedIdAnnotation,
+
+            logicalDeletedAnnotation = property.logicalDeletedAnnotation,
+
             otherAnnotation = property.otherAnnotation,
+
             orderKey = property.orderKey,
+
             longAssociation = property.longAssociation,
             inListView = property.inListView,
             inDetailView = property.inDetailView,
@@ -127,6 +141,7 @@ private fun GenEntityModelView.toConfigInput(
             inShortAssociationView = property.inShortAssociationView,
             inLongAssociationInput = property.inLongAssociationInput,
             inLongAssociationView = property.inLongAssociationView,
+            specialFormType = property.specialFormType,
         )
     }
 )
@@ -138,26 +153,37 @@ private fun GenPropertyModelView.toConfigInput(
     overwriteName = overwriteName,
     comment = comment,
     overwriteComment = overwriteComment,
+    remark = remark,
+    body = body,
+
     type = type,
     listType = listType,
     typeNotNull = typeNotNull,
+
     idProperty = idProperty,
-    idGenerationAnnotation = idGenerationAnnotation,
+    generatedId = generatedId,
+    generatedIdAnnotation = generatedIdAnnotation,
+
     keyProperty = keyProperty,
     keyGroup = keyGroup,
+
     logicalDelete = logicalDelete,
+    logicalDeletedAnnotation = logicalDeletedAnnotation,
+
+    associationType = associationType,
     idView = idView,
     idViewTarget = idViewTarget,
-    associationType = associationType,
-    longAssociation = longAssociation,
     mappedBy = mappedBy,
     inputNotNull = inputNotNull,
     joinColumnMetas = joinColumnMetas,
     joinTableMeta = joinTableMeta,
     dissociateAnnotation = dissociateAnnotation,
+
     otherAnnotation = otherAnnotation,
-    body = body,
+
     orderKey = orderKey,
+
+    longAssociation = longAssociation,
     inListView = inListView,
     inDetailView = inDetailView,
     inInsertInput = inInsertInput,
@@ -167,7 +193,8 @@ private fun GenPropertyModelView.toConfigInput(
     inShortAssociationView = inShortAssociationView,
     inLongAssociationView = inLongAssociationView,
     inLongAssociationInput = inLongAssociationInput,
-    remark = remark,
+    specialFormType = specialFormType,
+
     enumId = enumNameIdMap[enum?.name]
 )
 

@@ -15,6 +15,12 @@ input GenEntityConfigInput {
     canQuery
     canDelete
     hasPage
+    pageCanAdd
+    pageCanEdit
+    pageCanViewDetail
+    pageCanQuery
+    pageCanDelete
+    queryByPage
 
     properties {
         id!
@@ -24,12 +30,16 @@ input GenEntityConfigInput {
         overwriteComment
         remark
 
+        generatedId
+        generatedIdAnnotation
+
+        logicalDeletedAnnotation
+
         otherAnnotation
 
         orderKey
 
         longAssociation
-
         inListView
         inDetailView
         inOptionView
@@ -39,5 +49,6 @@ input GenEntityConfigInput {
         inShortAssociationView
         inLongAssociationInput
         inLongAssociationView
+        specialFormType
     }
 }

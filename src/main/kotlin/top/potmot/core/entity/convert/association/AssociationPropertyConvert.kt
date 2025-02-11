@@ -2,7 +2,7 @@ package top.potmot.core.entity.convert.association
 
 import org.babyfish.jimmer.kt.unload
 import org.babyfish.jimmer.sql.DissociateAction
-import top.potmot.context.getContextOrGlobal
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.entity.convert.base.TypeMapping
 import top.potmot.core.entity.convert.base.tableToEntityPackagePath
@@ -148,7 +148,7 @@ fun convertAssociationProperties(
             )
             typeTableId = targetTable.id
             idProperty = false
-            idGenerationAnnotation = null
+            generatedId = false
 
             if (association.type == ONE_TO_ONE || association.type == MANY_TO_ONE) {
                 // 当外键为伪、表为逻辑删除时，需要将类型设置为可空
@@ -274,7 +274,7 @@ fun convertAssociationProperties(
             )
             typeTableId = sourceTable.id
             idProperty = false
-            idGenerationAnnotation = null
+            generatedId = false
             keyProperty = false
 
             val mappedBy =

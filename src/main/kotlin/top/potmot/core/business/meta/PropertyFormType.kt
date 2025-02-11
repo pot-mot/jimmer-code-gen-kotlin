@@ -16,10 +16,27 @@ enum class PropertyFormType {
     TIME,
     DATE,
     DATETIME,
+
+    FILE,
+    FILE_LIST,
+    IMAGE,
+    IMAGE_LIST,
+}
+
+/**
+ * 特殊表单类型
+ */
+enum class PropertySpecialFormType(
+    val formType: PropertyFormType
+) {
+    FILE(PropertyFormType.FILE),
+    FILE_LIST(PropertyFormType.FILE_LIST),
+    IMAGE(PropertyFormType.IMAGE),
+    IMAGE_LIST(PropertyFormType.IMAGE_LIST),
 }
 
 val GenEntityBusinessView.TargetOf_properties.formType: PropertyFormType
-    get() = when (type) {
+    get() = specialFormType?.formType ?: when (type) {
         in intType -> PropertyFormType.INT
         in numericType -> PropertyFormType.FLOAT
         in booleanType -> PropertyFormType.BOOLEAN

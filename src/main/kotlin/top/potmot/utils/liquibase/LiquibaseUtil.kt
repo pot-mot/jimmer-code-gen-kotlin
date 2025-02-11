@@ -17,7 +17,7 @@ import liquibase.resource.AbstractResourceAccessor
 import liquibase.resource.OpenOptions
 import liquibase.resource.Resource
 import liquibase.serializer.core.xml.XMLChangeLogSerializer
-import top.potmot.context.getContextOrGlobal
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.database.generate.columnType.ColumnTypeDefiner
 import top.potmot.core.database.generate.columnType.getColumnTypeDefiner
 import top.potmot.enumeration.AssociationType

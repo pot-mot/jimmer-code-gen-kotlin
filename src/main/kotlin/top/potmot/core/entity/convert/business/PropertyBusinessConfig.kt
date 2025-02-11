@@ -13,7 +13,7 @@ fun PropertyInput.initBusinessConfig() =
             inOptionView = true,
             inUpdateInput = true,
         ).let {
-            if (!idGenerationAnnotation.isNullOrBlank()) {
+            if (generatedId) {
                 it.copy(
                     inInsertInput = false,
                 )

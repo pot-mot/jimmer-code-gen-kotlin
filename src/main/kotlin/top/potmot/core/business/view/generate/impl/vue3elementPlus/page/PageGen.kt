@@ -19,6 +19,7 @@ import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.typescript.commentLine
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
@@ -34,9 +35,6 @@ import top.potmot.enumeration.GenerateTag
 import top.potmot.utils.list.join
 import top.potmot.utils.string.StringIndentScopeBuilder
 import top.potmot.utils.string.buildScopeString
-
-// FIXME 移动至 entity 内
-private const val queryByPage: Boolean = true
 
 interface PageGen : Generator {
     private fun selectQueryCodes(
@@ -72,8 +70,14 @@ interface PageGen : Generator {
         val (listView, treeView, _, insertInput, _, updateInput, spec) = entity.dto
         val permission = entity.permissions
 
-        val needMessage = entity.canAdd || entity.canEdit || entity.canDelete
-        val needUserStore = entity.canAdd || entity.canEdit || entity.canDelete
+        val pageCanAdd = entity.pageCanAdd
+        val pageCanEdit = entity.pageCanEdit
+        val pageCanViewDetail = entity.pageCanViewDetail
+        val pageCanQuery = entity.pageCanQuery
+        val pageCanDelete = entity.pageCanDelete
+
+        val needMessage = pageCanAdd || pageCanEdit || pageCanDelete
+        val needUserStore = pageCanAdd || pageCanEdit || pageCanDelete
 
         val idProperty = entity.idProperty
         val idName = idProperty.name
@@ -90,6 +94,7 @@ interface PageGen : Generator {
         val isTree = entity.isTree
         val dataType = if (isTree) treeView else listView
 
+        val queryByPage = entity.queryByPage
         val queryFn = if (queryByPage) "queryPage" else "queryRows"
 
         val component = Component {
@@ -97,9 +102,9 @@ interface PageGen : Generator {
                 Import("vue", "ref"),
                 Import(
                     "@element-plus/icons-vue", listOfNotNull(
-                        if (!entity.canAdd) null else "Plus",
-                        if (!entity.canEdit) null else "EditPen",
-                        if (!entity.canDelete) null else "Delete"
+                        if (!pageCanAdd) null else "Plus",
+                        if (!pageCanEdit) null else "EditPen",
+                        if (!pageCanDelete) null else "Delete"
                     )
                 ),
                 ImportType(
@@ -107,24 +112,24 @@ interface PageGen : Generator {
                         if (queryByPage) "Page" else null,
                         if (queryByPage) "PageQuery" else null,
                         dataType,
-                        if (!entity.canAdd) null else insertInput,
-                        if (!entity.canEdit) null else updateInput,
-                        if (!entity.canQuery) null else spec,
+                        if (!pageCanAdd) null else insertInput,
+                        if (!pageCanEdit) null else updateInput,
+                        if (!pageCanQuery) null else spec,
                     )
                 ),
                 Import(apiPath, "api"),
                 if (!needMessage) null else Import("$utilPath/message", "sendMessage"),
                 if (!needUserStore) null else Import("$storePath/userStore", "useUserStore"),
-                if (!entity.canDelete) null else Import("$utilPath/confirm", "deleteConfirm"),
+                if (!pageCanDelete) null else Import("$utilPath/confirm", "deleteConfirm"),
                 Import("$utilPath/loading", "useLoading"),
                 if (queryByPage) Import("$utilPath/legalPage", "useLegalPage") else null,
             )
 
             imports += listOfNotNull(
                 table,
-                if (!entity.canAdd) null else addForm,
-                if (!entity.canEdit) null else editForm,
-                if (!entity.canQuery) null else queryForm
+                if (!pageCanAdd) null else addForm,
+                if (!pageCanEdit) null else editForm,
+                if (!pageCanQuery) null else queryForm
             ).map {
                 ImportDefault("@/${it.fullPath}", it.name)
             }
@@ -135,6 +140,16 @@ interface PageGen : Generator {
                 if (!needUserStore) null else ConstVariable("userStore", null, "useUserStore()\n"),
                 ConstVariable("{isLoading, withLoading}", null, "useLoading()\n")
             )
+
+            val pageCardChildren = mutableListOf<Element>()
+            val pageCard = TagElement(
+                "el-card",
+                props = listOf(
+                    PropBind("v-loading", "isLoading", isLiteral = true)
+                ),
+                children = pageCardChildren
+            )
+            template += pageCard
 
             if (queryByPage) {
                 script += listOf(
@@ -198,7 +213,100 @@ interface PageGen : Generator {
                 imports += Import("vue", "onMounted")
             }
 
-            if (entity.canAdd) {
+            if (pageCanQuery) {
+                pageCardChildren += TagElement(
+                    queryForm.name,
+                    directives = listOf(
+                        VModel(if (queryByPage) "queryInfo.spec" else "spec")
+                    ),
+                    props = specificationSelectNames.map {
+                        PropBind(it, it)
+                    },
+                    events = listOf(
+                        EventBind("query", queryFn)
+                    )
+                )
+                pageCardChildren += emptyLineElement
+            }
+
+            pageCardChildren += TagElement("div") {
+                props += PropBind("class", "page-operations", isLiteral = true)
+
+                if (pageCanAdd) {
+                    children += button(
+                        content = "新增",
+                        type = ElementPlusComponents.Type.PRIMARY,
+                        icon = "Plus",
+                    ).merge {
+                        directives += VIf("userStore.permissions.includes('${permission.insert}')")
+                        events += EventBind("click", "startAdd")
+                    }
+                }
+
+                if (pageCanDelete) {
+                    children += button(
+                        content = "删除",
+                        type = ElementPlusComponents.Type.DANGER,
+                        icon = "Delete",
+                    ).merge {
+                        directives += VIf("userStore.permissions.includes('${permission.delete}')")
+                        props += PropBind("disabled", "selection.length === 0")
+                        events += EventBind("click", "handleDelete(selection.map(it => it.$idName))")
+                    }
+                }
+            }
+
+            pageCardChildren += emptyLineElement
+            pageCardChildren += TagElement("template") {
+                directives += VIf(if (queryByPage) "pageData" else "rows")
+
+                children += TagElement(
+                    table.name,
+                    props = listOf(
+                        PropBind("rows", if (queryByPage) "pageData.rows" else "rows"),
+                    ),
+                    events = listOf(
+                        EventBind("selectionChange", "handleSelectionChange")
+                    ),
+                    children = listOf(
+                        slotTemplate(
+                            "operations",
+                            props = listOf("row"),
+                            content = listOfNotNull(
+                                if (!pageCanEdit) null else button(
+                                    content = "编辑",
+                                    type = ElementPlusComponents.Type.WARNING,
+                                    icon = "EditPen",
+                                    link = true,
+                                ).merge {
+                                    directives += VIf("userStore.permissions.includes('${permission.update}')")
+                                    events += EventBind("click", "startEdit(row.$idName)")
+                                },
+                                if (!pageCanDelete) null else button(
+                                    content = "删除",
+                                    type = ElementPlusComponents.Type.DANGER,
+                                    icon = "Delete",
+                                    link = true,
+                                ).merge {
+                                    directives += VIf("userStore.permissions.includes('${permission.delete}')")
+                                    events += EventBind("click", "handleDelete([row.$idName])")
+                                },
+                            )
+                        )
+                    )
+                )
+
+                if (queryByPage) {
+                    children += emptyLineElement
+                    children += pagination(
+                        currentPage = "currentPage",
+                        pageSize = "queryInfo.pageSize",
+                        total = "pageData.totalRowCount",
+                    )
+                }
+            }
+
+            if (pageCanAdd) {
                 script += listOf(
                     ConstVariable(
                         "add${entity.name}",
@@ -223,7 +331,7 @@ interface PageGen : Generator {
                 )
             }
 
-            if (entity.canEdit) {
+            if (pageCanEdit) {
                 script += listOf(
                     ConstVariable(
                         "get${entity.name}ForUpdate",
@@ -254,7 +362,7 @@ interface PageGen : Generator {
                 )
             }
 
-            if (entity.canDelete) {
+            if (pageCanDelete) {
                 script += listOf(
                     ConstVariable(
                         "delete${entity.name}",
@@ -293,7 +401,7 @@ interface PageGen : Generator {
 
             script += selectQueries.map { it.second }.join(listOf(emptyLineCode)).flatten()
 
-            if (entity.canAdd) {
+            if (pageCanAdd) {
                 script += listOf(
                     emptyLineCode,
                     commentLine("新增"),
@@ -330,9 +438,26 @@ interface PageGen : Generator {
                         body = functionBody("addDialogVisible.value = false")
                     ),
                 )
+
+                template += emptyLineElement
+                template += dialog(
+                    modelValue = "addDialogVisible",
+                    content = listOf(
+                        TagElement(
+                            addForm.name
+                        ).merge {
+                            props += insertSelectNames.map { PropBind(it, it) }
+                            props += PropBind("submitLoading", "isLoading")
+                            events += EventBind("submit", "submitAdd")
+                            events += EventBind("cancel", "cancelAdd")
+                        }
+                    )
+                ).merge {
+                    directives += VIf("userStore.permissions.includes('${permission.insert}')")
+                }
             }
 
-            if (entity.canEdit) {
+            if (pageCanEdit) {
                 val editFormType = entity.components.editFormType
 
                 imports += ImportType("@/" + editFormType.fullPathNoSuffix, editFormType.name)
@@ -387,9 +512,28 @@ interface PageGen : Generator {
                         )
                     ),
                 )
+
+                template += emptyLineElement
+                template += dialog(
+                    modelValue = "editDialogVisible",
+                    content = listOf(
+                        TagElement(
+                            editForm.name
+                        ).merge {
+                            directives += VIf("updateInput !== undefined")
+                            directives += VModel("updateInput")
+                            props += updateSelectNames.map { PropBind(it, it) }
+                            props += PropBind("submitLoading", "isLoading")
+                            events += EventBind("submit", "submitEdit")
+                            events += EventBind("cancel", "cancelEdit")
+                        }
+                    )
+                ).merge {
+                    directives += VIf("userStore.permissions.includes('${permission.update}')")
+                }
             }
 
-            if (entity.canDelete) {
+            if (pageCanDelete) {
                 script += listOf(
                     emptyLineCode,
                     commentLine("删除"),
@@ -417,145 +561,6 @@ interface PageGen : Generator {
                     )
                 )
             }
-
-            template += listOf(
-                TagElement(
-                    "el-card",
-                    props = listOf(
-                        PropBind("v-loading", "isLoading", isLiteral = true)
-                    ),
-                    children = listOf(
-                        *if (!entity.canQuery) emptyArray() else arrayOf(
-                            TagElement(
-                                queryForm.name,
-                                directives = listOf(
-                                    VModel(if (queryByPage) "queryInfo.spec" else "spec")
-                                ),
-                                props = specificationSelectNames.map {
-                                    PropBind(it, it)
-                                },
-                                events = listOf(
-                                    EventBind("query", queryFn)
-                                )
-                            ),
-                            emptyLineElement,
-                        ),
-                        TagElement(
-                            "div",
-                            props = listOf(
-                                PropBind("class", "page-operations", isLiteral = true),
-                            ),
-                            children = listOfNotNull(
-                                if (!entity.canAdd) null else button(
-                                    content = "新增",
-                                    type = ElementPlusComponents.Type.PRIMARY,
-                                    icon = "Plus",
-                                ).merge {
-                                    directives += VIf("userStore.permissions.includes('${permission.insert}')")
-                                    events += EventBind("click", "startAdd")
-                                },
-
-                                if (!entity.canDelete) null else button(
-                                    content = "删除",
-                                    type = ElementPlusComponents.Type.DANGER,
-                                    icon = "Delete",
-                                ).merge {
-                                    directives += VIf("userStore.permissions.includes('${permission.delete}')")
-                                    props += PropBind("disabled", "selection.length === 0")
-                                    events += EventBind("click", "handleDelete(selection.map(it => it.$idName))")
-                                },
-                            )
-                        ),
-                        emptyLineElement,
-                        TagElement(
-                            "template",
-                            directives = listOf(VIf(if (queryByPage) "pageData" else "rows")),
-                            children = listOf(
-                                TagElement(
-                                    table.name,
-                                    props = listOf(
-                                        PropBind("rows", if (queryByPage) "pageData.rows" else "rows"),
-                                    ),
-                                    events = listOf(
-                                        EventBind("selectionChange", "handleSelectionChange")
-                                    ),
-                                    children = listOf(
-                                        slotTemplate(
-                                            "operations",
-                                            props = listOf("row"),
-                                            content = listOfNotNull(
-                                                if (!entity.canEdit) null else button(
-                                                    content = "编辑",
-                                                    type = ElementPlusComponents.Type.WARNING,
-                                                    icon = "EditPen",
-                                                    link = true,
-                                                ).merge {
-                                                    directives += VIf("userStore.permissions.includes('${permission.update}')")
-                                                    events += EventBind("click", "startEdit(row.$idName)")
-                                                },
-                                                if (!entity.canDelete) null else button(
-                                                    content = "删除",
-                                                    type = ElementPlusComponents.Type.DANGER,
-                                                    icon = "Delete",
-                                                    link = true,
-                                                ).merge {
-                                                    directives += VIf("userStore.permissions.includes('${permission.delete}')")
-                                                    events += EventBind("click", "handleDelete([row.$idName])")
-                                                },
-                                            )
-                                        )
-                                    )
-                                )
-                            ) + if (queryByPage) listOf(
-                                emptyLineElement,
-                                pagination(
-                                    currentPage = "currentPage",
-                                    pageSize = "queryInfo.pageSize",
-                                    total = "pageData.totalRowCount",
-                                )
-                            ) else emptyList()
-                        ),
-                    )
-                ),
-                *if (!entity.canAdd) emptyArray() else arrayOf(
-                    emptyLineElement,
-                    dialog(
-                        modelValue = "addDialogVisible",
-                        content = listOf(
-                            TagElement(
-                                addForm.name
-                            ).merge {
-                                props += insertSelectNames.map { PropBind(it, it) }
-                                props += PropBind("submitLoading", "isLoading")
-                                events += EventBind("submit", "submitAdd")
-                                events += EventBind("cancel", "cancelAdd")
-                            }
-                        )
-                    ).merge {
-                        directives += VIf("userStore.permissions.includes('${permission.insert}')")
-                    },
-                ),
-                *if (!entity.canEdit) emptyArray() else arrayOf(
-                    emptyLineElement,
-                    dialog(
-                        modelValue = "editDialogVisible",
-                        content = listOf(
-                            TagElement(
-                                editForm.name
-                            ).merge {
-                                directives += VIf("updateInput !== undefined")
-                                directives += VModel("updateInput")
-                                props += updateSelectNames.map { PropBind(it, it) }
-                                props += PropBind("submitLoading", "isLoading")
-                                events += EventBind("submit", "submitEdit")
-                                events += EventBind("cancel", "cancelEdit")
-                            }
-                        )
-                    ).merge {
-                        directives += VIf("userStore.permissions.includes('${permission.update}')")
-                    }
-                )
-            )
         }
 
         return component

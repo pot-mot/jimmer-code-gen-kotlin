@@ -1,7 +1,7 @@
 package top.potmot.model.longNames
 
 import org.springframework.boot.test.context.SpringBootTest
-import top.potmot.context.multiple
+import top.potmot.utils.multiple
 import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DatabaseNamingStrategyType
 import top.potmot.enumeration.GenLanguage

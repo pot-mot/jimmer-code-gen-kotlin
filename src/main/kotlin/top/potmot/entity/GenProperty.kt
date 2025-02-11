@@ -12,12 +12,13 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Serialized
 import org.babyfish.jimmer.sql.Table
+import top.potmot.core.business.meta.PropertySpecialFormType
 import top.potmot.core.entity.meta.JoinColumnMeta
 import top.potmot.core.entity.meta.JoinTableMeta
 import top.potmot.enumeration.AssociationType
 import top.potmot.entity.base.BaseEntity
 import top.potmot.entity.property.PropertyBody
-import top.potmot.entity.property.OtherAnnotation
+import top.potmot.entity.property.AnnotationWithImports
 
 /**
  * 生成属性
@@ -118,9 +119,14 @@ interface GenProperty : BaseEntity {
     val idProperty: Boolean
 
     /**
-     * ID 生成类型
+     * 是否是生成式 ID
      */
-    val idGenerationAnnotation: String?
+    val generatedId: Boolean
+
+    /**
+     * Id 生成注解
+     */
+    val generatedIdAnnotation: AnnotationWithImports?
 
     /**
      * 是否为业务键属性
@@ -142,12 +148,17 @@ interface GenProperty : BaseEntity {
     val logicalDelete: Boolean
 
     /**
+     * 逻辑删除注解
+     */
+    val logicalDeletedAnnotation: AnnotationWithImports?
+
+    /**
      * 是否为 ID 视图属性
      */
     val idView: Boolean
 
     /**
-     * ID 视图注解
+     * ID 视图目标
      */
     val idViewTarget: String?
 
@@ -192,7 +203,7 @@ interface GenProperty : BaseEntity {
      * 其他注解
      */
     @Serialized
-    val otherAnnotation: OtherAnnotation?
+    val otherAnnotation: AnnotationWithImports?
 
     /**
      * 属性方法体
@@ -204,6 +215,11 @@ interface GenProperty : BaseEntity {
      * 排序键
      */
     val orderKey: Long
+
+    /**
+     * 特殊表单类型
+     */
+    val specialFormType: PropertySpecialFormType?
 
     /**
      * 是否在列表视图DTO中

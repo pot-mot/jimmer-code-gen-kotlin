@@ -18,7 +18,7 @@ import org.babyfish.jimmer.sql.Serialized
 import org.babyfish.jimmer.sql.Table
 import org.babyfish.jimmer.sql.Transient
 import top.potmot.entity.base.BaseEntity
-import top.potmot.entity.property.OtherAnnotation
+import top.potmot.entity.property.AnnotationWithImports
 import top.potmot.entity.resolver.GenEntityIdPropertiesResolver
 import top.potmot.entity.resolver.GenEntityLogicalDeleteResolver
 
@@ -134,9 +134,9 @@ interface GenEntity : BaseEntity {
      * 其他注解
      */
     @Serialized
-    val otherAnnotation: OtherAnnotation?
+    val otherAnnotation: AnnotationWithImports?
 
-     /**
+    /**
      * 是否可以创建
      */
     val canAdd: Boolean
@@ -157,9 +157,39 @@ interface GenEntity : BaseEntity {
     val canQuery: Boolean
 
     /**
-     * 是否具有页面
+     * 是否具有管理端页面
      */
     val hasPage: Boolean
+
+    /**
+     * 管理端页面中可查询
+     */
+    val pageCanQuery: Boolean
+
+    /**
+     * 管理端页面中可新增
+     */
+    val pageCanAdd: Boolean
+
+    /**
+     * 管理端页面中可编辑
+     */
+    val pageCanEdit: Boolean
+
+    /**
+     * 管理端页面中可查看详情
+     */
+    val pageCanViewDetail: Boolean
+
+    /**
+     * 管理端页面中可删除
+     */
+    val pageCanDelete: Boolean
+
+    /**
+     * 应用分页查询
+     */
+    val queryByPage: Boolean
 
     /**
      * 备注
@@ -184,4 +214,3 @@ interface GenEntity : BaseEntity {
     @Transient(GenEntityIdPropertiesResolver::class)
     val idProperties: List<GenProperty>
 }
-

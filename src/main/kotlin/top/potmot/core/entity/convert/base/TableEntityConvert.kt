@@ -1,6 +1,6 @@
 package top.potmot.core.entity.convert.base
 
-import top.potmot.context.getContextOrGlobal
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.entity.convert.EntityInput
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.utils.string.clearTableComment

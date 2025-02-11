@@ -239,6 +239,31 @@ interface FormItem {
                                 disabled = disabled,
                             )
                         )
+
+                    // TODO 完成 form file 组件
+                    PropertyFormType.FILE ->
+                        FormItemData(
+                            imports = listOf(),
+                            elements = listOf()
+                        )
+
+                    PropertyFormType.FILE_LIST ->
+                        FormItemData(
+                            imports = listOf(),
+                            elements = listOf()
+                        )
+
+                    PropertyFormType.IMAGE ->
+                        FormItemData(
+                            imports = listOf(),
+                            elements = listOf()
+                        )
+
+                    PropertyFormType.IMAGE_LIST ->
+                        FormItemData(
+                            imports = listOf(),
+                            elements = listOf()
+                        )
                 }
             }
         }

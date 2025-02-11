@@ -8,7 +8,7 @@ import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.property.PropertyBody
-import top.potmot.util.replaceSinceTimeComment
+import top.potmot.utils.replaceSinceTimeComment
 import java.time.LocalDateTime
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -49,7 +49,7 @@ class GeneratePropertyBodyTest {
         listType = false,
         typeNotNull = true,
         idProperty = true,
-        idGenerationAnnotation = "@GeneratedValue(strategy = GenerationType.SEQUENCE)",
+        generatedId = true,
         keyProperty = false,
         keyGroups = emptyList(),
         logicalDelete = false,
@@ -74,7 +74,7 @@ class GeneratePropertyBodyTest {
         idView = false,
         associationType = AssociationType.MANY_TO_ONE,
         body = PropertyBody(
-            importLines = listOf("package.Generator"),
+            imports = listOf("package.Generator"),
             codeBlock = "return Generator.generateData(\n    1\n);",
         ),
         entityId = 1,

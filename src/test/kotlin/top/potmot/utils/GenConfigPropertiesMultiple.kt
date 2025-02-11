@@ -1,11 +1,7 @@
-package top.potmot.context
+package top.potmot.utils
 
 import org.babyfish.jimmer.kt.merge
 import top.potmot.entity.dto.GenConfigProperties
-import top.potmot.entity.dto.MutableGenConfig
-
-fun MutableGenConfig.toProperties(): GenConfigProperties =
-    GenConfigProperties(this.toEntity())
 
 fun List<GenConfigProperties>.multiple(other: List<GenConfigProperties>): List<GenConfigProperties> {
     val result = mutableListOf<GenConfigProperties>()

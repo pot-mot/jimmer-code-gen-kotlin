@@ -20,6 +20,12 @@ GenEntityModelView {
     canQuery
     canDelete
     hasPage
+    pageCanAdd
+    pageCanEdit
+    pageCanViewDetail
+    pageCanQuery
+    pageCanDelete
+    queryByPage
 
     !where(columnId is not null)
     properties {
@@ -41,12 +47,18 @@ GenEntityModelView {
         overwriteComment
         remark
 
+        idProperty
+        generatedId
+        generatedIdAnnotation
+
+        logicalDelete
+        logicalDeletedAnnotation
+
         otherAnnotation
 
         orderKey
 
         longAssociation
-
         inListView
         inDetailView
         inOptionView
@@ -56,5 +68,6 @@ GenEntityModelView {
         inShortAssociationView
         inLongAssociationInput
         inLongAssociationView
+        specialFormType
     }
 }

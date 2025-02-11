@@ -21,7 +21,7 @@ import top.potmot.entity.dto.GenEntityConfigInput
 import top.potmot.entity.dto.GenEntityDetailView
 import top.potmot.entity.dto.GenPropertyEntityConfigInput
 import top.potmot.entity.id
-import top.potmot.entity.property.OtherAnnotation
+import top.potmot.entity.property.AnnotationWithImports
 import top.potmot.entity.tableId
 import top.potmot.service.ConvertService
 import top.potmot.service.EntityService
@@ -366,8 +366,8 @@ class ConvertEntityTest {
                 name = "newProperty"
                 orderKey = -2
                 typeTable = null
-                otherAnnotation = OtherAnnotation(
-                    importLines = listOf(
+                otherAnnotation = AnnotationWithImports(
+                    imports = listOf(
                         "org.babyfish.jimmer.sql.Transient",
                         "com.example.entity.EntityNewPropertyResolver",
                     ),
@@ -1097,8 +1097,8 @@ class ConvertEntityTest {
                     GenPropertyEntityConfigInput(baseProperty.toEntity {
                         name = "newProperty"
                         orderKey = -2
-                        otherAnnotation = OtherAnnotation(
-                            importLines = listOf(
+                        otherAnnotation = AnnotationWithImports(
+                            imports = listOf(
                                 "org.babyfish.jimmer.sql.Transient",
                                 "com.example.entity.EntityNewPropertyResolver",
                             ),

@@ -1,7 +1,7 @@
 package top.potmot.utils.string
 
 import top.potmot.constant.SEPARATOR
-import top.potmot.context.getContextOrGlobal
+import top.potmot.core.config.getContextOrGlobal
 
 /**
  * 转换下划线命名为大驼峰名名

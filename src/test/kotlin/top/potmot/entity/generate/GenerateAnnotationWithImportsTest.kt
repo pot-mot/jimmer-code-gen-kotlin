@@ -6,15 +6,15 @@ import top.potmot.core.entity.generate.impl.java.JavaEntityCodeGenerator
 import top.potmot.core.entity.generate.impl.kotlin.KotlinEntityCodeGenerator
 import top.potmot.enumeration.TableType
 import top.potmot.entity.dto.GenEntityGenerateView
-import top.potmot.entity.property.OtherAnnotation
-import top.potmot.util.replaceSinceTimeComment
+import top.potmot.entity.property.AnnotationWithImports
+import top.potmot.utils.replaceSinceTimeComment
 import java.time.LocalDateTime
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest
 @ActiveProfiles("test", "h2", "hide-sql")
-class GenerateOtherAnnotationTest {
+class GenerateAnnotationWithImportsTest {
     @Test
     fun testJavaEntityGenerate() {
         assertEquals(
@@ -45,7 +45,7 @@ class GenerateOtherAnnotationTest {
         listType = false,
         typeNotNull = true,
         idProperty = true,
-        idGenerationAnnotation = "@GeneratedValue(strategy = GenerationType.SEQUENCE)",
+        generatedId = true,
         keyProperty = false,
         keyGroups = emptyList(),
         logicalDelete = false,
@@ -61,8 +61,8 @@ class GenerateOtherAnnotationTest {
         name = "otherAnnotationProperty",
         comment = "comment",
         type = "Int",
-        otherAnnotation = OtherAnnotation(
-            importLines = listOf("package.Annotation"),
+        otherAnnotation = AnnotationWithImports(
+            imports = listOf("package.Annotation"),
             annotations = listOf("@Annotation(\n    value = \"a\"\n)")
         ),
         listType = false,
@@ -95,8 +95,8 @@ class GenerateOtherAnnotationTest {
         table = baseTable,
         packagePath = "com.example.test",
         superEntities = emptyList(),
-        otherAnnotation = OtherAnnotation(
-            importLines = listOf("package.Annotation"),
+        otherAnnotation = AnnotationWithImports(
+            imports = listOf("package.Annotation"),
             annotations = listOf("@Annotation(\n    value = \"a\"\n)")
         ),
         properties = listOf(

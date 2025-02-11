@@ -1,7 +1,7 @@
 package top.potmot.core.entity.convert.idview
 
 import org.babyfish.jimmer.kt.unload
-import top.potmot.context.getContextOrGlobal
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.entity.convert.base.TypeMapping
 import top.potmot.core.entity.convert.base.toPlural
 import top.potmot.entity.GenProperty
@@ -28,7 +28,7 @@ fun createIdViewProperty(
         unload(this, GenProperty::id)
         name = singularName + "Id"
         idProperty = false
-        idGenerationAnnotation = null
+        generatedId = false
         typeNotNull = associationProperty.typeNotNull
         associationType = associationProperty.associationType
         idView = true

@@ -1,4 +1,4 @@
-package top.potmot.util
+package top.potmot.utils
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest

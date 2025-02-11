@@ -56,6 +56,18 @@ sealed class EntityBusiness(
 
     val hasPage = entity.hasPage
 
+    val pageCanAdd = entity.hasPage && entity.canAdd && entity.pageCanAdd
+
+    val pageCanEdit = entity.hasPage && entity.canEdit && entity.pageCanEdit
+
+    val pageCanViewDetail = entity.hasPage && entity.pageCanViewDetail
+
+    val pageCanDelete = entity.hasPage && entity.canDelete && entity.pageCanDelete
+
+    val pageCanQuery = entity.hasPage && entity.canQuery && entity.pageCanQuery
+
+    val queryByPage = entity.queryByPage
+
     val packagePath = entity.packagePath
 
     val dir = lowerName

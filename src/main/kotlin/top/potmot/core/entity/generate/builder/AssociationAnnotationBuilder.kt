@@ -1,7 +1,7 @@
 package top.potmot.core.entity.generate.builder
 
 import org.babyfish.jimmer.sql.ForeignKeyType
-import top.potmot.context.getContextOrGlobal
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.entity.meta.JoinColumnMeta
 import top.potmot.core.entity.meta.JoinTableMeta
 import top.potmot.utils.string.buildScopeString

@@ -58,23 +58,27 @@ object Vue3ElementPlusViewGenerator :
 
         result += viewTableFile(entity)
 
-        if (entity.canAdd) {
+        if (entity.pageCanAdd) {
             result += addFormFiles(entity)
         }
 
-        if (entity.canEdit) {
+        if (entity.pageCanEdit) {
             result += editFormFiles(entity)
         }
 
-        if (entity.canAdd || entity.canEdit) {
+        if (entity.pageCanAdd || entity.pageCanEdit) {
             result += deepSubFormFiles(entity)
         }
 
-        if (entity.canQuery) {
+        if (entity.pageCanViewDetail) {
+            // TODO viewDetail
+        }
+
+        if (entity.pageCanQuery) {
             result += queryFormFile(entity)
         }
 
-        if (entity.canAdd || entity.canEdit || entity.canQuery) {
+        if (entity.pageCanAdd || entity.pageCanEdit || entity.pageCanQuery) {
             result += idSelectFiles(entity)
         }
 

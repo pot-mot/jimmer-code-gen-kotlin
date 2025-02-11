@@ -1,10 +1,12 @@
 package top.potmot.core.entity.convert.base
 
-import top.potmot.core.entity.convert.business.initBusinessConfig
-import top.potmot.core.entity.convert.merge.mergeExistAndConvertProperty
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.entity.convert.EntityView
 import top.potmot.core.entity.convert.PropertyInput
+import top.potmot.core.entity.convert.business.initBusinessConfig
+import top.potmot.core.entity.convert.merge.mergeExistAndConvertProperty
 import top.potmot.entity.dto.GenTableConvertView
+import top.potmot.entity.property.AnnotationWithImports
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.ConvertException
 import top.potmot.utils.string.clearForPropertyComment
@@ -59,10 +61,11 @@ private fun GenTableConvertView.TargetOf_columns.toBaseProperty(
         listType = false,
         typeNotNull = column.typeNotNull,
         idProperty = false,
-        idGenerationAnnotation = null,
+        generatedId = false,
         keyProperty = column.businessKey,
         keyGroup = column.keyGroup,
         logicalDelete = column.logicalDelete,
+        logicalDeletedAnnotation = if (logicalDelete) getContextOrGlobal().logicalDeletedAnnotation else null,
         enumId = column.enum?.id,
         idView = false,
         idViewTarget = null,
@@ -89,12 +92,27 @@ private fun GenTableConvertView.TargetOf_columns.toBaseProperty(
 
 private fun PropertyInput.toIdProperty(
     column: GenTableConvertView.TargetOf_columns,
-) =
-    copy(
-        idProperty = true,
-        typeNotNull = true,
-        keyProperty = false,
-        logicalDelete = false,
-        idView = false,
-        idGenerationAnnotation = if (column.autoIncrement) "@GeneratedValue(strategy = GenerationType.IDENTITY)" else null
-    )
+) = copy(
+    idProperty = true,
+    typeNotNull = true,
+    keyProperty = false,
+    logicalDelete = false,
+    idView = false,
+    generatedId = column.autoIncrement,
+    generatedIdAnnotation = 
+    if (column.autoIncrement) {
+        AnnotationWithImports(
+            imports = listOf(
+                "org.babyfish.jimmer.sql.GeneratedValue",
+                "org.babyfish.jimmer.sql.GenerationType",
+            ),
+            annotations = listOf(
+                "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+            )
+        )
+    } else if (generatedId) {
+        getContextOrGlobal().generatedIdAnnotation
+    } else {
+        null
+    }
+)

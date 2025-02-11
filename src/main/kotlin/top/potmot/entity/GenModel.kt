@@ -12,6 +12,8 @@ import top.potmot.enumeration.DataSourceType
 import top.potmot.enumeration.DatabaseNamingStrategyType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.entity.base.BaseEntity
+import top.potmot.entity.property.AnnotationWithImports
+import top.potmot.enumeration.ViewType
 
 /**
  * 生成模型
@@ -50,6 +52,11 @@ interface GenModel : BaseEntity {
     val dataSourceType: DataSourceType
 
     /**
+     * 视图类型
+     */
+    val viewType: ViewType
+
+    /**
      * 作者
      */
     val author: String
@@ -80,9 +87,24 @@ interface GenModel : BaseEntity {
     val idViewProperty: Boolean
 
     /**
+     * 默认 Id 类型
+     */
+    val defaultIdType: Int
+
+    /**
+     * Id 注解
+     */
+    val generatedIdAnnotation: AnnotationWithImports
+
+    /**
      * 逻辑删除注解
      */
-    val logicalDeletedAnnotation: String
+    val logicalDeletedAnnotation: AnnotationWithImports
+
+    /**
+     * 在前端视图中进行日期格式化
+     */
+    val dateTimeFormatInView: Boolean
 
     /**
      * 生成 Table 注解

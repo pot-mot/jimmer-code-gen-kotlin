@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import top.potmot.context.useContext
+import top.potmot.core.config.useContext
 import top.potmot.enumeration.GenLanguage
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.service.ConfigService

@@ -7,7 +7,7 @@ import top.potmot.core.entity.generate.impl.kotlin.KotlinEntityCodeGenerator
 import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
 import top.potmot.entity.dto.GenEntityGenerateView
-import top.potmot.util.replaceSinceTimeComment
+import top.potmot.utils.replaceSinceTimeComment
 import java.time.LocalDateTime
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -48,7 +48,7 @@ class GenerateEntityTest {
         listType = false,
         typeNotNull = true,
         idProperty = true,
-        idGenerationAnnotation = "@GeneratedValue(strategy = GenerationType.SEQUENCE)",
+        generatedId = true,
         keyProperty = false,
         keyGroups = emptyList(),
         logicalDelete = false,

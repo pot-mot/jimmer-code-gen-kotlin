@@ -1,24 +1,19 @@
 package top.potmot.core.entity.generate.builder
 
-import java.util.UUID
 import kotlin.reflect.KClass
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.ForeignKeyType
-import org.babyfish.jimmer.sql.GeneratedValue
-import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.JoinTable
 import org.babyfish.jimmer.sql.Key
-import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.MappedSuperclass
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.Table
-import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
-import top.potmot.context.getContextOrGlobal
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.IdentifierType
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
@@ -165,22 +160,8 @@ abstract class EntityBuilder : CodeBuilder() {
 
             if (idProperty) {
                 result += Id::class
-
-                idGenerationAnnotation?.let {
-                    result += GeneratedValue::class
-                    if (it.contains("GenerationType")) {
-                        result += GenerationType::class
-                    } else if (it.contains("generatorType") && it.contains("UUIDIdGenerator")) {
-                        result += UUIDIdGenerator::class
-                        result += UUID::class
-                    }
-                }
             } else if (keyProperty) {
                 result += Key::class
-            }
-
-            if (logicalDelete) {
-                result += LogicalDeleted::class
             }
 
             associationType?.let { type ->
@@ -246,11 +227,21 @@ abstract class EntityBuilder : CodeBuilder() {
     open fun importItems(property: PropertyView): Set<String> {
         val imports = classesToLines(importClasses(property)).toMutableSet()
 
-        property.otherAnnotation?.importLines?.let {
+        val context = getContextOrGlobal()
+
+        if (property.generatedId) {
+            imports += property.generatedIdAnnotation?.imports ?: context.generatedIdAnnotation.imports
+        }
+
+        if (property.logicalDelete) {
+            imports += property.logicalDeletedAnnotation?.imports ?: context.logicalDeletedAnnotation.imports
+        }
+
+        property.otherAnnotation?.imports?.let {
             imports += it
         }
 
-        property.body?.importLines?.let {
+        property.body?.imports?.let {
             imports += it
         }
 
@@ -264,7 +255,7 @@ abstract class EntityBuilder : CodeBuilder() {
     open fun importItems(entity: EntityView): List<String> {
         val imports = mutableListOf<String>()
         imports += classesToLines(importClasses(entity))
-        entity.otherAnnotation?.importLines?.let { imports += it }
+        entity.otherAnnotation?.imports?.let { imports += it }
         entity.properties.flatMapTo(imports) { importItems(it) }
         return imports.sorted().distinct().let { importItemsFilter(entity, it) }
     }
@@ -301,8 +292,8 @@ abstract class EntityBuilder : CodeBuilder() {
         property.apply {
             if (idProperty) {
                 list += "@Id"
-                idGenerationAnnotation.takeIf { !idGenerationAnnotation.isNullOrBlank() }?.let {
-                    list += it
+                if (property.generatedId) {
+                    list += property.generatedIdAnnotation?.annotations ?: context.generatedIdAnnotation.annotations
                 }
             } else if (keyProperty) {
                 list += buildString {
@@ -317,7 +308,7 @@ abstract class EntityBuilder : CodeBuilder() {
             }
 
             if (logicalDelete) {
-                list += context.logicalDeletedAnnotation
+                list += property.logicalDeletedAnnotation?.annotations ?: context.logicalDeletedAnnotation.annotations
             }
 
             if (associationType != null) {
