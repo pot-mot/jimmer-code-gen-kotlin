@@ -52,7 +52,7 @@ object Vue3ElementPlusViewGenerator :
     override fun generateView(
         entity: RootEntityBusiness
     ): List<GenerateFile> {
-        if (!entity.hasPage) return emptyList()
+        if (!entity.hasPage || !entity.canQuery) return emptyList()
 
         val result = mutableListOf<GenerateFile>()
 

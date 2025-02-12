@@ -142,9 +142,10 @@ public $detailView get(@PathVariable $idType id) throws AuthorizeException {
                     """.trimIndent()
                 )
 
-                line()
-                block(
-                    """
+                if (entity.canQuery) {
+                    line()
+                    block(
+                        """
 /**
  * 根据提供的查询参数列出${comment}。
  *
@@ -161,11 +162,11 @@ public List<@NotNull ${listView}> list(@RequestBody @NotNull $spec spec) throws 
             .execute();
 }
                     """.trimIndent()
-                )
+                    )
 
-                line()
-                block(
-                    """
+                    line()
+                    block(
+                        """
 /**
  * 根据提供的查询参数列出${comment}。
  *
@@ -182,12 +183,12 @@ public Page<@NotNull ${listView}> page(@RequestBody @NotNull PageQuery<${spec}> 
             .fetchPage(query.getPageIndex(), query.getPageSize());
 }
                     """.trimIndent()
-                )
+                    )
 
-                if (isTreeEntity) {
-                    line()
-                    block(
-                        """
+                    if (isTreeEntity) {
+                        line()
+                        block(
+                            """
 @NotNull
 private List<@NotNull ${treeView}> buildTree(
         @NotNull List<@NotNull ${treeView}> list
@@ -314,7 +315,8 @@ public Page<@NotNull ${treeView}> treePage(
     return new Page<>(treeList, idTreeList.size(), idTreeList.size() / query.getPageSize());
 }
                         """.trimIndent()
-                    )
+                        )
+                    }
                 }
 
                 line()

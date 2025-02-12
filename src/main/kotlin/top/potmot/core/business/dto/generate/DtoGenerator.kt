@@ -369,16 +369,18 @@ object DtoGenerator {
         line("export ${entity.packagePath}.${entity.name}")
         line()
 
-        dtoBlock(dto.listView) {
-            generateListViewBody(entity)
-        }
-        line()
-
-        if (entity.isTree) {
-            dtoBlock(dto.treeView) {
-                generateTreeViewBody(entity)
+        if (entity.canQuery) {
+            dtoBlock(dto.listView) {
+                generateListViewBody(entity)
             }
             line()
+
+            if (entity.isTree) {
+                dtoBlock(dto.treeView) {
+                    generateTreeViewBody(entity)
+                }
+                line()
+            }
         }
 
         dtoBlock(dto.detailView) {

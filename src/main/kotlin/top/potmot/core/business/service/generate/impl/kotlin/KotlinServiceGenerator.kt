@@ -130,9 +130,10 @@ fun get(@PathVariable id: $idType): $detailView? =
                     """.trimIndent()
                 )
 
-                line()
-                block(
-                    """
+                if (entity.canQuery) {
+                    line()
+                    block(
+                        """
 /**
  * 根据提供的查询参数列出${comment}。
  *
@@ -148,11 +149,11 @@ fun list(@RequestBody spec: $spec): List<$listView> =
         select(table.fetch(${listView}::class))
     }
                     """.trimIndent()
-                )
+                    )
 
-                line()
-                block(
-                    """
+                    line()
+                    block(
+                        """
 /**
  * 根据提供的查询参数分页查询${comment}。
  *
@@ -168,12 +169,12 @@ fun page(@RequestBody query: PageQuery<$spec>): Page<$listView> =
         select(table.fetch(${listView}::class))
     }.fetchPage(query.pageIndex, query.pageSize)
                     """.trimIndent()
-                )
+                    )
 
-                if (isTreeEntity) {
-                    line()
-                    block(
-                        """
+                    if (isTreeEntity) {
+                        line()
+                        block(
+                            """
 private fun buildTree(
     list: List<${treeView}>,
 ): List<${treeView}> {
@@ -273,7 +274,8 @@ fun treePage(
         .let { Page(it, list.size.toLong(), (list.size / query.pageSize).toLong()) }
 }
                         """.trimIndent()
-                    )
+                        )
+                    }
                 }
 
                 line()
