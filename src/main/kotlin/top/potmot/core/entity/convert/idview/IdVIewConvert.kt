@@ -28,12 +28,17 @@ fun createIdViewProperty(
         unload(this, GenProperty::id)
         name = singularName + "Id"
         idProperty = false
+        idProperty = false
         generatedId = false
+        generatedIdAnnotation = null
+        logicalDelete = false
+        logicalDeletedAnnotation = null
+        keyProperty = false
+
         typeNotNull = associationProperty.typeNotNull
         associationType = associationProperty.associationType
         idView = true
         idViewTarget = associationProperty.name
-        keyProperty = false
 
         associationProperty.comment.takeIf { it.isNotBlank() }?.let {
             comment = "$it ID View"

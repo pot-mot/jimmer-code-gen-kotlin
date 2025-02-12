@@ -149,6 +149,9 @@ fun convertAssociationProperties(
             typeTableId = targetTable.id
             idProperty = false
             generatedId = false
+            generatedIdAnnotation = null
+            logicalDelete = false
+            logicalDeletedAnnotation = null
 
             if (association.type == ONE_TO_ONE || association.type == MANY_TO_ONE) {
                 // 当外键为伪、表为逻辑删除时，需要将类型设置为可空
@@ -275,6 +278,9 @@ fun convertAssociationProperties(
             typeTableId = sourceTable.id
             idProperty = false
             generatedId = false
+            generatedIdAnnotation = null
+            logicalDelete = false
+            logicalDeletedAnnotation = null
             keyProperty = false
 
             val mappedBy =
