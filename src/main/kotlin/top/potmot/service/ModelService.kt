@@ -1,10 +1,6 @@
 package top.potmot.service
 
 import org.babyfish.jimmer.sql.kt.KSqlClient
-import org.babyfish.jimmer.sql.kt.ast.expression.eq
-import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
-import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
-import org.babyfish.jimmer.sql.kt.ast.table.isNull
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -17,22 +13,15 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.core.entity.config.EntityBusinessConfig
 import top.potmot.core.entity.config.EntityModelBusinessView
+import top.potmot.core.model.export.ModelEntityExport
 import top.potmot.core.model.load.ModelInputEntities
 import top.potmot.core.model.load.ModelSave
 import top.potmot.core.model.load.getGraphEntities
-import top.potmot.entity.GenEntity
 import top.potmot.entity.GenModel
-import top.potmot.entity.GenProperty
-import top.potmot.entity.`column?`
 import top.potmot.entity.createdTime
-import top.potmot.entity.dto.GenEntityModelView
 import top.potmot.entity.dto.GenModelInput
 import top.potmot.entity.dto.GenModelSimpleView
 import top.potmot.entity.dto.GenModelView
-import top.potmot.entity.dto.GenPropertyModelView
-import top.potmot.entity.entityId
-import top.potmot.entity.id
-import top.potmot.entity.modelId
 import top.potmot.error.LoadFromModelException
 import top.potmot.error.ModelBusinessInputException
 import top.potmot.utils.transaction.executeNotNull
@@ -41,10 +30,11 @@ import top.potmot.utils.transaction.executeNotNull
 @RequestMapping("/model")
 class ModelService(
     @Autowired
-    private val sqlClient: KSqlClient,
+    override val sqlClient: KSqlClient,
     @Autowired
     override val transactionTemplate: TransactionTemplate,
 ) : ModelSave,
+    ModelEntityExport,
     EntityBusinessConfig {
     @GetMapping
     fun list(): List<GenModelSimpleView> =
@@ -65,30 +55,8 @@ class ModelService(
     fun getEntityBusinessViews(
         @PathVariable id: Long,
         @RequestParam(required = false) excludeEntityIds: List<Long>?,
-    ): List<EntityModelBusinessView> {
-        val entities = sqlClient.executeQuery(GenEntity::class) {
-            where(table.modelId eq id)
-            excludeEntityIds?.takeIf { it.isNotEmpty() }?.let {
-                where(table.id valueNotIn it)
-            }
-            select(table.fetch(GenEntityModelView::class))
-        }
-
-        // 非列映射的属性
-        val propertiesEntityIdMap = sqlClient.executeQuery(GenProperty::class) {
-            where(table.`column?`.isNull())
-            where(table.entityId valueIn entities.map { it.id })
-            select(table.entityId, table.fetch(GenPropertyModelView::class))
-        }
-            .groupBy({ it._1 }, { it._2 })
-
-        return entities.map {
-            EntityModelBusinessView(
-                it,
-                propertiesEntityIdMap[it.id] ?: emptyList()
-            )
-        }
-    }
+    ) =
+        exportModelEntityBusinessViews(id, excludeEntityIds)
 
     @PostMapping
     @Throws(LoadFromModelException::class)

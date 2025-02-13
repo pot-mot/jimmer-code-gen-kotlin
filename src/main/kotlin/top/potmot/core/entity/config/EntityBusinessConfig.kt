@@ -13,7 +13,6 @@ import top.potmot.entity.dto.GenPropertyEntityConfigInput
 import top.potmot.entity.dto.GenPropertyModelView
 import top.potmot.entity.dto.GenTableModelBusinessFillView
 import top.potmot.entity.dto.IdName
-import top.potmot.entity.dto.toEntities
 import top.potmot.entity.modelId
 import top.potmot.error.ModelBusinessInputException
 
@@ -147,6 +146,7 @@ private fun GenEntityModelView.toConfigInput(
 )
 
 private fun GenPropertyModelView.toConfigInput(
+    entityNameTableIdMap: Map<String, Long>,
     enumNameIdMap: Map<String, Long>,
 ) = GenPropertyEntityConfigInput(
     name = name,
@@ -160,30 +160,10 @@ private fun GenPropertyModelView.toConfigInput(
     listType = listType,
     typeNotNull = typeNotNull,
 
-    idProperty = idProperty,
-    generatedId = generatedId,
-    generatedIdAnnotation = generatedIdAnnotation,
-
-    keyProperty = keyProperty,
-    keyGroup = keyGroup,
-
-    logicalDelete = logicalDelete,
-    logicalDeletedAnnotation = logicalDeletedAnnotation,
-
-    associationType = associationType,
-    idView = idView,
-    idViewTarget = idViewTarget,
-    mappedBy = mappedBy,
-    inputNotNull = inputNotNull,
-    joinColumnMetas = joinColumnMetas,
-    joinTableMeta = joinTableMeta,
-    dissociateAnnotation = dissociateAnnotation,
-
     otherAnnotation = otherAnnotation,
 
     orderKey = orderKey,
 
-    longAssociation = longAssociation,
     inListView = inListView,
     inDetailView = inDetailView,
     inInsertInput = inInsertInput,
@@ -195,7 +175,39 @@ private fun GenPropertyModelView.toConfigInput(
     inLongAssociationInput = inLongAssociationInput,
     specialFormType = specialFormType,
 
+    typeTableId = entityNameTableIdMap[typeEntity?.name],
     enumId = enumNameIdMap[enum?.name]
+)
+
+private fun GenPropertyEntityConfigInput.toPureInsertInput(entityId: Long) = toEntity {
+    this.entityId = entityId
+
+    idProperty = false
+    generatedId = false
+    generatedIdAnnotation = null
+
+    logicalDelete = false
+    logicalDeletedAnnotation = null
+
+    keyProperty = false
+    keyGroup = null
+
+    associationType = null
+    idView = false
+    idViewTarget = null
+    mappedBy = null
+    inputNotNull = null
+    joinTableMeta = null
+    joinColumnMetas = null
+    dissociateAnnotation = null
+
+    longAssociation = false
+}
+
+private data class EntityModelBusinessViewWithTable(
+    val entity: GenEntityModelView,
+    val table: GenTableModelBusinessFillView,
+    val properties: List<GenPropertyModelView>,
 )
 
 @Throws(ModelBusinessInputException::class)
@@ -206,13 +218,21 @@ private fun List<EntityModelBusinessView>.toInputs(
     val tableNameMap = tables.associateBy { it.name }
     val enumNameIdMap = enums.associate { it.name to it.id }
 
-    return map { (entity, properties) ->
-        val table = tableNameMap[entity.tableName]
+    val entityWithTables = map { (entity, properties) ->
+        val table = entity.tableName.let { tableNameMap[it] }
             ?: throw ModelBusinessInputException.entityCannotMatchTable(
                 "entity [${entity.name}] cannot match table",
                 entityName = entity.name,
                 tableName = entity.tableName
             )
+
+        EntityModelBusinessViewWithTable(entity, table, properties)
+    }
+    val entityNameTableIdMap = entityWithTables.associate { (entity, table) ->
+        entity.name to table.id
+    }
+
+    return entityWithTables.map { (entity, table, properties) ->
         val entityId = table.entityId
             ?: throw ModelBusinessInputException.entityMatchedTableConvertedEntityNotFound(
                 entityName = entity.name,
@@ -227,7 +247,7 @@ private fun List<EntityModelBusinessView>.toInputs(
                 columnNameMap
             ),
             properties.map { property ->
-                property.toConfigInput(enumNameIdMap)
+                property.toConfigInput(entityNameTableIdMap, enumNameIdMap)
             }
         )
     }
@@ -243,11 +263,7 @@ interface EntityBusinessConfig {
 
         insertEntities(
             inputs.flatMap {
-                it.properties.toEntities {
-                    entityId = it.entity.id
-                    columnId = null
-                    typeTable = null
-                }
+                it.properties.map { property -> property.toPureInsertInput(it.entity.id) }
             }
         )
     }
@@ -258,12 +274,7 @@ interface EntityBusinessConfig {
         val (entity, properties) = input
 
         update(entity, AssociatedSaveMode.REPLACE)
-
-        insertEntities(properties.toEntities {
-            entityId = entity.id
-            columnId = null
-            typeTable = null
-        })
+        insertEntities(properties.map { it.toPureInsertInput(entity.id) })
     }
 
     @Throws(ModelBusinessInputException::class)

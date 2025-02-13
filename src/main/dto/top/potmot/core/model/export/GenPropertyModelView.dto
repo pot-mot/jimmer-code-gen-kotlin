@@ -1,6 +1,6 @@
 export top.potmot.entity.GenProperty
 
-input GenPropertyEntityConfigInput {
+GenPropertyModelView {
     #allScalars(this)
     -id
 
@@ -23,6 +23,13 @@ input GenPropertyEntityConfigInput {
     -joinColumnMetas
     -dissociateAnnotation
 
-    typeTableId
-    enumId
+    flat(typeTable) {
+        entity as typeEntity {
+            name
+        }
+    }
+
+    enum {
+        name
+    }
 }

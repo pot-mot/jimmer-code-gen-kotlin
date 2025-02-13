@@ -145,17 +145,7 @@ sealed class EntityBusiness(
         val idViewTargetMap = properties.filter { it.idView }.associateBy { it.idViewTarget }
 
         properties.forEach {
-            if (it.associationType == null) {
-                if (it.enumId == null) {
-                    result += CommonProperty(this, it)
-                } else {
-                    val enum = enumIdMap[it.enumId] ?: throw GenerateException.EnumNotFound(
-                        message = "Enum [${it.enumId}] Not Found",
-                        enumId = it.enumId
-                    )
-                    result += EnumProperty(this, it, enum)
-                }
-            } else if (!it.idView) {
+            if (it.typeEntityId != null) {
                 result += AssociationProperty(
                     path = when (this) {
                         is RootEntityBusiness -> AssociationPath(
@@ -183,8 +173,18 @@ sealed class EntityBusiness(
                         message = "Entity [${it.typeEntityId}] Not Found",
                         entityId = it.typeEntityId
                     ),
-                    associationType = it.associationType
+                    associationType = it.associationType ?: if (it.listType) AssociationType.MANY_TO_MANY else AssociationType.MANY_TO_ONE
                 )
+            } else if (it.associationType == null || !it.idView) {
+                if (it.enumId != null) {
+                    val enum = enumIdMap[it.enumId] ?: throw GenerateException.EnumNotFound(
+                        message = "Enum [${it.enumId}] Not Found",
+                        enumId = it.enumId
+                    )
+                    result += EnumProperty(this, it, enum)
+                } else {
+                    result += CommonProperty(this, it)
+                }
             }
         }
 
