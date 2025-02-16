@@ -7,7 +7,7 @@ import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 
-private const val BOOLEAN_MIN_WIDTH = 43
+private const val BOOLEAN_MIN_WIDTH = 81
 private const val DATETIME_MIN_WIDTH = 193
 private const val NUMBER_MIN_WIDTH = 161
 private const val ENUM_MIN_WIDTH = 129
