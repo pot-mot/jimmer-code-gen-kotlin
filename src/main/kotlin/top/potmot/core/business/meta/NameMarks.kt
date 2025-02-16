@@ -33,6 +33,7 @@ sealed interface EntityComponentFiles
 
 data class RootEntityComponentFiles(
     val table: NamePath,
+    val viewForm: NamePath,
     val addForm: NamePath,
     val addFormType: NamePath,
     val addFormDefault: NamePath,
@@ -43,9 +44,11 @@ data class RootEntityComponentFiles(
 ) : EntityComponentFiles
 
 data class SubEntityComponentFiles(
-    val subForm: NamePath,
-    val subFormType: NamePath,
-    val subFormDefault: NamePath,
+    val viewForm: NamePath,
+    val editForm: NamePath,
+    val editFormType: NamePath,
+    val editFormDefault: NamePath,
+    val viewTable: NamePath,
     val editTable: NamePath,
     val editTableType: NamePath,
     val idSelect: NamePath,
@@ -76,6 +79,9 @@ data class EntityPermissions(
 
 data class EnumComponentFiles(
     val view: NamePath,
+    val nullableView: NamePath,
+    val multipleView: NamePath,
     val select: NamePath,
     val nullableSelect: NamePath,
+    val multipleSelect: NamePath,
 )

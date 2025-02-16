@@ -14,7 +14,7 @@ import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.QueryFormItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.query.QueryFormItem
 import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
@@ -46,7 +46,7 @@ class QueryFormGenItemTest : QueryFormItem {
         )
 
     private val GenEntityBusinessView.TargetOf_properties.result: String
-        get() = CommonProperty(mockEntityBusiness, this).createQueryFormItem(spec).let {
+        get() = CommonProperty(mockEntityBusiness, this).toQueryFormItem(spec).let {
             var result: String
             builder.apply {
                 result =
@@ -292,7 +292,7 @@ const nameRange = computed<[string | undefined, string | undefined]>({
     }
 
     private val GenEntityBusinessView.TargetOf_properties.enumResult: String
-        get() = EnumProperty(mockEntityBusiness, this, testEnumBusiness).createQueryFormItem(spec).let {
+        get() = EnumProperty(mockEntityBusiness, this, testEnumBusiness).toQueryFormItem(spec).let {
             var result: String
             builder.apply {
                 result =
@@ -316,7 +316,7 @@ import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 
 
     private val GenEntityBusinessView.TargetOf_properties.associationResult: String
-        get() = AssociationProperty(AssociationPath(mockEntityBusiness, emptyList()), mockEntityBusiness, this, null, baseEntity, associationType!!).createQueryFormItem(spec).let {
+        get() = AssociationProperty(AssociationPath(mockEntityBusiness, emptyList()), mockEntityBusiness, this, null, baseEntity, associationType!!).toQueryFormItem(spec).let {
             var result: String
             builder.apply {
                 result =

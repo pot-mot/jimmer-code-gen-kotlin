@@ -174,17 +174,6 @@ data class AssociationProperty(
             typeEntityBusiness.apiServiceName,
         )
     }
-
-    val longComponent by lazy {
-        if (listType)
-            typeEntityBusiness.components.editTable
-        else
-            typeEntityBusiness.components.subForm
-    }
-
-    val longComponentRefName by lazy {
-        longComponent.name.replaceFirstChar { it.uppercaseChar() } + "Ref"
-    }
 }
 
 data class ForceIdViewProperty(

@@ -1,31 +1,26 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
-import top.potmot.core.business.meta.EnumBusiness
+import top.potmot.core.business.meta.LazyGenerateResult
+import top.potmot.core.business.meta.LazyGenerated
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.view.generate.ViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.AddFormGen
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.EditFormGen
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.enumSelect.EnumSelectGen
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.enumView.EnumViewGen
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.SubFormGen
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.edit.AddFormGen
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.edit.EditFormGen
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.page.PageGen
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm.QueryFormGen
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.select.IdSelectGen
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.ViewTableGen
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.query.QueryFormGen
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.view.ViewFormGen
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.view.ViewTableGen
 import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.entity.dto.GenerateFile
-import top.potmot.error.ModelException
 
 object Vue3ElementPlusViewGenerator :
     ViewGenerator,
-    EnumViewGen,
-    EnumSelectGen,
     ViewTableGen,
-    IdSelectGen,
+    ViewFormGen,
     QueryFormGen,
     AddFormGen,
     EditFormGen,
-    SubFormGen,
+    LazyGenerator,
     PageGen {
     override val indent = "    "
 
@@ -37,53 +32,66 @@ object Vue3ElementPlusViewGenerator :
 
     override fun stringify(component: Component) = componentBuilder.build(component)
 
-    override fun generateEnum(
-        enum: EnumBusiness,
-    ): List<GenerateFile> {
-        val result = mutableListOf<GenerateFile>()
+    private fun generate(
+        entity: RootEntityBusiness,
+    ): LazyGenerateResult? {
+        if (!entity.hasPage || !entity.canQuery) return null
 
-        result += enumViewFile(enum)
-        result += enumSelectFile(enum)
+        val files = mutableListOf<GenerateFile>()
+        val lazyItems = mutableListOf<LazyGenerated>()
 
-        return result
-    }
-
-    @Throws(ModelException::class)
-    override fun generateView(
-        entity: RootEntityBusiness
-    ): List<GenerateFile> {
-        if (!entity.hasPage || !entity.canQuery) return emptyList()
-
-        val result = mutableListOf<GenerateFile>()
-
-        result += viewTableFile(entity)
+        viewTableFiles(entity).let {
+            files += it.files
+            lazyItems += it.lazyItems
+        }
 
         if (entity.pageCanAdd) {
-            result += addFormFiles(entity)
+            addFormFiles(entity).let {
+                files += it.files
+                lazyItems += it.lazyItems
+            }
         }
 
         if (entity.pageCanEdit) {
-            result += editFormFiles(entity)
-        }
-
-        if (entity.pageCanAdd || entity.pageCanEdit) {
-            result += deepSubFormFiles(entity)
+            editFormFiles(entity).let {
+                files += it.files
+                lazyItems += it.lazyItems
+            }
         }
 
         if (entity.pageCanViewDetail) {
-            // TODO viewDetail
+            viewFormFiles(entity).let {
+                files += it.files
+                lazyItems += it.lazyItems
+            }
         }
 
         if (entity.pageCanQuery) {
-            result += queryFormFile(entity)
+            queryFormFile(entity).let {
+                files += it.files
+                lazyItems += it.lazyItems
+            }
         }
 
-        if (entity.pageCanAdd || entity.pageCanEdit || entity.pageCanQuery) {
-            result += idSelectFiles(entity)
+        files += pageFile(entity)
+
+        return LazyGenerateResult(
+            files,
+            lazyItems
+        )
+    }
+
+    override fun generateEntity(entities: Iterable<RootEntityBusiness>): List<GenerateFile> {
+        val files = mutableListOf<GenerateFile>()
+        val generatedSet = mutableSetOf<LazyGenerated>()
+
+        entities.forEach { entity ->
+            generate(entity)?.let {
+                files += it.files
+                files += generateLazy(it.lazyItems, generatedSet)
+            }
         }
 
-        result += pageFile(entity)
-
-        return result.distinct()
+        return files
     }
 }

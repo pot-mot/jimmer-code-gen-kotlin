@@ -1,5 +1,6 @@
 package top.potmot.core.business.meta
 
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.IdName
 import top.potmot.error.ModelException
@@ -20,10 +21,14 @@ data class EnumBusiness(
     val constants = "${name}_CONSTANTS"
 
     val components by lazy {
+        val suffix = getContextOrGlobal().viewType.suffix
         EnumComponentFiles(
-            view = NamePath("${enum.name}View", "vue", "components/${dir}"),
-            select = NamePath("${enum.name}Select", "vue", "components/${dir}"),
-            nullableSelect = NamePath("${enum.name}NullableSelect", "vue", "components/${dir}"),
+            view = NamePath("${enum.name}View", suffix, "components/${dir}"),
+            nullableView = NamePath("${enum.name}NullableView", suffix, "components/${dir}"),
+            multipleView = NamePath("${enum.name}MultiView", suffix, "components/${dir}"),
+            select = NamePath("${enum.name}Select", suffix, "components/${dir}"),
+            nullableSelect = NamePath("${enum.name}NullableSelect", suffix, "components/${dir}"),
+            multipleSelect = NamePath("${enum.name}MultiSelect", suffix, "components/${dir}"),
         )
     }
 

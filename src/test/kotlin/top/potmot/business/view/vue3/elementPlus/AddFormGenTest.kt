@@ -3,8 +3,8 @@ package top.potmot.business.view.vue3.elementPlus
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.addForm
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormRefValidateItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.edit.addForm
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.edit.FormRefValidateItem
 import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.view.generate.staticPath
 

@@ -9,7 +9,6 @@ enum class GenerateType {
     Service,
     DTO,
     FrontEnd,
-    EnumComponent,
     View,
     Permission,
     Route,

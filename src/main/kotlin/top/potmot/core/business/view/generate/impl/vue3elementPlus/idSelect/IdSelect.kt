@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.idSelect
 
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.SubEntityBusiness

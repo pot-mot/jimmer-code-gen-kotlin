@@ -111,7 +111,7 @@ specification EntitySpec {
 
     @Test
     fun `test shortAssociationToOneTarget view`() {
-        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationToOneTargetEntity))
+        val viewItems = Vue3ElementPlusViewGenerator.generateEntity(listOf(shortAssociationToOneTargetEntity))
 
         assertEquals(
             """
@@ -231,7 +231,7 @@ watch(() => [modelValue.value, props.options], () => {
 </template>
 )]
             """.trimIndent(),
-            viewItems.filter { GenerateTag.Table in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
+            viewItems.filter { GenerateTag.ViewTable in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
         )
 
         viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Component in it.tags }.forEach {
@@ -298,7 +298,7 @@ specification EntitySpec {
 
     @Test
     fun `test shortAssociationToOneTarget idView view`() {
-        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationToOneTargetIdViewEntity))
+        val viewItems = Vue3ElementPlusViewGenerator.generateEntity(listOf(shortAssociationToOneTargetIdViewEntity))
 
         assertEquals(
             """
@@ -418,7 +418,7 @@ watch(() => [modelValue.value, props.options], () => {
 </template>
 )]
             """.trimIndent(),
-            viewItems.filter { GenerateTag.Table in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
+            viewItems.filter { GenerateTag.ViewTable in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
         )
 
         viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Component in it.tags }.forEach {
@@ -485,7 +485,7 @@ specification EntitySpec {
 
     @Test
     fun `test shortAssociationToManyTarget view`() {
-        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationToManyTargetEntity))
+        val viewItems = Vue3ElementPlusViewGenerator.generateEntity(listOf(shortAssociationToManyTargetEntity))
 
         assertEquals(
             """
@@ -610,7 +610,7 @@ watch(() => [modelValue.value, props.options], () => {
 </template>
 )]
             """.trimIndent(),
-            viewItems.filter { GenerateTag.Table in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
+            viewItems.filter { GenerateTag.ViewTable in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
         )
 
         viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Component in it.tags }.forEach {
@@ -677,7 +677,7 @@ specification EntitySpec {
 
     @Test
     fun `test shortAssociationToManyTarget idView view`() {
-        val viewItems = Vue3ElementPlusViewGenerator.generateView(listOf(shortAssociationToManyTargetIdViewEntity))
+        val viewItems = Vue3ElementPlusViewGenerator.generateEntity(listOf(shortAssociationToManyTargetIdViewEntity))
 
         assertEquals(
             """
@@ -802,7 +802,7 @@ watch(() => [modelValue.value, props.options], () => {
 </template>
 )]
             """.trimIndent(),
-            viewItems.filter { GenerateTag.Table in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
+            viewItems.filter { GenerateTag.ViewTable in it.tags || GenerateTag.IdSelect in it.tags }.map { it.path to it.content }.toString()
         )
 
         viewItems.filter { (GenerateTag.AddForm in it.tags || GenerateTag.EditForm in it.tags || GenerateTag.EditTable in it.tags) && GenerateTag.Component in it.tags }.forEach {

@@ -1,5 +1,7 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.query
 
+import top.potmot.core.business.meta.LazyGenerateResult
+import top.potmot.core.business.meta.LazyGenerated
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.meta.SelectOption
@@ -99,23 +101,38 @@ fun queryForm(
 }
 
 interface QueryFormGen : Generator, QueryFormItem {
-    private fun queryFormComponent(entity: RootEntityBusiness): Component {
+    private fun queryFormComponent(entity: RootEntityBusiness): Pair<Component, List<LazyGenerated>> {
         val spec = "spec"
 
-        return queryForm(
+        val content = entity.queryFormProperties
+            .associateWith { it.toQueryFormItem(spec) }
+
+        val component = queryForm(
             spec = spec,
             specType = entity.dto.spec,
             specTypePath = staticPath,
             selectOptions = entity.specificationSelects,
-            content = entity.queryFormProperties
-                .associateWith { it.createQueryFormItem(spec) }
+            content = content
         )
+
+        return component to content.values.flatMap { it.lazyItems }
     }
 
-    fun queryFormFile(entity: RootEntityBusiness) = GenerateFile(
-        entity,
-        entity.components.queryForm.fullPath,
-        stringify(queryFormComponent(entity)),
-        listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.QueryForm),
-    )
+    fun queryFormFile(entity: RootEntityBusiness): LazyGenerateResult {
+        val (component, lazyItems) = queryFormComponent(entity)
+
+        val files = listOf(
+            GenerateFile(
+                entity,
+                entity.components.queryForm.fullPath,
+                stringify(component),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.QueryForm),
+            )
+        )
+
+        return LazyGenerateResult(
+            files,
+            lazyItems,
+        )
+    }
 }

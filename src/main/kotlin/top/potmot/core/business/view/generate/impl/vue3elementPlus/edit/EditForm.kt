@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.edit
 
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.PRIMARY
@@ -82,7 +82,9 @@ fun handleValidate(
             buildScopeString(indent) {
                 validateItems.forEach {
                     line("const ${it.name}: boolean =")
-                    scope { line(it.expression) }
+                    scope {
+                        block(it.expression)
+                    }
                 }
                 line()
                 line("return ${(validateItems.map { it.name }).joinToString(" && ")}")
@@ -106,7 +108,9 @@ fun handleNullableValidate(
                 line()
                 validateItems.forEach {
                     line("const ${it.name}: boolean =")
-                    scope { line(it.expression) }
+                    scope {
+                        block(it.expression)
+                    }
                 }
                 line()
                 line("return ${(validateItems.map { it.name }).joinToString(" && ")}")

@@ -3,15 +3,15 @@ package top.potmot.business.view.vue3.elementPlus.withEntity
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.business.testEditTableEntityBusiness
+import top.potmot.business.testSubFormEntityBusiness
 
-class EntityEditTableGenTest {
+class EntitySubEditFormGenTest {
     private val index = "${'$'}index"
 
     private val generator = Vue3ElementPlusViewGenerator
 
     @Test
-    fun `test editTableType`() {
+    fun `test subFormType`() {
         assertEquals(
             """
 import type {Enum} from "@/api/__generated/model/enums"
@@ -23,12 +23,12 @@ export type EntityAddFormType = {
     toOneNullablePropertyId: number | undefined
 }
             """.trimIndent(),
-            generator.deepSubFormFiles(testEditTableEntityBusiness).first { it.name == "EntityEntitiesEditTableType.ts" }.content.trim()
+            generator.deepSubFormFiles(testSubFormEntityBusiness).first { it.name == "EntityEntitySubFormType.ts" }.content.trim()
         )
     }
 
     @Test
-    fun `test editTableRules`() {
+    fun `test subFormRules`() {
         assertEquals(
             """
 import type {Ref} from "vue"
@@ -52,12 +52,12 @@ export const useRules = (_: Ref<Array<EntityUpdateInput>>): FormRules<EntityUpda
     }
 }
             """.trimIndent(),
-            generator.deepSubFormFiles(testEditTableEntityBusiness).first { it.name == "EntityEntitiesEditTableRules.ts" }.content.trim()
+            generator.deepSubFormFiles(testSubFormEntityBusiness).first { it.name == "EntityEntitySubFormRules.ts" }.content.trim()
         )
     }
 
     @Test
-    fun `test editTable`() {
+    fun `test subForm`() {
         assertEquals(
             """
 <script setup lang="ts">
@@ -66,7 +66,7 @@ import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityAddFormType, ToOneEntityOptionView} from "@/api/__generated/model/static"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
-import {useRules} from "@/rules/entity/EntityEntitiesEditTableRules"
+import {useRules} from "@/rules/entity/EntityEntitySubFormRules"
 import {usePageSizeStore} from "@/stores/pageSizeStore"
 import {Plus, Delete} from "@element-plus/icons-vue"
 import {deleteConfirm} from "@/utils/confirm"
@@ -308,7 +308,7 @@ defineExpose<FormExpose>({
     </el-form>
 </template>
             """.trimIndent(),
-            generator.deepSubFormFiles(testEditTableEntityBusiness).first { it.name == "EntityEntitiesEditTable.vue" }.content.trim()
+            generator.deepSubFormFiles(testSubFormEntityBusiness).first { it.name == "EntityEntitySubForm.vue" }.content.trim()
         )
     }
 }

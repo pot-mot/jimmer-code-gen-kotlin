@@ -1,11 +1,19 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.edit
 
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
+import top.potmot.core.business.meta.LazyEnumSelect
+import top.potmot.core.business.meta.LazyIdSelect
+import top.potmot.core.business.meta.LazySubEdit
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.TypeEntityProperty
+import top.potmot.core.business.view.generate.commonComponentPath
+import top.potmot.core.business.view.generate.fileUpload
+import top.potmot.core.business.view.generate.filesUpload
+import top.potmot.core.business.view.generate.imageUpload
+import top.potmot.core.business.view.generate.imagesUpload
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.datePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.dateTimePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.formItem
@@ -15,6 +23,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.switch
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.timePicker
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormItemData
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
 import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
@@ -22,8 +31,8 @@ import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 import top.potmot.core.business.view.generate.meta.vue3.toPropBind
 
-interface FormItem {
-    fun PropertyBusiness.toFormItemData(
+interface EditFormItem {
+    fun PropertyBusiness.toEditFormItem(
         formData: String,
         disabled: Boolean = false,
         excludeSelf: Boolean = false,
@@ -35,9 +44,12 @@ interface FormItem {
         return when (this) {
             is TypeEntityProperty -> {
                 if (this is AssociationProperty && isLongAssociation) {
-                    val component = longComponent
-                    val refName = longComponentRefName
+                    val lazySubEdit = LazySubEdit(typeEntityBusiness, listType, !typeNotNull)
+
+                    val component = lazySubEdit.component
+                    val refName = lazySubEdit.componentRef
                     val selectOptions = typeEntityBusiness.subFormSelects
+
                     FormItemData(
                         elements = listOf(
                             TagElement(
@@ -57,11 +69,15 @@ interface FormItem {
                                 component.name,
                             )
                         ),
-                        formItemNotAround = true
+                        lazyItems = listOf(
+                            lazySubEdit
+                        ),
+                        formItemNotAround = true,
                     )
                 } else {
-                    val components = typeEntityBusiness.components
-                    val component = if (listType) components.idMultiSelect else components.idSelect
+                    val lazyIdSelect = LazyIdSelect(typeEntityBusiness, listType)
+                    val component = lazyIdSelect.component
+
                     FormItemData(
                         elements = listOf(
                             TagElement(
@@ -82,14 +98,17 @@ interface FormItem {
                                 "@/" + component.fullPath,
                                 component.name,
                             )
-                        )
+                        ),
+                        lazyItems = listOf(
+                            lazyIdSelect
+                        ),
                     )
                 }
             }
 
             is EnumProperty -> {
-                val components = enum.components
-                val component = if (typeNotNull) components.select else components.nullableSelect
+                val lazyEnumSelect = LazyEnumSelect(enum, listType, !typeNotNull)
+                val component = lazyEnumSelect.component
 
                 FormItemData(
                     elements = listOf(
@@ -106,6 +125,9 @@ interface FormItem {
                             "@/" + component.fullPath,
                             component.name,
                         )
+                    ),
+                    lazyItems = listOf(
+                        lazyEnumSelect
                     )
                 )
             }
@@ -134,100 +156,59 @@ interface FormItem {
 
                     PropertyFormType.INT ->
                         FormItemData(
-                            if (typeNotNull)
-                                inputNumber(
-                                    modelValue,
-                                    comment = comment,
-                                    precision = 0,
-                                    min = numberMin,
-                                    max = numberMax,
-                                    valueOnClear = numberMin,
-                                    disabled = disabled,
-                                )
-                            else
-                                inputNumber(
-                                    modelValue,
-                                    comment = comment,
-                                    precision = 0,
-                                    min = numberMin,
-                                    max = numberMax,
-                                    disabled = disabled,
-                                )
+                            inputNumber(
+                                modelValue,
+                                comment = comment,
+                                precision = 0,
+                                min = numberMin,
+                                max = numberMax,
+                                valueOnClear = if (typeNotNull) numberMin else null,
+                                disabled = disabled,
+                            )
                         )
 
                     PropertyFormType.FLOAT ->
                         FormItemData(
-                            if (typeNotNull)
-                                inputNumber(
-                                    modelValue,
-                                    comment = comment,
-                                    precision = numericPrecision,
-                                    min = numberMin,
-                                    max = numberMax,
-                                    valueOnClear = numberMin,
-                                    disabled = disabled,
-                                )
-                            else
-                                inputNumber(
-                                    modelValue,
-                                    comment = comment,
-                                    precision = numericPrecision,
-                                    min = numberMin,
-                                    max = numberMax,
-                                    disabled = disabled,
-                                )
+                            inputNumber(
+                                modelValue,
+                                comment = comment,
+                                precision = numericPrecision,
+                                min = numberMin,
+                                max = numberMax,
+                                valueOnClear = if (typeNotNull) numberMin else null,
+                                disabled = disabled,
+                            )
                         )
 
 
                     PropertyFormType.TIME ->
                         FormItemData(
-                            if (typeNotNull)
-                                timePicker(
-                                    modelValue,
-                                    comment = comment,
-                                    disabled = disabled,
-                                )
-                            else
-                                timePicker(
-                                    modelValue,
-                                    comment = comment,
-                                    clearable = true,
-                                    disabled = disabled,
-                                )
+                            timePicker(
+                                modelValue,
+                                comment = comment,
+                                clearable = !typeNotNull,
+                                disabled = disabled,
+                            )
                         )
 
                     PropertyFormType.DATE ->
                         FormItemData(
-                            if (typeNotNull)
-                                datePicker(
-                                    modelValue,
-                                    comment = comment,
-                                    disabled = disabled,
-                                )
-                            else
-                                datePicker(
-                                    modelValue,
-                                    comment = comment,
-                                    clearable = true,
-                                    disabled = disabled,
-                                )
+                            datePicker(
+                                modelValue,
+                                comment = comment,
+                                clearable = !typeNotNull,
+                                disabled = disabled,
+                            )
                         )
 
                     PropertyFormType.DATETIME ->
                         FormItemData(
-                            if (typeNotNull)
-                                dateTimePicker(
-                                    modelValue,
-                                    comment = comment,
-                                    disabled = disabled,
-                                )
-                            else
-                                dateTimePicker(
-                                    modelValue,
-                                    comment = comment,
-                                    clearable = true,
-                                    disabled = disabled,
-                                )
+                            dateTimePicker(
+                                modelValue,
+                                comment = comment,
+                                clearable = !typeNotNull,
+                                disabled = disabled,
+                            )
                         )
 
                     PropertyFormType.INPUT ->
@@ -240,29 +221,52 @@ interface FormItem {
                             )
                         )
 
-                    // TODO 完成 form file 组件
                     PropertyFormType.FILE ->
                         FormItemData(
-                            imports = listOf(),
-                            elements = listOf()
+                            imports = listOf(
+                                ImportDefault("$commonComponentPath/$fileUpload", fileUpload)
+                            ),
+                            elements = listOf(
+                                TagElement(fileUpload) {
+                                    directives += VModel(modelValue)
+                                }
+                            )
                         )
 
                     PropertyFormType.FILE_LIST ->
                         FormItemData(
-                            imports = listOf(),
-                            elements = listOf()
+                            imports = listOf(
+                                ImportDefault("$commonComponentPath/$filesUpload", filesUpload)
+                            ),
+                            elements = listOf(
+                                TagElement(filesUpload) {
+                                    directives += VModel(modelValue)
+                                }
+                            )
                         )
 
                     PropertyFormType.IMAGE ->
                         FormItemData(
-                            imports = listOf(),
-                            elements = listOf()
+                            imports = listOf(
+                                ImportDefault("$commonComponentPath/$imageUpload", imageUpload)
+                            ),
+                            elements = listOf(
+                                TagElement(imageUpload) {
+                                    directives += VModel(modelValue)
+                                }
+                            )
                         )
 
                     PropertyFormType.IMAGE_LIST ->
                         FormItemData(
-                            imports = listOf(),
-                            elements = listOf()
+                            imports = listOf(
+                                ImportDefault("$commonComponentPath/$imagesUpload", imagesUpload)
+                            ),
+                            elements = listOf(
+                                TagElement(imagesUpload) {
+                                    directives += VModel(modelValue)
+                                }
+                            )
                         )
                 }
             }

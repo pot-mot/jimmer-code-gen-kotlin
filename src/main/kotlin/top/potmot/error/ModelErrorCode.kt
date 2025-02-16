@@ -21,6 +21,10 @@ enum class ModelErrorCode {
     LONG_ASSOCIATION_CIRCULAR_DEPENDENCE,
 
     @ErrorField(name = "entity", type = IdName::class)
+    @ErrorField(name = "pathProperties", type = IdName::class, list = true)
+    SUB_ENTITY_NO_CURRENT_PATH,
+
+    @ErrorField(name = "entity", type = IdName::class)
     @ErrorField(name = "entityProperties", type = IdName::class, list = true)
     @ErrorField(name = "index", type = IdName::class)
     @ErrorField(name = "indexPropertyIds", type = Long::class, list = true)

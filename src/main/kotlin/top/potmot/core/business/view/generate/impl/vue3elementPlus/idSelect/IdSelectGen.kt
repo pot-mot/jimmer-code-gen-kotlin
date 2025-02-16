@@ -1,6 +1,5 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.select
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.idSelect
 
-import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.meta.vue3.Component
@@ -17,18 +16,10 @@ interface IdSelectGen : Generator, IdSelect, IdTreeSelect {
             createIdSelect(entity, multiple)
         }
 
-    private fun idSelectFile(entity: SubEntityBusiness, multiple: Boolean) = GenerateFile(
+    fun idSelectFile(entity: SubEntityBusiness, multiple: Boolean) = GenerateFile(
         entity,
         if (multiple) entity.components.idMultiSelect.fullPath else entity.components.idSelect.fullPath,
         stringify(idSelectComponent(entity, multiple)),
         listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.IdSelect),
     )
-
-    fun idSelectFiles(entity: EntityBusiness): List<GenerateFile> =
-        entity.pageSelectPairs.map { (property) ->
-            idSelectFile(property.typeEntityBusiness, property.listType)
-        } +
-                entity.editSubEntities.flatMap {
-                    idSelectFiles(it)
-                }
 }

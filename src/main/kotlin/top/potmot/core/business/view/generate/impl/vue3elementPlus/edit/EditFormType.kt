@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.edit
 
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EnumBusiness
@@ -12,17 +12,17 @@ import top.potmot.core.business.view.generate.meta.typescript.TsType
 import top.potmot.core.business.view.generate.meta.typescript.TsTypeProperty
 import top.potmot.core.business.view.generate.meta.typescript.TsWithGenericType
 
-interface FormType {
-    fun Iterable<PropertyBusiness>.formType(
+interface EditFormType {
+    fun Iterable<PropertyBusiness>.editFormType(
         canUndefined: Boolean = false,
         propertyProducer: (entity: SubEntityBusiness) -> Iterable<PropertyBusiness>,
     ): TsComplexType =
         TsComplexType(
-            map { TsTypeProperty(it.name, it.formType(propertyProducer)) },
+            map { TsTypeProperty(it.name, it.editFormType(propertyProducer)) },
             canUndefined,
         )
 
-    fun PropertyBusiness.formType(propertyProducer: (entity: SubEntityBusiness) -> Iterable<PropertyBusiness>): TsType {
+    fun PropertyBusiness.editFormType(propertyProducer: (entity: SubEntityBusiness) -> Iterable<PropertyBusiness>): TsType {
         val formItemTypeNotNull = if (editNullable && typeNotNull) false else typeNotNull
         val canUndefined = !formItemTypeNotNull
 
@@ -31,7 +31,7 @@ interface FormType {
         }
 
         val baseType = if (this is AssociationProperty && isLongAssociation)
-            propertyProducer(typeEntityBusiness).formType(canUndefined, propertyProducer)
+            propertyProducer(typeEntityBusiness).editFormType(canUndefined, propertyProducer)
         else
             TsRawType(typeStrToTypeScriptType(type, formItemTypeNotNull), canUndefined = canUndefined)
 

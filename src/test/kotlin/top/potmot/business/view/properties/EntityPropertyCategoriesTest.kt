@@ -43,7 +43,7 @@ class EntityPropertyCategoriesTest {
     @Test
     fun `test tableProperties`() {
         testEntities.forEach { testEntity ->
-            val tableProperties = testEntity.tableProperties.extract
+            val tableProperties = testEntity.viewTableProperties.extract
             assertEquals(4, tableProperties.size)
 
             val enumProperty = tableProperties[0]

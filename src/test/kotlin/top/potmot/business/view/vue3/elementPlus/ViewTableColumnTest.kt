@@ -10,17 +10,17 @@ import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.TableColumn
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.view.ViewTableColumn
 import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
-class TableColumnTest : TableColumn {
+class ViewTableColumnTest : ViewTableColumn {
     private val builder = Vue3ElementPlusViewGenerator.componentBuilder
 
     private val PropertyBusiness.result: String
-        get() = tableColumnDataPairs(withDateTimeFormat = true)
+        get() = viewTableColumnDataPairs(withDateTimeFormat = true)
             .map { it.second }
             .joinToString("\n") {
                 buildString {

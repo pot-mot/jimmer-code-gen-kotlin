@@ -16,23 +16,22 @@ enum class GenerateTag {
 
     EnumView,
     EnumSelect,
-    EnumNullableSelect,
 
     IdSelect,
-    IdMultiSelect,
 
     Page,
 
     Form,
     FormDefault,
-    FormRules,
     FormType,
+
+    ViewForm,
+    QueryForm,
     AddForm,
     EditForm,
-    SubForm,
+    ViewTable,
     EditTable,
 
-    QueryForm,
-
-    Table,
+    SubEdit,
+    SubView,
 }

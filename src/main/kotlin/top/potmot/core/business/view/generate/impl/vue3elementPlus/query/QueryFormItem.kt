@@ -1,7 +1,9 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.queryForm
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.query
 
 import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
+import top.potmot.core.business.meta.LazyEnumSelect
+import top.potmot.core.business.meta.LazyIdSelect
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.PropertyQueryType
@@ -22,7 +24,7 @@ import top.potmot.core.business.view.generate.meta.vue3.TagElement
 import top.potmot.core.business.view.generate.meta.vue3.VModel
 
 interface QueryFormItem {
-    fun PropertyBusiness.createQueryFormItem(spec: String): FormItemData {
+    fun PropertyBusiness.toQueryFormItem(spec: String): FormItemData {
         val modelValue = "$spec.${name}"
         val rangeModelValue = "${name}Range"
         val minModelValue = "$spec.min${upperName}"
@@ -67,6 +69,9 @@ interface QueryFormItem {
                             "@/${component.fullPath}",
                             component.name,
                         )
+                    ),
+                    lazyItems = listOf(
+                        LazyIdSelect(typeEntityBusiness, listType)
                     )
                 )
             }
@@ -86,6 +91,9 @@ interface QueryFormItem {
                             "@/${component.fullPath}",
                             component.name,
                         )
+                    ),
+                    lazyItems = listOf(
+                        LazyEnumSelect(enum, listType, nullable = true)
                     )
                 )
             }

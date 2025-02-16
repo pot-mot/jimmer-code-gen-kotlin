@@ -359,6 +359,30 @@ class ElementPlusComponents {
             children += content
         }
 
+        fun descriptionsItem(
+            label: String?,
+            labelIsLiteral: Boolean = true,
+            content: Collection<Element>,
+        ) = TagElement("el-descriptions-item") {
+            props += listOfNotNull(
+                label.toPropBind("label", isLiteral = labelIsLiteral),
+            )
+            children += content
+        }
+
+        fun descriptions(
+            labelWidth: String? = "auto",
+            labelWidthIsLiteral: Boolean = true,
+            content: Collection<Element>,
+            itemLineSize: Int = 3,
+        ) = TagElement("el-descriptions") {
+            props += listOfNotNull(
+                PropBind("label-width", labelWidth, isLiteral = labelWidthIsLiteral),
+                itemLineSize.toPropBind("column"),
+            )
+            children += content
+        }
+
         fun tableColumn(
             prop: String? = null,
             label: String? = null,
@@ -393,6 +417,7 @@ class ElementPlusComponents {
             border: Boolean = true,
             stripe: Boolean = true,
             columns: Collection<Element>,
+            expand: Collection<Element> = emptyList(),
             childrenProp: String? = null,
         ) = TagElement("el-table") {
             props += listOfNotNull(
@@ -404,7 +429,15 @@ class ElementPlusComponents {
             childrenProp?.let {
                 props += PropBind("tree-props", "{children: '${childrenProp}'}")
             }
+
             children += columns
+            if (expand.isNotEmpty()) {
+                children += tableColumn(
+                    type = "expand",
+                    fixed = TableColumnFixed.LEFT,
+                    content = expand
+                )
+            }
         }
 
         fun pagination(

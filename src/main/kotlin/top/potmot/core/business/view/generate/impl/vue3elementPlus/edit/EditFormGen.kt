@@ -1,5 +1,7 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.edit
 
+import top.potmot.core.business.meta.LazyGenerateResult
+import top.potmot.core.business.meta.LazyGenerated
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.meta.SelectOption
@@ -7,6 +9,7 @@ import top.potmot.core.business.view.generate.enumPath
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.toElements
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormItemData
 import top.potmot.core.business.view.generate.meta.rules.Rules
 import top.potmot.core.business.view.generate.meta.rules.existValidRules
 import top.potmot.core.business.view.generate.meta.rules.rules
@@ -18,6 +21,7 @@ import top.potmot.core.business.view.generate.meta.typescript.commentLine
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.VIf
@@ -30,13 +34,11 @@ import top.potmot.error.ModelException
 import top.potmot.utils.map.iterableMapOf
 import top.potmot.utils.string.buildScopeString
 
-fun addForm(
+fun editForm(
     submitType: String,
     submitTypePath: String,
     dataType: String,
     dataTypePath: String,
-    createDefault: String,
-    defaultPath: String,
     useRules: String,
     useRulesPath: String,
     formData: String = "formData",
@@ -56,15 +58,11 @@ fun addForm(
         ImportType(submitTypePath, submitType),
         ImportType(dataTypePath, dataType),
         Import(dataTypePath, validateDataForSubmit, assertDataTypeAsSubmitType),
-        Import(defaultPath, createDefault),
         Import(useRulesPath, useRules),
     )
     imports += content.values.flatMap { it.imports }
 
-    script += listOf(
-        ConstVariable(formData, null, "ref<$dataType>($createDefault())"),
-        emptyLineCode,
-    )
+    models += ModelProp(formData, dataType)
     props += listOf(
         Prop("withOperations", "boolean", required = false, default = "true"),
         submitLoadingProp,
@@ -85,7 +83,7 @@ fun addForm(
     script += listOf(
         ConstVariable(formRef, null, "ref<FormInstance>()"),
         ConstVariable("rules", null, "$useRules($formData)"),
-        emptyLineCode
+        emptyLineCode,
     )
 
     val validateItems = mutableListOf<ValidateItem>()
@@ -93,7 +91,6 @@ fun addForm(
         "formValid",
         "await $formRef.value?.validate().catch(() => false) ?? false"
     )
-
     if (subValidateItems.isNotEmpty()) {
         imports += subValidateItems.flatMap { it.imports }
         script += subValidateItems.map { it.ref }
@@ -128,23 +125,23 @@ fun addForm(
             operationsSlotElement.merge {
                 directives += VIf("withOperations")
             },
-        )
+        ),
     ).merge {
-        props += PropBind("class", "add-form", isLiteral = true)
+        props += PropBind("class", "edit-form", isLiteral = true)
     }
 }
 
-interface AddFormGen : Generator, FormItem, FormType, EditNullableValid, FormDefault {
-    private fun addFormType(entity: RootEntityBusiness): String {
-        val dataType = entity.components.addFormType.name
-        val submitType = entity.dto.insertInput
+interface EditFormGen : Generator, EditFormType, EditNullableValid, EditFormItem {
+    private fun editFormType(entity: RootEntityBusiness): String {
+        val dataType = entity.components.editFormType.name
+        val submitType = entity.dto.updateInput
 
         val imports = mutableListOf<TsImport>()
 
         imports += Import("$utilPath/message", "sendMessage")
         imports += ImportType(staticPath, submitType)
-        imports += entity.addFormProperties
-            .editEnums { it.subEditNoIdProperties }
+        imports += entity.editFormProperties
+            .editEnums { it.subEditProperties }
             .map { ImportType(enumPath, it.name) }
 
         return buildScopeString(indent) {
@@ -152,34 +149,14 @@ interface AddFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
             if (imports.isNotEmpty()) line()
 
             append("export type $dataType = ")
-            entity.addFormProperties
-                .formType { it.subEditNoIdProperties }
+            entity.editFormProperties
+                .editFormType { it.subEditProperties }
                 .stringify(this)
             line()
             line()
 
-            entity.addFormProperties
+            entity.editFormProperties
                 .editNullableValid(this, dataType, submitType)
-        }
-    }
-
-    @Throws(ModelException.DefaultItemNotFound::class)
-    private fun addFormDefault(entity: RootEntityBusiness): String {
-        val type = entity.components.addFormType.name
-        val createDefault = entity.components.addFormDefault.name
-
-        return buildScopeString(indent) {
-            line("import type {$type} from \"./${type}\"")
-            line()
-            line("export const $createDefault = (): $type => {")
-            scope {
-                append("return ")
-                entity.addFormProperties
-                    .formDefault { it.subEditNoIdProperties }
-                    .stringify(this)
-                line()
-            }
-            line("}")
         }
     }
 
@@ -188,74 +165,85 @@ interface AddFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    private fun addFormRules(entity: RootEntityBusiness): Rules {
-        val type = entity.components.addFormType
-        val properties = entity.addFormProperties
+    private fun editFormRules(entity: RootEntityBusiness): Rules {
+        val type = entity.components.editFormType
+        val properties = entity.editFormNoIdProperties
         val rules = iterableMapOf(
             properties.associateWith { it.rules },
-            entity.existValidRules(withId = false, properties)
+            entity.existValidRules(withId = true, properties)
         )
-
         return Rules(
             functionName = "useRules",
             formData = "formData",
             formDataType = type.name,
             formDataTypePath = "@/" + type.fullPathNoSuffix,
-            ruleDataType = entity.dto.insertInput,
+            ruleDataType = entity.dto.updateInput,
             ruleDataTypePath = staticPath,
             propertyRules = rules
         )
     }
 
-    private fun addFormComponent(entity: RootEntityBusiness): Component {
+    @Throws(ModelException.IdPropertyNotFound::class)
+    private fun editFormComponent(entity: RootEntityBusiness): Pair<Component, List<LazyGenerated>> {
         val formData = "formData"
 
-        val addFormType = entity.components.addFormType
-        val addFormDefault = entity.components.addFormDefault
-        val addFormRules = entity.rules.addFormRules
+        val editFormType = entity.components.editFormType
+        val editFormRules = entity.rules.editFormRules
 
-        return addForm(
-            submitType = entity.dto.insertInput,
-            submitTypePath = staticPath,
-            dataType = addFormType.name,
-            dataTypePath = "@/" + addFormType.fullPathNoSuffix,
-            createDefault = addFormDefault.name,
-            defaultPath = "@/" + addFormDefault.fullPathNoSuffix,
-            useRules = "useRules",
-            useRulesPath = "@/" + addFormRules.fullPathNoSuffix,
+        val content = entity.editFormNoIdProperties
+            .associateWith {
+                it.toEditFormItem(
+                    formData,
+                    excludeSelf = true,
+                    entityId = entity.id,
+                    idName = entity.idProperty.name
+                )
+            }
+
+        val component = editForm(
             formData = formData,
+            submitType = entity.dto.updateInput,
+            submitTypePath = staticPath,
+            dataType = editFormType.name,
+            dataTypePath = "@/" + editFormType.fullPathNoSuffix,
+            useRules = "useRules",
+            useRulesPath = "@/" + editFormRules.fullPathNoSuffix,
             indent = indent,
-            selectOptions = entity.insertSelects,
-            subValidateItems = entity.addFormProperties.toFormRefValidateItems(),
-            content = entity.addFormProperties
-                .associateWith { it.toFormItemData(formData) }
+            selectOptions = entity.updateSelects,
+            subValidateItems = entity.editFormProperties.toRefValidateItems(),
+            content = content
         )
+
+        return component to content.values.flatMap { it.lazyItems }
     }
 
-    fun addFormFiles(entity: RootEntityBusiness) = listOf(
-        GenerateFile(
-            entity,
-            entity.components.addFormType.fullPath,
-            addFormType(entity),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.AddForm, GenerateTag.FormType),
-        ),
-        GenerateFile(
-            entity,
-            entity.components.addFormDefault.fullPath,
-            addFormDefault(entity),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.AddForm, GenerateTag.FormDefault),
-        ),
-        GenerateFile(
-            entity,
-            entity.components.addForm.fullPath,
-            stringify(addFormComponent(entity)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.AddForm),
-        ),
-        GenerateFile(
-            entity,
-            entity.rules.addFormRules.fullPath,
-            stringify(addFormRules(entity)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.FormRules, GenerateTag.AddForm),
+    fun editFormFiles(entity: RootEntityBusiness): LazyGenerateResult {
+        val (component, lazyItems) = editFormComponent(entity)
+
+        val files = listOf(
+            GenerateFile(
+                entity,
+                entity.components.editFormType.fullPath,
+                editFormType(entity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.EditForm, GenerateTag.FormType),
+            ),
+            GenerateFile(
+                entity,
+                entity.components.editForm.fullPath,
+                stringify(component),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.EditForm, GenerateTag.Component),
+            ),
+            GenerateFile(
+                entity,
+                entity.rules.editFormRules.fullPath,
+                stringify(editFormRules(entity)),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.EditForm, GenerateTag.Rules),
+            ),
         )
-    )
+
+        return LazyGenerateResult(
+            files,
+            lazyItems,
+        )
+    }
 }

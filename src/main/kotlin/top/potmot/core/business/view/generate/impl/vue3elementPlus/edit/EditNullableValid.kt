@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.edit
 
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.PropertyBusiness

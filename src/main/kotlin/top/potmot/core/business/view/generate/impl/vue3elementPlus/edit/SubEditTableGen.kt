@@ -1,5 +1,8 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.edit
 
+import top.potmot.core.business.meta.AssociationProperty
+import top.potmot.core.business.meta.LazyGenerateResult
+import top.potmot.core.business.meta.LazyGenerated
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.meta.SubEntityBusiness
@@ -11,6 +14,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.tableColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.*
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormItemData
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.operationsColumn
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableMinWidth
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilColumns
@@ -29,6 +33,7 @@ import top.potmot.core.business.view.generate.meta.typescript.commentLine
 import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
 import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.business.view.generate.meta.vue3.Element
 import top.potmot.core.business.view.generate.meta.vue3.EventBind
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.Prop
@@ -187,6 +192,49 @@ fun editTable(
         exposeValid(indent)
     )
 
+    val propColumns = mutableListOf<Element>()
+    val expand = mutableListOf<Element>()
+
+    content.forEach { (property, formItemData) ->
+        val formItem = formItem(
+            prop = "[scope.${'$'}index, '${property.name}']",
+            propIsLiteral = false,
+            label = null,
+            rule = "rules.${property.name}",
+            content = formItemData.elements
+        )
+
+        if (property is AssociationProperty && property.isLongAssociation) {
+            expand += formItem
+        } else {
+            propColumns += tableColumn(
+                prop = property.name,
+                label = property.comment,
+                minWidth = property.tableMinWidth,
+                content = listOf(formItem)
+            )
+        }
+    }
+
+    val operationsColumn = operationsColumn(
+        listOf(
+            button(
+                icon = "Plus",
+                type = INFO,
+                link = true,
+            ).merge {
+                events += EventBind("click", "handleAdd(scope.${'$'}index + 1)")
+            },
+            button(
+                icon = "Delete",
+                type = DANGER,
+                link = true,
+            ).merge {
+                events += EventBind("click", "handleSingleDelete(scope.${'$'}index)")
+            }
+        )
+    )
+
     template += form(
         model = formData,
         ref = formRef,
@@ -219,39 +267,8 @@ fun editTable(
             table(
                 data = formData,
                 rowKey = idPropertyName,
-                columns = tableUtilColumns(idPropertyName) + content.map { (property, formItemData) ->
-                    tableColumn(
-                        prop = property.name,
-                        label = property.comment,
-                        minWidth = property.tableMinWidth,
-                        content = listOf(
-                            formItem(
-                                prop = "[scope.${'$'}index, '${property.name}']",
-                                propIsLiteral = false,
-                                label = null,
-                                rule = "rules.${property.name}",
-                                content = formItemData.elements
-                            )
-                        )
-                    )
-                } + operationsColumn(
-                    listOf(
-                        button(
-                            icon = "Plus",
-                            type = INFO,
-                            link = true,
-                        ).merge {
-                            events += EventBind("click", "handleAdd(scope.${'$'}index + 1)")
-                        },
-                        button(
-                            icon = "Delete",
-                            type = DANGER,
-                            link = true,
-                        ).merge {
-                            events += EventBind("click", "handleSingleDelete(scope.${'$'}index)")
-                        }
-                    )
-                )
+                columns = tableUtilColumns(idPropertyName) + propColumns +operationsColumn,
+                expand = expand,
             ).merge {
                 props += PropBind("class", "edit-table", isLiteral = true)
                 events += EventBind("selection-change", "handleSelectionChange")
@@ -266,8 +283,8 @@ fun editTable(
     }
 }
 
-interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormDefault {
-    private fun editTableType(entity: SubEntityBusiness): String {
+interface SubEditTableGen : Generator, EditFormItem, EditFormType, EditNullableValid, EditFormDefault {
+    private fun subEditTableType(entity: SubEntityBusiness): String {
         val rootEntity = entity.path.rootEntity
         val dataType = entity.components.editTableType.name
         val submitTypes = listOfNotNull(
@@ -290,7 +307,7 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
 
             append("export type $dataType = ")
             entity.subEditProperties
-                .formType { it.subEditProperties }
+                .editFormType { it.subEditProperties }
                 .stringify(this)
             line()
             line()
@@ -301,9 +318,9 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
     }
 
     @Throws(ModelException.DefaultItemNotFound::class)
-    private fun editTableDefault(entity: SubEntityBusiness): String {
+    private fun subEditTableDefault(entity: SubEntityBusiness): String {
         val type = entity.components.editTableType.name
-        val createDefault = entity.components.subFormDefault.name
+        val createDefault = entity.components.editFormDefault.name
 
         return buildScopeString(indent) {
             line("import type {$type} from \"./${type}\"")
@@ -325,7 +342,7 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    private fun editTableRules(entity: SubEntityBusiness): Rules {
+    private fun subEditTableRules(entity: SubEntityBusiness): Rules {
         val type = entity.components.editTableType
         val properties = entity.subEditNoIdProperties
         val rules = iterableMapOf(
@@ -345,15 +362,25 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
     }
 
     @Throws(ModelException.IdPropertyNotFound::class)
-    private fun editTableComponent(entity: SubEntityBusiness): Component {
+    private fun subEditTableComponent(entity: SubEntityBusiness): Pair<Component, List<LazyGenerated>> {
         val rows = "rows"
 
         val rootEntity = entity.path.rootEntity
         val editTableType = entity.components.editTableType
-        val editTableDefault = entity.components.subFormDefault
+        val editTableDefault = entity.components.editFormDefault
         val editTableRules = entity.rules.editTableRules
 
-        return editTable(
+        val content = entity.subEditNoIdProperties
+            .associateWith {
+                it.toEditFormItem(
+                    "scope.row",
+                    excludeSelf = true,
+                    entityId = entity.id,
+                    idName = entity.idProperty.name
+                )
+            }
+
+        val component = editTable(
             formData = rows,
             submitTypes = listOfNotNull(
                 if (rootEntity.canAdd) entity.dto.insertInput else null,
@@ -370,43 +397,46 @@ interface EditTableGen : Generator, FormItem, FormType, EditNullableValid, FormD
             idPropertyName = entity.idProperty.name,
             comment = entity.comment,
             selectOptions = entity.subFormSelects,
-            subValidateItems = entity.subEditProperties.toFormRefValidateItems(),
-            content = entity.subEditNoIdProperties
-                .associateWith {
-                    it.toFormItemData(
-                        "scope.row",
-                        excludeSelf = true,
-                        entityId = entity.id,
-                        idName = entity.idProperty.name
-                    )
-                }
+            subValidateItems = entity.subEditProperties.toRefValidateItems(),
+            content = content
         )
+
+        return component to content.values.flatMap { it.lazyItems }
     }
 
-    fun editTableFiles(entity: SubEntityBusiness) = listOf(
-        GenerateFile(
-            entity.path.rootEntity,
-            entity.components.editTableType.fullPath,
-            editTableType(entity),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.AddForm, GenerateTag.FormType),
-        ),
-        GenerateFile(
-            entity.path.rootEntity,
-            entity.components.subFormDefault.fullPath,
-            editTableDefault(entity),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.AddForm, GenerateTag.FormDefault),
-        ),
-        GenerateFile(
-            entity.path.rootEntity,
-            entity.components.editTable.fullPath,
-            stringify(editTableComponent(entity)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.EditTable),
-        ),
-        GenerateFile(
-            entity.path.rootEntity,
-            entity.rules.editTableRules.fullPath,
-            stringify(editTableRules(entity)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.FormRules, GenerateTag.EditTable),
+    fun subEditTableFiles(entity: SubEntityBusiness): LazyGenerateResult {
+        val (component, lazyItems) = subEditTableComponent(entity)
+
+        val files = listOf(
+            GenerateFile(
+                entity.path.rootEntity,
+                entity.components.editTableType.fullPath,
+                subEditTableType(entity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubEdit, GenerateTag.EditTable, GenerateTag.FormType),
+            ),
+            GenerateFile(
+                entity.path.rootEntity,
+                entity.components.editFormDefault.fullPath,
+                subEditTableDefault(entity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubEdit, GenerateTag.EditTable, GenerateTag.FormDefault),
+            ),
+            GenerateFile(
+                entity.path.rootEntity,
+                entity.components.editTable.fullPath,
+                stringify(component),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubEdit, GenerateTag.EditTable, GenerateTag.Component),
+            ),
+            GenerateFile(
+                entity.path.rootEntity,
+                entity.rules.editTableRules.fullPath,
+                stringify(subEditTableRules(entity)),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubEdit, GenerateTag.EditTable, GenerateTag.Rules),
+            )
         )
-    )
+
+        return LazyGenerateResult(
+            files,
+            lazyItems,
+        )
+    }
 }

@@ -283,26 +283,6 @@ sealed class EntityBusiness(
         properties.filterIsInstance<AssociationProperty>()
     }
 
-    private val editLongProperties by lazy {
-        associationProperties
-            .filter {
-                it.isLongAssociation &&
-                        when (this) {
-                            is RootEntityBusiness -> (canAdd && it.inInsertInput) || (canEdit && it.inUpdateInput)
-                            is SubEntityBusiness -> it.inLongAssociationInput
-                        }
-            }
-    }
-    val editSubEntityMap by lazy {
-        editLongProperties.associateWith {
-            it.typeEntityBusiness
-        }
-    }
-    val editSubEntities by lazy {
-        editSubEntityMap.values
-    }
-
-
     private val viewLongProperties by lazy {
         associationProperties
             .filter {
@@ -312,14 +292,6 @@ sealed class EntityBusiness(
                             is SubEntityBusiness -> it.inLongAssociationView
                         }
             }
-    }
-    val viewSubEntityMap by lazy {
-        viewLongProperties.associateWith {
-            it.typeEntityBusiness
-        }
-    }
-    val viewSubEntities by lazy {
-        viewSubEntityMap.values
     }
 
 
@@ -374,10 +346,6 @@ sealed class EntityBusiness(
             )
     }
 
-    val childIdsProperty by lazy {
-        childrenProperty.forceToIdView()
-    }
-
 
     val optionViewProperties by lazy {
         properties
@@ -401,7 +369,7 @@ sealed class EntityBusiness(
             .filter { it.inListView }
     }
 
-    val tableProperties by lazy {
+    open val viewTableProperties by lazy {
         listViewProperties
             .filter {
                 val notParentProperty =
@@ -421,7 +389,7 @@ sealed class EntityBusiness(
             .filter { it.inDetailView }
     }
 
-    val viewFormProperties by lazy {
+    open val viewFormProperties by lazy {
         detailViewProperties
             .filter { !it.property.idProperty }
             .`notLong and notShortView force to IdView`()
@@ -546,6 +514,7 @@ class RootEntityBusiness(
         val suffix = getContextOrGlobal().viewType.suffix
         RootEntityComponentFiles(
             table = NamePath("${name}Table", suffix, "components/$dir"),
+            viewForm = NamePath("${name}View", suffix, "components/$dir"),
             addForm = NamePath("${name}AddForm", suffix, "components/$dir"),
             addFormType = NamePath("${name}AddData", "ts", "components/$dir"),
             addFormDefault = NamePath("createDefault${name}", "ts", "components/$dir"),
@@ -604,10 +573,16 @@ class SubEntityBusiness(
         properties
             .filter { it.inLongAssociationView && it.property.id != currentFkProperty?.id }
     }
-    val subViewProperties by lazy {
+    private val subViewProperties by lazy {
         longAssociationViewProperties
             .filter { !it.property.idProperty }
             .`notLong and notShortView force to IdView`()
+    }
+    override val viewFormProperties by lazy {
+        subViewProperties
+    }
+    override val viewTableProperties by lazy {
+        subViewProperties
     }
 
     val subFormSelectPairs: List<Pair<ForceIdViewProperty, SelectOption>> by lazy {
@@ -646,10 +621,13 @@ class SubEntityBusiness(
 
         val rootEntity = path.rootEntity
 
-        val rootEntityName = rootEntity.name
-        val propertyNames =
-            path.propertyItems.map { it.property.name.replaceFirstChar { it.uppercaseChar() } }.joinToString("")
-        val currentName = rootEntityName + propertyNames
+        val currentName = (path.propertyItems.lastOrNull()?.property)?.let {
+            it.name.replaceFirstChar { c -> c.uppercaseChar() }
+        } ?: throw ModelException.subEntityNoCurrentPath(
+            "Entity [${entity.name}] No current Path: ${path}",
+            entity = IdName(entity.id, entity.name),
+            pathProperties = path.propertyItems.map { IdName(it.property.id, it.property.name) }
+        )
 
         val rootEntityDir = rootEntity.dir
         val propertyDirs =
@@ -657,9 +635,11 @@ class SubEntityBusiness(
         val currentPath = "$rootEntityDir/$propertyDirs"
 
         SubEntityComponentFiles(
-            subForm = NamePath("${currentName}SubForm", suffix, "components/$currentPath"),
-            subFormType = NamePath("${currentName}SubFormData", "ts", "components/$currentPath"),
-            subFormDefault = NamePath("createDefault${currentName}", "ts", "components/$currentPath"),
+            viewForm = NamePath("${currentName}View", suffix, "components/$currentPath"),
+            editForm = NamePath("${currentName}Form", suffix, "components/$currentPath"),
+            editFormType = NamePath("${currentName}FormData", "ts", "components/$currentPath"),
+            editFormDefault = NamePath("createDefault${currentName}", "ts", "components/$currentPath"),
+            viewTable = NamePath("${currentName}Table", suffix, "components/$currentPath"),
             editTable = NamePath("${currentName}EditTable", suffix, "components/$currentPath"),
             editTableType = NamePath("${currentName}EditTableData", "ts", "components/$currentPath"),
             idSelect = NamePath("${name}IdSelect", suffix, "components/$dir"),

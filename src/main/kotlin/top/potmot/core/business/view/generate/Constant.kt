@@ -9,3 +9,14 @@ const val enumPath = "@/api/__generated/model/enums"
 const val storePath = "@/stores"
 
 const val utilPath = "@/utils"
+
+const val commonComponentPath = "@/components/common"
+
+const val imageUpload = "ImageUpload"
+const val imagesUpload = "ImagesUpload"
+const val imagePreview = "ImagePreview"
+const val imagesPreview = "ImagesPreview"
+const val fileUpload = "FileUpload"
+const val filesUpload = "FilesUpload"
+const val filePreview = "FilePreview"
+const val filesPreview = "FilesPreview"

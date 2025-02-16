@@ -1,6 +1,7 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.edit
 
-import top.potmot.core.business.meta.EntityBusiness
+import top.potmot.core.business.meta.LazyGenerateResult
+import top.potmot.core.business.meta.LazyGenerated
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.meta.SubEntityBusiness
@@ -10,6 +11,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.form
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.toElements
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormItemData
 import top.potmot.core.business.view.generate.meta.rules.Rules
 import top.potmot.core.business.view.generate.meta.rules.existValidRules
 import top.potmot.core.business.view.generate.meta.rules.rules
@@ -186,10 +188,10 @@ const clear = () => {
     }
 }
 
-interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDefault, EditTableGen {
-    private fun subFormType(entity: SubEntityBusiness): String {
+interface SubEditFormGen : Generator, EditFormItem, EditFormType, EditNullableValid, EditFormDefault {
+    private fun subEditFormType(entity: SubEntityBusiness): String {
         val rootEntity = entity.path.rootEntity
-        val dataType = entity.components.subFormType.name
+        val dataType = entity.components.editFormType.name
         val submitTypes = listOfNotNull(
             if (rootEntity.canAdd) entity.dto.insertInput else null,
             if (rootEntity.canEdit) entity.dto.updateInput else null
@@ -210,7 +212,7 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
 
             append("export type $dataType = ")
             entity.subEditProperties
-                .formType { it.subEditProperties }
+                .editFormType { it.subEditProperties }
                 .stringify(this)
             line()
             line()
@@ -221,9 +223,9 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
     }
 
     @Throws(ModelException.DefaultItemNotFound::class)
-    private fun subFormDefault(entity: SubEntityBusiness): String {
-        val type = entity.components.subFormType.name
-        val createDefault = entity.components.subFormDefault.name
+    private fun subEditFormDefault(entity: SubEntityBusiness): String {
+        val type = entity.components.editFormType.name
+        val createDefault = entity.components.editFormDefault.name
 
         return buildScopeString(indent) {
             line("import type {$type} from \"./${type}\"")
@@ -245,8 +247,8 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
         ModelException.IndexRefPropertyNotFound::class,
         ModelException.IndexRefPropertyCannotBeList::class
     )
-    private fun subFormRules(entity: SubEntityBusiness, typeNotNull: Boolean): Rules {
-        val type = entity.components.subFormType
+    private fun subEditFormRules(entity: SubEntityBusiness, typeNotNull: Boolean): Rules {
+        val type = entity.components.editFormType
         val properties = entity.subEditNoIdProperties
         val rules = iterableMapOf(
             properties.associateWith { it.rules },
@@ -265,15 +267,18 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
         )
     }
 
-    private fun subFormComponent(entity: SubEntityBusiness, typeNotNull: Boolean): Component {
+    private fun subEditFormComponent(entity: SubEntityBusiness, typeNotNull: Boolean): Pair<Component, List<LazyGenerated>> {
         val formData = "formData"
 
         val rootEntity = entity.path.rootEntity
-        val subFormType = entity.components.subFormType
-        val subFormDefault = entity.components.subFormDefault
+        val subFormType = entity.components.editFormType
+        val subFormDefault = entity.components.editFormDefault
         val subFormRules = entity.rules.subFormRules
 
-        return subForm(
+        val content = entity.subEditNoIdProperties
+            .associateWith { it.toEditFormItem(formData) }
+
+        val component = subForm(
             submitTypes = listOfNotNull(
                 if (rootEntity.canAdd) entity.dto.insertInput else null,
                 if (rootEntity.canEdit) entity.dto.updateInput else null
@@ -289,53 +294,46 @@ interface SubFormGen : Generator, FormItem, FormType, EditNullableValid, FormDef
             formData = formData,
             indent = indent,
             selectOptions = entity.subFormSelects,
-            subValidateItems = entity.subEditProperties.toFormRefValidateItems(),
-            content = entity.subEditNoIdProperties
-                .associateWith { it.toFormItemData(formData) }
+            subValidateItems = entity.subEditProperties.toRefValidateItems(),
+            content = content
         )
+
+        return component to content.values.flatMap { it.lazyItems }
     }
 
-    private fun subFormFiles(entity: SubEntityBusiness, typeNotNull: Boolean) = listOfNotNull(
-        GenerateFile(
-            entity.path.rootEntity,
-            entity.components.subFormType.fullPath,
-            subFormType(entity),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubForm, GenerateTag.FormType),
-        ),
-        if (typeNotNull) null else GenerateFile(
-            entity.path.rootEntity,
-            entity.components.subFormDefault.fullPath,
-            subFormDefault(entity),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubForm, GenerateTag.FormDefault),
-        ),
-        GenerateFile(
-            entity.path.rootEntity,
-            entity.components.subForm.fullPath,
-            stringify(subFormComponent(entity, typeNotNull)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Form, GenerateTag.SubForm),
-        ),
-        GenerateFile(
-            entity.path.rootEntity,
-            entity.rules.subFormRules.fullPath,
-            stringify(subFormRules(entity, typeNotNull)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Rules, GenerateTag.FormRules, GenerateTag.SubForm),
+    fun subEditFormFiles(entity: SubEntityBusiness, typeNotNull: Boolean): LazyGenerateResult {
+        val (component, lazyItems) = subEditFormComponent(entity, typeNotNull)
+
+        val files = listOfNotNull(
+            GenerateFile(
+                entity.path.rootEntity,
+                entity.components.editFormType.fullPath,
+                subEditFormType(entity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubEdit, GenerateTag.FormType),
+            ),
+            if (typeNotNull) null else GenerateFile(
+                entity.path.rootEntity,
+                entity.components.editFormDefault.fullPath,
+                subEditFormDefault(entity),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubEdit, GenerateTag.FormDefault),
+            ),
+            GenerateFile(
+                entity.path.rootEntity,
+                entity.components.editForm.fullPath,
+                stringify(component),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubEdit, GenerateTag.Component),
+            ),
+            GenerateFile(
+                entity.path.rootEntity,
+                entity.rules.subFormRules.fullPath,
+                stringify(subEditFormRules(entity, typeNotNull)),
+                listOf(GenerateTag.FrontEnd, GenerateTag.Form, GenerateTag.SubEdit, GenerateTag.Rules),
+            )
         )
-    )
 
-    fun deepSubFormFiles(entity: EntityBusiness): List<GenerateFile> {
-        val result = mutableListOf<GenerateFile>()
-
-        entity.editSubEntityMap.forEach { (property, entity) ->
-            result +=
-                if (property.listType) {
-                    editTableFiles(entity)
-                } else {
-                    subFormFiles(entity, property.typeNotNull)
-                }
-
-            result += deepSubFormFiles(entity)
-        }
-
-        return result
+        return LazyGenerateResult(
+            files,
+            lazyItems,
+        )
     }
 }

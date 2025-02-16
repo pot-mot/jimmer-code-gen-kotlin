@@ -14,13 +14,13 @@ import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.edit.EditFormItem
 import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.enumeration.AssociationType
 
-class FormItemTest : FormItem {
+class EditFormItemTest : EditFormItem {
     private val formData = "formData"
 
     private val disabled = false
@@ -48,7 +48,7 @@ class FormItemTest : FormItem {
         )
 
     private val GenEntityBusinessView.TargetOf_properties.result: String
-        get() = CommonProperty(mockEntityBusiness, this).toFormItemData(formData, disabled).let {
+        get() = CommonProperty(mockEntityBusiness, this).toEditFormItem(formData, disabled).let {
             var result: String
             builder.apply {
                 result =
@@ -397,7 +397,7 @@ class FormItemTest : FormItem {
     }
 
     private val GenEntityBusinessView.TargetOf_properties.enumResult: String
-        get() = EnumProperty(mockEntityBusiness, this, testEnumBusiness).toFormItemData(formData, disabled).let {
+        get() = EnumProperty(mockEntityBusiness, this, testEnumBusiness).toEditFormItem(formData, disabled).let {
             var result: String
             builder.apply {
                 result =
@@ -422,7 +422,7 @@ import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
 
 
     private val GenEntityBusinessView.TargetOf_properties.associationResult: String
-        get() = AssociationProperty(AssociationPath(mockEntityBusiness, emptyList()), mockEntityBusiness, this, null, baseEntity, associationType!!).toFormItemData(formData, disabled).let {
+        get() = AssociationProperty(AssociationPath(mockEntityBusiness, emptyList()), mockEntityBusiness, this, null, baseEntity, associationType!!).toEditFormItem(formData, disabled).let {
             var result: String
             builder.apply {
                 result =

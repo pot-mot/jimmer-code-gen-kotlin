@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
+package top.potmot.core.business.view.generate.impl.vue3elementPlus.edit
 
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EnumProperty
@@ -11,7 +11,7 @@ import top.potmot.core.business.view.generate.meta.typescript.TsRawValue
 import top.potmot.core.business.view.generate.meta.typescript.TsValue
 import top.potmot.error.ModelException
 
-interface FormDefault {
+interface EditFormDefault {
     fun Iterable<PropertyBusiness>.formDefault(propertyProducer: (entity: SubEntityBusiness) -> Iterable<PropertyBusiness>): TsObject =
         TsObject(
             map { TsProperty(it.name, it.formDefault(propertyProducer)) }

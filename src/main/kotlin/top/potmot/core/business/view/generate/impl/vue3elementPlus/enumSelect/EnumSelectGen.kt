@@ -1,9 +1,10 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.enumSelect
 
-import top.potmot.core.business.meta.EnumBusiness
+import top.potmot.core.business.meta.LazyEnumSelect
+import top.potmot.core.business.meta.LazyEnumView
 import top.potmot.core.business.view.generate.enumPath
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.options
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.meta.typescript.Import
 import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
@@ -17,12 +18,16 @@ import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 
-interface EnumSelectGen: Generator {
-    fun enumSelectComponent(
-        enum: EnumBusiness,
-        nullable: Boolean,
-    ): Component {
-        val view = enum.components.view
+interface EnumSelectGen : Generator {
+    private fun enumSelectComponent(
+        data: LazyEnumSelect,
+    ): Pair<Component, LazyEnumView> {
+        val enum = data.enum
+        val multiple = data.multiple
+        val nullable = data.nullable
+
+        val component = data.component
+        val type = data.type
 
         val modelValue = "modelValue"
         val options = enum.constants
@@ -31,8 +36,9 @@ interface EnumSelectGen: Generator {
         val selectElement = select(
             modelValue = modelValue,
             comment = enum.comment,
-            clearable = nullable,
-            valueOnClear = if (nullable) "undefined" else null,
+            multiple = multiple,
+            clearable = multiple || nullable,
+            valueOnClear = if (multiple) "[]" else if (nullable) "undefined" else null,
             content = listOf(
                 options(
                     options = options,
@@ -41,15 +47,15 @@ interface EnumSelectGen: Generator {
                     label = { null },
                     content = listOf(
                         TagElement(
-                            view.name,
+                            component.name,
                             props = listOf(PropBind("value", option))
                         )
                     )
                 ),
                 slotTemplate(
-                    "label", content = listOf(
+                    "tag", content = listOf(
                         TagElement(
-                            view.name,
+                            component.name,
                             props = listOf(PropBind("value", modelValue)),
                             directives = listOfNotNull(if (nullable) VIf(modelValue) else null)
                         ),
@@ -62,29 +68,29 @@ interface EnumSelectGen: Generator {
             imports = listOf(
                 Import(enumPath, options),
                 ImportType(enumPath, enum.name),
-                ImportDefault("@/" + view.fullPath, view.name)
+                ImportDefault("@/" + component.fullPath, component.name)
             ),
             models = listOf(
-                ModelProp(modelValue, if (nullable) "${enum.name} | undefined" else enum.name)
+                ModelProp(modelValue, type)
             ),
             template = listOf(
                 selectElement
             )
-        )
+        ) to data.lazyView
     }
 
-    fun enumSelectFile(enum: EnumBusiness) = listOf(
-        GenerateFile(
-            enum,
-            enum.components.select.fullPath,
-            stringify(enumSelectComponent(enum, nullable = false)),
+    fun enumSelectFile(
+        data: LazyEnumSelect,
+    ): Pair<GenerateFile, LazyEnumView> {
+        val (component, lazyView) = enumSelectComponent(data)
+
+        val file = GenerateFile(
+            data.enum,
+            data.component.fullPath,
+            stringify(component),
             listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumSelect),
-        ),
-        GenerateFile(
-            enum,
-            enum.components.nullableSelect.fullPath,
-            stringify(enumSelectComponent(enum, nullable = true)),
-            listOf(GenerateTag.FrontEnd, GenerateTag.Component, GenerateTag.Enum, GenerateTag.EnumNullableSelect),
         )
-    )
+
+        return file to lazyView
+    }
 }

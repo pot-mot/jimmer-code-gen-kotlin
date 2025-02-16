@@ -3,12 +3,12 @@ package top.potmot.business.view.vue3.elementPlus
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormRefValidateItem
-import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.editTable
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.edit.FormRefValidateItem
+import top.potmot.core.business.view.generate.impl.vue3elementPlus.edit.editTable
 import top.potmot.core.business.meta.SelectOption
 import top.potmot.core.business.view.generate.staticPath
 
-class EditTableGenTest {
+class SubEditTableGenTest {
     private val builder = Vue3ElementPlusViewGenerator.componentBuilder
 
     private val index = "${'$'}index"

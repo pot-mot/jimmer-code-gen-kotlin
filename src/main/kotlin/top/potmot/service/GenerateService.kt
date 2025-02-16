@@ -139,13 +139,8 @@ class GenerateService(
             if (containsAll || containsBackEnd || GenerateType.Route in typeSet) {
                 files += DynamicRouteGenerator.generate(entityBusinesses)
             }
-            if (containsAll || containsFrontEnd|| GenerateType.Enum in typeSet || GenerateType.EnumComponent in typeSet) {
-                viewGenerator.generateEnum(enumBusinesses).forEach {
-                    files += it.copy(path = "${viewDir}/${it.path}")
-                }
-            }
             if (containsAll || containsFrontEnd || GenerateType.View in typeSet) {
-                viewGenerator.generateView(entityBusinesses).forEach {
+                viewGenerator.generateEntity(entityBusinesses).forEach {
                     files += it.copy(path = "${viewDir}/${it.path}")
                 }
             }

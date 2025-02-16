@@ -773,7 +773,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
 </template>
 )]
             """.trimIndent(),
-            Vue3ElementPlusViewGenerator.generateView(listOf(longAssociationToOneTargetEntity))
+            Vue3ElementPlusViewGenerator.generateEntity(listOf(longAssociationToOneTargetEntity))
                 .map { it.path to it.content }.toString()
         )
     }
@@ -1637,7 +1637,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
 </template>
 )]
             """.trimIndent(),
-            Vue3ElementPlusViewGenerator.generateView(listOf(longAssociationToManyTargetEntity))
+            Vue3ElementPlusViewGenerator.generateEntity(listOf(longAssociationToManyTargetEntity))
                 .map { it.path to it.content }.toString()
         )
     }
