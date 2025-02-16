@@ -63,6 +63,7 @@ interface PageGen : Generator {
 
     private fun pageComponent(entity: RootEntityBusiness): Component {
         val table = entity.components.table
+        val viewForm = entity.components.viewForm
         val addForm = entity.components.addForm
         val editForm = entity.components.editForm
         val queryForm = entity.components.queryForm
@@ -102,6 +103,7 @@ interface PageGen : Generator {
                 Import("vue", "ref"),
                 Import(
                     "@element-plus/icons-vue", listOfNotNull(
+                        if (!pageCanViewDetail) null else "View",
                         if (!pageCanAdd) null else "Plus",
                         if (!pageCanEdit) null else "EditPen",
                         if (!pageCanDelete) null else "Delete"
@@ -127,6 +129,7 @@ interface PageGen : Generator {
 
             imports += listOfNotNull(
                 table,
+                if (!pageCanViewDetail) null else viewForm,
                 if (!pageCanAdd) null else addForm,
                 if (!pageCanEdit) null else editForm,
                 if (!pageCanQuery) null else queryForm
@@ -232,6 +235,17 @@ interface PageGen : Generator {
             pageCardChildren += TagElement("div") {
                 props += PropBind("class", "page-operations", isLiteral = true)
 
+                if (pageCanViewDetail) {
+                    children += button(
+                        content = "新增",
+                        type = ElementPlusComponents.Type.INFO,
+                        icon = "View",
+                    ).merge {
+                        directives += VIf("userStore.permissions.includes('${permission.get}')")
+                        events += EventBind("click", "startView")
+                    }
+                }
+
                 if (pageCanAdd) {
                     children += button(
                         content = "新增",
@@ -260,41 +274,43 @@ interface PageGen : Generator {
             pageCardChildren += TagElement("template") {
                 directives += VIf(if (queryByPage) "pageData" else "rows")
 
-                children += TagElement(
-                    table.name,
-                    props = listOf(
-                        PropBind("rows", if (queryByPage) "pageData.rows" else "rows"),
-                    ),
-                    events = listOf(
-                        EventBind("selectionChange", "handleSelectionChange")
-                    ),
-                    children = listOf(
-                        slotTemplate(
-                            "operations",
-                            props = listOf("row"),
-                            content = listOfNotNull(
-                                if (!pageCanEdit) null else button(
-                                    content = "编辑",
-                                    type = ElementPlusComponents.Type.WARNING,
-                                    icon = "EditPen",
-                                    link = true,
-                                ).merge {
-                                    directives += VIf("userStore.permissions.includes('${permission.update}')")
-                                    events += EventBind("click", "startEdit(row.$idName)")
-                                },
-                                if (!pageCanDelete) null else button(
-                                    content = "删除",
-                                    type = ElementPlusComponents.Type.DANGER,
-                                    icon = "Delete",
-                                    link = true,
-                                ).merge {
-                                    directives += VIf("userStore.permissions.includes('${permission.delete}')")
-                                    events += EventBind("click", "handleDelete([row.$idName])")
-                                },
-                            )
+                children += TagElement(table.name) {
+                    props += PropBind("rows", if (queryByPage) "pageData.rows" else "rows")
+                    events += EventBind("selectionChange", "handleSelectionChange")
+                    children += slotTemplate(
+                        "operations",
+                        props = listOf("row"),
+                        content = listOfNotNull(
+                            if (!pageCanViewDetail) null else button(
+                                content = "详情",
+                                type = ElementPlusComponents.Type.INFO,
+                                icon = "View",
+                                link = true,
+                            ).merge {
+                                directives += VIf("userStore.permissions.includes('${permission.get}')")
+                                events += EventBind("click", "startView(row.$idName)")
+                            },
+                            if (!pageCanEdit) null else button(
+                                content = "编辑",
+                                type = ElementPlusComponents.Type.WARNING,
+                                icon = "EditPen",
+                                link = true,
+                            ).merge {
+                                directives += VIf("userStore.permissions.includes('${permission.update}')")
+                                events += EventBind("click", "startEdit(row.$idName)")
+                            },
+                            if (!pageCanDelete) null else button(
+                                content = "删除",
+                                type = ElementPlusComponents.Type.DANGER,
+                                icon = "Delete",
+                                link = true,
+                            ).merge {
+                                directives += VIf("userStore.permissions.includes('${permission.delete}')")
+                                events += EventBind("click", "handleDelete([row.$idName])")
+                            },
                         )
                     )
-                )
+                }
 
                 if (queryByPage) {
                     children += emptyLineElement
@@ -304,6 +320,17 @@ interface PageGen : Generator {
                         total = "pageData.totalRowCount",
                     )
                 }
+            }
+
+            if (pageCanViewDetail) {
+                script += listOf(
+                    ConstVariable(
+                        "get${entity.name}",
+                        null,
+                        "withLoading((id: $idType) => api.$apiServiceName.get({id}))"
+                    ),
+                    emptyLineCode,
+                )
             }
 
             if (pageCanAdd) {
@@ -401,6 +428,63 @@ interface PageGen : Generator {
 
             script += selectQueries.map { it.second }.join(listOf(emptyLineCode)).flatten()
 
+            if (pageCanViewDetail) {
+                val detailViewType = entity.dto.detailView
+
+                imports += Import("vue", "watch")
+                imports += ImportType(staticPath, detailViewType)
+                script += listOf(
+                    emptyLineCode,
+                    commentLine("详情"),
+                    ConstVariable("viewDialogVisible", null, "ref<boolean>(false)"),
+                    emptyLineCode,
+                    ConstVariable("detailView", null, "ref<$detailViewType | undefined>(undefined)"),
+                    emptyLineCode,
+                    Function(
+                        async = true,
+                        name = "startView",
+                        args = listOf(FunctionArg("id", idType)),
+                        body = buildFunctionBody(indent) {
+                            line("detailView.value = await get${entity.name}(id)")
+                            line("if (detailView.value === undefined) {")
+                            scope {
+                                line("sendMessage('查看的${entity.comment}不存在', 'error')")
+                                line("return")
+                            }
+                            line("}")
+                            append("viewDialogVisible.value = true")
+                        },
+                    ),
+                    emptyLineCode,
+                    CodeBlock(
+                        buildScopeString(indent) {
+                            line("watch(() => viewDialogVisible.value, (newVal) => {")
+                            scope {
+                                line("if (!newVal) {")
+                                scope {
+                                    line("detailView.value = undefined")
+                                }
+                                line("}")
+                            }
+                            line("})")
+                        }
+                    )
+                )
+
+                template += emptyLineElement
+                template += dialog(
+                    modelValue = "viewDialogVisible",
+                    content = listOf(
+                        TagElement(viewForm.name) {
+                            directives += VIf("detailView !== undefined")
+                            props += PropBind("value", "detailView")
+                        }
+                    )
+                ).merge {
+                    directives += VIf("userStore.permissions.includes('${permission.get}')")
+                }
+            }
+
             if (pageCanAdd) {
                 script += listOf(
                     emptyLineCode,
@@ -443,9 +527,7 @@ interface PageGen : Generator {
                 template += dialog(
                     modelValue = "addDialogVisible",
                     content = listOf(
-                        TagElement(
-                            addForm.name
-                        ).merge {
+                        TagElement(addForm.name) {
                             props += insertSelectNames.map { PropBind(it, it) }
                             props += PropBind("submitLoading", "isLoading")
                             events += EventBind("submit", "submitAdd")
@@ -460,6 +542,7 @@ interface PageGen : Generator {
             if (pageCanEdit) {
                 val editFormType = entity.components.editFormType
 
+                imports += Import("vue", "watch")
                 imports += ImportType("@/" + editFormType.fullPathNoSuffix, editFormType.name)
                 script += listOf(
                     emptyLineCode,
@@ -508,18 +591,30 @@ interface PageGen : Generator {
                     Function(
                         name = "cancelEdit",
                         body = listOf(
-                            CodeBlock("editDialogVisible.value = false\nupdateInput.value = undefined")
+                            CodeBlock("editDialogVisible.value = false")
                         )
                     ),
+                    emptyLineCode,
+                    CodeBlock(
+                        buildScopeString(indent) {
+                            line("watch(() => editDialogVisible.value, (newVal) => {")
+                            scope {
+                                line("if (!newVal) {")
+                                scope {
+                                    line("updateInput.value = undefined")
+                                }
+                                line("}")
+                            }
+                            line("})")
+                        }
+                    )
                 )
 
                 template += emptyLineElement
                 template += dialog(
                     modelValue = "editDialogVisible",
                     content = listOf(
-                        TagElement(
-                            editForm.name
-                        ).merge {
+                        TagElement(editForm.name) {
                             directives += VIf("updateInput !== undefined")
                             directives += VModel("updateInput")
                             props += updateSelectNames.map { PropBind(it, it) }
