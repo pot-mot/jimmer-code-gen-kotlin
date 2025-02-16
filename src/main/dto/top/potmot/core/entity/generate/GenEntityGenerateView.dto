@@ -3,6 +3,7 @@ export top.potmot.entity.GenEntity
 GenEntityGenerateFileFillView {
     id
     name
+    packagePath
 
     table {
         id

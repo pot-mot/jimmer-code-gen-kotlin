@@ -198,7 +198,6 @@ private fun GenTableConvertView.toEntityInput(
         ?.mapIndexed { index, it ->
             // 处理这些 unMergeProperties 的 orderKey，使它们不和 mergedProperties 冲突
             PropertyInput(it.toEntity {
-                typeTable = null
                 if (orderKey >= minOrderKey) {
                     orderKey = (maxOrderKey + index + 1).toLong()
                 }

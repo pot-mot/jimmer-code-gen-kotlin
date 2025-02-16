@@ -4,6 +4,7 @@ import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.transaction.support.TransactionTemplate
+import top.potmot.entity.GenEntity
 import top.potmot.entity.GenEnum
 import top.potmot.entity.GenTable
 import top.potmot.entity.dto.GenEntityConfigInput
@@ -179,31 +180,6 @@ private fun GenPropertyModelView.toConfigInput(
     enumId = enumNameIdMap[enum?.name]
 )
 
-private fun GenPropertyEntityConfigInput.toPureInsertInput(entityId: Long) = toEntity {
-    this.entityId = entityId
-
-    idProperty = false
-    generatedId = false
-    generatedIdAnnotation = null
-
-    logicalDelete = false
-    logicalDeletedAnnotation = null
-
-    keyProperty = false
-    keyGroup = null
-
-    associationType = null
-    idView = false
-    idViewTarget = null
-    mappedBy = null
-    inputNotNull = null
-    joinTableMeta = null
-    joinColumnMetas = null
-    dissociateAnnotation = null
-
-    longAssociation = false
-}
-
 private data class EntityModelBusinessViewWithTable(
     val entity: GenEntityModelView,
     val table: GenTableModelBusinessFillView,
@@ -211,7 +187,7 @@ private data class EntityModelBusinessViewWithTable(
 )
 
 @Throws(ModelBusinessInputException::class)
-private fun List<EntityModelBusinessView>.toInputs(
+private fun List<EntityModelBusinessView>.toConfigInputs(
     tables: List<GenTableModelBusinessFillView>,
     enums: List<GenEnumModelBusinessFillView>,
 ): List<EntityModelBusinessInput> {
@@ -253,28 +229,51 @@ private fun List<EntityModelBusinessView>.toInputs(
     }
 }
 
+private fun GenPropertyEntityConfigInput.toPureInput(entityId: Long) = toEntity {
+    this.entityId = entityId
+
+    idProperty = false
+    generatedId = false
+    generatedIdAnnotation = null
+
+    logicalDelete = false
+    logicalDeletedAnnotation = null
+
+    keyProperty = false
+    keyGroup = null
+
+    associationType = null
+    idView = false
+    idViewTarget = null
+    mappedBy = null
+    inputNotNull = null
+    joinTableMeta = null
+    joinColumnMetas = null
+    dissociateAnnotation = null
+}
+
+private fun EntityModelBusinessInput.toPureInput(): GenEntity {
+    val configEntity = entity
+    val configProperties = properties
+
+    return configEntity.toEntity {
+        properties += configProperties.map { it.toPureInput(entity.id) }
+    }
+}
+
 interface EntityBusinessConfig {
     val transactionTemplate: TransactionTemplate
 
     fun KSqlClient.configEntities(
-        inputs: List<EntityModelBusinessInput>,
+        entities: List<EntityModelBusinessInput>,
     ) = transactionTemplate.execute {
-        updateInputs(inputs.map { it.entity }, AssociatedSaveMode.REPLACE)
-
-        insertEntities(
-            inputs.flatMap {
-                it.properties.map { property -> property.toPureInsertInput(it.entity.id) }
-            }
-        )
+        updateEntities(entities.map { it.toPureInput() }, AssociatedSaveMode.REPLACE)
     }
 
     fun KSqlClient.configEntity(
-        input: EntityModelBusinessInput,
+        entity: EntityModelBusinessInput,
     ) = transactionTemplate.execute {
-        val (entity, properties) = input
-
-        update(entity, AssociatedSaveMode.REPLACE)
-        insertEntities(properties.map { it.toPureInsertInput(entity.id) })
+        update(entity.toPureInput(), AssociatedSaveMode.REPLACE)
     }
 
     @Throws(ModelBusinessInputException::class)
@@ -292,7 +291,7 @@ interface EntityBusinessConfig {
             select(table.fetch(GenEnumModelBusinessFillView::class))
         }
 
-        val inputs = views.toInputs(tables, enums)
+        val inputs = views.toConfigInputs(tables, enums)
 
         configEntities(inputs)
     }

@@ -37,6 +37,7 @@ import top.potmot.entity.dto.IdName
 import top.potmot.entity.dto.TableEntityNotNullPair
 import top.potmot.core.config.merge
 import top.potmot.entity.dto.GenEnumGenerateFileFillView
+import top.potmot.entity.dto.IdNamePackagePath
 import top.potmot.entity.id
 import top.potmot.entity.modelId
 import top.potmot.entity.table
@@ -152,14 +153,14 @@ class GenerateService(
                     entities.map {
                         TableEntityNotNullPair(
                             table = IdName(it.table.id, it.table.name),
-                            entity = IdName(it.id, it.name)
+                            entity = IdNamePackagePath(it.id, it.name, it.packagePath)
                         )
                     }
                 } else {
                     sqlClient.listEntity<GenEntityGenerateFileFillView>(modelId = id).map {
                         TableEntityNotNullPair(
                             table = IdName(it.table.id, it.table.name),
-                            entity = IdName(it.id, it.name)
+                            entity = IdNamePackagePath(it.id, it.name, it.packagePath)
                         )
                     }
                 }
@@ -167,11 +168,11 @@ class GenerateService(
             val resultEnums =
                 if (lazyEnums.isInitialized()) {
                     enums.map {
-                        IdName(it.id, it.name)
+                        IdNamePackagePath(it.id, it.name, it.packagePath)
                     }
                 } else {
                     sqlClient.listEnum<GenEnumGenerateFileFillView>(modelId = id).map {
-                        IdName(it.id, it.name)
+                        IdNamePackagePath(it.id, it.name, it.packagePath)
                     }
                 }
 

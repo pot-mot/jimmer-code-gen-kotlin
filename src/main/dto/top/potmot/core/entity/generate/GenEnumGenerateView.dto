@@ -3,6 +3,7 @@ export top.potmot.entity.GenEnum
 GenEnumGenerateFileFillView {
     id
     name
+    packagePath
 }
 
 GenEnumGenerateView {

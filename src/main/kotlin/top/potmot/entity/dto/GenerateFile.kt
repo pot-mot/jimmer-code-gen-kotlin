@@ -17,7 +17,7 @@ data class MainIdName(
 
 data class TableEntityNotNullPair(
     val table: IdName,
-    val entity: IdName,
+    val entity: IdNamePackagePath,
 )
 
 data class TableEntityPair(
@@ -42,7 +42,7 @@ data class GenerateFile(
 data class GenerateResult(
     val files: List<GenerateFile>,
     val tableEntityPairs: List<TableEntityNotNullPair>,
-    val enums: List<IdName>,
+    val enums: List<IdNamePackagePath>,
 )
 
 private val GenTableGenerateView.idName
