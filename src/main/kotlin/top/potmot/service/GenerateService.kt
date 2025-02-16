@@ -36,6 +36,7 @@ import top.potmot.entity.dto.GenerateResult
 import top.potmot.entity.dto.IdName
 import top.potmot.entity.dto.TableEntityNotNullPair
 import top.potmot.core.config.merge
+import top.potmot.entity.dto.GenEnumGenerateFileFillView
 import top.potmot.entity.id
 import top.potmot.entity.modelId
 import top.potmot.entity.table
@@ -75,9 +76,10 @@ class GenerateService(
                 sqlClient.listEntity<GenEntityGenerateView>(id)
             }
             val entities by lazyEntities
-            val enums by lazy {
-                sqlClient.listEnum(id)
+            val lazyEnums = lazy {
+                sqlClient.listEnum<GenEnumGenerateView>(id)
             }
+            val enums by lazyEnums
 
             val enumBusinesses by lazy {
                 enums.map { EnumBusiness(it) }
@@ -162,9 +164,21 @@ class GenerateService(
                     }
                 }
 
+            val resultEnums =
+                if (lazyEnums.isInitialized()) {
+                    enums.map {
+                        IdName(it.id, it.name)
+                    }
+                } else {
+                    sqlClient.listEnum<GenEnumGenerateFileFillView>(modelId = id).map {
+                        IdName(it.id, it.name)
+                    }
+                }
+
             GenerateResult(
                 files.sortedBy { it.path },
-                tableEntityPairs
+                tableEntityPairs,
+                resultEnums,
             )
         }
 
@@ -194,9 +208,9 @@ class GenerateService(
             select(table.fetch(V::class))
         }
 
-    private fun KSqlClient.listEnum(modelId: Long) =
+    private inline fun <reified V : View<GenEnum>> KSqlClient.listEnum(modelId: Long) =
         executeQuery(GenEnum::class) {
             where(table.modelId eq modelId)
-            select(table.fetch(GenEnumGenerateView::class))
+            select(table.fetch(V::class))
         }
 }

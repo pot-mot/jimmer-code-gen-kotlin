@@ -42,6 +42,7 @@ data class GenerateFile(
 data class GenerateResult(
     val files: List<GenerateFile>,
     val tableEntityPairs: List<TableEntityNotNullPair>,
+    val enums: List<IdName>,
 )
 
 private val GenTableGenerateView.idName
