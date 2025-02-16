@@ -6,7 +6,7 @@ import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.enumeration.GenLanguage
 
 object KotlinEntityCodeGenerator : EntityCodeGenerator() {
-    override val suffix = GenLanguage.JAVA.suffix
+    override val suffix = GenLanguage.KOTLIN.suffix
 
     override fun stringify(entity: GenEntityGenerateView): String =
         KotlinEntityBuilder.build(entity)
