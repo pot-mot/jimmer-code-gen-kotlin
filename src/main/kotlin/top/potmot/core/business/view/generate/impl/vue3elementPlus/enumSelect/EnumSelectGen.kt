@@ -13,7 +13,6 @@ import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.core.business.view.generate.meta.vue3.ModelProp
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
 import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
@@ -26,7 +25,7 @@ interface EnumSelectGen : Generator {
         val multiple = data.multiple
         val nullable = data.nullable
 
-        val component = data.component
+        val singleView = data.lazySingleView.component
         val type = data.type
 
         val modelValue = "modelValue"
@@ -47,17 +46,18 @@ interface EnumSelectGen : Generator {
                     label = { null },
                     content = listOf(
                         TagElement(
-                            component.name,
+                            singleView.name,
                             props = listOf(PropBind("value", option))
                         )
                     )
                 ),
                 slotTemplate(
-                    "tag", content = listOf(
+                    "label",
+                    props = listOf("value"),
+                    content = listOf(
                         TagElement(
-                            component.name,
-                            props = listOf(PropBind("value", modelValue)),
-                            directives = listOfNotNull(if (nullable) VIf(modelValue) else null)
+                            singleView.name,
+                            props = listOf(PropBind("value", "value")),
                         ),
                     )
                 ),
@@ -68,7 +68,7 @@ interface EnumSelectGen : Generator {
             imports = listOf(
                 Import(enumPath, options),
                 ImportType(enumPath, enum.name),
-                ImportDefault("@/" + component.fullPath, component.name)
+                ImportDefault("@/" + singleView.fullPath, singleView.name)
             ),
             models = listOf(
                 ModelProp(modelValue, type)
@@ -76,7 +76,7 @@ interface EnumSelectGen : Generator {
             template = listOf(
                 selectElement
             )
-        ) to data.lazyView
+        ) to data.lazySingleView
     }
 
     fun enumSelectFile(

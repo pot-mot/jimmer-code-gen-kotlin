@@ -301,7 +301,9 @@ interface SubEditFormGen : Generator, EditFormItem, EditFormType, EditNullableVa
         return component to content.values.flatMap { it.lazyItems }
     }
 
-    fun subEditFormFiles(entity: SubEntityBusiness, typeNotNull: Boolean): LazyGenerateResult {
+    fun subEditFormFiles(entity: SubEntityBusiness, nullable: Boolean): LazyGenerateResult {
+        val typeNotNull = !nullable
+
         val (component, lazyItems) = subEditFormComponent(entity, typeNotNull)
 
         val files = listOfNotNull(

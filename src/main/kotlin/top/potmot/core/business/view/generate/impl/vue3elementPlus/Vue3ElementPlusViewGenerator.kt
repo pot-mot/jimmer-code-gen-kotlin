@@ -83,12 +83,12 @@ object Vue3ElementPlusViewGenerator :
 
     override fun generateEntity(entities: Iterable<RootEntityBusiness>): List<GenerateFile> {
         val files = mutableListOf<GenerateFile>()
-        val generatedSet = mutableSetOf<LazyGenerated>()
+        val generatedKeySet = mutableSetOf<String>()
 
         entities.forEach { entity ->
             generate(entity)?.let {
                 files += it.files
-                files += generateLazy(it.lazyItems, generatedSet)
+                files += generateLazy(it.lazyItems, generatedKeySet)
             }
         }
 

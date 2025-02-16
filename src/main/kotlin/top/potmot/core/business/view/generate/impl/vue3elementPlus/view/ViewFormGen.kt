@@ -11,6 +11,7 @@ import top.potmot.core.business.view.generate.meta.typescript.ImportType
 import top.potmot.core.business.view.generate.meta.vue3.Component
 import top.potmot.core.business.view.generate.meta.vue3.Prop
 import top.potmot.core.business.view.generate.meta.vue3.PropBind
+import top.potmot.core.business.view.generate.meta.vue3.VIf
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
@@ -19,6 +20,7 @@ fun viewForm(
     formData: String,
     dataType: String,
     dataTypePath: String,
+    nullable: Boolean,
     content: List<ViewItemData>,
 ) = Component {
     imports += listOf(
@@ -26,11 +28,18 @@ fun viewForm(
     )
     imports += content.flatMap { it.imports }
 
-    props += Prop(formData, dataType)
+    if (nullable) {
+        props += Prop(formData, "$dataType | undefined")
+    } else {
+        props += Prop(formData, dataType)
+    }
 
     template += descriptions(
         content = content.toElements(),
     ).merge {
+        if (nullable) {
+            directives += VIf(formData)
+        }
         props += PropBind("class", "view-form", isLiteral = true)
     }
 }
@@ -45,7 +54,8 @@ interface ViewFormGen: Generator, ViewFormItem {
             formData = formData,
             dataType = entity.dto.detailView,
             dataTypePath = staticPath,
-            content = content
+            content = content,
+            nullable = false,
         )
 
         return component to content.flatMap { it.lazyItems }
@@ -69,7 +79,7 @@ interface ViewFormGen: Generator, ViewFormItem {
         )
     }
 
-    private fun viewFormComponent(entity: SubEntityBusiness): Pair<Component, List<LazyGenerated>> {
+    private fun viewFormComponent(entity: SubEntityBusiness, nullable: Boolean): Pair<Component, List<LazyGenerated>> {
         val formData = "value"
 
         val content = entity.viewFormProperties.flatMap { it.viewFormItem() }
@@ -78,14 +88,15 @@ interface ViewFormGen: Generator, ViewFormItem {
             formData = formData,
             dataType = entity.dto.detailView,
             dataTypePath = staticPath,
-            content = content
+            content = content,
+            nullable = nullable,
         )
 
         return component to content.flatMap { it.lazyItems }
     }
 
     fun viewFormFiles(entity: SubEntityBusiness, nullable: Boolean): LazyGenerateResult {
-        val (component, lazyItems) = viewFormComponent(entity)
+        val (component, lazyItems) = viewFormComponent(entity, nullable)
 
         val files = listOf(
             GenerateFile(

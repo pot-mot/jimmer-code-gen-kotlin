@@ -23,23 +23,15 @@ data class CommonValidateItem(
 data class FormRefValidateItem(
     val componentName: String,
     val refName: String,
-    val multiple: Boolean,
 ) : ValidateItem {
     private val componentLowerName = componentName.replaceFirstChar { it.lowercase() }
 
-    val ref = ConstVariable(refName, null, "ref<${if (multiple) "Array<$formExposeType>" else formExposeType}>()")
+    val ref = ConstVariable(refName, null, "ref<$formExposeType>()")
 
     override val name: String = "${componentLowerName}Valid"
 
     override val expression: String =
-        if (multiple)
-            "await Promise.all(\n" +
-                    "    ${refName}.value?.map(\n" +
-                    "        it => it.validate().catch(() => false)\n" +
-                    "    )\n" +
-                    ").catch(() => false)"
-        else
-            "await ${refName}.value?.validate().catch(() => false) ?? false"
+        "await ${refName}.value?.validate().catch(() => false) ?? false"
 
     override val imports = listOf(formExposeImport)
 }
@@ -52,6 +44,5 @@ fun Iterable<PropertyBusiness>.toRefValidateItems(): Collection<FormRefValidateI
             FormRefValidateItem(
                 componentName = subEdit.component.name,
                 refName = subEdit.componentRef,
-                multiple = it.listType
             )
         }

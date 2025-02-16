@@ -10,7 +10,7 @@ import top.potmot.core.business.meta.PropertyFormType
 private const val BOOLEAN_MIN_WIDTH = 43
 private const val DATETIME_MIN_WIDTH = 193
 private const val NUMBER_MIN_WIDTH = 161
-private const val ENUM_MIN_WIDTH = 161
+private const val ENUM_MIN_WIDTH = 129
 private const val ASSOCIATION_ID_MIN_WIDTH = 161
 private const val COMMON_MIN_WIDTH = 129
 

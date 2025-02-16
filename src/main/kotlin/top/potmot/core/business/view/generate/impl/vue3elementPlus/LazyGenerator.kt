@@ -26,13 +26,13 @@ interface LazyGenerator :
     EnumViewGen {
     fun generateLazy(
         lazyItems: Iterable<LazyGenerated>,
-        generatedSet: MutableSet<LazyGenerated>,
+        generatedKeySet: MutableSet<String>,
     ): List<GenerateFile> {
         val files = mutableListOf<GenerateFile>()
         val subLazyItems = mutableListOf<LazyGenerated>()
 
         lazyItems.distinct()
-            .filter { it !in generatedSet }
+            .filter { it.key !in generatedKeySet }
             .forEach {
                 when (it) {
                     is LazyIdSelect -> {
@@ -40,7 +40,8 @@ interface LazyGenerator :
                     }
 
                     is LazySubEdit -> {
-                        val result = if (it.multiple)subEditTableFiles(it.entity) else  subEditFormFiles(it.entity, it.nullable)
+                        val result =
+                            if (it.multiple) subEditTableFiles(it.entity) else subEditFormFiles(it.entity, it.nullable)
                         files += result.files
                         subLazyItems += result.lazyItems
                     }
@@ -56,7 +57,8 @@ interface LazyGenerator :
                     }
 
                     is LazySubView -> {
-                        val result = if (it.multiple) viewTableFiles(it.entity) else viewFormFiles(it.entity, it.nullable)
+                        val result =
+                            if (it.multiple) viewTableFiles(it.entity) else viewFormFiles(it.entity, it.nullable)
 
                         files += result.files
                         subLazyItems += result.lazyItems
@@ -70,11 +72,11 @@ interface LazyGenerator :
                     }
                 }
 
-                generatedSet += it
+                generatedKeySet += it.key
             }
 
         if (subLazyItems.isNotEmpty()) {
-            files += generateLazy(subLazyItems, generatedSet)
+            files += generateLazy(subLazyItems, generatedKeySet)
         }
 
         return files
