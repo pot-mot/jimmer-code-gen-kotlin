@@ -1,7 +1,13 @@
 export top.potmot.entity.GenEntity
 
-input GenEntityConfigInput {
-    id!
+GenEntityConfigView {
+    id
+
+    table {
+        id
+        name
+    }
+
     name
     overwriteName
     comment
@@ -22,17 +28,23 @@ input GenEntityConfigInput {
     pageCanDelete
     queryByPage
 
+    !where(columnId is not null)
     properties {
-        id!
+        id
         name
         overwriteName
         comment
         overwriteComment
         remark
 
+        idProperty
         generatedId
         generatedIdAnnotation
 
+        keyProperty
+        keyGroup
+
+        logicalDelete
         logicalDeletedAnnotation
 
         otherAnnotation
@@ -51,6 +63,25 @@ input GenEntityConfigInput {
         inLongAssociationView
         specialFormType
 
+        type
         listType
+        typeNotNull
+        flat(typeTable) {
+            id as typeTableId
+            entity as typeEntity {
+                id
+                name
+            }
+        }
+        associationType
+        mappedBy
+        idView
+        idViewTarget
+        joinColumnMetas
+        joinTableMeta
+        flat(enum) {
+            id as enumId
+            name as enumName
+        }
     }
 }

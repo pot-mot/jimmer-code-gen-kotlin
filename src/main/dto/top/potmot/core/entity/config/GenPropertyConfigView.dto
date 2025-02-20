@@ -1,8 +1,7 @@
 export top.potmot.entity.GenProperty
 
-GenPropertyModelView {
+GenPropertyConfigView {
     #allScalars(this)
-    -id
 
     -idProperty
     -generatedId
@@ -23,13 +22,6 @@ GenPropertyModelView {
     -joinColumnMetas
     -dissociateAnnotation
 
-    flat(typeTable) {
-        entity as typeEntity {
-            name
-        }
-    }
-
-    enum {
-        name
-    }
+    typeTableId
+    enumId
 }

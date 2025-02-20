@@ -5,41 +5,50 @@ import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
 import org.babyfish.jimmer.sql.kt.ast.table.isNull
-import top.potmot.core.entity.config.EntityModelBusinessView
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenProperty
 import top.potmot.entity.`column?`
-import top.potmot.entity.dto.GenEntityModelView
-import top.potmot.entity.dto.GenPropertyModelView
+import top.potmot.entity.dto.GenEntityExportView
+import top.potmot.entity.dto.GenPropertyExportView
 import top.potmot.entity.entityId
 import top.potmot.entity.id
 import top.potmot.entity.modelId
 
-interface ModelEntityExport {
-    val sqlClient: KSqlClient
+data class EntityExportView(
+    /**
+     * 表直接转换得到的实体
+     */
+    val entity: GenEntityExportView,
 
-    fun exportModelEntityBusinessViews(
+    /**
+     * 其余非转换属性
+     */
+    val properties: List<GenPropertyExportView>,
+)
+
+interface ModelEntitiesExport {
+    fun KSqlClient.exportModelEntities(
         modelId: Long,
         excludeEntityIds: List<Long>?,
-    ): List<EntityModelBusinessView> {
-        val entities = sqlClient.executeQuery(GenEntity::class) {
+    ): List<EntityExportView> {
+        val entities = executeQuery(GenEntity::class) {
             where(table.modelId eq modelId)
             excludeEntityIds?.takeIf { it.isNotEmpty() }?.let {
                 where(table.id valueNotIn it)
             }
-            select(table.fetch(GenEntityModelView::class))
+            select(table.fetch(GenEntityExportView::class))
         }
 
         // 非列映射的属性
-        val propertiesEntityIdMap = sqlClient.executeQuery(GenProperty::class) {
+        val propertiesEntityIdMap = executeQuery(GenProperty::class) {
             where(table.`column?`.isNull())
             where(table.entityId valueIn entities.map { it.id })
-            select(table.entityId, table.fetch(GenPropertyModelView::class))
+            select(table.entityId, table.fetch(GenPropertyExportView::class))
         }
             .groupBy({ it._1 }, { it._2 })
 
         return entities.map {
-            EntityModelBusinessView(
+            EntityExportView(
                 it,
                 propertiesEntityIdMap[it.id] ?: emptyList()
             )

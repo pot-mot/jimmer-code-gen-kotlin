@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.entity.config.EntityBusinessConfig
-import top.potmot.core.entity.config.EntityModelBusinessView
-import top.potmot.core.model.export.ModelEntityExport
+import top.potmot.core.model.config.ModelEntitiesConfig
+import top.potmot.core.model.export.EntityExportView
+import top.potmot.core.model.export.ModelEntitiesExport
 import top.potmot.core.model.load.ModelInputEntities
 import top.potmot.core.model.load.ModelSave
 import top.potmot.core.model.load.getGraphEntities
@@ -30,12 +30,12 @@ import top.potmot.utils.transaction.executeNotNull
 @RequestMapping("/model")
 class ModelService(
     @Autowired
-    override val sqlClient: KSqlClient,
+    private val sqlClient: KSqlClient,
     @Autowired
     override val transactionTemplate: TransactionTemplate,
 ) : ModelSave,
-    ModelEntityExport,
-    EntityBusinessConfig {
+    ModelEntitiesExport,
+    ModelEntitiesConfig {
     @GetMapping
     fun list(): List<GenModelSimpleView> =
         sqlClient.executeQuery(GenModel::class) {
@@ -51,13 +51,6 @@ class ModelService(
     fun getValueData(@PathVariable id: Long): ModelInputEntities? =
         sqlClient.findById(GenModelView::class, id)?.getGraphEntities()
 
-    @GetMapping("/entityBusinessViews/{id}")
-    fun getEntityBusinessViews(
-        @PathVariable id: Long,
-        @RequestParam(required = false) excludeEntityIds: List<Long>?,
-    ) =
-        exportModelEntityBusinessViews(id, excludeEntityIds)
-
     @PostMapping
     @Throws(LoadFromModelException::class)
     fun save(
@@ -65,13 +58,20 @@ class ModelService(
     ): Long =
         sqlClient.saveModel(input)
 
-    @PostMapping("/business/{id}")
-    @Throws(ModelBusinessInputException::class)
-    fun saveBusiness(
+    @GetMapping("/exportEntities/{id}")
+    fun exportEntities(
         @PathVariable id: Long,
-        @RequestBody entities: List<EntityModelBusinessView>,
+        @RequestParam(required = false) excludeEntityIds: List<Long>?,
+    ): List<EntityExportView> =
+        sqlClient.exportModelEntities(id, excludeEntityIds)
+
+    @PostMapping("/configEntities/{id}")
+    @Throws(ModelBusinessInputException::class)
+    fun configEntities(
+        @PathVariable id: Long,
+        @RequestBody entities: List<EntityExportView>,
     ) =
-        sqlClient.configEntities(id, entities)
+        sqlClient.configModelEntities(id, entities)
 
     @DeleteMapping
     fun delete(@RequestParam ids: List<Long>): Int =

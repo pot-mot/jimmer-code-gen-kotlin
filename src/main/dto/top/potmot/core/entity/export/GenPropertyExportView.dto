@@ -1,0 +1,35 @@
+export top.potmot.entity.GenProperty
+
+GenPropertyExportView {
+    #allScalars(this)
+    -id
+
+    -idProperty
+    -generatedId
+    -generatedIdAnnotation
+
+    -logicalDelete
+    -logicalDeletedAnnotation
+
+    -keyProperty
+    -keyGroup
+
+    -associationType
+    -idView
+    -idViewTarget
+    -mappedBy
+    -inputNotNull
+    -joinTableMeta
+    -joinColumnMetas
+    -dissociateAnnotation
+
+    flat(typeTable) {
+        entity as typeEntity {
+            name
+        }
+    }
+
+    enum {
+        name
+    }
+}

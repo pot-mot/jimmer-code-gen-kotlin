@@ -1,52 +1,26 @@
-package top.potmot.core.entity.config
+package top.potmot.core.model.config
 
-import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
-import org.springframework.transaction.support.TransactionTemplate
-import top.potmot.entity.GenEntity
+import top.potmot.core.entity.config.EntityConfig
+import top.potmot.core.entity.config.EntityConfigInput
+import top.potmot.core.model.export.EntityExportView
 import top.potmot.entity.GenEnum
 import top.potmot.entity.GenTable
 import top.potmot.entity.dto.GenEntityConfigInput
-import top.potmot.entity.dto.GenEntityModelView
+import top.potmot.entity.dto.GenEntityExportView
 import top.potmot.entity.dto.GenEnumModelBusinessFillView
-import top.potmot.entity.dto.GenPropertyEntityConfigInput
-import top.potmot.entity.dto.GenPropertyModelView
+import top.potmot.entity.dto.GenPropertyConfigInput
+import top.potmot.entity.dto.GenPropertyExportView
 import top.potmot.entity.dto.GenTableModelBusinessFillView
 import top.potmot.entity.dto.IdName
 import top.potmot.entity.modelId
 import top.potmot.error.ModelBusinessInputException
 
-/**
- * 实体 - 用于模型业务配置的输入
- * 将直接被用于 save
- */
-data class EntityModelBusinessInput(
-    /**
-     * 实体业务配置输入，仅包含特定的业务配置项
-     */
-    val entity: GenEntityConfigInput,
-
-    /**
-     * 属性业务配置输入，具有全标量字段，用于编辑无需考虑关联的非转换属性
-     */
-    val properties: List<GenPropertyEntityConfigInput>,
-)
-
-/**
- * 实体 - 用于模型业务配置的输出
- * 同时也将在 JSON 保存时作为输入对象，此时将被被转换为 EntityModelBusinessInput
- */
-data class EntityModelBusinessView(
-    /**
-     * 表直接转换得到的实体
-     */
-    val tableConvertedEntity: GenEntityModelView,
-
-    /**
-     * 其余非转换属性
-     */
-    val otherProperties: List<GenPropertyModelView>,
+private data class EntityExportView_WithTable(
+    val entity: GenEntityExportView,
+    val properties: List<GenPropertyExportView>,
+    val table: GenTableModelBusinessFillView,
 )
 
 @Throws(
@@ -54,7 +28,7 @@ data class EntityModelBusinessView(
     ModelBusinessInputException.PropertyCannotRematchOldProperty::class,
     ModelBusinessInputException.PropertyMatchedMoreThanOneOldProperty::class,
 )
-private fun GenEntityModelView.toConfigInput(
+private fun GenEntityExportView.toConfigInput(
     id: Long,
     columnNameMap: Map<String, GenTableModelBusinessFillView.TargetOf_columns>,
 ) = GenEntityConfigInput(
@@ -146,10 +120,10 @@ private fun GenEntityModelView.toConfigInput(
     }
 )
 
-private fun GenPropertyModelView.toConfigInput(
+private fun GenPropertyExportView.toConfigInput(
     entityNameTableIdMap: Map<String, Long>,
     enumNameIdMap: Map<String, Long>,
-) = GenPropertyEntityConfigInput(
+) = GenPropertyConfigInput(
     name = name,
     overwriteName = overwriteName,
     comment = comment,
@@ -180,35 +154,29 @@ private fun GenPropertyModelView.toConfigInput(
     enumId = enumNameIdMap[enum?.name]
 )
 
-private data class EntityModelBusinessViewWithTable(
-    val entity: GenEntityModelView,
-    val table: GenTableModelBusinessFillView,
-    val properties: List<GenPropertyModelView>,
-)
-
 @Throws(ModelBusinessInputException::class)
-private fun List<EntityModelBusinessView>.toConfigInputs(
+private fun List<EntityExportView>.toConfigInputs(
     tables: List<GenTableModelBusinessFillView>,
     enums: List<GenEnumModelBusinessFillView>,
-): List<EntityModelBusinessInput> {
+): List<EntityConfigInput> {
     val tableNameMap = tables.associateBy { it.name }
     val enumNameIdMap = enums.associate { it.name to it.id }
 
     val entityWithTables = map { (entity, properties) ->
-        val table = entity.tableName.let { tableNameMap[it] }
+        val table = tableNameMap[entity.tableName]
             ?: throw ModelBusinessInputException.entityCannotMatchTable(
                 "entity [${entity.name}] cannot match table",
                 entityName = entity.name,
                 tableName = entity.tableName
             )
 
-        EntityModelBusinessViewWithTable(entity, table, properties)
+        EntityExportView_WithTable(entity, properties, table)
     }
-    val entityNameTableIdMap = entityWithTables.associate { (entity, table) ->
+    val entityNameTableIdMap = entityWithTables.associate { (entity, _, table) ->
         entity.name to table.id
     }
 
-    return entityWithTables.map { (entity, table, properties) ->
+    return entityWithTables.map { (entity, properties, table) ->
         val entityId = table.entityId
             ?: throw ModelBusinessInputException.entityMatchedTableConvertedEntityNotFound(
                 entityName = entity.name,
@@ -217,7 +185,7 @@ private fun List<EntityModelBusinessView>.toConfigInputs(
 
         val columnNameMap = table.columns.associateBy { it.name }
 
-        EntityModelBusinessInput(
+        EntityConfigInput(
             entity.toConfigInput(
                 entityId,
                 columnNameMap
@@ -229,58 +197,12 @@ private fun List<EntityModelBusinessView>.toConfigInputs(
     }
 }
 
-private fun GenPropertyEntityConfigInput.toPureInput(entityId: Long) = toEntity {
-    this.entityId = entityId
-
-    idProperty = false
-    generatedId = false
-    generatedIdAnnotation = null
-
-    logicalDelete = false
-    logicalDeletedAnnotation = null
-
-    keyProperty = false
-    keyGroup = null
-
-    associationType = null
-    idView = false
-    idViewTarget = null
-    mappedBy = null
-    inputNotNull = null
-    joinTableMeta = null
-    joinColumnMetas = null
-    dissociateAnnotation = null
-}
-
-private fun EntityModelBusinessInput.toPureInput(): GenEntity {
-    val configEntity = entity
-    val configProperties = properties
-
-    return configEntity.toEntity {
-        properties += configProperties.map { it.toPureInput(entity.id) }
-    }
-}
-
-interface EntityBusinessConfig {
-    val transactionTemplate: TransactionTemplate
-
-    fun KSqlClient.configEntities(
-        entities: List<EntityModelBusinessInput>,
-    ) = transactionTemplate.execute {
-        updateEntities(entities.map { it.toPureInput() }, AssociatedSaveMode.REPLACE)
-    }
-
-    fun KSqlClient.configEntity(
-        entity: EntityModelBusinessInput,
-    ) = transactionTemplate.execute {
-        update(entity.toPureInput(), AssociatedSaveMode.REPLACE)
-    }
-
+interface ModelEntitiesConfig : EntityConfig {
     @Throws(ModelBusinessInputException::class)
-    fun KSqlClient.configEntities(
+    private fun KSqlClient.convertModelEntityInputsToViews(
         modelId: Long,
-        views: List<EntityModelBusinessView>,
-    ) {
+        views: List<EntityExportView>,
+    ): List<EntityConfigInput> {
         val tables = executeQuery(GenTable::class) {
             where(table.modelId eq modelId)
             select(table.fetch(GenTableModelBusinessFillView::class))
@@ -291,8 +213,19 @@ interface EntityBusinessConfig {
             select(table.fetch(GenEnumModelBusinessFillView::class))
         }
 
-        val inputs = views.toConfigInputs(tables, enums)
+        return views.toConfigInputs(tables, enums)
+    }
 
-        configEntities(inputs)
+    fun KSqlClient.configModelEntities(
+        modelId: Long,
+        views: List<EntityExportView>,
+    ) {
+        transactionTemplate.execute {
+            val entityInputs = convertModelEntityInputsToViews(
+                modelId = modelId,
+                views = views
+            )
+            configEntities(entityInputs)
+        }
     }
 }

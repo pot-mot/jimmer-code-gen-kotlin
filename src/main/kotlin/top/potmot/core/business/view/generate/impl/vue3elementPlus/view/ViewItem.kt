@@ -11,8 +11,8 @@ import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 import top.potmot.core.business.meta.TypeEntityProperty
 import top.potmot.core.business.view.generate.commonComponentPath
-import top.potmot.core.business.view.generate.filePreview
-import top.potmot.core.business.view.generate.filesPreview
+import top.potmot.core.business.view.generate.fileView
+import top.potmot.core.business.view.generate.filesView
 import top.potmot.core.business.view.generate.imagePreview
 import top.potmot.core.business.view.generate.imagesPreview
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.checkbox
@@ -120,10 +120,10 @@ interface ViewItem {
             label = property.comment,
             prop = property.name,
             imports = listOf(
-                ImportDefault("$commonComponentPath/$filePreview", filePreview)
+                ImportDefault("$commonComponentPath/$fileView", fileView)
             ),
             elements = listOf(
-                TagElement(filePreview) {
+                TagElement(fileView) {
                     props += PropBind("value", value)
                 }
             )
@@ -133,10 +133,10 @@ interface ViewItem {
             label = property.comment,
             prop = property.name,
             imports = listOf(
-                ImportDefault("$commonComponentPath/$filesPreview", filesPreview)
+                ImportDefault("$commonComponentPath/$filesView", filesView)
             ),
             elements = listOf(
-                TagElement(filesPreview) {
+                TagElement(filesView) {
                     props += PropBind("value", value)
                 }
             )

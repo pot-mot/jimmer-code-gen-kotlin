@@ -1,27 +1,3 @@
-GenEntityDetailView {
-    #allScalars
-    id(model)
-    id(table)
-    id(superEntities) as superEntityIds
-
-    properties {
-        #allScalars
-        id(column)
-
-        flat(typeTable) {
-            id as typeTableId
-            entity as typeEntity {
-                id
-                name
-            }
-        }
-        flat(enum) {
-            id as enumId
-            name as enumName
-        }
-    }
-}
-
 input GenEntityInput {
     #allScalars(this)
     -id

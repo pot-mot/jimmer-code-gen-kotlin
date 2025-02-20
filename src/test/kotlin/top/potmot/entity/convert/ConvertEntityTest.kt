@@ -12,14 +12,14 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import top.potmot.business.baseProperty
 import top.potmot.config.GlobalGenConfig
-import top.potmot.core.entity.config.EntityModelBusinessInput
+import top.potmot.core.entity.config.EntityConfigInput
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenModel
 import top.potmot.entity.GenProperty
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenEntityConfigInput
 import top.potmot.entity.dto.GenEntityDetailView
-import top.potmot.entity.dto.GenPropertyEntityConfigInput
+import top.potmot.entity.dto.GenPropertyConfigInput
 import top.potmot.entity.id
 import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.entity.tableId
@@ -1056,8 +1056,8 @@ class ConvertEntityTest {
         )
 
         entityService.config(
-            EntityModelBusinessInput(
-                entity = GenEntityConfigInput(
+            EntityConfigInput(
+                tableConvertedEntity = GenEntityConfigInput(
                     id = firstConvertEntity.id,
                     name = firstConvertEntity.name + " changed",
                     overwriteName = true,
@@ -1093,8 +1093,8 @@ class ConvertEntityTest {
                         )
                     }
                 ),
-                properties = listOf(
-                    GenPropertyEntityConfigInput(baseProperty.toEntity {
+                notConvertedProperties = listOf(
+                    GenPropertyConfigInput(baseProperty.toEntity {
                         name = "newProperty"
                         orderKey = -2
                         otherAnnotation = AnnotationWithImports(
