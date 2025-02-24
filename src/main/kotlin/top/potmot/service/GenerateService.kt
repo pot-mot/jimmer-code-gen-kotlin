@@ -49,7 +49,7 @@ import top.potmot.error.GenerateException
 import top.potmot.error.ModelException
 
 @RestController
-@RequestMapping("/preview")
+@RequestMapping("/generate")
 class GenerateService(
     @Autowired
     private val sqlClient: KSqlClient,
@@ -63,7 +63,7 @@ class GenerateService(
     ): GenerateResult =
         useContext(
             sqlClient.getModelProperties(id)?.merge(properties)
-                ?: throw GenerateException.modelNotFound("ModelId $id Not Found", modelId = id)
+                ?: throw GenerateException.modelNotFound("Model [$id] Not Found", modelId = id)
         ) { context ->
             val files = mutableListOf<GenerateFile>()
 
