@@ -206,7 +206,7 @@ interface ViewItem {
                             TagElement(
                                 component.name,
                                 props = listOfNotNull(
-                                    PropBind(lazyShortViewTable.propName, name)
+                                    PropBind(lazyShortViewTable.propName, nameToValue(name))
                                 ),
                             )
                         ),

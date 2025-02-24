@@ -28,11 +28,7 @@ fun viewForm(
     )
     imports += content.flatMap { it.imports }
 
-    if (nullable) {
-        props += Prop(formData, "$dataType | undefined")
-    } else {
-        props += Prop(formData, dataType)
-    }
+    props += Prop(formData, dataType.let { if (nullable) "$it | undefined" else it })
 
     template += descriptions(
         content = content.toElements(),

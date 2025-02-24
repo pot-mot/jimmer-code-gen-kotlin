@@ -27,7 +27,7 @@ data class LazyShortViewTable(
     override val component =
         entity.components.viewTable
 
-    val propName = "value"
+    val propName = "rows"
 }
 
 data class LazySubEdit(

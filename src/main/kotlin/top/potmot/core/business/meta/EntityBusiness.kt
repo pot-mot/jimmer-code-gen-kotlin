@@ -7,7 +7,7 @@ import top.potmot.enumeration.AssociationType
 import top.potmot.error.GenerateException
 import top.potmot.error.ModelException
 
-// 不是长关联就转换成 IdView，适用于查询场景
+// 不是关联就转换成 IdView，适用于查询场景
 private fun Iterable<PropertyBusiness>.`force to IdView`() = map {
     if (it is AssociationProperty) {
         it.forceIdView
@@ -285,17 +285,6 @@ sealed class EntityBusiness(
         properties.filterIsInstance<AssociationProperty>()
     }
 
-    private val viewLongProperties by lazy {
-        associationProperties
-            .filter {
-                it.isLongAssociation &&
-                        when (this) {
-                            is RootEntityBusiness -> it.inDetailView
-                            is SubEntityBusiness -> it.inLongAssociationView
-                        }
-            }
-    }
-
 
     val scalarProperties by lazy {
         properties
@@ -383,7 +372,7 @@ sealed class EntityBusiness(
 
                 !it.property.idProperty && notParentProperty
             }
-            .`notLong force to IdView`()
+            .`notLong and notShortView force to IdView`()
     }
 
     val detailViewProperties by lazy {

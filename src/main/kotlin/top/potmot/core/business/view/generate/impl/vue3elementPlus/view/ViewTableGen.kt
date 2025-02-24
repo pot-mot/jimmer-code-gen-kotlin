@@ -88,19 +88,20 @@ fun viewTable(
     val expand = mutableListOf<Element>()
 
     content.forEach {
-        val column = tableColumn(
-            prop = it.prop,
-            label = it.label,
-            width = it.width,
-            minWidth = it.minWidth,
-            showOverflowTooltip = it.showOverflowTooltip,
-            content = it.elements
-        ).merge {
-            props += it.props
+        if (it.expand) {
+            expand += it.elements
+        } else {
+            propColumns += tableColumn(
+                prop = it.prop,
+                label = it.label,
+                width = it.width,
+                minWidth = it.minWidth,
+                showOverflowTooltip = it.showOverflowTooltip,
+                content = it.elements
+            ).merge {
+                props += it.props
+            }
         }
-
-        if (it.expand) expand += column
-        else propColumns += column
     }
 
     val operationsColumn = operationsColumn(

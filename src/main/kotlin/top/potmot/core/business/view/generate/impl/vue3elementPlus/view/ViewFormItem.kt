@@ -10,8 +10,8 @@ interface ViewFormItem : ViewItem {
         withDateTimeFormat: Boolean = getContextOrGlobal().dateTimeFormatInView,
     ): List<ViewItemData> =
         viewItem(
-            { name -> "value.$name" },
-            { property ->
+            nameToValue = { name -> "value.$name" },
+            createDefault = { property ->
                 ViewItemData(
                     label = property.comment,
                     prop = property.name,

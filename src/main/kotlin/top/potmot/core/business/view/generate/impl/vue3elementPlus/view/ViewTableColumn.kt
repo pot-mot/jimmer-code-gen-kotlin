@@ -44,10 +44,12 @@ interface ViewTableColumn : ViewItem {
                         elements = shortViewItem.elements,
                         imports = shortViewItem.imports,
                         lazyItems = shortViewItem.lazyItems,
-                        minWidth = shortViewProperty.tableMinWidth
+                        minWidth = shortViewProperty.tableMinWidth,
                     )
                 }
             } else {
+                val expand = this is AssociationProperty && (isLongAssociation || isShortView)
+
                 listOf(
                     ViewTableColumnData(
                         prop = name,
@@ -56,7 +58,7 @@ interface ViewTableColumn : ViewItem {
                         imports = viewItem.imports,
                         lazyItems = viewItem.lazyItems,
                         minWidth = tableMinWidth,
-                        expand = (this is AssociationProperty && isLongAssociation)
+                        expand = expand
                     )
                 )
             }
