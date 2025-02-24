@@ -3,7 +3,9 @@ package top.potmot.core.business.meta
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
+import top.potmot.entity.dto.IdName
 import top.potmot.enumeration.AssociationType
+import top.potmot.error.ModelException
 import top.potmot.utils.string.toSingular
 
 sealed class PropertyBusiness(
@@ -134,26 +136,24 @@ data class AssociationProperty(
         )
     }
 
-    // 将关联属性强制转换为 IdView，保留关联属性 comment 和 typeEntityId
-    private fun forceToIdViewProperty(): TargetOf_properties =
-        if (idView != null) {
-            idView.copy(
-                comment = property.comment,
-                typeEntityId = property.typeEntityId
-            )
-        } else {
-            property.copy(
-                name = "${property.name}${if (listType) "Ids" else "Id"}",
-                type = typeEntityBusiness.idProperty.type,
-                idView = true,
-            )
-        }
-
-    fun forceToIdView(): ForceIdViewProperty {
-        return ForceIdViewProperty(
+    val forceIdView: ForceIdViewProperty by lazy {
+        ForceIdViewProperty(
             path = path,
             entityBusiness = entityBusiness,
-            property = forceToIdViewProperty(),
+            // 将关联属性强制转换为 IdView，保留关联属性 comment 和 typeEntityId
+            property = idView?.copy(
+                id = property.id,
+                comment = property.comment,
+                typeEntityId = property.typeEntityId,
+            )
+                ?: property.copy(
+                    name = "${property.name.let { if (listType) it.toSingular() else it }}${if (listType) "Ids" else "Id"}",
+                    type = typeEntity.properties.firstOrNull { it.idProperty }?.type ?: throw ModelException.idPropertyNotFound(
+                        "entity [${typeEntity.name}](${typeEntity.id}) id not found",
+                        entity = IdName(typeEntity.id, typeEntity.name)
+                    ),
+                    idView = true,
+                ),
             typeEntity = typeEntity,
             associationProperty = this,
             associationType = associationType,

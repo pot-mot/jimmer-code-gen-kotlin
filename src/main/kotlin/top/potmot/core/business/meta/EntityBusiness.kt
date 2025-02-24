@@ -10,7 +10,7 @@ import top.potmot.error.ModelException
 // 不是长关联就转换成 IdView，适用于查询场景
 private fun Iterable<PropertyBusiness>.`force to IdView`() = map {
     if (it is AssociationProperty) {
-        it.forceToIdView()
+        it.forceIdView
     } else {
         it
     }
@@ -19,7 +19,7 @@ private fun Iterable<PropertyBusiness>.`force to IdView`() = map {
 // 不是长关联就转换成 IdView，适用于编辑场景
 private fun Iterable<PropertyBusiness>.`notLong force to IdView`() = map {
     if (it is AssociationProperty && !it.isLongAssociation) {
-        it.forceToIdView()
+        it.forceIdView
     } else {
         it
     }
@@ -28,7 +28,7 @@ private fun Iterable<PropertyBusiness>.`notLong force to IdView`() = map {
 // 不是长关联且不是短关联视图才转换成 IdView，适用于视图场景
 private fun Iterable<PropertyBusiness>.`notLong and notShortView force to IdView`() = map {
     if (it is AssociationProperty && !it.isLongAssociation && !it.isShortView) {
-        it.forceToIdView()
+        it.forceIdView
     } else {
         it
     }
@@ -142,7 +142,9 @@ sealed class EntityBusiness(
     val properties by lazy {
         val properties = entity.properties
         val result = mutableListOf<PropertyBusiness>()
-        val idViewTargetMap = properties.filter { it.idView }.associateBy { it.idViewTarget }
+        val idViewTargetMap = properties
+            .filter { it.idView && it.idViewTarget != null }
+            .associateBy { it.idViewTarget }
 
         properties.forEach {
             if (it.typeEntityId != null) {
@@ -257,14 +259,14 @@ sealed class EntityBusiness(
             }
     }
 
-    val idProperties by lazy {
+    private val idProperties by lazy {
         properties.filter { it.property.idProperty }
     }
 
     val idProperty by lazy {
         if (idProperties.isEmpty()) {
             throw ModelException.idPropertyNotFound(
-                "entityName: $name",
+                "entity [$name]($id) id not found",
                 entity = IdName(id, name)
             )
         } else if (idProperties.size > 1) {
@@ -330,7 +332,7 @@ sealed class EntityBusiness(
     }
 
     val parentIdProperty by lazy {
-        parentProperty.forceToIdView()
+        parentProperty.forceIdView
     }
 
 
@@ -631,7 +633,7 @@ class SubEntityBusiness(
 
         val rootEntityDir = rootEntity.dir
         val propertyDirs =
-            path.propertyItems.map { it.property.name }.joinToString("/")
+            path.propertyItems.joinToString("/") { it.property.name }
         val currentPath = "$rootEntityDir/$propertyDirs"
 
         SubEntityComponentFiles(

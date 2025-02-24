@@ -369,7 +369,7 @@ interface PageGen : Generator {
                     ConstVariable(
                         "edit${entity.name}",
                         null,
-                        if (isTree) {
+                        if (selfSelects.isNotEmpty()) {
                             buildScopeString {
                                 line("withLoading(async (body: $updateInput) => {")
                                 scope {
@@ -394,7 +394,7 @@ interface PageGen : Generator {
                     ConstVariable(
                         "delete${entity.name}",
                         null,
-                        if (isTree) {
+                        if (selfSelects.isNotEmpty()) {
                             buildScopeString {
                                 line("withLoading(async (ids: Array<$idType>) => {")
                                 scope {
