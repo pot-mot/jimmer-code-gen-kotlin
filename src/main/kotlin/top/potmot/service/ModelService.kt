@@ -60,10 +60,9 @@ class ModelService(
 
     @GetMapping("/exportEntities/{id}")
     fun exportEntities(
-        @PathVariable id: Long,
-        @RequestParam(required = false) excludeEntityIds: List<Long>?,
+        @PathVariable id: Long
     ): List<EntityExportView> =
-        sqlClient.exportModelEntities(id, excludeEntityIds)
+        sqlClient.exportModelEntities(id)
 
     @PostMapping("/configEntities/{id}")
     @Throws(ModelBusinessInputException::class)

@@ -2,6 +2,8 @@ package top.potmot.core.entity.config
 
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
+import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
+import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
 import org.babyfish.jimmer.sql.kt.ast.table.isNull
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenProperty
@@ -10,6 +12,7 @@ import top.potmot.entity.dto.GenEntityConfigView
 import top.potmot.entity.dto.GenPropertyConfigView
 import top.potmot.entity.entityId
 import top.potmot.entity.id
+import top.potmot.entity.modelId
 
 /**
  * 实体 - 用于模型业务配置的输出
@@ -49,5 +52,32 @@ interface EntityConfigViewer {
             entity,
             properties
         )
+    }
+
+    fun KSqlClient.getEntityConfigViewByModelId(
+        modelId: Long,
+        excludeEntityIds: List<Long>?,
+    ): List<EntityConfigView> {
+        val entities = executeQuery(GenEntity::class) {
+            where(table.modelId eq modelId)
+            excludeEntityIds?.takeIf { it.isNotEmpty() }?.let {
+                where(table.id valueNotIn it)
+            }
+            select(table.fetch(GenEntityConfigView::class))
+        }
+
+        // 非列映射的属性
+        val propertyMap = executeQuery(GenProperty::class) {
+            where(table.`column?`.isNull())
+            where(table.entityId valueIn  entities.map { it.id })
+            select(table.entityId, table.fetch(GenPropertyConfigView::class))
+        }.groupBy({ it._1 }) { it._2 }
+
+        return entities.map {
+            EntityConfigView(
+                it,
+                propertyMap[it.id] ?: emptyList()
+            )
+        }
     }
 }
