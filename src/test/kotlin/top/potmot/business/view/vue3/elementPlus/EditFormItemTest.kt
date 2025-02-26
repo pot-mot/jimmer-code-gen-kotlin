@@ -1,7 +1,5 @@
 package top.potmot.business.view.vue3.elementPlus
 
-import java.sql.Types
-import java.time.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import top.potmot.business.baseEntity
@@ -9,6 +7,8 @@ import top.potmot.business.enumIdMap
 import top.potmot.business.testEnum
 import top.potmot.business.testEnumBusiness
 import top.potmot.core.business.meta.AssociationPath
+import top.potmot.core.business.meta.AssociationPathItem
+import top.potmot.core.business.meta.AssociationPathItemType
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
@@ -19,6 +19,8 @@ import top.potmot.core.business.view.generate.meta.typescript.stringify
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.enumeration.AssociationType
+import java.sql.Types
+import java.time.LocalDateTime
 
 class EditFormItemTest : EditFormItem {
     private val formData = "formData"
@@ -52,7 +54,10 @@ class EditFormItemTest : EditFormItem {
             var result: String
             builder.apply {
                 result =
-                    (it.imports.stringify(builder.indent, builder.wrapThreshold) + it.elements.stringifyElements()).joinToString("\n")
+                    (it.imports.stringify(
+                        builder.indent,
+                        builder.wrapThreshold
+                    ) + it.elements.stringifyElements()).joinToString("\n")
             }
             result
         }
@@ -79,7 +84,6 @@ class EditFormItemTest : EditFormItem {
     v-model="formData.name"
     value-format="HH:mm:ss"
     placeholder="请选择comment"
-    clearable
 />
             """.trimIndent(),
             baseProperty.copy(type = "java.time.LocalTime").result,
@@ -95,7 +99,6 @@ class EditFormItemTest : EditFormItem {
     type="date"
     value-format="YYYY-MM-DD"
     placeholder="请选择comment"
-    clearable
 />
             """.trimIndent(),
             baseProperty.copy(type = "java.time.LocalDate").result,
@@ -111,7 +114,6 @@ class EditFormItemTest : EditFormItem {
     type="datetime"
     value-format="YYYY-MM-DDTHH:mm:ss"
     placeholder="请选择comment"
-    clearable
 />
             """.trimIndent(),
             baseProperty.copy(type = "java.time.LocalDateTime").result,
@@ -176,7 +178,7 @@ class EditFormItemTest : EditFormItem {
     :precision="0"
     :min="0"
     :max="999999999"
-    :value-on-clear="0"
+    :value-on-clear="'min'"
 />
             """.trimIndent(),
             baseProperty.copy(
@@ -211,7 +213,7 @@ class EditFormItemTest : EditFormItem {
     :precision="0"
     :min="0"
     :max="2147483647"
-    :value-on-clear="0"
+    :value-on-clear="'min'"
 />
             """.trimIndent(),
             baseProperty.copy(
@@ -228,7 +230,7 @@ class EditFormItemTest : EditFormItem {
     :precision="0"
     :min="0"
     :max="999999999999"
-    :value-on-clear="0"
+    :value-on-clear="'min'"
 />
             """.trimIndent(),
             baseProperty.copy(
@@ -245,7 +247,7 @@ class EditFormItemTest : EditFormItem {
     :precision="0"
     :min="0"
     :max="9223372036854775807"
-    :value-on-clear="0"
+    :value-on-clear="'min'"
 />
             """.trimIndent(),
             baseProperty.copy(
@@ -308,7 +310,7 @@ class EditFormItemTest : EditFormItem {
     :precision="2"
     :min="0.00"
     :max="99999999.99"
-    :value-on-clear="0.00"
+    :value-on-clear="'min'"
 />
             """.trimIndent(),
             baseProperty.copy(
@@ -356,7 +358,7 @@ class EditFormItemTest : EditFormItem {
     :precision="2"
     :min="0.00"
     :max="99999999.99"
-    :value-on-clear="0.00"
+    :value-on-clear="'min'"
 />
             """.trimIndent(),
             baseProperty.copy(
@@ -386,7 +388,7 @@ class EditFormItemTest : EditFormItem {
     :precision="2"
     :min="0.00"
     :max="99999999.99"
-    :value-on-clear="0.00"
+    :value-on-clear="'min'"
 />
             """.trimIndent(),
             baseProperty.copy(
@@ -401,7 +403,10 @@ class EditFormItemTest : EditFormItem {
             var result: String
             builder.apply {
                 result =
-                    (it.imports.stringify(builder.indent, builder.wrapThreshold) + it.elements.stringifyElements()).joinToString("\n")
+                    (it.imports.stringify(
+                        builder.indent,
+                        builder.wrapThreshold
+                    ) + it.elements.stringifyElements()).joinToString("\n")
             }
             result
         }
@@ -422,22 +427,35 @@ import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
 
 
     private val GenEntityBusinessView.TargetOf_properties.associationResult: String
-        get() = AssociationProperty(AssociationPath(mockEntityBusiness, emptyList()), mockEntityBusiness, this, null, baseEntity, associationType!!).toEditFormItem(formData, disabled).let {
+        get() = AssociationProperty(
+            path = AssociationPath(
+                mockEntityBusiness,
+                listOf(AssociationPathItem(mockEntityBusiness, this, AssociationPathItemType.PROPERTY))
+            ),
+            entityBusiness = mockEntityBusiness,
+            property = this,
+            idView = null,
+            typeEntity = baseEntity,
+            associationType = associationType!!
+        ).toEditFormItem(formData, disabled).let {
             var result: String
             builder.apply {
                 result =
-                    (it.imports.stringify(builder.indent, builder.wrapThreshold) + it.elements.stringifyElements()).joinToString("\n")
+                    (it.imports.stringify(
+                        builder.indent,
+                        builder.wrapThreshold
+                    ) + it.elements.stringifyElements()).joinToString("\n")
             }
             result
         }
 
     @Test
-    fun `test to one association`() {
+    fun `test to one id`() {
         val expect = """
 import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
 <EntityIdSelect
     v-model="formData.name"
-    :options="nameOptions"
+    :options="nameIdOptions"
 />
         """.trimIndent()
 
@@ -463,12 +481,12 @@ import EntityIdSelect from "@/components/entity/EntityIdSelect.vue"
     }
 
     @Test
-    fun `test to many association`() {
+    fun `test to many id`() {
         val expect = """
 import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
 <EntityIdMultiSelect
     v-model="formData.name"
-    :options="nameOptions"
+    :options="nameIdsOptions"
 />
         """.trimIndent()
 
@@ -484,13 +502,13 @@ import EntityIdMultiSelect from "@/components/entity/EntityIdMultiSelect.vue"
             manyToManyProperty.associationResult,
         )
 
-        val oneToOneProperty = manyToManyProperty.copy(
+        val oneToManyProperty = manyToManyProperty.copy(
             associationType = AssociationType.ONE_TO_MANY,
         )
 
         assertEquals(
             expect,
-            oneToOneProperty.associationResult,
+            oneToManyProperty.associationResult,
         )
     }
 }

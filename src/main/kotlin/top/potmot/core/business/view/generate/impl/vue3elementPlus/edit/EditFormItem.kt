@@ -162,7 +162,11 @@ interface EditFormItem {
                                 precision = 0,
                                 min = numberMin,
                                 max = numberMax,
-                                valueOnClear = if (typeNotNull) numberMin else null,
+                                valueOnClear =
+                                if (typeNotNull)
+                                    if (numberMin == null) null else "'min'"
+                                else
+                                    "undefined",
                                 disabled = disabled,
                             )
                         )
@@ -175,7 +179,11 @@ interface EditFormItem {
                                 precision = numericPrecision,
                                 min = numberMin,
                                 max = numberMax,
-                                valueOnClear = if (typeNotNull) numberMin else null,
+                                valueOnClear =
+                                if (typeNotNull)
+                                    if (numberMin == null) null else "'min'"
+                                else
+                                    "undefined",
                                 disabled = disabled,
                             )
                         )
