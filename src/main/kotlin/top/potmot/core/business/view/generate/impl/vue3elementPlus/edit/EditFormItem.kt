@@ -237,6 +237,9 @@ interface EditFormItem {
                             elements = listOf(
                                 TagElement(fileUpload) {
                                     directives += VModel(modelValue)
+                                    if (!typeNotNull) {
+                                        props += PropBind("clearable", isLiteral = true)
+                                    }
                                 }
                             )
                         )
@@ -261,6 +264,9 @@ interface EditFormItem {
                             elements = listOf(
                                 TagElement(imageUpload) {
                                     directives += VModel(modelValue)
+                                    if (!typeNotNull) {
+                                        props += PropBind("clearable", isLiteral = true)
+                                    }
                                 }
                             )
                         )

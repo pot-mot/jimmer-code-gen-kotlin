@@ -12,6 +12,7 @@ import top.potmot.core.business.meta.AssociationPathItemType
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.CommonProperty
 import top.potmot.core.business.meta.EnumProperty
+import top.potmot.core.business.meta.PropertySpecialFormType
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.edit.EditFormItem
@@ -448,6 +449,94 @@ import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
             }
             result
         }
+
+    @Test
+    fun `test file`() {
+        val fileProperty = baseProperty.copy(
+            type = "kotlin.String",
+            specialFormType = PropertySpecialFormType.FILE
+        )
+
+        assertEquals(
+            """
+import FileUpload from "@/components/common/FileUpload"
+<FileUpload v-model="formData.name"/>
+            """.trimIndent(),
+            fileProperty.result
+        )
+
+        val fileNullableProperty = baseProperty.copy(
+            type = "kotlin.String",
+            typeNotNull = false,
+            specialFormType = PropertySpecialFormType.FILE,
+        )
+
+        assertEquals(
+            """
+import FileUpload from "@/components/common/FileUpload"
+<FileUpload v-model="formData.name" clearable/>
+            """.trimIndent(),
+            fileNullableProperty.result
+        )
+
+        val fileListProperty = baseProperty.copy(
+            type = "kotlin.String",
+            listType = true,
+            specialFormType = PropertySpecialFormType.FILE_LIST,
+        )
+
+        assertEquals(
+            """
+import FilesUpload from "@/components/common/FilesUpload"
+<FilesUpload v-model="formData.name"/>
+            """.trimIndent(),
+            fileListProperty.result
+        )
+    }
+
+    @Test
+    fun `test image`() {
+        val imageProperty = baseProperty.copy(
+            type = "kotlin.String",
+            specialFormType = PropertySpecialFormType.IMAGE
+        )
+
+        assertEquals(
+            """
+import ImageUpload from "@/components/common/ImageUpload"
+<ImageUpload v-model="formData.name"/>
+            """.trimIndent(),
+            imageProperty.result
+        )
+
+        val imageNullableProperty = baseProperty.copy(
+            type = "kotlin.String",
+            typeNotNull = false,
+            specialFormType = PropertySpecialFormType.IMAGE,
+        )
+
+        assertEquals(
+            """
+import ImageUpload from "@/components/common/ImageUpload"
+<ImageUpload v-model="formData.name" clearable/>
+            """.trimIndent(),
+            imageNullableProperty.result
+        )
+
+        val imageListProperty = baseProperty.copy(
+            type = "kotlin.String",
+            listType = true,
+            specialFormType = PropertySpecialFormType.IMAGE_LIST,
+        )
+
+        assertEquals(
+            """
+import ImagesUpload from "@/components/common/ImagesUpload"
+<ImagesUpload v-model="formData.name"/>
+            """.trimIndent(),
+            imageListProperty.result
+        )
+    }
 
     @Test
     fun `test to one id`() {
