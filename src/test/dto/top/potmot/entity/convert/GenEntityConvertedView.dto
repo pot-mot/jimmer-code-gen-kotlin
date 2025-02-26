@@ -1,0 +1,15 @@
+export top.potmot.entity.GenEntity
+
+GenEntityConvertedView {
+    #allScalars(this)
+    id(table)
+    superEntities {
+        id
+    }
+    properties {
+        #allScalars(this)
+        enum {
+            name
+        }
+    }
+}

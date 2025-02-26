@@ -18,7 +18,7 @@ import top.potmot.entity.GenModel
 import top.potmot.entity.GenProperty
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenEntityConfigInput
-import top.potmot.entity.dto.GenEntityDetailView
+import top.potmot.entity.dto.GenEntityConvertedView
 import top.potmot.entity.dto.GenPropertyConfigInput
 import top.potmot.entity.id
 import top.potmot.entity.sub.AnnotationWithImports
@@ -42,23 +42,15 @@ class ConvertEntityTest {
     @Autowired
     lateinit var entityService: EntityService
 
-    val GenEntityDetailView.result: String
-        get() = prettyObjectWriter.writeValueAsString(
-            toEntity {
-                unload(this, GenEntity::model)
-                unload(this, GenEntity::id)
-                unload(this, GenEntity::modifiedTime)
-                unload(this, GenEntity::createdTime)
-                properties = properties.map {
-                    it.copy {
-                        unload(this, GenProperty::id)
-                        unload(this, GenProperty::modifiedTime)
-                        unload(this, GenProperty::createdTime)
-                        unload(this, GenProperty::column)
-                    }
+    val GenEntityConvertedView.result: String
+        get() = prettyObjectWriter.writeValueAsString(this.toEntity {
+            unload(this, GenEntity::id)
+            properties = properties.map {
+                it.copy {
+                    unload(this, GenProperty::id)
                 }
             }
-        )
+        })
 
     @Test
     @Transactional
@@ -79,7 +71,7 @@ class ConvertEntityTest {
 
         val entity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
-            select(table.fetch(GenEntityDetailView::class))
+            select(table.fetch(GenEntityConvertedView::class))
         }.fetchOne()
 
         assertEquals(
@@ -101,6 +93,12 @@ class ConvertEntityTest {
     "canDelete" : true,
     "canQuery" : true,
     "hasPage" : true,
+    "pageCanQuery" : true,
+    "pageCanAdd" : true,
+    "pageCanEdit" : true,
+    "pageCanViewDetail" : false,
+    "pageCanDelete" : true,
+    "queryByPage" : true,
     "remark" : "table remark",
     "properties" : [
         {
@@ -109,16 +107,15 @@ class ConvertEntityTest {
             "comment" : "column comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
-            "idGenerationAnnotation" : null,
+            "generatedId" : false,
+            "generatedIdAnnotation" : null,
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -131,6 +128,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 0,
+            "specialFormType" : null,
             "inListView" : true,
             "inDetailView" : true,
             "inInsertInput" : true,
@@ -149,16 +147,23 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
-            "idGenerationAnnotation" : "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+            "generatedId" : true,
+            "generatedIdAnnotation" : {
+                "imports" : [
+                    "org.babyfish.jimmer.sql.GeneratedValue",
+                    "org.babyfish.jimmer.sql.GenerationType"
+                ],
+                "annotations" : [
+                    "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+                ]
+            },
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -171,6 +176,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 1,
+            "specialFormType" : null,
             "inListView" : false,
             "inDetailView" : false,
             "inInsertInput" : false,
@@ -212,7 +218,7 @@ class ConvertEntityTest {
 
         val entity1 = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
-            select(table.fetch(GenEntityDetailView::class))
+            select(table.fetch(GenEntityConvertedView::class))
         }.fetchOne()
 
         val result1 = """
@@ -233,6 +239,12 @@ class ConvertEntityTest {
     "canDelete" : true,
     "canQuery" : true,
     "hasPage" : true,
+    "pageCanQuery" : true,
+    "pageCanAdd" : true,
+    "pageCanEdit" : true,
+    "pageCanViewDetail" : false,
+    "pageCanDelete" : true,
+    "queryByPage" : true,
     "remark" : "table remark",
     "properties" : [
         {
@@ -241,16 +253,15 @@ class ConvertEntityTest {
             "comment" : "column comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
-            "idGenerationAnnotation" : null,
+            "generatedId" : false,
+            "generatedIdAnnotation" : null,
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -263,6 +274,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 0,
+            "specialFormType" : null,
             "inListView" : true,
             "inDetailView" : true,
             "inInsertInput" : true,
@@ -281,16 +293,23 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
-            "idGenerationAnnotation" : "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+            "generatedId" : true,
+            "generatedIdAnnotation" : {
+                "imports" : [
+                    "org.babyfish.jimmer.sql.GeneratedValue",
+                    "org.babyfish.jimmer.sql.GenerationType"
+                ],
+                "annotations" : [
+                    "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+                ]
+            },
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -303,6 +322,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 1,
+            "specialFormType" : null,
             "inListView" : false,
             "inDetailView" : false,
             "inInsertInput" : false,
@@ -380,7 +400,7 @@ class ConvertEntityTest {
 
         val entity2 = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
-            select(table.fetch(GenEntityDetailView::class))
+            select(table.fetch(GenEntityConvertedView::class))
         }.fetchOne()
 
         val result2 = """
@@ -401,6 +421,12 @@ class ConvertEntityTest {
     "canDelete" : false,
     "canQuery" : false,
     "hasPage" : false,
+    "pageCanQuery" : true,
+    "pageCanAdd" : true,
+    "pageCanEdit" : true,
+    "pageCanViewDetail" : false,
+    "pageCanDelete" : true,
+    "queryByPage" : true,
     "remark" : "table remark changed",
     "properties" : [
         {
@@ -409,16 +435,15 @@ class ConvertEntityTest {
             "comment" : "comment",
             "overwriteComment" : false,
             "type" : "kotlin.String",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
-            "idGenerationAnnotation" : null,
+            "generatedId" : false,
+            "generatedIdAnnotation" : null,
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -429,7 +454,7 @@ class ConvertEntityTest {
             "joinTableMeta" : null,
             "dissociateAnnotation" : null,
             "otherAnnotation" : {
-                "importLines" : [
+                "imports" : [
                     "org.babyfish.jimmer.sql.Transient",
                     "com.example.entity.EntityNewPropertyResolver"
                 ],
@@ -439,6 +464,7 @@ class ConvertEntityTest {
             },
             "body" : null,
             "orderKey" : -2,
+            "specialFormType" : null,
             "inListView" : true,
             "inDetailView" : true,
             "inInsertInput" : true,
@@ -457,16 +483,15 @@ class ConvertEntityTest {
             "comment" : "column comment changed",
             "overwriteComment" : true,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
-            "idGenerationAnnotation" : null,
+            "generatedId" : false,
+            "generatedIdAnnotation" : null,
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -479,6 +504,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 0,
+            "specialFormType" : null,
             "inListView" : false,
             "inDetailView" : false,
             "inInsertInput" : false,
@@ -497,16 +523,23 @@ class ConvertEntityTest {
             "comment" : "id comment changed",
             "overwriteComment" : true,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
-            "idGenerationAnnotation" : "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+            "generatedId" : true,
+            "generatedIdAnnotation" : {
+                "imports" : [
+                    "org.babyfish.jimmer.sql.GeneratedValue",
+                    "org.babyfish.jimmer.sql.GenerationType"
+                ],
+                "annotations" : [
+                    "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+                ]
+            },
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -519,6 +552,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 1,
+            "specialFormType" : null,
             "inListView" : true,
             "inDetailView" : true,
             "inInsertInput" : true,
@@ -544,7 +578,7 @@ class ConvertEntityTest {
 
         val entity3 = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
-            select(table.fetch(GenEntityDetailView::class))
+            select(table.fetch(GenEntityConvertedView::class))
         }.fetchOne()
 
         assertEquals(
@@ -575,7 +609,7 @@ class ConvertEntityTest {
 
         val entity1 = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
-            select(table.fetch(GenEntityDetailView::class))
+            select(table.fetch(GenEntityConvertedView::class))
         }.fetchOne()
 
         val result1 = """
@@ -596,6 +630,12 @@ class ConvertEntityTest {
     "canDelete" : true,
     "canQuery" : true,
     "hasPage" : true,
+    "pageCanQuery" : true,
+    "pageCanAdd" : true,
+    "pageCanEdit" : true,
+    "pageCanViewDetail" : false,
+    "pageCanDelete" : true,
+    "queryByPage" : true,
     "remark" : "table remark",
     "properties" : [
         {
@@ -604,16 +644,15 @@ class ConvertEntityTest {
             "comment" : "column comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
-            "idGenerationAnnotation" : null,
+            "generatedId" : false,
+            "generatedIdAnnotation" : null,
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -626,6 +665,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 0,
+            "specialFormType" : null,
             "inListView" : true,
             "inDetailView" : true,
             "inInsertInput" : true,
@@ -644,16 +684,23 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
-            "idGenerationAnnotation" : "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+            "generatedId" : true,
+            "generatedIdAnnotation" : {
+                "imports" : [
+                    "org.babyfish.jimmer.sql.GeneratedValue",
+                    "org.babyfish.jimmer.sql.GenerationType"
+                ],
+                "annotations" : [
+                    "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+                ]
+            },
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -666,6 +713,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 1,
+            "specialFormType" : null,
             "inListView" : false,
             "inDetailView" : false,
             "inInsertInput" : false,
@@ -697,7 +745,7 @@ class ConvertEntityTest {
 
         val entity2 = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
-            select(table.fetch(GenEntityDetailView::class))
+            select(table.fetch(GenEntityConvertedView::class))
         }.fetchOne()
 
         val result2 = """
@@ -718,6 +766,12 @@ class ConvertEntityTest {
     "canDelete" : true,
     "canQuery" : true,
     "hasPage" : true,
+    "pageCanQuery" : true,
+    "pageCanAdd" : true,
+    "pageCanEdit" : true,
+    "pageCanViewDetail" : false,
+    "pageCanDelete" : true,
+    "queryByPage" : true,
     "remark" : "table remark",
     "properties" : [
         {
@@ -726,16 +780,23 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
-            "idGenerationAnnotation" : "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+            "generatedId" : true,
+            "generatedIdAnnotation" : {
+                "imports" : [
+                    "org.babyfish.jimmer.sql.GeneratedValue",
+                    "org.babyfish.jimmer.sql.GenerationType"
+                ],
+                "annotations" : [
+                    "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+                ]
+            },
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -748,6 +809,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 0,
+            "specialFormType" : null,
             "inListView" : false,
             "inDetailView" : false,
             "inInsertInput" : false,
@@ -807,7 +869,7 @@ class ConvertEntityTest {
 
         val entity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
-            select(table.fetch(GenEntityDetailView::class))
+            select(table.fetch(GenEntityConvertedView::class))
         }.fetchOne()
 
         assertEquals(
@@ -833,6 +895,12 @@ class ConvertEntityTest {
     "canDelete" : true,
     "canQuery" : true,
     "hasPage" : true,
+    "pageCanQuery" : true,
+    "pageCanAdd" : true,
+    "pageCanEdit" : true,
+    "pageCanViewDetail" : false,
+    "pageCanDelete" : true,
+    "queryByPage" : true,
     "remark" : "table remark",
     "properties" : [
         {
@@ -841,16 +909,15 @@ class ConvertEntityTest {
             "comment" : "column comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
-            "idGenerationAnnotation" : null,
+            "generatedId" : false,
+            "generatedIdAnnotation" : null,
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -863,6 +930,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 0,
+            "specialFormType" : null,
             "inListView" : true,
             "inDetailView" : true,
             "inInsertInput" : true,
@@ -881,16 +949,23 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
-            "idGenerationAnnotation" : "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+            "generatedId" : true,
+            "generatedIdAnnotation" : {
+                "imports" : [
+                    "org.babyfish.jimmer.sql.GeneratedValue",
+                    "org.babyfish.jimmer.sql.GenerationType"
+                ],
+                "annotations" : [
+                    "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+                ]
+            },
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -903,6 +978,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 1,
+            "specialFormType" : null,
             "inListView" : false,
             "inDetailView" : false,
             "inInsertInput" : false,
@@ -943,7 +1019,7 @@ class ConvertEntityTest {
 
         val firstConvertEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
-            select(table.fetch(GenEntityDetailView::class))
+            select(table.fetch(GenEntityConvertedView::class))
         }.fetchOne()
 
         val firstResult = """
@@ -964,6 +1040,12 @@ class ConvertEntityTest {
     "canDelete" : true,
     "canQuery" : true,
     "hasPage" : true,
+    "pageCanQuery" : true,
+    "pageCanAdd" : true,
+    "pageCanEdit" : true,
+    "pageCanViewDetail" : false,
+    "pageCanDelete" : true,
+    "queryByPage" : true,
     "remark" : "table remark",
     "properties" : [
         {
@@ -972,16 +1054,15 @@ class ConvertEntityTest {
             "comment" : "column comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
-            "idGenerationAnnotation" : null,
+            "generatedId" : false,
+            "generatedIdAnnotation" : null,
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -994,6 +1075,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 0,
+            "specialFormType" : null,
             "inListView" : true,
             "inDetailView" : true,
             "inInsertInput" : true,
@@ -1012,16 +1094,23 @@ class ConvertEntityTest {
             "comment" : "id comment",
             "overwriteComment" : false,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
-            "idGenerationAnnotation" : "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+            "generatedId" : true,
+            "generatedIdAnnotation" : {
+                "imports" : [
+                    "org.babyfish.jimmer.sql.GeneratedValue",
+                    "org.babyfish.jimmer.sql.GenerationType"
+                ],
+                "annotations" : [
+                    "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+                ]
+            },
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -1034,6 +1123,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 1,
+            "specialFormType" : null,
             "inListView" : false,
             "inDetailView" : false,
             "inInsertInput" : false,
@@ -1081,6 +1171,11 @@ class ConvertEntityTest {
                             remark = property.remark + " changed",
                             orderKey = property.orderKey,
 
+                            generatedId = property.generatedId,
+                            generatedIdAnnotation = property.generatedIdAnnotation,
+
+                            logicalDeletedAnnotation = property.logicalDeletedAnnotation,
+
                             inListView = !property.inListView,
                             inDetailView = !property.inDetailView,
                             inSpecification = !property.inSpecification,
@@ -1097,6 +1192,7 @@ class ConvertEntityTest {
                     GenPropertyConfigInput(baseProperty.toEntity {
                         name = "newProperty"
                         orderKey = -2
+                        typeTableId = null
                         otherAnnotation = AnnotationWithImports(
                             imports = listOf(
                                 "org.babyfish.jimmer.sql.Transient",
@@ -1113,7 +1209,7 @@ class ConvertEntityTest {
 
         val changedEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
-            select(table.fetch(GenEntityDetailView::class))
+            select(table.fetch(GenEntityConvertedView::class))
         }.fetchOne()
 
         val result = """
@@ -1134,6 +1230,12 @@ class ConvertEntityTest {
     "canDelete" : false,
     "canQuery" : false,
     "hasPage" : false,
+    "pageCanQuery" : false,
+    "pageCanAdd" : false,
+    "pageCanEdit" : false,
+    "pageCanViewDetail" : false,
+    "pageCanDelete" : false,
+    "queryByPage" : false,
     "remark" : "table remark changed",
     "properties" : [
         {
@@ -1142,16 +1244,15 @@ class ConvertEntityTest {
             "comment" : "comment",
             "overwriteComment" : false,
             "type" : "kotlin.String",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
-            "idGenerationAnnotation" : null,
+            "generatedId" : false,
+            "generatedIdAnnotation" : null,
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -1162,7 +1263,7 @@ class ConvertEntityTest {
             "joinTableMeta" : null,
             "dissociateAnnotation" : null,
             "otherAnnotation" : {
-                "importLines" : [
+                "imports" : [
                     "org.babyfish.jimmer.sql.Transient",
                     "com.example.entity.EntityNewPropertyResolver"
                 ],
@@ -1172,6 +1273,7 @@ class ConvertEntityTest {
             },
             "body" : null,
             "orderKey" : -2,
+            "specialFormType" : null,
             "inListView" : true,
             "inDetailView" : true,
             "inInsertInput" : true,
@@ -1190,16 +1292,15 @@ class ConvertEntityTest {
             "comment" : "column comment changed",
             "overwriteComment" : true,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : false,
-            "idGenerationAnnotation" : null,
+            "generatedId" : false,
+            "generatedIdAnnotation" : null,
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -1212,6 +1313,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 0,
+            "specialFormType" : null,
             "inListView" : false,
             "inDetailView" : false,
             "inInsertInput" : false,
@@ -1230,16 +1332,23 @@ class ConvertEntityTest {
             "comment" : "id comment changed",
             "overwriteComment" : true,
             "type" : "kotlin.Int",
-            "typeTable" : {
-                "entity" : null
-            },
             "listType" : false,
             "typeNotNull" : true,
             "idProperty" : true,
-            "idGenerationAnnotation" : "@GeneratedValue(strategy = GenerationType.IDENTITY)",
+            "generatedId" : true,
+            "generatedIdAnnotation" : {
+                "imports" : [
+                    "org.babyfish.jimmer.sql.GeneratedValue",
+                    "org.babyfish.jimmer.sql.GenerationType"
+                ],
+                "annotations" : [
+                    "@GeneratedValue(strategy = GenerationType.IDENTITY)"
+                ]
+            },
             "keyProperty" : false,
             "keyGroup" : null,
             "logicalDelete" : false,
+            "logicalDeletedAnnotation" : null,
             "idView" : false,
             "idViewTarget" : null,
             "associationType" : null,
@@ -1252,6 +1361,7 @@ class ConvertEntityTest {
             "otherAnnotation" : null,
             "body" : null,
             "orderKey" : 1,
+            "specialFormType" : null,
             "inListView" : true,
             "inDetailView" : true,
             "inInsertInput" : true,
@@ -1277,7 +1387,7 @@ class ConvertEntityTest {
 
         val secondConvertEntity = sqlClient.createQuery(GenEntity::class) {
             where(table.tableId eq tableId)
-            select(table.fetch(GenEntityDetailView::class))
+            select(table.fetch(GenEntityConvertedView::class))
         }.fetchOne()
 
         assertEquals(
