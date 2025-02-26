@@ -175,7 +175,8 @@ sealed class EntityBusiness(
                         message = "Entity [${it.typeEntityId}] Not Found",
                         entityId = it.typeEntityId
                     ),
-                    associationType = it.associationType ?: if (it.listType) AssociationType.MANY_TO_MANY else AssociationType.MANY_TO_ONE
+                    associationType = it.associationType
+                        ?: if (it.listType) AssociationType.MANY_TO_MANY else AssociationType.MANY_TO_ONE
                 )
             } else if (it.associationType == null || !it.idView) {
                 if (it.enumId != null) {
@@ -615,7 +616,9 @@ class SubEntityBusiness(
         val currentName = (path.propertyItems.lastOrNull()?.property)?.let {
             it.name.replaceFirstChar { c -> c.uppercaseChar() }
         } ?: throw ModelException.subEntityNoCurrentPath(
-            "Entity [${entity.name}] No current Path: ${path}",
+            "Entity [${entity.name}] No current Path: [\n" +
+                    "\t${path.propertyItems.joinToString("\n\t") { it.property.name }}\n" +
+                    "]",
             entity = IdName(entity.id, entity.name),
             pathProperties = path.propertyItems.map { IdName(it.property.id, it.property.name) }
         )

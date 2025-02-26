@@ -88,6 +88,9 @@ sealed interface TypeEntityProperty {
     val selectOption: SelectOption
 }
 
+private fun withIdName(name: String, listType: Boolean) =
+    "${name.let { if (listType) it.toSingular() else it }}${if (listType) "Ids" else "Id"}"
+
 data class AssociationProperty(
     override val path: AssociationPath,
     override val entityBusiness: EntityBusiness,
@@ -137,23 +140,32 @@ data class AssociationProperty(
     }
 
     val forceIdView: ForceIdViewProperty by lazy {
-        ForceIdViewProperty(
-            path = path,
-            entityBusiness = entityBusiness,
-            // 将关联属性强制转换为 IdView，保留关联属性 comment 和 typeEntityId
-            property = idView?.copy(
-                id = property.id,
-                comment = property.comment,
-                typeEntityId = property.typeEntityId,
-            )
-                ?: property.copy(
-                    name = "${property.name.let { if (listType) it.toSingular() else it }}${if (listType) "Ids" else "Id"}",
-                    type = typeEntity.properties.firstOrNull { it.idProperty }?.type ?: throw ModelException.idPropertyNotFound(
+        val forceConvertedIdViewProperty = idView?.copy(
+            id = property.id,
+            comment = property.comment,
+            typeEntityId = property.typeEntityId,
+        )
+            ?: property.copy(
+                name = withIdName(name = property.name, listType = property.listType),
+                type = typeEntity.properties.firstOrNull { it.idProperty }?.type
+                    ?: throw ModelException.idPropertyNotFound(
                         "entity [${typeEntity.name}](${typeEntity.id}) id not found",
                         entity = IdName(typeEntity.id, typeEntity.name)
                     ),
-                    idView = true,
-                ),
+                idView = true,
+            )
+
+        val replaceLastPath = path.copy(
+            items = if (path.items.isNotEmpty())
+                path.items.dropLast(1) + path.items.last().copy(property = forceConvertedIdViewProperty)
+            else emptyList()
+        )
+
+        ForceIdViewProperty(
+            path = replaceLastPath,
+            entityBusiness = entityBusiness,
+            // 将关联属性强制转换为 IdView，保留关联属性 comment 和 typeEntityId
+            property = forceConvertedIdViewProperty,
             typeEntity = typeEntity,
             associationProperty = this,
             associationType = associationType,
@@ -163,7 +175,8 @@ data class AssociationProperty(
     override val selectOption by lazy {
         val selectOptionName =
             path.propertyItems.joinToString("") { it.property.name.replaceFirstChar { c -> c.uppercaseChar() } }
-                .replaceFirstChar { c -> c.lowercaseChar() } + "Options"
+                .replaceFirstChar { c -> c.lowercaseChar() }
+                .let { "${withIdName(name = it, listType = property.listType)}Options" }
         val selectOptionComment = path.propertyItems.joinToString("-") { it.property.comment } + "选项"
 
         SelectOption(
