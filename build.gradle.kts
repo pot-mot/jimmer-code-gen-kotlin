@@ -101,13 +101,13 @@ idea {
 }
 
 // 强制要求kspKotlin任务添加src/main/dto
-afterEvaluate {
-    tasks {
-        "kspKotlin" {
-            inputs.dir(layout.projectDirectory.dir("src/main/dto"))
-        }
-    }
-}
+//afterEvaluate {
+//    tasks {
+//        "kspKotlin" {
+//            inputs.dir(layout.projectDirectory.dir("src/main/dto"))
+//        }
+//    }
+//}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
