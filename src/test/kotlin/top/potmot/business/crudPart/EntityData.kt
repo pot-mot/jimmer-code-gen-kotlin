@@ -18,6 +18,7 @@ private val canNothingEntity = testEntity.copy(
 )
 
 val addOnlyEntity = canNothingEntity.copy(
+    canQuery = true,
     canAdd = true,
     pageCanAdd = true,
 ).let {
@@ -25,6 +26,7 @@ val addOnlyEntity = canNothingEntity.copy(
 }
 
 val editOnlyEntity = canNothingEntity.copy(
+    canQuery = true,
     canEdit = true,
     pageCanEdit = true,
 ).let {
@@ -39,6 +41,7 @@ val queryOnlyEntity = canNothingEntity.copy(
 }
 
 val deleteOnlyEntity = canNothingEntity.copy(
+    canQuery = true,
     canDelete = true,
     pageCanDelete = true,
 ).let {
