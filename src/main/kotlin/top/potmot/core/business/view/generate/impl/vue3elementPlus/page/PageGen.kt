@@ -235,17 +235,6 @@ interface PageGen : Generator {
             pageCardChildren += TagElement("div") {
                 props += PropBind("class", "page-operations", isLiteral = true)
 
-                if (pageCanViewDetail) {
-                    children += button(
-                        content = "新增",
-                        type = ElementPlusComponents.Type.INFO,
-                        icon = "View",
-                    ).merge {
-                        directives += VIf("userStore.permissions.includes('${permission.get}')")
-                        events += EventBind("click", "startView")
-                    }
-                }
-
                 if (pageCanAdd) {
                     children += button(
                         content = "新增",
