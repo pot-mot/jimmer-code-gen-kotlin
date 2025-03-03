@@ -27,5 +27,5 @@ abstract class TestGenerator {
 data class LazyInsertId(
     val entity: SubEntityBusiness,
     val name: String,
-    val serviceName: String,
+    val insertByService: Boolean = entity.canAdd,
 )

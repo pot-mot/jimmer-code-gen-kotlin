@@ -136,7 +136,9 @@ sealed class EntityBusiness(
         packagePath.replace(".", "/")
     }
 
-    val apiServiceName = "${lowerName}Service"
+    val serviceLowerName = "${lowerName}Service"
+
+    val apiServiceName = serviceLowerName
 
 
     val isSelfAssociated by lazy {

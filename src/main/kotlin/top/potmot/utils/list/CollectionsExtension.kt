@@ -16,3 +16,19 @@ fun <T> Iterable<T>.join(separator: T): List<T> {
     }
     return result
 }
+
+fun <T> Iterable<T>.forEachJoinDo(joinAction: (T) -> Unit, action: (T) -> Unit) {
+    val iterator = iterator()
+
+    if (iterator.hasNext()) {
+        // 处理第一个元素
+        action(iterator.next())
+
+        // 从第二个元素开始循环
+        while (iterator.hasNext()) {
+            val it = iterator.next()
+            joinAction(it)
+            action(it)
+        }
+    }
+}
