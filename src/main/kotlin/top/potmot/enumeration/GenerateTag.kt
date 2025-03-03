@@ -9,6 +9,7 @@ enum class GenerateTag {
     Permission,
     Route,
     Service,
+    CrudTest,
 
     FrontEnd,
     Component,

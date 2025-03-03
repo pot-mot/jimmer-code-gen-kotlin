@@ -7,6 +7,7 @@ enum class GenerateType {
     Enum,
     Entity,
     Service,
+    Test,
     DTO,
     FrontEnd,
     View,

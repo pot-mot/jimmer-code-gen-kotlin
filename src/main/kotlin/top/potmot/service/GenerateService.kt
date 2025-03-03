@@ -10,15 +10,17 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import top.potmot.core.config.useContext
 import top.potmot.core.business.dto.generate.DtoGenerator.generateDto
-import top.potmot.core.business.permission.generate.PermissionGenerator
 import top.potmot.core.business.meta.EnumBusiness
 import top.potmot.core.business.meta.RootEntityBusiness
+import top.potmot.core.business.meta.toFlat
+import top.potmot.core.business.permission.generate.PermissionGenerator
 import top.potmot.core.business.route.generate.DynamicRouteGenerator
 import top.potmot.core.business.service.generate.getServiceGenerator
-import top.potmot.core.business.meta.toFlat
+import top.potmot.core.business.test.generate.getTestGenerator
 import top.potmot.core.business.view.generate.getViewGenerator
+import top.potmot.core.config.merge
+import top.potmot.core.config.useContext
 import top.potmot.core.database.generate.getTableDefineGenerator
 import top.potmot.core.entity.generate.getEntityGenerator
 import top.potmot.entity.GenEntity
@@ -29,15 +31,14 @@ import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityGenerateFileFillView
 import top.potmot.entity.dto.GenEntityGenerateView
+import top.potmot.entity.dto.GenEnumGenerateFileFillView
 import top.potmot.entity.dto.GenEnumGenerateView
 import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.GenerateResult
 import top.potmot.entity.dto.IdName
-import top.potmot.entity.dto.TableEntityNotNullPair
-import top.potmot.core.config.merge
-import top.potmot.entity.dto.GenEnumGenerateFileFillView
 import top.potmot.entity.dto.IdNamePackagePath
+import top.potmot.entity.dto.TableEntityNotNullPair
 import top.potmot.entity.id
 import top.potmot.entity.modelId
 import top.potmot.entity.table
@@ -68,6 +69,7 @@ class GenerateService(
             val files = mutableListOf<GenerateFile>()
 
             val languageDir by lazy { context.language.dir }
+            val dtoDir = "dto"
             val viewDir by lazy { context.viewType.dir }
 
             val tables by lazy {
@@ -111,6 +113,9 @@ class GenerateService(
             val serviceGenerator by lazy {
                 context.language.getServiceGenerator()
             }
+            val testGenerator by lazy {
+                context.language.getTestGenerator()
+            }
             val viewGenerator by lazy {
                 context.viewType.getViewGenerator()
             }
@@ -120,21 +125,28 @@ class GenerateService(
             }
             if (containsAll || containsBackEnd || GenerateType.Enum in typeSet) {
                 entityGenerator.generateEnum(enums).forEach {
-                    files += it.copy(path = "${languageDir}/${it.path}")
+                    files += it.copy(path = "main/${languageDir}/${it.path}")
                 }
             }
             if (containsAll || containsBackEnd || GenerateType.Entity in typeSet) {
                 entityGenerator.generateEntity(entities).forEach {
-                    files += it.copy(path = "${languageDir}/${it.path}")
+                    files += it.copy(path = "main/${languageDir}/${it.path}")
                 }
             }
             if (containsAll || containsBackEnd || GenerateType.Service in typeSet) {
                 serviceGenerator.generateService(entityBusinesses).forEach {
-                    files += it.copy(path = "${languageDir}/${it.path}")
+                    files += it.copy(path = "main/${languageDir}/${it.path}")
+                }
+            }
+            if (containsAll || containsBackEnd || GenerateType.Test in typeSet) {
+                testGenerator.generateTest(entityBusinesses).forEach {
+                    files += it.copy(path = "test/${languageDir}/${it.path}")
                 }
             }
             if (containsAll || containsBackEnd || GenerateType.DTO in typeSet) {
-                files += generateDto(entityBusinesses)
+                files += generateDto(entityBusinesses).map {
+                    it.copy(path = "main/${dtoDir}/${it.path}")
+                }
             }
             if (containsAll || containsBackEnd || GenerateType.Permission in typeSet) {
                 files += PermissionGenerator.generate(entityBusinesses)

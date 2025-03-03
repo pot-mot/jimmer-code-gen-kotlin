@@ -45,7 +45,7 @@ data class AssociationPath(
         } else {
             throw ModelException.longAssociationCircularDependence(
                 message = "entity [${entity.name}] property [${property.name}] become circular dependence path\n" +
-                        "full path: [\n\t${propertyItems.joinToString("\n\t") { it.property.name }}\n]",
+                        "full path: [\n\t${propertyItems.joinToString("\n\t") { "${it.entity.name}.${it.property.name}" }}\n]",
                 entity = IdName(rootEntity.id, rootEntity.name),
                 properties = propertyItems.map { IdName(it.property.id, it.property.name) }
             )

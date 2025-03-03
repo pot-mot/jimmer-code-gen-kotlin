@@ -424,7 +424,7 @@ object DtoGenerator {
         entity: RootEntityBusiness,
     ) = GenerateFile(
         entity,
-        "dto/${formatFileName(entity)}",
+        formatFileName(entity),
         stringify(entity),
         listOf(GenerateTag.BackEnd, GenerateTag.DTO)
     )

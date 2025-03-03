@@ -85,10 +85,6 @@ sealed class EntityBusiness(
         )
     }
 
-    val serviceFilePath by lazy {
-        packages.service.replace(".", "/")
-    }
-
     abstract val dto: DtoNames
 
     val permissions by lazy {
@@ -129,6 +125,16 @@ sealed class EntityBusiness(
 
 
     val serviceName = "${name}Service"
+
+    val serviceFilePath by lazy {
+        packages.service.replace(".", "/")
+    }
+
+    val testName = "${name}Test"
+
+    val testFilePath by lazy {
+        packagePath.replace(".", "/")
+    }
 
     val apiServiceName = "${lowerName}Service"
 
@@ -536,6 +542,14 @@ class SubEntityBusiness(
     entityIdMap,
     enumIdMap
 ) {
+    val asRoot: RootEntityBusiness by lazy {
+        RootEntityBusiness(
+            entity,
+            entityIdMap,
+            enumIdMap
+        )
+    }
+
     val shortViewProperties by lazy {
         properties
             .filter { it.inShortAssociationView }
