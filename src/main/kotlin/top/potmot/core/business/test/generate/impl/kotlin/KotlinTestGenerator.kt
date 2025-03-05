@@ -173,7 +173,7 @@ object KotlinTestGenerator : TestGenerator() {
                     } else {
                         it.insertEntityPropertyValue(this, lazyInsertIdMap)
                     }
-                    line(",")
+                    line()
                 }
         }
         append("}")
@@ -198,7 +198,6 @@ object KotlinTestGenerator : TestGenerator() {
                         append(it.name)
                         append(" = ")
                         it.insertEntityPropertyValue(this, lazyInsertIdMap)
-                        line(",")
                     }
                 }
                 append("}")

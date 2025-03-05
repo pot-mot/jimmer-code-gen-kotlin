@@ -13,7 +13,6 @@ import top.potmot.core.entity.convert.merge.AssociationPropertyPairWaitMergeExis
 import top.potmot.core.entity.convert.meta.AssociationAnnotationMeta
 import top.potmot.core.entity.convert.meta.ConvertPropertyMeta
 import top.potmot.core.entity.convert.meta.TableAssociationMeta
-import top.potmot.entity.GenProperty
 import top.potmot.entity.GenPropertyDraft
 import top.potmot.entity.copy
 import top.potmot.core.entity.convert.PropertyInput
@@ -137,7 +136,7 @@ fun convertAssociationProperties(
 
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = sourceProperty.toEntity().copy {
-            unload(this, GenProperty::id)
+            unload(this, GenPropertyDraft::id)
             name = singularName
             if (comment.isBlank() || this.idProperty) {
                 comment = targetEntity?.comment ?: targetTable.comment.clearTableComment()
@@ -266,7 +265,7 @@ fun convertAssociationProperties(
 
         // 基于基础类型和关联信息制作出关联类型
         val associationProperty = targetProperty.toEntity().copy {
-            unload(this, GenProperty::id)
+            unload(this, GenPropertyDraft::id)
             name = singularName
             if (comment.isBlank() || this.idProperty) {
                 comment = sourceEntity?.comment ?: sourceTable.comment.clearTableComment()

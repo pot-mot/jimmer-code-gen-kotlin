@@ -4,9 +4,9 @@ import org.babyfish.jimmer.kt.unload
 import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.entity.convert.base.TypeMapping
 import top.potmot.core.entity.convert.base.toPlural
-import top.potmot.entity.GenProperty
 import top.potmot.entity.copy
 import top.potmot.core.entity.convert.PropertyInput
+import top.potmot.entity.GenPropertyDraft
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.IdName
 import top.potmot.enumeration.GenLanguage
@@ -25,7 +25,7 @@ fun createIdViewProperty(
     typeMapping: TypeMapping,
 ): PropertyInput =
     baseProperty.toEntity().copy {
-        unload(this, GenProperty::id)
+        unload(this, GenPropertyDraft::id)
         name = singularName + "Id"
         idProperty = false
         idProperty = false
