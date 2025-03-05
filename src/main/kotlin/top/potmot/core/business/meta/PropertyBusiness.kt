@@ -1,6 +1,8 @@
 package top.potmot.core.business.meta
 
 import top.potmot.core.business.view.generate.staticPath
+import top.potmot.core.numberMax
+import top.potmot.core.numberMin
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.IdName
@@ -64,11 +66,13 @@ data class CommonProperty(
     }
 
     val numberMin by lazy {
-        property.numberMin
+        if (property.column == null) null
+        else numberMin(property.column.typeCode, property.column.dataSize, property.column.numericPrecision)
     }
 
     val numberMax by lazy {
-        property.numberMax
+        if (property.column == null) null
+        else numberMax(property.column.typeCode, property.column.dataSize, property.column.numericPrecision)
     }
 }
 

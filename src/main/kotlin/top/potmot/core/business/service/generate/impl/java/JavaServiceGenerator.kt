@@ -89,6 +89,9 @@ object JavaServiceGenerator : ServiceGenerator() {
             if (entity.canAdd || entity.canEdit || entity.canDelete) {
                 imports += "org.springframework.transaction.annotation.Transactional"
             }
+            if (entity.canAdd || entity.canEdit) {
+                imports += "javax.validation.Valid"
+            }
             if (entity.canAdd) {
                 imports += listOf(
                     "${packages.dto}.${insertInput}"
@@ -353,7 +356,7 @@ public List<@NotNull ${optionView}> listOptions(@RequestBody @NotNull $spec spec
 @PostMapping
 @SaCheckPermission("${permissions.insert}")
 @Transactional
-public $idType insert(@RequestBody @NotNull $insertInput input) throws AuthorizeException {
+public $idType insert(@RequestBody @Valid @NotNull $insertInput input) throws AuthorizeException {
     return sqlClient.insert(input).getModifiedEntity().${idName}();
 }
                         """.trimIndent()
@@ -386,7 +389,7 @@ public $updateFillView getForUpdate(@PathVariable $idType id) throws AuthorizeEx
 @PutMapping
 @SaCheckPermission("${permissions.update}")
 @Transactional
-public $idType update(@RequestBody @NotNull $updateInput input) throws AuthorizeException {
+public $idType update(@RequestBody @Valid @NotNull $updateInput input) throws AuthorizeException {
     return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity().${idName}();
 }
                         """.trimIndent()

@@ -1,6 +1,5 @@
 package top.potmot.core.entity.generate.builder
 
-import kotlin.reflect.KClass
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
@@ -18,8 +17,10 @@ import top.potmot.core.database.generate.identifier.IdentifierType
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
 import top.potmot.entity.dto.GenEntityGenerateView
+import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.enumeration.TableType
 import top.potmot.utils.string.buildScopeString
+import kotlin.reflect.KClass
 
 typealias EntityView = GenEntityGenerateView
 typealias PropertyView = GenEntityGenerateView.TargetOf_properties
@@ -122,10 +123,8 @@ abstract class EntityBuilder : CodeBuilder() {
      *  3. 使用映射后的 type
      */
     fun PropertyView.shortType(): String {
-        enum?.let { return it.name }
-
         val baseType =
-            typeTable?.entity?.name ?: let {
+            typeTable?.entity?.name ?: enum?.name ?: let {
                 type.split(".").last()
             }
 
@@ -145,13 +144,11 @@ abstract class EntityBuilder : CodeBuilder() {
             }
         }
 
-        typeTable?.let { table ->
-            table.entity?.let {
-                return if (it.packagePath.isNotBlank()) {
-                    it.packagePath + "." + it.name
-                } else {
-                    it.name
-                }
+        typeTable?.entity?.let {
+            return if (it.packagePath.isNotBlank()) {
+                it.packagePath + "." + it.name
+            } else {
+                it.name
             }
         }
 
@@ -215,6 +212,8 @@ abstract class EntityBuilder : CodeBuilder() {
         return result
     }
 
+    abstract fun validateAnnotations(property: PropertyView): AnnotationWithImports
+
     open fun importClasses(entity: EntityView): Set<KClass<*>> {
         val result = mutableSetOf<KClass<*>>()
 
@@ -246,6 +245,8 @@ abstract class EntityBuilder : CodeBuilder() {
         if (property.logicalDelete) {
             imports += property.logicalDeletedAnnotation?.imports ?: context.logicalDeletedAnnotation.imports
         }
+
+        imports +=validateAnnotations(property).imports
 
         property.otherAnnotation?.imports?.let {
             imports += it
@@ -347,6 +348,8 @@ abstract class EntityBuilder : CodeBuilder() {
             } else if (context.columnAnnotation) {
                 columnAnnotation()?.let { list += it }
             }
+
+            list += validateAnnotations(property).annotations
 
             if (otherAnnotation != null && otherAnnotation.annotations.isNotEmpty()) {
                 list += otherAnnotation.annotations

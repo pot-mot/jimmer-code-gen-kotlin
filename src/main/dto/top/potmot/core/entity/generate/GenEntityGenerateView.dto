@@ -34,6 +34,9 @@ GenEntityGenerateView {
         column {
             id
             name
+            typeCode
+            dataSize
+            numericPrecision
         }
 
         typeTable {

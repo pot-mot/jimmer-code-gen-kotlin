@@ -80,6 +80,9 @@ object KotlinServiceGenerator : ServiceGenerator() {
             if (entity.canAdd || entity.canEdit || entity.canDelete) {
                 imports += "org.springframework.transaction.annotation.Transactional"
             }
+            if (entity.canAdd || entity.canEdit) {
+                imports += "javax.validation.Valid"
+            }
             if (entity.canAdd) {
                 imports += listOf(
                     "${packages.dto}.${insertInput}"
@@ -312,7 +315,7 @@ fun listOptions(@RequestBody spec: $spec): List<$optionView> =
 @SaCheckPermission("${permissions.insert}")
 @Throws(AuthorizeException::class)
 @Transactional
-fun insert(@RequestBody input: $insertInput): $idType =
+fun insert(@RequestBody @Valid input: $insertInput): $idType =
     sqlClient.insert(input).modifiedEntity.$idName
                         """.trimIndent()
                     )
@@ -344,7 +347,7 @@ fun getForUpdate(@PathVariable id: $idType): $updateFillView? =
 @SaCheckPermission("${permissions.update}")
 @Throws(AuthorizeException::class)
 @Transactional
-fun update(@RequestBody input: $updateInput): $idType =
+fun update(@RequestBody @Valid input: $updateInput): $idType =
     sqlClient.update(input, AssociatedSaveMode.REPLACE).modifiedEntity.$idName
                         """.trimIndent()
                     )
