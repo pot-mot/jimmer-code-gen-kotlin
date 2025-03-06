@@ -92,38 +92,27 @@ object KotlinTestGenerator : TestGenerator {
                     line("private val ${it.serviceLowerName}: ${it.serviceName},")
                 }
             }
-            line(") {")
-
-            scope {
-                line("fun insertAndReturnId(): $idPropertyShortType {")
-                scope {
+            scope(") {", "}") {
+                scope("fun insertAndReturnId(): $idPropertyShortType {", "}") {
                     block(frontInsertIdData)
                     block(currentInsertData)
                 }
-                line("}")
 
                 line()
-                line("fun testInsert() {")
-                scope {
+                scope("fun testInsert() {", "}") {
 
                 }
-                line("}")
 
                 line()
-                line("fun testUpdate() {")
-                scope {
+                scope("fun testUpdate() {", "}") {
 
                 }
-                line("}")
 
                 line()
-                line("fun testDelete() {")
-                scope {
+                scope("fun testDelete() {", "}") {
 
                 }
-                line("}")
             }
-            line("}")
         }
     }
 
@@ -160,9 +149,7 @@ object KotlinTestGenerator : TestGenerator {
         builder: StringIndentScopeBuilder,
         lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
     ) = builder.apply {
-        append(name)
-        line(" {")
-        scope {
+        scopeEndNoLine("$name {", "}") {
             properties
                 .filterNot { it.property.idProperty && it.property.generatedId }
                 .forEach {
@@ -176,7 +163,6 @@ object KotlinTestGenerator : TestGenerator {
                     line()
                 }
         }
-        append("}")
     }
 
     private fun PropertyBusiness.insertEntityPropertyValue(
@@ -191,16 +177,13 @@ object KotlinTestGenerator : TestGenerator {
             append("${enum.name}.${enum.defaultItem.name}")
         } else if (this@insertEntityPropertyValue is AssociationProperty) {
             if (isLongAssociation) {
-                append(typeEntity.name)
-                line(" {")
-                scope {
+                scopeEndNoLine("${typeEntity.name} {", "}") {
                     typeEntityBusiness.subEditNoIdProperties.forEach {
                         append(it.name)
                         append(" = ")
                         it.insertEntityPropertyValue(this, lazyInsertIdMap)
                     }
                 }
-                append("}")
             } else {
                 if (isTargetOne) {
                     if (typeEntity.id !in lazyInsertIdMap) {

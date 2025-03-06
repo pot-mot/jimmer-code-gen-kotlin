@@ -13,6 +13,26 @@ class StringIndentScopeBuilder(
         currentIndent = currentIndent.dropLast(indent.length)
     }
 
+    fun scope(
+        before: String,
+        after: String,
+        scopeBlock: () -> Unit
+    ) {
+        line(before)
+        scope(scopeBlock)
+        line(after)
+    }
+
+    fun scopeEndNoLine(
+        before: String,
+        after: String,
+        scopeBlock: () -> Unit
+    ) {
+        line(before)
+        scope(scopeBlock)
+        append(after)
+    }
+
     fun append(content: String) {
         if (stringBuilder.endsWith('\n')) {
             stringBuilder.append(currentIndent)

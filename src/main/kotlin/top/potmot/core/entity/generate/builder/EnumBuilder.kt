@@ -27,9 +27,7 @@ abstract class EnumBuilder : CodeBuilder() {
 
             block(blockComment(enum))
             annotations.forEach { block(it) }
-            line(enumLine(enum) + " {")
-
-            scope {
+            scope(enumLine(enum) + " {", "}") {
                 enum.items.forEachJoinDo({
                     line()
                 }) { item ->
@@ -38,8 +36,6 @@ abstract class EnumBuilder : CodeBuilder() {
                     line(itemLine(item))
                 }
             }
-
-            line("}")
         }
 
     open fun blockComment(enum: EnumView): String? =

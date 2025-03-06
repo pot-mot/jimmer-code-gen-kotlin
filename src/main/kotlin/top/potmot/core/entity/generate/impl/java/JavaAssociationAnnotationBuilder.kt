@@ -7,9 +7,7 @@ import top.potmot.utils.string.buildScopeString
 object JavaAssociationAnnotationBuilder : AssociationAnnotationBuilder("        ") {
     override fun build(meta: JoinTableMeta) =
         buildScopeString(indent) {
-            line("@JoinTable(")
-
-            scope {
+            scopeEndNoLine("@JoinTable(", ")") {
                 line("name = \"${meta.tableName}\",")
 
                 val foreignKeyTypeProp = createForeignKeyType(meta.foreignKeyType)
@@ -18,24 +16,18 @@ object JavaAssociationAnnotationBuilder : AssociationAnnotationBuilder("        
                     line("joinColumnName = \"${meta.columnNamePairs[0].first}\",")
                     line("inverseJoinColumnName = \"${meta.columnNamePairs[0].second}\"")
                 } else {
-                    line("joinColumns = {")
-                    scope {
+                    scope("joinColumns = {", "},") {
                         meta.columnNamePairs.forEach {
                             line("@JoinColumn(name = \"${it.first}\", ${foreignKeyTypeProp ?: ""}),")
                         }
                     }
-                    line("},")
 
-                    line("inverseJoinColumns = {")
-                    scope {
+                    scope("inverseJoinColumns = {", "}") {
                         meta.columnNamePairs.forEach {
                             line("@JoinColumn(name = \"${it.second}\", ${foreignKeyTypeProp ?: ""}),")
                         }
                     }
-                    line("}")
                 }
             }
-
-            append(")")
         }
 }

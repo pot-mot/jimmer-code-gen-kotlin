@@ -118,14 +118,13 @@ object JavaServiceGenerator : ServiceGenerator {
             lines(
                 "@RestController",
                 "@RequestMapping(\"/${entity.requestPath}\")",
-                "public class $serviceName implements Tables {"
             )
-            scope {
+            scope("public class $serviceName implements Tables {", "}") {
                 line("private final JSqlClient sqlClient;")
                 line()
-                line("public $serviceName(JSqlClient sqlClient) {")
-                scope { line("this.sqlClient = sqlClient;") }
-                line("}")
+                scope("public $serviceName(JSqlClient sqlClient) {", "}") {
+                    line("this.sqlClient = sqlClient;")
+                }
 
                 line()
                 block(
@@ -439,7 +438,6 @@ public boolean ${validItem.functionName}(@RequestBody @NotNull $name spec) throw
                     )
                 }
             }
-            line("}")
         }
             .trimBlankLine()
             .clearBlankLine()

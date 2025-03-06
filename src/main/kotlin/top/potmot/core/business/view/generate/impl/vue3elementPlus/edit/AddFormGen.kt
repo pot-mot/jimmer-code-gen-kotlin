@@ -174,15 +174,13 @@ interface AddFormGen : Generator, EditFormItem, EditFormType, EditNullableValid,
         return buildScopeString(indent) {
             line("import type {$type} from \"./${type}\"")
             line()
-            line("export const $createDefault = (): $type => {")
-            scope {
+            scope("export const $createDefault = (): $type => {", "}") {
                 append("return ")
                 entity.addFormProperties
                     .formDefault { it.subEditNoIdProperties }
                     .stringify(this)
                 line()
             }
-            line("}")
         }
     }
 

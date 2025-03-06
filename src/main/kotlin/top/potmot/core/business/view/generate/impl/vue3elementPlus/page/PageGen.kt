@@ -435,27 +435,21 @@ interface PageGen : Generator {
                         args = listOf(FunctionArg("id", idType)),
                         body = buildFunctionBody(indent) {
                             line("detailView.value = await get${entity.name}(id)")
-                            line("if (detailView.value === undefined) {")
-                            scope {
+                            scope("if (detailView.value === undefined) {", "}") {
                                 line("sendMessage('查看的${entity.comment}不存在', 'error')")
                                 line("return")
                             }
-                            line("}")
                             append("viewDialogVisible.value = true")
                         },
                     ),
                     emptyLineCode,
                     CodeBlock(
                         buildScopeString(indent) {
-                            line("watch(() => viewDialogVisible.value, (newVal) => {")
-                            scope {
-                                line("if (!newVal) {")
-                                scope {
+                            scope("watch(() => viewDialogVisible.value, (newVal) => {", "})") {
+                                scope("if (!newVal) {", "}") {
                                     line("detailView.value = undefined")
                                 }
-                                line("}")
                             }
-                            line("})")
                         }
                     )
                 )
@@ -490,19 +484,16 @@ interface PageGen : Generator {
                         name = "submitAdd",
                         args = listOf(FunctionArg("insertInput", insertInput)),
                         body = buildFunctionBody(indent) {
-                            line("try {")
-                            scope {
+                            scopeEndNoLine("try {", "}") {
                                 line("await add${entity.name}(insertInput)")
                                 line("await ${queryFn}()")
                                 line("addDialogVisible.value = false")
                                 line()
                                 line("sendMessage('新增${entity.comment}成功', 'success')")
                             }
-                            line("} catch (e) {")
-                            scope {
+                            scopeEndNoLine(" catch (e) {", "}") {
                                 line("sendMessage(\"新增${entity.comment}失败\", \"error\", e)")
                             }
-                            append("}")
                         }
                     ),
                     emptyLineCode,
@@ -546,12 +537,10 @@ interface PageGen : Generator {
                         args = listOf(FunctionArg("id", idType)),
                         body = buildFunctionBody(indent) {
                             line("updateInput.value = await get${entity.name}ForUpdate(id)")
-                            line("if (updateInput.value === undefined) {")
-                            scope {
+                            scope("if (updateInput.value === undefined) {", "}") {
                                 line("sendMessage('编辑的${entity.comment}不存在', 'error')")
                                 line("return")
                             }
-                            line("}")
                             append("editDialogVisible.value = true")
                         },
                     ),
@@ -561,19 +550,16 @@ interface PageGen : Generator {
                         name = "submitEdit",
                         args = listOf(FunctionArg("updateInput", "${entity.name}UpdateInput")),
                         body = buildFunctionBody(indent) {
-                            line("try {")
-                            scope {
+                            scopeEndNoLine("try {", "}") {
                                 line("await edit${entity.name}(updateInput)")
                                 line("await ${queryFn}()")
                                 line("editDialogVisible.value = false")
                                 line()
                                 line("sendMessage('编辑${entity.comment}成功', 'success')")
                             }
-                            line("} catch (e) {")
-                            scope {
+                            scopeEndNoLine(" catch (e)", "{") {
                                 line("sendMessage('编辑${entity.comment}失败', 'error', e)")
                             }
-                            append("}")
                         },
                     ),
                     emptyLineCode,
@@ -586,15 +572,11 @@ interface PageGen : Generator {
                     emptyLineCode,
                     CodeBlock(
                         buildScopeString(indent) {
-                            line("watch(() => editDialogVisible.value, (newVal) => {")
-                            scope {
-                                line("if (!newVal) {")
-                                scope {
+                            scope("watch(() => editDialogVisible.value, (newVal) => {", "})") {
+                                scope("if (!newVal) {", "}") {
                                     line("updateInput.value = undefined")
                                 }
-                                line("}")
                             }
-                            line("})")
                         }
                     )
                 )
@@ -629,18 +611,15 @@ interface PageGen : Generator {
                             line("const result = await deleteConfirm('${entity.comment}')")
                             line("if (!result) return")
                             line()
-                            line("try {")
-                            scope {
+                            scopeEndNoLine("try {", "}") {
                                 line("await delete${entity.name}(ids)")
                                 line("await ${queryFn}()")
                                 line()
                                 line("sendMessage('删除${entity.comment}成功', 'success')")
                             }
-                            line("} catch (e) {")
-                            scope {
+                            scope(" catch (e) {", "}") {
                                 line("sendMessage('删除${entity.comment}失败', 'error', e)")
                             }
-                            append("}")
                         },
                     )
                 )

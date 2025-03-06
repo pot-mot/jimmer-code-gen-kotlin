@@ -21,11 +21,9 @@ object DtoGenerator {
         "${entity.name}.dto"
 
     private fun StringIndentScopeBuilder.dtoBlock(name: String, body: StringIndentScopeBuilder.() -> Unit) {
-        line("$name {")
-        scope {
+        scope("$name {", "}") {
             this.body()
         }
-        line("}")
     }
 
     private fun Iterable<PropertyBusiness>.insect(

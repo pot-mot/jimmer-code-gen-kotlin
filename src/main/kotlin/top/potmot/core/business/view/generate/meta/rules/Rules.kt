@@ -192,14 +192,16 @@ data class ExistValidRule(
         val formDataValue = "$formData.value${if (formDataNotNull) "" else "?"}"
 
         return buildScopeString(indent) {
-            line("{")
-            scope {
-                line("asyncValidator: $asyncValidExist(\"${property.comment}\", async (${propertyName}: ${propertyType}) => {")
-                scope {
-                    line("return await api.${entity.apiServiceName}.${item.functionName}({")
-                    scope {
-                        line("body: {")
-                        scope {
+            scopeEndNoLine("{", "}") {
+                scope(
+                    "asyncValidator: $asyncValidExist(\"${property.comment}\", async (${propertyName}: ${propertyType}) => {",
+                    "}),"
+                ) {
+                    scope(
+                        "return await api.${entity.apiServiceName}.${item.functionName}({",
+                        "})"
+                    ){
+                        scope("body: {", "}") {
                             if (withId) {
                                 line("$idName: $formDataValue.$idName,")
                             }
@@ -218,14 +220,10 @@ data class ExistValidRule(
                                 }
                             }
                         }
-                        line("}")
                     }
-                    line("})")
                 }
-                line("}),")
                 line("trigger: $stringifyTriggers")
             }
-            append("}")
         }
     }
 

@@ -325,15 +325,13 @@ interface SubEditTableGen : Generator, EditFormItem, EditFormType, EditNullableV
         return buildScopeString(indent) {
             line("import type {$type} from \"./${type}\"")
             line()
-            line("export const $createDefault = (): $type => {")
-            scope {
+            scope("export const $createDefault = (): $type => {", "}") {
                 append("return ")
                 entity.subEditProperties
                     .formDefault { it.subEditProperties }
                     .stringify(this)
                 line()
             }
-            line("}")
         }
     }
 

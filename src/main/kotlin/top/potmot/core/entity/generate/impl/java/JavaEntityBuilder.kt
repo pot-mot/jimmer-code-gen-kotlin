@@ -24,8 +24,7 @@ object JavaEntityBuilder : EntityBuilder() {
             append("public interface ${entity.name}")
 
             if (entity.superEntities.isNotEmpty()) {
-                append(" extends")
-                append(" ${entity.superEntities.joinToString(", ") { it.name }}")
+                append(" extends ${entity.superEntities.joinToString(", ") { it.name }}")
             }
         }
 
@@ -38,17 +37,21 @@ object JavaEntityBuilder : EntityBuilder() {
             if (property.body == null) {
                 append(";")
             } else {
-                line(" {")
-                scope {
+                scopeEndNoLine(" {", "}") {
                     block(property.body.codeBlock)
                 }
-                append("}")
             }
         }
 
-    override fun validateAnnotations(property: PropertyView): AnnotationWithImports {
+    override fun annotationWithImports(property: PropertyView): AnnotationWithImports {
+        val base = super.annotationWithImports(property)
+
         val imports = mutableListOf<String>()
         val annotations = mutableListOf<String>()
+
+        if (property.listType) {
+            imports += List::class.java.name
+        }
 
         if (!property.typeNotNull) {
                 imports += Nullable::class.java.name
@@ -95,9 +98,9 @@ object JavaEntityBuilder : EntityBuilder() {
             }
         }
 
-        return AnnotationWithImports(
-            imports = imports,
-            annotations = annotations,
+        return base.copy(
+            imports = base.imports + imports,
+            annotations = base.annotations + annotations,
         )
     }
 }

@@ -35,16 +35,16 @@ object KotlinEntityBuilder : EntityBuilder() {
             if (property.body != null) {
                 scope {
                     line()
-                    line("get() {")
-                    scope {
+                    scopeEndNoLine("get() {", "}") {
                         block(property.body.codeBlock)
                     }
-                    append("}")
                 }
             }
         }
 
-    override fun validateAnnotations(property: PropertyView): AnnotationWithImports {
+    override fun annotationWithImports(property: PropertyView): AnnotationWithImports {
+        val base = super.annotationWithImports(property)
+
         val imports = mutableListOf<String>()
         val annotations = mutableListOf<String>()
 
@@ -88,9 +88,9 @@ object KotlinEntityBuilder : EntityBuilder() {
             }
         }
 
-        return AnnotationWithImports(
-            imports = imports,
-            annotations = annotations,
+        return base.copy(
+            imports = base.imports + imports,
+            annotations = base.annotations + annotations,
         )
     }
 }

@@ -67,8 +67,7 @@ data class TsObject(
     val properties: Collection<TsProperty>
 ): TsCode, TsValue {
     fun stringify(builder: StringIndentScopeBuilder) {
-        builder.line("{")
-        builder.scope {
+        builder.scopeEndNoLine("{", "}") {
             properties.forEachIndexed { index, it ->
                 builder.append(it.name)
                 builder.append(": ")
@@ -82,7 +81,6 @@ data class TsObject(
                 builder.line(if (index != properties.size - 1) "," else "")
             }
         }
-        builder.append("}")
     }
 
     fun stringify(indent: String) = buildScopeString(indent) {
@@ -94,8 +92,7 @@ data class TsArray(
     val items: Collection<TsValue>
 ): TsCode, TsValue {
     fun stringify(builder: StringIndentScopeBuilder) {
-        builder.line("[")
-        builder.scope {
+        builder.scopeEndNoLine("[", "]") {
             items.forEachIndexed { index, it ->
                 when (it) {
                     is TsRawValue -> builder.append(it.value)
@@ -106,7 +103,6 @@ data class TsArray(
                 builder.line(if (index != items.size - 1) "," else "")
             }
         }
-        builder.append("]")
     }
 
     fun stringify(indent: String) = buildScopeString(indent) {

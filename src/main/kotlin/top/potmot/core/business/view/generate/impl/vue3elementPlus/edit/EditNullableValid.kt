@@ -26,38 +26,31 @@ interface EditNullableValid {
 
         if (needValidateNotUndefined)
             builder.apply {
-                line("if ($data.$name === undefined) {")
-                scope {
+                scope("if ($data.$name === undefined) {", "}") {
                     line("$messageList.push(\"${currentComment}不可为空\")")
                 }
-                line("}")
             }
 
         if (this is AssociationProperty && isLongAssociation)
             builder.apply {
                 if (listType) {
                     if (!needValidateNotUndefined) {
-                        line("for (const item of $data.$name) {")
-                        scope {
+                        scope("for (const item of $data.$name) {", "}") {
                             propertyProducer(typeEntityBusiness).forEach {
                                 it.editNullableValid(builder, "item", messageList, currentComment, propertyProducer)
                             }
                         }
-                        line("}")
                     } else {
-                        line("if ($data.$name === undefined) {")
-                        scope {
+                        scope("if ($data.$name === undefined) {", "}") {
                             line("$messageList.push(\"${currentComment}不可为空\")")
                         }
-                        line("} else {")
-                        scope {
+                        scope(" else {", "}") {
                             line("for (const item of $data.$name) {")
                             propertyProducer(typeEntityBusiness).forEach {
                                 it.editNullableValid(builder, "item", messageList, currentComment, propertyProducer)
                             }
                             line("}")
                         }
-                        line("}")
                     }
                 } else {
                     if (!needValidateNotUndefined) {
@@ -66,18 +59,15 @@ interface EditNullableValid {
                             it.editNullableValid(builder, name, messageList, currentComment, propertyProducer)
                         }
                     } else {
-                        line("if ($data.$name === undefined) {")
-                        scope {
+                        scope("if ($data.$name === undefined) {", "}") {
                             line("$messageList.push(\"${currentComment}不可为空\")")
                         }
-                        line("} else {")
-                        scope {
+                        scope(" else {", "}") {
                             line("const $name = $data.$name")
                             propertyProducer(typeEntityBusiness).forEach {
                                 it.editNullableValid(builder, name, messageList, currentComment, propertyProducer)
                             }
                         }
-                        line("}")
                     }
                 }
             }
@@ -97,18 +87,15 @@ interface EditNullableValid {
 
             val getUnmatchedMessageList = "getUnmatchedMessageList"
 
-            line("const $getUnmatchedMessageList = (data: $inputType): Array<string> => {")
-            scope {
+            scope("const $getUnmatchedMessageList = (data: $inputType): Array<string> => {", "}") {
                 line("const messageList: Array<string> = []")
                 line()
                 if (listType) {
-                    line("for (const item of data) {")
-                    scope {
+                    scope("for (const item of data) {", "}") {
                         editNullableValid(this, "item", "messageList", "") {
                             it.subEditNoIdProperties
                         }
                     }
-                    line("}")
                 } else {
                     editNullableValid(this, "data", "messageList", "") {
                         it.subEditNoIdProperties
@@ -117,32 +104,24 @@ interface EditNullableValid {
                 line()
                 line("return messageList")
             }
-            line("}")
             line()
 
-            line("export const $validateDataForSubmit = (data: $inputType): boolean => {")
-            scope {
+            scope("export const $validateDataForSubmit = (data: $inputType): boolean => {", "}") {
                 line("const messageList = $getUnmatchedMessageList(data)")
                 line("return messageList.length === 0")
             }
-            line("}")
             line()
 
-            line("export const $assertDataTypeAsSubmitType = (data: $inputType): $outputType => {")
-            scope {
+            scope("export const $assertDataTypeAsSubmitType = (data: $inputType): $outputType => {", "}") {
                 line("const messageList = $getUnmatchedMessageList(data)")
-                line("if (messageList.length === 0) {")
-                scope {
+                scope("if (messageList.length === 0) {", "}") {
                     line("return data as $outputType")
                 }
-                line("} else {")
-                scope {
+                scope(" else {", "}") {
                     line("messageList.forEach(message => sendMessage(message, \"error\"))")
                     line("throw messageList")
                 }
-                line("}")
             }
-            line("}")
         }
     }
 }

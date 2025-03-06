@@ -153,11 +153,9 @@ fun handleSubmit(
                 line("if (props.$submitLoading) return")
                 line()
                 line("const validResult = await $handleValidateFnName()")
-                line("if (validResult) {")
-                scope {
+                scopeEndNoLine("if (validResult) {", "}") {
                     line("emits(\"submit\", $submitData)")
                 }
-                append("}")
             }
         )
     )

@@ -114,9 +114,7 @@ object KotlinServiceGenerator : ServiceGenerator {
             scope {
                 line("private val sqlClient: KSqlClient")
             }
-            line(") {")
-
-            scope {
+            scope(") {", "}") {
                 block(
                     """
 /**
@@ -395,7 +393,6 @@ fun ${validItem.functionName}(@RequestBody spec: $specName): Boolean =
                     )
                 }
             }
-            line("}")
         }
             .trimBlankLine()
             .clearBlankLine()

@@ -13,6 +13,7 @@ import top.potmot.core.common.typescript.TsImport
 import top.potmot.core.common.typescript.ImportType
 import top.potmot.core.common.typescript.stringify
 import top.potmot.error.ModelException
+import top.potmot.utils.collection.forEachJoinDo
 import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.trimBlankLine
 
@@ -47,9 +48,10 @@ class Vue3ElementPlusRulesBuilder(
         var hasExistValidRule = false
 
         val body = buildScopeString(indent) {
-            line("return {")
-            scope {
-                propertyRules.forEach { (property, rules) ->
+            scopeEndNoLine("return {", "}") {
+                propertyRules.forEachJoinDo({ _, _ ->
+                    line(",")
+                }) { property, rules ->
                     line("${property.name}: [")
                     rules.forEach { rule ->
                         scope {
@@ -61,10 +63,10 @@ class Vue3ElementPlusRulesBuilder(
                             }
                         }
                     }
-                    line("],")
+                    append("]")
                 }
+                line()
             }
-            append("}")
         }
 
         if (hasExistValidRule) {

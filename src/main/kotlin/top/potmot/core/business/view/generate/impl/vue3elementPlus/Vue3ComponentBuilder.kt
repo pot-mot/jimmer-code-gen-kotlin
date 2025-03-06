@@ -279,13 +279,11 @@ class Vue3ComponentBuilder(
     fun Iterable<StyleClass>.stringifyStyleClass(): String =
         joinToString("\n\n") { styleClass ->
             buildScopeString(indent) {
-                line("${styleClass.selector} {")
-                scope {
+                scopeEndNoLine("${styleClass.selector} {", "}") {
                     styleClass.properties.entries.forEach { (key, value) ->
                         line("$key: $value;")
                     }
                 }
-                append("}")
             }
         }
 

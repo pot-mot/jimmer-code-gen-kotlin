@@ -58,8 +58,7 @@ data class TsComplexType(
     override val canUndefined: Boolean,
 ): TsType {
     fun stringify(builder: StringIndentScopeBuilder) {
-        builder.line("{")
-        builder.scope {
+        builder.scopeEndNoLine("{", "}") {
             properties.forEach {
                 builder.append(it.name)
                 if (it.type.canUndefined) builder.append("?")
@@ -74,7 +73,6 @@ data class TsComplexType(
                 builder.line()
             }
         }
-        builder.append("}")
 
         if (canUndefined) {
             builder.append(" | undefined")

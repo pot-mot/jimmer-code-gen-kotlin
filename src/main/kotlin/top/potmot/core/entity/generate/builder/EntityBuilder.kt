@@ -51,9 +51,7 @@ abstract class EntityBuilder : CodeBuilder() {
 
             block(blockComment(entity))
             entityAnnotations.annotations.forEach { block(it) }
-            line(entityLine(entity) + " {")
-
-            scope {
+            scope(entityLine(entity) + " {", "}") {
                 propertyAnnotationsMap.forEachJoinDo({ _, _ ->
                     line()
                 }) { property, annotationWithImports ->
@@ -62,8 +60,6 @@ abstract class EntityBuilder : CodeBuilder() {
                     block(propertyBlock(property))
                 }
             }
-
-            line("}")
         }
 
     open fun EntityView.tableAnnotation(): String =
@@ -196,8 +192,6 @@ abstract class EntityBuilder : CodeBuilder() {
         )
     }
 
-    abstract fun validateAnnotations(property: PropertyView): AnnotationWithImports
-
     open fun annotationWithImports(property: PropertyView): AnnotationWithImports {
         val imports = mutableListOf<String>()
         val annotations = mutableListOf<String>()
@@ -285,15 +279,6 @@ abstract class EntityBuilder : CodeBuilder() {
                 imports += Column::class.java.name
                 columnAnnotation()?.let { annotations += it }
             }
-
-            if (listType) {
-                imports += List::class.java.name
-            }
-        }
-
-        validateAnnotations(property).let {
-            imports += it.imports
-            annotations += it.annotations
         }
 
         property.otherAnnotation?.let {
