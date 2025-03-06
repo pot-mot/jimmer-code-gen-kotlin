@@ -1,12 +1,12 @@
 package top.potmot.core.business.type
 
-import top.potmot.core.booleanType
-import top.potmot.core.dateTimeType
-import top.potmot.core.dateType
-import top.potmot.core.intType
-import top.potmot.core.numericType
-import top.potmot.core.stringType
-import top.potmot.core.timeType
+import top.potmot.core.common.booleanType
+import top.potmot.core.common.dateTimeType
+import top.potmot.core.common.dateType
+import top.potmot.core.common.intType
+import top.potmot.core.common.numericType
+import top.potmot.core.common.stringType
+import top.potmot.core.common.timeType
 
 fun typeStrToJavaType(typeStr: String, typeNotNull: Boolean) =
     when (typeStr) {

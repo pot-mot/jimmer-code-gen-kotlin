@@ -24,12 +24,12 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.switch
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.timePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormItemData
-import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
-import top.potmot.core.business.view.generate.meta.vue3.Element
-import top.potmot.core.business.view.generate.meta.vue3.PropBind
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.core.business.view.generate.meta.vue3.VModel
-import top.potmot.core.business.view.generate.meta.vue3.toPropBind
+import top.potmot.core.common.typescript.ImportDefault
+import top.potmot.core.common.vue3.Element
+import top.potmot.core.common.vue3.PropBind
+import top.potmot.core.common.vue3.TagElement
+import top.potmot.core.common.vue3.VModel
+import top.potmot.core.common.vue3.toPropBind
 
 interface EditFormItem {
     fun PropertyBusiness.toEditFormItem(

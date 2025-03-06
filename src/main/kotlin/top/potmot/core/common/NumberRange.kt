@@ -1,4 +1,4 @@
-package top.potmot.core
+package top.potmot.core.common
 
 import top.potmot.utils.number.format
 import java.math.BigDecimal

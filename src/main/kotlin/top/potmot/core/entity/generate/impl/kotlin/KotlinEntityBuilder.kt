@@ -3,15 +3,17 @@ package top.potmot.core.entity.generate.impl.kotlin
 import top.potmot.core.entity.generate.builder.EntityBuilder
 import top.potmot.core.entity.generate.builder.EntityView
 import top.potmot.core.entity.generate.builder.PropertyView
-import top.potmot.core.intType
-import top.potmot.core.numberMax
-import top.potmot.core.numberMin
-import top.potmot.core.numericType
-import top.potmot.core.stringType
+import top.potmot.core.common.intType
+import top.potmot.core.common.numberMax
+import top.potmot.core.common.numberMin
+import top.potmot.core.common.numericType
+import top.potmot.core.common.stringType
 import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.utils.string.buildScopeString
 
 object KotlinEntityBuilder : EntityBuilder() {
+    override val associationAnnotationBuilder = KotlinAssociationAnnotationBuilder
+
     override fun packageLine(path: String): String = "package $path"
 
     override fun importLine(item: String): String = "import $item"

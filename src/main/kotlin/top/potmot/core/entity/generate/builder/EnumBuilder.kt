@@ -1,9 +1,10 @@
 package top.potmot.core.entity.generate.builder
 
-import kotlin.reflect.KClass
 import org.babyfish.jimmer.sql.EnumItem
 import top.potmot.entity.dto.GenEnumGenerateView
+import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.enumeration.EnumType
+import top.potmot.utils.collection.forEachJoinDo
 import top.potmot.utils.string.buildScopeString
 
 typealias EnumView = GenEnumGenerateView
@@ -18,43 +19,28 @@ abstract class EnumBuilder : CodeBuilder() {
         buildScopeString {
             line(packageLine(enum.packagePath))
 
+            val (imports, annotations) = annotationWithImports(enum)
+
             line()
-            lines(importLines(enum)) { importLine(it) }
+            lines(filterImports(enum.packagePath, imports)) { importLine(it) }
             line()
 
             block(blockComment(enum))
-            lines(annotationLines(enum))
+            annotations.forEach { block(it) }
             line(enumLine(enum) + " {")
 
             scope {
-                enum.items.forEachIndexed { index, item ->
+                enum.items.forEachJoinDo({
+                    line()
+                }) { item ->
                     block(blockComment(item))
                     block(annotationBlock(item, enum.enumType))
                     line(itemLine(item))
-                    if (index < enum.items.size - 1) line()
                 }
             }
 
             line("}")
         }
-
-    open fun importClasses(enum: EnumView): Set<KClass<*>> {
-        val result = mutableSetOf<KClass<*>>()
-
-        enum.apply {
-            if (enumType != null) {
-                result += org.babyfish.jimmer.sql.EnumType::class
-            }
-            if (items.isNotEmpty() && enumType != null) {
-                result += EnumItem::class
-            }
-        }
-
-        return result
-    }
-
-    open fun importLines(enum: EnumView): Set<String> =
-        classesToLines(importClasses(enum))
 
     open fun blockComment(enum: EnumView): String? =
         createBlockComment(
@@ -68,14 +54,23 @@ abstract class EnumBuilder : CodeBuilder() {
             enumItem.remark
         )
 
-    open fun annotationLines(enum: EnumView): List<String> {
-        val list = mutableListOf<String>()
+    open fun annotationWithImports(enum: EnumView): AnnotationWithImports {
+        val imports = mutableListOf<String>()
+        val annotations = mutableListOf<String>()
 
         enum.enumType?.let {
-            list += "@EnumType(EnumType.Strategy.$it)"
+            imports += org.babyfish.jimmer.sql.EnumType::class.java.name
+            annotations += "@EnumType(EnumType.Strategy.$it)"
+
+            if (enum.items.isNotEmpty()) {
+                imports += EnumItem::class.java.name
+            }
         }
 
-        return list
+        return AnnotationWithImports(
+            imports = imports,
+            annotations = annotations
+        )
     }
 
     open fun annotationBlock(

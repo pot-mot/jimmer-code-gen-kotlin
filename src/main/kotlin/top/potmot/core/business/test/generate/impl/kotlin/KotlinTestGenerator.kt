@@ -1,6 +1,6 @@
 package top.potmot.core.business.test.generate.impl.kotlin
 
-import top.potmot.core.booleanType
+import top.potmot.core.common.booleanType
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.EnumProperty
@@ -8,19 +8,19 @@ import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.meta.SubEntityBusiness
-import top.potmot.core.business.test.generate.LazyInsertId
+import top.potmot.core.business.test.generate.meta.LazyInsertId
 import top.potmot.core.business.test.generate.TestGenerator
-import top.potmot.core.intType
-import top.potmot.core.numericType
-import top.potmot.core.stringType
+import top.potmot.core.common.intType
+import top.potmot.core.common.numericType
+import top.potmot.core.common.stringType
 import top.potmot.enumeration.GenLanguage
-import top.potmot.utils.list.forEachJoinDo
+import top.potmot.utils.collection.forEachJoinDo
 import top.potmot.utils.string.StringIndentScopeBuilder
 import top.potmot.utils.string.buildScopeString
 
 private const val sqlClient = "sqlClient"
 
-object KotlinTestGenerator : TestGenerator() {
+object KotlinTestGenerator : TestGenerator {
     override val suffix = GenLanguage.KOTLIN.suffix
 
     override fun stringifyTest(entity: RootEntityBusiness): String {

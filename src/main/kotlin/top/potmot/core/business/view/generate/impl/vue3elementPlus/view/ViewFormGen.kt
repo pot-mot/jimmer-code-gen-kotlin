@@ -7,11 +7,11 @@ import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.descriptions
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator.toElements
-import top.potmot.core.business.view.generate.meta.typescript.ImportType
-import top.potmot.core.business.view.generate.meta.vue3.Component
-import top.potmot.core.business.view.generate.meta.vue3.Prop
-import top.potmot.core.business.view.generate.meta.vue3.PropBind
-import top.potmot.core.business.view.generate.meta.vue3.VIf
+import top.potmot.core.common.typescript.ImportType
+import top.potmot.core.common.vue3.Component
+import top.potmot.core.common.vue3.Prop
+import top.potmot.core.common.vue3.PropBind
+import top.potmot.core.common.vue3.VIf
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag

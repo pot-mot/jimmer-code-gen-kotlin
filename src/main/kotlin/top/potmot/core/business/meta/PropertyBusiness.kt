@@ -1,8 +1,8 @@
 package top.potmot.core.business.meta
 
 import top.potmot.core.business.view.generate.staticPath
-import top.potmot.core.numberMax
-import top.potmot.core.numberMin
+import top.potmot.core.common.numberMax
+import top.potmot.core.common.numberMin
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties
 import top.potmot.entity.dto.IdName

@@ -1,11 +1,11 @@
 package top.potmot.core.business.meta
 
-import top.potmot.core.dateTimeType
-import top.potmot.core.dateType
-import top.potmot.core.intType
-import top.potmot.core.numericType
-import top.potmot.core.stringType
-import top.potmot.core.timeType
+import top.potmot.core.common.dateTimeType
+import top.potmot.core.common.dateType
+import top.potmot.core.common.intType
+import top.potmot.core.common.numericType
+import top.potmot.core.common.stringType
+import top.potmot.core.common.timeType
 import top.potmot.entity.dto.GenEntityBusinessView
 
 enum class PropertyQueryType {

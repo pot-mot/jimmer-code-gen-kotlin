@@ -1,10 +1,10 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.table
 
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.tableColumn
-import top.potmot.core.business.view.generate.meta.vue3.Element
-import top.potmot.core.business.view.generate.meta.vue3.Prop
-import top.potmot.core.business.view.generate.meta.vue3.PropBind
-import top.potmot.core.business.view.generate.meta.vue3.VIf
+import top.potmot.core.common.vue3.Element
+import top.potmot.core.common.vue3.Prop
+import top.potmot.core.common.vue3.PropBind
+import top.potmot.core.common.vue3.VIf
 
 private const val idColumn = "idColumn"
 private const val indexColumn = "indexColumn"

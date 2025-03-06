@@ -1,15 +1,15 @@
-package top.potmot.core.business.view.generate.meta.vue3
+package top.potmot.core.common.vue3
 
-import top.potmot.core.business.view.generate.meta.style.StyleClass
-import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
-import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
-import top.potmot.core.business.view.generate.meta.typescript.Function
-import top.potmot.core.business.view.generate.meta.typescript.LetVariable
-import top.potmot.core.business.view.generate.meta.typescript.TsArray
-import top.potmot.core.business.view.generate.meta.typescript.TsCode
-import top.potmot.core.business.view.generate.meta.typescript.TsImport
-import top.potmot.core.business.view.generate.meta.typescript.TsObject
-import top.potmot.core.business.view.generate.meta.typescript.TsRawValue
+import top.potmot.core.common.style.StyleClass
+import top.potmot.core.common.typescript.CodeBlock
+import top.potmot.core.common.typescript.ConstVariable
+import top.potmot.core.common.typescript.Function
+import top.potmot.core.common.typescript.LetVariable
+import top.potmot.core.common.typescript.TsArray
+import top.potmot.core.common.typescript.TsCode
+import top.potmot.core.common.typescript.TsImport
+import top.potmot.core.common.typescript.TsObject
+import top.potmot.core.common.typescript.TsRawValue
 
 data class Prop(
     val name: String,

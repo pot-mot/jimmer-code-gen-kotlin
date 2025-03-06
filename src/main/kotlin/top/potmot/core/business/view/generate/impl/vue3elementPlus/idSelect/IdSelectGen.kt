@@ -2,7 +2,7 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.idSelect
 
 import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
-import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.common.vue3.Component
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException

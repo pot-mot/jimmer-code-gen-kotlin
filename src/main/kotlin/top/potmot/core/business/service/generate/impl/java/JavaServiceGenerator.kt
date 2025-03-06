@@ -10,7 +10,7 @@ import top.potmot.utils.string.clearBlankLine
 import top.potmot.utils.string.entityNameToTableName
 import top.potmot.utils.string.trimBlankLine
 
-object JavaServiceGenerator : ServiceGenerator() {
+object JavaServiceGenerator : ServiceGenerator {
     override val suffix = GenLanguage.JAVA.suffix
 
     private val RootEntityBusiness.tableProxy

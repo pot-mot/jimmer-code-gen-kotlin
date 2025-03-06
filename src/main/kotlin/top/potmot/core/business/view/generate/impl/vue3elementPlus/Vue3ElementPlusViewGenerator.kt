@@ -10,7 +10,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.page.PageGen
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.query.QueryFormGen
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.view.ViewFormGen
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.view.ViewTableGen
-import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.common.vue3.Component
 import top.potmot.entity.dto.GenerateFile
 
 object Vue3ElementPlusViewGenerator :

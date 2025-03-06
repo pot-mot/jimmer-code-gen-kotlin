@@ -9,7 +9,7 @@ import top.potmot.utils.string.buildScopeString
 import top.potmot.utils.string.clearBlankLine
 import top.potmot.utils.string.trimBlankLine
 
-object KotlinServiceGenerator : ServiceGenerator() {
+object KotlinServiceGenerator : ServiceGenerator {
     override val suffix = GenLanguage.KOTLIN.suffix
 
     @Throws(GenerateException::class)

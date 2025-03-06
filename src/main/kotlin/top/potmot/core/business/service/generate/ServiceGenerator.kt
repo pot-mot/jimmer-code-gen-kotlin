@@ -5,10 +5,10 @@ import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 import top.potmot.error.GenerateException
 
-abstract class ServiceGenerator {
-    abstract val suffix: String
+interface ServiceGenerator {
+    val suffix: String
 
-    protected abstract fun stringifyService(entity: RootEntityBusiness): String
+    fun stringifyService(entity: RootEntityBusiness): String
 
     @Throws(GenerateException::class)
     fun generateService(

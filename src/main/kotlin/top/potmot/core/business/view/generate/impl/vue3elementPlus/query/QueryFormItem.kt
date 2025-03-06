@@ -16,12 +16,12 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.timePickerRange
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.form.FormItemData
-import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
-import top.potmot.core.business.view.generate.meta.typescript.Import
-import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
-import top.potmot.core.business.view.generate.meta.vue3.PropBind
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.core.business.view.generate.meta.vue3.VModel
+import top.potmot.core.common.typescript.CodeBlock
+import top.potmot.core.common.typescript.Import
+import top.potmot.core.common.typescript.ImportDefault
+import top.potmot.core.common.vue3.PropBind
+import top.potmot.core.common.vue3.TagElement
+import top.potmot.core.common.vue3.VModel
 
 interface QueryFormItem {
     fun PropertyBusiness.toQueryFormItem(spec: String): FormItemData {

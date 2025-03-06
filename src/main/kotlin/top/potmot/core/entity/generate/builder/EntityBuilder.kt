@@ -15,17 +15,19 @@ import org.babyfish.jimmer.sql.Table
 import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.database.generate.identifier.IdentifierType
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
-import top.potmot.core.entity.generate.getAssociationAnnotationBuilder
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.enumeration.TableType
+import top.potmot.utils.collection.flatSetOf
+import top.potmot.utils.collection.forEachJoinDo
 import top.potmot.utils.string.buildScopeString
-import kotlin.reflect.KClass
 
 typealias EntityView = GenEntityGenerateView
 typealias PropertyView = GenEntityGenerateView.TargetOf_properties
 
 abstract class EntityBuilder : CodeBuilder() {
+    abstract val associationAnnotationBuilder: AssociationAnnotationBuilder
+
     abstract fun entityLine(entity: EntityView): String
 
     abstract fun propertyBlock(property: PropertyView): String
@@ -36,21 +38,28 @@ abstract class EntityBuilder : CodeBuilder() {
         buildScopeString {
             line(packageLine(entity.packagePath))
 
+            val entityAnnotations = annotationWithImports(entity)
+            val propertyAnnotationsMap = entity.properties.associateWith { annotationWithImports(it) }
+            val allImports = flatSetOf(
+                entityAnnotations.imports,
+                propertyAnnotationsMap.flatMap { it.value.imports }
+            )
+
             line()
-            lines(importItems(entity)) { importLine(it) }
+            lines(filterImports(entity.packagePath, allImports)) { importLine(it) }
             line()
 
             block(blockComment(entity))
-            lines(annotationLines(entity))
-
+            entityAnnotations.annotations.forEach { block(it) }
             line(entityLine(entity) + " {")
 
             scope {
-                entity.properties.forEachIndexed { index, property ->
+                propertyAnnotationsMap.forEachJoinDo({ _, _ ->
+                    line()
+                }) { property, annotationWithImports ->
                     block(blockComment(property))
-                    lines(annotationLines(property))
+                    annotationWithImports.annotations.forEach { block(it) }
                     block(propertyBlock(property))
-                    if (index < entity.properties.size - 1) line()
                 }
             }
 
@@ -155,207 +164,154 @@ abstract class EntityBuilder : CodeBuilder() {
         return type
     }
 
-    open fun importClasses(property: PropertyView): Set<KClass<*>> {
-        val result = mutableSetOf<KClass<*>>()
-
-        val context = getContextOrGlobal()
-
-        property.apply {
-            if (context.columnAnnotation && column != null && associationType == null) {
-                result += Column::class
-            }
-
-            if (idProperty) {
-                result += Id::class
-            } else if (keyProperty) {
-                result += Key::class
-            }
-
-            associationType?.let { type ->
-                if (idView) {
-                    result += IdView::class
-                } else {
-                    result += type.toAnnotation()
-
-                    joinTableMeta?.let {
-                        result += JoinTable::class
-
-                        if (it.columnNamePairs.size > 1) {
-                            result += JoinColumn::class
-                        }
-
-                        if (context.realFk != it.realFk()) {
-                            result += ForeignKeyType::class
-                            result += JoinColumn::class
-                        }
-                    }
-
-                    joinColumnMetas?.takeIf { it.isNotEmpty() }?.let {
-                        result += JoinColumn::class
-                        if (it.any { joinTableMeta -> context.realFk != joinTableMeta.realFk() }) {
-                            result += ForeignKeyType::class
-                        }
-                    }
-
-                    if (dissociateAnnotation != null) {
-                        result += OnDissociate::class
-                        result += DissociateAction::class
-                    }
-                }
-            }
-
-            if (listType) {
-                result += List::class
-            }
-        }
-
-        return result
-    }
-
-    abstract fun validateAnnotations(property: PropertyView): AnnotationWithImports
-
-    open fun importClasses(entity: EntityView): Set<KClass<*>> {
-        val result = mutableSetOf<KClass<*>>()
+    open fun annotationWithImports(entity: EntityView): AnnotationWithImports {
+        val imports = mutableListOf<String>()
+        val annotations = mutableListOf<String>()
 
         val context = getContextOrGlobal()
 
         entity.apply {
             if (entity.table.type == TableType.SUPER_TABLE) {
-                result += MappedSuperclass::class
+                imports += MappedSuperclass::class.java.name
+                annotations += "@MappedSuperclass"
             } else {
-                result += Entity::class
+                imports += Entity::class.java.name
+                annotations += "@Entity"
+
                 if (context.tableAnnotation) {
-                    result += Table::class
+                    imports += Table::class.java.name
+                    annotations += tableAnnotation()
                 }
+            }
+
+            if (otherAnnotation != null) {
+                imports += otherAnnotation.imports
+                annotations += otherAnnotation.annotations
             }
         }
 
-        return result
+        return AnnotationWithImports(
+            imports = imports,
+            annotations = annotations,
+        )
     }
 
-    open fun importItems(property: PropertyView): Set<String> {
-        val imports = classesToLines(importClasses(property)).toMutableSet()
+    abstract fun validateAnnotations(property: PropertyView): AnnotationWithImports
+
+    open fun annotationWithImports(property: PropertyView): AnnotationWithImports {
+        val imports = mutableListOf<String>()
+        val annotations = mutableListOf<String>()
 
         val context = getContextOrGlobal()
 
-        if (property.generatedId) {
-            imports += property.generatedIdAnnotation?.imports ?: context.generatedIdAnnotation.imports
+        property.apply {
+            if (idProperty) {
+                imports += Id::class.java.name
+                annotations += "@Id"
+                if (generatedId) {
+                    (property.generatedIdAnnotation ?: context.generatedIdAnnotation).let {
+                        imports += it.imports
+                        annotations += it.annotations
+                    }
+                }
+            } else {
+                if (keyProperty) {
+                    imports += Key::class.java.name
+                    annotations += buildString {
+                        if (keyGroups.isEmpty()) {
+                            append("@Key")
+                        } else {
+                            append(keyGroups.joinToString("\n") {
+                                if (it.isBlank()) "@Key" else "@Key(group = \"${it}\")"
+                            })
+                        }
+                    }
+                } else if (logicalDelete) {
+                    (property.logicalDeletedAnnotation ?: context.logicalDeletedAnnotation).let {
+                        imports += it.imports
+                        annotations += it.annotations
+                    }
+                }
+            }
+
+            if (associationType != null) {
+                if (idView) {
+                    imports += IdView::class.java.name
+                    annotations += idViewTarget?.let { "@IdView(\"$it\")" } ?: "@IdView"
+                } else {
+                    imports += associationType.annotation.java.name
+                    ("@" + associationType.annotation.java.simpleName).let {
+                        annotations += if (mappedBy != null) {
+                            "$it(mappedBy = \"$mappedBy\")"
+                        } else {
+                            it
+                        }
+                    }
+
+                    joinTableMeta?.let {
+                        imports += JoinTable::class.java.name
+
+                        if (it.columnNamePairs.size > 1) {
+                            imports += JoinColumn::class.java.name
+                        }
+
+                        if (context.realFk != it.realFk()) {
+                            imports += ForeignKeyType::class.java.name
+                            imports += JoinColumn::class.java.name
+                        }
+
+                        annotations += associationAnnotationBuilder.build(it)
+                    }
+
+                    joinColumnMetas?.takeIf { it.isNotEmpty() }?.let {
+                        imports += JoinColumn::class.java.name
+                        if (it.any { joinTableMeta -> context.realFk != joinTableMeta.realFk() }) {
+                            imports += ForeignKeyType::class.java.name
+                        }
+                        it.forEach { joinColumnMeta ->
+                            annotations += associationAnnotationBuilder.build(joinColumnMeta)
+                        }
+                    }
+
+                    if (dissociateAnnotation != null) {
+                        imports += OnDissociate::class.java.name
+                        imports += DissociateAction::class.java.name
+                        annotations += dissociateAnnotation
+                    }
+                }
+            }
+
+            if (context.columnAnnotation && column != null && associationType == null) {
+                imports += Column::class.java.name
+                columnAnnotation()?.let { annotations += it }
+            }
+
+            if (listType) {
+                imports += List::class.java.name
+            }
         }
 
-        if (property.logicalDelete) {
-            imports += property.logicalDeletedAnnotation?.imports ?: context.logicalDeletedAnnotation.imports
+        validateAnnotations(property).let {
+            imports += it.imports
+            annotations += it.annotations
         }
 
-        imports +=validateAnnotations(property).imports
-
-        property.otherAnnotation?.imports?.let {
-            imports += it
+        property.otherAnnotation?.let {
+            imports += it.imports
+            annotations += it.annotations
         }
 
-        property.body?.imports?.let {
-            imports += it
+        property.body?.let {
+            imports += it.imports
         }
 
         property.fullType()
             .takeIf { type -> type.split(".").filter { it.isNotBlank() }.size >= 2 }
             ?.let { imports += it }
 
-        return imports
-    }
-
-    open fun importItems(entity: EntityView): List<String> {
-        val imports = mutableListOf<String>()
-        imports += classesToLines(importClasses(entity))
-        entity.otherAnnotation?.imports?.let { imports += it }
-        entity.properties.flatMapTo(imports) { importItems(it) }
-        return imports.sorted().distinct().let { importItemsFilter(entity, it) }
-    }
-
-    open fun annotationLines(entity: EntityView): List<String> {
-        val list = mutableListOf<String>()
-
-        val context = getContextOrGlobal()
-
-        entity.apply {
-            if (entity.table.type == TableType.SUPER_TABLE) {
-                list += "@MappedSuperclass"
-            } else {
-                list += "@Entity"
-
-                if (context.tableAnnotation) {
-                    list += tableAnnotation()
-                }
-            }
-
-            if (otherAnnotation != null) {
-                list += otherAnnotation.annotations
-            }
-        }
-
-        return list
-    }
-
-    open fun annotationLines(property: PropertyView): List<String> {
-        val list = mutableListOf<String>()
-
-        val context = getContextOrGlobal()
-
-        property.apply {
-            if (idProperty) {
-                list += "@Id"
-                if (property.generatedId) {
-                    list += property.generatedIdAnnotation?.annotations ?: context.generatedIdAnnotation.annotations
-                }
-            } else if (keyProperty) {
-                list += buildString {
-                    if (keyGroups.isEmpty()) {
-                        append("@Key")
-                    } else {
-                        append(keyGroups.joinToString("\n") {
-                            if (it.isBlank()) "@Key" else "@Key(group = \"${it}\")"
-                        })
-                    }
-                }
-            }
-
-            if (logicalDelete) {
-                list += property.logicalDeletedAnnotation?.annotations ?: context.logicalDeletedAnnotation.annotations
-            }
-
-            if (associationType != null) {
-                if (idView) {
-                    idViewTarget?.let { list += "@IdView(\"$it\")" }
-                } else {
-                    val associationAnnotation = "@" + associationType.toAnnotation().simpleName
-                    val annotationBuilder = context.language.getAssociationAnnotationBuilder()
-
-                    if (mappedBy != null) {
-                        list += "$associationAnnotation(mappedBy = \"$mappedBy\")"
-                    } else {
-                        list += associationAnnotation
-
-                        if (context.joinColumnAnnotation) {
-                            joinColumnMetas?.forEach { list += annotationBuilder.build(it) }
-                        }
-
-                        if (context.joinTableAnnotation) {
-                            joinTableMeta?.let { list += annotationBuilder.build(it) }
-                        }
-
-                        dissociateAnnotation?.let { list += it }
-                    }
-                }
-            } else if (context.columnAnnotation) {
-                columnAnnotation()?.let { list += it }
-            }
-
-            list += validateAnnotations(property).annotations
-
-            if (otherAnnotation != null && otherAnnotation.annotations.isNotEmpty()) {
-                list += otherAnnotation.annotations
-            }
-        }
-
-        return list.flatMap { it.lineSequence() }
+        return AnnotationWithImports(
+            imports = imports,
+            annotations = annotations,
+        )
     }
 }

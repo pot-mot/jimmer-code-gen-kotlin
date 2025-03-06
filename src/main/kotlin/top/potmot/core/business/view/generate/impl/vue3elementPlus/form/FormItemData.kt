@@ -1,9 +1,9 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus.form
 
 import top.potmot.core.business.meta.LazyGenerated
-import top.potmot.core.business.view.generate.meta.typescript.TsCode
-import top.potmot.core.business.view.generate.meta.typescript.TsImport
-import top.potmot.core.business.view.generate.meta.vue3.Element
+import top.potmot.core.common.typescript.TsCode
+import top.potmot.core.common.typescript.TsImport
+import top.potmot.core.common.vue3.Element
 
 data class FormItemData(
     val elements: Collection<Element>,

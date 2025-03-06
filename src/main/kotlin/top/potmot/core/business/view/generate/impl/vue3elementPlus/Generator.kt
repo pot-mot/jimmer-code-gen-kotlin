@@ -1,7 +1,7 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
 import top.potmot.core.business.view.generate.meta.rules.Rules
-import top.potmot.core.business.view.generate.meta.vue3.Component
+import top.potmot.core.common.vue3.Component
 
 interface Generator {
     val componentBuilder: Vue3ComponentBuilder

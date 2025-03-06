@@ -16,14 +16,14 @@ import top.potmot.core.business.view.generate.filesView
 import top.potmot.core.business.view.generate.imagePreview
 import top.potmot.core.business.view.generate.imagesPreview
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.checkbox
-import top.potmot.core.business.view.generate.meta.typescript.Import
-import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
-import top.potmot.core.business.view.generate.meta.typescript.TsImport
-import top.potmot.core.business.view.generate.meta.vue3.Element
-import top.potmot.core.business.view.generate.meta.vue3.ExpressionElement
-import top.potmot.core.business.view.generate.meta.vue3.PropBind
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.core.business.view.generate.meta.vue3.VShow
+import top.potmot.core.common.typescript.Import
+import top.potmot.core.common.typescript.ImportDefault
+import top.potmot.core.common.typescript.TsImport
+import top.potmot.core.common.vue3.Element
+import top.potmot.core.common.vue3.ExpressionElement
+import top.potmot.core.common.vue3.PropBind
+import top.potmot.core.common.vue3.TagElement
+import top.potmot.core.common.vue3.VShow
 import top.potmot.core.config.getContextOrGlobal
 import top.potmot.entity.dto.GenEntityBusinessView
 

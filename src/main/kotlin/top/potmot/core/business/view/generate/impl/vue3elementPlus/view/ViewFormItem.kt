@@ -2,7 +2,7 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.view
 
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.descriptionsItem
-import top.potmot.core.business.view.generate.meta.vue3.ExpressionElement
+import top.potmot.core.common.vue3.ExpressionElement
 import top.potmot.core.config.getContextOrGlobal
 
 interface ViewFormItem : ViewItem {

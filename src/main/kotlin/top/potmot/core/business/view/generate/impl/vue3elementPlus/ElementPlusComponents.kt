@@ -1,13 +1,13 @@
 package top.potmot.core.business.view.generate.impl.vue3elementPlus
 
-import top.potmot.core.business.view.generate.meta.vue3.Element
-import top.potmot.core.business.view.generate.meta.vue3.PropBind
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.core.business.view.generate.meta.vue3.TextElement
-import top.potmot.core.business.view.generate.meta.vue3.VFor
-import top.potmot.core.business.view.generate.meta.vue3.VModel
-import top.potmot.core.business.view.generate.meta.vue3.slotTemplate
-import top.potmot.core.business.view.generate.meta.vue3.toPropBind
+import top.potmot.core.common.vue3.Element
+import top.potmot.core.common.vue3.PropBind
+import top.potmot.core.common.vue3.TagElement
+import top.potmot.core.common.vue3.TextElement
+import top.potmot.core.common.vue3.VFor
+import top.potmot.core.common.vue3.VModel
+import top.potmot.core.common.vue3.slotTemplate
+import top.potmot.core.common.vue3.toPropBind
 import top.potmot.utils.number.formatIfDouble
 
 class ElementPlusComponents {

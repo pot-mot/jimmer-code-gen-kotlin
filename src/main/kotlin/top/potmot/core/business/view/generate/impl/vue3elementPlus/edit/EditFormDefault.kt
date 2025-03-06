@@ -5,10 +5,10 @@ import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.type.typeStrToTypeScriptDefault
-import top.potmot.core.business.view.generate.meta.typescript.TsObject
-import top.potmot.core.business.view.generate.meta.typescript.TsProperty
-import top.potmot.core.business.view.generate.meta.typescript.TsRawValue
-import top.potmot.core.business.view.generate.meta.typescript.TsValue
+import top.potmot.core.common.typescript.TsObject
+import top.potmot.core.common.typescript.TsProperty
+import top.potmot.core.common.typescript.TsRawValue
+import top.potmot.core.common.typescript.TsValue
 import top.potmot.error.ModelException
 
 interface EditFormDefault {

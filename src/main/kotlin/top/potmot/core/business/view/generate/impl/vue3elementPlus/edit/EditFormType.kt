@@ -6,11 +6,11 @@ import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.type.typeStrToTypeScriptType
-import top.potmot.core.business.view.generate.meta.typescript.TsComplexType
-import top.potmot.core.business.view.generate.meta.typescript.TsRawType
-import top.potmot.core.business.view.generate.meta.typescript.TsType
-import top.potmot.core.business.view.generate.meta.typescript.TsTypeProperty
-import top.potmot.core.business.view.generate.meta.typescript.TsWithGenericType
+import top.potmot.core.common.typescript.TsComplexType
+import top.potmot.core.common.typescript.TsRawType
+import top.potmot.core.common.typescript.TsType
+import top.potmot.core.common.typescript.TsTypeProperty
+import top.potmot.core.common.typescript.TsWithGenericType
 
 interface EditFormType {
     fun Iterable<PropertyBusiness>.editFormType(

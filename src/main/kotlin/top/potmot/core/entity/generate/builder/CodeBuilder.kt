@@ -1,10 +1,7 @@
 package top.potmot.core.entity.generate.builder
 
-import kotlin.reflect.KClass
-import top.potmot.core.entity.generate.meta.judgeImportPathInDefaultPackage
-import top.potmot.entity.dto.GenEntityGenerateView
+import top.potmot.core.common.judgeImportPathInDefaultPackage
 import top.potmot.utils.string.buildScopeString
-import top.potmot.utils.string.toBlockLines
 
 abstract class CodeBuilder {
     abstract fun packageLine(path: String): String
@@ -18,11 +15,11 @@ abstract class CodeBuilder {
     ): String? =
         buildScopeString {
             comment.takeIf { it.isNotBlank() }?.let {
-                lines(it.toBlockLines()) { line -> " * $line" }
+                block(it) { line -> " * $line" }
             }
 
             remark.takeIf { it.isNotBlank() }?.let {
-                lines(it.toBlockLines()) { line -> " * $line" }
+                block(it) { line -> " * $line" }
             }
 
             if (params.isNotEmpty() && stringBuilder.isNotBlank()) {
@@ -35,18 +32,17 @@ abstract class CodeBuilder {
             if (it.isBlank()) null else "/**\n$it */"
         }
 
-    open fun classesToLines(classes: Set<KClass<*>>): Set<String> =
-        classes.mapNotNull { it.qualifiedName }.toSet()
-
     /**
      * 过滤不必要和不合理的 import
      */
-    open fun importItemsFilter(entity: GenEntityGenerateView, importItems: List<String>): List<String> =
-        importItems.filter { importItem ->
+    open fun filterImports(currentPackagePath: String, imports: Iterable<String>): List<String> =
+        imports.filter { importItem ->
             // 非默认导入包下的 import
             !judgeImportPathInDefaultPackage(importItem)
                     &&
                     // 非当前包下的 import
-                    (importItem.substringBeforeLast(".") != entity.packagePath)
+                    (importItem.substringBeforeLast(".") != currentPackagePath)
         }
+            .distinct()
+            .sorted()
 }

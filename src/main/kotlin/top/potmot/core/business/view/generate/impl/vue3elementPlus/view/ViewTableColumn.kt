@@ -4,9 +4,9 @@ import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.LazyGenerated
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableMinWidth
-import top.potmot.core.business.view.generate.meta.typescript.TsImport
-import top.potmot.core.business.view.generate.meta.vue3.Element
-import top.potmot.core.business.view.generate.meta.vue3.PropBind
+import top.potmot.core.common.typescript.TsImport
+import top.potmot.core.common.vue3.Element
+import top.potmot.core.common.vue3.PropBind
 import top.potmot.core.config.getContextOrGlobal
 
 data class ViewTableColumnData(

@@ -7,7 +7,7 @@ import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.TypeEntityProperty
 import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.apiPath
-import top.potmot.core.business.view.generate.meta.typescript.Import
+import top.potmot.core.common.typescript.Import
 import top.potmot.core.business.view.generate.utilPath
 import top.potmot.utils.string.buildScopeString
 

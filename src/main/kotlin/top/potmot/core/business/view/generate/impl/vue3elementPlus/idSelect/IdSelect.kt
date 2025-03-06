@@ -6,15 +6,15 @@ import top.potmot.core.business.type.typeStrToTypeScriptType
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.options
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.select
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Generator
-import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
-import top.potmot.core.business.view.generate.meta.typescript.Import
-import top.potmot.core.business.view.generate.meta.typescript.ImportType
-import top.potmot.core.business.view.generate.meta.typescript.emptyLineCode
-import top.potmot.core.business.view.generate.meta.vue3.Component
-import top.potmot.core.business.view.generate.meta.vue3.EventBind
-import top.potmot.core.business.view.generate.meta.vue3.ModelProp
-import top.potmot.core.business.view.generate.meta.vue3.Prop
-import top.potmot.core.business.view.generate.meta.vue3.PropBind
+import top.potmot.core.common.typescript.CodeBlock
+import top.potmot.core.common.typescript.Import
+import top.potmot.core.common.typescript.ImportType
+import top.potmot.core.common.typescript.emptyLineCode
+import top.potmot.core.common.vue3.Component
+import top.potmot.core.common.vue3.EventBind
+import top.potmot.core.common.vue3.ModelProp
+import top.potmot.core.common.vue3.Prop
+import top.potmot.core.common.vue3.PropBind
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.utilPath
 

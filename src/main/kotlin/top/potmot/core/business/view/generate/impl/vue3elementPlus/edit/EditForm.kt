@@ -3,18 +3,18 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.edit
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.PRIMARY
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.WARNING
-import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
-import top.potmot.core.business.view.generate.meta.typescript.Function
-import top.potmot.core.business.view.generate.meta.typescript.ImportType
-import top.potmot.core.business.view.generate.meta.vue3.Event
-import top.potmot.core.business.view.generate.meta.vue3.EventArg
-import top.potmot.core.business.view.generate.meta.vue3.EventBind
-import top.potmot.core.business.view.generate.meta.vue3.Prop
-import top.potmot.core.business.view.generate.meta.vue3.PropBind
-import top.potmot.core.business.view.generate.meta.vue3.Slot
-import top.potmot.core.business.view.generate.meta.vue3.SlotProp
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.core.business.view.generate.meta.vue3.slotElement
+import top.potmot.core.common.typescript.CodeBlock
+import top.potmot.core.common.typescript.Function
+import top.potmot.core.common.typescript.ImportType
+import top.potmot.core.common.vue3.Event
+import top.potmot.core.common.vue3.EventArg
+import top.potmot.core.common.vue3.EventBind
+import top.potmot.core.common.vue3.Prop
+import top.potmot.core.common.vue3.PropBind
+import top.potmot.core.common.vue3.Slot
+import top.potmot.core.common.vue3.SlotProp
+import top.potmot.core.common.vue3.TagElement
+import top.potmot.core.common.vue3.slotElement
 import top.potmot.utils.string.buildScopeString
 
 const val formExposeType = "FormExpose"

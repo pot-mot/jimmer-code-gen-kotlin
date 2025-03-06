@@ -1,7 +1,7 @@
 package top.potmot.core.business.meta
 
-import top.potmot.core.business.view.generate.meta.typescript.ImportType
-import top.potmot.core.business.view.generate.meta.vue3.Prop
+import top.potmot.core.common.typescript.ImportType
+import top.potmot.core.common.vue3.Prop
 
 data class SelectOption(
     val name: String,

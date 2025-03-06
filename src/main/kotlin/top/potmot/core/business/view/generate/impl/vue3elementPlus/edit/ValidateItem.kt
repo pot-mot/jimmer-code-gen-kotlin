@@ -3,8 +3,8 @@ package top.potmot.core.business.view.generate.impl.vue3elementPlus.edit
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.LazySubEdit
 import top.potmot.core.business.meta.PropertyBusiness
-import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
-import top.potmot.core.business.view.generate.meta.typescript.TsImport
+import top.potmot.core.common.typescript.ConstVariable
+import top.potmot.core.common.typescript.TsImport
 
 interface ValidateItem {
     val imports: List<TsImport>

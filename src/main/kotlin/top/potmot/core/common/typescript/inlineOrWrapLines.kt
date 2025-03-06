@@ -1,4 +1,4 @@
-package top.potmot.core.business.view.generate.meta.typescript
+package top.potmot.core.common.typescript
 
 fun Iterable<String>.inlineOrWarpLines(
     indent: String,
