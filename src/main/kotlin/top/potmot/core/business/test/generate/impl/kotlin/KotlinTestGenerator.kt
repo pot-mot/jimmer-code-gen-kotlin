@@ -1,6 +1,5 @@
 package top.potmot.core.business.test.generate.impl.kotlin
 
-import top.potmot.core.common.booleanType
 import top.potmot.core.business.meta.AssociationProperty
 import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.EnumProperty
@@ -8,8 +7,9 @@ import top.potmot.core.business.meta.ForceIdViewProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.meta.SubEntityBusiness
-import top.potmot.core.business.test.generate.meta.LazyInsertId
 import top.potmot.core.business.test.generate.TestGenerator
+import top.potmot.core.business.test.generate.meta.LazyInsertId
+import top.potmot.core.common.booleanType
 import top.potmot.core.common.intType
 import top.potmot.core.common.numericType
 import top.potmot.core.common.stringType
@@ -31,18 +31,28 @@ object KotlinTestGenerator : TestGenerator {
 
         val currentInsertData = buildScopeString {
             if (entity.canAdd) {
-                append("return ${entity.serviceLowerName}.insert(")
+                append("${entity.serviceLowerName}.insert(")
                 entity.insertDto(this, frontInsertIdMap)
                 append(")")
             } else {
-                append("return $sqlClient.insert(")
+                append("$sqlClient.insert(")
                 entity.insertEntity(this, frontInsertIdMap)
                 append(").modifiedEntity.id")
             }
         }
 
+        val updateId = "updateId"
+
+        val currentUpdateData = buildScopeString {
+            if (entity.canEdit) {
+                append("${entity.serviceLowerName}.update(")
+                entity.updateDto(this, updateId, frontInsertIdMap)
+                append(")")
+            }
+        }
+
         val frontInsertIdData =
-            if (frontInsertIdMap.isEmpty()) ""
+            if (frontInsertIdMap.isEmpty()) null
             else buildScopeString {
                 val items = frontInsertIdMap.values.toList()
                 items.forEachJoinDo({
@@ -95,7 +105,15 @@ object KotlinTestGenerator : TestGenerator {
             scope(") {", "}") {
                 scope("fun insertAndReturnId(): $idPropertyShortType {", "}") {
                     block(frontInsertIdData)
+                    append("return ")
                     block(currentInsertData)
+                }
+
+                line()
+                scope("fun updateAndReturnId(): $idPropertyShortType {", "}") {
+                    block(frontInsertIdData)
+                    append("return ")
+                    block(currentUpdateData)
                 }
 
                 line()
@@ -158,14 +176,14 @@ object KotlinTestGenerator : TestGenerator {
                     if (it.property.idProperty) {
                         append("TODO(\"mock id\")")
                     } else {
-                        it.insertEntityPropertyValue(this, lazyInsertIdMap)
+                        it.entityPropertyValue(this, lazyInsertIdMap)
                     }
                     line()
                 }
         }
     }
 
-    private fun PropertyBusiness.insertEntityPropertyValue(
+    private fun PropertyBusiness.entityPropertyValue(
         builder: StringIndentScopeBuilder,
         lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
     ): StringIndentScopeBuilder = builder.apply {
@@ -173,15 +191,15 @@ object KotlinTestGenerator : TestGenerator {
             append("emptyList()")
         } else if (!typeNotNull) {
             append("null")
-        } else if (this@insertEntityPropertyValue is EnumProperty) {
+        } else if (this@entityPropertyValue is EnumProperty) {
             append("${enum.name}.${enum.defaultItem.name}")
-        } else if (this@insertEntityPropertyValue is AssociationProperty) {
+        } else if (this@entityPropertyValue is AssociationProperty) {
             if (isLongAssociation) {
                 scopeEndNoLine("${typeEntity.name} {", "}") {
                     typeEntityBusiness.subEditNoIdProperties.forEach {
                         append(it.name)
                         append(" = ")
-                        it.insertEntityPropertyValue(this, lazyInsertIdMap)
+                        it.entityPropertyValue(this, lazyInsertIdMap)
                     }
                 }
             } else {
@@ -198,7 +216,7 @@ object KotlinTestGenerator : TestGenerator {
                     append("emptyList()")
                 }
             }
-        } else if (this@insertEntityPropertyValue is ForceIdViewProperty) {
+        } else if (this@entityPropertyValue is ForceIdViewProperty) {
             if (isTargetOne) {
                 val variableName = "${entityBusiness.lowerName}${upperName}"
                 append(variableName)
@@ -221,11 +239,8 @@ object KotlinTestGenerator : TestGenerator {
         builder: StringIndentScopeBuilder,
         lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
     ) = builder.apply {
-        val insertInputTypeName = dto.insertInput
-
-        append(insertInputTypeName)
-        line("(")
-        scope {
+        val typeName = dto.insertInput
+        scopeEndNoLine("$typeName (", ")") {
             addFormProperties
                 .filterNot { it.property.idProperty && it.property.generatedId }
                 .forEach {
@@ -234,41 +249,48 @@ object KotlinTestGenerator : TestGenerator {
                     if (it.property.idProperty) {
                         append("TODO(\"mock id\")")
                     } else {
-                        it.insertDtoPropertyValue(insertInputTypeName, this, lazyInsertIdMap)
+                        it.dtoPropertyValue(typeName, this, lazyInsertIdMap)
                     }
                     line(",")
                 }
         }
-        append(")")
     }
 
     private fun SubEntityBusiness.insertDto(
         builder: StringIndentScopeBuilder,
         lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
-    ) = builder.apply {
-        val insertInputTypeName = asRoot.dto.insertInput
+    ) = asRoot.insertDto(builder, lazyInsertIdMap)
 
-        append(insertInputTypeName)
-        line("(")
-        scope {
-            addFormProperties
-                .filterNot { it.property.idProperty && it.property.generatedId }
-                .forEach {
-                    append(it.name)
-                    append(" = ")
-                    if (it.property.idProperty) {
-                        append("TODO(\"mock id\")")
-                    } else {
-                        it.insertDtoPropertyValue(insertInputTypeName, this, lazyInsertIdMap)
-                    }
-                    line(",")
-                }
+    private fun RootEntityBusiness.updateDto(
+        builder: StringIndentScopeBuilder,
+        idPropertyValue: String,
+        lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
+    ) = builder.apply {
+        val typeName = dto.updateInput
+        scopeEndNoLine("$typeName (", ")") {
+            idProperty.let {
+                append(it.name)
+                append(" = ")
+                append(idPropertyValue)
+                line(",")
+            }
+            editFormNoIdProperties.forEach {
+                append(it.name)
+                append(" = ")
+                it.dtoPropertyValue(typeName, this, lazyInsertIdMap)
+                line(",")
+            }
         }
-        append(")")
     }
 
-    private fun PropertyBusiness.insertDtoPropertyValue(
-        insertInputTypeName: String,
+    private fun SubEntityBusiness.updateDto(
+        builder: StringIndentScopeBuilder,
+        idPropertyValue: String,
+        lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
+    ) = asRoot.updateDto(builder, idPropertyValue, lazyInsertIdMap)
+
+    private fun PropertyBusiness.dtoPropertyValue(
+        parentTypeName: String,
         builder: StringIndentScopeBuilder,
         lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
     ): StringIndentScopeBuilder = builder.apply {
@@ -276,10 +298,10 @@ object KotlinTestGenerator : TestGenerator {
             append("emptyList()")
         } else if (!typeNotNull) {
             append("null")
-        } else if (this@insertDtoPropertyValue is EnumProperty) {
+        } else if (this@dtoPropertyValue is EnumProperty) {
             append("${enum.name}.${enum.defaultItem.name}")
-        } else if (this@insertDtoPropertyValue is AssociationProperty) {
-            val currentType = "${insertInputTypeName}.TargetOf_$name"
+        } else if (this@dtoPropertyValue is AssociationProperty) {
+            val currentType = "${parentTypeName}.TargetOf_$name"
 
             if (isLongAssociation) {
                 append(currentType)
@@ -288,7 +310,7 @@ object KotlinTestGenerator : TestGenerator {
                     typeEntityBusiness.subEditNoIdProperties.forEach {
                         append(it.name)
                         append(" = ")
-                        it.insertDtoPropertyValue(currentType, this, lazyInsertIdMap)
+                        it.dtoPropertyValue(currentType, this, lazyInsertIdMap)
                         line(",")
                     }
                 }
@@ -307,7 +329,7 @@ object KotlinTestGenerator : TestGenerator {
                     append("emptyList()")
                 }
             }
-        } else if (this@insertDtoPropertyValue is ForceIdViewProperty) {
+        } else if (this@dtoPropertyValue is ForceIdViewProperty) {
             if (isTargetOne) {
                 val variableName = "${entityBusiness.lowerName}${upperName}"
                 append(variableName)
