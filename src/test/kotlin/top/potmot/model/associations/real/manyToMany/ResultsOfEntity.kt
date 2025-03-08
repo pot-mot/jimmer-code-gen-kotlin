@@ -14,9 +14,6 @@ import org.babyfish.jimmer.sql.JoinTable;
 import org.babyfish.jimmer.sql.ManyToMany;
 import org.babyfish.jimmer.sql.Table;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "COURSE")
 public interface Course {
@@ -48,9 +45,6 @@ import org.babyfish.jimmer.sql.IdView;
 import org.babyfish.jimmer.sql.ManyToMany;
 import org.babyfish.jimmer.sql.Table;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "STUDENT")
 public interface Student {
@@ -84,9 +78,6 @@ import org.babyfish.jimmer.sql.JoinTable;
 import org.babyfish.jimmer.sql.ManyToMany;
 import org.babyfish.jimmer.sql.Table;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "COURSE")
 public interface Course {
@@ -122,9 +113,6 @@ import org.babyfish.jimmer.sql.IdView;
 import org.babyfish.jimmer.sql.ManyToMany;
 import org.babyfish.jimmer.sql.Table;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "STUDENT")
 public interface Student {
@@ -143,7 +131,7 @@ public interface Student {
 """
 
 const val kotlinRealFkResult = """
-[(kotlin/top/potmot/entity/Course.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/Course.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -155,9 +143,6 @@ import org.babyfish.jimmer.sql.JoinTable
 import org.babyfish.jimmer.sql.ManyToMany
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "COURSE")
 interface Course {
@@ -177,7 +162,7 @@ interface Course {
     @IdView("students")
     val studentIds: List<Long>
 }
-), (kotlin/top/potmot/entity/Student.kt, package top.potmot.entity
+), (main/kotlin/top/potmot/entity/Student.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -188,9 +173,6 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.ManyToMany
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "STUDENT")
 interface Student {
@@ -209,7 +191,7 @@ interface Student {
 """
 
 const val kotlinFakeFkResult = """
-[(kotlin/top/potmot/entity/Course.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/Course.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -223,9 +205,6 @@ import org.babyfish.jimmer.sql.JoinTable
 import org.babyfish.jimmer.sql.ManyToMany
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "COURSE")
 interface Course {
@@ -249,7 +228,7 @@ interface Course {
     @IdView("students")
     val studentIds: List<Long>
 }
-), (kotlin/top/potmot/entity/Student.kt, package top.potmot.entity
+), (main/kotlin/top/potmot/entity/Student.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -260,9 +239,6 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.ManyToMany
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "STUDENT")
 interface Student {

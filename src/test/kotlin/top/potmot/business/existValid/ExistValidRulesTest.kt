@@ -15,7 +15,8 @@ class ExistValidRulesTest {
     private val builder = Vue3ElementPlusViewGenerator.rulesBuilder
 
     private val Map<PropertyBusiness, List<Rule>>.result
-        get() = builder.build(Rules(
+        get() = builder.build(
+            Rules(
             functionName = "useRules",
             formData = "formData",
             formDataType = "EntityDate",
@@ -23,7 +24,8 @@ class ExistValidRulesTest {
             ruleDataType = "EntityDto",
             ruleDataTypePath = staticPath,
             propertyRules = this
-        ))
+        )
+        )
 
     @ParameterizedTest
     @MethodSource("entities")

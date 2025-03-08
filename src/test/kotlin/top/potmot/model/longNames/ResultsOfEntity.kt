@@ -10,9 +10,6 @@ import org.babyfish.jimmer.sql.GenerationType;
 import org.babyfish.jimmer.sql.Id;
 import org.babyfish.jimmer.sql.Table;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B")
 public interface Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd {
@@ -37,9 +34,6 @@ import org.babyfish.jimmer.sql.GenerationType;
 import org.babyfish.jimmer.sql.Id;
 import org.babyfish.jimmer.sql.Table;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b")
 public interface Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd {
@@ -55,7 +49,7 @@ public interface Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddd
 """
 
 const val kotlinUpperResult = """
-[(kotlin/top/potmot/entity/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -64,9 +58,6 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "SDAADSDASSDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD_BB0D4D2B")
 interface Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd {
@@ -82,7 +73,7 @@ interface Sdaadsdassdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
 """
 
 const val kotlinLowerResult = """
-[(kotlin/top/potmot/entity/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -91,9 +82,6 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "sdaadsdassdddddddddddddddddddddddddddddddddddddddddddd_bb0d4d2b")
 interface Sdaadsdassddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd {

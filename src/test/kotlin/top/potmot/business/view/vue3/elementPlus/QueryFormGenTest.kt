@@ -84,8 +84,8 @@ const spec = defineModel<EntitySpecification>({
 })
 
 defineProps<{
-    CustomerOptions: Array<CustomerOptionView>,
-    TypeOptions: Array<TypeOptionView>
+    CustomerOptions: LazyOptions<CustomerOptionView>,
+    TypeOptions: LazyOptions<TypeOptionView>
 }>()
 
 const emits = defineEmits<{

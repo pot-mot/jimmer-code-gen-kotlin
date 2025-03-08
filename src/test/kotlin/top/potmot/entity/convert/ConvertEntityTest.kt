@@ -14,8 +14,9 @@ import top.potmot.business.baseProperty
 import top.potmot.config.GlobalGenConfig
 import top.potmot.core.entity.config.EntityConfigInput
 import top.potmot.entity.GenEntity
+import top.potmot.entity.GenEntityDraft
 import top.potmot.entity.GenModel
-import top.potmot.entity.GenProperty
+import top.potmot.entity.GenPropertyDraft
 import top.potmot.entity.copy
 import top.potmot.entity.dto.GenEntityConfigInput
 import top.potmot.entity.dto.GenEntityConvertedView
@@ -44,10 +45,10 @@ class ConvertEntityTest {
 
     val GenEntityConvertedView.result: String
         get() = prettyObjectWriter.writeValueAsString(this.toEntity {
-            unload(this, GenEntity::id)
+            unload(this, GenEntityDraft::id)
             properties = properties.map {
                 it.copy {
-                    unload(this, GenProperty::id)
+                    unload(this, GenPropertyDraft::id)
                 }
             }
         })
@@ -360,8 +361,8 @@ class ConvertEntityTest {
 
             properties = entity1.properties.map { property ->
                 property.toEntity {
-                    unload(this, GenProperty::column)
-                    unload(this, GenProperty::typeTable)
+                    unload(this, GenPropertyDraft::column)
+                    unload(this, GenPropertyDraft::typeTable)
 
                     name = property.name + " changed"
                     overwriteName = true
@@ -380,8 +381,8 @@ class ConvertEntityTest {
                     inLongAssociationView = !property.inLongAssociationView
                 }
             } + baseProperty.toEntity {
-                unload(this, GenProperty::id)
-                unload(this, GenProperty::column)
+                unload(this, GenPropertyDraft::id)
+                unload(this, GenPropertyDraft::column)
 
                 name = "newProperty"
                 orderKey = -2

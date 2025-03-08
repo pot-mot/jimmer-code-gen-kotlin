@@ -65,7 +65,12 @@ const rules = useRules(formData)
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
-    return await formRef.value?.validate().catch(() => false) ?? false
+    const formValid: boolean =
+        await formRef.value?.validate().catch(() => false) ?? false
+    const typeValidate: boolean =
+        validateEntityEditDataForSubmit(formData.value)
+
+    return formValid && typeValidate
 }
 
 // 提交
@@ -74,7 +79,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", assertEntityEditDataAsSubmitType(formData.value))
     }
 }
 
@@ -93,7 +98,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
 
         <slot
@@ -219,7 +226,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
 
         <slot
@@ -285,8 +294,8 @@ const formData = defineModel<EntityUpdateInput>({
 const props = withDefaults(defineProps<{
     withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
-    CustomerOptions: Array<CustomerOptionView>,
-    TypeOptions: Array<TypeOptionView>
+    CustomerOptions: LazyOptions<CustomerOptionView>,
+    TypeOptions: LazyOptions<TypeOptionView>
 }>(), {
     withOperations: true,
     submitLoading: false,
@@ -312,7 +321,12 @@ const rules = useRules(formData)
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
-    return await formRef.value?.validate().catch(() => false) ?? false
+    const formValid: boolean =
+        await formRef.value?.validate().catch(() => false) ?? false
+    const typeValidate: boolean =
+        validateEntityEditDataForSubmit(formData.value)
+
+    return formValid && typeValidate
 }
 
 // 提交
@@ -321,7 +335,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", assertEntityEditDataAsSubmitType(formData.value))
     }
 }
 
@@ -340,7 +354,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
 
         <slot

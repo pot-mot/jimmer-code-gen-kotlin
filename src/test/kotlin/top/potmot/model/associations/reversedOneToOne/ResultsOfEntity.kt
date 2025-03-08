@@ -1,7 +1,7 @@
 package top.potmot.model.associations.reversedOneToOne
 
 const val kotlinRealFkResult = """
-[(kotlin/top/potmot/entity/User.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/User.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -12,9 +12,6 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "USER")
 interface User {
@@ -29,7 +26,7 @@ interface User {
     @IdView("userDetail")
     val userDetailId: Long?
 }
-), (kotlin/top/potmot/entity/UserDetail.kt, package top.potmot.entity
+), (main/kotlin/top/potmot/entity/UserDetail.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -41,9 +38,6 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "USER_DETAIL")
 interface UserDetail {
@@ -57,6 +51,7 @@ interface UserDetail {
         name = "USER_ID",
         referencedColumnName = "ID"
     )
+    @get:Valid
     val user: User
 
     @IdView("user")
@@ -66,7 +61,7 @@ interface UserDetail {
 """
 
 const val kotlinFakeFkResult = """
-[(kotlin/top/potmot/entity/User.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/User.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -77,9 +72,6 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "USER")
 interface User {
@@ -94,7 +86,7 @@ interface User {
     @IdView("userDetail")
     val userDetailId: Long?
 }
-), (kotlin/top/potmot/entity/UserDetail.kt, package top.potmot.entity
+), (main/kotlin/top/potmot/entity/UserDetail.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -107,9 +99,6 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "USER_DETAIL")
 interface UserDetail {
@@ -145,9 +134,6 @@ import org.babyfish.jimmer.sql.OneToOne;
 import org.babyfish.jimmer.sql.Table;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "USER")
 public interface User {
@@ -176,9 +162,6 @@ import org.babyfish.jimmer.sql.JoinColumn;
 import org.babyfish.jimmer.sql.OneToOne;
 import org.babyfish.jimmer.sql.Table;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "USER_DETAIL")
 public interface UserDetail {
@@ -192,6 +175,7 @@ public interface UserDetail {
             name = "USER_ID",
             referencedColumnName = "ID"
     )
+    @Valid 
     User user();
 
     @IdView("user")
@@ -213,9 +197,6 @@ import org.babyfish.jimmer.sql.OneToOne;
 import org.babyfish.jimmer.sql.Table;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "USER")
 public interface User {
@@ -245,9 +226,6 @@ import org.babyfish.jimmer.sql.JoinColumn;
 import org.babyfish.jimmer.sql.OneToOne;
 import org.babyfish.jimmer.sql.Table;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "USER_DETAIL")
 public interface UserDetail {

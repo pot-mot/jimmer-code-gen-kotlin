@@ -11,8 +11,8 @@ import top.potmot.core.business.meta.EnumProperty
 import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.view.ViewTableColumn
-import top.potmot.core.business.view.generate.meta.typescript.stringify
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
+import top.potmot.core.common.typescript.stringify
+import top.potmot.core.common.vue3.TagElement
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
@@ -20,8 +20,7 @@ class ViewTableColumnTest : ViewTableColumn {
     private val builder = Vue3ElementPlusViewGenerator.componentBuilder
 
     private val PropertyBusiness.result: String
-        get() = viewTableColumnDataPairs(withDateTimeFormat = true)
-            .map { it.second }
+        get() = viewTableColumns(withDateTimeFormat = true)
             .joinToString("\n") {
                 buildString {
                     builder.apply {
@@ -76,8 +75,10 @@ import EnumView from "@/components/enums/enum/EnumView.vue"
         ).forEach {
             assertEquals(
                 """
-import {formatTableColumnDate} from "@/utils/timeFormat"
-<el-table-item :formatter="formatTableColumnDate"/>
+import {formatDate} from "@/utils/timeFormat"
+<el-table-item>
+    {{ formatDate(scope.row.property) }}
+</el-table-item>
                 """.trimIndent(),
                 CommonProperty(testEntityBusiness, it).result,
             )
@@ -93,8 +94,10 @@ import {formatTableColumnDate} from "@/utils/timeFormat"
         ).forEach {
             assertEquals(
                 """
-import {formatTableColumnTime} from "@/utils/timeFormat"
-<el-table-item :formatter="formatTableColumnTime"/>
+import {formatTime} from "@/utils/timeFormat"
+<el-table-item>
+    {{ formatTime(scope.row.property) }}
+</el-table-item>
                 """.trimIndent(),
                 CommonProperty(testEntityBusiness, it).result,
             )
@@ -110,8 +113,10 @@ import {formatTableColumnTime} from "@/utils/timeFormat"
         ).forEach {
             assertEquals(
                 """
-import {formatTableColumnDateTime} from "@/utils/timeFormat"
-<el-table-item :formatter="formatTableColumnDateTime"/>
+import {formatDateTime} from "@/utils/timeFormat"
+<el-table-item>
+    {{ formatDateTime(scope.row.property) }}
+</el-table-item>
                 """.trimIndent(),
                 CommonProperty(testEntityBusiness, it).result,
             )

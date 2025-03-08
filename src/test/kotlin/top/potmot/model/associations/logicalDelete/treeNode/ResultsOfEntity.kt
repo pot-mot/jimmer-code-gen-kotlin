@@ -17,9 +17,6 @@ import org.babyfish.jimmer.sql.OneToMany;
 import org.babyfish.jimmer.sql.Table;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "TREE_NODE")
 public interface TreeNode {
@@ -39,6 +36,7 @@ public interface TreeNode {
             name = "PARENT_ID",
             referencedColumnName = "ID"
     )
+    @Valid 
     @Nullable
     TreeNode parent();
 
@@ -71,9 +69,6 @@ import org.babyfish.jimmer.sql.OneToMany;
 import org.babyfish.jimmer.sql.Table;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "TREE_NODE")
 public interface TreeNode {
@@ -109,7 +104,7 @@ public interface TreeNode {
 """
 
 const val kotlinRealFkResult = """
-[(kotlin/top/potmot/entity/TreeNode.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/TreeNode.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -123,9 +118,6 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "TREE_NODE")
 interface TreeNode {
@@ -145,6 +137,7 @@ interface TreeNode {
         name = "PARENT_ID",
         referencedColumnName = "ID"
     )
+    @get:Valid
     val parent: TreeNode?
 
     @IdView("parent")
@@ -158,7 +151,7 @@ interface TreeNode {
 """
 
 const val kotlinFakeFkResult = """
-[(kotlin/top/potmot/entity/TreeNode.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/TreeNode.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -173,9 +166,6 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "TREE_NODE")
 interface TreeNode {

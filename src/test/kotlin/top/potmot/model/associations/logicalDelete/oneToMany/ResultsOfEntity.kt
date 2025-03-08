@@ -1,7 +1,7 @@
 package top.potmot.model.associations.logicalDelete.oneToMany
 
 const val kotlinRealFkResult = """
-[(kotlin/top/potmot/entity/Order.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/Order.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -13,9 +13,6 @@ import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "ORDER")
 interface Order {
@@ -34,7 +31,7 @@ interface Order {
     @Column(name = "DELETE_FLAG")
     val deleteFlag: Boolean
 }
-), (kotlin/top/potmot/entity/OrderDetail.kt, package top.potmot.entity
+), (main/kotlin/top/potmot/entity/OrderDetail.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -47,9 +44,6 @@ import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "ORDER_DETAIL")
 interface OrderDetail {
@@ -63,6 +57,7 @@ interface OrderDetail {
         name = "ORDER_ID",
         referencedColumnName = "ID"
     )
+    @get:Valid
     val order: Order?
 
     @IdView("order")
@@ -76,7 +71,7 @@ interface OrderDetail {
 """
 
 const val kotlinFakeFkResult = """
-[(kotlin/top/potmot/entity/Order.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/Order.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -88,9 +83,6 @@ import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "ORDER")
 interface Order {
@@ -109,7 +101,7 @@ interface Order {
     @Column(name = "DELETE_FLAG")
     val deleteFlag: Boolean
 }
-), (kotlin/top/potmot/entity/OrderDetail.kt, package top.potmot.entity
+), (main/kotlin/top/potmot/entity/OrderDetail.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -123,9 +115,6 @@ import org.babyfish.jimmer.sql.LogicalDeleted
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "ORDER_DETAIL")
 interface OrderDetail {
@@ -166,9 +155,6 @@ import org.babyfish.jimmer.sql.LogicalDeleted;
 import org.babyfish.jimmer.sql.OneToMany;
 import org.babyfish.jimmer.sql.Table;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "ORDER")
 public interface Order {
@@ -201,9 +187,6 @@ import org.babyfish.jimmer.sql.ManyToOne;
 import org.babyfish.jimmer.sql.Table;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "ORDER_DETAIL")
 public interface OrderDetail {
@@ -217,6 +200,7 @@ public interface OrderDetail {
             name = "ORDER_ID",
             referencedColumnName = "ID"
     )
+    @Valid 
     @Nullable
     Order order();
 
@@ -245,9 +229,6 @@ import org.babyfish.jimmer.sql.LogicalDeleted;
 import org.babyfish.jimmer.sql.OneToMany;
 import org.babyfish.jimmer.sql.Table;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "ORDER")
 public interface Order {
@@ -281,9 +262,6 @@ import org.babyfish.jimmer.sql.ManyToOne;
 import org.babyfish.jimmer.sql.Table;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "ORDER_DETAIL")
 public interface OrderDetail {

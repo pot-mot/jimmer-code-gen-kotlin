@@ -52,6 +52,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         row-key="id"
         border
         stripe
+        class="view-table"
         @selection-change="handleSelectionChange"
     >
         <el-table-column
@@ -68,6 +69,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         <el-table-column
             v-if="multiSelect"
             type="selection"
+            :width="43"
             :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column

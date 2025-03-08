@@ -10,8 +10,6 @@ import org.babyfish.jimmer.sql.MappedSuperclass;
 
 /**
  * 基础实体
- * 
- * @author 
  */
 @MappedSuperclass
 public interface BaseEntity {
@@ -23,6 +21,7 @@ public interface BaseEntity {
             name = "CREATED_BY",
             referencedColumnName = "ID"
     )
+    @Valid 
     SysUser createdBy();
 
     /**
@@ -39,6 +38,7 @@ public interface BaseEntity {
             name = "MODIFIED_BY",
             referencedColumnName = "ID"
     )
+    @Valid 
     SysUser modifiedBy();
 
     /**
@@ -61,8 +61,6 @@ import org.babyfish.jimmer.sql.Table;
 
 /**
  * 项目
- * 
- * @author 
  */
 @Entity
 @Table(name = "BIZ_PROJECT")
@@ -80,6 +78,7 @@ public interface BizProject extends BaseEntity {
             name = "USER",
             referencedColumnName = "ID"
     )
+    @Valid 
     SysUser user();
 
     /**
@@ -108,8 +107,6 @@ import org.babyfish.jimmer.sql.Table;
 
 /**
  * 用户
- * 
- * @author 
  */
 @Entity
 @Table(name = "SYS_USER")
@@ -189,7 +186,7 @@ public interface SysUser extends BaseEntity {
 """
 
 const val kotlinResult = """
-[(kotlin/top/potmot/entity/BaseEntity.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/BaseEntity.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
@@ -198,8 +195,6 @@ import org.babyfish.jimmer.sql.MappedSuperclass
 
 /**
  * 基础实体
- * 
- * @author 
  */
 @MappedSuperclass
 interface BaseEntity {
@@ -211,6 +206,7 @@ interface BaseEntity {
         name = "CREATED_BY",
         referencedColumnName = "ID"
     )
+    @get:Valid
     val createdBy: SysUser
 
     /**
@@ -227,6 +223,7 @@ interface BaseEntity {
         name = "MODIFIED_BY",
         referencedColumnName = "ID"
     )
+    @get:Valid
     val modifiedBy: SysUser
 
     /**
@@ -235,7 +232,7 @@ interface BaseEntity {
     @IdView("modifiedBy")
     val modifiedById: Int
 }
-), (kotlin/top/potmot/entity/BizProject.kt, package top.potmot.entity
+), (main/kotlin/top/potmot/entity/BizProject.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -249,8 +246,6 @@ import org.babyfish.jimmer.sql.Table
 
 /**
  * 项目
- * 
- * @author 
  */
 @Entity
 @Table(name = "BIZ_PROJECT")
@@ -268,6 +263,7 @@ interface BizProject : BaseEntity {
         name = "USER",
         referencedColumnName = "ID"
     )
+    @get:Valid
     val user: SysUser
 
     /**
@@ -282,7 +278,7 @@ interface BizProject : BaseEntity {
     @Column(name = "NAME")
     val name: String
 }
-), (kotlin/top/potmot/entity/SysUser.kt, package top.potmot.entity
+), (main/kotlin/top/potmot/entity/SysUser.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -295,8 +291,6 @@ import org.babyfish.jimmer.sql.Table
 
 /**
  * 用户
- * 
- * @author 
  */
 @Entity
 @Table(name = "SYS_USER")

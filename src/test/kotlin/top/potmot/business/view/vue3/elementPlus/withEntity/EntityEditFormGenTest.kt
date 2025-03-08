@@ -14,14 +14,14 @@ class EntityEditFormGenTest {
             """
 import type {Enum} from "@/api/__generated/model/enums"
 
-export type EntityAddFormType = {
+export type EntityAddData = {
     enumProperty: Enum
     enumNullableProperty: Enum | undefined
     toOnePropertyId: number | undefined
     toOneNullablePropertyId: number | undefined
 }
             """.trimIndent(),
-            generator.editFormFiles(testEntityBusiness).first { it.name == "EntityEditFormType.ts" }.content.trim()
+            generator.editFormFiles(testEntityBusiness).files.first { it.name == "EntityEditFormType.ts" }.content.trim()
         )
     }
 
@@ -50,7 +50,7 @@ export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput
     }
 }
             """.trimIndent(),
-            generator.editFormFiles(testEntityBusiness).first { it.name == "EntityEditFormRules.ts" }.content.trim()
+            generator.editFormFiles(testEntityBusiness).files.first { it.name == "EntityEditFormRules.ts" }.content.trim()
         )
     }
 
@@ -75,8 +75,8 @@ const formData = defineModel<EntityUpdateInput>({
 const props = withDefaults(defineProps<{
     withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
-    toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
-    toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
+    toOnePropertyIdOptions: LazyOptions<ToOneEntityOptionView>,
+    toOneNullablePropertyIdOptions: LazyOptions<ToOneEntityOptionView>
 }>(), {
     withOperations: true,
     submitLoading: false,
@@ -102,7 +102,12 @@ const rules = useRules(formData)
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
-    return await formRef.value?.validate().catch(() => false) ?? false
+    const formValid: boolean =
+        await formRef.value?.validate().catch(() => false) ?? false
+    const typeValidate: boolean =
+        validateEntityEditDataForSubmit(formData.value)
+
+    return formValid && typeValidate
 }
 
 // 提交
@@ -111,7 +116,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", assertEntityEditDataAsSubmitType(formData.value))
     }
 }
 
@@ -130,7 +135,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
         <el-form-item prop="enumProperty" label="enumProperty">
             <EnumSelect v-model="formData.enumProperty"/>
@@ -182,7 +189,7 @@ defineExpose<FormExpose>({
     </el-form>
 </template>
             """.trimIndent(),
-            generator.editFormFiles(testEntityBusiness).first { it.name == "EntityEditForm.vue" }.content.trim()
+            generator.editFormFiles(testEntityBusiness).files.first { it.name == "EntityEditForm.vue" }.content.trim()
         )
     }
 }

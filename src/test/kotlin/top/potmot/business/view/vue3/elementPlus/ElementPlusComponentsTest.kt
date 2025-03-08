@@ -2,8 +2,8 @@ package top.potmot.business.view.vue3.elementPlus
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.core.business.view.generate.meta.vue3.PropBind
+import top.potmot.core.common.vue3.TagElement
+import top.potmot.core.common.vue3.PropBind
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.button
@@ -26,7 +26,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.text
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.timePicker
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.timePickerRange
-import top.potmot.core.business.view.generate.meta.vue3.TextElement
+import top.potmot.core.common.vue3.TextElement
 import top.potmot.utils.string.trimBlankLine
 
 class ElementPlusComponentsTest {

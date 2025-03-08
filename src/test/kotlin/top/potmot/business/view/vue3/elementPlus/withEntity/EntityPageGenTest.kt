@@ -242,9 +242,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
     <el-dialog
         v-model="addDialogVisible"
         v-if="
-            userStore.permissions.includes('entity:insert') &&
-            toOnePropertyIdOptions &&
-            toOneNullablePropertyIdOptions
+            userStore.permissions.includes('entity:insert')
         "
         destroy-on-close
         :close-on-click-modal="false"
@@ -261,9 +259,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
     <el-dialog
         v-model="editDialogVisible"
         v-if="
-            userStore.permissions.includes('entity:update') &&
-            toOnePropertyIdOptions &&
-            toOneNullablePropertyIdOptions
+            userStore.permissions.includes('entity:update')
         "
         destroy-on-close
         :close-on-click-modal="false"

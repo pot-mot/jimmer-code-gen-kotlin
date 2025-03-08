@@ -154,6 +154,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         row-key="id"
         border
         stripe
+        class="view-table"
         @selection-change="handleSelectionChange"
     >
         <el-table-column
@@ -170,6 +171,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         <el-table-column
             v-if="multiSelect"
             type="selection"
+            :width="43"
             :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column
@@ -195,7 +197,8 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     </el-table>
 </template>
 ), (components/shortAssociationEntity/ShortAssociationEntityIdSelect.vue, <script setup lang="ts">
-import {watch} from "vue"
+import {onBeforeMount, watch} from "vue"
+import type {LazyOptions} from "@/utils/lazyOptions"
 import type {ShortAssociationEntityOptionView} from "@/api/__generated/model/static"
 
 const modelValue = defineModel<number | undefined>({
@@ -203,11 +206,28 @@ const modelValue = defineModel<number | undefined>({
 })
 
 const props = defineProps<{
-    options: Array<ShortAssociationEntityOptionView>
+    options: LazyOptions<ShortAssociationEntityOptionView>
 }>()
 
+const loadIfNot = async () => {
+    if (props.options.state === 'unload') {
+        await props.options.load()
+    } else if (props.options.data === undefined && props.options.state !== 'loading') {
+        await props.options.load()
+    }
+}
+
+onBeforeMount(async () => {
+    if (modelValue.value !== undefined) {
+        await loadIfNot()
+    }
+})
+
 watch(() => [modelValue.value, props.options], () => {
-    if (!(props.options.map(it => it.id) as Array<number | undefined>).includes(modelValue.value)) {
+    if (props.options.state !== 'loaded') return []
+    if (props.options.data === undefined) return []
+
+    if (!(props.options.data.map(it => it.id) as Array<number | undefined>).includes(modelValue.value)) {
         modelValue.value = undefined
     }
 }, {immediate: true})
@@ -220,9 +240,11 @@ watch(() => [modelValue.value, props.options], () => {
         filterable
         clearable
         :value-on-clear="undefined"
+        :loading="options.state === 'loading'"
+        @focus.once="loadIfNot"
     >
         <el-option
-            v-for="option in options"
+            v-for="option in options.data"
             :key="option.id"
             :value="option.id"
             :label="`${'$'}{option.label1} ${'$'}{option.label2}`"
@@ -341,6 +363,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         row-key="id"
         border
         stripe
+        class="view-table"
         @selection-change="handleSelectionChange"
     >
         <el-table-column
@@ -357,6 +380,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         <el-table-column
             v-if="multiSelect"
             type="selection"
+            :width="43"
             :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column
@@ -382,7 +406,8 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
     </el-table>
 </template>
 ), (components/shortAssociationEntity/ShortAssociationEntityIdSelect.vue, <script setup lang="ts">
-import {watch} from "vue"
+import {onBeforeMount, watch} from "vue"
+import type {LazyOptions} from "@/utils/lazyOptions"
 import type {ShortAssociationEntityOptionView} from "@/api/__generated/model/static"
 
 const modelValue = defineModel<number | undefined>({
@@ -390,11 +415,28 @@ const modelValue = defineModel<number | undefined>({
 })
 
 const props = defineProps<{
-    options: Array<ShortAssociationEntityOptionView>
+    options: LazyOptions<ShortAssociationEntityOptionView>
 }>()
 
+const loadIfNot = async () => {
+    if (props.options.state === 'unload') {
+        await props.options.load()
+    } else if (props.options.data === undefined && props.options.state !== 'loading') {
+        await props.options.load()
+    }
+}
+
+onBeforeMount(async () => {
+    if (modelValue.value !== undefined) {
+        await loadIfNot()
+    }
+})
+
 watch(() => [modelValue.value, props.options], () => {
-    if (!(props.options.map(it => it.id) as Array<number | undefined>).includes(modelValue.value)) {
+    if (props.options.state !== 'loaded') return []
+    if (props.options.data === undefined) return []
+
+    if (!(props.options.data.map(it => it.id) as Array<number | undefined>).includes(modelValue.value)) {
         modelValue.value = undefined
     }
 }, {immediate: true})
@@ -407,9 +449,11 @@ watch(() => [modelValue.value, props.options], () => {
         filterable
         clearable
         :value-on-clear="undefined"
+        :loading="options.state === 'loading'"
+        @focus.once="loadIfNot"
     >
         <el-option
-            v-for="option in options"
+            v-for="option in options.data"
             :key="option.id"
             :value="option.id"
             :label="`${'$'}{option.label1} ${'$'}{option.label2}`"
@@ -528,6 +572,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         row-key="id"
         border
         stripe
+        class="view-table"
         @selection-change="handleSelectionChange"
     >
         <el-table-column
@@ -544,6 +589,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         <el-table-column
             v-if="multiSelect"
             type="selection"
+            :width="43"
             :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column
@@ -720,6 +766,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         row-key="id"
         border
         stripe
+        class="view-table"
         @selection-change="handleSelectionChange"
     >
         <el-table-column
@@ -736,6 +783,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         <el-table-column
             v-if="multiSelect"
             type="selection"
+            :width="43"
             :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column

@@ -16,7 +16,7 @@ import top.potmot.core.business.meta.PropertySpecialFormType
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.edit.EditFormItem
-import top.potmot.core.business.view.generate.meta.typescript.stringify
+import top.potmot.core.common.typescript.stringify
 import top.potmot.entity.dto.GenEntityBusinessView
 import top.potmot.entity.dto.GenEntityBusinessView.TargetOf_properties.TargetOf_column
 import top.potmot.enumeration.AssociationType

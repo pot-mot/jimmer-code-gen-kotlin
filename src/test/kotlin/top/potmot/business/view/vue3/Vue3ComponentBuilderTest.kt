@@ -3,30 +3,30 @@ package top.potmot.business.view.vue3
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import top.potmot.core.business.view.generate.meta.typescript.CodeBlock
-import top.potmot.core.business.view.generate.meta.typescript.Import
-import top.potmot.core.business.view.generate.meta.typescript.ConstVariable
-import top.potmot.core.business.view.generate.meta.typescript.ImportDefault
-import top.potmot.core.business.view.generate.meta.vue3.TagElement
-import top.potmot.core.business.view.generate.meta.typescript.LetVariable
-import top.potmot.core.business.view.generate.meta.style.StyleClass
-import top.potmot.core.business.view.generate.meta.typescript.Function
-import top.potmot.core.business.view.generate.meta.typescript.FunctionArg
-import top.potmot.core.business.view.generate.meta.typescript.ImportType
+import top.potmot.core.common.typescript.CodeBlock
+import top.potmot.core.common.typescript.Import
+import top.potmot.core.common.typescript.ConstVariable
+import top.potmot.core.common.typescript.ImportDefault
+import top.potmot.core.common.vue3.TagElement
+import top.potmot.core.common.typescript.LetVariable
+import top.potmot.core.common.style.StyleClass
+import top.potmot.core.common.typescript.Function
+import top.potmot.core.common.typescript.FunctionArg
+import top.potmot.core.common.typescript.ImportType
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.Vue3ElementPlusViewGenerator
-import top.potmot.core.business.view.generate.meta.typescript.stringify
-import top.potmot.core.business.view.generate.meta.vue3.Component
-import top.potmot.core.business.view.generate.meta.vue3.Event
-import top.potmot.core.business.view.generate.meta.vue3.EventArg
-import top.potmot.core.business.view.generate.meta.vue3.EventBind
-import top.potmot.core.business.view.generate.meta.vue3.VModel
-import top.potmot.core.business.view.generate.meta.vue3.ModelProp
-import top.potmot.core.business.view.generate.meta.vue3.Prop
-import top.potmot.core.business.view.generate.meta.vue3.Slot
-import top.potmot.core.business.view.generate.meta.vue3.SlotProp
-import top.potmot.core.business.view.generate.meta.vue3.TextElement
-import top.potmot.core.business.view.generate.meta.vue3.classProp
-import top.potmot.core.business.view.generate.meta.vue3.styleProp
+import top.potmot.core.common.typescript.stringify
+import top.potmot.core.common.vue3.Component
+import top.potmot.core.common.vue3.Event
+import top.potmot.core.common.vue3.EventArg
+import top.potmot.core.common.vue3.EventBind
+import top.potmot.core.common.vue3.VModel
+import top.potmot.core.common.vue3.ModelProp
+import top.potmot.core.common.vue3.Prop
+import top.potmot.core.common.vue3.Slot
+import top.potmot.core.common.vue3.SlotProp
+import top.potmot.core.common.vue3.TextElement
+import top.potmot.core.common.vue3.classProp
+import top.potmot.core.common.vue3.styleProp
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.trimBlankLine
 
@@ -250,7 +250,9 @@ console.log('Hello, World!')
             script = listOf(
                 ConstVariable("const1", "string", "\"value1\""),
                 LetVariable("let1", "number", "0"),
-                Function(async = true, name = "func1", args = listOf(FunctionArg("arg1", "string")), returnType = "boolean", body = listOf(CodeBlock("return false"))),
+                Function(async = true, name = "func1", args = listOf(FunctionArg("arg1", "string")), returnType = "boolean", body = listOf(
+                    CodeBlock("return false")
+                )),
                 CodeBlock("console.log('Hello, World!')")
             ),
             template = listOf(

@@ -108,6 +108,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         row-key="id"
         border
         stripe
+        class="view-table"
         @selection-change="handleSelectionChange"
     >
         <el-table-column
@@ -124,6 +125,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         <el-table-column
             v-if="multiSelect"
             type="selection"
+            :width="43"
             :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column
@@ -144,14 +146,14 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         </el-table-column>
     </el-table>
 </template>
-), (components/entity/EntityAddFormType.d.ts, export type EntityAddFormType = {
+), (components/entity/EntityAddData.ts, export type EntityAddData = {
     longAssociationToOneProperty: {
         name: string
     } | undefined
 }
-), (components/entity/createDefaultEntity.ts, import type {EntityAddFormType} from "./EntityAddFormType"
+), (components/entity/createDefaultEntity.ts, import type {EntityAddData} from "./EntityAddData"
 
-export const createDefaultEntity = (): EntityAddFormType => {
+export const createDefaultEntity = (): EntityAddData => {
     return {
         longAssociationToOneProperty: undefined
     }
@@ -161,7 +163,7 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
-import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
+import type {EntityAddData} from "@/components/entity/EntityAddData"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
 import {useRules} from "@/rules/entity/EntityAddFormRules"
 import EntityLongAssociationToOnePropertySubForm from "@/components/entity/longAssociationEntity/EntityLongAssociationToOnePropertySubForm.vue"
@@ -190,7 +192,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<EntityAddFormType>(createDefaultEntity())
+const formData = ref<EntityAddData>(createDefaultEntity())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -217,7 +219,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value as EntityInsertInput)
+        emits("submit", assertEntityAddDataAsSubmitType(formData.value))
     }
 }
 
@@ -236,7 +238,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
         <el-form-item
             prop="longAssociationToOneProperty"
@@ -270,10 +274,10 @@ defineExpose<FormExpose>({
 </template>
 ), (rules/entity/EntityAddFormRules.ts, import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
-import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
+import type {EntityAddData} from "@/components/entity/EntityAddData"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
 
-export const useRules = (_: Ref<EntityAddFormType>): FormRules<EntityInsertInput> => {
+export const useRules = (_: Ref<EntityAddData>): FormRules<EntityInsertInput> => {
     return {
         longAssociationToOnePropertyId: [
             {required: true, message: "comment不能为空", trigger: "blur"},
@@ -319,7 +323,12 @@ const rules = useRules(formData)
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
-    return await formRef.value?.validate().catch(() => false) ?? false
+    const formValid: boolean =
+        await formRef.value?.validate().catch(() => false) ?? false
+    const typeValidate: boolean =
+        validateEntityEditDataForSubmit(formData.value)
+
+    return formValid && typeValidate
 }
 
 // 提交
@@ -328,7 +337,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", assertEntityEditDataAsSubmitType(formData.value))
     }
 }
 
@@ -347,7 +356,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
         <el-form-item
             prop="longAssociationToOneProperty"
@@ -454,7 +465,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
         <el-form-item prop="name" label="name">
             <el-input
@@ -879,6 +892,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         row-key="id"
         border
         stripe
+        class="view-table"
         @selection-change="handleSelectionChange"
     >
         <el-table-column
@@ -895,6 +909,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         <el-table-column
             v-if="multiSelect"
             type="selection"
+            :width="43"
             :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column
@@ -915,15 +930,15 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         </el-table-column>
     </el-table>
 </template>
-), (components/entity/EntityAddFormType.d.ts, export type EntityAddFormType = {
+), (components/entity/EntityAddData.ts, export type EntityAddData = {
     longAssociationToOneProperty: Array<{
             name: string
         }
     >
 }
-), (components/entity/createDefaultEntity.ts, import type {EntityAddFormType} from "./EntityAddFormType"
+), (components/entity/createDefaultEntity.ts, import type {EntityAddData} from "./EntityAddData"
 
-export const createDefaultEntity = (): EntityAddFormType => {
+export const createDefaultEntity = (): EntityAddData => {
     return {
         longAssociationToOneProperty: []
     }
@@ -933,7 +948,7 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
-import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
+import type {EntityAddData} from "@/components/entity/EntityAddData"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
 import {useRules} from "@/rules/entity/EntityAddFormRules"
 import EntityLongAssociationToOnePropertyEditTable from "@/components/entity/longAssociationEntity/EntityLongAssociationToOnePropertyEditTable.vue"
@@ -961,7 +976,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<EntityAddFormType>(createDefaultEntity())
+const formData = ref<EntityAddData>(createDefaultEntity())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -977,7 +992,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value as EntityInsertInput)
+        emits("submit", assertEntityAddDataAsSubmitType(formData.value))
     }
 }
 
@@ -996,7 +1011,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
         <el-form-item
             prop="longAssociationToOneProperty"
@@ -1030,10 +1047,10 @@ defineExpose<FormExpose>({
 </template>
 ), (rules/entity/EntityAddFormRules.ts, import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
-import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
+import type {EntityAddData} from "@/components/entity/EntityAddData"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
 
-export const useRules = (_: Ref<EntityAddFormType>): FormRules<EntityInsertInput> => {
+export const useRules = (_: Ref<EntityAddData>): FormRules<EntityInsertInput> => {
     return {
         longAssociationToOnePropertyIds: [
             {required: true, message: "comment不能为空", trigger: "blur"},
@@ -1080,7 +1097,12 @@ const rules = useRules(formData)
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
-    return await formRef.value?.validate().catch(() => false) ?? false
+    const formValid: boolean =
+        await formRef.value?.validate().catch(() => false) ?? false
+    const typeValidate: boolean =
+        validateEntityEditDataForSubmit(formData.value)
+
+    return formValid && typeValidate
 }
 
 // 提交
@@ -1089,7 +1111,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", assertEntityEditDataAsSubmitType(formData.value))
     }
 }
 
@@ -1108,7 +1130,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
         <el-form-item
             prop="longAssociationToOneProperty"

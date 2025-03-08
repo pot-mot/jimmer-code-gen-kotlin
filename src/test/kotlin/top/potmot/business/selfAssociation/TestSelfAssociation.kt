@@ -258,8 +258,8 @@ const filterNodeMethod = (value: string | undefined, data: TreeNode) => {
 </template>
 )]
             """.trimIndent().trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
-                .filter { GenerateTag.IdSelect in it.tags || GenerateTag.IdMultiSelect in it.tags }
+            Vue3ElementPlusViewGenerator.generateEntity(selfAssociationEntity)
+                .filter { GenerateTag.IdSelect in it.tags }
                 .map { it.path to it.content }.toString()
         )
     }
@@ -536,7 +536,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
 </template>
 )]
             """.trimIndent().trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+            Vue3ElementPlusViewGenerator.generateEntity(selfAssociationEntity)
                 .filter { GenerateTag.Page in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -606,6 +606,7 @@ const handleSelectionChange = (
         <el-table-column
             v-if="multiSelect"
             type="selection"
+            :width="43"
             :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
         <el-table-column prop="label" label="标签"/>
@@ -625,7 +626,7 @@ const handleSelectionChange = (
 </template>
 )]
             """.trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+            Vue3ElementPlusViewGenerator.generateEntity(selfAssociationEntity)
                 .filter { GenerateTag.ViewTable in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -635,13 +636,13 @@ const handleSelectionChange = (
     fun `test selfAssociation addForm`() {
         assertEquals(
             """
-[(components/selfAssociationEntity/SelfAssociationEntityAddFormType.d.ts, export type SelfAssociationEntityAddFormType = {
+[(components/selfAssociationEntity/SelfAssociationEntityAddData.ts, export type SelfAssociationEntityAddData = {
     label: string
     parentId: number | undefined
 }
-), (components/selfAssociationEntity/createDefaultSelfAssociationEntity.ts, import type {SelfAssociationEntityAddFormType} from "./SelfAssociationEntityAddFormType"
+), (components/selfAssociationEntity/createDefaultSelfAssociationEntity.ts, import type {SelfAssociationEntityAddData} from "./SelfAssociationEntityAddData"
 
-export const createDefaultSelfAssociationEntity = (): SelfAssociationEntityAddFormType => {
+export const createDefaultSelfAssociationEntity = (): SelfAssociationEntityAddData => {
     return {
         label: "",
         parentId: undefined
@@ -655,7 +656,7 @@ import type {
     SelfAssociationEntityInsertInput,
     SelfAssociationEntityOptionView
 } from "@/api/__generated/model/static"
-import type {SelfAssociationEntityAddFormType} from "@/components/selfAssociationEntity/SelfAssociationEntityAddFormType"
+import type {SelfAssociationEntityAddData} from "@/components/selfAssociationEntity/SelfAssociationEntityAddData"
 import {createDefaultSelfAssociationEntity} from "@/components/selfAssociationEntity/createDefaultSelfAssociationEntity"
 import {useRules} from "@/rules/selfAssociationEntity/SelfAssociationEntityAddFormRules"
 import SelfAssociationEntityIdSelect from "@/components/selfAssociationEntity/SelfAssociationEntityIdSelect.vue"
@@ -663,7 +664,7 @@ import SelfAssociationEntityIdSelect from "@/components/selfAssociationEntity/Se
 const props = withDefaults(defineProps<{
     withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
-    parentIdOptions: Array<SelfAssociationEntityOptionView>
+    parentIdOptions: LazyOptions<SelfAssociationEntityOptionView>
 }>(), {
     withOperations: true,
     submitLoading: false,
@@ -684,7 +685,7 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<SelfAssociationEntityAddFormType>(createDefaultSelfAssociationEntity())
+const formData = ref<SelfAssociationEntityAddData>(createDefaultSelfAssociationEntity())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
@@ -719,7 +720,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
         <el-form-item prop="label" label="标签">
             <el-input
@@ -758,10 +761,10 @@ defineExpose<FormExpose>({
 </template>
 ), (rules/selfAssociationEntity/SelfAssociationEntityAddFormRules.ts, import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
-import type {SelfAssociationEntityAddFormType} from "@/components/selfAssociationEntity/SelfAssociationEntityAddFormType"
+import type {SelfAssociationEntityAddData} from "@/components/selfAssociationEntity/SelfAssociationEntityAddData"
 import type {SelfAssociationEntityInsertInput} from "@/api/__generated/model/static"
 
-export const useRules = (_: Ref<SelfAssociationEntityAddFormType>): FormRules<SelfAssociationEntityInsertInput> => {
+export const useRules = (_: Ref<SelfAssociationEntityAddData>): FormRules<SelfAssociationEntityInsertInput> => {
     return {
         label: [
             {required: true, message: "标签不能为空", trigger: "blur"},
@@ -771,7 +774,7 @@ export const useRules = (_: Ref<SelfAssociationEntityAddFormType>): FormRules<Se
     }
 })]
             """.trimIndent().trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+            Vue3ElementPlusViewGenerator.generateEntity(selfAssociationEntity)
                 .filter { GenerateTag.AddForm in it.tags }
                 .map { it.path to it.content }.toString()
         )
@@ -799,7 +802,7 @@ const formData = defineModel<SelfAssociationEntityUpdateInput>({
 const props = withDefaults(defineProps<{
     withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
-    parentIdOptions: Array<SelfAssociationEntityOptionView>
+    parentIdOptions: LazyOptions<SelfAssociationEntityOptionView>
 }>(), {
     withOperations: true,
     submitLoading: false,
@@ -825,7 +828,12 @@ const rules = useRules(formData)
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
-    return await formRef.value?.validate().catch(() => false) ?? false
+    const formValid: boolean =
+        await formRef.value?.validate().catch(() => false) ?? false
+    const typeValidate: boolean =
+        validateEntityEditDataForSubmit(formData.value)
+
+    return formValid && typeValidate
 }
 
 // 提交
@@ -834,7 +842,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", assertEntityEditDataAsSubmitType(formData.value))
     }
 }
 
@@ -853,7 +861,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
         <el-form-item prop="label" label="标签">
             <el-input
@@ -905,7 +915,7 @@ export const useRules = (_: Ref<SelfAssociationEntityUpdateInput>): FormRules<Se
     }
 })]
             """.trimBlankLine(),
-            Vue3ElementPlusViewGenerator.generateView(selfAssociationEntity)
+            Vue3ElementPlusViewGenerator.generateEntity(selfAssociationEntity)
                 .filter { GenerateTag.EditForm in it.tags }
                 .map { it.path to it.content }.toString()
         )

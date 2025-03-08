@@ -43,6 +43,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         row-key="id"
         border
         stripe
+        class="view-table"
         @selection-change="handleSelectionChange"
     >
         <el-table-column
@@ -59,9 +60,14 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         <el-table-column
             v-if="multiSelect"
             type="selection"
+            :width="43"
             :fixed="pageSizeStore.isSmall ? undefined : 'left'"
         />
-        <el-table-column prop="enumProperty" label="enumProperty">
+        <el-table-column
+            prop="enumProperty"
+            label="enumProperty"
+            :min-width="129"
+        >
             <template #default="scope">
                 <EnumView :value="scope.row.enumProperty"/>
             </template>
@@ -69,6 +75,7 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         <el-table-column
             prop="enumNullableProperty"
             label="enumNullableProperty"
+            :min-width="129"
         >
             <template #default="scope">
                 <EnumView :value="scope.row.enumNullableProperty"/>
@@ -77,10 +84,12 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         <el-table-column
             prop="toOnePropertyId"
             label="toOneProperty"
+            :min-width="161"
         />
         <el-table-column
             prop="toOneNullablePropertyId"
             label="toOneNullableProperty"
+            :min-width="161"
         />
         <el-table-column
             label="操作"
@@ -96,17 +105,17 @@ const handleSelectionChange = (newSelection: Array<EntityListView>): void => {
         </el-table-column>
     </el-table>
 </template>
-), (components/entity/EntityAddFormType.d.ts, import type {Enum} from "@/api/__generated/model/enums"
+), (components/entity/EntityAddData.ts, import type {Enum} from "@/api/__generated/model/enums"
 
-export type EntityAddFormType = {
+export type EntityAddData = {
     enumProperty: Enum
     enumNullableProperty: Enum | undefined
     toOnePropertyId: number | undefined
     toOneNullablePropertyId: number | undefined
 }
-), (components/entity/createDefaultEntity.ts, import type {EntityAddFormType} from "./EntityAddFormType"
+), (components/entity/createDefaultEntity.ts, import type {EntityAddData} from "./EntityAddData"
 
-export const createDefaultEntity = (): EntityAddFormType => {
+export const createDefaultEntity = (): EntityAddData => {
     return {
         enumProperty: "item1",
         enumNullableProperty: undefined,
@@ -119,7 +128,7 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityInsertInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
-import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
+import type {EntityAddData} from "@/components/entity/EntityAddData"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
 import {useRules} from "@/rules/entity/EntityAddFormRules"
 import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
@@ -130,8 +139,8 @@ import {sendMessage} from "@/utils/message"
 const props = withDefaults(defineProps<{
     withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
-    toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
-    toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
+    toOnePropertyIdOptions: LazyOptions<ToOneEntityOptionView>,
+    toOneNullablePropertyIdOptions: LazyOptions<ToOneEntityOptionView>
 }>(), {
     withOperations: true,
     submitLoading: false,
@@ -152,25 +161,19 @@ defineSlots<{
     }): any
 }>()
 
-const formData = ref<EntityAddFormType>(createDefaultEntity())
+const formData = ref<EntityAddData>(createDefaultEntity())
 
 const formRef = ref<FormInstance>()
 const rules = useRules(formData)
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
-    const formValid: boolean | undefined = await formRef.value?.validate().catch(() => false)
+    const formValid: boolean =
+        await formRef.value?.validate().catch(() => false) ?? false
+    const typeValidate: boolean =
+        validateEntityAddDataForSubmit(formData.value)
 
-    if (formValid) {
-        if (formData.value.toOnePropertyId === undefined) {
-            sendMessage("toOneProperty不可为空", "warning")
-            return false
-        }
-
-        return true
-    } else {
-        return false
-    }
+    return formValid && typeValidate
 }
 
 // 提交
@@ -179,7 +182,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value as EntityInsertInput)
+        emits("submit", assertEntityAddDataAsSubmitType(formData.value))
     }
 }
 
@@ -198,7 +201,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
         <el-form-item prop="enumProperty" label="enumProperty">
             <EnumSelect v-model="formData.enumProperty"/>
@@ -251,10 +256,10 @@ defineExpose<FormExpose>({
 </template>
 ), (rules/entity/EntityAddFormRules.ts, import type {Ref} from "vue"
 import type {FormRules} from "element-plus"
-import type {EntityAddFormType} from "@/components/entity/EntityAddFormType"
+import type {EntityAddData} from "@/components/entity/EntityAddData"
 import type {EntityInsertInput} from "@/api/__generated/model/static"
 
-export const useRules = (_: Ref<EntityAddFormType>): FormRules<EntityInsertInput> => {
+export const useRules = (_: Ref<EntityAddData>): FormRules<EntityInsertInput> => {
     return {
         enumProperty: [
             {required: true, message: "enumProperty不能为空", trigger: "blur"},
@@ -274,20 +279,26 @@ import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
 import type {EntityUpdateInput, ToOneEntityOptionView} from "@/api/__generated/model/static"
+import {
+    validateEntityEditDataForSubmit,
+    assertEntityEditDataAsSubmitType
+} from "@/components/entity/EntityEditData"
+import type {EntityEditData} from "@/components/entity/EntityEditData"
 import {useRules} from "@/rules/entity/EntityEditFormRules"
 import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
 import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
+import type {LazyOptions} from "@/utils/lazyOptions"
 
-const formData = defineModel<EntityUpdateInput>({
+const formData = defineModel<EntityEditData>({
     required: true
 })
 
 const props = withDefaults(defineProps<{
     withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
-    toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
-    toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
+    toOnePropertyIdOptions: LazyOptions<ToOneEntityOptionView>,
+    toOneNullablePropertyIdOptions: LazyOptions<ToOneEntityOptionView>
 }>(), {
     withOperations: true,
     submitLoading: false,
@@ -313,7 +324,12 @@ const rules = useRules(formData)
 
 // 校验
 const handleValidate = async (): Promise<boolean> => {
-    return await formRef.value?.validate().catch(() => false) ?? false
+    const formValid: boolean =
+        await formRef.value?.validate().catch(() => false) ?? false
+    const typeValidate: boolean =
+        validateEntityEditDataForSubmit(formData.value)
+
+    return formValid && typeValidate
 }
 
 // 提交
@@ -322,7 +338,7 @@ const handleSubmit = async (): Promise<void> => {
 
     const validResult = await handleValidate()
     if (validResult) {
-        emits("submit", formData.value)
+        emits("submit", assertEntityEditDataAsSubmitType(formData.value))
     }
 }
 
@@ -341,7 +357,9 @@ defineExpose<FormExpose>({
         :model="formData"
         ref="formRef"
         :rules="rules"
+        label-width="auto"
         @submit.prevent
+        class="add-form"
     >
         <el-form-item prop="enumProperty" label="enumProperty">
             <EnumSelect v-model="formData.enumProperty"/>
@@ -415,7 +433,7 @@ export const useRules = (_: Ref<EntityUpdateInput>): FormRules<EntityUpdateInput
 import {ref} from "vue"
 import type {FormInstance} from "element-plus"
 import type {FormExpose} from "@/components/form/FormExpose"
-import type {EntityAddFormType, ToOneEntityOptionView} from "@/api/__generated/model/static"
+import type {EntityAddData, ToOneEntityOptionView} from "@/api/__generated/model/static"
 import {createDefaultEntity} from "@/components/entity/createDefaultEntity"
 import {useRules} from "@/rules/entity/EntityEditTableRules"
 import {usePageSizeStore} from "@/stores/pageSizeStore"
@@ -425,7 +443,7 @@ import EnumSelect from "@/components/enums/enum/EnumSelect.vue"
 import EnumNullableSelect from "@/components/enums/enum/EnumNullableSelect.vue"
 import ToOneEntityIdSelect from "@/components/toOneEntity/ToOneEntityIdSelect.vue"
 
-const rows = defineModel<Array<EntityAddFormType>>({
+const rows = defineModel<Array<EntityAddData>>({
     required: true
 })
 
@@ -435,8 +453,8 @@ const props = withDefaults(defineProps<{
     multiSelect?: boolean | undefined,
     withOperations?: boolean | undefined,
     submitLoading?: boolean | undefined,
-    toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
-    toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
+    toOnePropertyIdOptions: LazyOptions<ToOneEntityOptionView>,
+    toOneNullablePropertyIdOptions: LazyOptions<ToOneEntityOptionView>
 }>(), {
     idColumn: false,
     indexColumn: false,
@@ -448,7 +466,7 @@ const props = withDefaults(defineProps<{
 const emits = defineEmits<{
     (
         event: "submit",
-        rows: Array<EntityAddFormType>
+        rows: Array<EntityAddData>
     ): void,
     (event: "cancel"): void
 }>()
@@ -486,9 +504,9 @@ const handleCancel = (): void => {
 }
 
 // 多选
-const selection = ref<Array<EntityAddFormType>>([])
+const selection = ref<Array<EntityAddData>>([])
 
-const handleSelectionChange = (newSelection: Array<EntityAddFormType>): void => {
+const handleSelectionChange = (newSelection: Array<EntityAddData>): void => {
     selection.value = newSelection
 }
 
@@ -563,7 +581,11 @@ defineExpose<FormExpose>({
                 type="selection"
                 :fixed="pageSizeStore.isSmall ? undefined : 'left'"
             />
-            <el-table-column prop="enumProperty" label="enumProperty">
+           <el-table-column
+            prop="enumProperty"
+            label="enumProperty"
+            :min-width="129"
+        >
                 <template #default="scope">
                     <el-form-item
                         :prop="[scope.$index, 'enumProperty']"
@@ -688,8 +710,8 @@ const spec = defineModel<EntitySpec>({
 })
 
 defineProps<{
-    toOnePropertyIdOptions: Array<ToOneEntityOptionView>,
-    toOneNullablePropertyIdOptions: Array<ToOneEntityOptionView>
+    toOnePropertyIdOptions: LazyOptions<ToOneEntityOptionView>,
+    toOneNullablePropertyIdOptions: LazyOptions<ToOneEntityOptionView>
 }>()
 
 const emits = defineEmits<{(event: "query", spec: EntitySpec): void}>()
@@ -982,9 +1004,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
     <el-dialog
         v-model="addDialogVisible"
         v-if="
-            userStore.permissions.includes('entity:insert') &&
-            toOnePropertyIdOptions &&
-            toOneNullablePropertyIdOptions
+            userStore.permissions.includes('entity:insert')
         "
         destroy-on-close
         :close-on-click-modal="false"
@@ -1001,9 +1021,7 @@ const handleDelete = async (ids: Array<number>): Promise<void> => {
     <el-dialog
         v-model="editDialogVisible"
         v-if="
-            userStore.permissions.includes('entity:update') &&
-            toOnePropertyIdOptions &&
-            toOneNullablePropertyIdOptions
+            userStore.permissions.includes('entity:update')
         "
         destroy-on-close
         :close-on-click-modal="false"

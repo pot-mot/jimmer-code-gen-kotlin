@@ -13,9 +13,6 @@ import org.babyfish.jimmer.sql.JoinColumn;
 import org.babyfish.jimmer.sql.OneToOne;
 import org.babyfish.jimmer.sql.Table;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "SOURCE")
 public interface Source {
@@ -29,6 +26,7 @@ public interface Source {
             name = "TARGET_ID",
             referencedColumnName = "ID"
     )
+    @Valid 
     Target target();
 
     @IdView("target")
@@ -46,9 +44,6 @@ import org.babyfish.jimmer.sql.OneToOne;
 import org.babyfish.jimmer.sql.Table;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "TARGET")
 public interface Target {
@@ -69,7 +64,7 @@ public interface Target {
 """
 
 const val kotlinResult = """
-[(kotlin/top/potmot/entity/Source.kt, package top.potmot.entity
+[(main/kotlin/top/potmot/entity/Source.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -81,9 +76,6 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "SOURCE")
 interface Source {
@@ -97,12 +89,13 @@ interface Source {
         name = "TARGET_ID",
         referencedColumnName = "ID"
     )
+    @get:Valid
     val target: Target
 
     @IdView("target")
     val targetId: Int
 }
-), (kotlin/top/potmot/entity/Target.kt, package top.potmot.entity
+), (main/kotlin/top/potmot/entity/Target.kt, package top.potmot.entity
 
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
@@ -113,9 +106,6 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.Table
 
-/**
- * @author 
- */
 @Entity
 @Table(name = "TARGET")
 interface Target {

@@ -1,4 +1,4 @@
-package top.potmot.business.enums
+package top.potmot.business.enums.vue3elementPlus
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import top.potmot.entity.GenEnum
