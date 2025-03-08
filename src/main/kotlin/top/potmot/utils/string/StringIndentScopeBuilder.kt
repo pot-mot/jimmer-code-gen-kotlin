@@ -6,7 +6,7 @@ class StringIndentScopeBuilder(
     val stringBuilder: StringBuilder = StringBuilder(),
 ) {
     fun scope(
-        scopeBlock: () -> Unit
+        scopeBlock: () -> Unit,
     ) {
         currentIndent += indent
         scopeBlock()
@@ -16,7 +16,7 @@ class StringIndentScopeBuilder(
     fun scope(
         before: String,
         after: String,
-        scopeBlock: () -> Unit
+        scopeBlock: () -> Unit,
     ) {
         line(before)
         scope(scopeBlock)
@@ -26,7 +26,7 @@ class StringIndentScopeBuilder(
     fun scopeEndNoLine(
         before: String,
         after: String,
-        scopeBlock: () -> Unit
+        scopeBlock: () -> Unit,
     ) {
         line(before)
         scope(scopeBlock)
@@ -53,28 +53,89 @@ class StringIndentScopeBuilder(
 
     fun lines(
         lines: Iterable<String>,
-        produce: (line: String) -> String = { it }
     ) {
-        lines.forEach {
-            line(produce(it))
+        val iterator = lines.iterator()
+        if (iterator.hasNext()) {
+            if (stringBuilder.endsWith('\n')) {
+                stringBuilder.append(currentIndent)
+            }
+            stringBuilder.appendLine(iterator.next())
+            while (iterator.hasNext()) {
+                stringBuilder.append(currentIndent)
+                stringBuilder.appendLine(iterator.next())
+            }
+        }
+    }
+
+    fun lines(
+        lines: Iterable<String>,
+        produce: ((String) -> String),
+    ) {
+        val iterator = lines.iterator()
+        if (iterator.hasNext()) {
+            if (stringBuilder.endsWith('\n')) {
+                stringBuilder.append(currentIndent)
+            }
+            stringBuilder.appendLine(produce(iterator.next()))
+            while (iterator.hasNext()) {
+                stringBuilder.append(currentIndent)
+                stringBuilder.appendLine(produce(iterator.next()))
+            }
         }
     }
 
     fun lines(
         vararg lines: String,
-        produce: (line: String) -> String = { it }
+    ) = lines(lines.asIterable())
+
+    fun lines(
+        vararg lines: String,
+        produce: ((String) -> String),
+    ) = lines(lines.asIterable(), produce)
+
+    fun block(
+        block: String?,
     ) {
-        lines.forEach {
-            line(produce(it))
-        }
+        if (block == null) return
+        lines(block.lines())
     }
 
     fun block(
         block: String?,
-        produce: (line: String) -> String = { it }
+        produce: ((String) -> String),
     ) {
-        block?.let {
-            lines(it.lines(), produce)
+        if (block == null) return
+        lines(block.lines(), produce)
+    }
+
+    fun blockNotEndLine(
+        block: String?,
+    ) {
+        if (block == null) return
+
+        val blockLines = block.lines()
+
+        if (blockLines.size == 1) {
+            append(blockLines.first())
+        } else if (blockLines.isNotEmpty()) {
+            lines(blockLines.subList(0, blockLines.size - 1))
+            append(blockLines.last())
+        }
+    }
+
+    fun blockNotEndLine(
+        block: String?,
+        produce: ((String) -> String),
+    ) {
+        if (block == null) return
+
+        val blockLines = block.lines()
+
+        if (blockLines.size == 1) {
+            append(blockLines.first())
+        } else if (blockLines.isNotEmpty()) {
+            lines(blockLines.subList(0, blockLines.size - 1), produce)
+            append(produce(blockLines.last()))
         }
     }
 }
@@ -82,7 +143,7 @@ class StringIndentScopeBuilder(
 fun buildScopeString(
     indent: String = "    ",
     currentIndent: String = "",
-    block: StringIndentScopeBuilder.() -> Unit
+    block: StringIndentScopeBuilder.() -> Unit,
 ): String {
     val scopeBuilder = StringIndentScopeBuilder(indent, currentIndent)
     scopeBuilder.block()
