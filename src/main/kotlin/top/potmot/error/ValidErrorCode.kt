@@ -1,0 +1,20 @@
+package top.potmot.error
+
+import org.babyfish.jimmer.error.ErrorFamily
+
+@ErrorFamily
+enum class ValidErrorCode {
+    DUPLICATE_TABLE_NAME,
+    DUPLICATE_ENTITY_NAME,
+    DUPLICATE_ENUM_NAME,
+    DUPLICATE_ENUM_ITEMS,
+    DUPLICATE_ASSOCIATION_NAME,
+    DUPLICATE_COLUMN_NAME,
+    DUPLICATE_PROPERTY_NAME,
+    DUPLICATE_INDEX_NAME,
+    DUPLICATE_INDEX_REF_COLUMN,
+
+    COLUMN_CATEGORY_ILLEGAL,
+
+    TO_MANY_SAVE_REQUIRED_KEY,
+}
