@@ -81,12 +81,9 @@ fun handleValidate(
         CodeBlock(
             buildScopeString(indent) {
                 validateItems.forEach {
-                    line("const ${it.name}: boolean =")
-                    scope {
-                        block(it.expression)
-                    }
+                    block(it.expression)
+                    line()
                 }
-                line()
                 line("return ${(validateItems.map { it.name }).joinToString(" && ")}")
             }
         )
@@ -107,10 +104,7 @@ fun handleNullableValidate(
                 line("if ($formData === undefined) return true")
                 line()
                 validateItems.forEach {
-                    line("const ${it.name}: boolean =")
-                    scope {
-                        block(it.expression)
-                    }
+                    block(it.expression)
                 }
                 line()
                 line("return ${(validateItems.map { it.name }).joinToString(" && ")}")

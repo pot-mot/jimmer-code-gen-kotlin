@@ -89,7 +89,7 @@ fun editForm(
     val validateItems = mutableListOf<ValidateItem>()
     validateItems += CommonValidateItem(
         "formValid",
-        "await $formRef.value?.validate().catch(() => false) ?? false"
+        "const formValid: boolean = await $formRef.value?.validate().catch(() => false) ?? false"
     )
     if (subValidateItems.isNotEmpty()) {
         imports += subValidateItems.flatMap { it.imports }
@@ -97,10 +97,9 @@ fun editForm(
         script += emptyLineCode
         validateItems += subValidateItems
     }
-
     validateItems += CommonValidateItem(
         "typeValidate",
-        "$validateDataForSubmit($formData.value)"
+        "const typeValidate: boolean = $validateDataForSubmit($formData.value)"
     )
 
     script += listOf(
