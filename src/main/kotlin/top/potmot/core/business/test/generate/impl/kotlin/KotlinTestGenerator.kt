@@ -8,14 +8,18 @@ import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.core.business.meta.SubEntityBusiness
 import top.potmot.core.business.test.generate.TestGenerator
+import top.potmot.core.business.test.generate.meta.ActionPropertyValueResult
+import top.potmot.core.business.test.generate.meta.BuilderAction
+import top.potmot.core.business.test.generate.meta.BuilderAction_WithLazyInsertIds
 import top.potmot.core.business.test.generate.meta.LazyInsertId
+import top.potmot.core.business.test.generate.meta.PropertyValueResult
+import top.potmot.core.business.test.generate.meta.RawPropertyValueResult
+import top.potmot.core.business.test.generate.meta.append
 import top.potmot.core.common.booleanType
 import top.potmot.core.common.intType
 import top.potmot.core.common.numericType
 import top.potmot.core.common.stringType
 import top.potmot.enumeration.GenLanguage
-import top.potmot.utils.collection.forEachJoinDo
-import top.potmot.utils.string.StringIndentScopeBuilder
 import top.potmot.utils.string.buildScopeString
 
 private const val sqlClient = "sqlClient"
@@ -25,18 +29,18 @@ object KotlinTestGenerator : TestGenerator {
 
     override fun stringifyTest(entity: RootEntityBusiness): String {
         val imports = mutableListOf<String>()
-        val frontInsertIdMap = mutableMapOf<Long, LazyInsertId>()
+        val lazyInsertIds = mutableListOf<LazyInsertId>()
 
         val idPropertyShortType = entity.idProperty.type.substringAfterLast(".")
 
         val currentInsertData = buildScopeString {
             if (entity.canAdd) {
                 append("${entity.serviceLowerName}.insert(")
-                entity.insertDto(this, frontInsertIdMap)
+                lazyInsertIds += append(entity.insertDto())
                 append(")")
             } else {
                 append("$sqlClient.insert(")
-                entity.insertEntity(this, frontInsertIdMap)
+                lazyInsertIds += append(entity.insertEntity())
                 append(").modifiedEntity.id")
             }
         }
@@ -46,30 +50,23 @@ object KotlinTestGenerator : TestGenerator {
         val currentUpdateData = buildScopeString {
             if (entity.canEdit) {
                 append("${entity.serviceLowerName}.update(")
-                entity.updateDto(this, updateId, frontInsertIdMap)
+                lazyInsertIds += append(entity.updateDto(updateId))
                 append(")")
             }
         }
 
-        val frontInsertIdData =
-            if (frontInsertIdMap.isEmpty()) null
-            else buildScopeString {
-                val items = frontInsertIdMap.values.toList()
-                items.forEachJoinDo({
-                    line()
-                }) {
-                    it.insertAndReturnId(this, frontInsertIdMap)
-                }
-            }
+        val lazyInsertIdActionMap = lazyInsertIds.flatToActionMap()
+        val allLazyInsertIds = lazyInsertIdActionMap.keys
+        val allLazyInsertActions = lazyInsertIdActionMap.values
 
         val needSqlClient =
-            !entity.canAdd || frontInsertIdMap.values.any { !it.insertByService }
+            !entity.canAdd || allLazyInsertIds.any { !it.insertByService }
 
         if (needSqlClient) {
             imports += "org.babyfish.jimmer.sql.kt.KSqlClient"
         }
 
-        val serviceEntities = frontInsertIdMap.values
+        val serviceEntities = allLazyInsertIds
             .filter { it.insertByService }
             .map { it.entity }
             .let {
@@ -104,14 +101,20 @@ object KotlinTestGenerator : TestGenerator {
             }
             scope(") {", "}") {
                 scope("fun insertAndReturnId(): $idPropertyShortType {", "}") {
-                    block(frontInsertIdData)
+                    allLazyInsertActions.forEach {
+                        append(it)
+                        line()
+                    }
                     append("return ")
                     block(currentInsertData)
                 }
 
                 line()
                 scope("fun updateAndReturnId(): $idPropertyShortType {", "}") {
-                    block(frontInsertIdData)
+                    allLazyInsertActions.forEach {
+                        append(it)
+                        line()
+                    }
                     append("return ")
                     block(currentUpdateData)
                 }
@@ -134,217 +137,257 @@ object KotlinTestGenerator : TestGenerator {
         }
     }
 
-    private fun LazyInsertId.insertAndReturnId(
-        builder: StringIndentScopeBuilder,
-        lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
-    ) {
-        val frontInsertIdMap = mutableMapOf<Long, LazyInsertId>()
-
-        val currentInsertData = buildScopeString {
-            if (entity.canAdd) {
-                append("val $name = ${entity.serviceLowerName}.insert(")
-                entity.insertDto(this, frontInsertIdMap)
-                append(")")
-            } else {
-                append("val $name = $sqlClient.insert(")
-                entity.insertEntity(this, frontInsertIdMap)
-                append(").modifiedEntity.id")
-            }
-        }
-
-        frontInsertIdMap.forEach { (key, value) ->
-            if (key !in lazyInsertIdMap) {
-                value.insertAndReturnId(builder, frontInsertIdMap)
-                builder.line()
-                lazyInsertIdMap[key] = value
-            }
-        }
-
-        builder.block(currentInsertData)
-    }
-
-    private fun EntityBusiness.insertEntity(
-        builder: StringIndentScopeBuilder,
-        lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
-    ) = builder.apply {
-        scopeEndNoLine("$name {", "}") {
-            properties
-                .filterNot { it.property.idProperty && it.property.generatedId }
-                .forEach {
-                    append(it.name)
-                    append(" = ")
-                    if (it.property.idProperty) {
-                        append("TODO(\"mock id\")")
-                    } else {
-                        it.entityPropertyValue(this, lazyInsertIdMap)
-                    }
-                    line()
-                }
-        }
-    }
-
-    private fun PropertyBusiness.entityPropertyValue(
-        builder: StringIndentScopeBuilder,
-        lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
-    ): StringIndentScopeBuilder = builder.apply {
+    private fun PropertyBusiness.entityPropertyValue(): PropertyValueResult =
         if (listType) {
-            append("emptyList()")
+            RawPropertyValueResult("emptyList()")
         } else if (!typeNotNull) {
-            append("null")
+            RawPropertyValueResult("null")
         } else if (this@entityPropertyValue is EnumProperty) {
-            append("${enum.name}.${enum.defaultItem.name}")
+            RawPropertyValueResult("${enum.name}.${enum.defaultItem.name}")
         } else if (this@entityPropertyValue is AssociationProperty) {
-            if (isLongAssociation) {
-                scopeEndNoLine("${typeEntity.name} {", "}") {
-                    typeEntityBusiness.subEditNoIdProperties.forEach {
-                        append(it.name)
-                        append(" = ")
-                        it.entityPropertyValue(this, lazyInsertIdMap)
+            if (isTargetOne) {
+                if (isLongAssociation) {
+                    val lazyInsertIds = mutableListOf<LazyInsertId>()
+
+                    val builderAction: BuilderAction = {
+                        scopeEndNoLine("${typeEntity.name} {", "}") {
+                            typeEntityBusiness.subEditNoIdProperties.forEach {
+                                append(it.name)
+                                append(" = ")
+                                lazyInsertIds += append(it.entityPropertyValue())
+                                line()
+                            }
+                        }
+                    }
+
+                    ActionPropertyValueResult(
+                        lazyInsertIds,
+                        builderAction
+                    )
+                } else {
+                    val variableName = "${entityBusiness.lowerName}${upperName}Id"
+                    ActionPropertyValueResult(
+                        lazyInsertIds = listOf(
+                            LazyInsertId(
+                                propertyId = id,
+                                entity = typeEntityBusiness,
+                                name = variableName,
+                            )
+                        )
+                    ) {
+                        append(variableName)
                     }
                 }
             } else {
-                if (isTargetOne) {
-                    if (typeEntity.id !in lazyInsertIdMap) {
-                        val variableName = "${entityBusiness.lowerName}${upperName}Id"
-                        append(variableName)
-                        lazyInsertIdMap[id] = LazyInsertId(
-                            entity = typeEntityBusiness,
-                            name = variableName,
-                        )
-                    }
-                } else {
-                    append("emptyList()")
-                }
+                RawPropertyValueResult("emptyList()")
             }
         } else if (this@entityPropertyValue is ForceIdViewProperty) {
             if (isTargetOne) {
                 val variableName = "${entityBusiness.lowerName}${upperName}"
-                append(variableName)
-                lazyInsertIdMap[id] = LazyInsertId(
-                    entity = typeEntityBusiness,
-                    name = variableName,
-                )
-            } else {
-                append("emptyList()")
-            }
-        } else when (type) {
-            in stringType -> append("\"\"")
-            in booleanType -> append("false")
-            in intType, in numericType -> append("0")
-            else -> append("${type.substringAfterLast(".")}()")
-        }
-    }
-
-    private fun RootEntityBusiness.insertDto(
-        builder: StringIndentScopeBuilder,
-        lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
-    ) = builder.apply {
-        val typeName = dto.insertInput
-        scopeEndNoLine("$typeName (", ")") {
-            addFormProperties
-                .filterNot { it.property.idProperty && it.property.generatedId }
-                .forEach {
-                    append(it.name)
-                    append(" = ")
-                    if (it.property.idProperty) {
-                        append("TODO(\"mock id\")")
-                    } else {
-                        it.dtoPropertyValue(typeName, this, lazyInsertIdMap)
-                    }
-                    line(",")
-                }
-        }
-    }
-
-    private fun SubEntityBusiness.insertDto(
-        builder: StringIndentScopeBuilder,
-        lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
-    ) = asRoot.insertDto(builder, lazyInsertIdMap)
-
-    private fun RootEntityBusiness.updateDto(
-        builder: StringIndentScopeBuilder,
-        idPropertyValue: String,
-        lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
-    ) = builder.apply {
-        val typeName = dto.updateInput
-        scopeEndNoLine("$typeName (", ")") {
-            idProperty.let {
-                append(it.name)
-                append(" = ")
-                append(idPropertyValue)
-                line(",")
-            }
-            editFormNoIdProperties.forEach {
-                append(it.name)
-                append(" = ")
-                it.dtoPropertyValue(typeName, this, lazyInsertIdMap)
-                line(",")
-            }
-        }
-    }
-
-    private fun SubEntityBusiness.updateDto(
-        builder: StringIndentScopeBuilder,
-        idPropertyValue: String,
-        lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
-    ) = asRoot.updateDto(builder, idPropertyValue, lazyInsertIdMap)
-
-    private fun PropertyBusiness.dtoPropertyValue(
-        parentTypeName: String,
-        builder: StringIndentScopeBuilder,
-        lazyInsertIdMap: MutableMap<Long, LazyInsertId>,
-    ): StringIndentScopeBuilder = builder.apply {
-        if (listType) {
-            append("emptyList()")
-        } else if (!typeNotNull) {
-            append("null")
-        } else if (this@dtoPropertyValue is EnumProperty) {
-            append("${enum.name}.${enum.defaultItem.name}")
-        } else if (this@dtoPropertyValue is AssociationProperty) {
-            val currentType = "${parentTypeName}.TargetOf_$name"
-
-            if (isLongAssociation) {
-                append(currentType)
-                line("(")
-                scope {
-                    typeEntityBusiness.subEditNoIdProperties.forEach {
-                        append(it.name)
-                        append(" = ")
-                        it.dtoPropertyValue(currentType, this, lazyInsertIdMap)
-                        line(",")
-                    }
-                }
-                append(")")
-            } else {
-                if (isTargetOne) {
-                    if (typeEntity.id !in lazyInsertIdMap) {
-                        val variableName = "${entityBusiness.lowerName}${upperName}Id"
-                        append(variableName)
-                        lazyInsertIdMap[id] = LazyInsertId(
+                ActionPropertyValueResult(
+                    lazyInsertIds = listOf(
+                        LazyInsertId(
+                            propertyId = id,
                             entity = typeEntityBusiness,
                             name = variableName,
                         )
-                    }
-                } else {
-                    append("emptyList()")
+                    )
+                ) {
+                    append(variableName)
                 }
+            } else {
+                RawPropertyValueResult("emptyList()")
+            }
+        } else when (type) {
+            in stringType -> RawPropertyValueResult("\"\"")
+            in booleanType -> RawPropertyValueResult("false")
+            in intType, in numericType -> RawPropertyValueResult("0")
+            else -> RawPropertyValueResult("${type.substringAfterLast(".")}()")
+        }
+
+    private fun PropertyBusiness.dtoPropertyValue(parentTypeName: String): PropertyValueResult =
+        if (listType) {
+            RawPropertyValueResult("emptyList()")
+        } else if (!typeNotNull) {
+            RawPropertyValueResult("null")
+        } else if (this@dtoPropertyValue is EnumProperty) {
+            RawPropertyValueResult("${enum.name}.${enum.defaultItem.name}")
+        } else if (this@dtoPropertyValue is AssociationProperty) {
+            val currentType = "${parentTypeName}.TargetOf_$name"
+
+            if (isTargetOne) {
+                if (isLongAssociation) {
+                    val lazyInsertIds = mutableListOf<LazyInsertId>()
+
+                    val builderAction: BuilderAction = {
+                        append(currentType)
+                        line("(")
+                        scope {
+                            typeEntityBusiness.subEditNoIdProperties.forEach {
+                                append(it.name)
+                                append(" = ")
+                                lazyInsertIds += append(it.dtoPropertyValue(currentType))
+                                line(",")
+                            }
+                        }
+                        append(")")
+                    }
+
+                    ActionPropertyValueResult(
+                        lazyInsertIds,
+                        builderAction,
+                    )
+                } else {
+                    val variableName = "${entityBusiness.lowerName}${upperName}Id"
+                    ActionPropertyValueResult(
+                        lazyInsertIds = listOf(
+                            LazyInsertId(
+                                propertyId = id,
+                                entity = typeEntityBusiness,
+                                name = variableName,
+                            )
+                        )
+                    ) {
+                        append(variableName)
+                    }
+                }
+            } else {
+                RawPropertyValueResult("emptyList()")
             }
         } else if (this@dtoPropertyValue is ForceIdViewProperty) {
             if (isTargetOne) {
                 val variableName = "${entityBusiness.lowerName}${upperName}"
-                append(variableName)
-                lazyInsertIdMap[id] = LazyInsertId(
-                    entity = typeEntityBusiness,
-                    name = variableName,
-                )
+                ActionPropertyValueResult(
+                    lazyInsertIds = listOf(
+                        LazyInsertId(
+                            propertyId = id,
+                            entity = typeEntityBusiness,
+                            name = variableName,
+                        )
+                    )
+                ) {
+                    append(variableName)
+                }
             } else {
-                append("emptyList()")
+                RawPropertyValueResult("emptyList()")
             }
         } else when (type) {
-            in stringType -> append("\"\"")
-            in booleanType -> append("false")
-            in intType, in numericType -> append("0")
-            else -> append("${type.substringAfterLast(".")}()")
+            in stringType -> RawPropertyValueResult("\"\"")
+            in booleanType -> RawPropertyValueResult("false")
+            in intType, in numericType -> RawPropertyValueResult("0")
+            else -> RawPropertyValueResult("${type.substringAfterLast(".")}()")
         }
+
+    private fun EntityBusiness.insertEntity(): BuilderAction_WithLazyInsertIds {
+        val lazyInsertIds = mutableListOf<LazyInsertId>()
+
+        val builderAction: BuilderAction = {
+            scopeEndNoLine("$name {", "}") {
+                properties
+                    .filterNot { it.property.idProperty && it.property.generatedId }
+                    .forEach {
+                        append(it.name)
+                        append(" = ")
+                        if (it.property.idProperty) {
+                            append("TODO(\"mock id\")")
+                        } else {
+                            lazyInsertIds += append(it.entityPropertyValue())
+                        }
+                        line()
+                    }
+            }
+        }
+
+        return BuilderAction_WithLazyInsertIds(
+            lazyInsertIds,
+            builderAction,
+        )
+    }
+
+    private fun RootEntityBusiness.insertDto(): BuilderAction_WithLazyInsertIds {
+        val lazyInsertIds = mutableListOf<LazyInsertId>()
+
+        val builderAction: BuilderAction = {
+            val typeName = dto.insertInput
+            scopeEndNoLine("$typeName (", ")") {
+                addFormProperties
+                    .filterNot { it.property.idProperty && it.property.generatedId }
+                    .forEach {
+                        append(it.name)
+                        append(" = ")
+                        if (it.property.idProperty) {
+                            append("TODO(\"mock id\")")
+                        } else {
+                            lazyInsertIds += append(it.dtoPropertyValue(typeName))
+                        }
+                        line(",")
+                    }
+            }
+        }
+
+        return BuilderAction_WithLazyInsertIds(
+            lazyInsertIds,
+            builderAction,
+        )
+    }
+
+    private fun SubEntityBusiness.insertDto() = asRoot.insertDto()
+
+    private fun RootEntityBusiness.updateDto(idPropertyValue: String): BuilderAction_WithLazyInsertIds {
+        val lazyInsertIds = mutableListOf<LazyInsertId>()
+
+        val builderAction: BuilderAction = {
+            val typeName = dto.updateInput
+            scopeEndNoLine("$typeName (", ")") {
+                idProperty.let {
+                    append(it.name)
+                    append(" = ")
+                    append(idPropertyValue)
+                    line(",")
+                }
+                editFormNoIdProperties.forEach {
+                    append(it.name)
+                    append(" = ")
+                    lazyInsertIds += append(it.dtoPropertyValue(typeName))
+                    line(",")
+                }
+            }
+        }
+
+        return BuilderAction_WithLazyInsertIds(
+            lazyInsertIds,
+            builderAction,
+        )
+    }
+
+    private fun LazyInsertId.insertAndReturnId(): BuilderAction_WithLazyInsertIds {
+        val lazyInsertIds = mutableListOf<LazyInsertId>()
+
+        val builderAction: BuilderAction = {
+            if (entity.canAdd) {
+                append("val $name = ${entity.serviceLowerName}.insert(")
+                lazyInsertIds += append(entity.insertDto())
+                append(")")
+            } else {
+                append("val $name = $sqlClient.insert(")
+                lazyInsertIds += append(entity.insertEntity())
+                append(").modifiedEntity.id")
+            }
+        }
+
+        return BuilderAction_WithLazyInsertIds(
+            lazyInsertIds,
+            builderAction,
+        )
+    }
+
+    private fun Iterable<LazyInsertId>.flatToActionMap(): Map<LazyInsertId, BuilderAction> {
+        val map = mutableMapOf<LazyInsertId, BuilderAction>()
+        forEach {
+            val (subLazyIds, builderAction) = it.insertAndReturnId()
+            map += subLazyIds.flatToActionMap()
+            map[it] = builderAction
+        }
+        return map
     }
 }
