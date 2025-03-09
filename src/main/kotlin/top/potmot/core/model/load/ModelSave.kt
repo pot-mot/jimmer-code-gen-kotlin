@@ -1,11 +1,13 @@
 package top.potmot.core.model.load
 
+import org.babyfish.jimmer.kt.unload
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
 import org.springframework.transaction.support.TransactionTemplate
 import top.potmot.entity.GenAssociation
+import top.potmot.entity.GenModelDraft
 import top.potmot.entity.GenTable
 import top.potmot.entity.GenTableIndex
 import top.potmot.entity.dto.GenModelInput
@@ -24,19 +26,29 @@ interface ModelSave {
     fun KSqlClient.saveModel(
         input: GenModelInput,
     ): Long = transactionTemplate.executeNotNull {
-        // 1. 保存 model, subGroups, enums
+        // 1. 保存 model, subGroups
         val savedModel = save(
-            input,
+            input.toEntity { unload(this, GenModelDraft::enums) },
             if (input.id == null) SaveMode.INSERT_ONLY else SaveMode.UPDATE_ONLY
         ).modifiedEntity
 
+        // 创建 subGroup name -> id map，用于映射 table.subGroup 和 enum.subGroup
+        val subGroupNameIdMap = savedModel.subGroups.associate { it.name to it.id }
+
+        // 1.2 保存 enums
+        val savedEnums = saveEntities(
+            input.enums.map {
+                it.toEntity {
+                    modelId = savedModel.id
+                    subGroupId = subGroupNameIdMap[it.subGroup?.name]
+                }
+            }
+        ).items.map { it.modifiedEntity }
+
+        // 创建 enum name -> id map，用于映射 table.columns.enum
+        val enumNameIdMap = savedEnums.associate { it.name to it.id }
+
         parseGraphData(savedModel.id, input.graphData).let { (tableModelInputs, associationModelInputs) ->
-            // 创建 subGroup name -> id map，用于映射 table.subGroup
-            val subGroupNameIdMap = savedModel.subGroups.associate { it.name to it.id }
-
-            // 创建 enum name -> id map，用于映射 table.columns.enum
-            val enumNameIdMap = savedModel.enums.associate { it.name to it.id }
-
             val tableInputsList =
                 tableModelInputs.map {
                     it.toInputs(subGroupNameIdMap, enumNameIdMap)

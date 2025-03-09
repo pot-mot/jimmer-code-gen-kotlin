@@ -11,6 +11,9 @@ input GenModelInput {
     enums {
         #allScalars(this)
         -id
+        subGroup {
+            name
+        }
 
         items {
             #allScalars(this)
