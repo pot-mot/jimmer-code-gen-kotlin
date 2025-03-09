@@ -7,6 +7,7 @@ import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
 import org.springframework.transaction.support.TransactionTemplate
 import top.potmot.entity.GenAssociation
+import top.potmot.entity.GenEnum
 import top.potmot.entity.GenModelDraft
 import top.potmot.entity.GenTable
 import top.potmot.entity.GenTableIndex
@@ -44,6 +45,12 @@ interface ModelSave {
                 }
             }
         ).items.map { it.modifiedEntity }
+
+        // 1.3 移除遗留 enums
+        executeDelete(GenEnum::class) {
+            where(table.modelId eq savedModel.id)
+            where(table.id valueNotIn savedEnums.map { it.id })
+        }
 
         // 创建 enum name -> id map，用于映射 table.columns.enum
         val enumNameIdMap = savedEnums.associate { it.name to it.id }
