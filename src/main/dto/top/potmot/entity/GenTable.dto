@@ -28,6 +28,7 @@ input GenTableInput {
     -id
     id(model)
     id(schema)
+    id(subGroup)
     id(superTables) as superTableIds
 
     columns {

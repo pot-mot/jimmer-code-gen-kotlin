@@ -5,6 +5,9 @@ input GenTableModelInput {
     -id
     id(model)
 
+    subGroup {
+        name
+    }
     superTables {
         name
     }

@@ -39,9 +39,16 @@ fun tableToEntity(
     )
 }
 
-// TODO 当未来要添加 subPackagePath 时，调整生成路径
 fun tableToEntityPackagePath(
     table: GenTableConvertView,
     modelBasePackagePath: String,
 ): String =
-    "${modelBasePackagePath}.entity"
+    buildString {
+        append(modelBasePackagePath)
+        append(".")
+        if (table.subGroup != null) {
+            append(table.subGroup.subPackagePath)
+            append(".")
+        }
+        append("entity")
+    }

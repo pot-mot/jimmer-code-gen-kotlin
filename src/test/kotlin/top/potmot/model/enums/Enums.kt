@@ -11,7 +11,6 @@ val COMMON_ENUM = TargetOf_enums(
     comment = "",
     enumType = null,
     remark = "",
-    modelId = 2L,
     items = listOf(
         TargetOf_items(
             name = "item1",
@@ -38,7 +37,6 @@ val ORDINAL_ENUM = TargetOf_enums(
     comment = "",
     enumType = EnumType.ORDINAL,
     remark = "",
-    modelId = 2L,
     items = listOf(
         TargetOf_items(
             name = "item1",
@@ -65,7 +63,6 @@ val NAME_ENUM = TargetOf_enums(
     comment = "",
     enumType = EnumType.NAME,
     remark = "",
-    modelId = 2L,
     items = listOf(
         TargetOf_items(
             name = "item1",

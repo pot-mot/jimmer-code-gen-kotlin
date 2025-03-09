@@ -59,5 +59,6 @@ private val baseModel = GenModelInput(
     columnCommentPrefixes = "",
     columnCommentSuffixes = "",
     remark = "",
-    enums = emptyList()
+    subGroups = emptyList(),
+    enums = emptyList(),
 )

@@ -5,6 +5,9 @@ import top.potmot.entity.dto.share.ColumnTypeMeta
 GenTableConvertView {
     #allScalars
     superTableIds
+    subGroup {
+        subPackagePath
+    }
 
     pkColumns {
         id

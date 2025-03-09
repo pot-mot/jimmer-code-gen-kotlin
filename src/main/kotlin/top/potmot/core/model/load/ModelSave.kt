@@ -24,19 +24,22 @@ interface ModelSave {
     fun KSqlClient.saveModel(
         input: GenModelInput,
     ): Long = transactionTemplate.executeNotNull {
-        // 1. 保存 model 和 enums
+        // 1. 保存 model, subGroups, enums
         val savedModel = save(
             input,
             if (input.id == null) SaveMode.INSERT_ONLY else SaveMode.UPDATE_ONLY
         ).modifiedEntity
 
         parseGraphData(savedModel.id, input.graphData).let { (tableModelInputs, associationModelInputs) ->
+            // 创建 subGroup name -> id map，用于映射 table.subGroup
+            val subGroupNameIdMap = savedModel.subGroups.associate { it.name to it.id }
+
             // 创建 enum name -> id map，用于映射 table.columns.enum
             val enumNameIdMap = savedModel.enums.associate { it.name to it.id }
 
             val tableInputsList =
                 tableModelInputs.map {
-                    it.toInputs(enumNameIdMap)
+                    it.toInputs(subGroupNameIdMap, enumNameIdMap)
                 }
 
             // 2. 保存 tables

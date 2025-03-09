@@ -82,6 +82,7 @@ data class GenTableInputs(
 )
 
 fun GenTableModelInput.toInputs(
+    subGroupNameIdMap: Map<String, Long>,
     enumNameIdMap: Map<String, Long>,
 ): GenTableInputs {
     val table = GenTableInput(
@@ -90,6 +91,7 @@ fun GenTableModelInput.toInputs(
         type = type,
         remark = remark,
         modelId = modelId,
+        subGroupId = subGroupNameIdMap[subGroup?.name],
         superTableIds = emptyList(),
         columns = columns.map {
             GenTableInput.TargetOf_columns(
