@@ -24,9 +24,9 @@ import top.potmot.service.SchemaService
 
 private const val SAVED_SCHEMA_SIZE = 1
 
-private const val SAVED_TABLE_SIZE = 17
+private const val SAVED_TABLE_SIZE = 18
 
-private const val SAVED_ASSOCIATION_SIZE = 26
+private const val SAVED_ASSOCIATION_SIZE = 29
 
 @SpringBootTest
 @ActiveProfiles("test", "h2")
