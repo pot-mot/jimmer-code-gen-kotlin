@@ -1,5 +1,6 @@
 package top.potmot.entity
 
+import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -7,6 +8,7 @@ import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import top.potmot.entity.base.BaseEntity
 
@@ -29,6 +31,7 @@ interface GenModelSubGroup : BaseEntity {
      */
     @Key
     @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
     val model: GenModel
 
     /**

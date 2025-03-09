@@ -69,6 +69,7 @@ interface GenTable : BaseEntity {
      * 子组
      */
     @ManyToOne
+    @OnDissociate(DissociateAction.SET_NULL)
     val subGroup: GenModelSubGroup?
 
     /**
