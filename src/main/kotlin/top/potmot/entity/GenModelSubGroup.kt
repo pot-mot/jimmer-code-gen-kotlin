@@ -6,6 +6,7 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
+import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OneToMany
 import top.potmot.entity.base.BaseEntity
@@ -27,11 +28,8 @@ interface GenModelSubGroup : BaseEntity {
     /**
      * 模型
      */
+    @Key
     @ManyToOne
-    @JoinColumn(
-        name = "model_id",
-        referencedColumnName = "id"
-    )
     val model: GenModel
 
     /**
@@ -43,6 +41,7 @@ interface GenModelSubGroup : BaseEntity {
     /**
      * 名称
      */
+    @Key
     val name: String
 
     /**
