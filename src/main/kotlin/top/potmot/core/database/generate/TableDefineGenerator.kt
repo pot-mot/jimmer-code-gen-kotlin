@@ -15,7 +15,7 @@ interface TableDefineGenerator {
     private fun formatFilePath(table: GenTableGenerateView): String = buildString {
         append("ddl/")
         if (!table.subPackagePath.isNullOrBlank()) {
-            append("${table.subPackagePath}/")
+            append("${table.subPackagePath.replace(".", "/")}/")
         }
         append("${table.name}.sql")
     }

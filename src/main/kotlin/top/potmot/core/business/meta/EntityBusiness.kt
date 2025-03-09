@@ -77,7 +77,7 @@ sealed class EntityBusiness(
 
     val dir = buildString {
         if (!subPackagePath.isNullOrBlank()) {
-            append("$subPackagePath/")
+            append("${subPackagePath.replace(".", "/")}/")
         }
         append(lowerName)
     }
@@ -97,7 +97,7 @@ sealed class EntityBusiness(
 
     val permissionBase = buildString {
         if (!subPackagePath.isNullOrBlank()) {
-            append("$subPackagePath:")
+            append("${subPackagePath.replace(".", ":")}:")
         }
         append(lowerName)
     }

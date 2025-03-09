@@ -19,7 +19,7 @@ object DtoGenerator {
         entity: RootEntityBusiness,
     ): String = buildString {
         if (!entity.subPackagePath.isNullOrBlank()) {
-            append("${entity.subPackagePath}/")
+            append("${entity.subPackagePath.replace(".", "/")}/")
         }
         append("${entity.name}.dto")
     }

@@ -14,7 +14,7 @@ object PermissionGenerator {
     private fun formatFilePath(entity: EntityBusiness): String =buildString {
         append("sql/permission/")
         if (!entity.subPackagePath.isNullOrBlank()) {
-            append("${entity.subPackagePath}/")
+            append("${entity.subPackagePath.replace(".", "/")}/")
         }
         append("${entity.lowerName}.sql")
     }
