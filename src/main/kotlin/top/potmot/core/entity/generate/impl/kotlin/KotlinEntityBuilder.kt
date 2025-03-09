@@ -1,13 +1,13 @@
 package top.potmot.core.entity.generate.impl.kotlin
 
-import top.potmot.core.entity.generate.builder.EntityBuilder
-import top.potmot.core.entity.generate.builder.EntityView
-import top.potmot.core.entity.generate.builder.PropertyView
 import top.potmot.core.common.intType
 import top.potmot.core.common.numberMax
 import top.potmot.core.common.numberMin
 import top.potmot.core.common.numericType
 import top.potmot.core.common.stringType
+import top.potmot.core.entity.generate.builder.EntityBuilder
+import top.potmot.core.entity.generate.builder.EntityView
+import top.potmot.core.entity.generate.builder.PropertyView
 import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.utils.string.buildScopeString
 
@@ -57,10 +57,13 @@ object KotlinEntityBuilder : EntityBuilder() {
             when (property.type) {
                 in stringType -> {
                     property.column?.dataSize?.let {
-                        imports += "org.hibernate.validator.constraints.Length"
-                        annotations += "@get:Length(max = ${it})"
+                        if (it > 0) {
+                            imports += "org.hibernate.validator.constraints.Length"
+                            annotations += "@get:Length(max = ${it})"
+                        }
                     }
                 }
+
                 in intType -> {
                     property.column?.let {
                         numberMax(it.typeCode, it.dataSize, it.numericPrecision)?.let { max ->
@@ -73,6 +76,7 @@ object KotlinEntityBuilder : EntityBuilder() {
                         }
                     }
                 }
+
                 in numericType -> {
                     property.column?.let {
                         numberMax(it.typeCode, it.dataSize, it.numericPrecision)?.let { max ->

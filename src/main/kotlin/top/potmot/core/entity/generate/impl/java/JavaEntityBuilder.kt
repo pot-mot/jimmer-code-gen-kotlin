@@ -1,14 +1,14 @@
 package top.potmot.core.entity.generate.impl.java
 
 import org.jetbrains.annotations.Nullable
-import top.potmot.core.entity.generate.builder.EntityBuilder
-import top.potmot.core.entity.generate.builder.EntityView
-import top.potmot.core.entity.generate.builder.PropertyView
 import top.potmot.core.common.intType
 import top.potmot.core.common.numberMax
 import top.potmot.core.common.numberMin
 import top.potmot.core.common.numericType
 import top.potmot.core.common.stringType
+import top.potmot.core.entity.generate.builder.EntityBuilder
+import top.potmot.core.entity.generate.builder.EntityView
+import top.potmot.core.entity.generate.builder.PropertyView
 import top.potmot.entity.sub.AnnotationWithImports
 import top.potmot.utils.string.buildScopeString
 
@@ -54,8 +54,8 @@ object JavaEntityBuilder : EntityBuilder() {
         }
 
         if (!property.typeNotNull) {
-                imports += Nullable::class.java.name
-                annotations += "@Nullable"
+            imports += Nullable::class.java.name
+            annotations += "@Nullable"
         }
 
         if (property.typeTable != null) {
@@ -67,10 +67,13 @@ object JavaEntityBuilder : EntityBuilder() {
             when (property.type) {
                 in stringType -> {
                     property.column?.dataSize?.let {
-                        imports += "org.hibernate.validator.constraints.Length"
-                        annotations += "@Length(max = ${it}, message = \"${property.comment}长度不可大于${it}\")"
+                        if (it > 0) {
+                            imports += "org.hibernate.validator.constraints.Length"
+                            annotations += "@Length(max = ${it}, message = \"${property.comment}长度不可大于${it}\")"
+                        }
                     }
                 }
+
                 in intType -> {
                     property.column?.let {
                         numberMax(it.typeCode, it.dataSize, it.numericPrecision)?.let { max ->
@@ -83,6 +86,7 @@ object JavaEntityBuilder : EntityBuilder() {
                         }
                     }
                 }
+
                 in numericType -> {
                     property.column?.let {
                         numberMax(it.typeCode, it.dataSize, it.numericPrecision)?.let { max ->
