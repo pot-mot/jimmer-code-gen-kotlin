@@ -1,5 +1,6 @@
 package top.potmot.core.database.load
 
+import java.util.regex.Pattern
 import org.babyfish.jimmer.sql.DissociateAction
 import schemacrawler.schema.Catalog
 import schemacrawler.schema.Column
@@ -13,19 +14,18 @@ import schemacrawler.schemacrawler.LoadOptionsBuilder
 import schemacrawler.schemacrawler.SchemaCrawlerOptionsBuilder
 import schemacrawler.schemacrawler.SchemaInfoLevelBuilder
 import schemacrawler.tools.utility.SchemaCrawlerUtility
-import top.potmot.enumeration.AssociationType
-import top.potmot.enumeration.TableType
-import top.potmot.error.LoadFromDataSourceException
 import top.potmot.entity.dto.GenAssociationInput
 import top.potmot.entity.dto.GenSchemaInput
 import top.potmot.entity.dto.GenSchemaPreview
 import top.potmot.entity.dto.GenTableIndexInput
 import top.potmot.entity.dto.GenTableInput
-import us.fatehi.utility.datasource.DatabaseConnectionSource
-import java.util.regex.Pattern
 import top.potmot.entity.dto.GenTableLoadView
 import top.potmot.entity.dto.IdName
+import top.potmot.enumeration.AssociationType
+import top.potmot.enumeration.TableType
 import top.potmot.error.ColumnTableNotMatchItem
+import top.potmot.error.LoadFromDataSourceException
+import us.fatehi.utility.datasource.DatabaseConnectionSource
 
 /**
  * 获取数据库目录（Catalog）
@@ -129,7 +129,7 @@ fun Table.toInput(schemaId: Long) = GenTableInput(
 )
 
 private fun Column.toInput(
-    orderKey: Long
+    orderKey: Long,
 ) = GenTableInput.TargetOf_columns(
     name = name,
     typeCode = columnDataType.javaSqlType.vendorTypeNumber,
@@ -154,7 +154,7 @@ private fun Column.toInput(
  */
 @Throws(LoadFromDataSourceException::class)
 fun ForeignKey.toInput(
-    tableNameMap: Map<String, GenTableLoadView>
+    tableNameMap: Map<String, GenTableLoadView>,
 ): GenAssociationInput {
     val columnReferences = mutableListOf<GenAssociationInput.TargetOf_columnReferences>()
 
@@ -169,17 +169,16 @@ fun ForeignKey.toInput(
     val targetTablePairs = mutableSetOf<Pair<GenTableLoadView.TargetOf_columns, GenTableLoadView>>()
 
     this.columnReferences.forEachIndexed { index, columnRef ->
-        columnRef.toLoadColumnReference(this, tableNameMap).let { loadColumnReference ->
-            sourceTablePairs += loadColumnReference.source.column to loadColumnReference.source.table
-            targetTablePairs += loadColumnReference.target.column to loadColumnReference.target.table
-            columnReferences +=
-                GenAssociationInput.TargetOf_columnReferences(
-                    orderKey = index.toLong(),
-                    remark = "",
-                    sourceColumnId = loadColumnReference.source.column.id,
-                    targetColumnId = loadColumnReference.target.column.id,
-                )
-        }
+        val loadColumnReference = columnRef.toLoadColumnReference(this, tableNameMap)
+        sourceTablePairs += loadColumnReference.source.column to loadColumnReference.source.table
+        targetTablePairs += loadColumnReference.target.column to loadColumnReference.target.table
+        columnReferences +=
+            GenAssociationInput.TargetOf_columnReferences(
+                orderKey = index.toLong(),
+                remark = "",
+                sourceColumnId = loadColumnReference.source.column.id,
+                targetColumnId = loadColumnReference.target.column.id,
+            )
     }
 
     if (sourceTablePairs.isEmpty() || targetTablePairs.isEmpty())
