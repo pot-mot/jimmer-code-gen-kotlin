@@ -24,41 +24,42 @@ DROP TABLE IF EXISTS "gen_type_mapping" CASCADE;
 DROP TABLE IF EXISTS "gen_column_default" CASCADE;
 DROP TABLE IF EXISTS "gen_super_table_mapping" CASCADE;
 DROP TABLE IF EXISTS "gen_super_entity_mapping" CASCADE;
+DROP TABLE IF EXISTS "gen_model_sub_group" CASCADE;
 
 -- ----------------------------
 -- Table structure for gen_model
 -- ----------------------------
 CREATE TABLE "gen_model"
 (
-    "id"                         BIGSERIAL NOT NULL,
-    "name"                       text      NOT NULL,
-    "graph_data"                 text      NOT NULL,
-    "language"                   text      NOT NULL,
-    "data_source_type"           text      NOT NULL,
-    "view_type"                  text      NOT NULL,
-    "author"                     text      NOT NULL,
-    "package_path"               text      NOT NULL,
-    "table_path"                 text      NOT NULL,
-    "database_naming_strategy"   text      NOT NULL,
-    "real_fk"                    boolean   NOT NULL,
-    "id_view_property"           boolean   NOT NULL,
-    "default_id_type"            int       NOT NULL,
-    "generated_id_annotation"    jsonb     NOT NULL,
-    "logical_deleted_annotation" jsonb     NOT NULL,
-    "date_time_format_in_view"   boolean   NOT NULL,
-    "table_annotation"           boolean   NOT NULL,
-    "column_annotation"          boolean   NOT NULL,
-    "join_table_annotation"      boolean   NOT NULL,
-    "join_column_annotation"     boolean   NOT NULL,
-    "table_name_prefixes"        text      NOT NULL,
-    "table_name_suffixes"        text      NOT NULL,
-    "table_comment_prefixes"     text      NOT NULL,
-    "table_comment_suffixes"     text      NOT NULL,
-    "column_name_prefixes"       text      NOT NULL,
-    "column_name_suffixes"       text      NOT NULL,
-    "column_comment_prefixes"    text      NOT NULL,
-    "column_comment_suffixes"    text      NOT NULL,
-    "remark"                     text      NOT NULL,
+    "id"                         BIGSERIAL   NOT NULL,
+    "name"                       text        NOT NULL,
+    "graph_data"                 text        NOT NULL,
+    "language"                   text        NOT NULL,
+    "data_source_type"           text        NOT NULL,
+    "view_type"                  text        NOT NULL,
+    "author"                     text        NOT NULL,
+    "package_path"               text        NOT NULL,
+    "table_path"                 text        NOT NULL,
+    "database_naming_strategy"   text        NOT NULL,
+    "real_fk"                    boolean     NOT NULL,
+    "id_view_property"           boolean     NOT NULL,
+    "default_id_type"            int         NOT NULL,
+    "generated_id_annotation"    jsonb       NOT NULL,
+    "logical_deleted_annotation" jsonb       NOT NULL,
+    "date_time_format_in_view"   boolean     NOT NULL,
+    "table_annotation"           boolean     NOT NULL,
+    "column_annotation"          boolean     NOT NULL,
+    "join_table_annotation"      boolean     NOT NULL,
+    "join_column_annotation"     boolean     NOT NULL,
+    "table_name_prefixes"        text        NOT NULL,
+    "table_name_suffixes"        text        NOT NULL,
+    "table_comment_prefixes"     text        NOT NULL,
+    "table_comment_suffixes"     text        NOT NULL,
+    "column_name_prefixes"       text        NOT NULL,
+    "column_name_suffixes"       text        NOT NULL,
+    "column_comment_prefixes"    text        NOT NULL,
+    "column_comment_suffixes"    text        NOT NULL,
+    "remark"                     text        NOT NULL,
     "created_time"               timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time"              timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id")
@@ -110,6 +111,7 @@ CREATE TABLE "gen_enum"
 (
     "id"            BIGSERIAL   NOT NULL,
     "model_id"      bigint      NULL,
+    "sub_group_id"  BIGINT               DEFAULT NULL,
     "package_path"  text        NOT NULL,
     "name"          text        NOT NULL,
     "comment"       text        NOT NULL,
@@ -126,6 +128,7 @@ CREATE INDEX "idx_enum_model" ON "gen_enum" ("model_id");
 COMMENT ON TABLE "gen_enum" IS '生成枚举';
 COMMENT ON COLUMN "gen_enum"."id" IS 'ID';
 COMMENT ON COLUMN "gen_enum"."model_id" IS '模型';
+COMMENT ON COLUMN "gen_enum"."sub_group_id" IS '子组';
 COMMENT ON COLUMN "gen_enum"."package_path" IS '包路径';
 COMMENT ON COLUMN "gen_enum"."name" IS '枚举名';
 COMMENT ON COLUMN "gen_enum"."comment" IS '枚举注释';
@@ -251,6 +254,7 @@ CREATE TABLE "gen_table"
     "id"            BIGSERIAL   NOT NULL,
     "model_id"      bigint      NULL,
     "schema_id"     bigint      NULL,
+    "sub_group_id"  BIGINT               DEFAULT NULL,
     "name"          text        NOT NULL,
     "comment"       text        NOT NULL,
     "type"          text        NOT NULL,
@@ -269,6 +273,7 @@ COMMENT ON TABLE "gen_table" IS '生成表';
 COMMENT ON COLUMN "gen_table"."id" IS 'ID';
 COMMENT ON COLUMN "gen_table"."model_id" IS '模型';
 COMMENT ON COLUMN "gen_table"."schema_id" IS '数据架构';
+COMMENT ON COLUMN "gen_table"."sub_group_id" IS '子组';
 COMMENT ON COLUMN "gen_table"."name" IS '表名称';
 COMMENT ON COLUMN "gen_table"."comment" IS '表注释';
 COMMENT ON COLUMN "gen_table"."type" IS '表种类';
@@ -415,12 +420,12 @@ EXECUTE FUNCTION update_modified_time();
 -- ----------------------------
 CREATE TABLE "gen_column_reference"
 (
-    "id"               bigserial NOT NULL,
-    "association_id"   bigint    NOT NULL,
-    "source_column_id" bigint    NOT NULL,
-    "target_column_id" bigint    NOT NULL,
-    "order_key"        bigint    NOT NULL,
-    "remark"           text      NOT NULL,
+    "id"               bigserial   NOT NULL,
+    "association_id"   bigint      NOT NULL,
+    "source_column_id" bigint      NOT NULL,
+    "target_column_id" bigint      NOT NULL,
+    "order_key"        bigint      NOT NULL,
+    "remark"           text        NOT NULL,
     "created_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time"    timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id"),
@@ -454,11 +459,11 @@ EXECUTE FUNCTION update_modified_time();
 -- ----------------------------
 CREATE TABLE "gen_table_index"
 (
-    "id"            bigserial NOT NULL,
-    "table_id"      bigint    NOT NULL,
-    "name"          text      NOT NULL,
-    "unique_index"  BOOLEAN   NOT NULL DEFAULT false,
-    "remark"        text      NOT NULL,
+    "id"            bigserial   NOT NULL,
+    "table_id"      bigint      NOT NULL,
+    "name"          text        NOT NULL,
+    "unique_index"  BOOLEAN     NOT NULL DEFAULT false,
+    "remark"        text        NOT NULL,
     "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id"),
@@ -736,15 +741,15 @@ EXECUTE FUNCTION update_modified_time();
 -- ----------------------------
 CREATE TABLE "gen_column_default"
 (
-    "id"                BIGSERIAL NOT NULL,
-    "data_source_type"  text      NULL,
-    "type_code"         int       NOT NULL,
-    "raw_type"          text      NOT NULL,
-    "data_size"         bigint    NOT NULL,
-    "numeric_precision" bigint    NOT NULL,
-    "default_value"     text      NULL     DEFAULT NULL,
-    "order_key"         bigint    NOT NULL,
-    "remark"            text      NOT NULL,
+    "id"                BIGSERIAL   NOT NULL,
+    "data_source_type"  text        NULL,
+    "type_code"         int         NOT NULL,
+    "raw_type"          text        NOT NULL,
+    "data_size"         bigint      NOT NULL,
+    "numeric_precision" bigint      NOT NULL,
+    "default_value"     text        NULL     DEFAULT NULL,
+    "order_key"         bigint      NOT NULL,
+    "remark"            text        NOT NULL,
     "created_time"      timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id")
@@ -773,3 +778,45 @@ INSERT INTO "gen_column_default"
 ("data_source_type", "type_code", "raw_type", "data_size", "numeric_precision", "default_value", "order_key", "remark")
 VALUES (NULL, 12, 'VARCHAR', 255, 0, NULL, 1, ''),
        ('PostgreSQL', 12, 'TEXT', 0, 0, NULL, 2, '');
+
+CREATE TABLE "gen_model_sub_group"
+(
+    "id"               BIGSERIAL   NOT NULL,
+    "model_id"         BIGINT      NOT NULL,
+    "name"             TEXT        NOT NULL,
+    "comment"          TEXT        NOT NULL,
+    "sub_package_path" TEXT        NOT NULL,
+    "style"            TEXT        NOT NULL,
+    "created_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"    timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ("id")
+);
+
+COMMENT ON TABLE "gen_model_sub_group" IS '生成模型子组';
+COMMENT ON COLUMN "gen_model_sub_group"."id" IS 'ID';
+COMMENT ON COLUMN "gen_model_sub_group"."model_id" IS '模型';
+COMMENT ON COLUMN "gen_model_sub_group"."name" IS '名称';
+COMMENT ON COLUMN "gen_model_sub_group"."comment" IS '注释';
+COMMENT ON COLUMN "gen_model_sub_group"."sub_package_path" IS '子包路径';
+COMMENT ON COLUMN "gen_model_sub_group"."style" IS '样式';
+
+ALTER TABLE "gen_model_sub_group"
+    ADD CONSTRAINT "fk_gen_model_sub_group_model_id"
+        FOREIGN KEY ("model_id")
+            REFERENCES "gen_model" ("id");
+
+ALTER TABLE "gen_enum"
+    ADD CONSTRAINT "fk_gen_enum_sub_group_id"
+        FOREIGN KEY ("sub_group_id")
+            REFERENCES "gen_model_sub_group" ("id");
+
+ALTER TABLE "gen_table"
+    ADD CONSTRAINT "fk_gen_table_sub_group_id"
+        FOREIGN KEY ("sub_group_id")
+            REFERENCES "gen_model_sub_group" ("id");
+
+CREATE TRIGGER "trg_update_gen_model_sub_group_default_modified_time"
+    BEFORE UPDATE
+    ON "gen_model_sub_group"
+    FOR EACH ROW
+EXECUTE FUNCTION update_modified_time();

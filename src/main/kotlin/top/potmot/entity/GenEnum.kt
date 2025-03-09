@@ -46,6 +46,18 @@ interface GenEnum : BaseEntity {
     val modelId: Long?
 
     /**
+     * 子组
+     */
+    @ManyToOne
+    val subGroup: GenModelSubGroup?
+
+    /**
+     * 子组 ID View
+     */
+    @IdView("subGroup")
+    val subGroupId: Long?
+
+    /**
      * 包路径
      */
     val packagePath: String

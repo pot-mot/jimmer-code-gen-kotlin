@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS `gen_type_mapping` CASCADE;
 DROP TABLE IF EXISTS `gen_column_default` CASCADE;
 DROP TABLE IF EXISTS `gen_super_table_mapping` CASCADE;
 DROP TABLE IF EXISTS `gen_super_entity_mapping` CASCADE;
+DROP TABLE IF EXISTS `gen_model_sub_group` CASCADE;
 
 -- ----------------------------
 -- Table structure for gen_model
@@ -95,6 +96,7 @@ CREATE TABLE `gen_enum`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT,
     `model_id`      bigint       NULL,
+    `sub_group_id`  BIGINT                DEFAULT NULL,
     `package_path`  varchar(500) NOT NULL,
     `name`          varchar(500) NOT NULL,
     `comment`       varchar(500) NOT NULL,
@@ -109,6 +111,7 @@ CREATE TABLE `gen_enum`
 COMMENT ON TABLE `gen_enum` IS '生成枚举';
 COMMENT ON COLUMN `gen_enum`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_enum`.`model_id` IS '模型';
+COMMENT ON COLUMN `gen_enum`.`sub_group_id` IS '子组';
 COMMENT ON COLUMN `gen_enum`.`package_path` IS '包路径';
 COMMENT ON COLUMN `gen_enum`.`name` IS '枚举名';
 COMMENT ON COLUMN `gen_enum`.`comment` IS '枚举注释';
@@ -211,6 +214,7 @@ CREATE TABLE `gen_table`
     `id`            bigint       NOT NULL AUTO_INCREMENT,
     `model_id`      bigint       NULL,
     `schema_id`     bigint       NULL,
+    `sub_group_id`  BIGINT                DEFAULT NULL,
     `name`          varchar(500) NOT NULL,
     `comment`       varchar(500) NOT NULL,
     `type`          varchar(500) NOT NULL,
@@ -229,6 +233,7 @@ COMMENT ON TABLE `gen_table` IS '生成表';
 COMMENT ON COLUMN `gen_table`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_table`.`model_id` IS '模型';
 COMMENT ON COLUMN `gen_table`.`schema_id` IS '数据架构';
+COMMENT ON COLUMN `gen_table`.`sub_group_id` IS '子组';
 COMMENT ON COLUMN `gen_table`.`name` IS '名称';
 COMMENT ON COLUMN `gen_table`.`comment` IS '注释';
 COMMENT ON COLUMN `gen_table`.`type` IS '种类';
@@ -513,50 +518,50 @@ COMMENT ON COLUMN `gen_super_entity_mapping`.`inherit_entity_id` IS '继承实�
 -- ----------------------------
 CREATE TABLE `gen_property`
 (
-    `id`                        bigint       NOT NULL AUTO_INCREMENT,
-    `entity_id`                 bigint       NOT NULL,
-    `column_id`                 bigint       NULL     DEFAULT NULL,
-    `name`                      varchar(500) NOT NULL,
-    `overwrite_name`            boolean      NOT NULL,
-    `comment`                   varchar(500) NOT NULL,
-    `overwrite_comment`         boolean      NOT NULL,
-    `type`                      varchar(500) NOT NULL,
-    `type_table_id`             bigint       NULL     DEFAULT NULL,
-    `list_type`                 boolean      NOT NULL,
-    `type_not_null`             boolean      NOT NULL,
-    `id_property`               boolean      NOT NULL,
-    `generated_id`              boolean      NOT NULL,
-    `generated_id_annotation`   varchar(500) NULL     DEFAULT NULL,
-    `key_property`              boolean      NOT NULL,
-    `key_group`                 varchar(500) NULL     DEFAULT NULL,
-    `logical_delete`            boolean      NOT NULL,
+    `id`                         bigint       NOT NULL AUTO_INCREMENT,
+    `entity_id`                  bigint       NOT NULL,
+    `column_id`                  bigint       NULL     DEFAULT NULL,
+    `name`                       varchar(500) NOT NULL,
+    `overwrite_name`             boolean      NOT NULL,
+    `comment`                    varchar(500) NOT NULL,
+    `overwrite_comment`          boolean      NOT NULL,
+    `type`                       varchar(500) NOT NULL,
+    `type_table_id`              bigint       NULL     DEFAULT NULL,
+    `list_type`                  boolean      NOT NULL,
+    `type_not_null`              boolean      NOT NULL,
+    `id_property`                boolean      NOT NULL,
+    `generated_id`               boolean      NOT NULL,
+    `generated_id_annotation`    varchar(500) NULL     DEFAULT NULL,
+    `key_property`               boolean      NOT NULL,
+    `key_group`                  varchar(500) NULL     DEFAULT NULL,
+    `logical_delete`             boolean      NOT NULL,
     `logical_deleted_annotation` varchar(500) NULL     DEFAULT NULL,
-    `id_view`                   boolean      NOT NULL,
-    `id_view_target`            varchar(500) NULL     DEFAULT NULL,
-    `association_type`          varchar(500) NULL     DEFAULT NULL,
-    `long_association`          boolean      NOT NULL,
-    `mapped_by`                 varchar(500) NULL     DEFAULT NULL,
-    `input_not_null`            boolean      NULL     DEFAULT NULL,
-    `join_column_metas`         varchar(500) NULL     DEFAULT NULL,
-    `join_table_meta`           varchar(500) NULL     DEFAULT NULL,
-    `dissociate_annotation`     varchar(500) NULL     DEFAULT NULL,
-    `other_annotation`          varchar(500) NULL     DEFAULT NULL,
-    `body`                      varchar(500) NULL     DEFAULT NULL,
-    `enum_id`                   bigint       NULL     DEFAULT NULL,
-    `order_key`                 bigint       NOT NULL,
-    `special_form_type`         varchar(500) NULL     DEFAULT NULL,
-    `in_list_view`              boolean      NOT NULL,
-    `in_detail_view`            boolean      NOT NULL,
-    `in_insert_input`           boolean      NOT NULL,
-    `in_update_input`           boolean      NOT NULL,
-    `in_specification`          boolean      NOT NULL,
-    `in_option_view`            boolean      NOT NULL,
-    `in_short_association_view` boolean      NOT NULL,
-    `in_long_association_view`  boolean      NOT NULL,
-    `in_long_association_input` boolean      NOT NULL,
-    `remark`                    varchar(500) NOT NULL,
-    `created_time`              TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `modified_time`             TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `id_view`                    boolean      NOT NULL,
+    `id_view_target`             varchar(500) NULL     DEFAULT NULL,
+    `association_type`           varchar(500) NULL     DEFAULT NULL,
+    `long_association`           boolean      NOT NULL,
+    `mapped_by`                  varchar(500) NULL     DEFAULT NULL,
+    `input_not_null`             boolean      NULL     DEFAULT NULL,
+    `join_column_metas`          varchar(500) NULL     DEFAULT NULL,
+    `join_table_meta`            varchar(500) NULL     DEFAULT NULL,
+    `dissociate_annotation`      varchar(500) NULL     DEFAULT NULL,
+    `other_annotation`           varchar(500) NULL     DEFAULT NULL,
+    `body`                       varchar(500) NULL     DEFAULT NULL,
+    `enum_id`                    bigint       NULL     DEFAULT NULL,
+    `order_key`                  bigint       NOT NULL,
+    `special_form_type`          varchar(500) NULL     DEFAULT NULL,
+    `in_list_view`               boolean      NOT NULL,
+    `in_detail_view`             boolean      NOT NULL,
+    `in_insert_input`            boolean      NOT NULL,
+    `in_update_input`            boolean      NOT NULL,
+    `in_specification`           boolean      NOT NULL,
+    `in_option_view`             boolean      NOT NULL,
+    `in_short_association_view`  boolean      NOT NULL,
+    `in_long_association_view`   boolean      NOT NULL,
+    `in_long_association_input`  boolean      NOT NULL,
+    `remark`                     varchar(500) NOT NULL,
+    `created_time`               TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified_time`              TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_property_column` FOREIGN KEY (`column_id`) REFERENCES `gen_column` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT `fk_property_entity` FOREIGN KEY (`entity_id`) REFERENCES `gen_entity` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
@@ -679,3 +684,39 @@ INSERT INTO `gen_column_default`
 (`data_source_type`, `type_code`, `raw_type`, `data_size`, `numeric_precision`, `default_value`, `order_key`, `remark`)
 VALUES (NULL, 12, 'VARCHAR', 255, 0, NULL, 1, ''),
        ('PostgreSQL', 12, 'TEXT', 0, 0, NULL, 2, '');
+
+CREATE TABLE `gen_model_sub_group`
+(
+    `id`               BIGINT       NOT NULL AUTO_INCREMENT,
+    `model_id`         BIGINT       NOT NULL,
+    `name`             varchar(500) NOT NULL,
+    `comment`          varchar(500) NOT NULL,
+    `sub_package_path` varchar(500) NOT NULL,
+    `style`            longtext     NOT NULL,
+    `created_time`     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `modified_time`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+);
+
+COMMENT ON TABLE `gen_model_sub_group` IS '生成模型子组';
+COMMENT ON COLUMN `gen_model_sub_group`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_model_sub_group`.`model_id` IS '模型';
+COMMENT ON COLUMN `gen_model_sub_group`.`name` IS '名称';
+COMMENT ON COLUMN `gen_model_sub_group`.`comment` IS '注释';
+COMMENT ON COLUMN `gen_model_sub_group`.`sub_package_path` IS '子包路径';
+COMMENT ON COLUMN `gen_model_sub_group`.`style` IS '样式';
+
+ALTER TABLE `gen_model_sub_group`
+    ADD CONSTRAINT `fk_gen_model_sub_group_model_id`
+        FOREIGN KEY (`model_id`)
+            REFERENCES `gen_model` (`id`);
+
+ALTER TABLE `gen_enum`
+    ADD CONSTRAINT `fk_gen_enum_sub_group_id`
+        FOREIGN KEY (`sub_group_id`)
+            REFERENCES `gen_model_sub_group` (`id`);
+
+ALTER TABLE `gen_table`
+    ADD CONSTRAINT `fk_gen_table_sub_group_id`
+        FOREIGN KEY (`sub_group_id`)
+            REFERENCES `gen_model_sub_group` (`id`);

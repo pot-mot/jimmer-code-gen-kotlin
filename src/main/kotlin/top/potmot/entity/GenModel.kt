@@ -184,6 +184,20 @@ interface GenModel : BaseEntity {
     val tableIds: List<Long>
 
     /**
+     * 生成模型子组
+     *
+     * @see top.potmot.entity.GenModelSubGroup.model
+     */
+    @OneToMany(mappedBy = "model")
+    val subGroups: List<GenModelSubGroup>
+
+    /**
+     * 生成模型子组 ID View
+     */
+    @IdView("subGroups")
+    val subGroupIds: List<Long>
+
+    /**
      * 关联
      */
     @OneToMany(mappedBy = "model", orderedProps = [OrderedProp("name")])

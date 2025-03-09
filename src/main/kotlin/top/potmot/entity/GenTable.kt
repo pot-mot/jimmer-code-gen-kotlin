@@ -66,6 +66,18 @@ interface GenTable : BaseEntity {
     val schemaId: Long?
 
     /**
+     * 子组
+     */
+    @ManyToOne
+    val subGroup: GenModelSubGroup?
+
+    /**
+     * 子组 ID View
+     */
+    @IdView("subGroup")
+    val subGroupId: Long?
+
+    /**
      * 上级表
      */
     @ManyToMany(orderedProps = [OrderedProp(value = "name")])

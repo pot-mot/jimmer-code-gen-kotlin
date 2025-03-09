@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS `gen_type_mapping` CASCADE;
 DROP TABLE IF EXISTS `gen_column_default` CASCADE;
 DROP TABLE IF EXISTS `gen_super_table_mapping` CASCADE;
 DROP TABLE IF EXISTS `gen_super_entity_mapping` CASCADE;
+DROP TABLE IF EXISTS `gen_model_sub_group` CASCADE;
 
 -- ----------------------------
 -- Table structure for gen_model
@@ -68,6 +69,7 @@ CREATE TABLE `gen_enum`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `model_id`      bigint       NULL COMMENT '模型',
+    `sub_group_id`  BIGINT                DEFAULT NULL COMMENT '子组',
     `package_path`  varchar(500) NOT NULL COMMENT '包路径',
     `name`          varchar(500) NOT NULL COMMENT '枚举名',
     `comment`       varchar(500) NOT NULL COMMENT '枚举注释',
@@ -152,6 +154,7 @@ CREATE TABLE `gen_table`
 (
     `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `model_id`      bigint       NULL COMMENT '模型',
+    `sub_group_id`  BIGINT                DEFAULT NULL COMMENT '子组',
     `schema_id`     bigint       NULL COMMENT '数据架构',
     `name`          varchar(500) NOT NULL COMMENT '表名称',
     `comment`       varchar(500) NOT NULL COMMENT '表注释',
@@ -474,5 +477,37 @@ INSERT INTO `gen_column_default`
 (`data_source_type`, `type_code`, `raw_type`, `data_size`, `numeric_precision`, `default_value`, `order_key`, `remark`)
 VALUES (NULL, 12, 'VARCHAR', 255, 0, NULL, 1, ''),
        ('PostgreSQL', 12, 'TEXT', 0, 0, NULL, 2, '');
+
+CREATE TABLE `gen_model_sub_group`
+(
+    `id`               BIGINT       NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `model_id`         BIGINT       NOT NULL COMMENT '模型',
+    `name`             varchar(500) NOT NULL COMMENT '名称',
+    `comment`          varchar(500) NOT NULL COMMENT '注释',
+    `sub_package_path` varchar(500) NOT NULL COMMENT '子包路径',
+    `style`            longtext     NOT NULL COMMENT '样式',
+    `created_time`     datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `modified_time`    datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    PRIMARY KEY (`id`)
+)
+    ENGINE = InnoDB
+    CHARACTER SET = utf8mb4
+    COMMENT = '生成模型子组'
+    ROW_FORMAT = Dynamic;
+
+ALTER TABLE `gen_model_sub_group`
+    ADD CONSTRAINT `fk_gen_model_sub_group_model_id`
+        FOREIGN KEY (`model_id`)
+            REFERENCES `gen_model` (`id`);
+
+ALTER TABLE `gen_enum`
+    ADD CONSTRAINT `fk_gen_enum_sub_group_id`
+        FOREIGN KEY (`sub_group_id`)
+            REFERENCES `gen_model_sub_group` (`id`);
+
+ALTER TABLE `gen_table`
+    ADD CONSTRAINT `fk_gen_table_sub_group_id`
+        FOREIGN KEY (`sub_group_id`)
+            REFERENCES `gen_model_sub_group` (`id`);
 
 SET FOREIGN_KEY_CHECKS = 1;
