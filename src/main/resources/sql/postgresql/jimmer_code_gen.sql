@@ -59,8 +59,8 @@ CREATE TABLE "gen_model"
     "column_comment_prefixes"    text      NOT NULL,
     "column_comment_suffixes"    text      NOT NULL,
     "remark"                     text      NOT NULL,
-    "created_time"               TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_time"               timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"              timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id")
 );
 
@@ -421,8 +421,8 @@ CREATE TABLE "gen_column_reference"
     "target_column_id" bigint    NOT NULL,
     "order_key"        bigint    NOT NULL,
     "remark"           text      NOT NULL,
-    "created_time"     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"    timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id"),
     CONSTRAINT "fk_column_reference_association" FOREIGN KEY ("association_id") REFERENCES "gen_association" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT "fk_column_reference_source_column" FOREIGN KEY ("source_column_id") REFERENCES "gen_column" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT,
@@ -459,8 +459,8 @@ CREATE TABLE "gen_table_index"
     "name"          text      NOT NULL,
     "unique_index"  BOOLEAN   NOT NULL DEFAULT false,
     "remark"        text      NOT NULL,
-    "created_time"  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_time"  timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id"),
     CONSTRAINT "fk_index_table" FOREIGN KEY ("table_id") REFERENCES "gen_table" ("id") ON DELETE RESTRICT ON UPDATE RESTRICT
 );
@@ -745,8 +745,8 @@ CREATE TABLE "gen_column_default"
     "default_value"     text      NULL     DEFAULT NULL,
     "order_key"         bigint    NOT NULL,
     "remark"            text      NOT NULL,
-    "created_time"      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "modified_time"     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_time"      timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modified_time"     timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY ("id")
 );
 
