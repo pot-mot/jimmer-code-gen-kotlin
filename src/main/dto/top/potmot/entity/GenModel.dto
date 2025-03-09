@@ -6,10 +6,14 @@ GenModelSimpleView {
 GenModelView {
     #allScalars
 
+    subGroups {
+        #allScalars(this)
+        -id
+    }
+
     enums {
         #allScalars(this)
         -id
-        id(model)
 
         items {
             #allScalars(this)
