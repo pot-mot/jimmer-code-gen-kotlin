@@ -67,7 +67,7 @@ object JavaServiceGenerator : ServiceGenerator {
                 "${packages.dto}.${detailView}",
                 "${packages.dto}.${spec}",
                 "${packages.dto}.${optionView}",
-                "${packages.entity}.query.PageQuery",
+                "${packages.base}.entity.dto.query.PageQuery",
                 "${packages.exception}.AuthorizeException",
                 "org.jetbrains.annotations.NotNull",
                 "jakarta.annotation.Nullable",

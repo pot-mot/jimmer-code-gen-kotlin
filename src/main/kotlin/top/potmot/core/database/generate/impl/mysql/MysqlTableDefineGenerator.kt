@@ -5,7 +5,7 @@ import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
-object MysqlTableDefineGenerator : TableDefineGenerator() {
+object MysqlTableDefineGenerator : TableDefineGenerator {
     private val builder = MysqlTableDefineBuilder
 
     override fun stringify(

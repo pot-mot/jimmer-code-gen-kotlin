@@ -5,7 +5,7 @@ import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
-object H2TableDefineGenerator : TableDefineGenerator() {
+object H2TableDefineGenerator : TableDefineGenerator {
     private val builder = H2TableDefineBuilder
 
     override fun stringify(

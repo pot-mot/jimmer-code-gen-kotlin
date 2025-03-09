@@ -9,13 +9,19 @@ import top.potmot.enumeration.TableType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.GenerateException
 
-private const val allTableFileName = "all-tables"
+private const val allTableFileName = "all-tables.sql"
 
-abstract class TableDefineGenerator {
-    protected open fun formatFileName(name: String): String =
-        "$name.sql"
+interface TableDefineGenerator {
+    private fun formatFilePath(table: GenTableGenerateView): String = buildString {
+        append("ddl/")
+        if (!table.subPackagePath.isNullOrBlank()) {
+            append("${table.subPackagePath}/")
+        }
+        append("${table.name}.sql")
+    }
 
-    protected abstract fun stringify(
+
+    fun stringify(
         tables: Iterable<GenTableGenerateView>,
     ): String
 
@@ -32,7 +38,7 @@ abstract class TableDefineGenerator {
 
         result += createGenerateFileByTables(
             flatTables,
-            "ddl/${formatFileName(allTableFileName)}",
+            "ddl/$allTableFileName",
             stringify(flatTables),
             listOf(GenerateTag.BackEnd, GenerateTag.DDL)
         )
@@ -40,7 +46,7 @@ abstract class TableDefineGenerator {
         flatTables.forEach {
             result += GenerateFile(
                 it,
-                "ddl/${formatFileName(it.name)}",
+                formatFilePath(it),
                 stringify(listOf(it)),
                 listOf(GenerateTag.BackEnd, GenerateTag.DDL)
             )

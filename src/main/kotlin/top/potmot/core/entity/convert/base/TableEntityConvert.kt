@@ -45,10 +45,9 @@ fun tableToEntityPackagePath(
 ): String =
     buildString {
         append(modelBasePackagePath)
-        append(".")
+        append(".entity")
         if (table.subGroup != null) {
-            append(table.subGroup.subPackagePath)
             append(".")
+            append(table.subGroup.subPackagePath)
         }
-        append("entity")
     }

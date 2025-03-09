@@ -1,9 +1,9 @@
 package top.potmot.core.business.meta
 
 data class Packages(
+    val base: String,
     val entity: String,
     val service: String,
-    val utils: String,
     val exception: String,
     val dto: String,
 )

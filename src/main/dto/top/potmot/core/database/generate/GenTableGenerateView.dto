@@ -4,6 +4,11 @@ import top.potmot.entity.dto.share.ColumnTypeMeta
 
 GenTableGenerateView {
     #allScalars
+
+    flat(subGroup) {
+        subPackagePath
+    }
+
     logicalDelete
 
     pkColumns {

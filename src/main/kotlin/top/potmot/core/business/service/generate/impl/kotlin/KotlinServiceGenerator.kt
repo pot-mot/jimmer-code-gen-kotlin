@@ -60,7 +60,7 @@ object KotlinServiceGenerator : ServiceGenerator {
                 "${packages.dto}.${detailView}",
                 "${packages.dto}.${spec}",
                 "${packages.dto}.${optionView}",
-                "${packages.entity}.query.PageQuery",
+                "${packages.base}.entity.dto.query.PageQuery",
                 "${packages.exception}.AuthorizeException",
             )
             imports += existValidItemWithNames.map {

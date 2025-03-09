@@ -5,7 +5,7 @@ import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
-object PostgresTableDefineGenerator : TableDefineGenerator() {
+object PostgresTableDefineGenerator : TableDefineGenerator {
     private val builder = PostgresTableDefineBuilder
 
     override fun stringify(

@@ -1,5 +1,6 @@
 package top.potmot.core.business.route.generate
 
+import top.potmot.core.business.meta.EntityBusiness
 import top.potmot.core.business.meta.RootEntityBusiness
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.entity.dto.createGenerateFileByEntities
@@ -7,13 +8,22 @@ import top.potmot.enumeration.GenerateTag
 import top.potmot.utils.string.appendBlock
 
 object DynamicRouteGenerator {
+    private fun formatFilePath(entity: EntityBusiness): String =buildString {
+        append("sql/menu/")
+        if (!entity.subPackagePath.isNullOrBlank()) {
+            append("${entity.subPackagePath}/")
+        }
+        append("${entity.lowerName}.sql")
+    }
+
+
     fun generate(entities: Iterable<RootEntityBusiness>): List<GenerateFile> {
         val items = entities.map {
             val page = it.components.page
 
             GenerateFile(
                 it,
-                "sql/menu/${it.lowerName}.sql",
+                formatFilePath(it),
                 buildString {
                     appendBlock(
                         """

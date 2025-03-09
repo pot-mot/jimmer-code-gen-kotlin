@@ -69,33 +69,48 @@ sealed class EntityBusiness(
 
     val queryByPage = entity.queryByPage
 
-    val packagePath = entity.packagePath
-
-    val dir = lowerName
-
     val requestPath = lowerName
 
+    val packagePath = entity.packagePath
+
+    val subPackagePath = entity.subPackagePath
+
+    val dir = buildString {
+        if (!subPackagePath.isNullOrBlank()) {
+            append("$subPackagePath/")
+        }
+        append(lowerName)
+    }
+
     val packages by lazy {
+        val basePackagePath = packagePath.substring(0, packagePath.lastIndexOf(".entity"))
         Packages(
+            base = basePackagePath,
             entity = packagePath,
-            service = packagePath.replaceAfterLast(".", "service"),
-            utils = packagePath.replaceAfterLast(".", "utils"),
-            exception = packagePath.replaceAfterLast(".", "exception"),
+            service = packagePath.replace(".entity", ".service"),
+            exception = "$basePackagePath.exception",
             dto = "${packagePath}.dto",
         )
     }
 
     abstract val dto: DtoNames
 
+    val permissionBase = buildString {
+        if (!subPackagePath.isNullOrBlank()) {
+            append("$subPackagePath:")
+        }
+        append(lowerName)
+    }
+
     val permissions by lazy {
         EntityPermissions(
-            get = "$lowerName:get",
-            list = "$lowerName:list",
-            select = "$lowerName:select",
-            insert = "$lowerName:insert",
-            update = "$lowerName:update",
-            delete = "$lowerName:delete",
-            menu = "$lowerName:menu",
+            get = "$permissionBase:get",
+            list = "$permissionBase:list",
+            select = "$permissionBase:select",
+            insert = "$permissionBase:insert",
+            update = "$permissionBase:update",
+            delete = "$permissionBase:delete",
+            menu = "$permissionBase:menu",
         )
     }
 

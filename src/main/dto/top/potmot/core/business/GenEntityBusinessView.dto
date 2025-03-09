@@ -23,6 +23,10 @@ GenEntityBusinessView {
     }
 
     flat(table) {
+        flat(subGroup) {
+            subPackagePath
+        }
+
         indexes {
             id
             name

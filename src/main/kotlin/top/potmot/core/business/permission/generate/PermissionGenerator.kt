@@ -8,9 +8,17 @@ import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 import top.potmot.utils.string.trimBlankLine
 
-private const val allPermissionFile = "all-permissions"
+private const val allPermissionFile = "all-permissions.sql"
 
 object PermissionGenerator {
+    private fun formatFilePath(entity: EntityBusiness): String =buildString {
+        append("sql/permission/")
+        if (!entity.subPackagePath.isNullOrBlank()) {
+            append("${entity.subPackagePath}/")
+        }
+        append("${entity.lowerName}.sql")
+    }
+
     fun generate(entities: Iterable<EntityBusiness>): List<GenerateFile> {
         val items = entities.map {
             val permissions = it.permissionStrList
@@ -18,7 +26,7 @@ object PermissionGenerator {
 
             GenerateFile(
                 it,
-                "sql/permission/${it.lowerName}.sql",
+                formatFilePath(it),
                 buildString {
                     if (allPermissions.isNotEmpty()) {
                         appendBlock(

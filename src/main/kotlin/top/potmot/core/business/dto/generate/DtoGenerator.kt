@@ -15,10 +15,14 @@ import top.potmot.utils.string.StringIndentScopeBuilder
 import top.potmot.utils.string.buildScopeString
 
 object DtoGenerator {
-    private fun formatFileName(
+    private fun formatFilePath(
         entity: RootEntityBusiness,
-    ): String =
-        "${entity.name}.dto"
+    ): String = buildString {
+        if (!entity.subPackagePath.isNullOrBlank()) {
+            append("${entity.subPackagePath}/")
+        }
+        append("${entity.name}.dto")
+    }
 
     private fun StringIndentScopeBuilder.dtoBlock(name: String, body: StringIndentScopeBuilder.() -> Unit) {
         scope("$name {", "}") {
@@ -422,7 +426,7 @@ object DtoGenerator {
         entity: RootEntityBusiness,
     ) = GenerateFile(
         entity,
-        formatFileName(entity),
+        formatFilePath(entity),
         stringify(entity),
         listOf(GenerateTag.BackEnd, GenerateTag.DTO)
     )
