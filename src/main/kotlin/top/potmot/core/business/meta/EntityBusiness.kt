@@ -536,7 +536,13 @@ class RootEntityBusiness(
             editForm = NamePath("${name}EditForm", suffix, "components/$dir"),
             editFormType = NamePath("${name}EditData", "ts", "components/$dir"),
             queryForm = NamePath("${name}QueryForm", suffix, "components/$dir"),
-            page = NamePath("${name}Page", suffix, "pages/$dir"),
+            page = NamePath("${name}Page", suffix, buildString {
+                append("pages")
+                if (!subPackagePath.isNullOrBlank()) {
+                    append("/")
+                    append(subPackagePath.replace(".", "/"))
+                }
+            }),
         )
     }
 
