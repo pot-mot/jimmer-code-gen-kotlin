@@ -167,7 +167,11 @@ abstract class EntityBuilder : CodeBuilder() {
         val context = getContextOrGlobal()
 
         entity.apply {
-            if (entity.table.type == TableType.SUPER_TABLE) {
+            superEntities.forEach {
+                imports += it.packagePath + "." + it.name
+            }
+
+            if (table.type == TableType.SUPER_TABLE) {
                 imports += MappedSuperclass::class.java.name
                 annotations += "@MappedSuperclass"
             } else {
