@@ -188,7 +188,7 @@ interface GenModel : BaseEntity {
      *
      * @see top.potmot.entity.GenModelSubGroup.model
      */
-    @OneToMany(mappedBy = "model")
+    @OneToMany(mappedBy = "model", orderedProps = [OrderedProp("name")])
     val subGroups: List<GenModelSubGroup>
 
     /**
