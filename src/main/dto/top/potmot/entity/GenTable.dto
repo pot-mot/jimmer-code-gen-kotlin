@@ -1,15 +1,22 @@
 GenTableCommonView {
     #allScalars
-    id(entity)
 }
 
 GenTableColumnsView {
     #allScalars
-    id(entity)
+
+    subGroup {
+        id
+        name
+    }
+
+    superTables {
+        id
+        name
+    }
 
     columns {
         #allScalars
-        id(table)
         enum {
             id
             name
@@ -18,7 +25,6 @@ GenTableColumnsView {
 
     indexes {
         #allScalars
-        id(table)
         columnIds
     }
 }
