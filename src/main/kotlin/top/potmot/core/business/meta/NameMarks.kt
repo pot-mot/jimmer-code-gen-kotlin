@@ -68,6 +68,7 @@ data class SubEntityRuleFiles(
 ) : EntityRuleFiles
 
 data class EntityPermissions(
+    val role: String,
     val get: String,
     val list: String,
     val select: String,

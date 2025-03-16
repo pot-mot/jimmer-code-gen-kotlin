@@ -73,7 +73,9 @@ sealed class EntityBusiness(
 
     val packagePath = entity.packagePath
 
-    val subPackagePath = entity.subPackagePath
+    val subGroup = entity.subGroup
+
+    val subPackagePath = entity.subGroup?.subPackagePath
 
     val dir = buildString {
         if (!subPackagePath.isNullOrBlank()) {
@@ -104,6 +106,7 @@ sealed class EntityBusiness(
 
     val permissions by lazy {
         EntityPermissions(
+            role = "${lowerName}_manager",
             get = "$permissionBase:get",
             list = "$permissionBase:list",
             select = "$permissionBase:select",

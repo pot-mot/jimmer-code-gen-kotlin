@@ -23,8 +23,8 @@ GenEntityBusinessView {
     }
 
     flat(table) {
-        flat(subGroup) {
-            subPackagePath
+        subGroup {
+            #allScalars
         }
 
         indexes {
