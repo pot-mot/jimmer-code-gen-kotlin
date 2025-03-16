@@ -75,11 +75,11 @@ object JavaEntityBuilder : EntityBuilder() {
                     property.column?.let {
                         numberMax(it.typeCode, it.dataSize, it.numericPrecision)?.let { max ->
                             imports += "jakarta.validation.constraints.Max"
-                            annotations += "@get:Max(value = ${max}, message = \"${property.comment}不可大于${max}\")"
+                            annotations += "@Max(value = ${max}, message = \"${property.comment}不可大于${max}\")"
                         }
                         numberMin(it.typeCode, it.dataSize, it.numericPrecision)?.let { min ->
                             imports += "jakarta.validation.constraints.Min"
-                            annotations += "@get:Min(value = ${min}, message = \"${property.comment}不可小于${min}\")"
+                            annotations += "@Min(value = ${min}, message = \"${property.comment}不可小于${min}\")"
                         }
                     }
                 }
@@ -87,11 +87,11 @@ object JavaEntityBuilder : EntityBuilder() {
                     property.column?.let {
                         numberMax(it.typeCode, it.dataSize, it.numericPrecision)?.let { max ->
                             imports += "jakarta.validation.constraints.DecimalMax"
-                            annotations += "@get:DecimalMax(value = \"${max}\", message = \"${property.comment}不可大于${max}\")"
+                            annotations += "@DecimalMax(value = \"${max}\", message = \"${property.comment}不可大于${max}\")"
                         }
                         numberMin(it.typeCode, it.dataSize, it.numericPrecision)?.let { min ->
                             imports += "jakarta.validation.constraints.DecimalMin"
-                            annotations += "@get:DecimalMax(value = \"${min}\", message = \"${property.comment}不可小于${min}\")"
+                            annotations += "@DecimalMin(value = \"${min}\", message = \"${property.comment}不可小于${min}\")"
                         }
                     }
                 }

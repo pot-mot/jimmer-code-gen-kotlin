@@ -81,7 +81,7 @@ object KotlinEntityBuilder : EntityBuilder() {
                         }
                         numberMin(it.typeCode, it.dataSize, it.numericPrecision)?.let { min ->
                             imports += "jakarta.validation.constraints.DecimalMin"
-                            annotations += "@get:DecimalMax(value = \"${min}\", message = \"${property.comment}不可小于${min}\")"
+                            annotations += "@get:DecimalMin(value = \"${min}\", message = \"${property.comment}不可小于${min}\")"
                         }
                     }
                 }
