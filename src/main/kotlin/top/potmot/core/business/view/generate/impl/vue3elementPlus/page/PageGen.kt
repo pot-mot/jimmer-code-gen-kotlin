@@ -557,7 +557,7 @@ interface PageGen : Generator {
                                 line()
                                 line("sendMessage('编辑${entity.comment}成功', 'success')")
                             }
-                            scopeEndNoLine(" catch (e)", "{") {
+                            scopeEndNoLine(" catch (e) {", "}") {
                                 line("sendMessage('编辑${entity.comment}失败', 'error', e)")
                             }
                         },
