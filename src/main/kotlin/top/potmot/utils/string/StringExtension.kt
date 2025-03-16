@@ -47,10 +47,22 @@ fun String.trimToLetterOrDigit(): String {
 }
 
 fun String.isAllUpperCase(): Boolean =
-    all { it.isUpperCase() }
+    all {
+        if (it.isLetter()) {
+            it.isUpperCase()
+        } else {
+            true
+        }
+    }
 
 fun String.isAllLowerCase(): Boolean =
-    all { it.isLowerCase() }
+    all {
+        if (it.isLetter()) {
+            it.isLowerCase()
+        } else {
+            true
+        }
+    }
 
 fun String.trimBlankLine() =
     lines()
