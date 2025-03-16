@@ -49,7 +49,7 @@ object KotlinEntityBuilder : EntityBuilder() {
         val annotations = mutableListOf<String>()
 
         if (property.typeTable != null) {
-            imports += "javax.validation.Valid"
+            imports += "jakarta.validation.Valid"
             annotations += "@get:Valid"
         }
 
@@ -64,24 +64,24 @@ object KotlinEntityBuilder : EntityBuilder() {
                 in intType -> {
                     property.column?.let {
                         numberMax(it.typeCode, it.dataSize, it.numericPrecision)?.let { max ->
-                            imports += "javax.validation.constraints.Max"
-                            annotations += "@Max(value = ${max}, message = \"${property.comment}不可大于${max}\")"
+                            imports += "jakarta.validation.constraints.Max"
+                            annotations += "@get:Max(value = ${max}, message = \"${property.comment}不可大于${max}\")"
                         }
                         numberMin(it.typeCode, it.dataSize, it.numericPrecision)?.let { min ->
-                            imports += "javax.validation.constraints.Min"
-                            annotations += "@Min(value = ${min}, message = \"${property.comment}不可小于${min}\")"
+                            imports += "jakarta.validation.constraints.Min"
+                            annotations += "@get:Min(value = ${min}, message = \"${property.comment}不可小于${min}\")"
                         }
                     }
                 }
                 in numericType -> {
                     property.column?.let {
                         numberMax(it.typeCode, it.dataSize, it.numericPrecision)?.let { max ->
-                            imports += "javax.validation.constraints.DecimalMax"
-                            annotations += "@DecimalMax(value = \"${max}\", message = \"${property.comment}不可大于${max}\")"
+                            imports += "jakarta.validation.constraints.DecimalMax"
+                            annotations += "@get:DecimalMax(value = \"${max}\", message = \"${property.comment}不可大于${max}\")"
                         }
                         numberMin(it.typeCode, it.dataSize, it.numericPrecision)?.let { min ->
-                            imports += "javax.validation.constraints.DecimalMin"
-                            annotations += "@DecimalMax(value = \"${min}\", message = \"${property.comment}不可小于${min}\")"
+                            imports += "jakarta.validation.constraints.DecimalMin"
+                            annotations += "@get:DecimalMax(value = \"${min}\", message = \"${property.comment}不可小于${min}\")"
                         }
                     }
                 }

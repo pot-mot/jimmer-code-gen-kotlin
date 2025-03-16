@@ -81,7 +81,7 @@ object KotlinServiceGenerator : ServiceGenerator {
                 imports += "org.springframework.transaction.annotation.Transactional"
             }
             if (entity.canAdd || entity.canEdit) {
-                imports += "javax.validation.Valid"
+                imports += "jakarta.validation.Valid"
             }
             if (entity.canAdd) {
                 imports += listOf(

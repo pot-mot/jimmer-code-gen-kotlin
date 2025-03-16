@@ -59,7 +59,7 @@ object JavaEntityBuilder : EntityBuilder() {
         }
 
         if (property.typeTable != null) {
-            imports += "javax.validation.Valid"
+            imports += "jakarta.validation.Valid"
             annotations += "@Valid"
         }
 
@@ -74,11 +74,11 @@ object JavaEntityBuilder : EntityBuilder() {
                 in intType -> {
                     property.column?.let {
                         numberMax(it.typeCode, it.dataSize, it.numericPrecision)?.let { max ->
-                            imports += "javax.validation.constraints.Max"
+                            imports += "jakarta.validation.constraints.Max"
                             annotations += "@get:Max(value = ${max}, message = \"${property.comment}不可大于${max}\")"
                         }
                         numberMin(it.typeCode, it.dataSize, it.numericPrecision)?.let { min ->
-                            imports += "javax.validation.constraints.Min"
+                            imports += "jakarta.validation.constraints.Min"
                             annotations += "@get:Min(value = ${min}, message = \"${property.comment}不可小于${min}\")"
                         }
                     }
@@ -86,11 +86,11 @@ object JavaEntityBuilder : EntityBuilder() {
                 in numericType -> {
                     property.column?.let {
                         numberMax(it.typeCode, it.dataSize, it.numericPrecision)?.let { max ->
-                            imports += "javax.validation.constraints.DecimalMax"
+                            imports += "jakarta.validation.constraints.DecimalMax"
                             annotations += "@get:DecimalMax(value = \"${max}\", message = \"${property.comment}不可大于${max}\")"
                         }
                         numberMin(it.typeCode, it.dataSize, it.numericPrecision)?.let { min ->
-                            imports += "javax.validation.constraints.DecimalMin"
+                            imports += "jakarta.validation.constraints.DecimalMin"
                             annotations += "@get:DecimalMax(value = \"${min}\", message = \"${property.comment}不可小于${min}\")"
                         }
                     }
