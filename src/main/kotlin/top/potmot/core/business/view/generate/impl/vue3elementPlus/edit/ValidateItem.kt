@@ -49,7 +49,7 @@ data class FormRefValidateItem(
     override val imports = listOf(formExposeImport)
 }
 
-fun Iterable<PropertyBusiness>.toRefValidateItems(): Collection<FormRefValidateItem> =
+fun Iterable<PropertyBusiness>.toRefValidateItems(parentIsMultiple: Boolean = false): Collection<FormRefValidateItem> =
     filterIsInstance<AssociationProperty>()
         .filter { it.isLongAssociation }
         .map {
@@ -57,6 +57,6 @@ fun Iterable<PropertyBusiness>.toRefValidateItems(): Collection<FormRefValidateI
             FormRefValidateItem(
                 componentName = subEdit.component.name,
                 refName = subEdit.componentRef,
-                multiple = subEdit.multiple
+                multiple = parentIsMultiple
             )
         }

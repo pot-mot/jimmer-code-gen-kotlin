@@ -199,7 +199,7 @@ fun editTable(
             prop = "[scope.${'$'}index, '${property.name}']",
             propIsLiteral = false,
             label = null,
-            rule = "rules.${property.name}",
+            rules = "rules.${property.name}",
             content = formItemData.elements
         )
 
@@ -394,7 +394,7 @@ interface SubEditTableGen : Generator, EditFormItem, EditFormType, EditNullableV
             idPropertyName = entity.idProperty.name,
             comment = entity.comment,
             selectOptions = entity.subFormSelects,
-            subValidateItems = entity.subEditProperties.toRefValidateItems(),
+            subValidateItems = entity.subEditProperties.toRefValidateItems(parentIsMultiple = true),
             content = content
         )
 

@@ -330,13 +330,13 @@ class ElementPlusComponents {
             propIsLiteral: Boolean = true,
             label: String?,
             labelIsLiteral: Boolean = true,
-            rule: String? = null,
+            rules: String? = null,
             content: Collection<Element>,
         ) = TagElement("el-form-item") {
             props += listOfNotNull(
                 PropBind("prop", prop, isLiteral = propIsLiteral),
                 label.toPropBind("label", isLiteral = labelIsLiteral),
-                rule.toPropBind("rule"),
+                rules.toPropBind("rules"),
             )
             children += content
         }
