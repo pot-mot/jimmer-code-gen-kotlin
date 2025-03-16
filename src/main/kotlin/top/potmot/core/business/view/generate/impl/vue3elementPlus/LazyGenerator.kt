@@ -31,7 +31,7 @@ interface LazyGenerator :
         val files = mutableListOf<GenerateFile>()
         val subLazyItems = mutableListOf<LazyGenerated>()
 
-        lazyItems.distinct()
+        lazyItems.distinctBy { it.key }
             .filter { it.key !in generatedKeySet }
             .forEach {
                 when (it) {
