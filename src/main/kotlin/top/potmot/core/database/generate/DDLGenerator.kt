@@ -11,7 +11,7 @@ import top.potmot.error.GenerateException
 
 private const val allTableFileName = "all-tables.sql"
 
-interface TableDefineGenerator {
+interface DDLGenerator {
     private fun formatFilePath(table: GenTableGenerateView): String = buildString {
         append("ddl/")
         if (!table.subPackagePath.isNullOrBlank()) {

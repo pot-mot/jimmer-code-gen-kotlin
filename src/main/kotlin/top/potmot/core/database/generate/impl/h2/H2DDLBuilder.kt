@@ -1,10 +1,10 @@
 package top.potmot.core.database.generate.impl.h2
 
-import top.potmot.core.database.generate.builder.TableDefineBuilder
+import top.potmot.core.database.generate.builder.DDLBuilder
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.entity.dto.GenTableGenerateView
 
-object H2TableDefineBuilder : TableDefineBuilder(
+object H2DDLBuilder : DDLBuilder(
     H2IdentifierProcessor,
     H2ColumnTypeDefiner,
 ) {

@@ -1,12 +1,12 @@
 package top.potmot.core.database.generate.impl.h2
 
-import top.potmot.core.database.generate.TableDefineGenerator
+import top.potmot.core.database.generate.DDLGenerator
 import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
-object H2TableDefineGenerator : TableDefineGenerator {
-    private val builder = H2TableDefineBuilder
+object H2DDLGenerator : DDLGenerator {
+    private val builder = H2DDLBuilder
 
     override fun stringify(
         tables: Iterable<GenTableGenerateView>,

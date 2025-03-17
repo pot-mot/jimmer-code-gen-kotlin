@@ -21,7 +21,7 @@ import top.potmot.core.business.test.generate.getTestGenerator
 import top.potmot.core.business.view.generate.getViewGenerator
 import top.potmot.core.config.merge
 import top.potmot.core.config.useContext
-import top.potmot.core.database.generate.getTableDefineGenerator
+import top.potmot.core.database.generate.getDDLGenerator
 import top.potmot.core.entity.generate.getEntityGenerator
 import top.potmot.entity.GenEntity
 import top.potmot.entity.GenEnum
@@ -105,7 +105,7 @@ class GenerateService(
             val containsFrontEnd = GenerateType.FrontEnd in typeSet
 
             val tableDefineGenerator by lazy {
-                context.dataSourceType.getTableDefineGenerator()
+                context.dataSourceType.getDDLGenerator()
             }
             val entityGenerator by lazy {
                 context.language.getEntityGenerator()

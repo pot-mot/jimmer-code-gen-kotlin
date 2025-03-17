@@ -1,10 +1,10 @@
 package top.potmot.core.database.generate.impl.mysql
 
-import top.potmot.core.database.generate.builder.TableDefineBuilder
+import top.potmot.core.database.generate.builder.DDLBuilder
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.entity.dto.GenTableGenerateView
 
-object MysqlTableDefineBuilder : TableDefineBuilder(
+object MysqlDDLBuilder : DDLBuilder(
     MysqlIdentifierProcessor,
     MysqlColumnTypeDefiner,
 ) {

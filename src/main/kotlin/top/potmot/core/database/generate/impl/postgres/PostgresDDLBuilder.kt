@@ -1,10 +1,10 @@
 package top.potmot.core.database.generate.impl.postgres
 
-import top.potmot.core.database.generate.builder.TableDefineBuilder
+import top.potmot.core.database.generate.builder.DDLBuilder
 import top.potmot.core.database.meta.MappingTableMeta
 import top.potmot.entity.dto.GenTableGenerateView
 
-object PostgresTableDefineBuilder : TableDefineBuilder(
+object PostgresDDLBuilder : DDLBuilder(
     PostgresIdentifierProcessor,
     PostgresColumnTypeDefiner,
 ) {

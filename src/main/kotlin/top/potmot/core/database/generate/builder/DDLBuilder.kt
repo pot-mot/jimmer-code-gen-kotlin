@@ -21,7 +21,7 @@ import top.potmot.entity.dto.IdName
 /**
  * 表定义构建器
  */
-abstract class TableDefineBuilder(
+abstract class DDLBuilder(
     protected val identifiers: IdentifierProcessor,
     private val columnTypes: ColumnTypeDefiner,
 ) {

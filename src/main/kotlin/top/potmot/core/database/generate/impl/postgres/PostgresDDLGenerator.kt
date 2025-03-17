@@ -1,12 +1,12 @@
-package top.potmot.core.database.generate.impl.mysql
+package top.potmot.core.database.generate.impl.postgres
 
-import top.potmot.core.database.generate.TableDefineGenerator
+import top.potmot.core.database.generate.DDLGenerator
 import top.potmot.entity.dto.GenTableGenerateView
 import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 
-object MysqlTableDefineGenerator : TableDefineGenerator {
-    private val builder = MysqlTableDefineBuilder
+object PostgresDDLGenerator : DDLGenerator {
+    private val builder = PostgresDDLBuilder
 
     override fun stringify(
         tables: Iterable<GenTableGenerateView>,
@@ -24,6 +24,10 @@ object MysqlTableDefineGenerator : TableDefineGenerator {
             val indexLines = builder.indexLines(table)
             appendLines(indexLines) { "$it;" }
             if (indexLines.isNotEmpty()) appendLine()
+
+            val commentLines = builder.commentLines(table)
+            appendLines(commentLines) { "$it;" }
+            if (commentLines.isNotEmpty()) appendLine()
         }
 
         val associationStrings = tables.flatMap { table ->
