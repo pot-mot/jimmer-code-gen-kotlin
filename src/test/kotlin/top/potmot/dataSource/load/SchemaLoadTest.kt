@@ -85,6 +85,6 @@ class SchemaLoadTest(
             h2DataSource
         )
 
-        validateResult(dataSourceId, "PUBLIC")
+        validateResult(dataSourceId)
     }
 }

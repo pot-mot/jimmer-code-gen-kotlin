@@ -308,7 +308,7 @@ class ElementPlusComponentsTest {
         val result = formItem(
             prop = "testProp",
             label = "testLabel",
-            rule = "testRule",
+            rules = "testRule",
             content = listOf(
                 TagElement("div", children = listOf(
                     TextElement("表单项")

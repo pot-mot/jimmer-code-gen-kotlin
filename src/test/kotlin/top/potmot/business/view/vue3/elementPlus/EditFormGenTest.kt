@@ -141,8 +141,8 @@ defineExpose<FormExpose>({
             indent = "    ",
             content = mapOf(),
             subValidateItems = listOf(
-                FormRefValidateItem("SubTable1", "SubTable1Ref"),
-                FormRefValidateItem("SubTable2", "SubTable2Ref"),
+                FormRefValidateItem("SubTable1", "SubTable1Ref", multiple = false),
+                FormRefValidateItem("SubTable2", "SubTable2Ref", multiple = true),
             )
         )
 
