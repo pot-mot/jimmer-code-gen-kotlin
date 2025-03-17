@@ -7,8 +7,6 @@ spring:
 
 jimmer:
   dialect: org.babyfish.jimmer.sql.dialect.MySqlDialect
-  database-validation:
-    catalog: jimmer_code_gen
 
 jimmer-code-gen:
   dataSourceType: mysql

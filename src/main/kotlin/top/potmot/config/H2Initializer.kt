@@ -44,6 +44,7 @@ class H2Initializer(
 
             if (count > 0) {
                 logger.info("h2 database already have schema `jimmer_code_gen`")
+                connection.execute("USE `jimmer_code_gen`;")
                 return
             }
 
@@ -64,6 +65,8 @@ class H2Initializer(
              * 执行 sql
              */
             logger.info("start init h2 database")
+
+            connection.execute("CREATE SCHEMA IF NOT EXISTS `jimmer_code_gen`; USE `jimmer_code_gen`;")
 
             val results = connection.execute(sqls)
 

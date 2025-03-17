@@ -24,8 +24,7 @@ jimmer:
   default-list-batch-size: 128
 
   id-only-target-checking-level: ALL
-  database-validation:
-    mode: ERROR
+  database-validation-mode: ERROR
   default-enum-strategy: NAME
 
   client:
