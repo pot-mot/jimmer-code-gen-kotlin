@@ -15,23 +15,23 @@ import top.potmot.error.ModelException
 )
 fun EntityBusiness.existValidRules(
     withId: Boolean,
-    filterProperties: List<PropertyBusiness> = properties,
+    filterProperties: List<PropertyBusiness>,
 ): Map<PropertyBusiness, List<ExistValidRule>> {
-    val filterPropertyIds = filterProperties.map { it.property.id }.toSet()
+    val filterPropertyIdMap = filterProperties.associateBy { it.property.id }
+    val existValidRules = mutableListOf<ExistValidRule>()
 
-    return existValidItems
-        .flatMap { item ->
-            item.properties.mapNotNull { property ->
-                if (property.id !in filterPropertyIds)
-                    null
-                else
-                    ExistValidRule(
-                        item,
-                        property,
-                        this,
-                        withId
-                    )
-            }
+    for (item in existValidItems) {
+        if (item.properties.any { it.id !in filterPropertyIdMap }) continue
+
+        for (property in item.properties) {
+            existValidRules += ExistValidRule(
+                item,
+                filterPropertyIdMap[property.id]!!,
+                this,
+                withId
+            )
         }
-        .groupBy { it.property }
+    }
+
+    return existValidRules.groupBy { it.property }
 }
