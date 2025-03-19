@@ -85,14 +85,27 @@ sealed class EntityBusiness(
     }
 
     val packages by lazy {
-        val basePackagePath = packagePath.substring(0, packagePath.lastIndexOf(".entity"))
-        Packages(
-            base = basePackagePath,
-            entity = packagePath,
-            service = packagePath.replace(".entity", ".service"),
-            exception = "$basePackagePath.exception",
-            dto = "${packagePath}.dto",
-        )
+        val basePackagePath = getContextOrGlobal().packagePath
+        val entityIndex = packagePath.lastIndexOf(".entity")
+
+        if (entityIndex == -1) {
+            Packages(
+                base = basePackagePath,
+                entity = packagePath,
+                service = "$basePackagePath.service",
+                exception = "$basePackagePath.exception",
+                dto = "${packagePath}.dto",
+            )
+        } else {
+            Packages(
+                base = basePackagePath,
+                entity = packagePath,
+                service = packagePath.replace(".entity", ".service"),
+                exception = "$basePackagePath.exception",
+                dto = "${packagePath}.dto",
+            )
+        }
+
     }
 
     abstract val dto: DtoNames
