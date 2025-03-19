@@ -30,7 +30,7 @@ class ExistValidRulesTest {
     @ParameterizedTest
     @MethodSource("entities")
     fun `test existValidRules`(testEntity: EntityBusiness) {
-        val existValidRulesWithoutId = testEntity.existValidRules(withId = false)
+        val existValidRulesWithoutId = testEntity.existValidRules(withId = false, filterProperties = testEntity.properties)
 
         assertEquals(
             """
@@ -105,7 +105,7 @@ export const useRules = (formData: Ref<EntityDto>): FormRules<EntityDto> => {
     @ParameterizedTest
     @MethodSource("entities")
     fun `test existValidRules withId`(testEntity: EntityBusiness) {
-        val existValidRulesWithoutId = testEntity.existValidRules(withId = true)
+        val existValidRulesWithoutId = testEntity.existValidRules(withId = true, filterProperties = testEntity.properties)
 
         assertEquals(
             """
