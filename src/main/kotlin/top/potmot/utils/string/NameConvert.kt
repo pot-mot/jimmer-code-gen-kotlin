@@ -2,6 +2,7 @@ package top.potmot.utils.string
 
 import top.potmot.constant.SEPARATOR
 import top.potmot.core.config.getContextOrGlobal
+import top.potmot.enumeration.DatabaseNamingStrategyType
 
 /**
  * 转换下划线命名为大驼峰名名
@@ -62,30 +63,47 @@ fun camelToLowerSnake(name: String): String =
 /**
  * 根据配置清理表名的前缀和后缀
  */
-fun String.clearTableName(): String =
-    this.removePrefixes(getContextOrGlobal().tableNamePrefixes.splitTrim())
-        .removeSuffixes(getContextOrGlobal().tableNameSuffixes.splitTrim())
+fun String.clearTableName(): String {
+    val context = getContextOrGlobal()
+    return this.removePrefixes(context.tableNamePrefixes.splitTrim())
+        .removeSuffixes(context.tableNameSuffixes.splitTrim())
+}
 
-fun String.clearTableComment(): String =
-    this.removePrefixes(getContextOrGlobal().tableCommentPrefixes.splitTrim())
-        .removeSuffixes(getContextOrGlobal().tableCommentSuffixes.splitTrim())
+
+fun String.clearTableComment(): String {
+    val context = getContextOrGlobal()
+    return this.removePrefixes(context.tableCommentPrefixes.splitTrim())
+        .removeSuffixes(context.tableCommentSuffixes.splitTrim())
+}
+
 
 fun tableNameToEntityName(tableName: String): String =
     snakeToUpperCamel(tableName.trimToLetterOrDigit().clearTableName())
 
-fun entityNameToTableName(entityName: String): String =
-    camelToUpperSnake(entityName)
+fun entityNameToTableName(entityName: String): String {
+    val context = getContextOrGlobal()
+    return when (context.databaseNamingStrategy) {
+        DatabaseNamingStrategyType.UPPER_CASE -> camelToUpperSnake(entityName)
+        else -> camelToLowerSnake(entityName)
+    }
+}
 
 /**
  * 根据配置清理列名的前缀和后缀
  */
-fun String.clearColumnName(): String =
-    this.removePrefixes(getContextOrGlobal().columnNamePrefixes.splitTrim())
-        .removeSuffixes(getContextOrGlobal().columnNameSuffixes.splitTrim())
+fun String.clearColumnName(): String {
+    val context = getContextOrGlobal()
+    return this.removePrefixes(context.columnNamePrefixes.splitTrim())
+        .removeSuffixes(context.columnNameSuffixes.splitTrim())
+}
 
-fun String.clearColumnComment(): String =
-    this.removePrefixes(getContextOrGlobal().columnCommentPrefixes.splitTrim())
-        .removeSuffixes(getContextOrGlobal().columnCommentSuffixes.splitTrim())
+
+fun String.clearColumnComment(): String {
+    val context = getContextOrGlobal()
+    return this.removePrefixes(context.columnCommentPrefixes.splitTrim())
+        .removeSuffixes(context.columnCommentSuffixes.splitTrim())
+}
+
 
 fun String.clearForPropertyName(): String = clearColumnName()
 
@@ -93,6 +111,14 @@ fun String.clearForPropertyComment(): String = clearColumnComment()
 
 fun columnNameToPropertyName(columnName: String): String =
     snakeToLowerCamel(columnName.trimToLetterOrDigit().clearForPropertyName())
+
+fun propertyNameToColumnName(propertyName: String): String {
+    val context = getContextOrGlobal()
+    return when (context.databaseNamingStrategy) {
+        DatabaseNamingStrategyType.UPPER_CASE -> camelToUpperSnake(propertyName)
+        else -> camelToLowerSnake(propertyName)
+    }
+}
 
 fun tableNameToPropertyName(tableName: String): String =
     snakeToLowerCamel(tableName.trimToLetterOrDigit().clearTableName().clearForPropertyName())

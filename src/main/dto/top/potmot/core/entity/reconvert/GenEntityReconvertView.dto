@@ -1,0 +1,48 @@
+export top.potmot.entity.GenEntity
+
+GenEntityReconvertView {
+    name
+    comment
+    remark
+
+    table {
+        name
+        type
+    }
+
+    superEntities {
+        name
+    }
+
+    properties {
+        name
+        comment
+        remark
+        orderKey
+
+        type
+        typeNotNull
+        listType
+
+        column {
+            name
+            dataSize
+            numericPrecision
+        }
+
+        idProperty
+
+        keyProperty
+        keyGroup
+
+        logicalDelete
+
+        associationType
+        joinColumnMetas
+        joinTableMeta
+
+        enum {
+            name
+        }
+    }
+}
