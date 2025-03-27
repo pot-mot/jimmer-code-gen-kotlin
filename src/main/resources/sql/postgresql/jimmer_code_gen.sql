@@ -511,7 +511,7 @@ CREATE TABLE "gen_entity"
     "id"                   bigserial   NOT NULL,
     "model_id"             bigint      NULL,
     "package_path"         text        NOT NULL,
-    "table_id"             bigint      NOT NULL,
+    "table_id"             bigint      NULL,
     "name"                 text        NOT NULL,
     "overwrite_name"       boolean     NOT NULL,
     "comment"              text        NOT NULL,

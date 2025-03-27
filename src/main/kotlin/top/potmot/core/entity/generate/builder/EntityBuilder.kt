@@ -21,6 +21,7 @@ import top.potmot.enumeration.TableType
 import top.potmot.utils.collection.flatSetOf
 import top.potmot.utils.collection.forEachJoinDo
 import top.potmot.utils.string.buildScopeString
+import top.potmot.utils.string.entityNameToTableName
 
 typealias EntityView = GenEntityGenerateView
 typealias PropertyView = GenEntityGenerateView.TargetOf_properties
@@ -74,7 +75,7 @@ abstract class EntityBuilder : CodeBuilder() {
                 append(".")
             }
             append(
-                table.name.let { identifiers.process(it, IdentifierType.TABLE_NAME) }.quotationEscape()
+                (table?.name ?: entityNameToTableName(name)).let { identifiers.process(it, IdentifierType.TABLE_NAME) }.quotationEscape()
             )
 
             append("\")")
@@ -171,7 +172,7 @@ abstract class EntityBuilder : CodeBuilder() {
                 imports += it.packagePath + "." + it.name
             }
 
-            if (table.type == TableType.SUPER_TABLE) {
+            if (table?.type == TableType.SUPER_TABLE) {
                 imports += MappedSuperclass::class.java.name
                 annotations += "@MappedSuperclass"
             } else {

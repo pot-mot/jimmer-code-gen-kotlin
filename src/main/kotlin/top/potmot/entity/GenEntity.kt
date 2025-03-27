@@ -59,7 +59,7 @@ interface GenEntity : BaseEntity {
      * 对应表 ID 视图
      */
     @IdView
-    val tableId: Long
+    val tableId: Long?
 
     /**
      * 对应表
@@ -67,7 +67,7 @@ interface GenEntity : BaseEntity {
     @OneToOne
     @OnDissociate(DissociateAction.DELETE)
     @Key
-    val table: GenTable
+    val table: GenTable?
 
     /**
      * 上级实体

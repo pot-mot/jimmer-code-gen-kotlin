@@ -441,7 +441,7 @@ CREATE TABLE `gen_entity`
     `id`                   bigint       NOT NULL AUTO_INCREMENT,
     `model_id`             bigint       NULL,
     `package_path`         varchar(500) NOT NULL,
-    `table_id`             bigint       NOT NULL,
+    `table_id`             bigint       NULL,
     `name`                 varchar(500) NOT NULL,
     `overwrite_name`       boolean      NOT NULL,
     `comment`              varchar(500) NOT NULL,

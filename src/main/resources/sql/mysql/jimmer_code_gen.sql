@@ -321,7 +321,7 @@ CREATE TABLE `gen_entity`
     `id`                   bigint       NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `model_id`             bigint       NULL COMMENT '模型',
     `package_path`         varchar(500) NOT NULL COMMENT '包路径',
-    `table_id`             bigint       NOT NULL COMMENT '对应表',
+    `table_id`             bigint       NULL COMMENT '对应表',
     `name`                 varchar(500) NOT NULL COMMENT '类名称',
     `overwrite_name`       boolean      NOT NULL COMMENT '覆盖自动生成类名称',
     `comment`              varchar(500) NOT NULL COMMENT '类注释',

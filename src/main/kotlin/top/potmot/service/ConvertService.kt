@@ -2,6 +2,7 @@ package top.potmot.service
 
 import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.sql.kt.ast.expression.asNonNull
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.springframework.beans.factory.annotation.Autowired
@@ -141,7 +142,7 @@ class ConvertService(
             where(
                 table.tableId valueIn tableIds
             )
-            select(table.tableId, table.fetch(GenEntityExistView::class))
+            select(table.tableId.asNonNull(), table.fetch(GenEntityExistView::class))
         }
 
     private fun KSqlClient.listTypeMapping(): List<GenTypeMappingView> =

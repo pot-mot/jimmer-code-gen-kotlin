@@ -162,15 +162,17 @@ class GenerateService(
 
             val tableEntityPairs =
                 if (lazyEntities.isInitialized()) {
-                    entities.map {
-                        TableEntityNotNullPair(
+                    entities.mapNotNull {
+                        if (it.table == null) null
+                        else TableEntityNotNullPair(
                             table = IdName(it.table.id, it.table.name),
                             entity = IdNamePackagePath(it.id, it.name, it.packagePath)
                         )
                     }
                 } else {
-                    sqlClient.listEntity<GenEntityGenerateFileFillView>(modelId = id).map {
-                        TableEntityNotNullPair(
+                    sqlClient.listEntity<GenEntityGenerateFileFillView>(modelId = id).mapNotNull {
+                        if (it.table == null) null
+                        else TableEntityNotNullPair(
                             table = IdName(it.table.id, it.table.name),
                             entity = IdNamePackagePath(it.id, it.name, it.packagePath)
                         )

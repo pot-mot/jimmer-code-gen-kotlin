@@ -22,7 +22,7 @@ data class TableEntityNotNullPair(
 
 data class TableEntityPair(
     var table: IdName? = null,
-    var entity: IdName? = null,
+    var entity: IdNamePackagePath? = null,
 )
 
 data class GenerateFile(
@@ -31,7 +31,7 @@ data class GenerateFile(
     val tags: List<GenerateTag>,
     val main: MainIdName? = null,
     val tableEntities: List<TableEntityPair> = emptyList(),
-    val enums: List<IdName> = emptyList(),
+    val enums: List<IdNamePackagePath> = emptyList(),
     val associations: List<IdName> = emptyList(),
 ) {
     val name by lazy {
@@ -123,7 +123,6 @@ fun GenerateFile(
     content = content,
     tags = tags,
     main = MainIdName(MainType.Enum, enum.idName),
-    enums = listOf(enum.idName),
 )
 
 private val EnumBusiness.idName
@@ -139,17 +138,16 @@ fun GenerateFile(
     content = content,
     tags = tags,
     main = MainIdName(MainType.Enum, enum.idName),
-    enums = listOf(enum.idName),
 )
 
 private val GenEntityGenerateView.idName
     get() = IdName(id, name)
 
-private val GenEntityGenerateView.TargetOf_properties.TargetOf_typeTable.TargetOf_entity.idName
-    get() = IdName(id, name)
+private val GenEntityGenerateView.TargetOf_properties.TargetOf_typeTable.TargetOf_entity.idNamePackagePath
+    get() = IdNamePackagePath(id, name, packagePath)
 
-private val GenEntityGenerateView.TargetOf_properties.TargetOf_enum.idName
-    get() = IdName(id, name)
+private val GenEntityGenerateView.TargetOf_properties.TargetOf_enum.idNamePackagePath
+    get() = IdNamePackagePath(id, name, packagePath)
 
 fun GenerateFile(
     entity: GenEntityGenerateView,
@@ -162,16 +160,22 @@ fun GenerateFile(
     tags = tags,
     main = MainIdName(MainType.Entity, entity.idName),
     tableEntities = entity.properties
-        .mapNotNull { it.typeTable?.entity?.idName }
+        .mapNotNull { it.typeTable?.entity?.idNamePackagePath }
         .distinctBy { it.id }
         .map { TableEntityPair(entity = it) },
     enums = entity.properties
-        .mapNotNull { it.enum?.idName }
+        .mapNotNull { it.enum?.idNamePackagePath }
         .distinctBy { it.id }
 )
 
-private val GenEntityBusinessView.idName
+private val GenEntityBusinessView.idNamePackagePath
+    get() = IdNamePackagePath(id, name, packagePath)
+
+private val EntityBusiness.idName
     get() = IdName(id, name)
+
+private val GenEnumGenerateView.idNamePackagePath
+    get() = IdNamePackagePath(id, name, packagePath)
 
 fun GenerateFile(
     entityBusiness: EntityBusiness,
@@ -182,16 +186,19 @@ fun GenerateFile(
     path = path,
     content = content,
     tags = tags,
-    main = MainIdName(MainType.Entity, entityBusiness.entity.idName),
+    main = MainIdName(MainType.Entity, entityBusiness.idName),
     tableEntities = entityBusiness.associationProperties
-        .map { it.typeEntity.idName }
+        .map { it.typeEntity.idNamePackagePath }
         .distinctBy { it.id }
         .map { TableEntityPair(entity = it) },
     enums = entityBusiness.properties
         .filterIsInstance<EnumBusiness>()
-        .map { it.enum.idName }
+        .map { it.enum.idNamePackagePath }
         .distinctBy { it.id }
 )
+
+private val EntityBusiness.idNamePackagePath
+    get() = IdNamePackagePath(id, name, packagePath)
 
 fun createGenerateFileByEntities(
     entities: Iterable<EntityBusiness>,
@@ -204,5 +211,5 @@ fun createGenerateFileByEntities(
     tags = tags,
     tableEntities = entities
         .distinctBy { it.id }
-        .map { TableEntityPair(entity = IdName(it.id, it.name)) },
+        .map { TableEntityPair(entity = it.idNamePackagePath) },
 )

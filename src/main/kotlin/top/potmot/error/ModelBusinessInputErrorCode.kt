@@ -7,7 +7,7 @@ import top.potmot.entity.dto.IdName
 @ErrorFamily
 enum class ModelBusinessInputErrorCode {
     @ErrorField(name = "entityName", type = String::class)
-    @ErrorField(name = "tableName", type = String::class)
+    @ErrorField(name = "tableName", type = String::class, nullable = true)
     ENTITY_CANNOT_MATCH_TABLE,
 
     @ErrorField(name = "entityName", type = String::class)

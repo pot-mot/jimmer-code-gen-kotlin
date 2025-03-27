@@ -248,7 +248,8 @@ sealed class EntityBusiness(
 
 
     val existValidItems: List<ExistValidItem> by lazy {
-        entity.indexes
+        if (entity.indexes == null) emptyList()
+        else entity.indexes
             .filter { it.uniqueIndex }
             .mapNotNull { index ->
                 val indexPropertyIds = index.columns.flatMap { column ->
