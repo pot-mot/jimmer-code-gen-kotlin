@@ -33,7 +33,7 @@ data class ConvertResult(
     val updateEntities: List<EntityInput>,
 )
 
-fun convertTableToEntities(
+fun convertTablesToEntities(
     modelId: Long,
     tableIdMap: Map<Long, GenTableConvertView>,
     columnIdMap: Map<Long, GenTableConvertView.TargetOf_columns>,
