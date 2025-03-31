@@ -54,6 +54,7 @@ class PluginStore(
             val file = File("plugins/$name.jar")
             val jarUrl = file.toURI().toURL()
             val jarFile = JarFile(file)
+            logger.info("Loaded plugin {} from {}", name, jarUrl)
             val manifest = jarFile.manifest
 
             // 创建专用类加载器（可避免不同插件的类冲突）
@@ -63,12 +64,20 @@ class PluginStore(
             val pluginClassName = manifest.mainAttributes.getValue("Plugin-Class")
 
             val pluginClass = pluginClassLoader.loadClass(pluginClassName)
+            if (pluginClass.isInterface) {
+                logger.error("Plugin {} is not a class", name)
+                return
+            }
+            if (!JimmerCodeGenPlugin::class.java.isAssignableFrom(pluginClass)) {
+                logger.error("Plugin {} is not a JimmerCodeGenPlugin", name)
+                return
+            }
             val plugin = pluginClass.getDeclaredConstructor().newInstance() as JimmerCodeGenPlugin
 
             plugins[name] = plugin
-            logger.info("Loaded plugin: {}", name)
+            logger.info("Loaded plugin [{}] Success", name)
         } catch (e: Throwable) {
-            logger.warn("Loaded plugin Fail: {}", name)
+            logger.error("Loaded plugin [{}] Fail", name)
             e.printStackTrace()
         }
     }

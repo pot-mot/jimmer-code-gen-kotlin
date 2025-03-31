@@ -19,7 +19,7 @@ import top.potmot.core.config.useContext
 import top.potmot.core.database.generate.getDDLGenerator
 import top.potmot.core.entity.generate.getEntityGenerator
 import top.potmot.core.plugin.PluginStore
-import top.potmot.core.plugin.generate.GenerateContext
+import top.potmot.core.common.GenerateContext
 import top.potmot.entity.GenModel
 import top.potmot.entity.dto.GenConfigProperties
 import top.potmot.entity.dto.GenerateFile

@@ -1,5 +1,6 @@
 package top.potmot.core.plugin.generate
 
+import top.potmot.core.common.GenerateContext
 import top.potmot.core.plugin.JimmerCodeGenPlugin
 import top.potmot.entity.dto.GenerateFile
 

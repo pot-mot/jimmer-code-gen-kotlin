@@ -1,4 +1,4 @@
-package top.potmot.core.plugin.generate
+package top.potmot.core.common
 
 import org.babyfish.jimmer.View
 import org.babyfish.jimmer.sql.kt.KSqlClient
