@@ -116,6 +116,17 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+tasks.register<Jar>("slimJar") {
+    // 设置 JAR 文件名
+    archiveBaseName.set("${project.name}-slim")
+
+    // 包含项目自身编译后的类文件
+    from(sourceSets.main.get().output)
+
+    // 排除测试代码
+    exclude("test/**")
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
