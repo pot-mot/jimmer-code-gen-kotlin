@@ -1,12 +1,14 @@
 package top.potmot.core.plugin
 
+import org.slf4j.Logger
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
+import top.potmot.core.plugin.generate.GeneratePlugin
 import java.io.File
 import java.net.URLClassLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarFile
-import java.util.jar.Manifest
 
 @Component
 @ConfigurationProperties(prefix = "jimmer-code-gen-plugin")
@@ -16,13 +18,25 @@ class PluginConfig {
 
 @Component
 class PluginStore(
+    @Autowired
     private val pluginConfig: PluginConfig
 ) {
-    val logger = org.slf4j.LoggerFactory.getLogger(PluginStore::class.java)
+    val logger: Logger = org.slf4j.LoggerFactory.getLogger(PluginStore::class.java)
 
     private val classLoader = URLClassLoader(arrayOf(), this::class.java.classLoader)
 
-    private val plugins = ConcurrentHashMap<String, CodeGenPlugin>()
+    private val plugins = ConcurrentHashMap<String, JimmerCodeGenPlugin>()
+
+    val generatePlugins: Map<String, GeneratePlugin>
+        get() {
+            val result = mutableMapOf<String, GeneratePlugin>()
+            for ((key, plugin) in plugins) {
+                if (plugin is GeneratePlugin) {
+                    result[key] = plugin
+                }
+            }
+            return result
+        }
 
     init {
         pluginConfig.items.forEach { name ->
@@ -31,6 +45,11 @@ class PluginStore(
     }
 
     private fun loadPlugin(name: String) {
+        if (plugins.contains(name)) {
+            logger.warn("Plugin {} is already loaded", name)
+            return
+        }
+
         try {
             val file = File("plugins/$name.jar")
             val jarUrl = file.toURI().toURL()
@@ -44,12 +63,12 @@ class PluginStore(
             val pluginClassName = manifest.mainAttributes.getValue("Plugin-Class")
 
             val pluginClass = pluginClassLoader.loadClass(pluginClassName)
-            val plugin = pluginClass.getDeclaredConstructor().newInstance() as CodeGenPlugin
+            val plugin = pluginClass.getDeclaredConstructor().newInstance() as JimmerCodeGenPlugin
 
             plugins[name] = plugin
             logger.info("Loaded plugin: {}", name)
-        } catch (e: Exception) {
-            logger.error("Loaded plugin Fail: {}", name)
+        } catch (e: Throwable) {
+            logger.warn("Loaded plugin Fail: {}", name)
             e.printStackTrace()
         }
     }

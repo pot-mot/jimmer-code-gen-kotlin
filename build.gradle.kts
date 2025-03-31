@@ -121,10 +121,9 @@ tasks.register<Jar>("slimJar") {
     archiveBaseName.set("${project.name}-slim")
 
     // 包含项目自身编译后的类文件
-    from(sourceSets.main.get().output)
-
-    // 排除测试代码
-    exclude("test/**")
+    from(sourceSets.main.get().output) {
+        exclude("/sql/**", "/dist/**", "/application**", "/top/potmot/service/**", "/top/potmot/JimmerCodeGenApplication**")
+    }
 }
 
 tasks.withType<Test> {

@@ -1,3 +1,3 @@
 package top.potmot.core.plugin
 
-interface CodeGenPlugin
+interface JimmerCodeGenPlugin
