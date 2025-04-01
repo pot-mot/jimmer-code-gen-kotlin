@@ -2,6 +2,7 @@ export top.potmot.entity.GenEntity
 
 GenEntityReconvertView {
     name
+    packagePath
     comment
     remark
 
@@ -12,6 +13,7 @@ GenEntityReconvertView {
 
     superEntities {
         name
+        packagePath
     }
 
     properties {
@@ -31,18 +33,26 @@ GenEntityReconvertView {
         }
 
         idProperty
+        generatedIdAnnotation
 
         keyProperty
         keyGroup
+        keyGroups
 
         logicalDelete
 
         associationType
+        mappedBy
+        idView
         joinColumnMetas
         joinTableMeta
 
+        otherAnnotation
+        body
+
         enum {
             name
+            enumType
         }
     }
 }
