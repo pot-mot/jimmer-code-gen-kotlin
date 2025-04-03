@@ -2,19 +2,13 @@ package top.potmot.core.plugin
 
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
+import top.potmot.config.PluginConfig
 import top.potmot.core.plugin.generate.GeneratePlugin
 import java.io.File
 import java.net.URLClassLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarFile
-
-@Component
-@ConfigurationProperties(prefix = "jimmer-code-gen-plugin")
-class PluginConfig {
-    lateinit var items: List<String>
-}
 
 @Component
 class PluginStore(
