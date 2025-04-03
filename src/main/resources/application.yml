@@ -41,7 +41,3 @@ jimmer:
 jimmer-code-gen:
   language: kotlin
   table-comment-suffixes: 表
-
-jimmer-code-gen-plugin:
-  items:
-    - test
