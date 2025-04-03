@@ -14,3 +14,7 @@ enum class GenerateType {
     Permission,
     Route,
 }
+
+fun Iterable<String>.has(type: GenerateType): Boolean {
+    return contains(type.name) // 判断枚举的 name 是否在列表中
+}
