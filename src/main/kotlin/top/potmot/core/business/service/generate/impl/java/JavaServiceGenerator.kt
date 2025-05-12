@@ -6,15 +6,15 @@ import top.potmot.core.business.type.typeStrToJavaType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.buildScopeString
+import top.potmot.utils.string.camelToUpperSnake
 import top.potmot.utils.string.clearBlankLine
-import top.potmot.utils.string.entityNameToTableName
 import top.potmot.utils.string.trimBlankLine
 
 object JavaServiceGenerator : ServiceGenerator {
     override val suffix = GenLanguage.JAVA.suffix
 
     private val RootEntityBusiness.tableProxy
-        get() = entityNameToTableName(name) + "_TABLE"
+        get() = camelToUpperSnake(name) + "_TABLE"
 
     @Throws(GenerateException::class)
     override fun stringifyService(
@@ -62,7 +62,7 @@ object JavaServiceGenerator : ServiceGenerator {
                 "org.springframework.web.bind.annotation.RequestMapping",
                 "org.springframework.web.bind.annotation.RestController",
                 "${packages.entity}.${name}",
-                "${packages.entity}.Tables",
+                "${packages.base}.entity.Tables",
                 "${packages.dto}.${listView}",
                 "${packages.dto}.${detailView}",
                 "${packages.dto}.${spec}",
@@ -79,10 +79,15 @@ object JavaServiceGenerator : ServiceGenerator {
 
             if (isTreeEntity) {
                 imports += listOf(
+                    "java.util.ArrayList",
+                    "java.util.Collections",
+                    "java.util.HashMap",
+                    "java.util.Map",
                     "${packages.dto}.${treeView}",
                     "${packages.entity}.${name}Draft",
                     "java.util.function.Function",
                     "java.util.stream.Collectors",
+                    "org.babyfish.jimmer.sql.ast.tuple.Tuple2",
                 )
             }
 
