@@ -36,7 +36,7 @@ DELETE FROM sys_menu_sys_permission_mapping WHERE sys_menu_id IN (
 );
 
 DELETE FROM sys_menu WHERE parent_id IN (
-    SELECT id FROM sys_menu WHERE name = '${it.name}'
+    SELECT id FROM (SELECT id FROM sys_menu WHERE name = '${it.name}') target
 );
 
 DELETE FROM sys_menu WHERE name = '${it.name}';
@@ -74,7 +74,7 @@ DELETE FROM sys_menu WHERE name = '${page.name}';
 
                     if (it.hasPage) {
                         val parentIdValue = if (it.subGroup != null) {
-                            "(SELECT id FROM sys_menu WHERE name = '${it.subGroup.name}' LIMIT 1)"
+                            "(SELECT id FROM (SELECT id FROM sys_menu WHERE name = '${it.subGroup.name}' LIMIT 1) target)"
                         } else {
                             "NULL"
                         }
