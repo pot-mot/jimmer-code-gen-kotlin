@@ -28,6 +28,18 @@ object JavaEntityBuilder : EntityBuilder() {
             }
         }
 
+    override fun blockComment(property: PropertyView): String? =
+        createBlockComment(
+            property.comment,
+            property.remark,
+            params =
+            if (property.mappedBy != null) {
+                mapOf(
+                    Pair("see", property.type + "#" + property.mappedBy),
+                )
+            } else emptyMap()
+        )
+
     override fun propertyBlock(property: PropertyView) =
         buildScopeString {
             if (property.body != null) {
