@@ -95,7 +95,11 @@ object JavaServiceGenerator : ServiceGenerator {
                 imports += "org.springframework.transaction.annotation.Transactional"
             }
             if (entity.canAdd || entity.canEdit) {
-                imports += "jakarta.validation.Valid"
+                imports += listOf(
+                    "jakarta.validation.Valid",
+                    "org.babyfish.jimmer.sql.ast.mutation.SaveMode",
+                    "org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode"
+                )
             }
             if (entity.canAdd) {
                 imports += listOf(
@@ -104,7 +108,6 @@ object JavaServiceGenerator : ServiceGenerator {
             }
             if (entity.canEdit) {
                 imports += listOf(
-                    "org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode",
                     "org.springframework.web.bind.annotation.PutMapping",
                     "${packages.dto}.${updateInput}",
                     "${packages.dto}.${updateFillView}",
@@ -361,7 +364,11 @@ public List<@NotNull ${optionView}> listOptions(@RequestBody @NotNull $spec spec
 @SaCheckPermission("${permissions.insert}")
 @Transactional
 public $idType insert(@RequestBody @Valid @NotNull $insertInput input) throws AuthorizeException {
-    return sqlClient.insert(input).getModifiedEntity().${idName}();
+    return sqlClient.saveCommand(input)
+                .setMode(SaveMode.INSERT_ONLY)
+                .setAssociatedModeAll(AssociatedSaveMode.REPLACE)
+                .execute()
+                .getModifiedEntity().${idName}();
 }
                         """.trimIndent()
                     )
@@ -394,7 +401,11 @@ public $updateFillView getForUpdate(@PathVariable $idType id) throws AuthorizeEx
 @SaCheckPermission("${permissions.update}")
 @Transactional
 public $idType update(@RequestBody @Valid @NotNull $updateInput input) throws AuthorizeException {
-    return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity().${idName}();
+    return sqlClient.saveCommand(input)
+                .setMode(SaveMode.UPDATE_ONLY)
+                .setAssociatedModeAll(AssociatedSaveMode.REPLACE)
+                .execute()
+                .getModifiedEntity().${idName}();
 }
                         """.trimIndent()
                     )

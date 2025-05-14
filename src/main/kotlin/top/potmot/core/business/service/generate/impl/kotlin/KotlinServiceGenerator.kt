@@ -81,7 +81,11 @@ object KotlinServiceGenerator : ServiceGenerator {
                 imports += "org.springframework.transaction.annotation.Transactional"
             }
             if (entity.canAdd || entity.canEdit) {
-                imports += "jakarta.validation.Valid"
+                imports += listOf(
+                    "jakarta.validation.Valid",
+                    "org.babyfish.jimmer.sql.ast.mutation.SaveMode",
+                    "org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode"
+                )
             }
             if (entity.canAdd) {
                 imports += listOf(
@@ -90,7 +94,6 @@ object KotlinServiceGenerator : ServiceGenerator {
             }
             if (entity.canEdit) {
                 imports += listOf(
-                    "org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode",
                     "org.springframework.web.bind.annotation.PutMapping",
                     "${packages.dto}.${updateInput}",
                     "${packages.dto}.${updateFillView}",
@@ -314,7 +317,10 @@ fun listOptions(@RequestBody spec: $spec): List<$optionView> =
 @Throws(AuthorizeException::class)
 @Transactional
 fun insert(@RequestBody @Valid input: $insertInput): $idType =
-    sqlClient.insert(input).modifiedEntity.$idName
+    sqlClient.save(input) {
+        setMode(SaveMode.INSERT_ONLY)
+        setAssociatedModeAll(AssociatedSaveMode.REPLACE)
+    }.modifiedEntity.$idName
                         """.trimIndent()
                     )
                 }
@@ -346,7 +352,10 @@ fun getForUpdate(@PathVariable id: $idType): $updateFillView? =
 @Throws(AuthorizeException::class)
 @Transactional
 fun update(@RequestBody @Valid input: $updateInput): $idType =
-    sqlClient.update(input, AssociatedSaveMode.REPLACE).modifiedEntity.$idName
+    sqlClient.save(input) {
+        setMode(SaveMode.UPDATE_ONLY)
+        setAssociatedModeAll(AssociatedSaveMode.REPLACE)
+    }.modifiedEntity.$idName
                         """.trimIndent()
                     )
                 }
