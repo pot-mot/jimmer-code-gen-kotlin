@@ -35,9 +35,9 @@ interface EditNullableValid {
             builder.apply {
                 if (listType) {
                     if (!needValidateNotUndefined) {
-                        scope("for (const item of $data.$name) {", "}") {
+                        scope("for (const ${name}_item of $data.$name) {", "}") {
                             propertyProducer(typeEntityBusiness).forEach {
-                                it.editNullableValid(builder, "item", messageList, currentComment, propertyProducer)
+                                it.editNullableValid(builder, "${name}_item", messageList, currentComment, propertyProducer)
                             }
                         }
                     } else {
@@ -45,9 +45,9 @@ interface EditNullableValid {
                             line("$messageList.push(\"${currentComment}不可为空\")")
                         }
                         scope(" else {", "}") {
-                            line("for (const item of $data.$name) {")
+                            line("for (const ${name}_item of $data.$name) {")
                             propertyProducer(typeEntityBusiness).forEach {
-                                it.editNullableValid(builder, "item", messageList, currentComment, propertyProducer)
+                                it.editNullableValid(builder, "${name}_item", messageList, currentComment, propertyProducer)
                             }
                             line("}")
                         }
