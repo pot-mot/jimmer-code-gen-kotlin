@@ -42,7 +42,7 @@ data class LazySubEdit(
         else entity.components.editForm
 
     val componentRef =
-        component.name.replaceFirstChar { it.uppercaseChar() } + "Ref"
+        component.name.replaceFirstChar { it.lowercaseChar() } + "Ref"
 }
 
 data class LazySubView(
