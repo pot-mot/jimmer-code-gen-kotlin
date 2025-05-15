@@ -46,7 +46,7 @@ data class FormRefValidateItem(
         } else {
             line("const $name: boolean =")
             scope {
-                scope("await ${refName}.value?.validate().catch((e => {", "}) ?? false") {
+                scope("await ${refName}.value?.validate().catch(e => {", "}) ?? false") {
                     line("errors.push(e)")
                     line("return false")
                 }
