@@ -237,7 +237,7 @@ fun editTable(
     template += form(
         model = formData,
         ref = formRef,
-        rules = "rules",
+        labelWidth = null,
         content = listOf(
             TagElement(
                 "div",
