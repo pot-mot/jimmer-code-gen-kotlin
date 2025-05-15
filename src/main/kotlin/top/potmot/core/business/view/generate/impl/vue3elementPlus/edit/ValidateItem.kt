@@ -36,12 +36,20 @@ data class FormRefValidateItem(
     override val expression: String = buildScopeString {
         if (multiple) {
             line("const ${name}Results =")
-            scope { line("await Promise.all(${refName}.value.map(item => item.validate().catch(() => false)))") }
+            scope {
+                scope("await Promise.all(${refName}.value.map(item => item.validate().catch(e => {", "}))) ?? false") {
+                    line("errors.push(e)")
+                    line("return false")
+                }
+            }
             append("const $name: boolean = ${name}Results.every(item => item)")
         } else {
             line("const $name: boolean =")
             scope {
-                line("await ${refName}.value?.validate().catch(() => false) ?? false")
+                scope("await ${refName}.value?.validate().catch((e => {", "}) ?? false") {
+                    line("errors.push(e)")
+                    line("return false")
+                }
             }
         }
     }
