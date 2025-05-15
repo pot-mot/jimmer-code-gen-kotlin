@@ -20,7 +20,6 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableMi
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilColumns
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilProps
 import top.potmot.core.business.view.generate.meta.rules.Rules
-import top.potmot.core.business.view.generate.meta.rules.existValidRules
 import top.potmot.core.business.view.generate.meta.rules.rules
 import top.potmot.core.common.typescript.CodeBlock
 import top.potmot.core.common.typescript.ConstVariable
@@ -344,7 +343,6 @@ interface SubEditTableGen : Generator, EditFormItem, EditFormType, EditNullableV
         val properties = entity.subEditNoIdProperties
         val rules = iterableMapOf(
             properties.associateWith { it.rules },
-            entity.existValidRules(withId = true, properties),
         )
         return Rules(
             functionName = "useRules",
