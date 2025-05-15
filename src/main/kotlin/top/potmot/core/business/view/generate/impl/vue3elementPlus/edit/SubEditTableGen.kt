@@ -122,7 +122,10 @@ fun editTable(
     val validateItems = mutableListOf<ValidateItem>()
     validateItems += CommonValidateItem(
         "formValid",
-        "const formValid: boolean = await $formRef.value?.validate().catch(() => false) ?? false"
+        "const formValid: boolean = await $formRef.value?.validate().catch(e => {\n" +
+                "    errors.push(e)\n" +
+                "    return false\n" +
+                "}) ?? false"
     )
     if (subValidateItems.isNotEmpty()) {
         imports += subValidateItems.flatMap { it.imports }

@@ -5,6 +5,7 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusCo
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Type.WARNING
 import top.potmot.core.common.typescript.CodeBlock
 import top.potmot.core.common.typescript.Function
+import top.potmot.core.common.typescript.FunctionArg
 import top.potmot.core.common.typescript.ImportType
 import top.potmot.core.common.vue3.Event
 import top.potmot.core.common.vue3.EventArg
@@ -76,14 +77,26 @@ fun handleValidate(
 ) = Function(
     async = true,
     name = handleValidateFnName,
+    args = listOf(
+        FunctionArg(
+            name = "errorHandler",
+            type = "(errors: any[]) => void",
+            defaultValue = "(errors) => {console.error(errors)}"
+        )
+    ),
     returnType = "boolean",
     body = listOf(
         CodeBlock(
             buildScopeString(indent) {
+                line("const errors: any[] = []")
+
                 validateItems.forEach {
                     block(it.expression)
                     line()
                 }
+
+                line("errorHandler?.(errors)")
+
                 line("return ${(validateItems.map { it.name }).joinToString(" && ")}")
             }
         )
