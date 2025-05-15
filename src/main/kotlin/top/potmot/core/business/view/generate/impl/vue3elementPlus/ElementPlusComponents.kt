@@ -353,7 +353,7 @@ class ElementPlusComponents {
                 PropBind("model", model),
                 ref.toPropBind("ref", true),
                 rules.toPropBind("rules"),
-                PropBind("label-width", labelWidth, isLiteral = labelWidthIsLiteral),
+                labelWidth.toPropBind("label-width", isLiteral = labelWidthIsLiteral),
                 PropBind("@submit.prevent", isLiteral = true),
             )
             children += content
