@@ -25,7 +25,7 @@ interface IdSelect : Generator {
         idType: String,
     ) =
         if (multiple)
-            "Array<$idType>"
+            "Array<$idType> | undefined"
         else
             "$idType | undefined"
 
@@ -72,14 +72,18 @@ onBeforeMount(async () => {
                 if (props.$options.data === undefined) return []
             
                 const newModelValue: Array<$idType> = []
-                
-                for (const item of $modelValue.value) {
-                    if (props.${options}.data.map(it => it.$idName).includes(item)) {
-                        newModelValue.push(item)
+            
+                if ($modelValue.value !== undefined) {    
+                    for (const item of $modelValue.value) {
+                        if (props.${options}.data.map(it => it.$idName).includes(item)) {
+                            newModelValue.push(item)
+                        }
                     }
-                }
-                if ($modelValue.value.length != newModelValue.length)
+                    if ($modelValue.value.length != newModelValue.length)
+                        $modelValue.value = newModelValue
+                } else {
                     $modelValue.value = newModelValue
+                }
             }, {immediate: true})
             """.trimIndent()
     )
