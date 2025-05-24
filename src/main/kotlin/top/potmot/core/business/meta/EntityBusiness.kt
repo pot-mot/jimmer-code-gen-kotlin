@@ -434,8 +434,7 @@ sealed class EntityBusiness(
     private val `queryFormProperties nullable not change` by lazy {
         specificationProperties
             .filter {
-                !it.property.idProperty &&
-                        (it.property.associationType == null || it.property.associationType!!.isTargetOne)
+                !it.property.idProperty
             }
             .`force to IdView`()
     }
