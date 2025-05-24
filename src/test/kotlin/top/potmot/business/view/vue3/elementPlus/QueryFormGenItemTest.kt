@@ -81,7 +81,7 @@ const nameRange = computed<[string | undefined, string | undefined]>({
         return [
             spec.value.minName,
             spec.value.maxName,
-       ]
+        ]
     },
     set(range: [string | undefined, string | undefined] | null) {
         spec.value.minName = range?.[0]
@@ -111,7 +111,7 @@ const nameRange = computed<[string | undefined, string | undefined]>({
         return [
             spec.value.minName,
             spec.value.maxName,
-       ]
+        ]
     },
     set(range: [string | undefined, string | undefined] | null) {
         spec.value.minName = range?.[0]
@@ -142,7 +142,7 @@ const nameRange = computed<[string | undefined, string | undefined]>({
         return [
             spec.value.minName,
             spec.value.maxName,
-       ]
+        ]
     },
     set(range: [string | undefined, string | undefined] | null) {
         spec.value.minName = range?.[0]
