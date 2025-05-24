@@ -38,7 +38,7 @@ interface QueryFormItem {
                             return [
                                 $spec.value.min${upperName},
                                 $spec.value.max${upperName},
-                           ]
+                            ]
                         },
                         set(range: [string | undefined, string | undefined] | null) {
                             $spec.value.min${upperName} = range?.[0]
