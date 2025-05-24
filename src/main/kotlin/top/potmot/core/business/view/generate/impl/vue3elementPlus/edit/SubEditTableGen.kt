@@ -20,7 +20,6 @@ import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableMi
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilColumns
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.table.tableUtilProps
 import top.potmot.core.business.view.generate.meta.rules.Rules
-import top.potmot.core.business.view.generate.meta.rules.existValidRules
 import top.potmot.core.business.view.generate.meta.rules.rules
 import top.potmot.core.common.typescript.CodeBlock
 import top.potmot.core.common.typescript.ConstVariable
@@ -123,7 +122,10 @@ fun editTable(
     val validateItems = mutableListOf<ValidateItem>()
     validateItems += CommonValidateItem(
         "formValid",
-        "const formValid: boolean = await $formRef.value?.validate().catch(() => false) ?? false"
+        "const formValid: boolean = await $formRef.value?.validate().catch(e => {\n" +
+                "    errors.push(e)\n" +
+                "    return false\n" +
+                "}) ?? false"
     )
     if (subValidateItems.isNotEmpty()) {
         imports += subValidateItems.flatMap { it.imports }
@@ -237,7 +239,7 @@ fun editTable(
     template += form(
         model = formData,
         ref = formRef,
-        rules = "rules",
+        labelWidth = null,
         content = listOf(
             TagElement(
                 "div",
@@ -344,7 +346,6 @@ interface SubEditTableGen : Generator, EditFormItem, EditFormType, EditNullableV
         val properties = entity.subEditNoIdProperties
         val rules = iterableMapOf(
             properties.associateWith { it.rules },
-            entity.existValidRules(withId = true, properties),
         )
         return Rules(
             functionName = "useRules",

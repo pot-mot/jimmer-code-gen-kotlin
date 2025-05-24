@@ -6,15 +6,15 @@ import top.potmot.core.business.type.typeStrToJavaType
 import top.potmot.enumeration.GenLanguage
 import top.potmot.error.GenerateException
 import top.potmot.utils.string.buildScopeString
+import top.potmot.utils.string.camelToUpperSnake
 import top.potmot.utils.string.clearBlankLine
-import top.potmot.utils.string.entityNameToTableName
 import top.potmot.utils.string.trimBlankLine
 
 object JavaServiceGenerator : ServiceGenerator {
     override val suffix = GenLanguage.JAVA.suffix
 
     private val RootEntityBusiness.tableProxy
-        get() = entityNameToTableName(name) + "_TABLE"
+        get() = camelToUpperSnake(name) + "_TABLE"
 
     @Throws(GenerateException::class)
     override fun stringifyService(
@@ -62,7 +62,7 @@ object JavaServiceGenerator : ServiceGenerator {
                 "org.springframework.web.bind.annotation.RequestMapping",
                 "org.springframework.web.bind.annotation.RestController",
                 "${packages.entity}.${name}",
-                "${packages.entity}.Tables",
+                "${packages.base}.entity.Tables",
                 "${packages.dto}.${listView}",
                 "${packages.dto}.${detailView}",
                 "${packages.dto}.${spec}",
@@ -79,10 +79,15 @@ object JavaServiceGenerator : ServiceGenerator {
 
             if (isTreeEntity) {
                 imports += listOf(
+                    "java.util.ArrayList",
+                    "java.util.Collections",
+                    "java.util.HashMap",
+                    "java.util.Map",
                     "${packages.dto}.${treeView}",
                     "${packages.entity}.${name}Draft",
                     "java.util.function.Function",
                     "java.util.stream.Collectors",
+                    "org.babyfish.jimmer.sql.ast.tuple.Tuple2",
                 )
             }
 
@@ -90,7 +95,11 @@ object JavaServiceGenerator : ServiceGenerator {
                 imports += "org.springframework.transaction.annotation.Transactional"
             }
             if (entity.canAdd || entity.canEdit) {
-                imports += "jakarta.validation.Valid"
+                imports += listOf(
+                    "jakarta.validation.Valid",
+                    "org.babyfish.jimmer.sql.ast.mutation.SaveMode",
+                    "org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode"
+                )
             }
             if (entity.canAdd) {
                 imports += listOf(
@@ -99,7 +108,6 @@ object JavaServiceGenerator : ServiceGenerator {
             }
             if (entity.canEdit) {
                 imports += listOf(
-                    "org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode",
                     "org.springframework.web.bind.annotation.PutMapping",
                     "${packages.dto}.${updateInput}",
                     "${packages.dto}.${updateFillView}",
@@ -356,7 +364,11 @@ public List<@NotNull ${optionView}> listOptions(@RequestBody @NotNull $spec spec
 @SaCheckPermission("${permissions.insert}")
 @Transactional
 public $idType insert(@RequestBody @Valid @NotNull $insertInput input) throws AuthorizeException {
-    return sqlClient.insert(input).getModifiedEntity().${idName}();
+    return sqlClient.saveCommand(input)
+                .setMode(SaveMode.INSERT_ONLY)
+                .setAssociatedModeAll(AssociatedSaveMode.REPLACE)
+                .execute()
+                .getModifiedEntity().${idName}();
 }
                         """.trimIndent()
                     )
@@ -389,7 +401,11 @@ public $updateFillView getForUpdate(@PathVariable $idType id) throws AuthorizeEx
 @SaCheckPermission("${permissions.update}")
 @Transactional
 public $idType update(@RequestBody @Valid @NotNull $updateInput input) throws AuthorizeException {
-    return sqlClient.update(input, AssociatedSaveMode.REPLACE).getModifiedEntity().${idName}();
+    return sqlClient.saveCommand(input)
+                .setMode(SaveMode.UPDATE_ONLY)
+                .setAssociatedModeAll(AssociatedSaveMode.REPLACE)
+                .execute()
+                .getModifiedEntity().${idName}();
 }
                         """.trimIndent()
                     )
