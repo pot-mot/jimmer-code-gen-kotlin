@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 repositories {
@@ -9,22 +10,22 @@ plugins {
     idea
     id("org.springframework.boot") version "2.7.18"
     id("io.spring.dependency-management") version "1.1.4"
-    kotlin("jvm") version "1.9.24"
-    kotlin("plugin.spring") version "1.9.24"
-    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
+    kotlin("jvm") version "2.1.20"
+    kotlin("plugin.spring") version "2.1.20"
+    id("com.google.devtools.ksp") version "2.1.20-2.0.0"
 }
 
 group = "top.potmot"
-version = "0.3.0" // 2025-3-9
+version = "0.4.0" // 2025-3-27
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.9.67"
+val jimmerVersion = "0.9.96"
 
 val mysqlVersion = "9.0.0"
 val postgresVersion = "42.7.3"
 val h2Version = "2.2.224"
 
-val schemacrawlerVersion = "16.21.2"
+val schemacrawlerVersion = "16.26.2"
 val liquibaseVersion = "4.22.0"
 
 repositories {
@@ -58,7 +59,7 @@ dependencies {
         exclude(group = "org.slf4j", module = "slf4j-jdk14")
     }
     // https://mvnrepository.com/artifact/us.fatehi/schemacrawler-tools
-    implementation("us.fatehi:schemacrawler-tools:${schemacrawlerVersion}"){
+    implementation("us.fatehi:schemacrawler-tools:${schemacrawlerVersion}") {
         exclude(group = "org.slf4j", module = "slf4j-nop")
         exclude(group = "org.slf4j", module = "slf4j-jdk14")
     }
@@ -81,7 +82,7 @@ dependencies {
 // Without this configuration, gradle command can still run.
 // However, Intellij cannot find the generated source.
 kotlin {
-    sourceSets{
+    sourceSets {
         main {
             kotlin.srcDir("build/generated/ksp/main/kotlin")
         }
@@ -110,9 +111,19 @@ afterEvaluate {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "1.8"
+    compilerOptions {
+        freeCompilerArgs.add("-Xjsr305=strict")
+        jvmTarget.set(JvmTarget.JVM_1_8)
+    }
+}
+
+tasks.register<Jar>("slimJar") {
+    // 设置 JAR 文件名
+    archiveBaseName.set("${project.name}-slim")
+
+    // 包含项目自身编译后的类文件
+    from(sourceSets.main.get().output) {
+        exclude("/sql/**", "/dist/**", "/application**", "/top/potmot/service/**", "/top/potmot/JimmerCodeGenApplication**")
     }
 }
 
