@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 repositories {
@@ -18,13 +19,13 @@ group = "top.potmot"
 version = "0.4.0" // 2025-3-27
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.9.84"
+val jimmerVersion = "0.9.96"
 
 val mysqlVersion = "9.0.0"
 val postgresVersion = "42.7.3"
 val h2Version = "2.2.224"
 
-val schemacrawlerVersion = "16.21.2"
+val schemacrawlerVersion = "16.26.2"
 val liquibaseVersion = "4.22.0"
 
 repositories {
@@ -110,9 +111,9 @@ afterEvaluate {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "1.8"
+    compilerOptions {
+        freeCompilerArgs.add("-Xjsr305=strict")
+        jvmTarget.set(JvmTarget.JVM_1_8)
     }
 }
 
