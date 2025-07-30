@@ -37,7 +37,7 @@ data class ViewItemData(
 ) {
     val flatShortViews: Collection<Pair<PropertyBusiness, ViewItemData>> by lazy {
         if (shortViews.isNotEmpty()) {
-            shortViews.flatMap { it.second.flatShortViews }
+            shortViews + shortViews.flatMap { it.second.flatShortViews }
         } else {
             emptyList()
         }
