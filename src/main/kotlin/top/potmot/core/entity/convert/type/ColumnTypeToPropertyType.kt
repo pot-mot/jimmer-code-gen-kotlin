@@ -9,7 +9,6 @@ import java.time.OffsetTime
 import java.time.ZonedDateTime
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
-import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.database.generate.columnType.getColumnTypeDefiner
 import top.potmot.entity.dto.GenTableConvertView
 import top.potmot.entity.dto.GenTypeMappingView
@@ -113,11 +112,11 @@ private fun mappingPropertyType(
  * 通过 dataSourceType 和 language 参数获取映射方式
  */
 @Throws(ColumnTypeException::class)
-fun getPropertyType(
+fun toPropertyType(
     column: GenTableConvertView.TargetOf_columns,
     typeMappings: Collection<GenTypeMappingView> = emptyList(),
-    dataSourceType: DataSourceType = getContextOrGlobal().dataSourceType,
-    language: GenLanguage = getContextOrGlobal().language,
+    dataSourceType: DataSourceType,
+    language: GenLanguage,
 ): String =
     column.enum?.let { "${it.packagePath}.${it.name}" }
         ?: mappingPropertyType(

@@ -1,5 +1,6 @@
 package top.potmot.core.entity.convert
 
+import top.potmot.core.config.getContextOrGlobal
 import top.potmot.core.entity.convert.association.aggregateOtherSideLeafTableAssociations
 import top.potmot.core.entity.convert.association.convertAssociationProperties
 import top.potmot.core.entity.convert.association.handleDuplicateName
@@ -10,7 +11,7 @@ import top.potmot.core.entity.convert.base.convertBaseProperties
 import top.potmot.core.entity.convert.base.tableToEntity
 import top.potmot.core.entity.convert.merge.AssociationPropertyPairWaitMergeExist
 import top.potmot.core.entity.convert.merge.mergeExistAndConvertEntity
-import top.potmot.core.entity.convert.type.getPropertyType
+import top.potmot.core.entity.convert.type.toPropertyType
 import top.potmot.core.entity.convert.meta.TableAssociationMeta
 import top.potmot.core.entity.convert.meta.getAssociationMeta
 import top.potmot.core.entity.convert.meta.toAssociationMetaIdMap
@@ -131,7 +132,10 @@ private fun GenTableConvertView.toEntityInput(
         }
     }
 
-    val typeMapping: TypeMapping = { typeMeta -> getPropertyType(typeMeta, typeMappings) }
+    val context = getContextOrGlobal()
+    val typeMapping: TypeMapping = { column ->
+        toPropertyType(column, typeMappings, context.dataSourceType, context.language)
+    }
 
     val basePropertyMap = convertBaseProperties(
         this,

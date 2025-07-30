@@ -1,8 +1,6 @@
 export top.potmot.entity.GenEntity
 
 GenEntityExportView {
-    id
-
     flat(table) {
         name as tableName
     }

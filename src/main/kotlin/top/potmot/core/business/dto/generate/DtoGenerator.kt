@@ -308,13 +308,21 @@ object DtoGenerator {
             when (this) {
                 is AssociationProperty ->
                     if (listType)
-                        listOf("associatedIdIn(${name}) as $nameWithId")
+                        listOf(
+                            "flat(${name}) {",
+                            "   valueId(${entityBusiness.idProperty.name}) as $nameWithId",
+                            "}"
+                        )
                     else
                         listOf("associatedIdEq(${name})")
 
                 is ForceIdViewProperty ->
                     if (listType)
-                        listOf("associatedIdIn(${associationProperty.name}) as $name")
+                        listOf(
+                            "flat(${associationProperty.name}) {",
+                            "   valueId(${entityBusiness.idProperty.name}) as $name",
+                            "}"
+                        )
                     else
                         listOf("associatedIdEq(${associationProperty.name})")
 
