@@ -232,7 +232,7 @@ interface ViewItem {
                         TagElement(
                             component.name,
                             props = listOfNotNull(
-                                PropBind(lazySubView.propName, name)
+                                PropBind(lazySubView.propName, nameToValue(name))
                             ),
                         )
                     ),
