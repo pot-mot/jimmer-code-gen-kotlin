@@ -149,7 +149,7 @@ interface ViewTableGen : Generator, ViewTableColumn {
 
         val component = viewTable(
             data = rows,
-            type = if (isTree) dto.treeView else dto.listView,
+            type = dto.detailView,
             typePath = staticPath,
             stripe = !isTree,
             idPropertyName = entity.idProperty.name,
@@ -200,7 +200,7 @@ interface ViewTableGen : Generator, ViewTableColumn {
 
         val component = viewTable(
             data = rows,
-            type = if (isTree) dto.treeView else dto.listView,
+            type = dto.detailView,
             typePath = staticPath,
             stripe = !isTree,
             idPropertyName = entity.idProperty.name,
