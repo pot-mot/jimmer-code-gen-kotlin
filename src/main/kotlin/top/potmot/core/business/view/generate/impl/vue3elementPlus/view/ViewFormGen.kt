@@ -32,6 +32,7 @@ fun viewForm(
 
     template += descriptions(
         content = content.toElements(),
+        column = 1,
     ).merge {
         if (nullable) {
             directives += VIf(formData)

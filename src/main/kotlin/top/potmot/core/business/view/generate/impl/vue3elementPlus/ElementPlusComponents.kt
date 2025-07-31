@@ -374,11 +374,11 @@ class ElementPlusComponents {
             labelWidth: String? = "auto",
             labelWidthIsLiteral: Boolean = true,
             content: Collection<Element>,
-            itemLineSize: Int = 3,
+            column: Int = 3,
         ) = TagElement("el-descriptions") {
             props += listOfNotNull(
                 PropBind("label-width", labelWidth, isLiteral = labelWidthIsLiteral),
-                itemLineSize.toPropBind("column"),
+                column.toPropBind("column"),
             )
             children += content
         }
