@@ -30,6 +30,7 @@ import top.potmot.core.common.vue3.SlotProp
 import top.potmot.core.common.vue3.slotElement
 import top.potmot.core.business.view.generate.staticPath
 import top.potmot.core.business.view.generate.storePath
+import top.potmot.core.common.vue3.VIf
 import top.potmot.entity.dto.GenerateFile
 import top.potmot.enumeration.GenerateTag
 import top.potmot.error.ModelException
@@ -44,6 +45,7 @@ fun viewTable(
     showId: Boolean = false,
     showIndex: Boolean = true,
     showSelection: Boolean = true,
+    withOperations: Boolean = true,
     border: Boolean = true,
     stripe: Boolean = true,
 ) = Component {
@@ -60,6 +62,7 @@ fun viewTable(
         showIndex,
         showSelection
     )
+    props += Prop("withOperations", "boolean", false, "$withOperations")
 
     slots += Slot(
         "operations",
@@ -111,10 +114,12 @@ fun viewTable(
                 props = listOf(
                     PropBind("row", "scope.row as $type"),
                     PropBind("index", "scope.${'$'}index")
-                )
+                ),
             )
         )
-    )
+    ).merge {
+        directives += VIf("withOperations")
+    }
 
     template += table(
         data = data,
@@ -149,7 +154,7 @@ interface ViewTableGen : Generator, ViewTableColumn {
 
         val component = viewTable(
             data = rows,
-            type = dto.detailView,
+            type = if (isTree) dto.treeView else dto.listView,
             typePath = staticPath,
             stripe = !isTree,
             idPropertyName = entity.idProperty.name,
@@ -208,6 +213,7 @@ interface ViewTableGen : Generator, ViewTableColumn {
             childrenProp = childrenProp,
             showIndex = !isTree,
             showSelection = false,
+            withOperations = false,
         )
 
         return component to content.flatMap { it.lazyItems }
