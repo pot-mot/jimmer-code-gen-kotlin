@@ -286,12 +286,8 @@ fun editTable(
 
 interface SubEditTableGen : Generator, EditFormItem, EditFormType, EditNullableValid, EditFormDefault {
     private fun subEditTableType(entity: SubEntityBusiness): String {
-        val rootEntity = entity.path.rootEntity
         val dataType = entity.components.editTableType.name
-        val submitTypes = listOfNotNull(
-            if (rootEntity.canAdd) entity.dto.insertInput else null,
-            if (rootEntity.canEdit) entity.dto.updateInput else null
-        )
+        val submitTypes = entity.subFormSubmitTypes
         val submitType = submitTypes.joinToString(" | ")
 
         val imports = mutableListOf<TsImport>()
@@ -363,7 +359,7 @@ interface SubEditTableGen : Generator, EditFormItem, EditFormType, EditNullableV
     private fun subEditTableComponent(entity: SubEntityBusiness): Pair<Component, List<LazyGenerated>> {
         val rows = "rows"
 
-        val rootEntity = entity.path.rootEntity
+        val submitTypes = entity.subFormSubmitTypes
         val editTableType = entity.components.editTableType
         val editTableDefault = entity.components.editFormDefault
         val editTableRules = entity.rules.editTableRules
@@ -380,10 +376,7 @@ interface SubEditTableGen : Generator, EditFormItem, EditFormType, EditNullableV
 
         val component = editTable(
             formData = rows,
-            submitTypes = listOfNotNull(
-                if (rootEntity.pageCanAdd) entity.dto.insertInput else null,
-                if (rootEntity.pageCanEdit) entity.dto.updateInput else null
-            ),
+            submitTypes = submitTypes,
             submitTypePath = staticPath,
             dataType = editTableType.name,
             dataTypePath = "@/" + editTableType.fullPathNoSuffix,

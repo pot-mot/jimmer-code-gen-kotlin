@@ -660,6 +660,23 @@ class SubEntityBusiness(
         )
     }
 
+    val subFormSubmitTypes: List<String> by lazy {
+        val rootEntity = path.rootEntity
+        val lastProperty = path.propertyItems.last().property
+        listOfNotNull(
+            if (
+                rootEntity.pageCanAdd &&
+                rootEntity.addFormProperties.map { it.property }.contains(lastProperty)
+            )
+                dto.insertInput else null,
+            if (
+                rootEntity.pageCanEdit &&
+                rootEntity.editFormProperties.map { it.property }.contains(lastProperty)
+            )
+                dto.updateInput else null
+        )
+    }
+
     val components by lazy {
         val suffix = getContextOrGlobal().viewType.suffix
 

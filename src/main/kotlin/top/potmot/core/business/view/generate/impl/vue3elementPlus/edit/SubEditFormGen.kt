@@ -192,12 +192,8 @@ const clear = () => {
 
 interface SubEditFormGen : Generator, EditFormItem, EditFormType, EditNullableValid, EditFormDefault {
     private fun subEditFormType(entity: SubEntityBusiness): String {
-        val rootEntity = entity.path.rootEntity
         val dataType = entity.components.editFormType.name
-        val submitTypes = listOfNotNull(
-            if (rootEntity.canAdd) entity.dto.insertInput else null,
-            if (rootEntity.canEdit) entity.dto.updateInput else null
-        )
+        val submitTypes = entity.subFormSubmitTypes
         val submitType = submitTypes.joinToString(" | ")
 
         val imports = mutableListOf<TsImport>()
@@ -270,7 +266,7 @@ interface SubEditFormGen : Generator, EditFormItem, EditFormType, EditNullableVa
     private fun subEditFormComponent(entity: SubEntityBusiness, typeNotNull: Boolean): Pair<Component, List<LazyGenerated>> {
         val formData = "formData"
 
-        val rootEntity = entity.path.rootEntity
+        val submitTypes = entity.subFormSubmitTypes
         val subFormType = entity.components.editFormType
         val subFormDefault = entity.components.editFormDefault
         val subFormRules = entity.rules.subFormRules
@@ -279,10 +275,7 @@ interface SubEditFormGen : Generator, EditFormItem, EditFormType, EditNullableVa
             .associateWith { it.toEditFormItem(formData) }
 
         val component = subForm(
-            submitTypes = listOfNotNull(
-                if (rootEntity.pageCanAdd) entity.dto.insertInput else null,
-                if (rootEntity.pageCanEdit) entity.dto.updateInput else null
-            ),
+            submitTypes = submitTypes,
             submitTypePath = staticPath,
             dataType = subFormType.name,
             dataTypePath = "@/" + subFormType.fullPathNoSuffix,
