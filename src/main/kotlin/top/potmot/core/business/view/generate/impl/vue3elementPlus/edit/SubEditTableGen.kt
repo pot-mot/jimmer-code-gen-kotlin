@@ -381,8 +381,8 @@ interface SubEditTableGen : Generator, EditFormItem, EditFormType, EditNullableV
         val component = editTable(
             formData = rows,
             submitTypes = listOfNotNull(
-                if (rootEntity.canAdd) entity.dto.insertInput else null,
-                if (rootEntity.canEdit) entity.dto.updateInput else null
+                if (rootEntity.pageCanAdd) entity.dto.insertInput else null,
+                if (rootEntity.pageCanEdit) entity.dto.updateInput else null
             ),
             submitTypePath = staticPath,
             dataType = editTableType.name,
