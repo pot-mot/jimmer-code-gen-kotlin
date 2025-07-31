@@ -25,11 +25,10 @@ import top.potmot.core.common.vue3.PropBind
 import top.potmot.core.common.vue3.TagElement
 import top.potmot.core.common.vue3.VShow
 import top.potmot.core.config.getContextOrGlobal
-import top.potmot.entity.dto.GenEntityBusinessView
 
 data class ViewItemData(
     val label: String,
-    val prop: String,
+    val properties: Collection<PropertyBusiness>,
     val elements: Collection<Element> = emptyList(),
     val imports: Collection<TsImport> = emptyList(),
     val lazyItems: Collection<LazyGenerated> = emptyList(),
@@ -46,21 +45,21 @@ data class ViewItemData(
 
 fun ViewItemData(
     label: String,
-    prop: String,
+    properties: Collection<PropertyBusiness>,
     vararg elements: Element,
-) = ViewItemData(label, prop, elements = elements.toList())
+) = ViewItemData(label, properties, elements = elements.toList())
 
 interface ViewItem {
     private fun viewItem(
         value: String,
-        property: GenEntityBusinessView.TargetOf_properties,
+        property: PropertyBusiness,
         formType: PropertyFormType,
-        createDefault: (property: GenEntityBusinessView.TargetOf_properties) -> ViewItemData,
+        createDefault: (properties: Collection<PropertyBusiness>) -> ViewItemData,
         dateTimeFormatInView: Boolean = getContextOrGlobal().dateTimeFormatInView,
     ): ViewItemData = when (formType) {
         PropertyFormType.BOOLEAN -> ViewItemData(
             label = property.comment,
-            prop = property.name,
+            properties = listOf(property),
             checkbox(
                 value,
                 doubleBind = false,
@@ -73,11 +72,11 @@ interface ViewItem {
 
         PropertyFormType.TIME ->
             if (!dateTimeFormatInView)
-                createDefault(property)
+                createDefault(listOf(property))
             else
                 ViewItemData(
                     label = property.comment,
-                    prop = property.name,
+                    properties = listOf(property),
                     imports = listOf(
                         Import(timeFormatPath, formatTime)
                     ),
@@ -88,11 +87,11 @@ interface ViewItem {
 
         PropertyFormType.DATE ->
             if (!dateTimeFormatInView)
-                createDefault(property)
+                createDefault(listOf(property))
             else
                 ViewItemData(
                     label = property.comment,
-                    prop = property.name,
+                    properties = listOf(property),
                     imports = listOf(
                         Import(timeFormatPath, formatDate)
                     ),
@@ -103,11 +102,11 @@ interface ViewItem {
 
         PropertyFormType.DATETIME ->
             if (!dateTimeFormatInView)
-                createDefault(property)
+                createDefault(listOf(property))
             else
                 ViewItemData(
                     label = property.comment,
-                    prop = property.name,
+                    properties = listOf(property),
                     imports = listOf(
                         Import(timeFormatPath, formatDateTime)
                     ),
@@ -118,7 +117,7 @@ interface ViewItem {
 
         PropertyFormType.FILE -> ViewItemData(
             label = property.comment,
-            prop = property.name,
+            properties = listOf(property),
             imports = listOf(
                 ImportDefault("$commonComponentPath/$fileView", fileView)
             ),
@@ -131,7 +130,7 @@ interface ViewItem {
 
         PropertyFormType.FILE_LIST -> ViewItemData(
             label = property.comment,
-            prop = property.name,
+            properties = listOf(property),
             imports = listOf(
                 ImportDefault("$commonComponentPath/$filesView", filesView)
             ),
@@ -144,7 +143,7 @@ interface ViewItem {
 
         PropertyFormType.IMAGE -> ViewItemData(
             label = property.comment,
-            prop = property.name,
+            properties = listOf(property),
             imports = listOf(
                 ImportDefault("$commonComponentPath/$imagePreview", imagePreview)
             ),
@@ -157,7 +156,7 @@ interface ViewItem {
 
         PropertyFormType.IMAGE_LIST -> ViewItemData(
             label = property.comment,
-            prop = property.name,
+            properties = listOf(property),
             imports = listOf(
                 ImportDefault("$commonComponentPath/$imagesPreview", imagesPreview)
             ),
@@ -169,19 +168,19 @@ interface ViewItem {
         )
 
         else ->
-            createDefault(property)
+            createDefault(listOf(property))
     }
 
     fun PropertyBusiness.viewItem(
         nameToValue: (name: String) -> String,
-        createDefault: (property: GenEntityBusinessView.TargetOf_properties) -> ViewItemData,
+        createDefault: (properties: Collection<PropertyBusiness>) -> ViewItemData,
         withDateTimeFormat: Boolean,
     ): ViewItemData = when (this) {
         is TypeEntityProperty ->
             if (isShortView) {
                 if (isTargetOne) {
                     ViewItemData(
-                        prop = name,
+                        properties = listOf(this),
                         label = comment,
                         shortViews = typeEntityBusiness.shortViewProperties.map { shortProperty ->
                             shortProperty to shortProperty
@@ -189,7 +188,7 @@ interface ViewItem {
                                 .let { shortViewItem ->
                                     shortViewItem.copy(
                                         label = comment + shortViewItem.label,
-                                        prop = name + "." + shortViewItem.prop
+                                        properties = listOf(this) + shortViewItem.properties
                                     )
                                 }
                         }
@@ -200,7 +199,7 @@ interface ViewItem {
                     val component = lazyShortViewTable.component
 
                     ViewItemData(
-                        prop = name,
+                        properties = listOf(this),
                         label = comment,
                         elements = listOf(
                             TagElement(
@@ -226,7 +225,7 @@ interface ViewItem {
                 val component = lazySubView.component
 
                 ViewItemData(
-                    prop = name,
+                    properties = listOf(this),
                     label = comment,
                     elements = listOf(
                         TagElement(
@@ -249,7 +248,7 @@ interface ViewItem {
             } else {
                 ViewItemData(
                     label = property.comment,
-                    prop = property.name,
+                    properties = listOf(this),
                 )
             }
 
@@ -258,7 +257,7 @@ interface ViewItem {
             val component = lazyEnumView.component
 
             ViewItemData(
-                prop = name,
+                properties = listOf(this),
                 label = comment,
                 elements = listOf(
                     TagElement(
@@ -281,6 +280,6 @@ interface ViewItem {
         }
 
         is CommonProperty ->
-            viewItem(nameToValue(name), property, formType, createDefault, withDateTimeFormat)
+            viewItem(nameToValue(name), this, formType, createDefault, withDateTimeFormat)
     }
 }

@@ -95,7 +95,7 @@ fun viewTable(
             expand += it.elements
         } else {
             propColumns += tableColumn(
-                prop = it.prop,
+                prop = it.properties.joinToString(".") { it.name },
                 label = it.label,
                 width = it.width,
                 minWidth = it.minWidth,

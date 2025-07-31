@@ -4,6 +4,24 @@ import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.view.generate.impl.vue3elementPlus.ElementPlusComponents.Companion.descriptionsItem
 import top.potmot.core.common.vue3.ExpressionElement
 import top.potmot.core.config.getContextOrGlobal
+import kotlin.collections.listOf
+
+private val createPropExpressionElement: (Collection<PropertyBusiness>) -> ExpressionElement = { properties ->
+    var beforeNullable = false
+    val propExpression = buildString {
+        append("value")
+        for (property in properties) {
+            if (beforeNullable) {
+                append("?")
+            }
+            append(".")
+            append(property.name)
+            beforeNullable = !property.typeNotNull
+        }
+    }
+    ExpressionElement(propExpression)
+}
+
 
 interface ViewFormItem : ViewItem {
     fun PropertyBusiness.viewFormItem(
@@ -11,18 +29,20 @@ interface ViewFormItem : ViewItem {
     ): List<ViewItemData> =
         viewItem(
             nameToValue = { name -> "value.$name" },
-            createDefault = { property ->
+            createDefault = { properties ->
                 ViewItemData(
-                    label = property.comment,
-                    prop = property.name,
-                    ExpressionElement("value.${property.name}")
+                    label = properties.lastOrNull()?.comment ?: "",
+                    properties,
+                    createPropExpressionElement(properties)
                 )
             },
             withDateTimeFormat,
         ).let { viewItem ->
             if (viewItem.shortViews.isNotEmpty()) {
                 viewItem.flatShortViews.map { (_, shortViewItem) ->
-                    shortViewItem
+                    shortViewItem.copy(
+                        elements = listOf(createPropExpressionElement(shortViewItem.properties))
+                    )
                 }
             } else {
                 listOf(viewItem)
