@@ -17,6 +17,7 @@ import top.potmot.core.database.generate.identifier.IdentifierType
 import top.potmot.core.database.generate.identifier.getIdentifierProcessor
 import top.potmot.entity.dto.GenEntityGenerateView
 import top.potmot.entity.sub.AnnotationWithImports
+import top.potmot.enumeration.AssociationType
 import top.potmot.enumeration.TableType
 import top.potmot.utils.collection.flatSetOf
 import top.potmot.utils.collection.forEachJoinDo
@@ -239,10 +240,34 @@ abstract class EntityBuilder : CodeBuilder() {
                 } else {
                     imports += associationType.annotation.java.name
                     ("@" + associationType.annotation.java.simpleName).let {
-                        annotations += if (mappedBy != null) {
-                            "$it(mappedBy = \"$mappedBy\")"
-                        } else {
-                            it
+                        annotations += buildString {
+                            val args = mutableMapOf<String, String>()
+                            append(it)
+
+                            if (mappedBy != null) {
+                                args += "mappedBy" to "\"$mappedBy\""
+                            }
+
+                            if (associationType === AssociationType.MANY_TO_MANY || associationType === AssociationType.ONE_TO_MANY) {
+                                args += "orderedProps" to "[OrderedProp(\"id\")]"
+                                imports += "org.babyfish.jimmer.sql.OrderedProp"
+                            }
+
+                            if (args.isNotEmpty()) {
+                                append("(")
+                                var first = true
+                                for ((key, value) in args) {
+                                    if (first) {
+                                        first = false
+                                    } else {
+                                        append(", ")
+                                    }
+                                    append(key)
+                                    append(" = ")
+                                    append(value)
+                                }
+                                append(")")
+                            }
                         }
                     }
 
