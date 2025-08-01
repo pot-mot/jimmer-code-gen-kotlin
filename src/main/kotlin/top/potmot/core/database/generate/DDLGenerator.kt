@@ -13,7 +13,7 @@ private const val allTableFileName = "1_all-tables.sql"
 
 interface DDLGenerator {
     private fun formatFilePath(table: GenTableGenerateView): String = buildString {
-        append("sql/")
+        append("sql/ddl/")
         if (!table.subPackagePath.isNullOrBlank()) {
             append("${table.subPackagePath.replace(".", "/")}/")
         }
@@ -38,7 +38,7 @@ interface DDLGenerator {
 
         result += createGenerateFileByTables(
             flatTables,
-            "ddl/$allTableFileName",
+            "sql/$allTableFileName",
             stringify(flatTables),
             listOf(GenerateTag.BackEnd, GenerateTag.DDL)
         )

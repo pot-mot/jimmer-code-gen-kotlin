@@ -104,7 +104,7 @@ WHERE sys_permission.name = '${it.permissions.menu}' AND sys_menu.name = '${page
 
         val allDynamicRoutes = createGenerateFileByEntities(
             entities,
-            "sql/menu/4_all-menus.sql",
+            "sql/4_all-menus.sql",
             buildString {
                 subGroupFiles.forEachJoinDo({
                     appendLine()

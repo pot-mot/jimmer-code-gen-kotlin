@@ -165,7 +165,7 @@ WHERE sys_permission.name IN (${permissions.joinToString(", ") { permission -> "
 
         val allPermissions = createGenerateFileByEntities(
             entities,
-            "sql/permission/${allPermissionFile}.sql",
+            "sql/${allPermissionFile}.sql",
             buildString {
                 subGroupFiles.forEachJoinDo({
                     appendLine()
