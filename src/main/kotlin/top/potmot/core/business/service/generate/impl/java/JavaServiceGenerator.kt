@@ -63,11 +63,9 @@ object JavaServiceGenerator : ServiceGenerator {
                 "org.springframework.web.bind.annotation.RestController",
                 "${packages.entity}.${name}",
                 "${packages.base}.entity.Tables",
-                "${packages.dto}.${listView}",
                 "${packages.dto}.${detailView}",
                 "${packages.dto}.${spec}",
                 "${packages.dto}.${optionView}",
-                "${packages.base}.entity.dto.query.PageQuery",
                 "${packages.exception}.AuthorizeException",
                 "org.jetbrains.annotations.NotNull",
                 "jakarta.annotation.Nullable",
@@ -99,6 +97,12 @@ object JavaServiceGenerator : ServiceGenerator {
                     "jakarta.validation.Valid",
                     "org.babyfish.jimmer.sql.ast.mutation.SaveMode",
                     "org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode"
+                )
+            }
+            if (entity.canQuery) {
+                imports += listOf(
+                    "${packages.dto}.${listView}",
+                    "${packages.base}.entity.dto.query.PageQuery",
                 )
             }
             if (entity.canAdd) {
