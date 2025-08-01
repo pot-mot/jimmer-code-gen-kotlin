@@ -9,11 +9,11 @@ import top.potmot.enumeration.TableType
 import top.potmot.error.ColumnTypeException
 import top.potmot.error.GenerateException
 
-private const val allTableFileName = "all-tables.sql"
+private const val allTableFileName = "1_all-tables.sql"
 
 interface DDLGenerator {
     private fun formatFilePath(table: GenTableGenerateView): String = buildString {
-        append("ddl/")
+        append("sql/")
         if (!table.subPackagePath.isNullOrBlank()) {
             append("${table.subPackagePath.replace(".", "/")}/")
         }

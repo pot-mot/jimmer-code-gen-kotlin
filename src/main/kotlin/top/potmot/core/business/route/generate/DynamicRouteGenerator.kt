@@ -31,7 +31,7 @@ object DynamicRouteGenerator {
                 content = buildString {
                     appendBlock(
                         """
-DELETE FROM sys_menu_sys_permission_mapping WHERE sys_menu_id IN (
+DELETE FROM sys_menu_sys_permission_mapping WHERE menu_id IN (
     SELECT id FROM sys_menu WHERE name = '${it.name}'
 );
 
@@ -48,10 +48,10 @@ DELETE FROM sys_menu WHERE parent_id IN (
 DELETE FROM sys_menu WHERE name = '${it.name}';
 
 INSERT INTO sys_menu 
-(parent_id, name, path, icon, label, component, order_key, created_by, created_time, modified_by, modified_time)
-VALUES (NULL, '${it.name}', '/${it.name}', 'List', '${it.comment}', NULL, 1, 1, now(), 1, now());
+(parent_id, name, path, icon, label, component, order_key, created_time, modified_time)
+VALUES (NULL, '${it.name}', '/${it.name}', 'List', '${it.comment}', NULL, 1, now(), now());
 
-INSERT INTO sys_menu_sys_permission_mapping (sys_permission_id, sys_menu_id)
+INSERT INTO sys_menu_sys_permission_mapping (permission_id, menu_id)
 SELECT sys_permission.id, sys_menu.id FROM sys_permission, sys_menu 
 WHERE sys_permission.name = '${menuPermission}' AND sys_menu.name = '${it.name}';
 """.trim()
@@ -70,7 +70,7 @@ WHERE sys_permission.name = '${menuPermission}' AND sys_menu.name = '${it.name}'
                 buildString {
                     appendBlock(
                         """
-DELETE FROM sys_menu_sys_permission_mapping WHERE sys_menu_id IN (
+DELETE FROM sys_menu_sys_permission_mapping WHERE menu_id IN (
     SELECT id FROM sys_menu WHERE name = '${page.name}'
 );
 
@@ -88,10 +88,10 @@ DELETE FROM sys_menu WHERE name = '${page.name}';
                         appendBlock(
                             """
 INSERT INTO sys_menu 
-(parent_id, name, path, icon, label, component, order_key, created_by, created_time, modified_by, modified_time)
-VALUES ($parentIdValue, '${page.name}', '/${page.name}', 'List', '${it.comment}', '${page.fullPath}', 1, 1, now(), 1, now());
+(parent_id, name, path, icon, label, component, order_key, created_time, modified_time)
+VALUES ($parentIdValue, '${page.name}', '/${page.name}', 'List', '${it.comment}', '${page.fullPath}', 1, now(), now());
 
-INSERT INTO sys_menu_sys_permission_mapping (sys_permission_id, sys_menu_id)
+INSERT INTO sys_menu_sys_permission_mapping (permission_id, menu_id)
 SELECT sys_permission.id, sys_menu.id FROM sys_permission, sys_menu 
 WHERE sys_permission.name = '${it.permissions.menu}' AND sys_menu.name = '${page.name}';
 """.trimEnd()
@@ -104,7 +104,7 @@ WHERE sys_permission.name = '${it.permissions.menu}' AND sys_menu.name = '${page
 
         val allDynamicRoutes = createGenerateFileByEntities(
             entities,
-            "sql/menu/all-menus.sql",
+            "sql/menu/4_all-menus.sql",
             buildString {
                 subGroupFiles.forEachJoinDo({
                     appendLine()
