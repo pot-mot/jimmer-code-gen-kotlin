@@ -257,7 +257,7 @@ interface SubEditFormGen : Generator, EditFormItem, EditFormType, EditNullableVa
             formDataType = type.name,
             formDataNotNull = typeNotNull,
             formDataTypePath = "@/" + type.fullPathNoSuffix,
-            ruleDataType = entity.dto.insertInput,
+            ruleDataTypes = entity.subFormSubmitTypes,
             ruleDataTypePath = staticPath,
             propertyRules = rules
         )

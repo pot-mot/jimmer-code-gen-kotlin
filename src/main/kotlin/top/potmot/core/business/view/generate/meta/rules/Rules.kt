@@ -239,7 +239,7 @@ data class Rules(
     val formDataNotNull: Boolean = true,
     val formDataTypePath: String,
 
-    val ruleDataType: String,
+    val ruleDataTypes: Iterable<String>,
     val ruleDataTypePath: String,
 
     val propertyRules: Map<PropertyBusiness, Iterable<Rule>>,
