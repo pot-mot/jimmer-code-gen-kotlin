@@ -1,6 +1,7 @@
 package top.potmot.core.model.load
 
 import org.babyfish.jimmer.kt.unload
+import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
@@ -30,7 +31,8 @@ interface ModelSave {
         // 1. 保存 model, subGroups
         val savedModel = save(
             input.toEntity { unload(this, GenModelDraft::enums) },
-            if (input.id == null) SaveMode.INSERT_ONLY else SaveMode.UPDATE_ONLY
+            if (input.id == null) SaveMode.INSERT_ONLY else SaveMode.UPDATE_ONLY,
+            AssociatedSaveMode.REPLACE,
         ).modifiedEntity
 
         // 创建 subGroup name -> id map，用于映射 table.subGroup 和 enum.subGroup
