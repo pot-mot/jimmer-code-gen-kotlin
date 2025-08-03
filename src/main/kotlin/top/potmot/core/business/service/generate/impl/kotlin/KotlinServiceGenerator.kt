@@ -48,6 +48,7 @@ object KotlinServiceGenerator : ServiceGenerator {
             imports += listOf(
                 "cn.dev33.satoken.annotation.SaCheckPermission",
                 "org.babyfish.jimmer.sql.kt.KSqlClient",
+                "org.babyfish.jimmer.sql.kt.ast.expression.asc",
                 "org.springframework.web.bind.annotation.GetMapping",
                 "org.springframework.web.bind.annotation.PathVariable",
                 "org.springframework.web.bind.annotation.PostMapping",
@@ -55,6 +56,7 @@ object KotlinServiceGenerator : ServiceGenerator {
                 "org.springframework.web.bind.annotation.RequestMapping",
                 "org.springframework.web.bind.annotation.RestController",
                 "${packages.entity}.${name}",
+                "${packages.entity}.${idProperty.name}",
                 "${packages.dto}.${detailView}",
                 "${packages.dto}.${spec}",
                 "${packages.dto}.${optionView}",
@@ -156,6 +158,7 @@ fun get(@PathVariable id: $idType): $detailView? =
 fun list(@RequestBody spec: $spec): List<$listView> =
     sqlClient.executeQuery(${name}::class) {
         where(spec)
+        orderBy(table.${idName}.asc())
         select(table.fetch(${listView}::class))
     }
                     """.trimIndent()
@@ -176,6 +179,7 @@ fun list(@RequestBody spec: $spec): List<$listView> =
 fun page(@RequestBody query: PageQuery<$spec>): Page<$listView> =
     sqlClient.createQuery(${name}::class) {
         where(query.spec)
+        orderBy(table.${idName}.asc())
         select(table.fetch(${listView}::class))
     }.fetchPage(query.pageIndex, query.pageSize)
                     """.trimIndent()
@@ -217,6 +221,7 @@ fun tree(
 ): List<$treeView> =
     sqlClient.executeQuery(${name}::class) {
         where(spec)
+        orderBy(table.${idName}.asc())
         select(table.fetch(${treeView}.METADATA.fetcher.remove("${childrenProperty.name}")))
     }
         .map { ${treeView}(it) }
@@ -264,7 +269,8 @@ fun treePage(
 ): Page<$treeView> {
     val list = sqlClient.executeQuery(${name}::class) {
         where(query.spec)
-        select(table.id, table.${parentIdProperty.name})
+        orderBy(table.${idName}.asc())
+        select(table.${idName}, table.${parentIdProperty.name})
     }
         .let { buildIdTree(it) }
 
@@ -276,7 +282,8 @@ fun treePage(
         .let { flatIds(it) }
 
     return sqlClient.executeQuery(${name}::class) {
-        where(table.id valueIn idList)
+        where(table.${idName} valueIn idList)
+        orderBy(table.${idName}.asc())
         select(table.fetch(${treeView}.METADATA.fetcher.remove("${childrenProperty.name}")))
     }
         .map { ${treeView}(it) }
@@ -303,6 +310,7 @@ fun treePage(
 fun listOptions(@RequestBody spec: $spec): List<$optionView> =
     sqlClient.executeQuery(${name}::class) {
         where(spec)
+        orderBy(table.${idName}.asc())
         select(table.fetch(${optionView}::class))
     }
                     """.trimIndent()
