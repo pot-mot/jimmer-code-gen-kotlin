@@ -349,7 +349,7 @@ interface SubEditTableGen : Generator, EditFormItem, EditFormType, EditNullableV
             formData = "formData",
             formDataType = type.name,
             formDataTypePath = "@/" + type.fullPathNoSuffix,
-            ruleDataType = entity.dto.updateInput,
+            ruleDataTypes = entity.subFormSubmitTypes,
             ruleDataTypePath = staticPath,
             propertyRules = rules,
         )

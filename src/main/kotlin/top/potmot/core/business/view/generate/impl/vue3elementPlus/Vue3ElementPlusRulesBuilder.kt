@@ -32,7 +32,7 @@ class Vue3ElementPlusRulesBuilder(
             formDataNotNull,
             formDataTypePath,
 
-            ruleDataType,
+            ruleDataTypes,
             ruleDataTypePath,
 
             propertyRules,
@@ -42,7 +42,7 @@ class Vue3ElementPlusRulesBuilder(
             ImportType("vue", "Ref"),
             ImportType("element-plus", "FormRules"),
             ImportType(formDataTypePath, formDataType),
-            ImportType(ruleDataTypePath, ruleDataType),
+            ImportType(ruleDataTypePath, ruleDataTypes.joinToString(", ")),
         )
 
         var hasExistValidRule = false
@@ -92,7 +92,7 @@ class Vue3ElementPlusRulesBuilder(
                         type = "Ref<${if (isPlural) "Array<${formDataType}>" else formDataType}${if (formDataNotNull) "" else "| undefined"}>"
                     ),
                 ),
-                returnType = "FormRules<${ruleDataType}>",
+                returnType = "FormRules<${ruleDataTypes.joinToString(" | ")}>",
                 body = listOf(CodeBlock(body))
             )
                 .stringify(indent, wrapThreshold)
