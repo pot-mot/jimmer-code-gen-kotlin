@@ -19,14 +19,14 @@ group = "top.potmot"
 version = "0.4.0" // 2025-3-27
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-val jimmerVersion = "0.9.96"
+val jimmerVersion = "0.9.102"
 
 val mysqlVersion = "9.0.0"
 val postgresVersion = "42.7.3"
 val h2Version = "2.2.224"
 
 val schemacrawlerVersion = "16.26.2"
-val liquibaseVersion = "4.22.0"
+//val liquibaseVersion = "4.22.0"
 
 repositories {
     mavenCentral()
@@ -76,7 +76,7 @@ dependencies {
     }
 
     // https://mvnrepository.com/artifact/org.liquibase/liquibase-core
-    implementation("org.liquibase:liquibase-core:${liquibaseVersion}")
+//    implementation("org.liquibase:liquibase-core:${liquibaseVersion}")
 }
 
 // Without this configuration, gradle command can still run.
