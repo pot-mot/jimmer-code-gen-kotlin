@@ -8,7 +8,9 @@ import top.potmot.core.business.meta.PropertyBusiness
 import top.potmot.core.business.meta.PropertyFormType
 
 private const val BOOLEAN_MIN_WIDTH = 81
-private const val DATETIME_MIN_WIDTH = 193
+private const val DATE_MIN_WIDTH = 193
+private const val TIME_MIN_WIDTH = 193
+private const val DATETIME_MIN_WIDTH = 223
 private const val NUMBER_MIN_WIDTH = 161
 private const val ENUM_MIN_WIDTH = 129
 private const val ASSOCIATION_ID_MIN_WIDTH = 161
@@ -18,6 +20,8 @@ val PropertyBusiness.tableMinWidth: Int?
     get() = when (this) {
         is CommonProperty -> when (formType) {
             PropertyFormType.BOOLEAN -> BOOLEAN_MIN_WIDTH
+            PropertyFormType.DATE -> DATE_MIN_WIDTH
+            PropertyFormType.TIME -> TIME_MIN_WIDTH
             PropertyFormType.DATETIME -> DATETIME_MIN_WIDTH
             PropertyFormType.INT -> NUMBER_MIN_WIDTH
             PropertyFormType.FLOAT -> NUMBER_MIN_WIDTH
