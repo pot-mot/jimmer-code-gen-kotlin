@@ -47,7 +47,6 @@ object KotlinServiceGenerator : ServiceGenerator {
             val imports = mutableSetOf<String>()
             imports += listOf(
                 "cn.dev33.satoken.annotation.SaCheckPermission",
-                "org.babyfish.jimmer.Page",
                 "org.babyfish.jimmer.sql.kt.KSqlClient",
                 "org.springframework.web.bind.annotation.GetMapping",
                 "org.springframework.web.bind.annotation.PathVariable",
@@ -90,6 +89,9 @@ object KotlinServiceGenerator : ServiceGenerator {
                     "${packages.dto}.${listView}",
                     "${packages.base}.entity.dto.query.PageQuery",
                 )
+                if (entity.queryByPage) {
+                    imports += "org.babyfish.jimmer.Page"
+                }
             }
             if (entity.canAdd) {
                 imports += listOf(
