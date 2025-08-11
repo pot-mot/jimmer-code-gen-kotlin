@@ -32,6 +32,8 @@ fun viewForm(
 
     template += descriptions(
         content = content.toElements(),
+        labelWidth = "8rem",
+        column = 1,
     ).merge {
         if (nullable) {
             directives += VIf(formData)

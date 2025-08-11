@@ -53,7 +53,6 @@ object JavaServiceGenerator : ServiceGenerator {
             val imports = mutableSetOf<String>()
             imports += listOf(
                 "cn.dev33.satoken.annotation.SaCheckPermission",
-                "org.babyfish.jimmer.Page",
                 "org.babyfish.jimmer.sql.JSqlClient",
                 "org.springframework.web.bind.annotation.GetMapping",
                 "org.springframework.web.bind.annotation.PathVariable",
@@ -63,11 +62,9 @@ object JavaServiceGenerator : ServiceGenerator {
                 "org.springframework.web.bind.annotation.RestController",
                 "${packages.entity}.${name}",
                 "${packages.base}.entity.Tables",
-                "${packages.dto}.${listView}",
                 "${packages.dto}.${detailView}",
                 "${packages.dto}.${spec}",
                 "${packages.dto}.${optionView}",
-                "${packages.base}.entity.dto.query.PageQuery",
                 "${packages.exception}.AuthorizeException",
                 "org.jetbrains.annotations.NotNull",
                 "jakarta.annotation.Nullable",
@@ -100,6 +97,15 @@ object JavaServiceGenerator : ServiceGenerator {
                     "org.babyfish.jimmer.sql.ast.mutation.SaveMode",
                     "org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode"
                 )
+            }
+            if (entity.canQuery) {
+                imports += listOf(
+                    "${packages.dto}.${listView}",
+                    "${packages.base}.entity.dto.query.PageQuery",
+                )
+                if (entity.queryByPage) {
+                    imports += "org.babyfish.jimmer.Page"
+                }
             }
             if (entity.canAdd) {
                 imports += listOf(

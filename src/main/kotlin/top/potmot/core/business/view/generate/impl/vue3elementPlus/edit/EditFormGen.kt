@@ -179,7 +179,7 @@ interface EditFormGen : Generator, EditFormType, EditNullableValid, EditFormItem
             formData = "formData",
             formDataType = type.name,
             formDataTypePath = "@/" + type.fullPathNoSuffix,
-            ruleDataType = entity.dto.updateInput,
+            ruleDataTypes = listOf(entity.dto.updateInput),
             ruleDataTypePath = staticPath,
             propertyRules = rules
         )

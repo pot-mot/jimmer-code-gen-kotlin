@@ -51,7 +51,7 @@ object EnglishWordUtil {
         )
         irregularSingularToPlural.add(
             PatternAndReplacement(
-                Pattern.compile("([^(Ger)])man", Pattern.CASE_INSENSITIVE),
+                Pattern.compile("([^(Ger)])man$", Pattern.CASE_INSENSITIVE),
                 "$1men"
             )
         )
@@ -168,7 +168,7 @@ object EnglishWordUtil {
         )
         irregularPluralToSingular.add(
             PatternAndReplacement(
-                Pattern.compile("([^(Ger)])men", Pattern.CASE_INSENSITIVE),
+                Pattern.compile("([^(Ger)])men$", Pattern.CASE_INSENSITIVE),
                 "$1man"
             )
         )

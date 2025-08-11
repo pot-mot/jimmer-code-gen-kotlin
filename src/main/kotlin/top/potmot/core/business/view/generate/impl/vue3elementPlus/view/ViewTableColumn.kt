@@ -11,7 +11,7 @@ import top.potmot.core.config.getContextOrGlobal
 
 data class ViewTableColumnData(
     val label: String,
-    val prop: String,
+    val properties: Collection<PropertyBusiness>,
     val elements: Collection<Element> = emptyList(),
     val imports: Collection<TsImport> = emptyList(),
     val props: Collection<PropBind> = emptyList(),
@@ -28,10 +28,10 @@ interface ViewTableColumn : ViewItem {
     ): List<ViewTableColumnData> =
         viewItem(
             { name -> "scope.row.$name" },
-            { property ->
+            { properties ->
                 ViewItemData(
-                    label = property.comment,
-                    prop = property.name
+                    label = properties.lastOrNull()?.comment ?: "",
+                    properties = properties
                 )
             },
             withDateTimeFormat
@@ -39,7 +39,7 @@ interface ViewTableColumn : ViewItem {
             if (viewItem.shortViews.isNotEmpty()) {
                 viewItem.flatShortViews.map { (shortViewProperty, shortViewItem) ->
                     ViewTableColumnData(
-                        prop = shortViewItem.prop,
+                        properties = shortViewItem.properties,
                         label = shortViewItem.label,
                         elements = shortViewItem.elements,
                         imports = shortViewItem.imports,
@@ -52,7 +52,7 @@ interface ViewTableColumn : ViewItem {
 
                 listOf(
                     ViewTableColumnData(
-                        prop = name,
+                        properties = viewItem.properties,
                         label = comment,
                         elements = viewItem.elements,
                         imports = viewItem.imports,

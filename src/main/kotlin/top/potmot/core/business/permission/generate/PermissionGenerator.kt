@@ -9,8 +9,6 @@ import top.potmot.utils.string.appendBlock
 import top.potmot.utils.string.appendLines
 import top.potmot.utils.string.trimBlankLine
 
-private const val allPermissionFile = "all-permissions.sql"
-
 object PermissionGenerator {
     private fun formatFilePath(entity: EntityBusiness): String = buildString {
         append("sql/permission/")
@@ -165,7 +163,7 @@ WHERE sys_permission.name IN (${permissions.joinToString(", ") { permission -> "
 
         val allPermissions = createGenerateFileByEntities(
             entities,
-            "sql/permission/${allPermissionFile}.sql",
+            "sql/permission/all-permissions.sql",
             buildString {
                 subGroupFiles.forEachJoinDo({
                     appendLine()
