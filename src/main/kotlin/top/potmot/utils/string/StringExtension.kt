@@ -13,18 +13,6 @@ fun String.splitTrim(): List<String> =
     split(",").map { it.trim() }
 
 /**
- * 将名词转换为复数形式。
- * @return 转换后的复数形式
- */
-fun String.toPlural(): String = EnglishWordUtil.toPlural(this)
-
-/**
- * 将名词转换为单数形式。
- * @return 转换后的单数形式
- */
-fun String.toSingular(): String = EnglishWordUtil.toSingular(this)
-
-/**
  * 移除两侧的非字母或数字符号
  */
 fun String.trimToLetterOrDigit(): String {

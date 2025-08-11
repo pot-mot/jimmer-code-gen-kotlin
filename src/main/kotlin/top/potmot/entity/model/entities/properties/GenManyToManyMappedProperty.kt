@@ -86,11 +86,11 @@ interface GenManyToManyMappedProperty : TypeMustEntity {
      */
     @OneToMany(mappedBy = "mappedProperty", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val manyTomenyAssociation: List<GenManyToManyAssociation>
+    val manyToManyAssociations: List<GenManyToManyAssociation>
 
     /**
      * 多对多关联 ID View
      */
-    @IdView("manyTomenyAssociation")
-    val manyTomenyAssociationId: List<Int>
+    @IdView("manyToManyAssociations")
+    val manyToManyAssociationIds: List<Int>
 }

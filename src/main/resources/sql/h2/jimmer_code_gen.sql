@@ -497,6 +497,7 @@ CREATE TABLE `gen_join_table` (
                                   `prevent_deletion_by_source` BOOLEAN NOT NULL,
                                   `prevent_deletion_by_target` BOOLEAN NOT NULL,
                                   `deleted_when_endpointIs_logically_deleted` BOOLEAN NOT NULL,
+                                  `logical_delete_filter_id` INTEGER DEFAULT NULL,
                                   PRIMARY KEY (`id`)
 );
 
@@ -508,6 +509,7 @@ COMMENT ON COLUMN `gen_join_table`.`readonly` IS '只读';
 COMMENT ON COLUMN `gen_join_table`.`prevent_deletion_by_source` IS '阻止从源删除';
 COMMENT ON COLUMN `gen_join_table`.`prevent_deletion_by_target` IS '阻止从目标删除';
 COMMENT ON COLUMN `gen_join_table`.`deleted_when_endpointIs_logically_deleted` IS '在终端逻辑删除时物理删除';
+COMMENT ON COLUMN `gen_join_table`.`logical_delete_filter_id` IS '逻辑删除过滤器';
 
 CREATE TABLE `gen_join_table_column` (
                                          `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -559,7 +561,6 @@ COMMENT ON COLUMN `gen_join_table_filter`.`values` IS '值';
 
 CREATE TABLE `gen_join_table_logical_delete_filter` (
                                                         `id` INTEGER NOT NULL AUTO_INCREMENT,
-                                                        `join_table_id` INTEGER NOT NULL,
                                                         `column_name` VARCHAR(255) NOT NULL,
                                                         `type` VARCHAR(255) NOT NULL,
                                                         `values` VARCHAR(255) NOT NULL,
@@ -570,7 +571,6 @@ CREATE TABLE `gen_join_table_logical_delete_filter` (
 
 COMMENT ON TABLE `gen_join_table_logical_delete_filter` IS 'Join Table 逻辑删除过滤器';
 COMMENT ON COLUMN `gen_join_table_logical_delete_filter`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_join_table_logical_delete_filter`.`join_table_id` IS 'Join Table';
 COMMENT ON COLUMN `gen_join_table_logical_delete_filter`.`column_name` IS '列名称';
 COMMENT ON COLUMN `gen_join_table_logical_delete_filter`.`type` IS '类型';
 COMMENT ON COLUMN `gen_join_table_logical_delete_filter`.`values` IS '值';
@@ -1259,6 +1259,11 @@ ALTER TABLE `gen_id_property`
         FOREIGN KEY (`property_id`)
             REFERENCES `gen_property` (`id`);
 
+ALTER TABLE `gen_join_table`
+    ADD CONSTRAINT `fk_gen_join_table_logical_delete_filter_id`
+        FOREIGN KEY (`logical_delete_filter_id`)
+            REFERENCES `gen_join_table_logical_delete_filter` (`id`);
+
 ALTER TABLE `gen_join_table_column`
     ADD CONSTRAINT `fk_gen_join_table_column_join_table_id`
         FOREIGN KEY (`join_table_id`)
@@ -1266,11 +1271,6 @@ ALTER TABLE `gen_join_table_column`
 
 ALTER TABLE `gen_join_table_filter`
     ADD CONSTRAINT `fk_gen_join_table_filter_join_table_id`
-        FOREIGN KEY (`join_table_id`)
-            REFERENCES `gen_join_table` (`id`);
-
-ALTER TABLE `gen_join_table_logical_delete_filter`
-    ADD CONSTRAINT `fk_gen_join_table_logical_delete_filter_join_table_id`
         FOREIGN KEY (`join_table_id`)
             REFERENCES `gen_join_table` (`id`);
 

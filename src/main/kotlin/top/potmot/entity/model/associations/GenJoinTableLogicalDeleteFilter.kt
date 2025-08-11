@@ -7,8 +7,8 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
-import org.babyfish.jimmer.sql.JoinColumn
-import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 
@@ -27,23 +27,6 @@ interface GenJoinTableLogicalDeleteFilter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     val id: Int
-
-    /**
-     * Join Table
-     */
-    @ManyToOne
-    @JoinColumn(
-        name = "join_table_id",
-        referencedColumnName = "id"
-    )
-    @get:Valid
-    val joinTable: GenJoinTable
-
-    /**
-     * Join Table ID View
-     */
-    @IdView("joinTable")
-    val joinTableId: Int
 
     /**
      * 列名称
@@ -78,4 +61,19 @@ interface GenJoinTableLogicalDeleteFilter {
      */
     @Column(name = "nullable")
     val nullable: Boolean
+
+    /**
+     * Join Table
+     * 
+     * @see top.potmot.entity.model.associations.GenJoinTable.logicalDeleteFilter
+     */
+    @OneToMany(mappedBy = "logicalDeleteFilter", orderedProps = [OrderedProp("id")])
+    @get:Valid
+    val joinTables: List<GenJoinTable>
+
+    /**
+     * Join Table ID View
+     */
+    @IdView("joinTables")
+    val joinTableIds: List<Int>
 }

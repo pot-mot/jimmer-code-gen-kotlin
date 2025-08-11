@@ -7,6 +7,8 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
+import org.babyfish.jimmer.sql.JoinColumn
+import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
@@ -67,6 +69,23 @@ interface GenJoinTable {
     val deletedWhenEndpointIsLogicallyDeleted: Boolean
 
     /**
+     * 逻辑删除过滤器
+     */
+    @ManyToOne
+    @JoinColumn(
+        name = "logical_delete_filter_id",
+        referencedColumnName = "id"
+    )
+    @get:Valid
+    val logicalDeleteFilter: GenJoinTableLogicalDeleteFilter?
+
+    /**
+     * 逻辑删除过滤器 ID View
+     */
+    @IdView("logicalDeleteFilter")
+    val logicalDeleteFilterId: Int?
+
+    /**
      * Join Table Join Column
      * 
      * @see top.potmot.entity.model.associations.GenJoinTableColumn.joinTable
@@ -97,34 +116,19 @@ interface GenJoinTable {
     val joinTableFilterIds: List<Int>
 
     /**
-     * Join Table 逻辑删除过滤器
-     * 
-     * @see top.potmot.entity.model.associations.GenJoinTableLogicalDeleteFilter.joinTable
-     */
-    @OneToMany(mappedBy = "joinTable", orderedProps = [OrderedProp("id")])
-    @get:Valid
-    val joinTableLogicalDeleteFilters: List<GenJoinTableLogicalDeleteFilter>
-
-    /**
-     * Join Table 逻辑删除过滤器 ID View
-     */
-    @IdView("joinTableLogicalDeleteFilters")
-    val joinTableLogicalDeleteFilterIds: List<Int>
-
-    /**
      * 多对多关联
      * 
      * @see top.potmot.entity.model.associations.GenManyToManyAssociation.joinTable
      */
     @OneToMany(mappedBy = "joinTable", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val manyTomenyAssociation: List<GenManyToManyAssociation>
+    val manyToManyAssociations: List<GenManyToManyAssociation>
 
     /**
      * 多对多关联 ID View
      */
-    @IdView("manyTomenyAssociation")
-    val manyTomenyAssociationId: List<Int>
+    @IdView("manyToManyAssociations")
+    val manyToManyAssociationIds: List<Int>
 
     /**
      * 多对一关联

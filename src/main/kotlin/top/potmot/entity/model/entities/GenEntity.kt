@@ -334,13 +334,13 @@ interface GenEntity {
      */
     @OneToMany(mappedBy = "typeEntity", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val manyTomenyMappedProperty: List<GenManyToManyMappedProperty>
+    val manyToManyMappedProperties: List<GenManyToManyMappedProperty>
 
     /**
      * 多对多映射属性 ID View
      */
-    @IdView("manyTomenyMappedProperty")
-    val manyTomenyMappedPropertyId: List<Int>
+    @IdView("manyToManyMappedProperties")
+    val manyToManyMappedPropertyIds: List<Int>
 
     /**
      * 多对多源属性
@@ -349,13 +349,13 @@ interface GenEntity {
      */
     @OneToMany(mappedBy = "typeEntity", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val manyTomenySourceProperty: List<GenManyToManySourceProperty>
+    val manyToManySourceProperties: List<GenManyToManySourceProperty>
 
     /**
      * 多对多源属性 ID View
      */
-    @IdView("manyTomenySourceProperty")
-    val manyTomenySourcePropertyId: List<Int>
+    @IdView("manyToManySourceProperties")
+    val manyToManySourcePropertyIds: List<Int>
 
     /**
      * 多对一映射属性（对多）
