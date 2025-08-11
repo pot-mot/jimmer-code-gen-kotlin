@@ -1,0 +1,29 @@
+[versions]
+jimmer = "0.9.105"
+kotlin = "2.1.20"
+ksp = "2.1.20-2.0.0"
+springDependency = "1.1.7"
+springboot = "3.4.3"
+h2 = "2.2.224"
+mysql = "9.0.0"
+postgres = "42.7.3"
+
+[libraries]
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect"}
+
+jimmer-spring-boot-starter = { module = "org.babyfish.jimmer:jimmer-spring-boot-starter", version.ref = "jimmer" }
+jimmer-ksp = { module = "org.babyfish.jimmer:jimmer-ksp", version.ref = "jimmer" }
+
+h2 = { module = "com.h2database:h2", version.ref = "h2" }
+mysql = { module = "com.mysql:mysql-connector-j", version.ref = "mysql"}
+postgres = { module = "org.postgresql:postgresql", version.ref = "postgres"}
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springDependency" }
+spring-boot = { id = "org.springframework.boot", version.ref = "springboot" }

@@ -1,5 +1,0 @@
-GenColumnView {
-    #allScalars
-    id(table)
-    id(enum)
-}

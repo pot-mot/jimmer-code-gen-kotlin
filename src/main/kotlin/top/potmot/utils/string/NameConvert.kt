@@ -1,7 +1,6 @@
 package top.potmot.utils.string
 
 import top.potmot.constant.SEPARATOR
-import top.potmot.core.config.getContextOrGlobal
 
 /**
  * 转换下划线命名为大驼峰名名
@@ -58,44 +57,3 @@ fun camelToUpperSnake(name: String): String =
 
 fun camelToLowerSnake(name: String): String =
     camelToUpperSnake(name).lowercase()
-
-/**
- * 根据配置清理表名的前缀和后缀
- */
-fun String.clearTableName(): String =
-    this.removePrefixes(getContextOrGlobal().tableNamePrefixes.splitTrim())
-        .removeSuffixes(getContextOrGlobal().tableNameSuffixes.splitTrim())
-
-fun String.clearTableComment(): String =
-    this.removePrefixes(getContextOrGlobal().tableCommentPrefixes.splitTrim())
-        .removeSuffixes(getContextOrGlobal().tableCommentSuffixes.splitTrim())
-
-fun tableNameToEntityName(tableName: String): String =
-    snakeToUpperCamel(tableName.trimToLetterOrDigit().clearTableName())
-
-fun entityNameToTableName(entityName: String): String =
-    camelToUpperSnake(entityName)
-
-/**
- * 根据配置清理列名的前缀和后缀
- */
-fun String.clearColumnName(): String =
-    this.removePrefixes(getContextOrGlobal().columnNamePrefixes.splitTrim())
-        .removeSuffixes(getContextOrGlobal().columnNameSuffixes.splitTrim())
-
-fun String.clearColumnComment(): String =
-    this.removePrefixes(getContextOrGlobal().columnCommentPrefixes.splitTrim())
-        .removeSuffixes(getContextOrGlobal().columnCommentSuffixes.splitTrim())
-
-fun String.clearForPropertyName(): String = clearColumnName()
-
-fun String.clearForPropertyComment(): String = clearColumnComment()
-
-fun columnNameToPropertyName(columnName: String): String =
-    snakeToLowerCamel(columnName.trimToLetterOrDigit().clearForPropertyName())
-
-fun tableNameToPropertyName(tableName: String): String =
-    snakeToLowerCamel(tableName.trimToLetterOrDigit().clearTableName().clearForPropertyName())
-
-fun entityNameToPropertyName(entityName: String): String =
-    entityName.clearForPropertyName().replaceFirstChar { it.lowercaseChar() }

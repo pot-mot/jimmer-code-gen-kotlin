@@ -35,9 +35,3 @@ jimmer:
   show-sql: true
   pretty-sql: true
   inline-sql-variables: true
-
-
-# 代码生成
-jimmer-code-gen:
-  language: kotlin
-  table-comment-suffixes: 表

@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class DatabaseNamingStrategyConfig {
+open class DatabaseNamingStrategyConfig {
     @Bean
-    fun databaseNamingStrategy(): DatabaseNamingStrategy =
+    open fun databaseNamingStrategy(): DatabaseNamingStrategy =
         DefaultDatabaseNamingStrategy.LOWER_CASE
 }

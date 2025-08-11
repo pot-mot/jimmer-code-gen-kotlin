@@ -1,7 +1,0 @@
-GenTypeMappingView {
-    #allScalars
-}
-
-input GenTypeMappingInput {
-    #allScalars(this)
-}
