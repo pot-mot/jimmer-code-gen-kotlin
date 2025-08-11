@@ -10,20 +10,22 @@ import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
+import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
-import top.potmot.entity.model.associations.GenManyToOneAssociation
+import top.potmot.entity.model.embeddables.GenEmbeddableTypeDeepProperty
+import top.potmot.entity.model.embeddables.GenEmbeddableTypeProperty
 
 /**
- * 多对一映射属性（对多）
+ * 复合属性列覆盖
  * 
  * @author potmot
  */
 @Entity
-@Table(name = "gen_many_to_one_mapped_property")
-interface GenManyToOneMappedProperty : TypeEntityProperty {
+@Table(name = "gen_embeddable_property_override")
+interface GenEmbeddablePropertyOverride {
     /**
      * ID
      */
@@ -33,62 +35,65 @@ interface GenManyToOneMappedProperty : TypeEntityProperty {
     val id: Int
 
     /**
-     * 多对一关联
-     * 
-     * @see top.potmot.entity.model.associations.GenManyToOneAssociation.mappedProperty
+     * 复合属性
      */
-    @OneToOne(mappedBy = "mappedProperty")
+    @Key
+    @ManyToOne
+    @JoinColumn(
+        name = "embeddable_property_id",
+        referencedColumnName = "id"
+    )
+    @OnDissociate(DissociateAction.DELETE)
     @get:Valid
-    val manyToOneAssociation: GenManyToOneAssociation?
+    val embeddableProperty: GenEmbeddableProperty
 
     /**
-     * 多对一关联 ID View
+     * 复合属性 ID View
      */
-    @IdView("manyToOneAssociation")
-    val manyToOneAssociationId: Int?
+    @IdView("embeddableProperty")
+    val embeddablePropertyId: Int
 
     /**
-     * 属性
+     * 深层属性
+     */
+    @Key
+    @ManyToOne
+    @JoinColumn(
+        name = "deep_property_id",
+        referencedColumnName = "id"
+    )
+    @OnDissociate(DissociateAction.DELETE)
+    @get:Valid
+    val deepProperty: GenEmbeddableTypeDeepProperty
+
+    /**
+     * 深层属性 ID View
+     */
+    @IdView("deepProperty")
+    val deepPropertyId: Int
+
+    /**
+     * 覆盖属性
      */
     @Key
     @OneToOne
     @JoinColumn(
-        name = "property_id",
+        name = "override_property_id",
         referencedColumnName = "id"
     )
-    @OnDissociate(DissociateAction.DELETE)
     @get:Valid
-    val property: GenProperty
+    val overrideProperty: GenEmbeddableTypeProperty
 
     /**
-     * 属性 ID View
+     * 覆盖属性 ID View
      */
-    @IdView("property")
-    val propertyId: Int
+    @IdView("overrideProperty")
+    val overridePropertyId: Int
 
     /**
-     * 对应源属性
+     * 覆盖后列名
      */
-    @Key(group = "mapped_by")
-    @OneToOne
-    @JoinColumn(
-        name = "mapped_by_id",
-        referencedColumnName = "id"
-    )
-    @OnDissociate(DissociateAction.DELETE)
-    @get:Valid
-    val mappedBy: GenManyToOneSourceProperty
-
-    /**
-     * 对应源属性 ID View
-     */
-    @IdView("mappedBy")
-    val mappedById: Int
-
-    /**
-     * ID视图名
-     */
-    @Column(name = "id_view_name")
+    @Column(name = "column_name")
     @get:Length(max = 255)
-    val idViewName: String
+    val columnName: String
 }

@@ -17,6 +17,9 @@ import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.GenModelGroup
+import top.potmot.entity.model.entities.properties.GenColumnProperty
+import top.potmot.entity.model.entities.properties.GenEmbeddableProperty
+import top.potmot.entity.model.entities.properties.GenEnumColumnProperty
 import top.potmot.entity.model.entities.properties.GenExtraProperty
 import top.potmot.entity.model.entities.properties.GenIdProperty
 import top.potmot.entity.model.entities.properties.GenLogicalDeleteProperty
@@ -27,7 +30,6 @@ import top.potmot.entity.model.entities.properties.GenManyToOneSourceProperty
 import top.potmot.entity.model.entities.properties.GenOneToOneMappedProperty
 import top.potmot.entity.model.entities.properties.GenOneToOneSourceProperty
 import top.potmot.entity.model.entities.properties.GenProperty
-import top.potmot.entity.model.entities.properties.GenScalarProperty
 import top.potmot.entity.model.entities.properties.GenSortProperty
 import top.potmot.entity.model.entities.properties.GenVersionProperty
 
@@ -191,21 +193,46 @@ interface GenEntity {
     val versionPropertyId: Int?
 
     /**
-     * 图数据
+     * X坐标
      */
-    @ManyToOne
-    @JoinColumn(
-        name = "graph_data_id",
-        referencedColumnName = "id"
-    )
-    @get:Valid
-    val graphData: GenEntityGraphData
+    @Column(name = "x")
+    val x: Double
 
     /**
-     * 图数据 ID View
+     * Y坐标
      */
-    @IdView("graphData")
-    val graphDataId: Int
+    @Column(name = "y")
+    val y: Double
+
+    /**
+     * 列属性
+     * 
+     * @see top.potmot.entity.model.entities.properties.GenColumnProperty.entity
+     */
+    @OneToMany(mappedBy = "entity", orderedProps = [OrderedProp("id")])
+    @get:Valid
+    val columnProperties: List<GenColumnProperty>
+
+    /**
+     * 列属性 ID View
+     */
+    @IdView("columnProperties")
+    val columnPropertyIds: List<Int>
+
+    /**
+     * 复合属性
+     * 
+     * @see top.potmot.entity.model.entities.properties.GenEmbeddableProperty.entity
+     */
+    @OneToMany(mappedBy = "entity", orderedProps = [OrderedProp("id")])
+    @get:Valid
+    val embeddableProperties: List<GenEmbeddableProperty>
+
+    /**
+     * 复合属性 ID View
+     */
+    @IdView("embeddableProperties")
+    val embeddablePropertyIds: List<Int>
 
     /**
      * 实体索引
@@ -253,6 +280,21 @@ interface GenEntity {
     val entityInheritIdsForParent: List<Int>
 
     /**
+     * 枚举列属性
+     * 
+     * @see top.potmot.entity.model.entities.properties.GenEnumColumnProperty.entity
+     */
+    @OneToMany(mappedBy = "entity", orderedProps = [OrderedProp("id")])
+    @get:Valid
+    val enumColumnProperties: List<GenEnumColumnProperty>
+
+    /**
+     * 枚举列属性 ID View
+     */
+    @IdView("enumColumnProperties")
+    val enumColumnPropertyIds: List<Int>
+
+    /**
      * 额外属性
      * 
      * @see top.potmot.entity.model.entities.properties.GenExtraProperty.entity
@@ -296,21 +338,6 @@ interface GenEntity {
      */
     @IdView("properties")
     val propertyIds: List<Int>
-
-    /**
-     * 标量属性
-     * 
-     * @see top.potmot.entity.model.entities.properties.GenScalarProperty.entity
-     */
-    @OneToMany(mappedBy = "entity", orderedProps = [OrderedProp("id")])
-    @get:Valid
-    val scalarProperties: List<GenScalarProperty>
-
-    /**
-     * 标量属性 ID View
-     */
-    @IdView("scalarProperties")
-    val scalarPropertyIds: List<Int>
 
     /**
      * 排序属性

@@ -12,20 +12,21 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
+import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
+import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
-import org.hibernate.validator.constraints.Length
-import top.potmot.entity.model.GenColumnTypeInfo
+import top.potmot.entity.model.embeddables.GenEmbeddableType
 import top.potmot.entity.model.entities.GenEntity
 
 /**
- * 标量属性
+ * 复合属性
  * 
  * @author potmot
  */
 @Entity
-@Table(name = "gen_scalar_property")
-interface GenScalarProperty : GenColumnTypeInfo, TypeMayEmbeddable, TypeMayEnum {
+@Table(name = "gen_embeddable_property")
+interface GenEmbeddableProperty {
     /**
      * ID
      */
@@ -71,23 +72,35 @@ interface GenScalarProperty : GenColumnTypeInfo, TypeMayEmbeddable, TypeMayEnum 
     val entityId: Int
 
     /**
-     * 类型
+     * 复合类型
      */
-    @Column(name = "type")
-    @get:Length(max = 500)
-    val type: String?
+    @ManyToOne
+    @JoinColumn(
+        name = "type_embeddable_id",
+        referencedColumnName = "id"
+    )
+    @OnDissociate(DissociateAction.DELETE)
+    @get:Valid
+    val typeEmbeddable: GenEmbeddableType
 
     /**
-     * 列名称
+     * 复合类型 ID View
      */
-    @Column(name = "column_name")
-    @get:Length(max = 255)
-    val columnName: String
+    @IdView("typeEmbeddable")
+    val typeEmbeddableId: Int
 
     /**
-     * 默认值
+     * 复合属性列覆盖
+     * 
+     * @see top.potmot.entity.model.entities.properties.GenEmbeddablePropertyOverride.embeddableProperty
      */
-    @Column(name = "default_value")
-    @get:Length(max = 500)
-    val defaultValue: String?
+    @OneToMany(mappedBy = "embeddableProperty", orderedProps = [OrderedProp("id")])
+    @get:Valid
+    val embeddablePropertyOverrides: List<GenEmbeddablePropertyOverride>
+
+    /**
+     * 复合属性列覆盖 ID View
+     */
+    @IdView("embeddablePropertyOverrides")
+    val embeddablePropertyOverrideIds: List<Int>
 }

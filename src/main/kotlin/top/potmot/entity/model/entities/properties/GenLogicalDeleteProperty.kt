@@ -16,7 +16,6 @@ import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
-import top.potmot.entity.model.GenColumnTypeInfo
 import top.potmot.entity.model.entities.GenEntity
 
 /**
@@ -26,7 +25,7 @@ import top.potmot.entity.model.entities.GenEntity
  */
 @Entity
 @Table(name = "gen_logical_delete_property")
-interface GenLogicalDeleteProperty : GenColumnTypeInfo, TypeMayEnum {
+interface GenLogicalDeleteProperty {
     /**
      * ID
      */
@@ -55,25 +54,11 @@ interface GenLogicalDeleteProperty : GenColumnTypeInfo, TypeMayEnum {
     val propertyId: Int
 
     /**
-     * 类型
-     */
-    @Column(name = "type")
-    @get:Length(max = 500)
-    val type: String?
-
-    /**
      * 逻辑删除注解
      */
     @Column(name = "logical_deleted_annotation")
     @get:Length(max = 500)
     val logicalDeletedAnnotation: String
-
-    /**
-     * 列名称
-     */
-    @Column(name = "column_name")
-    @get:Length(max = 255)
-    val columnName: String
 
     /**
      * 实体

@@ -1,8 +1,6 @@
 package top.potmot.entity.database
 
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Max
-import jakarta.validation.constraints.Min
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
@@ -68,15 +66,12 @@ interface DbTableColumn {
      * 排序键
      */
     @Column(name = "order_key")
-    @get:Max(value = 2147483647, message = "排序键不可大于2147483647")
     val orderKey: Int
 
     /**
      * JdbcType 码值
      */
     @Column(name = "jdbc_type_code")
-    @get:Max(value = 2147483647, message = "JdbcType 码值不可大于2147483647")
-    @get:Min(value = 0, message = "JdbcType 码值不可小于0")
     val jdbcTypeCode: Int
 
     /**
@@ -96,16 +91,12 @@ interface DbTableColumn {
      * 长度
      */
     @Column(name = "data_size")
-    @get:Max(value = 9223372036854775807, message = "长度不可大于9223372036854775807")
-    @get:Min(value = 0, message = "长度不可小于0")
     val dataSize: Long?
 
     /**
      * 精度
      */
     @Column(name = "numeric_precision")
-    @get:Max(value = 9223372036854775807, message = "精度不可大于9223372036854775807")
-    @get:Min(value = 0, message = "精度不可小于0")
     val numericPrecision: Long?
 
     /**

@@ -17,17 +17,16 @@ import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.GenModelGroup
-import top.potmot.entity.model.entities.properties.GenExtraProperty
-import top.potmot.entity.model.entities.properties.GenScalarProperty
+import top.potmot.entity.model.entities.properties.GenEmbeddableProperty
 
 /**
- * 嵌入类型
+ * 复合类型
  * 
  * @author potmot
  */
 @Entity
-@Table(name = "gen_embeddable")
-interface GenEmbeddable {
+@Table(name = "gen_embeddable_type")
+interface GenEmbeddableType {
     /**
      * ID
      */
@@ -78,77 +77,62 @@ interface GenEmbeddable {
     val comment: String
 
     /**
-     * 嵌入类型深层属性
+     * 复合属性
      * 
-     * @see top.potmot.entity.model.embeddables.GenEmbeddableDeepProperty.embeddable
-     */
-    @OneToMany(mappedBy = "embeddable", orderedProps = [OrderedProp("id")])
-    @get:Valid
-    val embeddableDeepPropertiesForEmbeddable: List<GenEmbeddableDeepProperty>
-
-    /**
-     * 嵌入类型深层属性 ID View
-     */
-    @IdView("embeddableDeepPropertiesForEmbeddable")
-    val embeddableDeepPropertyIdsForEmbeddable: List<Int>
-
-    /**
-     * 嵌入类型深层属性
-     * 
-     * @see top.potmot.entity.model.embeddables.GenEmbeddableDeepProperty.typeEmbeddable
+     * @see top.potmot.entity.model.entities.properties.GenEmbeddableProperty.typeEmbeddable
      */
     @OneToMany(mappedBy = "typeEmbeddable", orderedProps = [OrderedProp("id")])
-    @get:Valid
-    val embeddableDeepPropertiesForTypeEmbeddable: List<GenEmbeddableDeepProperty>
-
-    /**
-     * 嵌入类型深层属性 ID View
-     */
-    @IdView("embeddableDeepPropertiesForTypeEmbeddable")
-    val embeddableDeepPropertyIdsForTypeEmbeddable: List<Int>
-
-    /**
-     * 嵌入类型属性
-     * 
-     * @see top.potmot.entity.model.embeddables.GenEmbeddableProperty.embeddable
-     */
-    @OneToMany(mappedBy = "embeddable", orderedProps = [OrderedProp("id")])
     @get:Valid
     val embeddableProperties: List<GenEmbeddableProperty>
 
     /**
-     * 嵌入类型属性 ID View
+     * 复合属性 ID View
      */
     @IdView("embeddableProperties")
     val embeddablePropertyIds: List<Int>
 
     /**
-     * 额外属性
+     * 深层复合属性
      * 
-     * @see top.potmot.entity.model.entities.properties.GenExtraProperty.typeEmbeddable
+     * @see top.potmot.entity.model.embeddables.GenEmbeddableTypeDeepProperty.embeddable
+     */
+    @OneToMany(mappedBy = "embeddable", orderedProps = [OrderedProp("id")])
+    @get:Valid
+    val embeddableTypeDeepPropertiesForEmbeddable: List<GenEmbeddableTypeDeepProperty>
+
+    /**
+     * 深层复合属性 ID View
+     */
+    @IdView("embeddableTypeDeepPropertiesForEmbeddable")
+    val embeddableTypeDeepPropertyIdsForEmbeddable: List<Int>
+
+    /**
+     * 深层复合属性
+     * 
+     * @see top.potmot.entity.model.embeddables.GenEmbeddableTypeDeepProperty.typeEmbeddable
      */
     @OneToMany(mappedBy = "typeEmbeddable", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val extraProperties: List<GenExtraProperty>
+    val embeddableTypeDeepPropertiesForTypeEmbeddable: List<GenEmbeddableTypeDeepProperty>
 
     /**
-     * 额外属性 ID View
+     * 深层复合属性 ID View
      */
-    @IdView("extraProperties")
-    val extraPropertyIds: List<Int>
+    @IdView("embeddableTypeDeepPropertiesForTypeEmbeddable")
+    val embeddableTypeDeepPropertyIdsForTypeEmbeddable: List<Int>
 
     /**
-     * 标量属性
+     * 复合类型属性
      * 
-     * @see top.potmot.entity.model.entities.properties.GenScalarProperty.typeEmbeddable
+     * @see top.potmot.entity.model.embeddables.GenEmbeddableTypeProperty.embeddable
      */
-    @OneToMany(mappedBy = "typeEmbeddable", orderedProps = [OrderedProp("id")])
+    @OneToMany(mappedBy = "embeddable", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val scalarProperties: List<GenScalarProperty>
+    val embeddableTypeProperties: List<GenEmbeddableTypeProperty>
 
     /**
-     * 标量属性 ID View
+     * 复合类型属性 ID View
      */
-    @IdView("scalarProperties")
-    val scalarPropertyIds: List<Int>
+    @IdView("embeddableTypeProperties")
+    val embeddableTypePropertyIds: List<Int>
 }

@@ -1,0 +1,12 @@
+logging:
+  level:
+    top.potmot: debug
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: "jdbc:h2:mem:jimmer_code_gen;database_to_upper=false;INIT=CREATE SCHEMA IF NOT EXISTS `jimmer_code_gen`\\; SET SCHEMA `jimmer_code_gen`\\;"
+    username: root
+    password: root
+
+    sql-path: sql/h2/jimmer_code_gen.sql

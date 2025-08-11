@@ -1,4 +1,4 @@
-package top.potmot.entity.model.entities.properties
+package top.potmot.entity.model.embeddables
 
 import jakarta.validation.Valid
 import org.babyfish.jimmer.sql.Column
@@ -10,22 +10,19 @@ import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
+import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import org.babyfish.jimmer.sql.OneToMany
-import org.babyfish.jimmer.sql.OneToOne
-import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
-import top.potmot.entity.model.entities.GenEntity
 
 /**
- * ID属性
+ * 深层复合属性列覆盖
  * 
  * @author potmot
  */
 @Entity
-@Table(name = "gen_id_property")
-interface GenIdProperty {
+@Table(name = "gen_deep_embeddable_property_override")
+interface GenDeepEmbeddablePropertyOverride {
     /**
      * ID
      */
@@ -35,43 +32,47 @@ interface GenIdProperty {
     val id: Int
 
     /**
-     * 属性
+     * 深层属性
      */
     @Key
-    @OneToOne
+    @ManyToOne
     @JoinColumn(
-        name = "property_id",
+        name = "deep_property_id",
         referencedColumnName = "id"
     )
     @OnDissociate(DissociateAction.DELETE)
     @get:Valid
-    val property: GenProperty
+    val deepProperty: GenEmbeddableTypeDeepProperty
 
     /**
-     * 属性 ID View
+     * 深层属性 ID View
      */
-    @IdView("property")
-    val propertyId: Int
+    @IdView("deepProperty")
+    val deepPropertyId: Int
 
     /**
-     * 生成 ID 注解
+     * 覆盖属性
      */
-    @Column(name = "generated_id_annotation")
-    @get:Length(max = 500)
-    val eratedIdAnnotation: String?
-
-    /**
-     * 实体
-     * 
-     * @see top.potmot.entity.model.entities.GenEntity.idProperty
-     */
-    @OneToMany(mappedBy = "idProperty", orderedProps = [OrderedProp("id")])
+    @Key
+    @ManyToOne
+    @JoinColumn(
+        name = "override_property_id",
+        referencedColumnName = "id"
+    )
+    @OnDissociate(DissociateAction.DELETE)
     @get:Valid
-    val entities: List<GenEntity>
+    val overrideProperty: GenEmbeddableTypeProperty
 
     /**
-     * 实体 ID View
+     * 覆盖属性 ID View
      */
-    @IdView("entities")
-    val entityIds: List<Int>
+    @IdView("overrideProperty")
+    val overridePropertyId: Int
+
+    /**
+     * 覆盖后列名
+     */
+    @Column(name = "column_name")
+    @get:Length(max = 255)
+    val columnName: String
 }

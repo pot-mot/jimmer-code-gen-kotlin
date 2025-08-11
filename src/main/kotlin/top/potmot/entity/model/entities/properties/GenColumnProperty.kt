@@ -1,4 +1,4 @@
-package top.potmot.entity.model.embeddables
+package top.potmot.entity.model.entities.properties
 
 import jakarta.validation.Valid
 import org.babyfish.jimmer.sql.Column
@@ -12,18 +12,20 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
+import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.GenColumnTypeInfo
+import top.potmot.entity.model.entities.GenEntity
 
 /**
- * 嵌入类型属性
+ * 列属性
  * 
  * @author potmot
  */
 @Entity
-@Table(name = "gen_embeddable_property")
-interface GenEmbeddableProperty : GenColumnTypeInfo {
+@Table(name = "gen_column_property")
+interface GenColumnProperty : GenColumnTypeInfo {
     /**
      * ID
      */
@@ -33,71 +35,53 @@ interface GenEmbeddableProperty : GenColumnTypeInfo {
     val id: Int
 
     /**
-     * 嵌入类型
+     * 属性
      */
     @Key
-    @ManyToOne
+    @OneToOne
     @JoinColumn(
-        name = "embeddable_id",
+        name = "property_id",
         referencedColumnName = "id"
     )
     @OnDissociate(DissociateAction.DELETE)
     @get:Valid
-    val embeddable: GenEmbeddable
+    val property: GenProperty
 
     /**
-     * 嵌入类型 ID View
+     * 属性 ID View
      */
-    @IdView("embeddable")
-    val embeddableId: Int
+    @IdView("property")
+    val propertyId: Int
 
     /**
-     * 名称
+     * 实体
      */
-    @Key
-    @Column(name = "name")
-    @get:Length(max = 500)
-    val name: String
+    @ManyToOne
+    @JoinColumn(
+        name = "entity_id",
+        referencedColumnName = "id"
+    )
+    @OnDissociate(DissociateAction.DELETE)
+    @get:Valid
+    val entity: GenEntity
 
     /**
-     * 注释
+     * 实体 ID View
      */
-    @Column(name = "comment")
-    @get:Length(max = 500)
-    val comment: String
+    @IdView("entity")
+    val entityId: Int
 
     /**
      * 类型
      */
     @Column(name = "type")
-    @get:Length(max = 500)
+    @get:Length(max = 255)
     val type: String
 
     /**
-     * 其他注解
+     * 列名
      */
-    @Column(name = "extra_annotations")
-    @get:Length(max = 500)
-    val extraAnnotations: String?
-
-    /**
-     * 其他导入
-     */
-    @Column(name = "extra_imports")
+    @Column(name = "column_name")
     @get:Length(max = 255)
-    val extraImports: String?
-
-    /**
-     * 其他验证器
-     */
-    @Column(name = "extra_validations")
-    @get:Length(max = 255)
-    val extraValidations: String?
-
-    /**
-     * 备注
-     */
-    @Column(name = "remark")
-    @get:Length(max = 500)
-    val remark: String
+    val columnName: String
 }

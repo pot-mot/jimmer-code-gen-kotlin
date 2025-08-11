@@ -1,7 +1,5 @@
 package top.potmot.entity.model
 
-import jakarta.validation.constraints.Max
-import jakarta.validation.constraints.Min
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.MappedSuperclass
 import org.hibernate.validator.constraints.Length
@@ -17,8 +15,6 @@ interface GenColumnTypeInfo {
      * JdbcType 码值
      */
     @Column(name = "jdbc_type_code")
-    @get:Max(value = 2147483647, message = "JdbcType 码值不可大于2147483647")
-    @get:Min(value = 0, message = "JdbcType 码值不可小于0")
     val jdbcTypeCode: Int
 
     /**
@@ -38,14 +34,12 @@ interface GenColumnTypeInfo {
      * 长度
      */
     @Column(name = "data_size")
-    @get:Max(value = 2147483647, message = "长度不可大于2147483647")
     val dataSize: Int?
 
     /**
      * 精度
      */
     @Column(name = "numeric_precision")
-    @get:Max(value = 2147483647, message = "精度不可大于2147483647")
     val numericPrecision: Int?
 
     /**

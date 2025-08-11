@@ -1,7 +1,6 @@
 package top.potmot.entity.model
 
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Max
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
@@ -17,7 +16,7 @@ import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
-import top.potmot.entity.model.embeddables.GenEmbeddable
+import top.potmot.entity.model.embeddables.GenEmbeddableType
 import top.potmot.entity.model.entities.GenEntity
 import top.potmot.entity.model.enums.GenEnum
 
@@ -96,23 +95,22 @@ interface GenModelGroup {
      * 排序键
      */
     @Column(name = "order_key")
-    @get:Max(value = 2147483647, message = "排序键不可大于2147483647")
     val orderKey: Int
 
     /**
-     * 嵌入类型
+     * 复合类型
      * 
-     * @see top.potmot.entity.model.embeddables.GenEmbeddable.group
+     * @see top.potmot.entity.model.embeddables.GenEmbeddableType.group
      */
     @OneToMany(mappedBy = "group", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val embeddables: List<GenEmbeddable>
+    val embeddableTypes: List<GenEmbeddableType>
 
     /**
-     * 嵌入类型 ID View
+     * 复合类型 ID View
      */
-    @IdView("embeddables")
-    val embeddableIds: List<Int>
+    @IdView("embeddableTypes")
+    val embeddableTypeIds: List<Int>
 
     /**
      * 实体

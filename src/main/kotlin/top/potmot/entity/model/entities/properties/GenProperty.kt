@@ -9,6 +9,7 @@ import org.babyfish.jimmer.sql.GenerationType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
+import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToMany
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
@@ -34,6 +35,51 @@ interface GenProperty {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     val id: Int
+
+    /**
+     * 列属性
+     * 
+     * @see top.potmot.entity.model.entities.properties.GenColumnProperty.property
+     */
+    @OneToOne(mappedBy = "property")
+    @get:Valid
+    val columnProperty: GenColumnProperty?
+
+    /**
+     * 列属性 ID View
+     */
+    @IdView("columnProperty")
+    val columnPropertyId: Int?
+
+    /**
+     * 复合属性
+     * 
+     * @see top.potmot.entity.model.entities.properties.GenEmbeddableProperty.property
+     */
+    @OneToOne(mappedBy = "property")
+    @get:Valid
+    val embeddableProperty: GenEmbeddableProperty?
+
+    /**
+     * 复合属性 ID View
+     */
+    @IdView("embeddableProperty")
+    val embeddablePropertyId: Int?
+
+    /**
+     * 枚举列属性
+     * 
+     * @see top.potmot.entity.model.entities.properties.GenEnumColumnProperty.property
+     */
+    @OneToOne(mappedBy = "property")
+    @get:Valid
+    val enumColumnProperty: GenEnumColumnProperty?
+
+    /**
+     * 枚举列属性 ID View
+     */
+    @IdView("enumColumnProperty")
+    val enumColumnPropertyId: Int?
 
     /**
      * 额外属性
@@ -171,21 +217,6 @@ interface GenProperty {
     val oneToOneSourcePropertyId: Int?
 
     /**
-     * 标量属性
-     * 
-     * @see top.potmot.entity.model.entities.properties.GenScalarProperty.property
-     */
-    @OneToOne(mappedBy = "property")
-    @get:Valid
-    val scalarProperty: GenScalarProperty?
-
-    /**
-     * 标量属性 ID View
-     */
-    @IdView("scalarProperty")
-    val scalarPropertyId: Int?
-
-    /**
      * 排序属性
      * 
      * @see top.potmot.entity.model.entities.properties.GenSortProperty.property
@@ -218,6 +249,7 @@ interface GenProperty {
     /**
      * 实体
      */
+    @Key
     @ManyToOne
     @JoinColumn(
         name = "entity_id",
@@ -236,6 +268,7 @@ interface GenProperty {
     /**
      * 名称
      */
+    @Key
     @Column(name = "name")
     @get:Length(max = 500)
     val name: String
@@ -274,6 +307,12 @@ interface GenProperty {
     @Column(name = "remark")
     @get:Length(max = 500)
     val remark: String
+
+    /**
+     * 排序键
+     */
+    @Column(name = "order_key")
+    val orderKey: Int
 
     /**
      * 实体索引

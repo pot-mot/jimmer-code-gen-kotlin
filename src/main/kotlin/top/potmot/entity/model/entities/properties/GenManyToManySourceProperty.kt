@@ -25,7 +25,7 @@ import top.potmot.entity.model.associations.GenManyToManyAssociation
  */
 @Entity
 @Table(name = "gen_many_to_many_source_property")
-interface GenManyToManySourceProperty : TypeMustEntity {
+interface GenManyToManySourceProperty : TypeEntityProperty {
     /**
      * ID
      */
@@ -67,6 +67,13 @@ interface GenManyToManySourceProperty : TypeMustEntity {
      */
     @IdView("property")
     val propertyId: Int
+
+    /**
+     * 列名称
+     */
+    @Column(name = "column_name")
+    @get:Length(max = 255)
+    val columnName: String
 
     /**
      * ID视图名

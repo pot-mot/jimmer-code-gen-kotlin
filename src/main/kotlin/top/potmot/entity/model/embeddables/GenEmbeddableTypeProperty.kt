@@ -12,17 +12,23 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
+import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.OneToOne
+import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
+import top.potmot.entity.model.GenColumnTypeInfo
+import top.potmot.entity.model.entities.properties.GenEmbeddablePropertyOverride
+import top.potmot.entity.model.entities.properties.TypeMayEnum
 
 /**
- * 嵌入类型深层属性
+ * 复合类型属性
  * 
  * @author potmot
  */
 @Entity
-@Table(name = "gen_embeddable_deep_property")
-interface GenEmbeddableDeepProperty {
+@Table(name = "gen_embeddable_type_property")
+interface GenEmbeddableTypeProperty : GenColumnTypeInfo, TypeMayEnum {
     /**
      * ID
      */
@@ -30,6 +36,21 @@ interface GenEmbeddableDeepProperty {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     val id: Int
+
+    /**
+     * 复合属性列覆盖
+     * 
+     * @see top.potmot.entity.model.entities.properties.GenEmbeddablePropertyOverride.overrideProperty
+     */
+    @OneToOne(mappedBy = "overrideProperty")
+    @get:Valid
+    val embeddablePropertyOverride: GenEmbeddablePropertyOverride?
+
+    /**
+     * 复合属性列覆盖 ID View
+     */
+    @IdView("embeddablePropertyOverride")
+    val embeddablePropertyOverrideId: Int?
 
     /**
      * 嵌入类型
@@ -42,7 +63,7 @@ interface GenEmbeddableDeepProperty {
     )
     @OnDissociate(DissociateAction.DELETE)
     @get:Valid
-    val embeddable: GenEmbeddable
+    val embeddable: GenEmbeddableType
 
     /**
      * 嵌入类型 ID View
@@ -66,22 +87,18 @@ interface GenEmbeddableDeepProperty {
     val comment: String
 
     /**
-     * 类型对应嵌入类型
+     * 类型
      */
-    @ManyToOne
-    @JoinColumn(
-        name = "type_embeddable_id",
-        referencedColumnName = "id"
-    )
-    @OnDissociate(DissociateAction.DELETE)
-    @get:Valid
-    val typeEmbeddable: GenEmbeddable
+    @Column(name = "type")
+    @get:Length(max = 500)
+    val type: String?
 
     /**
-     * 类型对应嵌入类型 ID View
+     * 列名
      */
-    @IdView("typeEmbeddable")
-    val typeEmbeddableId: Int
+    @Column(name = "column_name")
+    @get:Length(max = 255)
+    val columnName: String
 
     /**
      * 其他注解
@@ -110,4 +127,25 @@ interface GenEmbeddableDeepProperty {
     @Column(name = "remark")
     @get:Length(max = 500)
     val remark: String
+
+    /**
+     * 排序键
+     */
+    @Column(name = "order_key")
+    val orderKey: Int
+
+    /**
+     * 深层复合属性列覆盖
+     * 
+     * @see top.potmot.entity.model.embeddables.GenDeepEmbeddablePropertyOverride.overrideProperty
+     */
+    @OneToMany(mappedBy = "overrideProperty", orderedProps = [OrderedProp("id")])
+    @get:Valid
+    val deepEmbeddablePropertyOverrides: List<GenDeepEmbeddablePropertyOverride>
+
+    /**
+     * 深层复合属性列覆盖 ID View
+     */
+    @IdView("deepEmbeddablePropertyOverrides")
+    val deepEmbeddablePropertyOverrideIds: List<Int>
 }

@@ -6,15 +6,19 @@ DROP TABLE IF EXISTS `db_schema` CASCADE;
 DROP TABLE IF EXISTS `db_table` CASCADE;
 DROP TABLE IF EXISTS `db_table_column` CASCADE;
 DROP TABLE IF EXISTS `db_table_index` CASCADE;
-DROP TABLE IF EXISTS `gen_embeddable` CASCADE;
-DROP TABLE IF EXISTS `gen_embeddable_deep_property` CASCADE;
+DROP TABLE IF EXISTS `gen_column_property` CASCADE;
+DROP TABLE IF EXISTS `gen_deep_embeddable_property_override` CASCADE;
 DROP TABLE IF EXISTS `gen_embeddable_property` CASCADE;
+DROP TABLE IF EXISTS `gen_embeddable_property_override` CASCADE;
+DROP TABLE IF EXISTS `gen_embeddable_type` CASCADE;
+DROP TABLE IF EXISTS `gen_embeddable_type_deep_property` CASCADE;
+DROP TABLE IF EXISTS `gen_embeddable_type_property` CASCADE;
 DROP TABLE IF EXISTS `gen_entity` CASCADE;
-DROP TABLE IF EXISTS `gen_entity_graph_data` CASCADE;
 DROP TABLE IF EXISTS `gen_entity_index` CASCADE;
 DROP TABLE IF EXISTS `gen_entity_inherit` CASCADE;
 DROP TABLE IF EXISTS `gen_entity_key_group` CASCADE;
 DROP TABLE IF EXISTS `gen_enum` CASCADE;
+DROP TABLE IF EXISTS `gen_enum_column_property` CASCADE;
 DROP TABLE IF EXISTS `gen_enum_item` CASCADE;
 DROP TABLE IF EXISTS `gen_extra_property` CASCADE;
 DROP TABLE IF EXISTS `gen_id_property` CASCADE;
@@ -36,7 +40,6 @@ DROP TABLE IF EXISTS `gen_one_to_one_association` CASCADE;
 DROP TABLE IF EXISTS `gen_one_to_one_mapped_property` CASCADE;
 DROP TABLE IF EXISTS `gen_one_to_one_source_property` CASCADE;
 DROP TABLE IF EXISTS `gen_property` CASCADE;
-DROP TABLE IF EXISTS `gen_scalar_property` CASCADE;
 DROP TABLE IF EXISTS `gen_sort_property` CASCADE;
 DROP TABLE IF EXISTS `gen_type_pair` CASCADE;
 DROP TABLE IF EXISTS `gen_version_property` CASCADE;
@@ -207,87 +210,175 @@ COMMENT ON COLUMN `db_table_index`.`name` IS '名称';
 COMMENT ON COLUMN `db_table_index`.`unique_index` IS '是否是唯一索引';
 COMMENT ON COLUMN `db_table_index`.`remark` IS '备注';
 
-CREATE TABLE `gen_embeddable` (
-                                  `id` INTEGER NOT NULL AUTO_INCREMENT,
-                                  `group_id` INTEGER NOT NULL,
-                                  `name` VARCHAR(255) NOT NULL,
-                                  `sub_package_path` CHARACTER VARYING(500) NOT NULL,
-                                  `comment` VARCHAR(255) NOT NULL,
-                                  PRIMARY KEY (`id`)
+CREATE TABLE `gen_column_property` (
+                                       `id` INTEGER NOT NULL AUTO_INCREMENT,
+                                       `property_id` INTEGER NOT NULL,
+                                       `entity_id` INTEGER NOT NULL,
+                                       `type` VARCHAR(255) NOT NULL,
+                                       `column_name` VARCHAR(255) NOT NULL,
+                                       `jdbc_type_code` INTEGER NOT NULL,
+                                       `raw_type` CHARACTER VARYING(500) NOT NULL,
+                                       `type_is_not_null` BOOLEAN NOT NULL,
+                                       `data_size` INTEGER DEFAULT NULL,
+                                       `numeric_precision` INTEGER DEFAULT NULL,
+                                       `column_default_exp` CHARACTER VARYING(500) DEFAULT NULL,
+                                       PRIMARY KEY (`id`)
 );
 
-CREATE UNIQUE INDEX `key_of_gen_embeddable` ON `gen_embeddable` (`group_id`, `name`);
+CREATE UNIQUE INDEX `key_of_gen_column_property` ON `gen_column_property` (`property_id`);
 
-COMMENT ON TABLE `gen_embeddable` IS '嵌入类型';
-COMMENT ON COLUMN `gen_embeddable`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_embeddable`.`group_id` IS '分组';
-COMMENT ON COLUMN `gen_embeddable`.`name` IS '名称';
-COMMENT ON COLUMN `gen_embeddable`.`sub_package_path` IS '子包路径';
-COMMENT ON COLUMN `gen_embeddable`.`comment` IS '注释';
+COMMENT ON TABLE `gen_column_property` IS '列属性';
+COMMENT ON COLUMN `gen_column_property`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_column_property`.`property_id` IS '属性';
+COMMENT ON COLUMN `gen_column_property`.`entity_id` IS '实体';
+COMMENT ON COLUMN `gen_column_property`.`type` IS '类型';
+COMMENT ON COLUMN `gen_column_property`.`column_name` IS '列名';
+COMMENT ON COLUMN `gen_column_property`.`jdbc_type_code` IS 'JdbcType 码值';
+COMMENT ON COLUMN `gen_column_property`.`raw_type` IS '字面类型';
+COMMENT ON COLUMN `gen_column_property`.`type_is_not_null` IS '类型是否非空';
+COMMENT ON COLUMN `gen_column_property`.`data_size` IS '长度';
+COMMENT ON COLUMN `gen_column_property`.`numeric_precision` IS '精度';
+COMMENT ON COLUMN `gen_column_property`.`column_default_exp` IS '列默认表达式';
 
-CREATE TABLE `gen_embeddable_deep_property` (
+CREATE TABLE `gen_deep_embeddable_property_override` (
+                                                         `id` INTEGER NOT NULL AUTO_INCREMENT,
+                                                         `deep_property_id` INTEGER NOT NULL,
+                                                         `override_property_id` INTEGER NOT NULL,
+                                                         `column_name` VARCHAR(255) NOT NULL,
+                                                         PRIMARY KEY (`id`)
+);
+
+CREATE UNIQUE INDEX `key_of_gen_deep_embeddable_property_override` ON `gen_deep_embeddable_property_override` (`deep_property_id`, `override_property_id`);
+
+COMMENT ON TABLE `gen_deep_embeddable_property_override` IS '深层复合属性列覆盖';
+COMMENT ON COLUMN `gen_deep_embeddable_property_override`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_deep_embeddable_property_override`.`deep_property_id` IS '深层属性';
+COMMENT ON COLUMN `gen_deep_embeddable_property_override`.`override_property_id` IS '覆盖属性';
+COMMENT ON COLUMN `gen_deep_embeddable_property_override`.`column_name` IS '覆盖后列名';
+
+CREATE TABLE `gen_embeddable_property` (
+                                           `id` INTEGER NOT NULL AUTO_INCREMENT,
+                                           `property_id` INTEGER NOT NULL,
+                                           `entity_id` INTEGER NOT NULL,
+                                           `type_embeddable_id` INTEGER NOT NULL,
+                                           PRIMARY KEY (`id`)
+);
+
+CREATE UNIQUE INDEX `key_of_gen_embeddable_property` ON `gen_embeddable_property` (`property_id`);
+
+COMMENT ON TABLE `gen_embeddable_property` IS '复合属性';
+COMMENT ON COLUMN `gen_embeddable_property`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_embeddable_property`.`property_id` IS '属性';
+COMMENT ON COLUMN `gen_embeddable_property`.`entity_id` IS '实体';
+COMMENT ON COLUMN `gen_embeddable_property`.`type_embeddable_id` IS '复合类型';
+
+CREATE TABLE `gen_embeddable_property_override` (
+                                                    `id` INTEGER NOT NULL AUTO_INCREMENT,
+                                                    `embeddable_property_id` INTEGER NOT NULL,
+                                                    `deep_property_id` INTEGER NOT NULL,
+                                                    `override_property_id` INTEGER NOT NULL,
+                                                    `column_name` VARCHAR(255) NOT NULL,
+                                                    PRIMARY KEY (`id`)
+);
+
+CREATE UNIQUE INDEX `key_of_gen_embeddable_property_override` ON `gen_embeddable_property_override` (`embeddable_property_id`, `deep_property_id`, `override_property_id`);
+
+COMMENT ON TABLE `gen_embeddable_property_override` IS '复合属性列覆盖';
+COMMENT ON COLUMN `gen_embeddable_property_override`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_embeddable_property_override`.`embeddable_property_id` IS '复合属性';
+COMMENT ON COLUMN `gen_embeddable_property_override`.`deep_property_id` IS '深层属性';
+COMMENT ON COLUMN `gen_embeddable_property_override`.`override_property_id` IS '覆盖属性';
+COMMENT ON COLUMN `gen_embeddable_property_override`.`column_name` IS '覆盖后列名';
+
+CREATE TABLE `gen_embeddable_type` (
+                                       `id` INTEGER NOT NULL AUTO_INCREMENT,
+                                       `group_id` INTEGER NOT NULL,
+                                       `name` VARCHAR(255) NOT NULL,
+                                       `sub_package_path` CHARACTER VARYING(500) NOT NULL,
+                                       `comment` VARCHAR(255) NOT NULL,
+                                       PRIMARY KEY (`id`)
+);
+
+CREATE UNIQUE INDEX `key_of_gen_embeddable_type` ON `gen_embeddable_type` (`group_id`, `name`);
+
+COMMENT ON TABLE `gen_embeddable_type` IS '复合类型';
+COMMENT ON COLUMN `gen_embeddable_type`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_embeddable_type`.`group_id` IS '分组';
+COMMENT ON COLUMN `gen_embeddable_type`.`name` IS '名称';
+COMMENT ON COLUMN `gen_embeddable_type`.`sub_package_path` IS '子包路径';
+COMMENT ON COLUMN `gen_embeddable_type`.`comment` IS '注释';
+
+CREATE TABLE `gen_embeddable_type_deep_property` (
+                                                     `id` INTEGER NOT NULL AUTO_INCREMENT,
+                                                     `embeddable_id` INTEGER NOT NULL,
+                                                     `name` CHARACTER VARYING(500) NOT NULL,
+                                                     `comment` CHARACTER VARYING(500) NOT NULL,
+                                                     `type_embeddable_id` INTEGER NOT NULL,
+                                                     `extra_annotations` CHARACTER VARYING(500) DEFAULT NULL,
+                                                     `extra_imports` VARCHAR(255) DEFAULT NULL,
+                                                     `extra_validations` VARCHAR(255) DEFAULT NULL,
+                                                     `remark` CHARACTER VARYING(500) NOT NULL,
+                                                     `order_key` INTEGER NOT NULL,
+                                                     PRIMARY KEY (`id`)
+);
+
+CREATE UNIQUE INDEX `key_of_gen_embeddable_type_deep_property` ON `gen_embeddable_type_deep_property` (`embeddable_id`, `name`);
+
+COMMENT ON TABLE `gen_embeddable_type_deep_property` IS '深层复合属性';
+COMMENT ON COLUMN `gen_embeddable_type_deep_property`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_embeddable_type_deep_property`.`embeddable_id` IS '嵌入类型';
+COMMENT ON COLUMN `gen_embeddable_type_deep_property`.`name` IS '名称';
+COMMENT ON COLUMN `gen_embeddable_type_deep_property`.`comment` IS '注释';
+COMMENT ON COLUMN `gen_embeddable_type_deep_property`.`type_embeddable_id` IS '类型对应嵌入类型';
+COMMENT ON COLUMN `gen_embeddable_type_deep_property`.`extra_annotations` IS '其他注解';
+COMMENT ON COLUMN `gen_embeddable_type_deep_property`.`extra_imports` IS '其他导入';
+COMMENT ON COLUMN `gen_embeddable_type_deep_property`.`extra_validations` IS '其他验证器';
+COMMENT ON COLUMN `gen_embeddable_type_deep_property`.`remark` IS '备注';
+COMMENT ON COLUMN `gen_embeddable_type_deep_property`.`order_key` IS '排序键';
+
+CREATE TABLE `gen_embeddable_type_property` (
                                                 `id` INTEGER NOT NULL AUTO_INCREMENT,
                                                 `embeddable_id` INTEGER NOT NULL,
                                                 `name` CHARACTER VARYING(500) NOT NULL,
                                                 `comment` CHARACTER VARYING(500) NOT NULL,
-                                                `type_embeddable_id` INTEGER NOT NULL,
+                                                `type` CHARACTER VARYING(500) DEFAULT NULL,
+                                                `column_name` VARCHAR(255) NOT NULL,
                                                 `extra_annotations` CHARACTER VARYING(500) DEFAULT NULL,
                                                 `extra_imports` VARCHAR(255) DEFAULT NULL,
                                                 `extra_validations` VARCHAR(255) DEFAULT NULL,
                                                 `remark` CHARACTER VARYING(500) NOT NULL,
+                                                `order_key` INTEGER NOT NULL,
+                                                `jdbc_type_code` INTEGER NOT NULL,
+                                                `raw_type` CHARACTER VARYING(500) NOT NULL,
+                                                `type_is_not_null` BOOLEAN NOT NULL,
+                                                `data_size` INTEGER DEFAULT NULL,
+                                                `numeric_precision` INTEGER DEFAULT NULL,
+                                                `column_default_exp` CHARACTER VARYING(500) DEFAULT NULL,
+                                                `type_enum_id` INTEGER DEFAULT NULL,
                                                 PRIMARY KEY (`id`)
 );
 
-CREATE UNIQUE INDEX `key_of_gen_embeddable_deep_property` ON `gen_embeddable_deep_property` (`embeddable_id`, `name`);
+CREATE UNIQUE INDEX `key_of_gen_embeddable_type_property` ON `gen_embeddable_type_property` (`embeddable_id`, `name`);
 
-COMMENT ON TABLE `gen_embeddable_deep_property` IS '嵌入类型深层属性';
-COMMENT ON COLUMN `gen_embeddable_deep_property`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_embeddable_deep_property`.`embeddable_id` IS '嵌入类型';
-COMMENT ON COLUMN `gen_embeddable_deep_property`.`name` IS '名称';
-COMMENT ON COLUMN `gen_embeddable_deep_property`.`comment` IS '注释';
-COMMENT ON COLUMN `gen_embeddable_deep_property`.`type_embeddable_id` IS '类型对应嵌入类型';
-COMMENT ON COLUMN `gen_embeddable_deep_property`.`extra_annotations` IS '其他注解';
-COMMENT ON COLUMN `gen_embeddable_deep_property`.`extra_imports` IS '其他导入';
-COMMENT ON COLUMN `gen_embeddable_deep_property`.`extra_validations` IS '其他验证器';
-COMMENT ON COLUMN `gen_embeddable_deep_property`.`remark` IS '备注';
-
-CREATE TABLE `gen_embeddable_property` (
-                                           `id` INTEGER NOT NULL AUTO_INCREMENT,
-                                           `embeddable_id` INTEGER NOT NULL,
-                                           `name` CHARACTER VARYING(500) NOT NULL,
-                                           `comment` CHARACTER VARYING(500) NOT NULL,
-                                           `type` CHARACTER VARYING(500) NOT NULL,
-                                           `extra_annotations` CHARACTER VARYING(500) DEFAULT NULL,
-                                           `extra_imports` VARCHAR(255) DEFAULT NULL,
-                                           `extra_validations` VARCHAR(255) DEFAULT NULL,
-                                           `remark` CHARACTER VARYING(500) NOT NULL,
-                                           `jdbc_type_code` INTEGER NOT NULL,
-                                           `raw_type` CHARACTER VARYING(500) NOT NULL,
-                                           `type_is_not_null` BOOLEAN NOT NULL,
-                                           `data_size` INTEGER DEFAULT NULL,
-                                           `numeric_precision` INTEGER DEFAULT NULL,
-                                           `column_default_exp` CHARACTER VARYING(500) DEFAULT NULL,
-                                           PRIMARY KEY (`id`)
-);
-
-CREATE UNIQUE INDEX `key_of_gen_embeddable_property` ON `gen_embeddable_property` (`embeddable_id`, `name`);
-
-COMMENT ON TABLE `gen_embeddable_property` IS '嵌入类型属性';
-COMMENT ON COLUMN `gen_embeddable_property`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_embeddable_property`.`embeddable_id` IS '嵌入类型';
-COMMENT ON COLUMN `gen_embeddable_property`.`name` IS '名称';
-COMMENT ON COLUMN `gen_embeddable_property`.`comment` IS '注释';
-COMMENT ON COLUMN `gen_embeddable_property`.`type` IS '类型';
-COMMENT ON COLUMN `gen_embeddable_property`.`extra_annotations` IS '其他注解';
-COMMENT ON COLUMN `gen_embeddable_property`.`extra_imports` IS '其他导入';
-COMMENT ON COLUMN `gen_embeddable_property`.`extra_validations` IS '其他验证器';
-COMMENT ON COLUMN `gen_embeddable_property`.`remark` IS '备注';
-COMMENT ON COLUMN `gen_embeddable_property`.`jdbc_type_code` IS 'JdbcType 码值';
-COMMENT ON COLUMN `gen_embeddable_property`.`raw_type` IS '字面类型';
-COMMENT ON COLUMN `gen_embeddable_property`.`type_is_not_null` IS '类型是否非空';
-COMMENT ON COLUMN `gen_embeddable_property`.`data_size` IS '长度';
-COMMENT ON COLUMN `gen_embeddable_property`.`numeric_precision` IS '精度';
-COMMENT ON COLUMN `gen_embeddable_property`.`column_default_exp` IS '列默认表达式';
+COMMENT ON TABLE `gen_embeddable_type_property` IS '复合类型属性';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`embeddable_id` IS '嵌入类型';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`name` IS '名称';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`comment` IS '注释';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`type` IS '类型';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`column_name` IS '列名';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`extra_annotations` IS '其他注解';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`extra_imports` IS '其他导入';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`extra_validations` IS '其他验证器';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`remark` IS '备注';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`order_key` IS '排序键';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`jdbc_type_code` IS 'JdbcType 码值';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`raw_type` IS '字面类型';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`type_is_not_null` IS '类型是否非空';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`data_size` IS '长度';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`numeric_precision` IS '精度';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`column_default_exp` IS '列默认表达式';
+COMMENT ON COLUMN `gen_embeddable_type_property`.`type_enum_id` IS '类型对应枚举';
 
 CREATE TABLE `gen_entity` (
                               `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -305,7 +396,8 @@ CREATE TABLE `gen_entity` (
                               `id_property_id` INTEGER DEFAULT NULL,
                               `logical_delete_property_id` INTEGER DEFAULT NULL,
                               `version_property_id` INTEGER DEFAULT NULL,
-                              `graph_data_id` INTEGER NOT NULL,
+                              `x` DOUBLE PRECISION NOT NULL,
+                              `y` DOUBLE PRECISION NOT NULL,
                               PRIMARY KEY (`id`)
 );
 
@@ -327,19 +419,8 @@ COMMENT ON COLUMN `gen_entity`.`remark` IS '备注';
 COMMENT ON COLUMN `gen_entity`.`id_property_id` IS 'ID属性';
 COMMENT ON COLUMN `gen_entity`.`logical_delete_property_id` IS '逻辑删除属性';
 COMMENT ON COLUMN `gen_entity`.`version_property_id` IS '乐观锁属性';
-COMMENT ON COLUMN `gen_entity`.`graph_data_id` IS '图数据';
-
-CREATE TABLE `gen_entity_graph_data` (
-                                         `id` INTEGER NOT NULL AUTO_INCREMENT,
-                                         `x` DOUBLE PRECISION NOT NULL,
-                                         `y` DOUBLE PRECISION NOT NULL,
-                                         PRIMARY KEY (`id`)
-);
-
-COMMENT ON TABLE `gen_entity_graph_data` IS '实体图数据';
-COMMENT ON COLUMN `gen_entity_graph_data`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_entity_graph_data`.`x` IS 'X坐标';
-COMMENT ON COLUMN `gen_entity_graph_data`.`y` IS 'Y坐标';
+COMMENT ON COLUMN `gen_entity`.`x` IS 'X坐标';
+COMMENT ON COLUMN `gen_entity`.`y` IS 'Y坐标';
 
 CREATE TABLE `gen_entity_index` (
                                     `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -347,6 +428,7 @@ CREATE TABLE `gen_entity_index` (
                                     `name` CHARACTER VARYING(500) NOT NULL,
                                     `unique_index` BOOLEAN NOT NULL,
                                     `remark` CHARACTER VARYING(500) NOT NULL,
+                                    `order_key` INTEGER NOT NULL,
                                     PRIMARY KEY (`id`)
 );
 
@@ -358,6 +440,7 @@ COMMENT ON COLUMN `gen_entity_index`.`entity_id` IS '归属表';
 COMMENT ON COLUMN `gen_entity_index`.`name` IS '名称';
 COMMENT ON COLUMN `gen_entity_index`.`unique_index` IS '是否是唯一索引';
 COMMENT ON COLUMN `gen_entity_index`.`remark` IS '备注';
+COMMENT ON COLUMN `gen_entity_index`.`order_key` IS '排序键';
 
 CREATE TABLE `gen_entity_inherit` (
                                       `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -395,6 +478,12 @@ CREATE TABLE `gen_enum` (
                             `enum_type` CHARACTER VARYING(500) NOT NULL,
                             `sub_package_path` CHARACTER VARYING(500) NOT NULL,
                             `remark` CHARACTER VARYING(500) NOT NULL,
+                            `jdbc_type_code` INTEGER NOT NULL,
+                            `raw_type` CHARACTER VARYING(500) NOT NULL,
+                            `type_is_not_null` BOOLEAN NOT NULL,
+                            `data_size` INTEGER DEFAULT NULL,
+                            `numeric_precision` INTEGER DEFAULT NULL,
+                            `column_default_exp` CHARACTER VARYING(500) DEFAULT NULL,
                             PRIMARY KEY (`id`)
 );
 
@@ -408,6 +497,30 @@ COMMENT ON COLUMN `gen_enum`.`comment` IS '枚举注释';
 COMMENT ON COLUMN `gen_enum`.`enum_type` IS '枚举类型';
 COMMENT ON COLUMN `gen_enum`.`sub_package_path` IS '子包路径';
 COMMENT ON COLUMN `gen_enum`.`remark` IS '备注';
+COMMENT ON COLUMN `gen_enum`.`jdbc_type_code` IS 'JdbcType 码值';
+COMMENT ON COLUMN `gen_enum`.`raw_type` IS '字面类型';
+COMMENT ON COLUMN `gen_enum`.`type_is_not_null` IS '类型是否非空';
+COMMENT ON COLUMN `gen_enum`.`data_size` IS '长度';
+COMMENT ON COLUMN `gen_enum`.`numeric_precision` IS '精度';
+COMMENT ON COLUMN `gen_enum`.`column_default_exp` IS '列默认表达式';
+
+CREATE TABLE `gen_enum_column_property` (
+                                            `id` INTEGER NOT NULL AUTO_INCREMENT,
+                                            `property_id` INTEGER NOT NULL,
+                                            `entity_id` INTEGER NOT NULL,
+                                            `type_enum_id` INTEGER NOT NULL,
+                                            `column_name` VARCHAR(255) NOT NULL,
+                                            PRIMARY KEY (`id`)
+);
+
+CREATE UNIQUE INDEX `key_of_gen_enum_column_property` ON `gen_enum_column_property` (`property_id`);
+
+COMMENT ON TABLE `gen_enum_column_property` IS '枚举列属性';
+COMMENT ON COLUMN `gen_enum_column_property`.`id` IS 'ID';
+COMMENT ON COLUMN `gen_enum_column_property`.`property_id` IS '属性';
+COMMENT ON COLUMN `gen_enum_column_property`.`entity_id` IS '实体';
+COMMENT ON COLUMN `gen_enum_column_property`.`type_enum_id` IS '类型对应枚举';
+COMMENT ON COLUMN `gen_enum_column_property`.`column_name` IS '列名';
 
 CREATE TABLE `gen_enum_item` (
                                  `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -415,9 +528,9 @@ CREATE TABLE `gen_enum_item` (
                                  `name` CHARACTER VARYING(500) NOT NULL,
                                  `mapped_value` CHARACTER VARYING(500) NOT NULL,
                                  `comment` CHARACTER VARYING(500) NOT NULL,
-                                 `order_key` INTEGER NOT NULL,
                                  `default_item` BOOLEAN NOT NULL,
                                  `remark` CHARACTER VARYING(500) NOT NULL,
+                                 `order_key` INTEGER NOT NULL,
                                  PRIMARY KEY (`id`)
 );
 
@@ -431,19 +544,18 @@ COMMENT ON COLUMN `gen_enum_item`.`enum_id` IS '枚举';
 COMMENT ON COLUMN `gen_enum_item`.`name` IS '名称';
 COMMENT ON COLUMN `gen_enum_item`.`mapped_value` IS '值';
 COMMENT ON COLUMN `gen_enum_item`.`comment` IS '注释';
-COMMENT ON COLUMN `gen_enum_item`.`order_key` IS '排序键';
 COMMENT ON COLUMN `gen_enum_item`.`default_item` IS '是否默认';
 COMMENT ON COLUMN `gen_enum_item`.`remark` IS '备注';
+COMMENT ON COLUMN `gen_enum_item`.`order_key` IS '排序键';
 
 CREATE TABLE `gen_extra_property` (
                                       `id` INTEGER NOT NULL AUTO_INCREMENT,
                                       `property_id` INTEGER NOT NULL,
                                       `entity_id` INTEGER NOT NULL,
-                                      `type` CHARACTER VARYING(500) DEFAULT NULL,
-                                      `body` CHARACTER VARYING(500) DEFAULT NULL,
-                                      `type_embeddable_id` INTEGER DEFAULT NULL,
+                                      `type` VARCHAR(255) DEFAULT NULL,
                                       `type_entity_id` INTEGER DEFAULT NULL,
                                       `type_enum_id` INTEGER DEFAULT NULL,
+                                      `body` CHARACTER VARYING(500) DEFAULT NULL,
                                       PRIMARY KEY (`id`)
 );
 
@@ -454,23 +566,14 @@ COMMENT ON COLUMN `gen_extra_property`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_extra_property`.`property_id` IS '属性';
 COMMENT ON COLUMN `gen_extra_property`.`entity_id` IS '实体';
 COMMENT ON COLUMN `gen_extra_property`.`type` IS '类型';
-COMMENT ON COLUMN `gen_extra_property`.`body` IS '属性方法体';
-COMMENT ON COLUMN `gen_extra_property`.`type_embeddable_id` IS '类型对应嵌入';
 COMMENT ON COLUMN `gen_extra_property`.`type_entity_id` IS '类型对应实体';
 COMMENT ON COLUMN `gen_extra_property`.`type_enum_id` IS '类型对应枚举';
+COMMENT ON COLUMN `gen_extra_property`.`body` IS '属性方法体';
 
 CREATE TABLE `gen_id_property` (
                                    `id` INTEGER NOT NULL AUTO_INCREMENT,
                                    `property_id` INTEGER NOT NULL,
-                                   `column_name` VARCHAR(255) NOT NULL,
-                                   `type` CHARACTER VARYING(500) NOT NULL,
                                    `generated_id_annotation` CHARACTER VARYING(500) DEFAULT NULL,
-                                   `jdbc_type_code` INTEGER NOT NULL,
-                                   `raw_type` CHARACTER VARYING(500) NOT NULL,
-                                   `type_is_not_null` BOOLEAN NOT NULL,
-                                   `data_size` INTEGER DEFAULT NULL,
-                                   `numeric_precision` INTEGER DEFAULT NULL,
-                                   `column_default_exp` CHARACTER VARYING(500) DEFAULT NULL,
                                    PRIMARY KEY (`id`)
 );
 
@@ -479,15 +582,7 @@ CREATE UNIQUE INDEX `key_of_gen_id_property` ON `gen_id_property` (`property_id`
 COMMENT ON TABLE `gen_id_property` IS 'ID属性';
 COMMENT ON COLUMN `gen_id_property`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_id_property`.`property_id` IS '属性';
-COMMENT ON COLUMN `gen_id_property`.`column_name` IS '列名称';
-COMMENT ON COLUMN `gen_id_property`.`type` IS '类型';
 COMMENT ON COLUMN `gen_id_property`.`generated_id_annotation` IS '生成 ID 注解';
-COMMENT ON COLUMN `gen_id_property`.`jdbc_type_code` IS 'JdbcType 码值';
-COMMENT ON COLUMN `gen_id_property`.`raw_type` IS '字面类型';
-COMMENT ON COLUMN `gen_id_property`.`type_is_not_null` IS '类型是否非空';
-COMMENT ON COLUMN `gen_id_property`.`data_size` IS '长度';
-COMMENT ON COLUMN `gen_id_property`.`numeric_precision` IS '精度';
-COMMENT ON COLUMN `gen_id_property`.`column_default_exp` IS '列默认表达式';
 
 CREATE TABLE `gen_join_table` (
                                   `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -580,16 +675,7 @@ COMMENT ON COLUMN `gen_join_table_logical_delete_filter`.`nullable` IS '可空';
 CREATE TABLE `gen_logical_delete_property` (
                                                `id` INTEGER NOT NULL AUTO_INCREMENT,
                                                `property_id` INTEGER NOT NULL,
-                                               `type` CHARACTER VARYING(500) DEFAULT NULL,
                                                `logical_deleted_annotation` CHARACTER VARYING(500) NOT NULL,
-                                               `column_name` VARCHAR(255) NOT NULL,
-                                               `jdbc_type_code` INTEGER NOT NULL,
-                                               `raw_type` CHARACTER VARYING(500) NOT NULL,
-                                               `type_is_not_null` BOOLEAN NOT NULL,
-                                               `data_size` INTEGER DEFAULT NULL,
-                                               `numeric_precision` INTEGER DEFAULT NULL,
-                                               `column_default_exp` CHARACTER VARYING(500) DEFAULT NULL,
-                                               `type_enum_id` INTEGER DEFAULT NULL,
                                                PRIMARY KEY (`id`)
 );
 
@@ -598,16 +684,7 @@ CREATE UNIQUE INDEX `key_of_gen_logical_delete_property` ON `gen_logical_delete_
 COMMENT ON TABLE `gen_logical_delete_property` IS '逻辑删除属性';
 COMMENT ON COLUMN `gen_logical_delete_property`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_logical_delete_property`.`property_id` IS '属性';
-COMMENT ON COLUMN `gen_logical_delete_property`.`type` IS '类型';
 COMMENT ON COLUMN `gen_logical_delete_property`.`logical_deleted_annotation` IS '逻辑删除注解';
-COMMENT ON COLUMN `gen_logical_delete_property`.`column_name` IS '列名称';
-COMMENT ON COLUMN `gen_logical_delete_property`.`jdbc_type_code` IS 'JdbcType 码值';
-COMMENT ON COLUMN `gen_logical_delete_property`.`raw_type` IS '字面类型';
-COMMENT ON COLUMN `gen_logical_delete_property`.`type_is_not_null` IS '类型是否非空';
-COMMENT ON COLUMN `gen_logical_delete_property`.`data_size` IS '长度';
-COMMENT ON COLUMN `gen_logical_delete_property`.`numeric_precision` IS '精度';
-COMMENT ON COLUMN `gen_logical_delete_property`.`column_default_exp` IS '列默认表达式';
-COMMENT ON COLUMN `gen_logical_delete_property`.`type_enum_id` IS '类型对应枚举';
 
 CREATE TABLE `gen_many_to_many_association` (
                                                 `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -645,6 +722,7 @@ COMMENT ON COLUMN `gen_many_to_many_mapped_property`.`type_entity_id` IS '类型
 CREATE TABLE `gen_many_to_many_source_property` (
                                                     `id` INTEGER NOT NULL AUTO_INCREMENT,
                                                     `property_id` INTEGER NOT NULL,
+                                                    `column_name` VARCHAR(255) NOT NULL,
                                                     `id_view_name` VARCHAR(255) NOT NULL,
                                                     `type_entity_id` INTEGER NOT NULL,
                                                     PRIMARY KEY (`id`)
@@ -655,6 +733,7 @@ CREATE UNIQUE INDEX `key_of_gen_many_to_many_source_property` ON `gen_many_to_ma
 COMMENT ON TABLE `gen_many_to_many_source_property` IS '多对多源属性';
 COMMENT ON COLUMN `gen_many_to_many_source_property`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_many_to_many_source_property`.`property_id` IS '属性';
+COMMENT ON COLUMN `gen_many_to_many_source_property`.`column_name` IS '列名称';
 COMMENT ON COLUMN `gen_many_to_many_source_property`.`id_view_name` IS 'ID视图名';
 COMMENT ON COLUMN `gen_many_to_many_source_property`.`type_entity_id` IS '类型对应实体';
 
@@ -694,7 +773,9 @@ COMMENT ON COLUMN `gen_many_to_one_mapped_property`.`type_entity_id` IS '类型�
 CREATE TABLE `gen_many_to_one_source_property` (
                                                    `id` INTEGER NOT NULL AUTO_INCREMENT,
                                                    `property_id` INTEGER NOT NULL,
+                                                   `column_name` VARCHAR(255) NOT NULL,
                                                    `id_view_name` VARCHAR(255) NOT NULL,
+                                                   `type_is_not_null` BOOLEAN NOT NULL,
                                                    `type_entity_id` INTEGER NOT NULL,
                                                    PRIMARY KEY (`id`)
 );
@@ -704,7 +785,9 @@ CREATE UNIQUE INDEX `key_of_gen_many_to_one_source_property` ON `gen_many_to_one
 COMMENT ON TABLE `gen_many_to_one_source_property` IS '多对一源属性（对单）';
 COMMENT ON COLUMN `gen_many_to_one_source_property`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_many_to_one_source_property`.`property_id` IS '属性';
+COMMENT ON COLUMN `gen_many_to_one_source_property`.`column_name` IS '列名称';
 COMMENT ON COLUMN `gen_many_to_one_source_property`.`id_view_name` IS 'ID视图名';
+COMMENT ON COLUMN `gen_many_to_one_source_property`.`type_is_not_null` IS '类型是否非空';
 COMMENT ON COLUMN `gen_many_to_one_source_property`.`type_entity_id` IS '类型对应实体';
 
 CREATE TABLE `gen_model` (
@@ -837,7 +920,9 @@ COMMENT ON COLUMN `gen_one_to_one_mapped_property`.`type_entity_id` IS '类型�
 CREATE TABLE `gen_one_to_one_source_property` (
                                                   `id` INTEGER NOT NULL AUTO_INCREMENT,
                                                   `property_id` INTEGER NOT NULL,
+                                                  `column_name` VARCHAR(255) NOT NULL,
                                                   `id_view_name` VARCHAR(255) NOT NULL,
+                                                  `type_is_not_null` BOOLEAN NOT NULL,
                                                   `type_entity_id` INTEGER NOT NULL,
                                                   PRIMARY KEY (`id`)
 );
@@ -847,7 +932,9 @@ CREATE UNIQUE INDEX `key_of_gen_one_to_one_source_property` ON `gen_one_to_one_s
 COMMENT ON TABLE `gen_one_to_one_source_property` IS '一对一源属性';
 COMMENT ON COLUMN `gen_one_to_one_source_property`.`id` IS 'ID';
 COMMENT ON COLUMN `gen_one_to_one_source_property`.`property_id` IS '属性';
+COMMENT ON COLUMN `gen_one_to_one_source_property`.`column_name` IS '列名称';
 COMMENT ON COLUMN `gen_one_to_one_source_property`.`id_view_name` IS 'ID视图名';
+COMMENT ON COLUMN `gen_one_to_one_source_property`.`type_is_not_null` IS '类型是否非空';
 COMMENT ON COLUMN `gen_one_to_one_source_property`.`type_entity_id` IS '类型对应实体';
 
 CREATE TABLE `gen_property` (
@@ -859,8 +946,11 @@ CREATE TABLE `gen_property` (
                                 `extra_imports` VARCHAR(255) DEFAULT NULL,
                                 `extra_validations` VARCHAR(255) DEFAULT NULL,
                                 `remark` CHARACTER VARYING(500) NOT NULL,
+                                `order_key` INTEGER NOT NULL,
                                 PRIMARY KEY (`id`)
 );
+
+CREATE UNIQUE INDEX `key_of_gen_property` ON `gen_property` (`entity_id`, `name`);
 
 COMMENT ON TABLE `gen_property` IS '属性';
 COMMENT ON COLUMN `gen_property`.`id` IS 'ID';
@@ -871,43 +961,7 @@ COMMENT ON COLUMN `gen_property`.`extra_annotations` IS '其他注解';
 COMMENT ON COLUMN `gen_property`.`extra_imports` IS '其他导入';
 COMMENT ON COLUMN `gen_property`.`extra_validations` IS '其他验证器';
 COMMENT ON COLUMN `gen_property`.`remark` IS '备注';
-
-CREATE TABLE `gen_scalar_property` (
-                                       `id` INTEGER NOT NULL AUTO_INCREMENT,
-                                       `property_id` INTEGER NOT NULL,
-                                       `entity_id` INTEGER NOT NULL,
-                                       `type` CHARACTER VARYING(500) DEFAULT NULL,
-                                       `column_name` VARCHAR(255) NOT NULL,
-                                       `default_value` CHARACTER VARYING(500) DEFAULT NULL,
-                                       `jdbc_type_code` INTEGER NOT NULL,
-                                       `raw_type` CHARACTER VARYING(500) NOT NULL,
-                                       `type_is_not_null` BOOLEAN NOT NULL,
-                                       `data_size` INTEGER DEFAULT NULL,
-                                       `numeric_precision` INTEGER DEFAULT NULL,
-                                       `column_default_exp` CHARACTER VARYING(500) DEFAULT NULL,
-                                       `type_embeddable_id` INTEGER DEFAULT NULL,
-                                       `type_enum_id` INTEGER DEFAULT NULL,
-                                       PRIMARY KEY (`id`)
-);
-
-CREATE UNIQUE INDEX `key_of_gen_scalar_property` ON `gen_scalar_property` (`property_id`);
-CREATE UNIQUE INDEX `key_of_gen_common_property` ON `gen_scalar_property` (`property_id`);
-
-COMMENT ON TABLE `gen_scalar_property` IS '标量属性';
-COMMENT ON COLUMN `gen_scalar_property`.`id` IS 'ID';
-COMMENT ON COLUMN `gen_scalar_property`.`property_id` IS '属性';
-COMMENT ON COLUMN `gen_scalar_property`.`entity_id` IS '实体';
-COMMENT ON COLUMN `gen_scalar_property`.`type` IS '类型';
-COMMENT ON COLUMN `gen_scalar_property`.`column_name` IS '列名称';
-COMMENT ON COLUMN `gen_scalar_property`.`default_value` IS '默认值';
-COMMENT ON COLUMN `gen_scalar_property`.`jdbc_type_code` IS 'JdbcType 码值';
-COMMENT ON COLUMN `gen_scalar_property`.`raw_type` IS '字面类型';
-COMMENT ON COLUMN `gen_scalar_property`.`type_is_not_null` IS '类型是否非空';
-COMMENT ON COLUMN `gen_scalar_property`.`data_size` IS '长度';
-COMMENT ON COLUMN `gen_scalar_property`.`numeric_precision` IS '精度';
-COMMENT ON COLUMN `gen_scalar_property`.`column_default_exp` IS '列默认表达式';
-COMMENT ON COLUMN `gen_scalar_property`.`type_embeddable_id` IS '类型对应嵌入';
-COMMENT ON COLUMN `gen_scalar_property`.`type_enum_id` IS '类型对应枚举';
+COMMENT ON COLUMN `gen_property`.`order_key` IS '排序键';
 
 CREATE TABLE `gen_sort_property` (
                                      `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -1069,40 +1123,80 @@ ALTER TABLE `db_table_index_db_table_column_mapping`
 
 COMMENT ON TABLE `db_table_index_db_table_column_mapping` IS '表索引与列的映射关系表';
 
-ALTER TABLE `gen_embeddable`
-    ADD CONSTRAINT `fk_gen_embeddable_group_id`
+ALTER TABLE `gen_column_property`
+    ADD CONSTRAINT `fk_gen_column_property_entity_id`
+        FOREIGN KEY (`entity_id`)
+            REFERENCES `gen_entity` (`id`);
+
+ALTER TABLE `gen_column_property`
+    ADD CONSTRAINT `fk_gen_column_property_property_id`
+        FOREIGN KEY (`property_id`)
+            REFERENCES `gen_property` (`id`);
+
+ALTER TABLE `gen_deep_embeddable_property_override`
+    ADD CONSTRAINT `fk_gen_deep_embeddable_property_override_deep_embeddable_property_id`
+        FOREIGN KEY (`deep_property_id`)
+            REFERENCES `gen_embeddable_type_deep_property` (`id`);
+
+ALTER TABLE `gen_deep_embeddable_property_override`
+    ADD CONSTRAINT `fk_gen_deep_embeddable_property_override_property_id`
+        FOREIGN KEY (`override_property_id`)
+            REFERENCES `gen_embeddable_type_property` (`id`);
+
+ALTER TABLE `gen_embeddable_property`
+    ADD CONSTRAINT `fk_gen_embeddable_property_entity_id`
+        FOREIGN KEY (`entity_id`)
+            REFERENCES `gen_entity` (`id`);
+
+ALTER TABLE `gen_embeddable_property`
+    ADD CONSTRAINT `fk_gen_embeddable_property_property_id`
+        FOREIGN KEY (`property_id`)
+            REFERENCES `gen_property` (`id`);
+
+ALTER TABLE `gen_embeddable_property`
+    ADD CONSTRAINT `fk_gen_embeddable_property_type_embeddable_id`
+        FOREIGN KEY (`type_embeddable_id`)
+            REFERENCES `gen_embeddable_type` (`id`);
+
+ALTER TABLE `gen_embeddable_property_override`
+    ADD CONSTRAINT `fk_gen_embeddable_property_override_embeddable_property_id`
+        FOREIGN KEY (`embeddable_property_id`)
+            REFERENCES `gen_embeddable_property` (`id`);
+
+ALTER TABLE `gen_embeddable_property_override`
+    ADD CONSTRAINT `fk_gen_embeddable_property_override_deep_property_id`
+        FOREIGN KEY (`deep_property_id`)
+            REFERENCES `gen_embeddable_type_deep_property` (`id`);
+
+ALTER TABLE `gen_embeddable_property_override`
+    ADD CONSTRAINT `fk_gen_embeddable_property_override_override_property_id`
+        FOREIGN KEY (`override_property_id`)
+            REFERENCES `gen_embeddable_type_property` (`id`);
+
+ALTER TABLE `gen_embeddable_type`
+    ADD CONSTRAINT `fk_gen_embeddable_type_group_id`
         FOREIGN KEY (`group_id`)
             REFERENCES `gen_model_group` (`id`);
 
-ALTER TABLE `gen_embeddable_deep_property`
-    ADD CONSTRAINT `fk_gen_embeddable_deep_property_embeddable_id`
+ALTER TABLE `gen_embeddable_type_deep_property`
+    ADD CONSTRAINT `fk_gen_embeddable_type_deep_property_embeddable_id`
         FOREIGN KEY (`embeddable_id`)
-            REFERENCES `gen_embeddable` (`id`);
+            REFERENCES `gen_embeddable_type` (`id`);
 
-ALTER TABLE `gen_embeddable_deep_property`
-    ADD CONSTRAINT `fk_gen_embeddable_deep_property_type_embeddable_id`
+ALTER TABLE `gen_embeddable_type_deep_property`
+    ADD CONSTRAINT `fk_gen_embeddable_type_deep_property_type_embeddable_id`
         FOREIGN KEY (`type_embeddable_id`)
-            REFERENCES `gen_embeddable` (`id`);
+            REFERENCES `gen_embeddable_type` (`id`);
 
-ALTER TABLE `gen_embeddable_property`
-    ADD CONSTRAINT `fk_gen_embeddable_property_embeddable_type_id`
+ALTER TABLE `gen_embeddable_type_property`
+    ADD CONSTRAINT `fk_gen_embeddable_type_property_embeddable_type_id`
         FOREIGN KEY (`embeddable_id`)
-            REFERENCES `gen_embeddable` (`id`);
+            REFERENCES `gen_embeddable_type` (`id`);
 
-ALTER TABLE `gen_extra_property`
-    ADD CONSTRAINT `fk_gen_extra_property_type_embeddable_id`
-        FOREIGN KEY (`type_embeddable_id`)
-            REFERENCES `gen_embeddable` (`id`);
-
-ALTER TABLE `gen_scalar_property`
-    ADD CONSTRAINT `fk_gen_scalar_property_type_embeddable_id`
-        FOREIGN KEY (`type_embeddable_id`)
-            REFERENCES `gen_embeddable` (`id`);
-
-ALTER TABLE `gen_entity`
-    ADD CONSTRAINT `fk_gen_entity_graph_data_id`
-        FOREIGN KEY (`graph_data_id`)
-            REFERENCES `gen_entity_graph_data` (`id`);
+ALTER TABLE `gen_embeddable_type_property`
+    ADD CONSTRAINT `fk_gen_embeddable_type_property_type_enum_id`
+        FOREIGN KEY (`type_enum_id`)
+            REFERENCES `gen_enum` (`id`);
 
 ALTER TABLE `gen_entity`
     ADD CONSTRAINT `fk_gen_entity_group_id`
@@ -1139,18 +1233,23 @@ ALTER TABLE `gen_entity_inherit`
         FOREIGN KEY (`parent_id`)
             REFERENCES `gen_entity` (`id`);
 
+ALTER TABLE `gen_enum_column_property`
+    ADD CONSTRAINT `fk_gen_enum_column_property_entity_id`
+        FOREIGN KEY (`entity_id`)
+            REFERENCES `gen_entity` (`id`);
+
 ALTER TABLE `gen_extra_property`
     ADD CONSTRAINT `fk_gen_extra_property_entity_id`
         FOREIGN KEY (`entity_id`)
             REFERENCES `gen_entity` (`id`);
 
-ALTER TABLE `gen_property`
-    ADD CONSTRAINT `fk_gen_property_entity_id`
-        FOREIGN KEY (`entity_id`)
+ALTER TABLE `gen_extra_property`
+    ADD CONSTRAINT `fk_gen_extra_property_type_entity_id`
+        FOREIGN KEY (`type_entity_id`)
             REFERENCES `gen_entity` (`id`);
 
-ALTER TABLE `gen_scalar_property`
-    ADD CONSTRAINT `fk_gen_scalar_property_entity_id`
+ALTER TABLE `gen_property`
+    ADD CONSTRAINT `fk_gen_property_entity_id`
         FOREIGN KEY (`entity_id`)
             REFERENCES `gen_entity` (`id`);
 
@@ -1159,38 +1258,33 @@ ALTER TABLE `gen_sort_property`
         FOREIGN KEY (`entity_id`)
             REFERENCES `gen_entity` (`id`);
 
-ALTER TABLE `gen_extra_property`
-    ADD CONSTRAINT `fk_gen_extra_property_may_type_entity_id`
-        FOREIGN KEY (`type_entity_id`)
-            REFERENCES `gen_entity` (`id`);
-
 ALTER TABLE `gen_many_to_many_mapped_property`
-    ADD CONSTRAINT `fk_gen_many_to_many_mapped_property_must_type_entity_id`
+    ADD CONSTRAINT `fk_gen_many_to_many_mapped_property_type_entity_id`
         FOREIGN KEY (`type_entity_id`)
             REFERENCES `gen_entity` (`id`);
 
 ALTER TABLE `gen_many_to_many_source_property`
-    ADD CONSTRAINT `fk_gen_many_to_many_source_property_must_type_entity_id`
+    ADD CONSTRAINT `fk_gen_many_to_many_source_property_type_entity_id`
         FOREIGN KEY (`type_entity_id`)
             REFERENCES `gen_entity` (`id`);
 
 ALTER TABLE `gen_many_to_one_mapped_property`
-    ADD CONSTRAINT `fk_gen_many_to_one_mapped_property_must_type_entity_id`
+    ADD CONSTRAINT `fk_gen_many_to_one_mapped_property_type_entity_id`
         FOREIGN KEY (`type_entity_id`)
             REFERENCES `gen_entity` (`id`);
 
 ALTER TABLE `gen_many_to_one_source_property`
-    ADD CONSTRAINT `fk_gen_many_to_one_source_property_must_type_entity_id`
+    ADD CONSTRAINT `fk_gen_many_to_one_source_property_type_entity_id`
         FOREIGN KEY (`type_entity_id`)
             REFERENCES `gen_entity` (`id`);
 
 ALTER TABLE `gen_one_to_one_mapped_property`
-    ADD CONSTRAINT `fk_gen_one_to_one_mapped_property_must_type_entity_id`
+    ADD CONSTRAINT `fk_gen_one_to_one_mapped_property_type_entity_id`
         FOREIGN KEY (`type_entity_id`)
             REFERENCES `gen_entity` (`id`);
 
 ALTER TABLE `gen_one_to_one_source_property`
-    ADD CONSTRAINT `fk_gen_one_to_one_source_property_must_type_entity_id`
+    ADD CONSTRAINT `fk_gen_one_to_one_source_property_type_entity_id`
         FOREIGN KEY (`type_entity_id`)
             REFERENCES `gen_entity` (`id`);
 
@@ -1234,20 +1328,20 @@ ALTER TABLE `gen_enum_item`
             ON UPDATE restrict
             ON DELETE restrict;
 
+ALTER TABLE `gen_enum_column_property`
+    ADD CONSTRAINT `fk_gen_enum_column_property_type_enum_id`
+        FOREIGN KEY (`type_enum_id`)
+            REFERENCES `gen_enum` (`id`);
+
 ALTER TABLE `gen_extra_property`
     ADD CONSTRAINT `fk_gen_extra_property_type_enum_id`
         FOREIGN KEY (`type_enum_id`)
             REFERENCES `gen_enum` (`id`);
 
-ALTER TABLE `gen_logical_delete_property`
-    ADD CONSTRAINT `fk_gen_logical_delete_property_type_enum_id`
-        FOREIGN KEY (`type_enum_id`)
-            REFERENCES `gen_enum` (`id`);
-
-ALTER TABLE `gen_scalar_property`
-    ADD CONSTRAINT `fk_gen_scalar_property_type_enum_id`
-        FOREIGN KEY (`type_enum_id`)
-            REFERENCES `gen_enum` (`id`);
+ALTER TABLE `gen_enum_column_property`
+    ADD CONSTRAINT `fk_gen_enum_column_property_property_id`
+        FOREIGN KEY (`property_id`)
+            REFERENCES `gen_property` (`id`);
 
 ALTER TABLE `gen_extra_property`
     ADD CONSTRAINT `fk_gen_extra_property_property_id`
@@ -1378,11 +1472,6 @@ ALTER TABLE `gen_one_to_one_mapped_property`
 
 ALTER TABLE `gen_one_to_one_source_property`
     ADD CONSTRAINT `fk_gen_one_to_one_source_property_property_id`
-        FOREIGN KEY (`property_id`)
-            REFERENCES `gen_property` (`id`);
-
-ALTER TABLE `gen_scalar_property`
-    ADD CONSTRAINT `fk_gen_scalar_property_property_id`
         FOREIGN KEY (`property_id`)
             REFERENCES `gen_property` (`id`);
 

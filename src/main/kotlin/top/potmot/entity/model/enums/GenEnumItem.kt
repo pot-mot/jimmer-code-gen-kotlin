@@ -1,7 +1,6 @@
 package top.potmot.entity.model.enums
 
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Max
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
@@ -74,13 +73,6 @@ interface GenEnumItem {
     val comment: String
 
     /**
-     * 排序键
-     */
-    @Column(name = "order_key")
-    @get:Max(value = 2147483647, message = "排序键不可大于2147483647")
-    val orderKey: Int
-
-    /**
      * 是否默认
      */
     @Column(name = "default_item")
@@ -92,4 +84,10 @@ interface GenEnumItem {
     @Column(name = "remark")
     @get:Length(max = 500)
     val remark: String
+
+    /**
+     * 排序键
+     */
+    @Column(name = "order_key")
+    val orderKey: Int
 }

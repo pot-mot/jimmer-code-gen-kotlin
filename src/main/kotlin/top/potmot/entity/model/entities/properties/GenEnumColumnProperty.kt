@@ -10,22 +10,22 @@ import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
+import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
-import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
-import top.potmot.entity.model.associations.GenManyToManyAssociation
+import top.potmot.entity.model.entities.GenEntity
+import top.potmot.entity.model.enums.GenEnum
 
 /**
- * 多对多映射属性
+ * 枚举列属性
  * 
  * @author potmot
  */
 @Entity
-@Table(name = "gen_many_to_many_mapped_property")
-interface GenManyToManyMappedProperty : TypeEntityProperty {
+@Table(name = "gen_enum_column_property")
+interface GenEnumColumnProperty {
     /**
      * ID
      */
@@ -54,43 +54,45 @@ interface GenManyToManyMappedProperty : TypeEntityProperty {
     val propertyId: Int
 
     /**
-     * 对应源属性
+     * 实体
      */
-    @Key(group = "mapped_by")
-    @OneToOne
+    @ManyToOne
     @JoinColumn(
-        name = "mapped_by_id",
+        name = "entity_id",
         referencedColumnName = "id"
     )
     @OnDissociate(DissociateAction.DELETE)
     @get:Valid
-    val mappedBy: GenManyToManySourceProperty
+    val entity: GenEntity
 
     /**
-     * 对应源属性 ID View
+     * 实体 ID View
      */
-    @IdView("mappedBy")
-    val mappedById: Int
+    @IdView("entity")
+    val entityId: Int
 
     /**
-     * ID视图名
+     * 类型对应枚举
      */
-    @Column(name = "id_view_name")
-    @get:Length(max = 255)
-    val idViewName: String
-
-    /**
-     * 多对多关联
-     * 
-     * @see top.potmot.entity.model.associations.GenManyToManyAssociation.mappedProperty
-     */
-    @OneToMany(mappedBy = "mappedProperty", orderedProps = [OrderedProp("id")])
+    @ManyToOne
+    @JoinColumn(
+        name = "type_enum_id",
+        referencedColumnName = "id"
+    )
+    @OnDissociate(DissociateAction.DELETE)
     @get:Valid
-    val manyToManyAssociations: List<GenManyToManyAssociation>
+    val typeEnum: GenEnum
 
     /**
-     * 多对多关联 ID View
+     * 类型对应枚举 ID View
      */
-    @IdView("manyToManyAssociations")
-    val manyToManyAssociationIds: List<Int>
+    @IdView("typeEnum")
+    val typeEnumId: Int
+
+    /**
+     * 列名
+     */
+    @Column(name = "column_name")
+    @get:Length(max = 255)
+    val columnName: String
 }

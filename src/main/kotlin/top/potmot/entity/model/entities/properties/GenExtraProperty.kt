@@ -16,6 +16,7 @@ import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.entities.GenEntity
+import top.potmot.entity.model.enums.GenEnum
 
 /**
  * 额外属性
@@ -24,7 +25,7 @@ import top.potmot.entity.model.entities.GenEntity
  */
 @Entity
 @Table(name = "gen_extra_property")
-interface GenExtraProperty : TypeMayEmbeddable, TypeMayEntity, TypeMayEnum {
+interface GenExtraProperty {
     /**
      * ID
      */
@@ -74,8 +75,44 @@ interface GenExtraProperty : TypeMayEmbeddable, TypeMayEntity, TypeMayEnum {
      * 类型
      */
     @Column(name = "type")
-    @get:Length(max = 500)
+    @get:Length(max = 255)
     val type: String?
+
+    /**
+     * 类型对应实体
+     */
+    @ManyToOne
+    @JoinColumn(
+        name = "type_entity_id",
+        referencedColumnName = "id"
+    )
+    @OnDissociate(DissociateAction.SET_NULL)
+    @get:Valid
+    val typeEntity: GenEntity?
+
+    /**
+     * 类型对应实体 ID View
+     */
+    @IdView("typeEntity")
+    val typeEntityId: Int?
+
+    /**
+     * 类型对应枚举
+     */
+    @ManyToOne
+    @JoinColumn(
+        name = "type_enum_id",
+        referencedColumnName = "id"
+    )
+    @OnDissociate(DissociateAction.DELETE)
+    @get:Valid
+    val typeEnum: GenEnum?
+
+    /**
+     * 类型对应枚举 ID View
+     */
+    @IdView("typeEnum")
+    val typeEnumId: Int?
 
     /**
      * 属性方法体

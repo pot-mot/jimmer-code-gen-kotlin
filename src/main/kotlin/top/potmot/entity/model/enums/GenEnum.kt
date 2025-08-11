@@ -16,10 +16,11 @@ import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
+import top.potmot.entity.model.GenColumnTypeInfo
 import top.potmot.entity.model.GenModelGroup
+import top.potmot.entity.model.embeddables.GenEmbeddableTypeProperty
+import top.potmot.entity.model.entities.properties.GenEnumColumnProperty
 import top.potmot.entity.model.entities.properties.GenExtraProperty
-import top.potmot.entity.model.entities.properties.GenLogicalDeleteProperty
-import top.potmot.entity.model.entities.properties.GenScalarProperty
 import top.potmot.enums.model.enums.EnumType
 
 /**
@@ -29,7 +30,7 @@ import top.potmot.enums.model.enums.EnumType
  */
 @Entity
 @Table(name = "gen_enum")
-interface GenEnum {
+interface GenEnum : GenColumnTypeInfo {
     /**
      * ID
      */
@@ -108,6 +109,21 @@ interface GenEnum {
     val enumItemIds: List<Int>
 
     /**
+     * 枚举列属性
+     * 
+     * @see top.potmot.entity.model.entities.properties.GenEnumColumnProperty.typeEnum
+     */
+    @OneToMany(mappedBy = "typeEnum", orderedProps = [OrderedProp("id")])
+    @get:Valid
+    val enumColumnProperties: List<GenEnumColumnProperty>
+
+    /**
+     * 枚举列属性 ID View
+     */
+    @IdView("enumColumnProperties")
+    val enumColumnPropertyIds: List<Int>
+
+    /**
      * 额外属性
      * 
      * @see top.potmot.entity.model.entities.properties.GenExtraProperty.typeEnum
@@ -123,32 +139,17 @@ interface GenEnum {
     val extraPropertyIds: List<Int>
 
     /**
-     * 逻辑删除属性
+     * 复合类型属性
      * 
-     * @see top.potmot.entity.model.entities.properties.GenLogicalDeleteProperty.typeEnum
+     * @see top.potmot.entity.model.embeddables.GenEmbeddableTypeProperty.typeEnum
      */
     @OneToMany(mappedBy = "typeEnum", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val logicalDeleteProperties: List<GenLogicalDeleteProperty>
+    val embeddableTypeProperties: List<GenEmbeddableTypeProperty>
 
     /**
-     * 逻辑删除属性 ID View
+     * 复合类型属性 ID View
      */
-    @IdView("logicalDeleteProperties")
-    val logicalDeletePropertyIds: List<Int>
-
-    /**
-     * 标量属性
-     * 
-     * @see top.potmot.entity.model.entities.properties.GenScalarProperty.typeEnum
-     */
-    @OneToMany(mappedBy = "typeEnum", orderedProps = [OrderedProp("id")])
-    @get:Valid
-    val scalarProperties: List<GenScalarProperty>
-
-    /**
-     * 标量属性 ID View
-     */
-    @IdView("scalarProperties")
-    val scalarPropertyIds: List<Int>
+    @IdView("embeddableTypeProperties")
+    val embeddableTypePropertyIds: List<Int>
 }

@@ -1,6 +1,5 @@
 package top.potmot.entity.model
 
-import jakarta.validation.constraints.Max
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -57,7 +56,6 @@ interface GenTypePair {
      * 排序键
      */
     @Column(name = "order_key")
-    @get:Max(value = 2147483647, message = "排序键不可大于2147483647")
     val orderKey: Int
 
     /**

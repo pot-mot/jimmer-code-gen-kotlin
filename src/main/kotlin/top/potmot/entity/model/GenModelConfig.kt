@@ -1,8 +1,6 @@
 package top.potmot.entity.model
 
 import jakarta.validation.Valid
-import jakarta.validation.constraints.Max
-import jakarta.validation.constraints.Min
 import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
@@ -83,8 +81,6 @@ interface GenModelConfig {
      * 默认ID类型
      */
     @Column(name = "default_id_type")
-    @get:Max(value = 2147483647, message = "默认ID类型不可大于2147483647")
-    @get:Min(value = 0, message = "默认ID类型不可小于0")
     val defaultIdType: Int
 
     /**

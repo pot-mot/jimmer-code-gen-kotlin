@@ -23,7 +23,7 @@ import top.potmot.entity.model.associations.GenOneToOneAssociation
  */
 @Entity
 @Table(name = "gen_one_to_one_mapped_property")
-interface GenOneToOneMappedProperty : TypeMustEntity {
+interface GenOneToOneMappedProperty : TypeEntityProperty {
     /**
      * ID
      */

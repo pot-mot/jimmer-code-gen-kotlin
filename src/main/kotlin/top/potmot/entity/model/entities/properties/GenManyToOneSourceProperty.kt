@@ -23,7 +23,7 @@ import top.potmot.entity.model.associations.GenManyToOneAssociation
  */
 @Entity
 @Table(name = "gen_many_to_one_source_property")
-interface GenManyToOneSourceProperty : TypeMustEntity {
+interface GenManyToOneSourceProperty : TypeEntityProperty {
     /**
      * ID
      */
@@ -82,9 +82,22 @@ interface GenManyToOneSourceProperty : TypeMustEntity {
     val propertyId: Int
 
     /**
+     * 列名称
+     */
+    @Column(name = "column_name")
+    @get:Length(max = 255)
+    val columnName: String
+
+    /**
      * ID视图名
      */
     @Column(name = "id_view_name")
     @get:Length(max = 255)
     val idViewName: String
+
+    /**
+     * 类型是否非空
+     */
+    @Column(name = "type_is_not_null")
+    val typeIsNotNull: Boolean
 }

@@ -92,6 +92,12 @@ interface GenEntityIndex {
     val remark: String
 
     /**
+     * 排序键
+     */
+    @Column(name = "order_key")
+    val orderKey: Int
+
+    /**
      * 属性
      */
     @ManyToMany(orderedProps = [OrderedProp("id")])
