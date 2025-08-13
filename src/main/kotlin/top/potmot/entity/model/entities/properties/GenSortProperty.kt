@@ -1,7 +1,6 @@
 package top.potmot.entity.model.entities.properties
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -13,7 +12,6 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToOne
-import org.babyfish.jimmer.sql.Table
 import top.potmot.entity.model.entities.GenEntity
 import top.potmot.enums.model.OrderDirection
 
@@ -23,14 +21,12 @@ import top.potmot.enums.model.OrderDirection
  * @author potmot
  */
 @Entity
-@Table(name = "gen_sort_property")
 interface GenSortProperty {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -73,6 +69,5 @@ interface GenSortProperty {
     /**
      * 排序方向
      */
-    @Column(name = "order_direction")
     val orderDirection: OrderDirection
 }

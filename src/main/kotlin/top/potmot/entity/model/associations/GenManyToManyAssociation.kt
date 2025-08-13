@@ -1,7 +1,6 @@
 package top.potmot.entity.model.associations
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -9,7 +8,6 @@ import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.ManyToOne
-import org.babyfish.jimmer.sql.Table
 import top.potmot.entity.model.entities.properties.GenManyToManyMappedProperty
 import top.potmot.entity.model.entities.properties.GenManyToManySourceProperty
 
@@ -19,14 +17,12 @@ import top.potmot.entity.model.entities.properties.GenManyToManySourceProperty
  * @author potmot
  */
 @Entity
-@Table(name = "gen_many_to_many_association")
 interface GenManyToManyAssociation {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**

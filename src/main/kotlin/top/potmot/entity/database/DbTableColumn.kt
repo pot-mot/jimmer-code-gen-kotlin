@@ -1,7 +1,6 @@
 package top.potmot.entity.database
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -16,7 +15,6 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 
 /**
@@ -25,14 +23,12 @@ import org.hibernate.validator.constraints.Length
  * @author potmot
  */
 @Entity
-@Table(name = "db_table_column")
 interface DbTableColumn {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -58,65 +54,55 @@ interface DbTableColumn {
      * 名称
      */
     @Key
-    @Column(name = "name")
     @get:Length(max = 500)
     val name: String
 
     /**
      * 排序键
      */
-    @Column(name = "order_key")
     val orderKey: Int
 
     /**
      * JdbcType 码值
      */
-    @Column(name = "jdbc_type_code")
     val jdbcTypeCode: Int
 
     /**
      * 字面类型
      */
-    @Column(name = "raw_type")
     @get:Length(max = 500)
     val rawType: String
 
     /**
      * 类型是否非空
      */
-    @Column(name = "type_is_not_null")
     val typeIsNotNull: Boolean
 
     /**
      * 长度
      */
-    @Column(name = "data_size")
     val dataSize: Long?
 
     /**
      * 精度
      */
-    @Column(name = "numeric_precision")
     val numericPrecision: Long?
 
     /**
      * 列默认值
      */
-    @Column(name = "default_value")
     @get:Length(max = 500)
     val defaultValue: String?
 
     /**
      * 注释
      */
-    @Column(name = "comment")
     @get:Length(max = 500)
     val comment: String
 
     /**
      * 备注
      */
-    @Column(name = "remark")
     @get:Length(max = 500)
     val remark: String
 

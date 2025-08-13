@@ -1,7 +1,6 @@
 package top.potmot.entity.database
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -14,7 +13,6 @@ import org.babyfish.jimmer.sql.ManyToMany
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 
 /**
@@ -23,14 +21,12 @@ import org.hibernate.validator.constraints.Length
  * @author potmot
  */
 @Entity
-@Table(name = "db_primary_key")
 interface DbPrimaryKey {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -55,27 +51,23 @@ interface DbPrimaryKey {
     /**
      * 名称
      */
-    @Column(name = "name")
     @get:Length(max = 500)
     val name: String
 
     /**
      * 对应序列
      */
-    @Column(name = "serial_name")
     @get:Length(max = 255)
     val serialName: String?
 
     /**
      * 是否自增
      */
-    @Column(name = "auto_increment")
     val autoIncrement: Boolean
 
     /**
      * 备注
      */
-    @Column(name = "remark")
     @get:Length(max = 500)
     val remark: String
 

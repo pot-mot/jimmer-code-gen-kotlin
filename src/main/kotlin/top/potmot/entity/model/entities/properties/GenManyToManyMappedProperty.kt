@@ -1,7 +1,6 @@
 package top.potmot.entity.model.entities.properties
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -14,7 +13,6 @@ import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.associations.GenManyToManyAssociation
 
@@ -24,14 +22,12 @@ import top.potmot.entity.model.associations.GenManyToManyAssociation
  * @author potmot
  */
 @Entity
-@Table(name = "gen_many_to_many_mapped_property")
-interface GenManyToManyMappedProperty : TypeEntityProperty {
+interface GenManyToManyMappedProperty : AssociationPropertyTypeInfo {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -75,7 +71,6 @@ interface GenManyToManyMappedProperty : TypeEntityProperty {
     /**
      * ID视图名
      */
-    @Column(name = "id_view_name")
     @get:Length(max = 255)
     val idViewName: String
 
@@ -86,11 +81,11 @@ interface GenManyToManyMappedProperty : TypeEntityProperty {
      */
     @OneToMany(mappedBy = "mappedProperty", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val manyToManyAssociations: List<GenManyToManyAssociation>
+    val genManyToManyAssociations: List<GenManyToManyAssociation>
 
     /**
      * 多对多关联 ID View
      */
-    @IdView("manyToManyAssociations")
-    val manyToManyAssociationIds: List<Int>
+    @IdView("genManyToManyAssociations")
+    val genManyToManyAssociationIds: List<Int>
 }

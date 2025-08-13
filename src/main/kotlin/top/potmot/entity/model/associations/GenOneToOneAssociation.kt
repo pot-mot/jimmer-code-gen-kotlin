@@ -1,7 +1,6 @@
 package top.potmot.entity.model.associations
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -12,7 +11,6 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToOne
-import org.babyfish.jimmer.sql.Table
 import top.potmot.entity.model.entities.properties.GenOneToOneMappedProperty
 import top.potmot.entity.model.entities.properties.GenOneToOneSourceProperty
 
@@ -22,14 +20,12 @@ import top.potmot.entity.model.entities.properties.GenOneToOneSourceProperty
  * @author potmot
  */
 @Entity
-@Table(name = "gen_one_to_one_association")
 interface GenOneToOneAssociation {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**

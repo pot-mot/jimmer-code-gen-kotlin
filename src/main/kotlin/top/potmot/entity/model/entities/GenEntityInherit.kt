@@ -1,7 +1,6 @@
 package top.potmot.entity.model.entities
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -10,7 +9,6 @@ import org.babyfish.jimmer.sql.IdView
 import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
-import org.babyfish.jimmer.sql.Table
 
 /**
  * 实体继承
@@ -18,14 +16,12 @@ import org.babyfish.jimmer.sql.Table
  * @author potmot
  */
 @Entity
-@Table(name = "gen_entity_inherit")
 interface GenEntityInherit {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**

@@ -1,7 +1,6 @@
 package top.potmot.entity.model.entities
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -16,7 +15,6 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.entities.properties.GenProperty
 
@@ -26,14 +24,12 @@ import top.potmot.entity.model.entities.properties.GenProperty
  * @author potmot
  */
 @Entity
-@Table(name = "gen_entity_index")
 interface GenEntityIndex {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -43,13 +39,13 @@ interface GenEntityIndex {
      */
     @OneToOne(mappedBy = "index")
     @get:Valid
-    val entityKeyGroup: GenEntityKeyGroup?
+    val genEntityKeyGroup: GenEntityKeyGroup?
 
     /**
      * 实体业务键组 ID View
      */
-    @IdView("entityKeyGroup")
-    val entityKeyGroupId: Int?
+    @IdView("genEntityKeyGroup")
+    val genEntityKeyGroupId: Int?
 
     /**
      * 归属表
@@ -74,27 +70,23 @@ interface GenEntityIndex {
      * 名称
      */
     @Key
-    @Column(name = "name")
     @get:Length(max = 500)
     val name: String
 
     /**
      * 是否是唯一索引
      */
-    @Column(name = "unique_index")
     val uniqueIndex: Boolean
 
     /**
      * 备注
      */
-    @Column(name = "remark")
     @get:Length(max = 500)
     val remark: String
 
     /**
      * 排序键
      */
-    @Column(name = "order_key")
     val orderKey: Int
 
     /**
@@ -107,11 +99,11 @@ interface GenEntityIndex {
         inverseJoinColumnName = "gen_property_id"
     )
     @get:Valid
-    val properties: List<GenProperty>
+    val genProperties: List<GenProperty>
 
     /**
      * 属性 ID View
      */
-    @IdView("properties")
-    val propertyIds: List<Int>
+    @IdView("genProperties")
+    val genPropertyIds: List<Int>
 }

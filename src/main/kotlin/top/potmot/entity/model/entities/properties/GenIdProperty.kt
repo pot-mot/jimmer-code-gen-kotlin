@@ -1,7 +1,6 @@
 package top.potmot.entity.model.entities.properties
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -14,7 +13,6 @@ import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.entities.GenEntity
 
@@ -24,14 +22,12 @@ import top.potmot.entity.model.entities.GenEntity
  * @author potmot
  */
 @Entity
-@Table(name = "gen_id_property")
 interface GenIdProperty {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -56,9 +52,8 @@ interface GenIdProperty {
     /**
      * 生成 ID 注解
      */
-    @Column(name = "generated_id_annotation")
     @get:Length(max = 500)
-    val eratedIdAnnotation: String?
+    val generatedIdAnnotation: String?
 
     /**
      * 实体
@@ -67,11 +62,11 @@ interface GenIdProperty {
      */
     @OneToMany(mappedBy = "idProperty", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val entities: List<GenEntity>
+    val genEntities: List<GenEntity>
 
     /**
      * 实体 ID View
      */
-    @IdView("entities")
-    val entityIds: List<Int>
+    @IdView("genEntities")
+    val genEntityIds: List<Int>
 }

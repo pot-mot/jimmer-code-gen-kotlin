@@ -1,7 +1,6 @@
 package top.potmot.entity.model.associations
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -12,9 +11,7 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
-import top.potmot.entity.model.GenColumnTypeInfo
 
 /**
  * Join Table Join Column
@@ -22,14 +19,12 @@ import top.potmot.entity.model.GenColumnTypeInfo
  * @author potmot
  */
 @Entity
-@Table(name = "gen_join_table_column")
-interface GenJoinTableColumn : GenColumnTypeInfo {
+interface GenJoinTableColumn {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -55,27 +50,23 @@ interface GenJoinTableColumn : GenColumnTypeInfo {
      * 本地列名称
      */
     @Key
-    @Column(name = "column_name")
     @get:Length(max = 255)
     val columnName: String
 
     /**
      * 引用列名称
      */
-    @Column(name = "reference_column_name")
     @get:Length(max = 255)
     val referenceColumnName: String
 
     /**
      * 注释
      */
-    @Column(name = "comment")
     @get:Length(max = 255)
     val comment: String
 
     /**
      * 是否伪外键
      */
-    @Column(name = "fake")
     val fake: Boolean
 }

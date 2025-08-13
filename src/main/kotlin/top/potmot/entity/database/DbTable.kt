@@ -1,7 +1,6 @@
 package top.potmot.entity.database
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -14,7 +13,6 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.enums.database.TableType
 
@@ -22,14 +20,12 @@ import top.potmot.enums.database.TableType
  * @author potmot
  */
 @Entity
-@Table(name = "db_table")
 interface DbTable {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -55,27 +51,23 @@ interface DbTable {
      * 名称
      */
     @Key
-    @Column(name = "name")
     @get:Length(max = 500)
     val name: String
 
     /**
      * 注释
      */
-    @Column(name = "comment")
     @get:Length(max = 500)
     val comment: String
 
     /**
      * 类型
      */
-    @Column(name = "type")
     val type: TableType
 
     /**
      * 备注
      */
-    @Column(name = "remark")
     @get:Length(max = 500)
     val remark: String
 

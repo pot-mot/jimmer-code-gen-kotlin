@@ -1,7 +1,6 @@
 package top.potmot.entity.model
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -14,7 +13,6 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.embeddables.GenEmbeddableType
 import top.potmot.entity.model.entities.GenEntity
@@ -26,14 +24,12 @@ import top.potmot.entity.model.enums.GenEnum
  * @author potmot
  */
 @Entity
-@Table(name = "gen_model_group")
 interface GenModelGroup {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -59,42 +55,36 @@ interface GenModelGroup {
      * 名称
      */
     @Key
-    @Column(name = "name")
     @get:Length(max = 500)
     val name: String
 
     /**
      * 注释
      */
-    @Column(name = "comment")
     @get:Length(max = 500)
     val comment: String
 
     /**
      * 包路径
      */
-    @Column(name = "package_path")
     @get:Length(max = 500)
     val packagePath: String
 
     /**
      * 表路径
      */
-    @Column(name = "table_path")
     @get:Length(max = 500)
     val tablePath: String
 
     /**
-     * 样式
+     * 颜色
      */
-    @Column(name = "style")
     @get:Length(max = 1000000000)
-    val style: String
+    val color: String
 
     /**
      * 排序键
      */
-    @Column(name = "order_key")
     val orderKey: Int
 
     /**
@@ -104,13 +94,13 @@ interface GenModelGroup {
      */
     @OneToMany(mappedBy = "group", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val embeddableTypes: List<GenEmbeddableType>
+    val genEmbeddableTypes: List<GenEmbeddableType>
 
     /**
      * 复合类型 ID View
      */
-    @IdView("embeddableTypes")
-    val embeddableTypeIds: List<Int>
+    @IdView("genEmbeddableTypes")
+    val genEmbeddableTypeIds: List<Int>
 
     /**
      * 实体
@@ -119,13 +109,13 @@ interface GenModelGroup {
      */
     @OneToMany(mappedBy = "group", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val entities: List<GenEntity>
+    val genEntities: List<GenEntity>
 
     /**
      * 实体 ID View
      */
-    @IdView("entities")
-    val entityIds: List<Int>
+    @IdView("genEntities")
+    val genEntityIds: List<Int>
 
     /**
      * 枚举
@@ -134,11 +124,11 @@ interface GenModelGroup {
      */
     @OneToMany(mappedBy = "group", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val enums: List<GenEnum>
+    val genEnums: List<GenEnum>
 
     /**
      * 枚举 ID View
      */
-    @IdView("enums")
-    val enumIds: List<Int>
+    @IdView("genEnums")
+    val genEnumIds: List<Int>
 }

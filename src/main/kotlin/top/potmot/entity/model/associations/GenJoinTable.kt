@@ -1,7 +1,6 @@
 package top.potmot.entity.model.associations
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.GenerationType
@@ -11,7 +10,6 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 
 /**
@@ -20,52 +18,44 @@ import org.hibernate.validator.constraints.Length
  * @author potmot
  */
 @Entity
-@Table(name = "gen_join_table")
 interface GenJoinTable {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
      * 名称
      */
-    @Column(name = "name")
     @get:Length(max = 255)
     val name: String
 
     /**
      * 注释
      */
-    @Column(name = "comment")
     @get:Length(max = 255)
     val comment: String
 
     /**
      * 只读
      */
-    @Column(name = "readonly")
     val readonly: Boolean
 
     /**
      * 阻止从源删除
      */
-    @Column(name = "prevent_deletion_by_source")
     val preventDeletionBySource: Boolean
 
     /**
      * 阻止从目标删除
      */
-    @Column(name = "prevent_deletion_by_target")
     val preventDeletionByTarget: Boolean
 
     /**
      * 在终端逻辑删除时物理删除
      */
-    @Column(name = "deleted_when_endpointIs_logically_deleted")
     val deletedWhenEndpointIsLogicallyDeleted: Boolean
 
     /**
@@ -92,13 +82,13 @@ interface GenJoinTable {
      */
     @OneToMany(mappedBy = "joinTable", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val joinTableColumns: List<GenJoinTableColumn>
+    val genJoinTableColumns: List<GenJoinTableColumn>
 
     /**
      * Join Table Join Column ID View
      */
-    @IdView("joinTableColumns")
-    val joinTableColumnIds: List<Int>
+    @IdView("genJoinTableColumns")
+    val genJoinTableColumnIds: List<Int>
 
     /**
      * Join Table 过滤器
@@ -107,13 +97,13 @@ interface GenJoinTable {
      */
     @OneToMany(mappedBy = "joinTable", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val joinTableFilters: List<GenJoinTableFilter>
+    val genJoinTableFilters: List<GenJoinTableFilter>
 
     /**
      * Join Table 过滤器 ID View
      */
-    @IdView("joinTableFilters")
-    val joinTableFilterIds: List<Int>
+    @IdView("genJoinTableFilters")
+    val genJoinTableFilterIds: List<Int>
 
     /**
      * 多对多关联
@@ -122,13 +112,13 @@ interface GenJoinTable {
      */
     @OneToMany(mappedBy = "joinTable", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val manyToManyAssociations: List<GenManyToManyAssociation>
+    val genManyToManyAssociations: List<GenManyToManyAssociation>
 
     /**
      * 多对多关联 ID View
      */
-    @IdView("manyToManyAssociations")
-    val manyToManyAssociationIds: List<Int>
+    @IdView("genManyToManyAssociations")
+    val genManyToManyAssociationIds: List<Int>
 
     /**
      * 多对一关联
@@ -137,13 +127,13 @@ interface GenJoinTable {
      */
     @OneToMany(mappedBy = "joinTable", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val manyToOneAssociations: List<GenManyToOneAssociation>
+    val genManyToOneAssociations: List<GenManyToOneAssociation>
 
     /**
      * 多对一关联 ID View
      */
-    @IdView("manyToOneAssociations")
-    val manyToOneAssociationIds: List<Int>
+    @IdView("genManyToOneAssociations")
+    val genManyToOneAssociationIds: List<Int>
 
     /**
      * 一对一关联
@@ -152,11 +142,11 @@ interface GenJoinTable {
      */
     @OneToMany(mappedBy = "joinTable", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val oneToOneAssociations: List<GenOneToOneAssociation>
+    val genOneToOneAssociations: List<GenOneToOneAssociation>
 
     /**
      * 一对一关联 ID View
      */
-    @IdView("oneToOneAssociations")
-    val oneToOneAssociationIds: List<Int>
+    @IdView("genOneToOneAssociations")
+    val genOneToOneAssociationIds: List<Int>
 }

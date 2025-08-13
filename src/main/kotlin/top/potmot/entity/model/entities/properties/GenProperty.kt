@@ -1,7 +1,6 @@
 package top.potmot.entity.model.entities.properties
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -15,7 +14,6 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.entities.GenEntity
 import top.potmot.entity.model.entities.GenEntityIndex
@@ -26,60 +24,13 @@ import top.potmot.entity.model.entities.GenEntityIndex
  * @author potmot
  */
 @Entity
-@Table(name = "gen_property")
-interface GenProperty {
+interface GenProperty : ScalarPropertyTypeInfo {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
-
-    /**
-     * 列属性
-     * 
-     * @see top.potmot.entity.model.entities.properties.GenColumnProperty.property
-     */
-    @OneToOne(mappedBy = "property")
-    @get:Valid
-    val columnProperty: GenColumnProperty?
-
-    /**
-     * 列属性 ID View
-     */
-    @IdView("columnProperty")
-    val columnPropertyId: Int?
-
-    /**
-     * 复合属性
-     * 
-     * @see top.potmot.entity.model.entities.properties.GenEmbeddableProperty.property
-     */
-    @OneToOne(mappedBy = "property")
-    @get:Valid
-    val embeddableProperty: GenEmbeddableProperty?
-
-    /**
-     * 复合属性 ID View
-     */
-    @IdView("embeddableProperty")
-    val embeddablePropertyId: Int?
-
-    /**
-     * 枚举列属性
-     * 
-     * @see top.potmot.entity.model.entities.properties.GenEnumColumnProperty.property
-     */
-    @OneToOne(mappedBy = "property")
-    @get:Valid
-    val enumColumnProperty: GenEnumColumnProperty?
-
-    /**
-     * 枚举列属性 ID View
-     */
-    @IdView("enumColumnProperty")
-    val enumColumnPropertyId: Int?
 
     /**
      * 额外属性
@@ -88,13 +39,13 @@ interface GenProperty {
      */
     @OneToOne(mappedBy = "property")
     @get:Valid
-    val extraProperty: GenExtraProperty?
+    val genExtraProperty: GenExtraProperty?
 
     /**
      * 额外属性 ID View
      */
-    @IdView("extraProperty")
-    val extraPropertyId: Int?
+    @IdView("genExtraProperty")
+    val genExtraPropertyId: Int?
 
     /**
      * ID属性
@@ -103,13 +54,13 @@ interface GenProperty {
      */
     @OneToOne(mappedBy = "property")
     @get:Valid
-    val idProperty: GenIdProperty?
+    val genIdProperty: GenIdProperty?
 
     /**
      * ID属性 ID View
      */
-    @IdView("idProperty")
-    val idPropertyId: Int?
+    @IdView("genIdProperty")
+    val genIdPropertyId: Int?
 
     /**
      * 逻辑删除属性
@@ -118,13 +69,13 @@ interface GenProperty {
      */
     @OneToOne(mappedBy = "property")
     @get:Valid
-    val logicalDeleteProperty: GenLogicalDeleteProperty?
+    val genLogicalDeleteProperty: GenLogicalDeleteProperty?
 
     /**
      * 逻辑删除属性 ID View
      */
-    @IdView("logicalDeleteProperty")
-    val logicalDeletePropertyId: Int?
+    @IdView("genLogicalDeleteProperty")
+    val genLogicalDeletePropertyId: Int?
 
     /**
      * 多对多映射属性
@@ -133,13 +84,13 @@ interface GenProperty {
      */
     @OneToOne(mappedBy = "property")
     @get:Valid
-    val manyToManyMappedProperty: GenManyToManyMappedProperty?
+    val genManyToManyMappedProperty: GenManyToManyMappedProperty?
 
     /**
      * 多对多映射属性 ID View
      */
-    @IdView("manyToManyMappedProperty")
-    val manyToManyMappedPropertyId: Int?
+    @IdView("genManyToManyMappedProperty")
+    val genManyToManyMappedPropertyId: Int?
 
     /**
      * 多对多源属性
@@ -148,13 +99,13 @@ interface GenProperty {
      */
     @OneToOne(mappedBy = "property")
     @get:Valid
-    val manyToManySourceProperty: GenManyToManySourceProperty?
+    val genManyToManySourceProperty: GenManyToManySourceProperty?
 
     /**
      * 多对多源属性 ID View
      */
-    @IdView("manyToManySourceProperty")
-    val manyToManySourcePropertyId: Int?
+    @IdView("genManyToManySourceProperty")
+    val genManyToManySourcePropertyId: Int?
 
     /**
      * 多对一映射属性（对多）
@@ -163,13 +114,13 @@ interface GenProperty {
      */
     @OneToOne(mappedBy = "property")
     @get:Valid
-    val manyToOneMappedProperty: GenManyToOneMappedProperty?
+    val genManyToOneMappedProperty: GenManyToOneMappedProperty?
 
     /**
      * 多对一映射属性（对多） ID View
      */
-    @IdView("manyToOneMappedProperty")
-    val manyToOneMappedPropertyId: Int?
+    @IdView("genManyToOneMappedProperty")
+    val genManyToOneMappedPropertyId: Int?
 
     /**
      * 多对一源属性（对单）
@@ -178,13 +129,13 @@ interface GenProperty {
      */
     @OneToOne(mappedBy = "property")
     @get:Valid
-    val manyToOneSourceProperty: GenManyToOneSourceProperty?
+    val genManyToOneSourceProperty: GenManyToOneSourceProperty?
 
     /**
      * 多对一源属性（对单） ID View
      */
-    @IdView("manyToOneSourceProperty")
-    val manyToOneSourcePropertyId: Int?
+    @IdView("genManyToOneSourceProperty")
+    val genManyToOneSourcePropertyId: Int?
 
     /**
      * 一对一映射属性
@@ -193,13 +144,13 @@ interface GenProperty {
      */
     @OneToOne(mappedBy = "property")
     @get:Valid
-    val oneToOneMappedProperty: GenOneToOneMappedProperty?
+    val genOneToOneMappedProperty: GenOneToOneMappedProperty?
 
     /**
      * 一对一映射属性 ID View
      */
-    @IdView("oneToOneMappedProperty")
-    val oneToOneMappedPropertyId: Int?
+    @IdView("genOneToOneMappedProperty")
+    val genOneToOneMappedPropertyId: Int?
 
     /**
      * 一对一源属性
@@ -208,13 +159,13 @@ interface GenProperty {
      */
     @OneToOne(mappedBy = "property")
     @get:Valid
-    val oneToOneSourceProperty: GenOneToOneSourceProperty?
+    val genOneToOneSourceProperty: GenOneToOneSourceProperty?
 
     /**
      * 一对一源属性 ID View
      */
-    @IdView("oneToOneSourceProperty")
-    val oneToOneSourcePropertyId: Int?
+    @IdView("genOneToOneSourceProperty")
+    val genOneToOneSourcePropertyId: Int?
 
     /**
      * 排序属性
@@ -223,13 +174,13 @@ interface GenProperty {
      */
     @OneToOne(mappedBy = "property")
     @get:Valid
-    val sortProperty: GenSortProperty?
+    val genSortProperty: GenSortProperty?
 
     /**
      * 排序属性 ID View
      */
-    @IdView("sortProperty")
-    val sortPropertyId: Int?
+    @IdView("genSortProperty")
+    val genSortPropertyId: Int?
 
     /**
      * 乐观锁属性
@@ -238,13 +189,13 @@ interface GenProperty {
      */
     @OneToOne(mappedBy = "property")
     @get:Valid
-    val versionProperty: GenVersionProperty?
+    val genVersionProperty: GenVersionProperty?
 
     /**
      * 乐观锁属性 ID View
      */
-    @IdView("versionProperty")
-    val versionPropertyId: Int?
+    @IdView("genVersionProperty")
+    val genVersionPropertyId: Int?
 
     /**
      * 实体
@@ -269,63 +220,56 @@ interface GenProperty {
      * 名称
      */
     @Key
-    @Column(name = "name")
     @get:Length(max = 500)
     val name: String
 
     /**
      * 注释
      */
-    @Column(name = "comment")
     @get:Length(max = 500)
     val comment: String
 
     /**
      * 其他注解
      */
-    @Column(name = "extra_annotations")
     @get:Length(max = 500)
     val extraAnnotations: String?
 
     /**
      * 其他导入
      */
-    @Column(name = "extra_imports")
     @get:Length(max = 255)
     val extraImports: String?
 
     /**
      * 其他验证器
      */
-    @Column(name = "extra_validations")
     @get:Length(max = 255)
     val extraValidations: String?
 
     /**
      * 备注
      */
-    @Column(name = "remark")
     @get:Length(max = 500)
     val remark: String
 
     /**
      * 排序键
      */
-    @Column(name = "order_key")
     val orderKey: Int
 
     /**
      * 实体索引
      * 
-     * @see top.potmot.entity.model.entities.GenEntityIndex.properties
+     * @see top.potmot.entity.model.entities.GenEntityIndex.genProperties
      */
-    @ManyToMany(mappedBy = "properties", orderedProps = [OrderedProp("id")])
+    @ManyToMany(mappedBy = "genProperties", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val entityIndexes: List<GenEntityIndex>
+    val genEntityIndexes: List<GenEntityIndex>
 
     /**
      * 实体索引 ID View
      */
-    @IdView("entityIndexes")
-    val entityIndexIds: List<Int>
+    @IdView("genEntityIndexes")
+    val genEntityIndexIds: List<Int>
 }

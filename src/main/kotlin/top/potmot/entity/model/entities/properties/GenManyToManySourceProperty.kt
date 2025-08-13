@@ -1,7 +1,6 @@
 package top.potmot.entity.model.entities.properties
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -14,7 +13,6 @@ import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.associations.GenManyToManyAssociation
 
@@ -24,14 +22,12 @@ import top.potmot.entity.model.associations.GenManyToManyAssociation
  * @author potmot
  */
 @Entity
-@Table(name = "gen_many_to_many_source_property")
-interface GenManyToManySourceProperty : TypeEntityProperty {
+interface GenManyToManySourceProperty : AssociationPropertyTypeInfo {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -41,13 +37,13 @@ interface GenManyToManySourceProperty : TypeEntityProperty {
      */
     @OneToOne(mappedBy = "mappedBy")
     @get:Valid
-    val manyToManyMappedProperty: GenManyToManyMappedProperty?
+    val genManyToManyMappedProperty: GenManyToManyMappedProperty?
 
     /**
      * 多对多映射属性 ID View
      */
-    @IdView("manyToManyMappedProperty")
-    val manyToManyMappedPropertyId: Int?
+    @IdView("genManyToManyMappedProperty")
+    val genManyToManyMappedPropertyId: Int?
 
     /**
      * 属性
@@ -69,16 +65,8 @@ interface GenManyToManySourceProperty : TypeEntityProperty {
     val propertyId: Int
 
     /**
-     * 列名称
-     */
-    @Column(name = "column_name")
-    @get:Length(max = 255)
-    val columnName: String
-
-    /**
      * ID视图名
      */
-    @Column(name = "id_view_name")
     @get:Length(max = 255)
     val idViewName: String
 
@@ -89,11 +77,11 @@ interface GenManyToManySourceProperty : TypeEntityProperty {
      */
     @OneToMany(mappedBy = "sourceProperty", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val manyToManyAssociations: List<GenManyToManyAssociation>
+    val genManyToManyAssociations: List<GenManyToManyAssociation>
 
     /**
      * 多对多关联 ID View
      */
-    @IdView("manyToManyAssociations")
-    val manyToManyAssociationIds: List<Int>
+    @IdView("genManyToManyAssociations")
+    val genManyToManyAssociationIds: List<Int>
 }

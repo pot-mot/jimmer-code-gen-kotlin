@@ -1,7 +1,6 @@
 package top.potmot.entity.model.entities.properties
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -14,7 +13,6 @@ import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OneToOne
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.entities.GenEntity
 
@@ -24,14 +22,12 @@ import top.potmot.entity.model.entities.GenEntity
  * @author potmot
  */
 @Entity
-@Table(name = "gen_logical_delete_property")
 interface GenLogicalDeleteProperty {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -56,7 +52,6 @@ interface GenLogicalDeleteProperty {
     /**
      * 逻辑删除注解
      */
-    @Column(name = "logical_deleted_annotation")
     @get:Length(max = 500)
     val logicalDeletedAnnotation: String
 
@@ -67,11 +62,11 @@ interface GenLogicalDeleteProperty {
      */
     @OneToMany(mappedBy = "logicalDeleteProperty", orderedProps = [OrderedProp("id")])
     @get:Valid
-    val entities: List<GenEntity>
+    val genEntities: List<GenEntity>
 
     /**
      * 实体 ID View
      */
-    @IdView("entities")
-    val entityIds: List<Int>
+    @IdView("genEntities")
+    val genEntityIds: List<Int>
 }

@@ -1,7 +1,6 @@
 package top.potmot.entity.model.entities.properties
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -12,7 +11,6 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToOne
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.associations.GenOneToOneAssociation
 
@@ -22,14 +20,12 @@ import top.potmot.entity.model.associations.GenOneToOneAssociation
  * @author potmot
  */
 @Entity
-@Table(name = "gen_one_to_one_mapped_property")
-interface GenOneToOneMappedProperty : TypeEntityProperty {
+interface GenOneToOneMappedProperty : AssociationPropertyTypeInfo {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -39,13 +35,13 @@ interface GenOneToOneMappedProperty : TypeEntityProperty {
      */
     @OneToOne(mappedBy = "mappedProperty")
     @get:Valid
-    val oneToOneAssociation: GenOneToOneAssociation?
+    val genOneToOneAssociation: GenOneToOneAssociation?
 
     /**
      * 一对一关联 ID View
      */
-    @IdView("oneToOneAssociation")
-    val oneToOneAssociationId: Int?
+    @IdView("genOneToOneAssociation")
+    val genOneToOneAssociationId: Int?
 
     /**
      * 属性
@@ -88,7 +84,6 @@ interface GenOneToOneMappedProperty : TypeEntityProperty {
     /**
      * ID视图名
      */
-    @Column(name = "id_view_name")
     @get:Length(max = 255)
     val idViewName: String
 }

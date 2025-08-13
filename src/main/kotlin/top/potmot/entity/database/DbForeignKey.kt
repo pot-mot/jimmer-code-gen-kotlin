@@ -1,7 +1,6 @@
 package top.potmot.entity.database
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -13,7 +12,6 @@ import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 
 /**
@@ -22,20 +20,17 @@ import org.hibernate.validator.constraints.Length
  * @author potmot
  */
 @Entity
-@Table(name = "db_foreign_key")
 interface DbForeignKey {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
      * 关联名称
      */
-    @Column(name = "name")
     @get:Length(max = 500)
     val name: String
 
@@ -78,28 +73,24 @@ interface DbForeignKey {
     /**
      * 关联类型
      */
-    @Column(name = "type")
     @get:Length(max = 500)
     val type: String
 
     /**
      * 更新行为
      */
-    @Column(name = "update_action")
     @get:Length(max = 500)
     val updateAction: String
 
     /**
      * 删除行为
      */
-    @Column(name = "delete_action")
     @get:Length(max = 500)
     val deleteAction: String
 
     /**
      * 备注
      */
-    @Column(name = "remark")
     @get:Length(max = 500)
     val remark: String
 

@@ -10,12 +10,12 @@ import org.babyfish.jimmer.sql.OnDissociate
 import top.potmot.entity.model.entities.GenEntity
 
 /**
- * 类型是实体的属性
+ * 关联属性类型信息
  * 
  * @author potmot
  */
 @MappedSuperclass
-interface TypeEntityProperty {
+interface AssociationPropertyTypeInfo {
     /**
      * 类型对应实体
      */

@@ -1,7 +1,6 @@
 package top.potmot.entity.model.entities.properties
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -13,7 +12,6 @@ import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToOne
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.entities.GenEntity
 import top.potmot.entity.model.enums.GenEnum
@@ -24,14 +22,12 @@ import top.potmot.entity.model.enums.GenEnum
  * @author potmot
  */
 @Entity
-@Table(name = "gen_extra_property")
 interface GenExtraProperty {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -54,29 +50,10 @@ interface GenExtraProperty {
     val propertyId: Int
 
     /**
-     * 实体
-     */
-    @ManyToOne
-    @JoinColumn(
-        name = "entity_id",
-        referencedColumnName = "id"
-    )
-    @OnDissociate(DissociateAction.DELETE)
-    @get:Valid
-    val entity: GenEntity
-
-    /**
-     * 实体 ID View
-     */
-    @IdView("entity")
-    val entityId: Int
-
-    /**
      * 类型
      */
-    @Column(name = "type")
     @get:Length(max = 255)
-    val type: String?
+    val type: String
 
     /**
      * 类型对应实体
@@ -117,7 +94,6 @@ interface GenExtraProperty {
     /**
      * 属性方法体
      */
-    @Column(name = "body")
     @get:Length(max = 500)
     val body: String?
 }

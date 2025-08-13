@@ -1,7 +1,6 @@
 package top.potmot.entity.model.entities.properties
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -12,7 +11,6 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToOne
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 import top.potmot.entity.model.associations.GenManyToOneAssociation
 
@@ -22,14 +20,12 @@ import top.potmot.entity.model.associations.GenManyToOneAssociation
  * @author potmot
  */
 @Entity
-@Table(name = "gen_many_to_one_source_property")
-interface GenManyToOneSourceProperty : TypeEntityProperty {
+interface GenManyToOneSourceProperty : AssociationPropertyTypeInfo {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -39,13 +35,13 @@ interface GenManyToOneSourceProperty : TypeEntityProperty {
      */
     @OneToOne(mappedBy = "sourceProperty")
     @get:Valid
-    val manyToOneAssociation: GenManyToOneAssociation?
+    val genManyToOneAssociation: GenManyToOneAssociation?
 
     /**
      * 多对一关联 ID View
      */
-    @IdView("manyToOneAssociation")
-    val manyToOneAssociationId: Int?
+    @IdView("genManyToOneAssociation")
+    val genManyToOneAssociationId: Int?
 
     /**
      * 多对一映射属性（对多）
@@ -54,13 +50,13 @@ interface GenManyToOneSourceProperty : TypeEntityProperty {
      */
     @OneToOne(mappedBy = "mappedBy")
     @get:Valid
-    val manyToOneMappedProperty: GenManyToOneMappedProperty?
+    val genManyToOneMappedProperty: GenManyToOneMappedProperty?
 
     /**
      * 多对一映射属性（对多） ID View
      */
-    @IdView("manyToOneMappedProperty")
-    val manyToOneMappedPropertyId: Int?
+    @IdView("genManyToOneMappedProperty")
+    val genManyToOneMappedPropertyId: Int?
 
     /**
      * 属性
@@ -82,22 +78,13 @@ interface GenManyToOneSourceProperty : TypeEntityProperty {
     val propertyId: Int
 
     /**
-     * 列名称
-     */
-    @Column(name = "column_name")
-    @get:Length(max = 255)
-    val columnName: String
-
-    /**
      * ID视图名
      */
-    @Column(name = "id_view_name")
     @get:Length(max = 255)
     val idViewName: String
 
     /**
      * 类型是否非空
      */
-    @Column(name = "type_is_not_null")
     val typeIsNotNull: Boolean
 }

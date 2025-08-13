@@ -38,6 +38,6 @@ out/
 
 src/main/resources/dist
 /gradle.properties
-/jimmer-code-gen.trace.db
-/jimmer-code-gen.mv.db
+/jimmer_code_gen.trace.db
+/jimmer_code_gen.mv.db
 /.kotlin/

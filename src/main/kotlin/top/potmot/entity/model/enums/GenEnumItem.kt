@@ -1,7 +1,6 @@
 package top.potmot.entity.model.enums
 
 import jakarta.validation.Valid
-import org.babyfish.jimmer.sql.Column
 import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
@@ -12,7 +11,6 @@ import org.babyfish.jimmer.sql.JoinColumn
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import org.babyfish.jimmer.sql.Table
 import org.hibernate.validator.constraints.Length
 
 /**
@@ -21,14 +19,12 @@ import org.hibernate.validator.constraints.Length
  * @author potmot
  */
 @Entity
-@Table(name = "gen_enum_item")
 interface GenEnumItem {
     /**
      * ID
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Int
 
     /**
@@ -54,40 +50,34 @@ interface GenEnumItem {
      * 名称
      */
     @Key
-    @Column(name = "name")
     @get:Length(max = 500)
     val name: String
 
     /**
      * 值
      */
-    @Column(name = "mapped_value")
     @get:Length(max = 500)
     val mappedValue: String
 
     /**
      * 注释
      */
-    @Column(name = "comment")
     @get:Length(max = 500)
     val comment: String
 
     /**
      * 是否默认
      */
-    @Column(name = "default_item")
     val defaultItem: Boolean
 
     /**
      * 备注
      */
-    @Column(name = "remark")
     @get:Length(max = 500)
     val remark: String
 
     /**
      * 排序键
      */
-    @Column(name = "order_key")
     val orderKey: Int
 }
