@@ -1,0 +1,10 @@
+export top.potmot.entity.model.ModelHistory
+
+input ModelHistoryInput {
+    #allScalars
+}
+
+ModelHistoryView {
+    #allScalars
+    id(model)
+}

@@ -1,0 +1,14 @@
+export top.potmot.entity.model.Model
+
+input ModelInput {
+    #allScalars
+}
+
+ModelView {
+    #allScalars
+}
+
+ModelNoJsonView {
+    #allScalars
+    -jsonData
+}

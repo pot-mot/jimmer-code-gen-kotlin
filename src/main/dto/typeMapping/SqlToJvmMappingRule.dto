@@ -1,0 +1,9 @@
+export top.potmot.entity.typeMapping.SqlToJvmMappingRule
+
+input SqlToJvmMappingRuleInput {
+    #allScalars
+}
+
+SqlToJvmMappingRuleView {
+    #allScalars
+}

@@ -1,0 +1,19 @@
+export top.potmot.entity.typeMapping.CrossType
+
+input CrossType {
+    #allScalars
+    #allReferences
+}
+
+GenerateView {
+    #allScalars
+    sqlType {
+        #allScalars
+    }
+    jvmType {
+        #allScalars
+    }
+    tsType {
+        #allScalars
+    }
+}

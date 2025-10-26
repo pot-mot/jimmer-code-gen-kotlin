@@ -1,0 +1,9 @@
+export top.potmot.entity.script.GenerateScript
+
+input GenerateScriptInput {
+    #allScalars
+}
+
+GenerateScriptView {
+    #allScalars
+}

@@ -1,0 +1,9 @@
+export top.potmot.entity.typeMapping.TsType
+
+input TsTypeInput {
+    #allScalars
+}
+
+TsTypeView {
+    #allScalars
+}

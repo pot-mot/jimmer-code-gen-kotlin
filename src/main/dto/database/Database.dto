@@ -1,0 +1,9 @@
+export top.potmot.entity.database.DbDatabase
+
+input DatabaseInput {
+    #allScalars
+}
+
+DatabaseView {
+    #allScalars
+}

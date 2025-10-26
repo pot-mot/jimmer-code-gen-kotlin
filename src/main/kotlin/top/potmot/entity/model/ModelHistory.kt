@@ -3,22 +3,22 @@ package top.potmot.entity.model
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.ForeignKeyType
 import org.babyfish.jimmer.sql.Id
-import org.babyfish.jimmer.sql.OneToMany
-import org.babyfish.jimmer.sql.OrderedProp
+import org.babyfish.jimmer.sql.ManyToOne
 import top.potmot.entity.database.DatabaseType
 import top.potmot.entity.database.DbNameStrategy
 import java.time.LocalDateTime
 
 @Entity
-interface Model {
+interface ModelHistory {
     @Id
     val id: String
+
+    @ManyToOne
+    val model: Model
 
     val name: String
 
     val description: String
-
-    val createdTime: LocalDateTime
 
     val modifiedTime: LocalDateTime
 
@@ -33,8 +33,4 @@ interface Model {
     val defaultEnumerationStrategy: EnumerationStrategy
 
     val jsonData: String
-
-    @OneToMany(mappedBy = "model", orderedProps = [OrderedProp("modifiedTime")])
-    val histories: List<ModelHistory>
 }
-
