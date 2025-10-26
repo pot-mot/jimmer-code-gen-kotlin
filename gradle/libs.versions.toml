@@ -1,5 +1,5 @@
 [versions]
-jimmer = "0.9.105"
+jimmer = "0.9.113"
 kotlin = "2.1.20"
 ksp = "2.1.20-2.0.0"
 springDependency = "1.1.7"

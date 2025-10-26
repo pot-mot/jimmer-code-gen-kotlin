@@ -2,9 +2,6 @@ spring:
   profiles:
     active: h2-file
 
-  liquibase:
-    enabled: false
-
   web:
     resources:
       static-locations: classpath:/dist
