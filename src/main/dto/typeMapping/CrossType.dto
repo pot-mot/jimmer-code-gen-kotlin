@@ -1,11 +1,11 @@
 export top.potmot.entity.typeMapping.CrossType
 
-input CrossType {
+input CrossTypeInput {
     #allScalars
     #allReferences
 }
 
-GenerateView {
+CrossTypeView {
     #allScalars
     sqlType {
         #allScalars

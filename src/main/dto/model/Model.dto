@@ -1,7 +1,13 @@
 export top.potmot.entity.model.Model
 
-input ModelInput {
+input ModelInsertInput {
     #allScalars
+    -id
+}
+
+input ModelUpdateInput {
+    #allScalars
+    id!
 }
 
 ModelView {
@@ -11,4 +17,14 @@ ModelView {
 ModelNoJsonView {
     #allScalars
     -jsonData
+}
+
+specification ModelSpec {
+    like/i(name)
+    like/i(description)
+    ge(createdTime)
+    le(createdTime)
+    ge(modifiedTime)
+    le(modifiedTime)
+    databaseType
 }

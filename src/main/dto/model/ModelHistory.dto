@@ -2,9 +2,17 @@ export top.potmot.entity.model.ModelHistory
 
 input ModelHistoryInput {
     #allScalars
+    -id
+    id(model)
 }
 
 ModelHistoryView {
     #allScalars
     id(model)
+}
+
+ModelHistoryNoJsonView {
+    #allScalars
+    id(model)
+    -jsonData
 }

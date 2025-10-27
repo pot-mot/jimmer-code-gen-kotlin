@@ -1,8 +1,8 @@
 create table if not exists db_column
 (
-    id text not null,
+    id uuid not null,
+    table_id uuid not null,
     name text not null,
-    table_id text not null,
     comment text not null,
     type text not null,
     data_size integer,
@@ -17,8 +17,8 @@ create table if not exists db_column
 
 create table if not exists db_column_ref
 (
-    id text not null,
-    foreign_key_id text not null,
+    id uuid not null,
+    foreign_key_id uuid not null,
     column_name text not null,
     referenced_column_name text not null
 );
@@ -26,7 +26,7 @@ create table if not exists db_column_ref
 
 create table if not exists db_database
 (
-    id text not null,
+    id uuid not null,
     type text check (type in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE')) not null,
     name text not null,
     url text not null,
@@ -38,8 +38,8 @@ create table if not exists db_database
 
 create table if not exists db_foreign_key
 (
-    id text not null,
-    table_id text not null,
+    id uuid not null,
+    table_id uuid not null,
     name text not null,
     comment text not null,
     referenced_table_name text not null,
@@ -51,8 +51,8 @@ create table if not exists db_foreign_key
 
 create table if not exists db_index
 (
-    id text not null,
-    table_id text not null,
+    id uuid not null,
+    table_id uuid not null,
     name text not null,
     column_names text not null,
     unique_index bool not null,
@@ -62,8 +62,8 @@ create table if not exists db_index
 
 create table if not exists db_table
 (
-    id text not null,
-    database_id text not null,
+    id uuid not null,
+    database_id uuid not null,
     schema text not null,
     name text not null,
     comment text not null
@@ -72,7 +72,7 @@ create table if not exists db_table
 
 create table if not exists model
 (
-    id text not null,
+    id uuid not null,
     name text not null,
     description text not null,
     created_time timestamp not null,
@@ -87,9 +87,25 @@ create table if not exists model
 
 
 
+create table if not exists model_history
+(
+    id uuid not null,
+    model_id uuid not null,
+    name text not null,
+    description text not null,
+    modified_time timestamp not null,
+    database_type text check (database_type in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE')) not null,
+    database_name_strategy text check (database_name_strategy in ('UPPER_SNAKE', 'LOWER_SNAKE')) not null,
+    default_foreign_key_type text check (default_foreign_key_type in ('AUTO', 'REAL', 'FAKE')) not null,
+    jvm_language text check (jvm_language in ('JAVA', 'KOTLIN')) not null,
+    default_enumeration_strategy text check (default_enumeration_strategy in ('NAME', 'ORDINAL')) not null,
+    json_data text not null
+);
+
+
 create table if not exists generate_script
 (
-    id text not null,
+    id uuid not null,
     name text not null,
     type text check (type in ('AssociationGenerator', 'EmbeddableTypeGenerator', 'EntityGenerator', 'EnumerationGenerator', 'GroupGenerator', 'MappedSuperClassGenerator', 'ModelGenerator', 'TableDiffGenerator', 'TableGenerator')) not null,
     enabled bool not null,
@@ -102,37 +118,37 @@ create table if not exists generate_script
 
 create table if not exists cross_type
 (
-    id text not null,
+    id uuid not null,
     jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
     database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
-    sql_type_id text not null,
-    jvm_type_id text not null,
-    ts_type_id text not null
+    sql_type_id uuid not null,
+    jvm_type_id uuid not null,
+    ts_type_id uuid not null
 );
 
 
 create table if not exists jvm_to_sql_mapping_rule
 (
-    id text not null,
+    id uuid not null,
     jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
     database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
     match_reg_exp text not null,
-    result_id text not null
+    result_id uuid not null
 );
 
 
 create table if not exists jvm_to_ts_mapping_rule
 (
-    id text not null,
+    id uuid not null,
     jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
     match_reg_exp text not null,
-    result_id text not null
+    result_id uuid not null
 );
 
 
 create table if not exists jvm_type
 (
-    id text not null,
+    id uuid not null,
     type_expression text not null,
     serialized bool not null,
     extra_imports text not null,
@@ -143,17 +159,17 @@ create table if not exists jvm_type
 
 create table if not exists sql_to_jvm_mapping_rule
 (
-    id text not null,
+    id uuid not null,
     jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
     database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
     match_reg_exp text not null,
-    result_id text not null
+    result_id uuid not null
 );
 
 
 create table if not exists sql_type
 (
-    id text not null,
+    id uuid not null,
     type text not null,
     data_size integer,
     numeric_precision integer,
@@ -164,7 +180,7 @@ create table if not exists sql_type
 
 create table if not exists ts_type
 (
-    id text not null,
+    id uuid not null,
     type_expression text not null,
     extra_imports text not null
 );
@@ -177,6 +193,7 @@ alter table db_foreign_key add constraint pk_db_foreign_key_id primary key (id);
 alter table db_index add constraint pk_db_index_id primary key (id);
 alter table db_table add constraint pk_db_table_id primary key (id);
 alter table model add constraint pk_model_id primary key (id);
+alter table model_history add constraint pk_model_history_id primary key (id);
 alter table generate_script add constraint pk_generate_script_id primary key (id);
 alter table cross_type add constraint pk_cross_type_id primary key (id);
 alter table jvm_to_sql_mapping_rule add constraint pk_jvm_to_sql_mapping_rule_id primary key (id);
@@ -190,6 +207,7 @@ alter table db_column_ref add constraint fk_db_column_ref_foreign_key foreign ke
 alter table db_foreign_key add constraint fk_db_foreign_key_table foreign key (table_id) references db_table (id);
 alter table db_index add constraint fk_db_index_table foreign key (table_id) references db_table (id);
 alter table db_table add constraint fk_db_table_database foreign key (database_id) references db_database (id);
+alter table model_history add constraint fk_model_history_model foreign key (model_id) references model (id);
 alter table cross_type add constraint fk_cross_type_sql_type foreign key (sql_type_id) references sql_type (id);
 alter table cross_type add constraint fk_cross_type_jvm_type foreign key (jvm_type_id) references jvm_type (id);
 alter table cross_type add constraint fk_cross_type_ts_type foreign key (ts_type_id) references ts_type (id);
