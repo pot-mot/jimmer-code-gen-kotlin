@@ -4,9 +4,10 @@ import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.Serialized
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import java.util.UUID
 
@@ -18,8 +19,10 @@ interface DbForeignKey {
 
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
+    @Key
     val table: DbTable
 
+    @Key
     val name: String
 
     val comment: String
@@ -32,6 +35,6 @@ interface DbForeignKey {
 
     val onDelete: String?
 
-    @OneToMany(mappedBy = "foreignKey")
+    @Serialized
     val columnRefs: List<DbColumnRef>
 }

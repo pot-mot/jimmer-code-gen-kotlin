@@ -15,15 +15,6 @@ create table if not exists db_column
 );
 
 
-create table if not exists db_column_ref
-(
-    id uuid not null,
-    foreign_key_id uuid not null,
-    column_name text not null,
-    referenced_column_name text not null
-);
-
-
 create table if not exists db_database
 (
     id uuid not null,
@@ -45,7 +36,8 @@ create table if not exists db_foreign_key
     referenced_table_name text not null,
     referenced_table_schema text not null,
     on_update text,
-    on_delete text
+    on_delete text,
+    column_refs text not null
 );
 
 
@@ -187,7 +179,6 @@ create table if not exists ts_type
 
 
 alter table db_column add constraint pk_db_column_id primary key (id);
-alter table db_column_ref add constraint pk_db_column_ref_id primary key (id);
 alter table db_database add constraint pk_db_database_id primary key (id);
 alter table db_foreign_key add constraint pk_db_foreign_key_id primary key (id);
 alter table db_index add constraint pk_db_index_id primary key (id);
@@ -202,10 +193,13 @@ alter table jvm_type add constraint pk_jvm_type_id primary key (id);
 alter table sql_to_jvm_mapping_rule add constraint pk_sql_to_jvm_mapping_rule_id primary key (id);
 alter table sql_type add constraint pk_sql_type_id primary key (id);
 alter table ts_type add constraint pk_ts_type_id primary key (id);
+alter table db_column add constraint uk_db_column_default unique (table_id, name);
 alter table db_column add constraint fk_db_column_table foreign key (table_id) references db_table (id);
-alter table db_column_ref add constraint fk_db_column_ref_foreign_key foreign key (foreign_key_id) references db_foreign_key (id);
+alter table db_foreign_key add constraint uk_db_foreign_key_default unique (table_id, name);
 alter table db_foreign_key add constraint fk_db_foreign_key_table foreign key (table_id) references db_table (id);
+alter table db_index add constraint uk_db_index_default unique (table_id, name);
 alter table db_index add constraint fk_db_index_table foreign key (table_id) references db_table (id);
+alter table db_table add constraint uk_db_table_default unique (database_id, schema, name);
 alter table db_table add constraint fk_db_table_database foreign key (database_id) references db_database (id);
 alter table model_history add constraint fk_model_history_model foreign key (model_id) references model (id);
 alter table cross_type add constraint fk_cross_type_sql_type foreign key (sql_type_id) references sql_type (id);

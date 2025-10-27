@@ -4,6 +4,7 @@ import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
 import org.babyfish.jimmer.sql.OneToMany
@@ -18,10 +19,13 @@ interface DbTable {
 
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
+    @Key
     val database: DbDatabase
 
+    @Key
     val schema: String
 
+    @Key
     val name: String
 
     val comment: String

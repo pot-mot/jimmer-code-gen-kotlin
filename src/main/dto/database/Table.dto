@@ -14,10 +14,6 @@ input TableInput {
     foreignKeys {
         #allScalars
         -id
-        columnRefs {
-            #allScalars
-            -id
-        }
     }
 }
 
@@ -31,8 +27,5 @@ TableView {
     }
     foreignKeys {
         #allScalars
-        columnRefs {
-            #allScalars
-        }
     }
 }
