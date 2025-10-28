@@ -24,10 +24,6 @@ fun TableInput.TargetOf_columns.stringify() = buildString {
     if (defaultValue != null) {
         append(" DEFAULT $defaultValue ")
     }
-    if (!otherConstraints.isNullOrEmpty()) {
-        append(" ")
-        append(otherConstraints.joinToString(","))
-    }
 }
 
 fun TableInput.TargetOf_indexes.stringify() = buildString {
@@ -50,4 +46,10 @@ fun TableInput.TargetOf_foreignKeys.stringify() = buildString {
     append(onUpdate)
     append(" ")
     append(onDelete)
+}
+
+fun TableInput.TargetOf_checks.stringify() = buildString {
+    append(name)
+    append(" ")
+    append(expression)
 }

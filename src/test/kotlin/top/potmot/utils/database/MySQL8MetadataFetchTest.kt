@@ -69,7 +69,7 @@ type_text 文本类型 text 65535,null NULL
 type_longtext 长文本类型 longtext 2147483647,null NULL
 type_enum 枚举类型 enum('value1','value2','value3') 6,null NULL
 type_set 集合类型 set('option1','option2','option3') 23,null NULL
-type_check_enum 枚举类型检查 varchar(20) 20,null NULL (`type_check_enum` in (_utf8mb4'value1',_utf8mb4'value2',_utf8mb4'value3'))
+type_check_enum 枚举类型检查 varchar(20) 20,null NULL
 type_json JSON数据类型 json 1073741824,null NULL
 type_blob 二进制大对象类型 blob 65535,null NULL
 type_bit 位类型 bit(8) 8,null NULL
@@ -98,6 +98,14 @@ fk_nullable_user .test_table nullable_user_id -> id SET NULL SET NULL
 fk_user .test_table user_id -> id CASCADE CASCADE
                 """.trim().split("\n"),
                 testTable.foreignKeys.sortedBy { it.name }.map { it.stringify() }
+            )
+
+            assert(testTable.checks.size == 1)
+            Assertions.assertLinesMatch(
+                """
+test_table_chk_1 (`type_check_enum` in (_utf8mb4'value1',_utf8mb4'value2',_utf8mb4'value3'))
+                """.trim().split("\n"),
+                testTable.checks.map { it.stringify() }
             )
         }
     }

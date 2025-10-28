@@ -39,6 +39,8 @@ services:
       POSTGRES_PASSWORD: test
     ports:
       - "39110:5432"
+    volumes:
+      - ../resources/sql/metadata-test-postgresql.sql:/docker-entrypoint-initdb.d/init.sql
 
   postgresql-17:
     image: postgres:17
@@ -49,6 +51,8 @@ services:
       POSTGRES_PASSWORD: test
     ports:
       - "39111:5432"
+    volumes:
+      - ../resources/sql/metadata-test-postgresql.sql:/docker-entrypoint-initdb.d/init.sql
 
   # Oracle (ports 39120-39129)
   oracle-xe-21c:

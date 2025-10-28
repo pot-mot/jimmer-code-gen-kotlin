@@ -43,7 +43,7 @@ CREATE TABLE test_table
     type_longtext    LONGTEXT COMMENT '长文本类型',
     type_enum        ENUM ('value1', 'value2', 'value3') COMMENT '枚举类型',
     type_set         SET ('option1', 'option2', 'option3') COMMENT '集合类型',
-    type_check_enum  VARCHAR(20) CHECK ( type_check_enum IN ('value1', 'value2', 'value3') ) COMMENT '枚举类型检查',
+    type_check_enum  VARCHAR(20) COMMENT '枚举类型检查',
     type_json        JSON COMMENT 'JSON数据类型',
     type_blob        BLOB COMMENT '二进制大对象类型',
     type_bit         BIT(8) COMMENT '位类型',
@@ -62,6 +62,9 @@ CREATE TABLE test_table
     UNIQUE INDEX uk_email (email),
 
     -- 非唯一索引
-    INDEX idx_name_status (name, status)
+    INDEX idx_name_status (name, status),
+
+    -- 枚举约束
+    CHECK ( type_check_enum IN ('value1', 'value2', 'value3') )
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='测试表';

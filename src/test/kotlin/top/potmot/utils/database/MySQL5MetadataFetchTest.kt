@@ -98,6 +98,8 @@ fk_user .test_table user_id -> id CASCADE CASCADE
                 """.trim().split("\n"),
                 testTable.foreignKeys.sortedBy { it.name }.map { it.stringify() }
             )
+
+            assert(testTable.checks.isEmpty())
         }
     }
 }
