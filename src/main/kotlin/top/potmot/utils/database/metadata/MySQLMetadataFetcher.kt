@@ -52,7 +52,7 @@ class MySQLMetadataFetcher(
         while (resultSet.next()) {
             val columnName = resultSet.getString("COLUMN_NAME")
             val columnInfo = fullTypeMap[columnName]
-            val constraints = checkInfoMap[columnName]?.map { it.checkClause } ?: emptyList()
+            val constraints = checkInfoMap[columnName]?.map { it.checkClause }
 
             val remarks = resultSet.getString("REMARKS") ?: ""
             val typeName = columnInfo?.fullType ?: resultSet.getString("TYPE_NAME")

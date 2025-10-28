@@ -110,9 +110,6 @@ open class MetadataFetcher(
         while (resultSet.next()) {
             val indexName = resultSet.getString("INDEX_NAME") ?: continue
             val columnName = resultSet.getString("COLUMN_NAME") ?: continue
-
-            if (indexName == "PRIMARY") continue // 跳过主键索引
-
             val nonUnique = resultSet.getBoolean("NON_UNIQUE")
 
             indexes[indexName] = indexes[indexName]?.let { existing ->
