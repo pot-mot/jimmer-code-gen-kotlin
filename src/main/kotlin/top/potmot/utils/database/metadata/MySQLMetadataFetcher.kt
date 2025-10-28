@@ -1,7 +1,6 @@
 package top.potmot.utils.database.metadata
 
 import top.potmot.entity.database.dto.TableInput
-import top.potmot.utils.database.model.CheckConstraintInfo
 import top.potmot.utils.database.model.ColumnFullTypePair
 import java.sql.Connection
 
@@ -11,12 +10,44 @@ private val checkConstraintRegex = Regex("CONSTRAINT\\s+`([^`]+)`\\s+CHECK\\s*\\
 class MySQLMetadataFetcher(
     connection: Connection
 ) : MetadataFetcher(connection) {
-    override fun fetchTableColumns(tableName: String): List<TableInput.TargetOf_columns> {
+    override fun fetchTables(): List<TableInput> {
+        val tables = mutableListOf<TableInput>()
+
+        val resultSet = metadata.getTables(catalog, schema, "%", arrayOf("TABLE"))
+
+        while (resultSet.next()) {
+            val schema = resultSet.getString("TABLE_SCHEM") ?: ""
+            val tableName = resultSet.getString("TABLE_NAME")
+            val remarks = resultSet.getString("REMARKS") ?: ""
+
+            val (columns, checks) = fetchTableColumnsAndChecks(tableName)
+            val indexes = fetchTableIndexes(tableName)
+            val foreignKeys = fetchTableForeignKeys(tableName)
+
+            // 创建 TableInput 实例
+            tables.add(
+                TableInput(
+                    schema = schema,
+                    name = tableName,
+                    comment = remarks,
+                    columns = columns,
+                    indexes = indexes,
+                    foreignKeys = foreignKeys,
+                    checks = checks,
+                )
+            )
+        }
+
+        resultSet.close()
+        return tables
+    }
+
+    fun fetchTableColumnsAndChecks(tableName: String): Pair<List<TableInput.TargetOf_columns>, List<TableInput.TargetOf_checks>> {
         val createTableStmt = getCreateTableStmt(tableName)
-        if (createTableStmt == null) return emptyList()
+        if (createTableStmt == null) return emptyList<TableInput.TargetOf_columns>() to emptyList<TableInput.TargetOf_checks>()
 
         val fullTypeMap = mutableMapOf<String, ColumnFullTypePair>()
-        val checkInfoMap = mutableMapOf<String, MutableList<CheckConstraintInfo>>()
+        val checks = mutableListOf<TableInput.TargetOf_checks>()
 
         // 解析 CREATE TABLE 语句中的列定义
         val lines = createTableStmt.lines()
@@ -24,11 +55,7 @@ class MySQLMetadataFetcher(
             val trimmedLine = line.trim()
             if (trimmedLine.startsWith("CONSTRAINT") && trimmedLine.contains("CHECK", ignoreCase = true)) {
                 val checkConstraint = parseCheckConstraintDefinition(trimmedLine)
-                checkConstraint?.let {
-                    checkInfoMap[it.columnName]?.add(it) ?: run {
-                        checkInfoMap[it.columnName] = mutableListOf(it)
-                    }
-                }
+                checkConstraint?.let { checks.add(it) }
             } else if (
                 !trimmedLine.startsWith("`PRIMARY") &&
                 !trimmedLine.startsWith("`CONSTRAINT") &&
@@ -52,7 +79,6 @@ class MySQLMetadataFetcher(
         while (resultSet.next()) {
             val columnName = resultSet.getString("COLUMN_NAME")
             val columnInfo = fullTypeMap[columnName]
-            val constraints = checkInfoMap[columnName]?.map { it.checkClause }
 
             val remarks = resultSet.getString("REMARKS") ?: ""
             val typeName = columnInfo?.fullType ?: resultSet.getString("TYPE_NAME")
@@ -73,14 +99,13 @@ class MySQLMetadataFetcher(
                     defaultValue = defaultValue,
                     partOfPrimaryKey = primaryKeys.contains(columnName),
                     autoIncrement = autoIncrement,
-                    otherConstraints = constraints
                 )
             )
         }
 
         resultSet.close()
 
-        return columns
+        return columns to checks
     }
 
     private fun getCreateTableStmt(tableName: String): String? {
@@ -110,23 +135,14 @@ class MySQLMetadataFetcher(
         return null
     }
 
-    private fun parseCheckConstraintDefinition(constraintDef: String): CheckConstraintInfo? {
+    private fun parseCheckConstraintDefinition(constraintDef: String): TableInput.TargetOf_checks? {
         // 解析 CHECK 约束定义
         val matchResult = checkConstraintRegex.find(constraintDef)
 
         if (matchResult != null) {
-            val constraintName = matchResult.groupValues[1]
-            val checkClause = matchResult.groupValues[2]
-
-            // 简单提取列名（假设 CHECK 约束格式为 `column` op value）
-            val columnRegex = Regex("`([^`]+)`")
-            val columnMatch = columnRegex.find(checkClause)
-            val columnName = columnMatch?.groupValues?.get(1) ?: ""
-
-            return CheckConstraintInfo(
-                constraintName = constraintName,
-                columnName = columnName,
-                checkClause = checkClause
+            return TableInput.TargetOf_checks(
+                name = matchResult.groupValues[1],
+                expression = matchResult.groupValues[2]
             )
         }
 

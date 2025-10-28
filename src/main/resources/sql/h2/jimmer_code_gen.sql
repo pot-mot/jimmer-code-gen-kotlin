@@ -1,3 +1,12 @@
+create table if not exists db_check
+(
+    id uuid not null,
+    table_id uuid not null,
+    name text not null,
+    expression text not null
+);
+
+
 create table if not exists db_column
 (
     id uuid not null,
@@ -10,8 +19,7 @@ create table if not exists db_column
     nullable bool not null,
     default_value text,
     part_of_primary_key bool,
-    auto_increment bool,
-    other_constraints text
+    auto_increment bool
 );
 
 
@@ -178,6 +186,7 @@ create table if not exists ts_type
 );
 
 
+alter table db_check add constraint pk_db_check_id primary key (id);
 alter table db_column add constraint pk_db_column_id primary key (id);
 alter table db_database add constraint pk_db_database_id primary key (id);
 alter table db_foreign_key add constraint pk_db_foreign_key_id primary key (id);
@@ -193,6 +202,8 @@ alter table jvm_type add constraint pk_jvm_type_id primary key (id);
 alter table sql_to_jvm_mapping_rule add constraint pk_sql_to_jvm_mapping_rule_id primary key (id);
 alter table sql_type add constraint pk_sql_type_id primary key (id);
 alter table ts_type add constraint pk_ts_type_id primary key (id);
+alter table db_check add constraint uk_db_check_default unique (table_id);
+alter table db_check add constraint fk_db_check_table foreign key (table_id) references db_table (id);
 alter table db_column add constraint uk_db_column_default unique (table_id, name);
 alter table db_column add constraint fk_db_column_table foreign key (table_id) references db_table (id);
 alter table db_foreign_key add constraint uk_db_foreign_key_default unique (table_id, name);

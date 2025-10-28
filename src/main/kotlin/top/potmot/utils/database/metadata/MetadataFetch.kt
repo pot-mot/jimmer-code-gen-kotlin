@@ -29,6 +29,7 @@ open class MetadataFetcher(
             val columns = fetchTableColumns(tableName)
             val indexes = fetchTableIndexes(tableName)
             val foreignKeys = fetchTableForeignKeys(tableName)
+            val checks = fetchTableChecks(tableName)
 
             // 创建 TableInput 实例
             tables.add(
@@ -38,7 +39,8 @@ open class MetadataFetcher(
                     comment = remarks,
                     columns = columns,
                     indexes = indexes,
-                    foreignKeys = foreignKeys
+                    foreignKeys = foreignKeys,
+                    checks = checks,
                 )
             )
         }
@@ -77,7 +79,6 @@ open class MetadataFetcher(
                     defaultValue = defaultValue,
                     partOfPrimaryKey = primaryKeys.contains(columnName),
                     autoIncrement = autoIncrement,
-                    otherConstraints = emptyList()
                 )
             )
         }
@@ -184,5 +185,10 @@ open class MetadataFetcher(
             else -> null
         }
     }
-}
 
+    protected open fun fetchTableChecks(
+        tableName: String
+    ): List<TableInput.TargetOf_checks> {
+        return emptyList()
+    }
+}

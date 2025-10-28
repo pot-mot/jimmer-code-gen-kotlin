@@ -7,7 +7,6 @@ import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.Key
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import org.babyfish.jimmer.sql.Serialized
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import java.util.UUID
 
@@ -40,7 +39,4 @@ interface DbColumn {
     val partOfPrimaryKey: Boolean?
 
     val autoIncrement: Boolean?
-
-    @Serialized
-    val otherConstraints: List<String>?
 }

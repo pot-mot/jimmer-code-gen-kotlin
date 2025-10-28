@@ -11,6 +11,9 @@ input TableInput {
     foreignKeys {
         #allScalars
     }
+    checks {
+        #allScalars
+    }
 }
 
 TableView {
@@ -22,6 +25,9 @@ TableView {
         #allScalars
     }
     foreignKeys {
+        #allScalars
+    }
+    checks {
         #allScalars
     }
 }
