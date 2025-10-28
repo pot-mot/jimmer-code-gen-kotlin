@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  # MySQL versions (ports 39100-39109)
+  mysql-5.7:
+    image: mysql:5.7
+    container_name: test-mysql-5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    ports:
+      - "39100:3306"
+    command: --default-authentication-plugin=mysql_native_password
+
+  mysql-8.4.7:
+    image: mysql:8.4.7
+    container_name: test-mysql-8.4.7
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    ports:
+      - "39101:3306"
+
+  # PostgreSQL versions (ports 39110-39119)
+  postgresql-16:
+    image: postgres:16
+    container_name: test-postgresql-16
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    ports:
+      - "39110:5432"
+
+  postgresql-17:
+    image: postgres:17
+    container_name: test-postgresql-17
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    ports:
+      - "39111:5432"
+
+  # Oracle (ports 39120-39129)
+  oracle-xe-21c:
+    image: gvenzl/oracle-xe:21.3.0-slim
+    container_name: test-oracle-xe-21
+    environment:
+      ORACLE_PASSWORD: test
+      APP_USER: test
+      APP_USER_PASSWORD: test
+    ports:
+      - "39120:1521"
+
+  oracle-xe-18:
+    image: gvenzl/oracle-xe:18.4.0-slim
+    container_name: test-oracle-xe-18
+    environment:
+      ORACLE_PASSWORD: test
+      APP_USER: test
+      APP_USER_PASSWORD: test
+    ports:
+      - "39121:1521"
+
+  # SQL Server (ports 39130-39139)
+  sqlserver-2019:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: test-sqlserver-2019
+    environment:
+      SA_PASSWORD: "Test1234!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "39130:1433"
+
+  sqlserver-2022:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: test-sqlserver-2022
+    environment:
+      SA_PASSWORD: "Test1234!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "39131:1433"
+
+  # H2 Database (ports 39140-39149)
+  h2:
+    image: oscarfonts/h2:latest
+    container_name: test-h2
+    environment:
+      H2_OPTIONS: "-ifNotExists"
+    ports:
+      - "39140:8082"
+      - "39141:9092"
+
+  # SQLite (ports 39150-39159)
+  sqlite:
+    image: coleifer/sqlite-web:latest
+    container_name: test-sqlite
+    environment:
+      SQLITE_DATABASE: test.db
+    ports:
+      - "39150:8080"

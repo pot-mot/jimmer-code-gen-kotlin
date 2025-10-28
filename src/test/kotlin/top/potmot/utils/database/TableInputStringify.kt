@@ -12,16 +12,22 @@ fun TableInput.TargetOf_columns.stringify() = buildString {
     append(dataSize)
     append(",")
     append(numericPrecision)
-    append(" ")
-    append(nullable)
-    append(" ")
-    append(partOfPrimaryKey)
-    append(" ")
-    append(autoIncrement)
-    append(" ")
-    append(defaultValue)
-    append(" ")
-    append(otherConstraints?.joinToString(","))
+    if (nullable) {
+        append(" NULL")
+    }
+    if (partOfPrimaryKey != null && partOfPrimaryKey) {
+        append(" PRIMARY")
+    }
+    if (autoIncrement != null && autoIncrement) {
+        append(" AUTO_INCREMENT")
+    }
+    if (defaultValue != null) {
+        append(" DEFAULT $defaultValue ")
+    }
+    if (!otherConstraints.isNullOrEmpty()) {
+        append(" ")
+        append(otherConstraints.joinToString(","))
+    }
 }
 
 fun TableInput.TargetOf_indexes.stringify() = buildString {
