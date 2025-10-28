@@ -1,3 +1,5 @@
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 CREATE TABLE test_user
 (
     id INT COMMENT '非自增主键',
@@ -41,6 +43,7 @@ CREATE TABLE test_table
     type_longtext    LONGTEXT COMMENT '长文本类型',
     type_enum        ENUM ('value1', 'value2', 'value3') COMMENT '枚举类型',
     type_set         SET ('option1', 'option2', 'option3') COMMENT '集合类型',
+    type_check_enum  VARCHAR(20) CHECK ( type_check_enum IN ('value1', 'value2', 'value3') ) COMMENT '枚举类型检查',
     type_json        JSON COMMENT 'JSON数据类型',
     type_blob        BLOB COMMENT '二进制大对象类型',
     type_bit         BIT(8) COMMENT '位类型',

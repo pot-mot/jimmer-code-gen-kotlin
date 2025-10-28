@@ -76,16 +76,6 @@ type_bit 位类型 bit(8) 8,null NULL
                 testTable.columns.map { it.stringify() }
             )
 
-            assert(testTable.foreignKeys.size == 3)
-            Assertions.assertLinesMatch(
-                """
-fk_group_category .test_table group_id -> group_id RESTRICT RESTRICT
-fk_nullable_user .test_table nullable_user_id -> id SET NULL SET NULL
-fk_user .test_table user_id -> id CASCADE CASCADE
-                """.trim().split("\n"),
-                testTable.foreignKeys.map { it.stringify() }
-            )
-
             assert(testTable.indexes.size == 6)
             Assertions.assertLinesMatch(
                 """
@@ -97,6 +87,16 @@ fk_user false user_id
 idx_name_status false name,status
                 """.trim().split("\n"),
                 testTable.indexes.map { it.stringify() }
+            )
+
+            assert(testTable.foreignKeys.size == 3)
+            Assertions.assertLinesMatch(
+                """
+fk_group_category .test_table group_id -> group_id RESTRICT RESTRICT
+fk_nullable_user .test_table nullable_user_id -> id SET NULL SET NULL
+fk_user .test_table user_id -> id CASCADE CASCADE
+                """.trim().split("\n"),
+                testTable.foreignKeys.sortedBy { it.name }.map { it.stringify() }
             )
         }
     }

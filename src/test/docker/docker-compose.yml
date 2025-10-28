@@ -13,6 +13,8 @@ services:
     ports:
       - "39100:3306"
     command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ../resources/sql/metadata-test-mysql5.7.sql:/docker-entrypoint-initdb.d/init.sql
 
   mysql-8.4.7:
     image: mysql:8.4.7
@@ -24,6 +26,8 @@ services:
       MYSQL_PASSWORD: test
     ports:
       - "39101:3306"
+    volumes:
+      - ../resources/sql/metadata-test-mysql8.4.7.sql:/docker-entrypoint-initdb.d/init.sql
 
   # PostgreSQL versions (ports 39110-39119)
   postgresql-16:
