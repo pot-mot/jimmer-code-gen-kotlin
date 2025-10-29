@@ -7,6 +7,9 @@ springboot = "3.4.3"
 h2 = "2.2.224"
 mysql = "9.0.0"
 postgres = "42.7.3"
+oracle = "23.26.0.0.0"
+sqlserver = "13.2.1.jre11"
+sqlite = "3.50.3.0"
 
 [libraries]
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
@@ -21,6 +24,9 @@ jimmer-ksp = { module = "org.babyfish.jimmer:jimmer-ksp", version.ref = "jimmer"
 h2 = { module = "com.h2database:h2", version.ref = "h2" }
 mysql = { module = "com.mysql:mysql-connector-j", version.ref = "mysql"}
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres"}
+oracle = { module = "com.oracle.database.jdbc:ojdbc17", version.ref = "oracle"}
+sqlserver = { module = "com.microsoft.sqlserver:mssql-jdbc", version.ref = "sqlserver"}
+sqlite = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite"}
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

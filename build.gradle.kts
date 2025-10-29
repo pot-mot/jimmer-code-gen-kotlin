@@ -35,6 +35,9 @@ dependencies {
     runtimeOnly(libs.h2)
     runtimeOnly(libs.postgres)
     runtimeOnly(libs.mysql)
+    runtimeOnly(libs.oracle)
+    runtimeOnly(libs.sqlserver)
+    runtimeOnly(libs.sqlite)
 }
 
 // Without this configuration, gradle command can still run.
