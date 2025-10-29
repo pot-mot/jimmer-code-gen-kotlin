@@ -84,6 +84,10 @@ services:
       ACCEPT_EULA: "Y"
     ports:
       - "39130:1433"
+    volumes:
+      - ../resources/sql/metadata-test-sqlserver.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../resources/sql/init-sqlserver.sh:/docker-entrypoint-initdb.d/init-sqlserver.sh
+    entrypoint: /docker-entrypoint-initdb.d/init-sqlserver.sh
 
   sqlserver-2022:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -93,6 +97,10 @@ services:
       ACCEPT_EULA: "Y"
     ports:
       - "39131:1433"
+    volumes:
+      - ../resources/sql/metadata-test-sqlserver.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../resources/sql/init-sqlserver.sh:/docker-entrypoint-initdb.d/init-sqlserver.sh
+    entrypoint: /docker-entrypoint-initdb.d/init-sqlserver.sh
 
   # H2 Database (ports 39140-39149)
   h2:
