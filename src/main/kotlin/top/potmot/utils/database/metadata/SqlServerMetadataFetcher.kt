@@ -88,17 +88,19 @@ class SqlServerMetadataFetcher(
     override fun fetchTableChecks(tableName: String): List<TableInput.TargetOf_checks> {
         val checks = mutableListOf<TableInput.TargetOf_checks>()
 
-        connection.createStatement().use { stmt ->
-            val rs = stmt.executeQuery(
-                """
-                SELECT cc.name as constraint_name,
-                       cc.definition as definition
-                FROM sys.check_constraints cc
-                INNER JOIN sys.tables t ON cc.parent_object_id = t.object_id
-                INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
-                WHERE t.name = '$tableName' AND s.name = '${schema ?: "dbo"}'
-                """.trimIndent()
-            )
+        connection.prepareStatement(
+            """
+        SELECT cc.name as constraint_name,
+               cc.definition as definition
+        FROM sys.check_constraints cc
+        INNER JOIN sys.tables t ON cc.parent_object_id = t.object_id
+        INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
+        WHERE t.name = ? AND s.name = ?
+        """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, tableName)
+            stmt.setString(2, schema ?: "dbo")
+            val rs = stmt.executeQuery()
 
             while (rs.next()) {
                 checks.add(
@@ -113,26 +115,28 @@ class SqlServerMetadataFetcher(
         return checks
     }
 
+
     /**
      * 批量加载所有表和列的注释信息
      */
     private fun loadAllComments() {
-        connection.createStatement().use { stmt ->
-            // 批量获取所有表的注释
-            val tableRs = stmt.executeQuery(
-                """
-                SELECT 
-                    s.name AS schema_name,
-                    t.name AS table_name,
-                    ep.value AS table_comment
-                FROM sys.extended_properties ep
-                INNER JOIN sys.tables t ON ep.major_id = t.object_id
-                INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
-                WHERE ep.name = 'MS_Description' 
-                AND ep.minor_id = 0
-                AND s.name = '${schema ?: "dbo"}'
-                """.trimIndent()
-            )
+        // 批量获取所有表的注释
+        connection.prepareStatement(
+            """
+            SELECT 
+                s.name AS schema_name,
+                t.name AS table_name,
+                ep.value AS table_comment
+            FROM sys.extended_properties ep
+            INNER JOIN sys.tables t ON ep.major_id = t.object_id
+            INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
+            WHERE ep.name = 'MS_Description' 
+            AND ep.minor_id = 0
+            AND s.name = ?
+            """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, schema ?: "dbo")
+            val tableRs = stmt.executeQuery()
 
             while (tableRs.next()) {
                 val schemaName = tableRs.getString("schema_name")
@@ -140,25 +144,27 @@ class SqlServerMetadataFetcher(
                 val tableComment = tableRs.getString("table_comment")
                 tableCommentsCache["$schemaName.$tableName"] = tableComment ?: ""
             }
-            tableRs.close()
+        }
 
-            // 批量获取所有列的注释
-            val columnRs = stmt.executeQuery(
-                """
-                SELECT 
-                    s.name AS schema_name,
-                    t.name AS table_name,
-                    c.name AS column_name,
-                    ep.value AS column_comment
-                FROM sys.extended_properties ep
-                INNER JOIN sys.columns c ON ep.major_id = c.object_id AND ep.minor_id = c.column_id
-                INNER JOIN sys.tables t ON c.object_id = t.object_id
-                INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
-                WHERE ep.name = 'MS_Description'
-                AND ep.minor_id > 0
-                AND s.name = '${schema ?: "dbo"}'
-                """.trimIndent()
-            )
+        // 批量获取所有列的注释
+        connection.prepareStatement(
+            """
+            SELECT 
+                s.name AS schema_name,
+                t.name AS table_name,
+                c.name AS column_name,
+                ep.value AS column_comment
+            FROM sys.extended_properties ep
+            INNER JOIN sys.columns c ON ep.major_id = c.object_id AND ep.minor_id = c.column_id
+            INNER JOIN sys.tables t ON c.object_id = t.object_id
+            INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
+            WHERE ep.name = 'MS_Description'
+            AND ep.minor_id > 0
+            AND s.name = ?
+            """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, schema ?: "dbo")
+            val columnRs = stmt.executeQuery()
 
             while (columnRs.next()) {
                 val schemaName = columnRs.getString("schema_name")
@@ -167,7 +173,6 @@ class SqlServerMetadataFetcher(
                 val columnComment = columnRs.getString("column_comment")
                 columnCommentsCache["$schemaName.$tableName.$columnName"] = columnComment ?: ""
             }
-            columnRs.close()
         }
     }
 

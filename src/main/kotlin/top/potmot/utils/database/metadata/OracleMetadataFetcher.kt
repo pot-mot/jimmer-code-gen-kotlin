@@ -87,17 +87,19 @@ class OracleMetadataFetcher(
     override fun fetchTableChecks(tableName: String): List<TableInput.TargetOf_checks> {
         val checks = mutableListOf<TableInput.TargetOf_checks>()
 
-        connection.createStatement().use { stmt ->
-            val resultSet = stmt.executeQuery(
-                """
-                SELECT CONSTRAINT_NAME, SEARCH_CONDITION
-                FROM ALL_CONSTRAINTS
-                WHERE OWNER = '${connection.schema}'
-                  AND TABLE_NAME = '$tableName'
-                  AND CONSTRAINT_TYPE = 'C'
-                  AND UPPER(CONSTRAINT_NAME) NOT LIKE 'SYS_%'
-                """.trimIndent()
-            )
+        connection.prepareStatement(
+            """
+            SELECT CONSTRAINT_NAME, SEARCH_CONDITION
+            FROM ALL_CONSTRAINTS
+            WHERE OWNER = ?
+              AND TABLE_NAME = ?
+              AND CONSTRAINT_TYPE = 'C'
+              AND UPPER(CONSTRAINT_NAME) NOT LIKE 'SYS_%'
+            """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, connection.schema)
+            stmt.setString(2, tableName)
+            val resultSet = stmt.executeQuery()
 
             while (resultSet.next()) {
                 checks.add(
@@ -116,15 +118,15 @@ class OracleMetadataFetcher(
      * 批量加载所有表和列的注释信息
      */
     private fun loadAllComments() {
-        connection.createStatement().use { stmt ->
-            // 批量获取所有表的注释
-            val tableRs = stmt.executeQuery(
-                """
-                SELECT OWNER, TABLE_NAME, COMMENTS 
-                FROM ALL_TAB_COMMENTS 
-                WHERE OWNER = '$schema'
-                """.trimIndent()
-            )
+        connection.prepareStatement(
+            """
+            SELECT OWNER, TABLE_NAME, COMMENTS 
+            FROM ALL_TAB_COMMENTS 
+            WHERE OWNER = ?
+            """.trimIndent()
+        ).use { tableStmt ->
+            tableStmt.setString(1, schema)
+            val tableRs = tableStmt.executeQuery()
 
             while (tableRs.next()) {
                 val tableSchema = tableRs.getString("OWNER")
@@ -133,15 +135,17 @@ class OracleMetadataFetcher(
                 tableCommentsCache["$tableSchema.$tableName"] = tableComment ?: ""
             }
             tableRs.close()
+        }
 
-            // 批量获取所有列的注释
-            val columnRs = stmt.executeQuery(
-                """
-                SELECT OWNER, TABLE_NAME, COLUMN_NAME, COMMENTS 
-                FROM ALL_COL_COMMENTS 
-                WHERE OWNER = '$schema'
-                """.trimIndent()
-            )
+        connection.prepareStatement(
+            """
+            SELECT OWNER, TABLE_NAME, COLUMN_NAME, COMMENTS 
+            FROM ALL_COL_COMMENTS 
+            WHERE OWNER = ?
+            """.trimIndent()
+        ).use { columnStmt ->
+            columnStmt.setString(1, schema)
+            val columnRs = columnStmt.executeQuery()
 
             while (columnRs.next()) {
                 val tableSchema = columnRs.getString("OWNER")

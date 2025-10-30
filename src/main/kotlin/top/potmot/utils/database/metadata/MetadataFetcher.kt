@@ -1,5 +1,6 @@
 package top.potmot.utils.database.metadata
 
+import org.slf4j.LoggerFactory
 import top.potmot.entity.database.DbColumnRef
 import top.potmot.entity.database.dto.TableInput
 import java.sql.Connection
@@ -11,6 +12,8 @@ open class MetadataFetcher(
     fun fetch(): List<TableInput> {
         return fetchTables()
     }
+
+    protected val logger = LoggerFactory.getLogger(MetadataFetcher::class.java)
 
     protected val metadata: DatabaseMetaData = connection.metaData
     protected val catalog: String? = connection.catalog
@@ -189,6 +192,7 @@ open class MetadataFetcher(
     protected open fun fetchTableChecks(
         tableName: String
     ): List<TableInput.TargetOf_checks> {
+        logger.warn("Check constraints are not supported in generic metadata fetcher. Use database-specific implementation.")
         return emptyList()
     }
 }

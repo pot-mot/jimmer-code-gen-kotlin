@@ -12,23 +12,25 @@ class PostgreSQLMetadataFetcher(
         val fullTypeMap = mutableMapOf<String, ColumnFullTypePair>()
 
         // 获取表的所有列定义，包括数组信息和维度
-        connection.createStatement().use { stmt ->
-            val resultSet = stmt.executeQuery(
-                """
-                SELECT a.attname as column_name,
-                       pg_catalog.format_type(a.atttypid, a.atttypmod) as formatted_type
-                FROM pg_catalog.pg_attribute a
-                JOIN pg_catalog.pg_type ty ON a.atttypid = ty.oid
-                LEFT JOIN pg_catalog.pg_attrdef d ON (a.attrelid = d.adrelid AND a.attnum = d.adnum)
-                JOIN pg_catalog.pg_class c ON a.attrelid = c.oid
-                JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid
-                WHERE c.relname = '$tableName'
-                  AND n.nspname = '${schema ?: "public"}'
-                  AND a.attnum > 0
-                  AND NOT a.attisdropped
-                ORDER BY a.attnum
-                """.trimIndent()
-            )
+        connection.prepareStatement(
+            """
+            SELECT a.attname as column_name,
+                   pg_catalog.format_type(a.atttypid, a.atttypmod) as formatted_type
+            FROM pg_catalog.pg_attribute a
+            JOIN pg_catalog.pg_type ty ON a.atttypid = ty.oid
+            LEFT JOIN pg_catalog.pg_attrdef d ON (a.attrelid = d.adrelid AND a.attnum = d.adnum)
+            JOIN pg_catalog.pg_class c ON a.attrelid = c.oid
+            JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid
+            WHERE c.relname = ?
+              AND n.nspname = ?
+              AND a.attnum > 0
+              AND NOT a.attisdropped
+            ORDER BY a.attnum
+            """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, tableName)
+            stmt.setString(2, schema ?: "public")
+            val resultSet = stmt.executeQuery()
 
             while (resultSet.next()) {
                 val columnName = resultSet.getString("column_name")
@@ -80,16 +82,19 @@ class PostgreSQLMetadataFetcher(
     }
 
     private fun isAutoIncrement(tableName: String, columnName: String): Boolean {
-        connection.createStatement().use { stmt ->
-            val rs = stmt.executeQuery(
-                """
-                SELECT column_default
-                FROM information_schema.columns
-                WHERE table_name = '$tableName'
-                  AND column_name = '$columnName'
-                  AND table_schema = '${schema ?: "public"}'
-                """.trimIndent()
-            )
+        connection.prepareStatement(
+            """
+            SELECT column_default
+            FROM information_schema.columns
+            WHERE table_name = ?
+              AND column_name = ?
+              AND table_schema = ?
+            """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, tableName)
+            stmt.setString(2, columnName)
+            stmt.setString(3, schema ?: "public")
+            val rs = stmt.executeQuery()
 
             if (rs.next()) {
                 val defaultValue = rs.getString("column_default")
@@ -103,19 +108,21 @@ class PostgreSQLMetadataFetcher(
         val checks = mutableListOf<TableInput.TargetOf_checks>()
 
         // 获取 CHECK 约束信息
-        connection.createStatement().use { stmt ->
-            val constraintRs = stmt.executeQuery(
-                """
-                SELECT conname AS constraint_name,
-                       pg_get_constraintdef(c.oid) AS constraint_definition
-                FROM pg_constraint c
-                JOIN pg_class cls ON c.conrelid = cls.oid
-                JOIN pg_namespace nsp ON cls.relnamespace = nsp.oid
-                WHERE contype = 'c'
-                  AND cls.relname = '$tableName'
-                  AND nsp.nspname = '${schema ?: "public"}'
-                """.trimIndent()
-            )
+        connection.prepareStatement(
+            """
+            SELECT conname AS constraint_name,
+                   pg_get_constraintdef(c.oid) AS constraint_definition
+            FROM pg_constraint c
+            JOIN pg_class cls ON c.conrelid = cls.oid
+            JOIN pg_namespace nsp ON cls.relnamespace = nsp.oid
+            WHERE contype = 'c'
+              AND cls.relname = ?
+              AND nsp.nspname = ?
+            """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, tableName)
+            stmt.setString(2, schema ?: "public")
+            val constraintRs = stmt.executeQuery()
 
             while (constraintRs.next()) {
                 val constraintName = constraintRs.getString("constraint_name")

@@ -3,7 +3,7 @@ package top.potmot.utils.sql
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 
-val logger = LoggerFactory.getLogger(Connection::class.java)
+private val logger = LoggerFactory.getLogger(Connection::class.java)
 
 fun Connection.execute(sql: String, log: Boolean = false, ignoreExecuteFail: Boolean = false): List<SQLExecuteResult> {
     val results = mutableListOf<SQLExecuteResult>()
