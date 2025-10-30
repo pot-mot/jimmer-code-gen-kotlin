@@ -3,20 +3,25 @@ package top.potmot.utils.database.metadata
 
 import top.potmot.entity.database.dto.TableInput
 import java.sql.Connection
+import java.util.concurrent.ConcurrentHashMap
 
 class SqlServerMetadataFetcher(
     connection: Connection
 ) : MetadataFetcher(connection) {
+    private val tableCommentsCache = ConcurrentHashMap<String, String>()
+    private val columnCommentsCache = ConcurrentHashMap<String, String>()
 
     override fun fetchTables(): List<TableInput> {
+        loadAllComments()
+
         val tables = mutableListOf<TableInput>()
 
         val resultSet = metadata.getTables(catalog, schema, "%", arrayOf("TABLE"))
 
         while (resultSet.next()) {
-            val schema = resultSet.getString("TABLE_SCHEM") ?: ""
+            val tableSchema = resultSet.getString("TABLE_SCHEM") ?: ""
             val tableName = resultSet.getString("TABLE_NAME")
-            val remarks = getTableComment(schema, tableName) ?: ""
+            val comment = getTableComment(tableSchema, tableName) ?: ""
 
             val columns = fetchTableColumns(tableName)
             val indexes = fetchTableIndexes(tableName)
@@ -25,9 +30,9 @@ class SqlServerMetadataFetcher(
 
             tables.add(
                 TableInput(
-                    schema = schema,
+                    schema = tableSchema,
                     name = tableName,
-                    comment = remarks,
+                    comment = comment,
                     columns = columns,
                     indexes = indexes,
                     foreignKeys = foreignKeys,
@@ -37,29 +42,11 @@ class SqlServerMetadataFetcher(
         }
 
         resultSet.close()
+
+        tableCommentsCache.clear()
+        columnCommentsCache.clear()
+
         return tables
-    }
-
-    private fun getTableComment(schema: String, tableName: String): String? {
-        return connection.createStatement().use { stmt ->
-            val rs = stmt.executeQuery(
-                """
-                SELECT value 
-                FROM fn_listextendedproperty (
-                    'MS_Description', 
-                    'SCHEMA', '$schema', 
-                    'TABLE', '$tableName', 
-                    default, default
-                )
-                """.trimIndent()
-            )
-
-            if (rs.next()) {
-                rs.getString("value")
-            } else {
-                null
-            }
-        }
     }
 
     override fun fetchTableColumns(tableName: String): List<TableInput.TargetOf_columns> {
@@ -71,7 +58,7 @@ class SqlServerMetadataFetcher(
 
         while (resultSet.next()) {
             val columnName = resultSet.getString("COLUMN_NAME")
-            val remarks = getColumnComment(schema!!, tableName, columnName) ?: ""
+            val comment = getColumnComment(schema, tableName, columnName) ?: ""
             val typeName = resultSet.getString("TYPE_NAME")
             val dataSize = resultSet.getInt("COLUMN_SIZE").takeIf { it != 0 }
             val numericPrecision = resultSet.getInt("DECIMAL_DIGITS").takeIf { it != 0 }
@@ -82,7 +69,7 @@ class SqlServerMetadataFetcher(
             columns.add(
                 TableInput.TargetOf_columns(
                     name = columnName,
-                    comment = remarks,
+                    comment = comment,
                     type = typeName,
                     dataSize = dataSize,
                     numericPrecision = numericPrecision,
@@ -96,28 +83,6 @@ class SqlServerMetadataFetcher(
 
         resultSet.close()
         return columns
-    }
-
-    private fun getColumnComment(schema: String, tableName: String, columnName: String): String? {
-        return connection.createStatement().use { stmt ->
-            val rs = stmt.executeQuery(
-                """
-                SELECT value 
-                FROM fn_listextendedproperty (
-                    'MS_Description', 
-                    'SCHEMA', '$schema', 
-                    'TABLE', '$tableName', 
-                    'COLUMN', '$columnName'
-                )
-                """.trimIndent()
-            )
-
-            if (rs.next()) {
-                rs.getString("value")
-            } else {
-                null
-            }
-        }
     }
 
     override fun fetchTableChecks(tableName: String): List<TableInput.TargetOf_checks> {
@@ -146,5 +111,73 @@ class SqlServerMetadataFetcher(
         }
 
         return checks
+    }
+
+    /**
+     * 批量加载所有表和列的注释信息
+     */
+    private fun loadAllComments() {
+        connection.createStatement().use { stmt ->
+            // 批量获取所有表的注释
+            val tableRs = stmt.executeQuery(
+                """
+                SELECT 
+                    s.name AS schema_name,
+                    t.name AS table_name,
+                    ep.value AS table_comment
+                FROM sys.extended_properties ep
+                INNER JOIN sys.tables t ON ep.major_id = t.object_id
+                INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
+                WHERE ep.name = 'MS_Description' 
+                AND ep.minor_id = 0
+                AND s.name = '${schema ?: "dbo"}'
+                """.trimIndent()
+            )
+
+            while (tableRs.next()) {
+                val schemaName = tableRs.getString("schema_name")
+                val tableName = tableRs.getString("table_name")
+                val tableComment = tableRs.getString("table_comment")
+                tableCommentsCache["$schemaName.$tableName"] = tableComment ?: ""
+            }
+            tableRs.close()
+
+            // 批量获取所有列的注释
+            val columnRs = stmt.executeQuery(
+                """
+                SELECT 
+                    s.name AS schema_name,
+                    t.name AS table_name,
+                    c.name AS column_name,
+                    ep.value AS column_comment
+                FROM sys.extended_properties ep
+                INNER JOIN sys.columns c ON ep.major_id = c.object_id AND ep.minor_id = c.column_id
+                INNER JOIN sys.tables t ON c.object_id = t.object_id
+                INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
+                WHERE ep.name = 'MS_Description'
+                AND ep.minor_id > 0
+                AND s.name = '${schema ?: "dbo"}'
+                """.trimIndent()
+            )
+
+            while (columnRs.next()) {
+                val schemaName = columnRs.getString("schema_name")
+                val tableName = columnRs.getString("table_name")
+                val columnName = columnRs.getString("column_name")
+                val columnComment = columnRs.getString("column_comment")
+                columnCommentsCache["$schemaName.$tableName.$columnName"] = columnComment ?: ""
+            }
+            columnRs.close()
+        }
+    }
+
+    private fun getTableComment(tableSchema: String?, tableName: String): String? {
+        // 直接从缓存中获取
+        return tableCommentsCache["$tableSchema.$tableName"]
+    }
+
+    private fun getColumnComment(tableSchema: String?, tableName: String, columnName: String): String? {
+        // 直接从缓存中获取
+        return columnCommentsCache["$tableSchema.$tableName.$columnName"]
     }
 }
