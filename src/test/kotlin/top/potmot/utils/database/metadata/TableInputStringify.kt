@@ -1,4 +1,4 @@
-package top.potmot.utils.database
+package top.potmot.utils.database.metadata
 
 import top.potmot.entity.database.dto.TableInput
 

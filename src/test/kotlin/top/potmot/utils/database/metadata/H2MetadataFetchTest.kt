@@ -1,33 +1,19 @@
-package top.potmot.utils.database
+package top.potmot.utils.database.metadata
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import top.potmot.entity.database.dto.TableInput
-import top.potmot.utils.database.metadata.OracleMetadataFetcher
 import java.sql.DriverManager
-import kotlin.use
 
-class OracleMetadataFetchTest {
+class H2MetadataFetchTest {
     @Test
-    fun testXe21Metadata() {
+    fun testMetadata() {
         DriverManager.getConnection(
-            "jdbc:oracle:thin:@localhost:39120:XE",
-            "test",
-            "test"
+            "jdbc:h2:mem:test;INIT=RUNSCRIPT FROM './src/test/resources/sql/metadata-test-h2.sql'",
+            "sa",
+            ""
         ).use { connection ->
-            val result = OracleMetadataFetcher(connection).fetch()
-            assetResult(result)
-        }
-    }
-
-    @Test
-    fun testXe18Metadata() {
-        DriverManager.getConnection(
-            "jdbc:oracle:thin:@localhost:39121:XE",
-            "test",
-            "test"
-        ).use { connection ->
-            val result = OracleMetadataFetcher(connection).fetch()
+            val result = H2MetadataFetcher(connection).fetch()
             assetResult(result)
         }
     }
@@ -60,39 +46,42 @@ class OracleMetadataFetchTest {
             assert(testTable.columns.size == 24)
             Assertions.assertLinesMatch(
                 """
-ID 自增主键 NUMBER 19,null PRIMARY DEFAULT "TEST"."SEQ_TEST_TABLE_ID"."NEXTVAL" 
-USER_ID 用户ID NUMBER 10,null
-GROUP_ID 组ID NUMBER 10,null
-CATEGORY_ID 分类ID NUMBER 10,null
-NULLABLE_USER_ID 可空用户ID NUMBER 10,null NULL
-NAME 名称 VARCHAR2 50,null NULL
-EMAIL 邮箱 VARCHAR2 100,null NULL
-STATUS 状态 NUMBER 3,null NULL DEFAULT 1 
-TYPE_INT 整数类型 NUMBER 10,null NULL
-TYPE_BIGINT 大整数类型 NUMBER 19,null NULL
-TYPE_SMALLINT 小整数类型 NUMBER 5,null NULL
-TYPE_DECIMAL 精确小数类型 NUMBER 10,2 NULL
-TYPE_FLOAT 单精度浮点数 BINARY_FLOAT 4,null NULL
-TYPE_DOUBLE 双精度浮点数 BINARY_DOUBLE 8,null NULL
-TYPE_BOOLEAN 布尔类型 NUMBER 1,null NULL
-TYPE_DATE 日期类型 DATE 7,null NULL
-TYPE_DATETIME 日期时间类型 TIMESTAMP(6) 11,6 NULL
-TYPE_TIMESTAMP 时间戳类型 TIMESTAMP(6) 11,6 NULL DEFAULT CURRENT_TIMESTAMP 
-TYPE_TIMESTAMP_TZ 时区时间戳类型 TIMESTAMP(6) WITH TIME ZONE 13,6 NULL
-TYPE_TEXT 文本类型 CLOB 4000,null NULL
-TYPE_CHECK_ENUM 枚举类型检查 VARCHAR2 20,null NULL
-TYPE_JSON JSON数据类型 CLOB 4000,null NULL
-TYPE_BLOB 二进制大对象类型 BLOB 4000,null NULL
-TYPE_BIT 位类型 RAW 8,null NULL
+ID 自增主键 INTEGER 32,null PRIMARY AUTO_INCREMENT
+USER_ID 用户ID INTEGER 32,null
+GROUP_ID 组ID INTEGER 32,null
+CATEGORY_ID 分类ID INTEGER 32,null
+NULLABLE_USER_ID 可空用户ID INTEGER 32,null NULL
+NAME 名称 CHARACTER VARYING 50,null NULL
+EMAIL 邮箱 CHARACTER VARYING 100,null NULL
+STATUS 状态 SMALLINT 16,null NULL DEFAULT 1 
+TYPE_INT 整数类型 INTEGER 32,null NULL
+TYPE_BIGINT 大整数类型 BIGINT 64,null NULL
+TYPE_SMALLINT 小整数类型 SMALLINT 16,null NULL
+TYPE_DECIMAL 精确小数类型 NUMERIC 10,2 NULL
+TYPE_FLOAT 单精度浮点数 REAL 24,null NULL
+TYPE_DOUBLE 双精度浮点数 DOUBLE PRECISION 53,null NULL
+TYPE_BOOLEAN 布尔类型 BOOLEAN 1,null NULL
+TYPE_DATE 日期类型 DATE 10,null NULL
+TYPE_DATETIME 日期时间类型 TIMESTAMP 26,6 NULL
+TYPE_TIMESTAMP 时间戳类型 TIMESTAMP 26,6 NULL DEFAULT CURRENT_TIMESTAMP 
+TYPE_TIMESTAMP_TZ 时区时间戳类型 TIMESTAMP WITH TIME ZONE 32,6 NULL
+TYPE_TEXT 文本类型 CHARACTER VARYING 1000000000,null NULL
+TYPE_CHECK_ENUM 枚举类型检查 CHARACTER VARYING 20,null NULL
+TYPE_JSON JSON数据类型 JSON 1000000000,null NULL
+TYPE_BLOB 二进制大对象类型 BINARY VARYING 1000000000,null NULL
+TYPE_BIT 位类型 BINARY 8,null NULL
                 """.trim().split("\n"),
                 testTable.columns.map { it.stringify() }
             )
 
-            assert(testTable.indexes.size == 3)
+            assert(testTable.indexes.size == 6)
             Assertions.assertLinesMatch(
                 """
-PK_TEST_TABLE true ID
-UK_EMAIL true EMAIL
+PRIMARY_KEY_C true ID
+UK_EMAIL_INDEX_C true EMAIL
+FK_GROUP_CATEGORY_INDEX_C false GROUP_ID,CATEGORY_ID
+FK_NULLABLE_USER_INDEX_C false NULLABLE_USER_ID
+FK_USER_INDEX_C false USER_ID
 IDX_NAME_STATUS false NAME,STATUS
                 """.trim().split("\n"),
                 testTable.indexes.map { it.stringify() }
@@ -101,9 +90,9 @@ IDX_NAME_STATUS false NAME,STATUS
             assert(testTable.foreignKeys.size == 3)
             Assertions.assertLinesMatch(
                 """
-FK_GROUP_CATEGORY TEST.TEST_TABLE GROUP_ID -> GROUP_ID CASCADE RESTRICT
-FK_NULLABLE_USER TEST.TEST_TABLE NULLABLE_USER_ID -> ID CASCADE SET NULL
-FK_USER TEST.TEST_TABLE USER_ID -> ID CASCADE CASCADE
+FK_GROUP_CATEGORY PUBLIC.TEST_TABLE GROUP_ID -> GROUP_ID RESTRICT RESTRICT
+FK_NULLABLE_USER PUBLIC.TEST_TABLE NULLABLE_USER_ID -> ID SET NULL SET NULL
+FK_USER PUBLIC.TEST_TABLE USER_ID -> ID CASCADE CASCADE
                 """.trim().split("\n"),
                 testTable.foreignKeys.sortedBy { it.name }.map { it.stringify() }
             )
@@ -111,7 +100,7 @@ FK_USER TEST.TEST_TABLE USER_ID -> ID CASCADE CASCADE
             assert(testTable.checks.size == 1)
             Assertions.assertLinesMatch(
                 """
-CHK_TYPE_CHECK_ENUM type_check_enum IN ('value1', 'value2', 'value3')
+CONSTRAINT_C "TYPE_CHECK_ENUM" IN('value1', 'value2', 'value3')
                 """.trim().split("\n"),
                 testTable.checks.map { it.stringify() }
             )

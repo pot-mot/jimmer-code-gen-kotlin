@@ -1,12 +1,10 @@
-package top.potmot.utils.database
+package top.potmot.utils.database.metadata
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import top.potmot.entity.database.dto.TableInput
-import top.potmot.utils.database.metadata.SqliteMetadataFetcher
 import top.potmot.utils.sql.execute
 import java.sql.DriverManager
-import kotlin.use
 
 class SqliteMetadataFetchTest {
     @Test
