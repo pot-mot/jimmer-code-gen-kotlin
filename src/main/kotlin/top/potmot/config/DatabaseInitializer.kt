@@ -5,6 +5,7 @@ import org.babyfish.jimmer.sql.kt.cfg.KInitializer
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import top.potmot.error.DatabaseException
 import top.potmot.utils.sql.execute
 import java.io.InputStreamReader
 import javax.sql.DataSource
@@ -52,7 +53,7 @@ open class DatabaseInitializer(
                 DatabaseInitializer::class.java
                     .classLoader
                     .getResourceAsStream(it)
-            } ?: throw Exception("no h2 sql find in path: $sqlPath")
+            } ?: throw DatabaseException.h2InitFail(exceptionMessage = "no h2 sql find in path: $sqlPath")
 
             val sqlList = InputStreamReader(inputStream).use { reader ->
                 reader.readText()
@@ -68,10 +69,13 @@ open class DatabaseInitializer(
             val failResults = results.filterNot { it.success }
 
             if (failResults.isNotEmpty()) {
+                val failMessages = mutableListOf<String>()
                 failResults.forEach {
-                    logger.error("execute fail: \n---\n${it.sql}\n---\nbecause of exception: \n---\n${it.exception}\n---\n")
+                    val failMessage = "execute fail: \n---\n${it.sql}\n---\nbecause of exception: \n---\n${it.exception}\n---\n"
+                    failMessages.add(failMessage)
+                    logger.error(failMessage)
                 }
-                throw Exception("h2 init fail")
+                throw DatabaseException.h2InitFail(exceptionMessage = failMessages.joinToString("\n"))
             }
 
             logger.info("h2 init finish")

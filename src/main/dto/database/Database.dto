@@ -10,9 +10,16 @@ input DatabaseUpdateInput {
     id!
 }
 
-
 DatabaseView {
     #allScalars
+    -username
+    -password
+}
+
+DatabaseConnectionView {
+    url
+    username
+    password
 }
 
 specification DatabaseSpec {

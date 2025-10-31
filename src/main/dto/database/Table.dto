@@ -2,17 +2,22 @@ export top.potmot.entity.database.DbTable
 
 input TableInput {
     #allScalars
+    -id
     columns {
         #allScalars
+        -id
     }
     indexes {
         #allScalars
+        -id
     }
     foreignKeys {
         #allScalars
+        -id
     }
     checks {
         #allScalars
+        -id
     }
 }
 
