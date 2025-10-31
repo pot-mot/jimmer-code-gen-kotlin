@@ -21,7 +21,7 @@ class SqliteMetadataFetchTest {
                 ?: throw Exception("no sqlite init script find")
             connection.execute(initScript)
 
-            val result = SqliteMetadataFetcher(connection).fetch()
+            val result = fetchMetadata(connection)
             assetResult(result)
         }
     }

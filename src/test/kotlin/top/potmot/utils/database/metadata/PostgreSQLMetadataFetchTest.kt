@@ -13,7 +13,7 @@ class PostgreSQLMetadataFetchTest {
             "test",
             "test"
         ).use { connection ->
-            val result = PostgreSQLMetadataFetcher(connection).fetch()
+            val result = fetchMetadata(connection)
             assetResult(result)
         }
     }
@@ -25,7 +25,7 @@ class PostgreSQLMetadataFetchTest {
             "test",
             "test"
         ).use { connection ->
-            val result = PostgreSQLMetadataFetcher(connection).fetch()
+            val result = fetchMetadata(connection)
             assetResult(result)
         }
     }

@@ -1,6 +1,7 @@
 package top.potmot.utils.database.metadata
 
 import org.slf4j.LoggerFactory
+import top.potmot.entity.database.DatabaseType
 import top.potmot.entity.database.DbColumnRef
 import top.potmot.entity.database.dto.TableInput
 import java.sql.Connection
@@ -196,3 +197,28 @@ open class MetadataFetcher(
         return emptyList()
     }
 }
+
+private fun getTypeFromConnection(connection: Connection): DatabaseType? =
+    when (connection.metaData.databaseProductName.lowercase()) {
+        "mysql" -> DatabaseType.MYSQL
+        "postgresql" -> DatabaseType.POSTGRESQL
+        "oracle" -> DatabaseType.ORACLE
+        "microsoft sql server" -> DatabaseType.SQLSERVER
+        "h2" -> DatabaseType.H2
+        "sqlite" -> DatabaseType.SQLITE
+        else -> null
+    }
+
+fun fetchMetadata(
+    connection: Connection,
+    databaseType: DatabaseType? = getTypeFromConnection(connection)
+) =
+    when(databaseType) {
+        DatabaseType.MYSQL -> MySQLMetadataFetcher(connection).fetch()
+        DatabaseType.POSTGRESQL -> PostgreSQLMetadataFetcher(connection).fetch()
+        DatabaseType.ORACLE -> OracleMetadataFetcher(connection).fetch()
+        DatabaseType.SQLSERVER -> SqlServerMetadataFetcher(connection).fetch()
+        DatabaseType.H2 -> H2MetadataFetcher(connection).fetch()
+        DatabaseType.SQLITE -> SqliteMetadataFetcher(connection).fetch()
+        else -> MetadataFetcher(connection).fetch()
+    }

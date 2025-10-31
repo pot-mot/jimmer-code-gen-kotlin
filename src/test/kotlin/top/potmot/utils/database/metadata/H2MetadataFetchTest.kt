@@ -13,7 +13,7 @@ class H2MetadataFetchTest {
             "sa",
             ""
         ).use { connection ->
-            val result = H2MetadataFetcher(connection).fetch()
+            val result = fetchMetadata(connection)
             assetResult(result)
         }
     }

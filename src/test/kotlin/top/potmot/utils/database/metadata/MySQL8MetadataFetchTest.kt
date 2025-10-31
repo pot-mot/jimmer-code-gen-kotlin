@@ -13,7 +13,7 @@ class MySQL8MetadataFetchTest {
             "test",
             "test"
         ).use { connection ->
-            val result = MySQLMetadataFetcher(connection).fetch()
+            val result = fetchMetadata(connection)
             assetResult(result)
         }
     }

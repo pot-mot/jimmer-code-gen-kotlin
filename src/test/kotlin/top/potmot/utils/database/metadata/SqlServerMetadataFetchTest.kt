@@ -13,7 +13,7 @@ class SqlServerMetadataFetchTest {
             "test_login",
             "Test1234!"
         ).use { connection ->
-            val result = SqlServerMetadataFetcher(connection).fetch()
+            val result = fetchMetadata(connection)
             assetResult(result)
         }
     }
@@ -25,7 +25,7 @@ class SqlServerMetadataFetchTest {
             "test_login",
             "Test1234!"
         ).use { connection ->
-            val result = SqlServerMetadataFetcher(connection).fetch()
+            val result = fetchMetadata(connection)
             assetResult(result)
         }
     }

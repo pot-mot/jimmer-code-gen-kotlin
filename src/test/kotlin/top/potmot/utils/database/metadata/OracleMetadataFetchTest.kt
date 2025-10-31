@@ -13,7 +13,7 @@ class OracleMetadataFetchTest {
             "test",
             "test"
         ).use { connection ->
-            val result = OracleMetadataFetcher(connection).fetch()
+            val result = fetchMetadata(connection)
             assetResult(result)
         }
     }
@@ -25,7 +25,7 @@ class OracleMetadataFetchTest {
             "test",
             "test"
         ).use { connection ->
-            val result = OracleMetadataFetcher(connection).fetch()
+            val result = fetchMetadata(connection)
             assetResult(result)
         }
     }
