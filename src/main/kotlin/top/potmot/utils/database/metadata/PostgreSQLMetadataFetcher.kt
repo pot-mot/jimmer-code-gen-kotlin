@@ -30,16 +30,16 @@ class PostgreSQLMetadataFetcher(
         ).use { stmt ->
             stmt.setString(1, tableName)
             stmt.setString(2, schema ?: "public")
-            val resultSet = stmt.executeQuery()
+            stmt.executeQuery().use { rs ->
+                while (rs.next()) {
+                    val columnName = rs.getString("column_name")
+                    val formattedType = rs.getString("formatted_type")
 
-            while (resultSet.next()) {
-                val columnName = resultSet.getString("column_name")
-                val formattedType = resultSet.getString("formatted_type")
-
-                fullTypeMap[columnName] = ColumnFullTypePair(
-                    columnName = columnName,
-                    fullType = formattedType
-                )
+                    fullTypeMap[columnName] = ColumnFullTypePair(
+                        columnName = columnName,
+                        fullType = formattedType
+                    )
+                }   
             }
         }
 
@@ -48,36 +48,40 @@ class PostgreSQLMetadataFetcher(
 
         // 构建返回结果
         val columns = mutableListOf<TableInput.TargetOf_columns>()
-        val resultSet = metadata.getColumns(catalog, schema, tableName, "%")
+        metadata.getColumns(
+            catalog,
+            schema,
+            tableName,
+            "%"
+        ).use { rs ->
+            while (rs.next()) {
+                val columnName = rs.getString("COLUMN_NAME")
+                val columnInfo = fullTypeMap[columnName]
 
-        while (resultSet.next()) {
-            val columnName = resultSet.getString("COLUMN_NAME")
-            val columnInfo = fullTypeMap[columnName]
+                val remarks = rs.getString("REMARKS") ?: ""
+                val typeName = columnInfo?.fullType ?: rs.getString("TYPE_NAME")
+                val dataSize = rs.getInt("COLUMN_SIZE").takeIf { it != 0 }
+                val numericPrecision = rs.getInt("DECIMAL_DIGITS").takeIf { it != 0 }
+                val nullable = rs.getString("IS_NULLABLE") == "YES"
+                val defaultValue = rs.getString("COLUMN_DEF")
+                val autoIncrement = isAutoIncrement(tableName, columnName)
 
-            val remarks = resultSet.getString("REMARKS") ?: ""
-            val typeName = columnInfo?.fullType ?: resultSet.getString("TYPE_NAME")
-            val dataSize = resultSet.getInt("COLUMN_SIZE").takeIf { it != 0 }
-            val numericPrecision = resultSet.getInt("DECIMAL_DIGITS").takeIf { it != 0 }
-            val nullable = resultSet.getString("IS_NULLABLE") == "YES"
-            val defaultValue = resultSet.getString("COLUMN_DEF")
-            val autoIncrement = isAutoIncrement(tableName, columnName)
-
-            columns.add(
-                TableInput.TargetOf_columns(
-                    name = columnName,
-                    comment = remarks,
-                    type = typeName,
-                    dataSize = dataSize,
-                    numericPrecision = numericPrecision,
-                    nullable = nullable,
-                    defaultValue = defaultValue,
-                    partOfPrimaryKey = primaryKeys.contains(columnName),
-                    autoIncrement = autoIncrement,
+                columns.add(
+                    TableInput.TargetOf_columns(
+                        name = columnName,
+                        comment = remarks,
+                        type = typeName,
+                        dataSize = dataSize,
+                        numericPrecision = numericPrecision,
+                        nullable = nullable,
+                        defaultValue = defaultValue,
+                        partOfPrimaryKey = primaryKeys.contains(columnName),
+                        autoIncrement = autoIncrement,
+                    )
                 )
-            )
+            }   
         }
 
-        resultSet.close()
         return columns
     }
 
@@ -94,11 +98,11 @@ class PostgreSQLMetadataFetcher(
             stmt.setString(1, tableName)
             stmt.setString(2, columnName)
             stmt.setString(3, schema ?: "public")
-            val rs = stmt.executeQuery()
-
-            if (rs.next()) {
-                val defaultValue = rs.getString("column_default")
-                return defaultValue?.startsWith("nextval(") == true
+            stmt.executeQuery().use { rs ->
+                if (rs.next()) {
+                    val defaultValue = rs.getString("column_default")
+                    return defaultValue?.startsWith("nextval(") == true
+                }
             }
         }
         return false
@@ -122,18 +126,18 @@ class PostgreSQLMetadataFetcher(
         ).use { stmt ->
             stmt.setString(1, tableName)
             stmt.setString(2, schema ?: "public")
-            val constraintRs = stmt.executeQuery()
+            stmt.executeQuery().use { rs ->
+                while (rs.next()) {
+                    val constraintName = rs.getString("constraint_name")
+                    val definition = rs.getString("constraint_definition")
 
-            while (constraintRs.next()) {
-                val constraintName = constraintRs.getString("constraint_name")
-                val definition = constraintRs.getString("constraint_definition")
-
-                checks.add(
-                    TableInput.TargetOf_checks(
-                        name = constraintName,
-                        expression = definition
+                    checks.add(
+                        TableInput.TargetOf_checks(
+                            name = constraintName,
+                            expression = definition
+                        )
                     )
-                )
+                }
             }
         }
 

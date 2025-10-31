@@ -20,9 +20,9 @@ class SqliteMetadataFetcher(
             """.trimIndent()
         ).use { statement ->
             statement.setString(1, tableName)
-            statement.executeQuery().use { resultSet ->
-                if (resultSet.next()) {
-                    val createTableSql = resultSet.getString("sql")
+            statement.executeQuery().use { rs ->
+                if (rs.next()) {
+                    val createTableSql = rs.getString("sql")
                     // 使用正则表达式从 CREATE TABLE 语句中提取 CHECK 约束
                     val matches = checkPattern.findAll(createTableSql)
 

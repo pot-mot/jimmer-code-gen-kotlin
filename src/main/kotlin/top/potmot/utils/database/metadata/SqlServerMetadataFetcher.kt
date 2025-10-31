@@ -136,13 +136,13 @@ class SqlServerMetadataFetcher(
             """.trimIndent()
         ).use { stmt ->
             stmt.setString(1, schema ?: "dbo")
-            val tableRs = stmt.executeQuery()
-
-            while (tableRs.next()) {
-                val schemaName = tableRs.getString("schema_name")
-                val tableName = tableRs.getString("table_name")
-                val tableComment = tableRs.getString("table_comment")
-                tableCommentsCache["$schemaName.$tableName"] = tableComment ?: ""
+            stmt.executeQuery().use { rs ->
+                while (rs.next()) {
+                    val schemaName = rs.getString("schema_name")
+                    val tableName = rs.getString("table_name")
+                    val tableComment = rs.getString("table_comment")
+                    tableCommentsCache["$schemaName.$tableName"] = tableComment ?: ""
+                }
             }
         }
 
@@ -164,14 +164,14 @@ class SqlServerMetadataFetcher(
             """.trimIndent()
         ).use { stmt ->
             stmt.setString(1, schema ?: "dbo")
-            val columnRs = stmt.executeQuery()
-
-            while (columnRs.next()) {
-                val schemaName = columnRs.getString("schema_name")
-                val tableName = columnRs.getString("table_name")
-                val columnName = columnRs.getString("column_name")
-                val columnComment = columnRs.getString("column_comment")
-                columnCommentsCache["$schemaName.$tableName.$columnName"] = columnComment ?: ""
+            stmt.executeQuery().use { rs ->
+                while (rs.next()) {
+                    val schemaName = rs.getString("schema_name")
+                    val tableName = rs.getString("table_name")
+                    val columnName = rs.getString("column_name")
+                    val columnComment = rs.getString("column_comment")
+                    columnCommentsCache["$schemaName.$tableName.$columnName"] = columnComment ?: ""
+                }
             }
         }
     }

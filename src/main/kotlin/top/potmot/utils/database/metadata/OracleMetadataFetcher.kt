@@ -15,35 +15,35 @@ class OracleMetadataFetcher(
 
         val tables = mutableListOf<TableInput>()
 
-        val resultSet = metadata.getTables(catalog, schema, "%", arrayOf("TABLE"))
+        metadata.getTables(
+            catalog,
+            schema,
+            "%",
+            arrayOf("TABLE")
+        ).use { rs ->
+            while (rs.next()) {
+                val tableSchema = rs.getString("TABLE_SCHEM") ?: ""
+                val tableName = rs.getString("TABLE_NAME")
+                val remarks = getTableComment(tableSchema, tableName) ?: ""
 
-        while (resultSet.next()) {
-            val tableSchema = resultSet.getString("TABLE_SCHEM") ?: ""
-            val tableName = resultSet.getString("TABLE_NAME")
-            val remarks = getTableComment(tableSchema, tableName) ?: ""
+                val columns = fetchTableColumns(tableName)
+                val indexes = fetchTableIndexes(tableName)
+                val foreignKeys = fetchTableForeignKeys(tableName)
+                val checks = fetchTableChecks(tableName)
 
-            val columns = fetchTableColumns(tableName)
-            val indexes = fetchTableIndexes(tableName)
-            val foreignKeys = fetchTableForeignKeys(tableName)
-            val checks = fetchTableChecks(tableName)
-
-            tables.add(
-                TableInput(
-                    schema = tableSchema,
-                    name = tableName,
-                    comment = remarks,
-                    columns = columns,
-                    indexes = indexes,
-                    foreignKeys = foreignKeys,
-                    checks = checks,
+                tables.add(
+                    TableInput(
+                        schema = tableSchema,
+                        name = tableName,
+                        comment = remarks,
+                        columns = columns,
+                        indexes = indexes,
+                        foreignKeys = foreignKeys,
+                        checks = checks,
+                    )
                 )
-            )
+            }
         }
-
-        resultSet.close()
-
-        tableCommentsCache.clear()
-        columnCommentsCache.clear()
 
         return tables
     }
@@ -53,34 +53,38 @@ class OracleMetadataFetcher(
         val primaryKeys = fetchPrimaryKeys(tableName).toSet()
 
         val columns = mutableListOf<TableInput.TargetOf_columns>()
-        val resultSet = metadata.getColumns(catalog, schema, tableName, "%")
+        metadata.getColumns(
+            catalog,
+            schema,
+            tableName,
+            "%"
+        ).use { rs ->
+            while (rs.next()) {
+                val columnName = rs.getString("COLUMN_NAME")
+                val remarks = getColumnComment(schema, tableName, columnName) ?: ""
+                val typeName = rs.getString("TYPE_NAME")
+                val dataSize = rs.getInt("COLUMN_SIZE").takeIf { it != 0 }
+                val numericPrecision = rs.getInt("DECIMAL_DIGITS").takeIf { it != 0 }
+                val nullable = rs.getInt("NULLABLE") != 0
+                val defaultValue = rs.getString("COLUMN_DEF")
+                val autoIncrement = rs.getString("IS_AUTOINCREMENT")?.equals("YES", ignoreCase = true)
 
-        while (resultSet.next()) {
-            val columnName = resultSet.getString("COLUMN_NAME")
-            val remarks = getColumnComment(schema, tableName, columnName) ?: ""
-            val typeName = resultSet.getString("TYPE_NAME")
-            val dataSize = resultSet.getInt("COLUMN_SIZE").takeIf { it != 0 }
-            val numericPrecision = resultSet.getInt("DECIMAL_DIGITS").takeIf { it != 0 }
-            val nullable = resultSet.getInt("NULLABLE") != 0
-            val defaultValue = resultSet.getString("COLUMN_DEF")
-            val autoIncrement = resultSet.getString("IS_AUTOINCREMENT")?.equals("YES", ignoreCase = true)
-
-            columns.add(
-                TableInput.TargetOf_columns(
-                    name = columnName,
-                    comment = remarks,
-                    type = typeName,
-                    dataSize = dataSize,
-                    numericPrecision = numericPrecision,
-                    nullable = nullable,
-                    defaultValue = defaultValue,
-                    partOfPrimaryKey = primaryKeys.contains(columnName),
-                    autoIncrement = autoIncrement,
+                columns.add(
+                    TableInput.TargetOf_columns(
+                        name = columnName,
+                        comment = remarks,
+                        type = typeName,
+                        dataSize = dataSize,
+                        numericPrecision = numericPrecision,
+                        nullable = nullable,
+                        defaultValue = defaultValue,
+                        partOfPrimaryKey = primaryKeys.contains(columnName),
+                        autoIncrement = autoIncrement,
+                    )
                 )
-            )
+            }
         }
 
-        resultSet.close()
         return columns
     }
 
@@ -99,15 +103,15 @@ class OracleMetadataFetcher(
         ).use { stmt ->
             stmt.setString(1, connection.schema)
             stmt.setString(2, tableName)
-            val resultSet = stmt.executeQuery()
-
-            while (resultSet.next()) {
-                checks.add(
-                    TableInput.TargetOf_checks(
-                        name = resultSet.getString("CONSTRAINT_NAME"),
-                        expression = resultSet.getString("SEARCH_CONDITION")
+            stmt.executeQuery().use { rs ->
+                while (rs.next()) {
+                    checks.add(
+                        TableInput.TargetOf_checks(
+                            name = rs.getString("CONSTRAINT_NAME"),
+                            expression = rs.getString("SEARCH_CONDITION")
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -124,17 +128,16 @@ class OracleMetadataFetcher(
             FROM ALL_TAB_COMMENTS 
             WHERE OWNER = ?
             """.trimIndent()
-        ).use { tableStmt ->
-            tableStmt.setString(1, schema)
-            val tableRs = tableStmt.executeQuery()
-
-            while (tableRs.next()) {
-                val tableSchema = tableRs.getString("OWNER")
-                val tableName = tableRs.getString("TABLE_NAME")
-                val tableComment = tableRs.getString("COMMENTS")
-                tableCommentsCache["$tableSchema.$tableName"] = tableComment ?: ""
+        ).use { stmt ->
+            stmt.setString(1, schema)
+            stmt.executeQuery().use { rs ->
+                while (rs.next()) {
+                    val tableSchema = rs.getString("OWNER")
+                    val tableName = rs.getString("TABLE_NAME")
+                    val tableComment = rs.getString("COMMENTS")
+                    tableCommentsCache["$tableSchema.$tableName"] = tableComment ?: ""
+                }
             }
-            tableRs.close()
         }
 
         connection.prepareStatement(
@@ -143,18 +146,17 @@ class OracleMetadataFetcher(
             FROM ALL_COL_COMMENTS 
             WHERE OWNER = ?
             """.trimIndent()
-        ).use { columnStmt ->
-            columnStmt.setString(1, schema)
-            val columnRs = columnStmt.executeQuery()
-
-            while (columnRs.next()) {
-                val tableSchema = columnRs.getString("OWNER")
-                val tableName = columnRs.getString("TABLE_NAME")
-                val columnName = columnRs.getString("COLUMN_NAME")
-                val columnComment = columnRs.getString("COMMENTS")
-                columnCommentsCache["$tableSchema.$tableName.$columnName"] = columnComment ?: ""
+        ).use { stmt ->
+            stmt.setString(1, schema)
+            stmt.executeQuery().use { rs ->
+                while (rs.next()) {
+                    val tableSchema = rs.getString("OWNER")
+                    val tableName = rs.getString("TABLE_NAME")
+                    val columnName = rs.getString("COLUMN_NAME")
+                    val columnComment = rs.getString("COMMENTS")
+                    columnCommentsCache["$tableSchema.$tableName.$columnName"] = columnComment ?: ""
+                }
             }
-            columnRs.close()
         }
     }
 

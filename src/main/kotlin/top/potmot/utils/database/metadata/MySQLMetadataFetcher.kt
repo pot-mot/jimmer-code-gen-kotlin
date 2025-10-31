@@ -13,32 +13,36 @@ class MySQLMetadataFetcher(
     override fun fetchTables(): List<TableInput> {
         val tables = mutableListOf<TableInput>()
 
-        val resultSet = metadata.getTables(catalog, schema, "%", arrayOf("TABLE"))
+        metadata.getTables(
+            catalog,
+            schema,
+            "%",
+            arrayOf("TABLE")
+        ).use { rs ->
+            while (rs.next()) {
+                val schema = rs.getString("TABLE_SCHEM") ?: ""
+                val tableName = rs.getString("TABLE_NAME")
+                val remarks = rs.getString("REMARKS") ?: ""
 
-        while (resultSet.next()) {
-            val schema = resultSet.getString("TABLE_SCHEM") ?: ""
-            val tableName = resultSet.getString("TABLE_NAME")
-            val remarks = resultSet.getString("REMARKS") ?: ""
+                val (columns, checks) = fetchTableColumnsAndChecks(tableName)
+                val indexes = fetchTableIndexes(tableName)
+                val foreignKeys = fetchTableForeignKeys(tableName)
 
-            val (columns, checks) = fetchTableColumnsAndChecks(tableName)
-            val indexes = fetchTableIndexes(tableName)
-            val foreignKeys = fetchTableForeignKeys(tableName)
-
-            // 创建 TableInput 实例
-            tables.add(
-                TableInput(
-                    schema = schema,
-                    name = tableName,
-                    comment = remarks,
-                    columns = columns,
-                    indexes = indexes,
-                    foreignKeys = foreignKeys,
-                    checks = checks,
+                // 创建 TableInput 实例
+                tables.add(
+                    TableInput(
+                        schema = schema,
+                        name = tableName,
+                        comment = remarks,
+                        columns = columns,
+                        indexes = indexes,
+                        foreignKeys = foreignKeys,
+                        checks = checks,
+                    )
                 )
-            )
+            }
         }
 
-        resultSet.close()
         return tables
     }
 
@@ -110,9 +114,10 @@ class MySQLMetadataFetcher(
 
     private fun getCreateTableStmt(tableName: String): String? {
         connection.createStatement().use { stmt ->
-            val resultSet = stmt.executeQuery("SHOW CREATE TABLE `$tableName`")
-            if (resultSet.next()) {
-                return resultSet.getString(2)
+            stmt.executeQuery("SHOW CREATE TABLE `$tableName`").use { rs ->
+                if (rs.next()) {
+                    return rs.getString(2)
+                }
             }
         }
         return null

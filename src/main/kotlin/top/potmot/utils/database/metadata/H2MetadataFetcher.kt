@@ -22,11 +22,11 @@ class H2MetadataFetcher(
             """.trimIndent()
         ).use { statement ->
             statement.setString(1, tableName.uppercase())
-            statement.executeQuery().use { resultSet ->
-                while (resultSet.next()) {
+            statement.executeQuery().use { rs ->
+                while (rs.next()) {
                     val check = TableInput.TargetOf_checks(
-                        name = resultSet.getString("CONSTRAINT_NAME"),
-                        expression = resultSet.getString("CHECK_CLAUSE")
+                        name = rs.getString("CONSTRAINT_NAME"),
+                        expression = rs.getString("CHECK_CLAUSE")
                     )
                     checks.add(check)
                 }

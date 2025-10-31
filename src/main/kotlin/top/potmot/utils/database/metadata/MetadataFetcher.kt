@@ -23,33 +23,37 @@ open class MetadataFetcher(
     protected open fun fetchTables(): List<TableInput> {
         val tables = mutableListOf<TableInput>()
 
-        val resultSet = metadata.getTables(catalog, schema, "%", arrayOf("TABLE"))
+        metadata.getTables(
+            catalog,
+            schema,
+            "%",
+            arrayOf("TABLE")
+        ).use { rs ->
+            while (rs.next()) {
+                val schema = rs.getString("TABLE_SCHEM") ?: ""
+                val tableName = rs.getString("TABLE_NAME")
+                val remarks = rs.getString("REMARKS") ?: ""
 
-        while (resultSet.next()) {
-            val schema = resultSet.getString("TABLE_SCHEM") ?: ""
-            val tableName = resultSet.getString("TABLE_NAME")
-            val remarks = resultSet.getString("REMARKS") ?: ""
+                val columns = fetchTableColumns(tableName)
+                val indexes = fetchTableIndexes(tableName)
+                val foreignKeys = fetchTableForeignKeys(tableName)
+                val checks = fetchTableChecks(tableName)
 
-            val columns = fetchTableColumns(tableName)
-            val indexes = fetchTableIndexes(tableName)
-            val foreignKeys = fetchTableForeignKeys(tableName)
-            val checks = fetchTableChecks(tableName)
-
-            // 创建 TableInput 实例
-            tables.add(
-                TableInput(
-                    schema = schema,
-                    name = tableName,
-                    comment = remarks,
-                    columns = columns,
-                    indexes = indexes,
-                    foreignKeys = foreignKeys,
-                    checks = checks,
+                // 创建 TableInput 实例
+                tables.add(
+                    TableInput(
+                        schema = schema,
+                        name = tableName,
+                        comment = remarks,
+                        columns = columns,
+                        indexes = indexes,
+                        foreignKeys = foreignKeys,
+                        checks = checks,
+                    )
                 )
-            )
+            }
         }
 
-        resultSet.close()
         return tables
     }
 
@@ -60,34 +64,37 @@ open class MetadataFetcher(
         val primaryKeys = fetchPrimaryKeys(tableName).toSet()
 
         val columns = mutableListOf<TableInput.TargetOf_columns>()
-        val resultSet = metadata.getColumns(catalog, schema, tableName, "%")
+        metadata.getColumns(
+            catalog,
+            schema,
+            tableName,
+            "%"
+        ).use { rs ->
+            while (rs.next()) {
+                val columnName = rs.getString("COLUMN_NAME")
+                val remarks = rs.getString("REMARKS") ?: ""
+                val typeName = rs.getString("TYPE_NAME")
+                val dataSize = rs.getInt("COLUMN_SIZE").takeIf { it != 0 }
+                val numericPrecision = rs.getInt("DECIMAL_DIGITS").takeIf { it != 0 }
+                val nullable = rs.getInt("NULLABLE") != 0
+                val defaultValue = rs.getString("COLUMN_DEF")
+                val autoIncrement = rs.getString("IS_AUTOINCREMENT")?.equals("YES", ignoreCase = true)
 
-        while (resultSet.next()) {
-            val columnName = resultSet.getString("COLUMN_NAME")
-            val remarks = resultSet.getString("REMARKS") ?: ""
-            val typeName = resultSet.getString("TYPE_NAME")
-            val dataSize = resultSet.getInt("COLUMN_SIZE").takeIf { it != 0 }
-            val numericPrecision = resultSet.getInt("DECIMAL_DIGITS").takeIf { it != 0 }
-            val nullable = resultSet.getInt("NULLABLE") != 0
-            val defaultValue = resultSet.getString("COLUMN_DEF")
-            val autoIncrement = resultSet.getString("IS_AUTOINCREMENT")?.equals("YES", ignoreCase = true)
-
-            columns.add(
-                TableInput.TargetOf_columns(
-                    name = columnName,
-                    comment = remarks,
-                    type = typeName,
-                    dataSize = dataSize,
-                    numericPrecision = numericPrecision,
-                    nullable = nullable,
-                    defaultValue = defaultValue,
-                    partOfPrimaryKey = primaryKeys.contains(columnName),
-                    autoIncrement = autoIncrement,
+                columns.add(
+                    TableInput.TargetOf_columns(
+                        name = columnName,
+                        comment = remarks,
+                        type = typeName,
+                        dataSize = dataSize,
+                        numericPrecision = numericPrecision,
+                        nullable = nullable,
+                        defaultValue = defaultValue,
+                        partOfPrimaryKey = primaryKeys.contains(columnName),
+                        autoIncrement = autoIncrement,
+                    )
                 )
-            )
+            }
         }
-
-        resultSet.close()
 
         return columns
     }
@@ -96,13 +103,16 @@ open class MetadataFetcher(
         tableName: String
     ): List<String> {
         val primaryKeys = mutableListOf<String>()
-        val resultSet = metadata.getPrimaryKeys(catalog, schema, tableName)
-
-        while (resultSet.next()) {
-            primaryKeys.add(resultSet.getString("COLUMN_NAME"))
+        metadata.getPrimaryKeys(
+            catalog,
+            schema,
+            tableName
+        ).use { rs ->
+            while (rs.next()) {
+                primaryKeys.add(rs.getString("COLUMN_NAME"))
+            }
         }
 
-        resultSet.close()
         return primaryKeys
     }
 
@@ -110,26 +120,31 @@ open class MetadataFetcher(
         tableName: String
     ): List<TableInput.TargetOf_indexes> {
         val indexes = mutableMapOf<String, TableInput.TargetOf_indexes>()
-        val resultSet = metadata.getIndexInfo(catalog, schema, tableName, false, true)
+        metadata.getIndexInfo(
+            catalog,
+            schema,
+            tableName,
+            false,
+            true
+        ).use { rs ->
+            while (rs.next()) {
+                val indexName = rs.getString("INDEX_NAME") ?: continue
+                val columnName = rs.getString("COLUMN_NAME") ?: continue
+                val nonUnique = rs.getBoolean("NON_UNIQUE")
 
-        while (resultSet.next()) {
-            val indexName = resultSet.getString("INDEX_NAME") ?: continue
-            val columnName = resultSet.getString("COLUMN_NAME") ?: continue
-            val nonUnique = resultSet.getBoolean("NON_UNIQUE")
-
-            indexes[indexName] = indexes[indexName]?.let { existing ->
-                existing.copy(
-                    columnNames = existing.columnNames + columnName
+                indexes[indexName] = indexes[indexName]?.let { existing ->
+                    existing.copy(
+                        columnNames = existing.columnNames + columnName
+                    )
+                } ?: TableInput.TargetOf_indexes(
+                    name = indexName,
+                    columnNames = listOf(columnName),
+                    uniqueIndex = !nonUnique,
+                    wherePredicates = null
                 )
-            } ?: TableInput.TargetOf_indexes(
-                name = indexName,
-                columnNames = listOf(columnName),
-                uniqueIndex = !nonUnique,
-                wherePredicates = null
-            )
+            }
         }
 
-        resultSet.close()
         return indexes.values.toList()
     }
 
@@ -137,43 +152,46 @@ open class MetadataFetcher(
         tableName: String
     ): List<TableInput.TargetOf_foreignKeys> {
         val foreignKeys = mutableMapOf<String, TableInput.TargetOf_foreignKeys>()
-        val resultSet = metadata.getImportedKeys(catalog, schema, tableName)
+        metadata.getImportedKeys(
+            catalog,
+            schema,
+            tableName
+        ).use { rs ->
+            while (rs.next()) {
+                val fkName = rs.getString("FK_NAME") ?: continue
+                val fkComment = ""
+                val fkTableName = rs.getString("FKTABLE_NAME") ?: continue
+                val fkTableSchema = rs.getString("FKTABLE_SCHEM") ?: ""
+                val fkColumnName = rs.getString("FKCOLUMN_NAME") ?: continue
+                val pkColumnName = rs.getString("PKCOLUMN_NAME") ?: continue
+                val onUpdate = rs.getInt("UPDATE_RULE")
+                val onDelete = rs.getInt("DELETE_RULE")
 
-        while (resultSet.next()) {
-            val fkName = resultSet.getString("FK_NAME") ?: continue
-            val fkComment = ""
-            val fkTableName = resultSet.getString("FKTABLE_NAME") ?: continue
-            val fkTableSchema = resultSet.getString("FKTABLE_SCHEM") ?: ""
-            val fkColumnName = resultSet.getString("FKCOLUMN_NAME") ?: continue
-            val pkColumnName = resultSet.getString("PKCOLUMN_NAME") ?: continue
-            val onUpdate = resultSet.getInt("UPDATE_RULE")
-            val onDelete = resultSet.getInt("DELETE_RULE")
-
-            foreignKeys[fkName] = foreignKeys[fkName]?.let { existing ->
-                existing.copy(
-                    columnRefs = existing.columnRefs + DbColumnRef(
-                        columnName = fkColumnName,
-                        referencedColumnName = pkColumnName
+                foreignKeys[fkName] = foreignKeys[fkName]?.let { existing ->
+                    existing.copy(
+                        columnRefs = existing.columnRefs + DbColumnRef(
+                            columnName = fkColumnName,
+                            referencedColumnName = pkColumnName
+                        ),
+                    )
+                    existing
+                } ?: TableInput.TargetOf_foreignKeys(
+                    name = fkName,
+                    comment = fkComment,
+                    referencedTableName = fkTableName,
+                    referencedTableSchema = fkTableSchema,
+                    onUpdate = mapForeignKeyAction(onUpdate),
+                    onDelete = mapForeignKeyAction(onDelete),
+                    columnRefs = listOf(
+                        DbColumnRef(
+                            columnName = fkColumnName,
+                            referencedColumnName = pkColumnName
+                        )
                     ),
                 )
-                existing
-            } ?: TableInput.TargetOf_foreignKeys(
-                name = fkName,
-                comment = fkComment,
-                referencedTableName = fkTableName,
-                referencedTableSchema = fkTableSchema,
-                onUpdate = mapForeignKeyAction(onUpdate),
-                onDelete = mapForeignKeyAction(onDelete),
-                columnRefs = listOf(
-                    DbColumnRef(
-                        columnName = fkColumnName,
-                        referencedColumnName = pkColumnName
-                    )
-                ),
-            )
+            }
         }
 
-        resultSet.close()
         return foreignKeys.values.toList()
     }
 
@@ -213,7 +231,7 @@ fun fetchMetadata(
     connection: Connection,
     databaseType: DatabaseType? = getTypeFromConnection(connection)
 ) =
-    when(databaseType) {
+    when (databaseType) {
         DatabaseType.MYSQL -> MySQLMetadataFetcher(connection).fetch()
         DatabaseType.POSTGRESQL -> PostgreSQLMetadataFetcher(connection).fetch()
         DatabaseType.ORACLE -> OracleMetadataFetcher(connection).fetch()
