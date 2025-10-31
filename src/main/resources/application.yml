@@ -6,6 +6,10 @@ spring:
     resources:
       static-locations: classpath:/dist
 
+  jackson:
+    # api json result null to undefined
+    default-property-inclusion: non_null
+
 server:
   port: 39000
   error:
