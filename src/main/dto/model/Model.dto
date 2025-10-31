@@ -3,11 +3,15 @@ export top.potmot.entity.model.Model
 input ModelInsertInput {
     #allScalars
     -id
+    -createdTime
+    -modifiedTime
 }
 
 input ModelUpdateInput {
     #allScalars
     id!
+    -createdTime
+    -modifiedTime
 }
 
 ModelView {

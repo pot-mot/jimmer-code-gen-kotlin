@@ -12,10 +12,10 @@ import top.potmot.entity.database.dto.*
 
 @SpringBootTest
 @Transactional(rollbackFor = [Throwable::class])
-open class DatabaseServiceTest {
+open class DatabaseServiceTest(
     @Autowired
-    private lateinit var databaseService: DatabaseService
-
+    private val databaseService: DatabaseService
+) {
     @Test
     fun testInsert() {
         // 创建插入数据

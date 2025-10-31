@@ -2,6 +2,7 @@ package top.potmot.service
 
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.sql.kt.ast.expression.asc
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
@@ -21,7 +22,10 @@ import top.potmot.entity.model.dto.ModelView
 import top.potmot.entity.model.dto.toHistory
 import top.potmot.entity.model.id
 import top.potmot.entity.model.modelId
+import top.potmot.entity.model.modifiedTime
 import top.potmot.utils.transaction.executeNotNull
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @RestController
@@ -51,14 +55,17 @@ class ModelService(
     }
 
     @PostMapping("/insert")
-    fun insert(@RequestBody input: ModelInsertInput): UUID {
+    fun insert(@RequestBody input: ModelInsertInput): ModelNoJsonView {
         return transactionTemplate.executeNotNull {
-            // TODO set createdTime modifiedTime
             val savedModel = sqlClient
-                .saveCommand(input) {
+                .saveCommand(input.toEntity {
+                    val now = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
+                    createdTime = now
+                    modifiedTime = now
+                }) {
                     setMode(SaveMode.INSERT_ONLY)
-                }.execute()
-                .modifiedEntity
+                }.execute(ModelNoJsonView::class)
+                .modifiedView
 
             val modelHistoryInput = input.toHistory(savedModel)
 
@@ -67,19 +74,20 @@ class ModelService(
                     setMode(SaveMode.INSERT_ONLY)
                 }.execute()
 
-            savedModel.id
+            savedModel
         }
     }
 
     @PostMapping("/update")
-    fun update(@RequestBody input: ModelUpdateInput): UUID {
+    fun update(@RequestBody input: ModelUpdateInput): ModelNoJsonView {
         return transactionTemplate.executeNotNull {
-            // TODO set createdTime modifiedTime
             val savedModel = sqlClient
-                .saveCommand(input) {
+                .saveCommand(input.toEntity {
+                    modifiedTime = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
+                }) {
                     setMode(SaveMode.UPDATE_ONLY)
-                }.execute()
-                .modifiedEntity
+                }.execute(ModelNoJsonView::class)
+                .modifiedView
 
             val modelHistoryInput = input.toHistory(savedModel)
 
@@ -88,7 +96,7 @@ class ModelService(
                     setMode(SaveMode.INSERT_ONLY)
                 }.execute()
 
-            savedModel.id
+            savedModel
         }
     }
 
@@ -97,6 +105,7 @@ class ModelService(
         return sqlClient
             .createQuery(ModelHistory::class) {
                 where(table.modelId eq modelId)
+                orderBy(table.modifiedTime.asc())
                 select(table.fetch(ModelHistoryNoJsonView::class))
             }.execute()
     }

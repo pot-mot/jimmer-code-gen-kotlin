@@ -2,7 +2,6 @@ package top.potmot.entity.model
 
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
-import org.babyfish.jimmer.sql.ForeignKeyType
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.OrderedProp
@@ -30,7 +29,7 @@ interface Model {
 
     val databaseNameStrategy: DbNameStrategy
 
-    val defaultForeignKeyType: ForeignKeyType
+    val defaultForeignKeyType: ModelForeignKeyType
 
     val jvmLanguage: JvmLanguage
 
@@ -38,7 +37,10 @@ interface Model {
 
     val jsonData: String
 
-    @OneToMany(mappedBy = "model", orderedProps = [OrderedProp("modifiedTime")])
+    @OneToMany(
+        mappedBy = "model",
+        orderedProps = [OrderedProp(value = "modifiedTime")]
+    )
     val histories: List<ModelHistory>
 }
 
