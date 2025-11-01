@@ -12,6 +12,7 @@ import top.potmot.entity.model.EnumerationStrategy
 import top.potmot.entity.model.JvmLanguage
 import top.potmot.entity.model.ModelDraft
 import top.potmot.entity.model.ModelForeignKeyType
+import top.potmot.entity.model.ModelViewport
 import top.potmot.entity.model.dto.ModelInsertInput
 import top.potmot.entity.model.dto.ModelUpdateInput
 
@@ -31,6 +32,7 @@ open class ModelServiceTest(
             defaultForeignKeyType = ModelForeignKeyType.REAL,
             jvmLanguage = JvmLanguage.KOTLIN,
             defaultEnumerationStrategy = EnumerationStrategy.NAME,
+            viewport = ModelViewport(0.0, 0.0, 1.0),
             jsonData = ""
         )
         val view = modelService.insert(input)
@@ -58,6 +60,7 @@ open class ModelServiceTest(
             defaultForeignKeyType = ModelForeignKeyType.REAL,
             jvmLanguage = JvmLanguage.KOTLIN,
             defaultEnumerationStrategy = EnumerationStrategy.NAME,
+            viewport = ModelViewport(0.0, 0.0, 1.0),
             jsonData = ""
         )
         val view = modelService.insert(input)
@@ -71,6 +74,7 @@ open class ModelServiceTest(
             defaultForeignKeyType = ModelForeignKeyType.REAL,
             jvmLanguage = JvmLanguage.KOTLIN,
             defaultEnumerationStrategy = EnumerationStrategy.NAME,
+            viewport = ModelViewport(0.0, 0.0, 1.0),
             jsonData = ""
         )
         val updateView = modelService.update(updateInput)
@@ -84,5 +88,25 @@ open class ModelServiceTest(
         Assertions.assertTrue(histories[0].modifiedTime < histories[1].modifiedTime)
         Assertions.assertEquals(view.modifiedTime, histories[0].modifiedTime)
         Assertions.assertEquals(updateView.modifiedTime, histories[1].modifiedTime)
+    }
+
+    @Test
+    fun testDelete() {
+        val input = ModelInsertInput(
+            name = "test",
+            description = "test",
+            databaseType = DatabaseType.POSTGRESQL,
+            databaseNameStrategy = DbNameStrategy.LOWER_SNAKE,
+            defaultForeignKeyType = ModelForeignKeyType.REAL,
+            jvmLanguage = JvmLanguage.KOTLIN,
+            defaultEnumerationStrategy = EnumerationStrategy.NAME,
+            viewport = ModelViewport(0.0, 0.0, 1.0),
+            jsonData = ""
+        )
+        val view = modelService.insert(input)
+
+        val deleteCount = modelService.delete(view.id)
+        // self and history
+        Assertions.assertEquals(2, deleteCount)
     }
 }

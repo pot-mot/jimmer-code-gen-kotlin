@@ -157,6 +157,12 @@ open class DatabaseServiceTest(
                 Assertions.assertEquals(savedTables[i].toEntity(), firstRefreshTables[i].toEntity())
                 Assertions.assertEquals(savedTables[i].toEntity(), secondRefreshTables[i].toEntity())
             }
+
+            val deleteCount = databaseService.delete(view.id)
+            Assertions.assertEquals(
+                1 + firstRefreshTables.size + firstRefreshTables.sumOf { it.columns.size + it.indexes.size + it.foreignKeys.size + it.checks.size },
+                deleteCount
+            )
         }
     }
 }
