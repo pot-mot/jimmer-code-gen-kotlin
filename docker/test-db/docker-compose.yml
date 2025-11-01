@@ -14,7 +14,7 @@ services:
       - "39100:3306"
     command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - ../resources/sql/metadata-test-mysql5.7.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./metadata/metadata-test-mysql5.7.sql:/docker-entrypoint-initdb.d/init.sql
 
   mysql-8.4.7:
     image: mysql:8.4.7
@@ -27,7 +27,7 @@ services:
     ports:
       - "39101:3306"
     volumes:
-      - ../resources/sql/metadata-test-mysql8.4.7.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./metadata/metadata-test-mysql8.4.7.sql:/docker-entrypoint-initdb.d/init.sql
 
   # PostgreSQL versions (ports 39110-39119)
   postgresql-16:
@@ -40,7 +40,7 @@ services:
     ports:
       - "39110:5432"
     volumes:
-      - ../resources/sql/metadata-test-postgresql.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./metadata/metadata-test-postgresql.sql:/docker-entrypoint-initdb.d/init.sql
 
   postgresql-17:
     image: postgres:17
@@ -52,7 +52,7 @@ services:
     ports:
       - "39111:5432"
     volumes:
-      - ../resources/sql/metadata-test-postgresql.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./metadata/metadata-test-postgresql.sql:/docker-entrypoint-initdb.d/init.sql
 
   # Oracle (ports 39120-39129)
   oracle-xe-21:
@@ -63,7 +63,7 @@ services:
     ports:
       - "39120:1521"
     volumes:
-      - ../resources/sql/metadata-test-oracle.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./metadata/metadata-test-oracle.sql:/docker-entrypoint-initdb.d/init.sql
 
   oracle-xe-18:
     image: gvenzl/oracle-xe:18.4.0-slim
@@ -73,7 +73,7 @@ services:
     ports:
       - "39121:1521"
     volumes:
-      - ../resources/sql/metadata-test-oracle.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./metadata/metadata-test-oracle.sql:/docker-entrypoint-initdb.d/init.sql
 
   # SQL Server (ports 39130-39139)
   sqlserver-2019:
@@ -85,8 +85,8 @@ services:
     ports:
       - "39130:1433"
     volumes:
-      - ../resources/sql/metadata-test-sqlserver.sql:/docker-entrypoint-initdb.d/init.sql
-      - ../resources/sql/init-sqlserver.sh:/docker-entrypoint-initdb.d/init-sqlserver.sh
+      - ./metadata/metadata-test-sqlserver.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./metadata/init-sqlserver.sh:/docker-entrypoint-initdb.d/init-sqlserver.sh
     entrypoint: /docker-entrypoint-initdb.d/init-sqlserver.sh
 
   sqlserver-2022:
@@ -98,6 +98,6 @@ services:
     ports:
       - "39131:1433"
     volumes:
-      - ../resources/sql/metadata-test-sqlserver.sql:/docker-entrypoint-initdb.d/init.sql
-      - ../resources/sql/init-sqlserver.sh:/docker-entrypoint-initdb.d/init-sqlserver.sh
+      - ./metadata/metadata-test-sqlserver.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./metadata/init-sqlserver.sh:/docker-entrypoint-initdb.d/init-sqlserver.sh
     entrypoint: /docker-entrypoint-initdb.d/init-sqlserver.sh
