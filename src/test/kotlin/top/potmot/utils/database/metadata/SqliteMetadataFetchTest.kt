@@ -15,7 +15,7 @@ class SqliteMetadataFetchTest {
             ""
         ).use { connection ->
             val initScript = this::class.java
-                .getResourceAsStream("/sql/metadata-test-sqlite.sql")
+                .getResourceAsStream("/database/sqlite.sql")
                 ?.bufferedReader()
                 ?.readText()
                 ?: throw Exception("no sqlite init script find")

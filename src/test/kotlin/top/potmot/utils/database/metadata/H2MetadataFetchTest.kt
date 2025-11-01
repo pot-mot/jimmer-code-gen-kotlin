@@ -9,7 +9,7 @@ class H2MetadataFetchTest {
     @Test
     fun testMetadata() {
         DriverManager.getConnection(
-            "jdbc:h2:mem:test;INIT=RUNSCRIPT FROM './src/test/resources/sql/metadata-test-h2.sql'",
+            "jdbc:h2:mem:test;INIT=RUNSCRIPT FROM './src/test/resources/database/h2.sql'",
             "sa",
             ""
         ).use { connection ->
