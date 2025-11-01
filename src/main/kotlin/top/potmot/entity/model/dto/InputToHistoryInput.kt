@@ -13,6 +13,7 @@ fun ModelInsertInput.toHistory(
         defaultForeignKeyType = defaultForeignKeyType,
         jvmLanguage = jvmLanguage,
         defaultEnumerationStrategy = defaultEnumerationStrategy,
+        viewport = viewport,
         jsonData = jsonData
     )
 }
@@ -30,6 +31,7 @@ fun ModelUpdateInput.toHistory(
         defaultForeignKeyType = defaultForeignKeyType,
         jvmLanguage = jvmLanguage,
         defaultEnumerationStrategy = defaultEnumerationStrategy,
+        viewport = viewport,
         jsonData = jsonData
     )
 }

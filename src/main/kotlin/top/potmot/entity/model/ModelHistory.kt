@@ -38,5 +38,7 @@ interface ModelHistory {
 
     val defaultEnumerationStrategy: EnumerationStrategy
 
+    val viewport: ModelViewport
+
     val jsonData: String
 }

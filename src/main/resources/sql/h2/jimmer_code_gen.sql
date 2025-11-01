@@ -82,6 +82,7 @@ create table if not exists model
     default_foreign_key_type text check (default_foreign_key_type in ('AUTO', 'REAL', 'FAKE')) not null,
     jvm_language text check (jvm_language in ('JAVA', 'KOTLIN')) not null,
     default_enumeration_strategy text check (default_enumeration_strategy in ('NAME', 'ORDINAL')) not null,
+    viewport text not null,
     json_data text not null
 );
 
@@ -99,6 +100,7 @@ create table if not exists model_history
     default_foreign_key_type text check (default_foreign_key_type in ('AUTO', 'REAL', 'FAKE')) not null,
     jvm_language text check (jvm_language in ('JAVA', 'KOTLIN')) not null,
     default_enumeration_strategy text check (default_enumeration_strategy in ('NAME', 'ORDINAL')) not null,
+    viewport text not null,
     json_data text not null
 );
 

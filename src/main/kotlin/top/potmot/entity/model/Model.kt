@@ -35,6 +35,8 @@ interface Model {
 
     val defaultEnumerationStrategy: EnumerationStrategy
 
+    val viewport: ModelViewport
+
     val jsonData: String
 
     @OneToMany(
