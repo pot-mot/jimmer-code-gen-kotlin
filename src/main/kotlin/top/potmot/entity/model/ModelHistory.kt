@@ -1,9 +1,11 @@
 package top.potmot.entity.model
 
+import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.ManyToOne
+import org.babyfish.jimmer.sql.OnDissociate
 import top.potmot.entity.database.DatabaseType
 import top.potmot.entity.database.DbNameStrategy
 import java.time.LocalDateTime
@@ -17,6 +19,7 @@ interface ModelHistory {
     val id: UUID
 
     @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
     val model: Model
 
     val name: String
