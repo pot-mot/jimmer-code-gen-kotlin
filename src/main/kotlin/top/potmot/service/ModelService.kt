@@ -128,4 +128,14 @@ class ModelService(
                 }.execute()
         }
     }
+
+    @PostMapping("/deleteHistory")
+    fun deleteHistory(modelHistoryId: UUID): Int {
+        return transactionTemplate.executeNotNull {
+            sqlClient
+                .createDelete(ModelHistory::class) {
+                    where(table.id eq modelHistoryId)
+                }.execute()
+        }
+    }
 }
