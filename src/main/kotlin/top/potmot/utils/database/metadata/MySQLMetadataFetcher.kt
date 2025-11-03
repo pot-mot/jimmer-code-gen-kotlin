@@ -3,6 +3,7 @@ package top.potmot.utils.database.metadata
 import top.potmot.entity.database.dto.TableInput
 import top.potmot.utils.database.model.ColumnFullTypePair
 import java.sql.Connection
+import java.util.concurrent.ConcurrentHashMap
 
 private val columnRegex = Regex("`([^`]+)`\\s+([^\\n\\s]+)")
 private val checkConstraintRegex = Regex("CONSTRAINT\\s+`([^`]+)`\\s+CHECK\\s*\\((.+)\\)", RegexOption.IGNORE_CASE)
@@ -10,7 +11,11 @@ private val checkConstraintRegex = Regex("CONSTRAINT\\s+`([^`]+)`\\s+CHECK\\s*\\
 class MySQLMetadataFetcher(
     connection: Connection
 ) : MetadataFetcher(connection) {
+    private val tableCommentsCache = ConcurrentHashMap<String, String>()
+
     override fun fetchTables(): List<TableInput> {
+        loadAllComments()
+
         val tables = mutableListOf<TableInput>()
 
         metadata.getTables(
@@ -20,13 +25,17 @@ class MySQLMetadataFetcher(
             arrayOf("TABLE")
         ).use { rs ->
             while (rs.next()) {
-                val schema = rs.getString("TABLE_SCHEM") ?: ""
+                val schema = rs.getString("TABLE_CAT") ?: ""
                 val tableName = rs.getString("TABLE_NAME")
-                val remarks = rs.getString("REMARKS") ?: ""
+                val remarks = getTableComment(schema, tableName) ?: rs.getString("REMARKS") ?: ""
 
                 val (columns, checks) = fetchTableColumnsAndChecks(tableName)
-                val indexes = fetchTableIndexes(tableName)
                 val foreignKeys = fetchTableForeignKeys(tableName)
+
+                val systemIndexName = (foreignKeys.map { it.name } + "PRIMARY").toSet()
+                val indexes = fetchTableIndexes(tableName).filter {
+                    it.name !in systemIndexName
+                }
 
                 // 创建 TableInput 实例
                 tables.add(
@@ -42,6 +51,8 @@ class MySQLMetadataFetcher(
                 )
             }
         }
+
+        tableCommentsCache.clear()
 
         return tables
     }
@@ -152,5 +163,37 @@ class MySQLMetadataFetcher(
         }
 
         return null
+    }
+
+    /**
+     * 批量加载所有表和列的注释信息
+     */
+    private fun loadAllComments() {
+        // 批量获取所有表的注释
+        connection.prepareStatement(
+            """
+        SELECT 
+            TABLE_SCHEMA,
+            TABLE_NAME,
+            TABLE_COMMENT
+        FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = ?
+        """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, connection.catalog)
+            stmt.executeQuery().use { rs ->
+                while (rs.next()) {
+                    val tableSchema = rs.getString("TABLE_SCHEMA")
+                    val tableName = rs.getString("TABLE_NAME")
+                    val tableComment = rs.getString("TABLE_COMMENT")
+                    tableCommentsCache["$tableSchema.$tableName"] = tableComment ?: ""
+                }
+            }
+        }
+    }
+
+    private fun getTableComment(tableSchema: String?, tableName: String): String? {
+        // 直接从缓存中获取
+        return tableCommentsCache["$tableSchema.$tableName"]
     }
 }

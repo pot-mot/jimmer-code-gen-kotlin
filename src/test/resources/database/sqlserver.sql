@@ -26,6 +26,9 @@ GO
 GRANT VIEW DATABASE STATE ON DATABASE::test TO test;
 GO
 
+SET QUOTED_IDENTIFIER ON;
+GO
+
 -- 创建 test_user 表
 CREATE TABLE test_user
 (
@@ -99,7 +102,7 @@ CREATE TABLE test_table
 );
 
 -- 创建索引
-CREATE INDEX idx_name_status ON test_table (name, status);
+CREATE INDEX idx_name_status ON test_table (name, status) WHERE status = 1;
 
 -- 添加表和列注释
 EXEC sp_addextendedproperty 'MS_Description', N'测试表', 'SCHEMA', 'dbo', 'TABLE', 'test_table';

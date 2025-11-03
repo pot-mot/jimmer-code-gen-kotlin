@@ -3,6 +3,7 @@ package top.potmot.utils.database.metadata
 import top.potmot.entity.database.dto.TableInput
 import top.potmot.utils.database.model.ColumnFullTypePair
 import java.sql.Connection
+import kotlin.collections.set
 
 class PostgreSQLMetadataFetcher(
     connection: Connection
@@ -106,6 +107,58 @@ class PostgreSQLMetadataFetcher(
             }
         }
         return false
+    }
+
+    override fun fetchTableIndexes(tableName: String): List<TableInput.TargetOf_indexes> {
+        val indexes = mutableMapOf<String, TableInput.TargetOf_indexes>()
+
+        connection.prepareStatement(
+            """
+        SELECT 
+            idx.relname AS index_name,
+            a.attname AS column_name,
+            i.indisunique AS is_unique,
+            i.indisprimary AS is_primary,
+            CASE 
+                WHEN i.indpred IS NOT NULL THEN pg_get_expr(i.indpred, i.indrelid)
+            END AS predicate
+        FROM pg_index i
+        JOIN pg_class idx ON i.indexrelid = idx.oid
+        JOIN pg_class tbl ON i.indrelid = tbl.oid
+        JOIN pg_namespace n ON tbl.relnamespace = n.oid
+        LEFT JOIN LATERAL unnest(i.indkey) WITH ORDINALITY AS ak(key, k) ON TRUE
+        LEFT JOIN pg_attribute a ON a.attrelid = tbl.oid AND a.attnum = ak.key
+        WHERE tbl.relname = ?
+          AND n.nspname = ?
+          AND i.indisprimary = false
+        ORDER BY idx.relname, ak.k
+        """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, tableName)
+            stmt.setString(2, schema ?: "public")
+            stmt.executeQuery().use { rs ->
+
+                while (rs.next()) {
+                    val indexName = rs.getString("index_name")
+                    val columnName = rs.getString("column_name")
+                    val isUnique = rs.getBoolean("is_unique")
+                    val predicate = rs.getString("predicate")
+
+                    indexes[indexName] = indexes[indexName]?.let { existing ->
+                        existing.copy(
+                            columnNames = existing.columnNames + columnName
+                        )
+                    } ?: TableInput.TargetOf_indexes(
+                        name = indexName,
+                        columnNames = listOf(columnName),
+                        uniqueIndex = isUnique,
+                        wherePredicates = predicate
+                    )
+                }
+            }
+        }
+
+        return indexes.values.toList()
     }
 
     override fun fetchTableChecks(tableName: String): List<TableInput.TargetOf_checks> {

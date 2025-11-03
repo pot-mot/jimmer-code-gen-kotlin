@@ -45,7 +45,7 @@ CREATE TABLE test_table
     type_blob                 BYTEA,
     type_bit                  BINARY(8),
 
-    CONSTRAINT pk_test_table PRIMARY KEY (id),
+    PRIMARY KEY (id),
 
     -- 外键约束
     CONSTRAINT fk_user

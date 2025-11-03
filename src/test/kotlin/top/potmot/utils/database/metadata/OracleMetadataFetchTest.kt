@@ -36,26 +36,27 @@ class OracleMetadataFetchTest {
         val testUserTable = result.find { it.name == "TEST_USER" }
         assert(testUserTable != null)
         testUserTable?.apply {
-            assert(testUserTable.columns.size == 1)
-            assert(testUserTable.columns[0].name == "ID")
-            assert(testUserTable.indexes.size == 1)
-            assert(testUserTable.foreignKeys.isEmpty())
+            Assertions.assertEquals(1, testUserTable.columns.size)
+            Assertions.assertEquals("ID", testUserTable.columns[0].name)
+            Assertions.assertEquals(0, testUserTable.indexes.size)
+            Assertions.assertEquals(0, testUserTable.foreignKeys.size)
         }
 
         val testGroupCategoriesTable = result.find { it.name == "TEST_GROUP_CATEGORIES" }
         assert(testGroupCategoriesTable != null)
         testGroupCategoriesTable?.apply {
-            assert(testGroupCategoriesTable.columns.size == 2)
-            assert(testGroupCategoriesTable.columns[0].name == "GROUP_ID")
-            assert(testGroupCategoriesTable.columns[1].name == "CATEGORY_ID")
-            assert(testGroupCategoriesTable.indexes.size == 1)
-            assert(testGroupCategoriesTable.foreignKeys.isEmpty())
+            Assertions.assertEquals(2, testGroupCategoriesTable.columns.size)
+            Assertions.assertEquals("GROUP_ID", testGroupCategoriesTable.columns[0].name)
+            Assertions.assertEquals("CATEGORY_ID", testGroupCategoriesTable.columns[1].name)
+            Assertions.assertEquals(0, testGroupCategoriesTable.indexes.size)
+            Assertions.assertEquals(0, testGroupCategoriesTable.foreignKeys.size)
         }
 
         val testTable = result.find { it.name == "TEST_TABLE" }
         assert(testTable != null)
         testTable?.apply {
-            assert(testTable.columns.size == 24)
+            Assertions.assertEquals("测试表", testTable.comment)
+            Assertions.assertEquals(24, testTable.columns.size)
             Assertions.assertLinesMatch(
                 """
 ID 自增主键 NUMBER 19,null PRIMARY DEFAULT "TEST"."SEQ_TEST_TABLE_ID"."NEXTVAL" 
@@ -86,17 +87,16 @@ TYPE_BIT 位类型 RAW 8,null NULL
                 testTable.columns.map { it.stringify() }
             )
 
-            assert(testTable.indexes.size == 3)
+            Assertions.assertEquals(2, testTable.indexes.size)
             Assertions.assertLinesMatch(
                 """
-PK_TEST_TABLE true ID
 UK_EMAIL true EMAIL
 IDX_NAME_STATUS false NAME,STATUS
                 """.trim().split("\n"),
                 testTable.indexes.map { it.stringify() }
             )
 
-            assert(testTable.foreignKeys.size == 3)
+            Assertions.assertEquals(3, testTable.foreignKeys.size)
             Assertions.assertLinesMatch(
                 """
 FK_GROUP_CATEGORY TEST.TEST_TABLE GROUP_ID -> GROUP_ID CASCADE RESTRICT
@@ -106,7 +106,7 @@ FK_USER TEST.TEST_TABLE USER_ID -> ID CASCADE CASCADE
                 testTable.foreignKeys.sortedBy { it.name }.map { it.stringify() }
             )
 
-            assert(testTable.checks.size == 1)
+            Assertions.assertEquals(1, testTable.checks.size)
             Assertions.assertLinesMatch(
                 """
 CHK_TYPE_CHECK_ENUM type_check_enum IN ('value1', 'value2', 'value3')

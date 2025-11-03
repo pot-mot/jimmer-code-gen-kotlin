@@ -32,6 +32,10 @@ fun TableInput.TargetOf_indexes.stringify() = buildString {
     append(uniqueIndex)
     append(" ")
     append(columnNames.joinToString(","))
+    if (wherePredicates != null) {
+        append(" WHERE ")
+        append(wherePredicates)
+    }
 }
 
 fun TableInput.TargetOf_foreignKeys.stringify() = buildString {

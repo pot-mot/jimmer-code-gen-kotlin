@@ -36,27 +36,27 @@ class SqlServerMetadataFetchTest {
         val testUserTable = result.find { it.name == "test_user" }
         assert(testUserTable != null)
         testUserTable?.apply {
-            assert(testUserTable.columns.size == 1)
-            assert(testUserTable.columns[0].name == "id")
-            assert(testUserTable.indexes.size == 1)
-            assert(testUserTable.foreignKeys.isEmpty())
+            Assertions.assertEquals(1, testUserTable.columns.size)
+            Assertions.assertEquals("id", testUserTable.columns[0].name)
+            Assertions.assertEquals(0, testUserTable.indexes.size)
+            Assertions.assertEquals(0, testUserTable.foreignKeys.size)
         }
 
         val testGroupCategoriesTable = result.find { it.name == "test_group_categories" }
         assert(testGroupCategoriesTable != null)
         testGroupCategoriesTable?.apply {
-            assert(testGroupCategoriesTable.columns.size == 2)
-            assert(testGroupCategoriesTable.columns[0].name == "group_id")
-            assert(testGroupCategoriesTable.columns[1].name == "category_id")
-            assert(testGroupCategoriesTable.indexes.size == 1)
-            assert(testGroupCategoriesTable.foreignKeys.isEmpty())
+            Assertions.assertEquals(2, testGroupCategoriesTable.columns.size)
+            Assertions.assertEquals("group_id", testGroupCategoriesTable.columns[0].name)
+            Assertions.assertEquals("category_id", testGroupCategoriesTable.columns[1].name)
+            Assertions.assertEquals(0, testGroupCategoriesTable.indexes.size)
+            Assertions.assertEquals(0, testGroupCategoriesTable.foreignKeys.size)
         }
 
         val testTable = result.find { it.name == "test_table" }
         assert(testTable != null)
         testTable?.apply {
-            assert(testTable.comment == "测试表")
-            assert(testTable.columns.size == 23)
+            Assertions.assertEquals("测试表", testTable.comment)
+            Assertions.assertEquals(23, testTable.columns.size)
             Assertions.assertLinesMatch(
                 """
 id 自增主键 int identity 10,null PRIMARY AUTO_INCREMENT
@@ -86,17 +86,16 @@ type_bit 位类型 binary 8,null NULL
                 testTable.columns.map { it.stringify() }
             )
 
-            assert(testTable.indexes.size == 3)
+            Assertions.assertEquals(2, testTable.indexes.size)
             Assertions.assertLinesMatch(
                 """
-pk_test_table true id
+idx_name_status false name,status WHERE ([status]=(1))
 uk_email true email
-idx_name_status false name,status
                 """.trim().split("\n"),
                 testTable.indexes.map { it.stringify() }
             )
 
-            assert(testTable.foreignKeys.size == 3)
+            Assertions.assertEquals(3, testTable.foreignKeys.size)
             Assertions.assertLinesMatch(
                 """
 fk_group_category dbo.test_table group_id -> group_id NO ACTION NO ACTION
@@ -106,7 +105,7 @@ fk_user dbo.test_table user_id -> id NO ACTION NO ACTION
                 testTable.foreignKeys.sortedBy { it.name }.map { it.stringify() }
             )
 
-            assert(testTable.checks.size == 1)
+            Assertions.assertEquals(1, testTable.checks.size)
             Assertions.assertLinesMatch(
                 """
 chk_type_check_enum ([type_check_enum]='value3' OR [type_check_enum]='value2' OR [type_check_enum]='value1')

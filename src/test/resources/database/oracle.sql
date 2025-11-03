@@ -17,7 +17,7 @@ ALTER SESSION SET CURRENT_SCHEMA = test;
 CREATE TABLE test_user
 (
     id NUMBER(10) NOT NULL,
-    CONSTRAINT pk_test_user PRIMARY KEY (id)
+    PRIMARY KEY (id)
 );
 
 COMMENT ON TABLE test_user IS '测试用户表';
@@ -28,7 +28,7 @@ CREATE TABLE test_group_categories
 (
     group_id    NUMBER(10) NOT NULL,
     category_id NUMBER(10) NOT NULL,
-    CONSTRAINT pk_test_group_categories PRIMARY KEY (group_id, category_id)
+    PRIMARY KEY (group_id, category_id)
 );
 
 COMMENT ON TABLE test_group_categories IS '组分类表';
@@ -65,10 +65,10 @@ CREATE TABLE test_table
     type_check_enum   VARCHAR2(20),
     type_json         CLOB,
     type_blob         BLOB,
-    type_bit          RAW(8)
+    type_bit          RAW(8),
+    PRIMARY KEY (id)
 );
 
-ALTER TABLE test_table ADD CONSTRAINT pk_test_table PRIMARY KEY (id);
 ALTER TABLE test_table ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES test_user (id) ON DELETE CASCADE;
 ALTER TABLE test_table ADD CONSTRAINT fk_nullable_user FOREIGN KEY (nullable_user_id) REFERENCES test_user (id) ON DELETE SET NULL;
 ALTER TABLE test_table ADD CONSTRAINT fk_group_category FOREIGN KEY (group_id, category_id) REFERENCES test_group_categories (group_id, category_id);

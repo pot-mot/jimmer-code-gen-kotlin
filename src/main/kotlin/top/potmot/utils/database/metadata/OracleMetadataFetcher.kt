@@ -88,6 +88,12 @@ class OracleMetadataFetcher(
         return columns
     }
 
+    override fun fetchTableIndexes(tableName: String): List<TableInput.TargetOf_indexes> {
+        return super.fetchTableIndexes(tableName).filter {
+            !it.name.startsWith("SYS_")
+        }
+    }
+
     override fun fetchTableChecks(tableName: String): List<TableInput.TargetOf_checks> {
         val checks = mutableListOf<TableInput.TargetOf_checks>()
 

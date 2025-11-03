@@ -1,4 +1,3 @@
-// SqlServerMetadataFetcher.kt
 package top.potmot.utils.database.metadata
 
 import top.potmot.entity.database.dto.TableInput
@@ -84,6 +83,54 @@ class SqlServerMetadataFetcher(
         resultSet.close()
         return columns
     }
+
+    override fun fetchTableIndexes(tableName: String): List<TableInput.TargetOf_indexes> {
+        val indexes = mutableMapOf<String, TableInput.TargetOf_indexes>()
+
+        connection.prepareStatement(
+            """
+        SELECT 
+            i.name AS index_name,
+            c.name AS column_name,
+            i.is_unique AS is_unique,
+            i.filter_definition AS filter_definition
+        FROM sys.indexes i
+        INNER JOIN sys.index_columns ic ON i.object_id = ic.object_id AND i.index_id = ic.index_id
+        INNER JOIN sys.columns c ON ic.object_id = c.object_id AND ic.column_id = c.column_id
+        INNER JOIN sys.tables t ON i.object_id = t.object_id
+        INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
+        WHERE t.name = ?
+          AND s.name = ?
+          AND i.is_primary_key = 0
+        ORDER BY i.name, ic.key_ordinal
+        """.trimIndent()
+        ).use { stmt ->
+            stmt.setString(1, tableName)
+            stmt.setString(2, schema ?: "dbo")
+            stmt.executeQuery().use { rs ->
+                while (rs.next()) {
+                    val indexName = rs.getString("index_name")
+                    val columnName = rs.getString("column_name")
+                    val isUnique = rs.getBoolean("is_unique")
+                    val filterDefinition = rs.getString("filter_definition")
+
+                    indexes[indexName] = indexes[indexName]?.let { existing ->
+                        existing.copy(
+                            columnNames = existing.columnNames + columnName
+                        )
+                    } ?: TableInput.TargetOf_indexes(
+                        name = indexName,
+                        columnNames = listOf(columnName),
+                        uniqueIndex = isUnique,
+                        wherePredicates = filterDefinition
+                    )
+                }
+            }
+        }
+
+        return indexes.values.toList()
+    }
+
 
     override fun fetchTableChecks(tableName: String): List<TableInput.TargetOf_checks> {
         val checks = mutableListOf<TableInput.TargetOf_checks>()

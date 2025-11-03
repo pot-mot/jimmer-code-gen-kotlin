@@ -77,7 +77,7 @@ CREATE TABLE test_table
 );
 
 -- 创建索引
-CREATE INDEX idx_name_status ON test_table (name, status);
+CREATE INDEX idx_name_status ON test_table (name, status) WHERE status = 1;
 
 COMMENT ON TABLE test_table IS '测试表';
 COMMENT ON COLUMN test_table.id IS '自增主键';
