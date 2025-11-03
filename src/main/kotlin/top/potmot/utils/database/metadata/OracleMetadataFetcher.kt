@@ -73,7 +73,7 @@ class OracleMetadataFetcher(
                     TableInput.TargetOf_columns(
                         name = columnName,
                         comment = remarks,
-                        type = typeName,
+                        type = buildFullTypeDeclaration(typeName, dataSize, numericPrecision),
                         dataSize = dataSize,
                         numericPrecision = numericPrecision,
                         nullable = nullable,
@@ -174,5 +174,30 @@ class OracleMetadataFetcher(
     private fun getColumnComment(tableSchema: String?, tableName: String, columnName: String): String? {
         // 直接从缓存中获取
         return columnCommentsCache["$tableSchema.$tableName.$columnName"]
+    }
+
+    private fun buildFullTypeDeclaration(
+        typeName: String,
+        dataSize: Int?,
+        numericPrecision: Int?,
+    ): String {
+        return when (typeName.uppercase()) {
+            "VARCHAR2", "NVARCHAR2", "CHAR", "NCHAR", "RAW" -> {
+                "$typeName($dataSize)"
+            }
+            "NUMBER" -> {
+                when {
+                    dataSize != null && numericPrecision != null ->
+                        "$typeName($dataSize,$numericPrecision)"
+                    dataSize != null ->
+                        "$typeName($dataSize)"
+                    else -> typeName
+                }
+            }
+            "FLOAT" -> {
+                if (dataSize != null) "$typeName($dataSize)" else typeName
+            }
+            else -> typeName
+        }
     }
 }
