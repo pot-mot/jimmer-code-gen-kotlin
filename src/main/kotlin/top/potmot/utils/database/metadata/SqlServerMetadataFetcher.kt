@@ -69,7 +69,7 @@ class SqlServerMetadataFetcher(
                 TableInput.TargetOf_columns(
                     name = columnName,
                     comment = comment,
-                    type = typeName,
+                    type = buildFullTypeDeclaration(typeName, dataSize, numericPrecision),
                     dataSize = dataSize,
                     numericPrecision = numericPrecision,
                     nullable = nullable,
@@ -231,5 +231,27 @@ class SqlServerMetadataFetcher(
     private fun getColumnComment(tableSchema: String?, tableName: String, columnName: String): String? {
         // 直接从缓存中获取
         return columnCommentsCache["$tableSchema.$tableName.$columnName"]
+    }
+
+    private fun buildFullTypeDeclaration(typeName: String, dataSize: Int?, numericPrecision: Int?): String {
+        return when (typeName.uppercase()) {
+            "VARCHAR", "NVARCHAR", "CHAR", "NCHAR" -> {
+                if (dataSize != null) "$typeName($dataSize)" else typeName
+            }
+            "VARBINARY", "BINARY" -> {
+                if (dataSize != null) "$typeName($dataSize)" else typeName
+            }
+            "DECIMAL", "NUMERIC" -> {
+                when {
+                    dataSize != null && numericPrecision != null -> "$typeName($dataSize,$numericPrecision)"
+                    dataSize != null -> "$typeName($dataSize)"
+                    else -> typeName
+                }
+            }
+            "TIME", "DATETIME2", "DATETIMEOFFSET" -> {
+                if (numericPrecision != null) "$typeName($numericPrecision)" else typeName
+            }
+            else -> typeName
+        }
     }
 }

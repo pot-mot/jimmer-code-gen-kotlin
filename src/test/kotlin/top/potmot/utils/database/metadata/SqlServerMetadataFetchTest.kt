@@ -64,24 +64,24 @@ user_id 用户ID int 10,null
 group_id 组ID int 10,null
 category_id 分类ID int 10,null
 nullable_user_id 可空用户ID int 10,null NULL
-name 名称 nvarchar 50,null NULL
-email 邮箱 nvarchar 100,null NULL
+name 名称 nvarchar(50) 50,null NULL
+email 邮箱 nvarchar(100) 100,null NULL
 status 状态 smallint 5,null NULL DEFAULT ((1)) 
 type_int 整数类型 int 10,null NULL
 type_bigint 大整数类型 bigint 19,null NULL
 type_smallint 小整数类型 smallint 5,null NULL
-type_decimal 精确小数类型 decimal 10,2 NULL
+type_decimal 精确小数类型 decimal(10,2) 10,2 NULL
 type_float 单精度浮点数 real 24,null NULL
 type_double 双精度浮点数 float 53,null NULL
 type_boolean 布尔类型 bit 1,null NULL
 type_date 日期类型 date 10,null NULL
-type_datetime 日期时间类型 datetime2 27,7 NULL
-type_timestamp 时间戳类型 datetime2 27,7 NULL DEFAULT (getdate()) 
-type_timestamp_tz 时区时间戳类型 datetimeoffset 34,7 NULL
-type_text 文本类型 nvarchar 2147483647,null NULL
-type_check_enum 枚举类型检查 nvarchar 20,null NULL
-type_blob 二进制大对象类型 varbinary 2147483647,null NULL
-type_bit 位类型 binary 8,null NULL
+type_datetime 日期时间类型 datetime2(7) 27,7 NULL
+type_timestamp 时间戳类型 datetime2(7) 27,7 NULL DEFAULT (getdate()) 
+type_timestamp_tz 时区时间戳类型 datetimeoffset(7) 34,7 NULL
+type_text 文本类型 nvarchar(2147483647) 2147483647,null NULL
+type_check_enum 枚举类型检查 nvarchar(20) 20,null NULL
+type_blob 二进制大对象类型 varbinary(2147483647) 2147483647,null NULL
+type_bit 位类型 binary(8) 8,null NULL
                 """.trim().split("\n"),
                 testTable.columns.map { it.stringify() }
             )
