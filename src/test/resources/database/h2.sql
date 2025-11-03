@@ -20,30 +20,34 @@ COMMENT ON TABLE test_group_categories IS '组分类表';
 -- 创建 test_table 表
 CREATE TABLE test_table
 (
-    id                        INT AUTO_INCREMENT,
-    user_id                   INT NOT NULL,
-    group_id                  INT NOT NULL,
-    category_id               INT NOT NULL,
-    nullable_user_id          INT,
-    name                      VARCHAR(50),
-    email                     VARCHAR(100),
-    status                    SMALLINT  DEFAULT 1,
-    type_int                  INT,
-    type_bigint               BIGINT,
-    type_smallint             SMALLINT,
-    type_decimal              NUMERIC(10, 2),
-    type_float                REAL,
-    type_double               DOUBLE PRECISION,
-    type_boolean              BOOLEAN,
-    type_date                 DATE,
-    type_datetime             TIMESTAMP,
-    type_timestamp            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    type_timestamp_tz         TIMESTAMP WITH TIME ZONE,
-    type_text                 TEXT,
-    type_check_enum           VARCHAR(20),
-    type_json                 JSON,
-    type_blob                 BYTEA,
-    type_bit                  BINARY(8),
+    id                INT AUTO_INCREMENT,
+    user_id           INT NOT NULL,
+    group_id          INT NOT NULL,
+    category_id       INT NOT NULL,
+    nullable_user_id  INT,
+    name              VARCHAR(50),
+    email             VARCHAR(100),
+    status            SMALLINT  DEFAULT 1,
+    type_int          INT,
+    type_bigint       BIGINT,
+    type_smallint     SMALLINT,
+    type_decimal      NUMERIC(10, 2),
+    type_float        REAL,
+    type_double       DOUBLE PRECISION,
+    type_boolean      BOOLEAN,
+    type_date         DATE,
+    type_datetime     TIMESTAMP,
+    type_timestamp    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type_timestamp_tz TIMESTAMP WITH TIME ZONE,
+    type_text         TEXT,
+    type_check_enum   VARCHAR(20),
+    type_char         CHAR(20),
+    type_nchar        NCHAR(20),
+    type_nvarchar     NVARCHAR(20),
+    type_varchar2     VARCHAR2(20),
+    type_json         JSON,
+    type_blob         BYTEA,
+    type_bit          BINARY(8),
 
     PRIMARY KEY (id),
 
@@ -98,6 +102,10 @@ COMMENT ON COLUMN test_table.type_timestamp IS '时间戳类型';
 COMMENT ON COLUMN test_table.type_timestamp_tz IS '时区时间戳类型';
 COMMENT ON COLUMN test_table.type_text IS '文本类型';
 COMMENT ON COLUMN test_table.type_check_enum IS '枚举类型检查';
+COMMENT ON COLUMN test_table.type_char IS '字符类型';
+COMMENT ON COLUMN test_table.type_nchar IS '宽字符类型';
+COMMENT ON COLUMN test_table.type_nvarchar IS '宽字符文本类型';
+COMMENT ON COLUMN test_table.type_varchar2 IS '字符文本类型';
 COMMENT ON COLUMN test_table.type_json IS 'JSON数据类型';
 COMMENT ON COLUMN test_table.type_blob IS '二进制大对象类型';
 COMMENT ON COLUMN test_table.type_bit IS '位类型';

@@ -48,6 +48,46 @@ class H2MetadataFetcher(
         return tables
     }
 
+    override fun fetchTableColumns(tableName: String): List<TableInput.TargetOf_columns> {
+        // 获取主键信息并更新列标记
+        val primaryKeys = fetchPrimaryKeys(tableName).toSet()
+
+        val columns = mutableListOf<TableInput.TargetOf_columns>()
+        metadata.getColumns(
+            catalog,
+            schema,
+            tableName,
+            "%"
+        ).use { rs ->
+            while (rs.next()) {
+                val columnName = rs.getString("COLUMN_NAME")
+                val remarks = rs.getString("REMARKS") ?: ""
+                val typeName = rs.getString("TYPE_NAME")
+                val dataSize = rs.getInt("COLUMN_SIZE").takeIf { it != 0 }
+                val numericPrecision = rs.getInt("DECIMAL_DIGITS").takeIf { it != 0 }
+                val nullable = rs.getInt("NULLABLE") != 0
+                val defaultValue = rs.getString("COLUMN_DEF")
+                val autoIncrement = rs.getString("IS_AUTOINCREMENT")?.equals("YES", ignoreCase = true)
+
+                columns.add(
+                    TableInput.TargetOf_columns(
+                        name = columnName,
+                        comment = remarks,
+                        type = buildFullTypeDeclaration(typeName, dataSize, numericPrecision),
+                        dataSize = dataSize,
+                        numericPrecision = numericPrecision,
+                        nullable = nullable,
+                        defaultValue = defaultValue,
+                        partOfPrimaryKey = primaryKeys.contains(columnName),
+                        autoIncrement = autoIncrement,
+                    )
+                )
+            }
+        }
+
+        return columns
+    }
+
     override fun fetchTableChecks(tableName: String): List<TableInput.TargetOf_checks> {
         val checks = mutableListOf<TableInput.TargetOf_checks>()
 
@@ -76,5 +116,35 @@ class H2MetadataFetcher(
         }
 
         return checks
+    }
+
+    private fun buildFullTypeDeclaration(
+        typeName: String,
+        dataSize: Int?,
+        numericPrecision: Int?,
+    ): String {
+        return when (typeName.uppercase()) {
+            "CHARACTER", "CHARACTER VARYING", "CHAR", "VARCHAR", "VARCHAR2", "NVARCHAR", "NVARCHAR2", "NCHAR" -> {
+                if (dataSize != null) "$typeName($dataSize)" else typeName
+            }
+
+            "DECIMAL", "NUMERIC" -> {
+                when {
+                    dataSize != null && numericPrecision != null ->
+                        "$typeName($dataSize,$numericPrecision)"
+
+                    dataSize != null ->
+                        "$typeName($dataSize)"
+
+                    else -> typeName
+                }
+            }
+
+            "FLOAT", "DOUBLE" -> {
+                if (dataSize != null) "$typeName($dataSize)" else typeName
+            }
+
+            else -> typeName
+        }
     }
 }
