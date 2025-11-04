@@ -16,12 +16,30 @@ class PostgreSQLMetadataFetchTest {
             val result = fetchMetadata(connection)
             assetResult(result)
         }
+
+        DriverManager.getConnection(
+            "jdbc:postgresql://localhost:39110/",
+            "test",
+            "test"
+        ).use { connection ->
+            val result = fetchMetadata(connection)
+            assetResult(result)
+        }
     }
 
     @Test
     fun test17Metadata() {
         DriverManager.getConnection(
             "jdbc:postgresql://localhost:39111/test",
+            "test",
+            "test"
+        ).use { connection ->
+            val result = fetchMetadata(connection)
+            assetResult(result)
+        }
+
+        DriverManager.getConnection(
+            "jdbc:postgresql://localhost:39111/",
             "test",
             "test"
         ).use { connection ->
@@ -104,9 +122,9 @@ uk_email true email
             Assertions.assertEquals(3, testTable.foreignKeys.size)
             Assertions.assertLinesMatch(
                 """
-fk_group_category public.test_table group_id -> group_id RESTRICT RESTRICT
-fk_nullable_user public.test_table nullable_user_id -> id SET NULL SET NULL
-fk_user public.test_table user_id -> id CASCADE CASCADE
+fk_group_category public.test_group_categories group_id -> group_id RESTRICT RESTRICT
+fk_nullable_user public.test_user nullable_user_id -> id SET NULL SET NULL
+fk_user public.test_user user_id -> id CASCADE CASCADE
                 """.trim().split("\n"),
                 testTable.foreignKeys.sortedBy { it.name }.map { it.stringify() }
             )

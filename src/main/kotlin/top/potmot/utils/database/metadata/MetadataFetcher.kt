@@ -160,9 +160,9 @@ open class MetadataFetcher(
             while (rs.next()) {
                 val fkName = rs.getString("FK_NAME") ?: continue
                 val fkComment = ""
-                val fkTableName = rs.getString("FKTABLE_NAME") ?: continue
-                val fkTableSchema = rs.getString("FKTABLE_SCHEM") ?: ""
                 val fkColumnName = rs.getString("FKCOLUMN_NAME") ?: continue
+                val pkTableSchema = rs.getString("PKTABLE_SCHEM") ?: ""
+                val pkTableName = rs.getString("PKTABLE_NAME") ?: continue
                 val pkColumnName = rs.getString("PKCOLUMN_NAME") ?: continue
                 val onUpdate = rs.getInt("UPDATE_RULE")
                 val onDelete = rs.getInt("DELETE_RULE")
@@ -178,8 +178,8 @@ open class MetadataFetcher(
                 } ?: TableInput.TargetOf_foreignKeys(
                     name = fkName,
                     comment = fkComment,
-                    referencedTableName = fkTableName,
-                    referencedTableSchema = fkTableSchema,
+                    referencedTableName = pkTableName,
+                    referencedTableSchema = pkTableSchema,
                     onUpdate = mapForeignKeyAction(onUpdate),
                     onDelete = mapForeignKeyAction(onDelete),
                     columnRefs = listOf(

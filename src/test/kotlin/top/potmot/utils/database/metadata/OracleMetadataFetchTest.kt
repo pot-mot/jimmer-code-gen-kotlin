@@ -99,9 +99,9 @@ IDX_NAME_STATUS false NAME,STATUS
             Assertions.assertEquals(3, testTable.foreignKeys.size)
             Assertions.assertLinesMatch(
                 """
-FK_GROUP_CATEGORY TEST.TEST_TABLE GROUP_ID -> GROUP_ID CASCADE RESTRICT
-FK_NULLABLE_USER TEST.TEST_TABLE NULLABLE_USER_ID -> ID CASCADE SET NULL
-FK_USER TEST.TEST_TABLE USER_ID -> ID CASCADE CASCADE
+FK_GROUP_CATEGORY TEST.TEST_GROUP_CATEGORIES GROUP_ID -> GROUP_ID CASCADE RESTRICT
+FK_NULLABLE_USER TEST.TEST_USER NULLABLE_USER_ID -> ID CASCADE SET NULL
+FK_USER TEST.TEST_USER USER_ID -> ID CASCADE CASCADE
                 """.trim().split("\n"),
                 testTable.foreignKeys.sortedBy { it.name }.map { it.stringify() }
             )

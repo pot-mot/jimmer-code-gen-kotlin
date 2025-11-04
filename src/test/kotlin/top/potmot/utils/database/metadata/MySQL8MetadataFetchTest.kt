@@ -89,9 +89,9 @@ idx_name_status false name,status
             Assertions.assertEquals(3, testTable.foreignKeys.size)
             Assertions.assertLinesMatch(
                 """
-fk_group_category .test_table group_id -> group_id RESTRICT RESTRICT
-fk_nullable_user .test_table nullable_user_id -> id SET NULL SET NULL
-fk_user .test_table user_id -> id CASCADE CASCADE
+fk_group_category .test_group_categories group_id -> group_id RESTRICT RESTRICT
+fk_nullable_user .test_user nullable_user_id -> id SET NULL SET NULL
+fk_user .test_user user_id -> id CASCADE CASCADE
                 """.trim().split("\n"),
                 testTable.foreignKeys.sortedBy { it.name }.map { it.stringify() }
             )
