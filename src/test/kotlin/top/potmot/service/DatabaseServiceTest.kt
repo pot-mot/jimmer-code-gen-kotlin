@@ -53,8 +53,8 @@ open class DatabaseServiceTest(
             name = "updated_test_database",
             type = DatabaseType.POSTGRESQL,
             url = "jdbc:postgresql://localhost:39110/test",
-            username = "test1",
-            password = "test1",
+            username = "test",
+            password = "test",
         )
         val updatedView = databaseService.update(updateInput)
 
@@ -70,9 +70,9 @@ open class DatabaseServiceTest(
         val input = DatabaseInsertInput(
             name = "test_database",
             type = DatabaseType.MYSQL,
-            url = "jdbc:mysql://localhost:3306/test",
-            username = "root",
-            password = "password",
+            url = "jdbc:mysql://localhost:39100/test",
+            username = "test",
+            password = "test",
         )
         val view = databaseService.insert(input)
 
