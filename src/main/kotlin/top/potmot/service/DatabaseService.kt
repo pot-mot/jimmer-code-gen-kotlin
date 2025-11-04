@@ -55,6 +55,7 @@ class DatabaseService(
     }
 
     @PostMapping("/insert")
+    @Throws(DatabaseException.ConnectFail::class)
     fun insert(@RequestBody input: DatabaseInsertInput): DatabaseView {
         return transactionTemplate.executeNotNull {
             if (!testConnection(input.url, input.username, input.password)) {
@@ -69,6 +70,7 @@ class DatabaseService(
     }
 
     @PostMapping("/update")
+    @Throws(DatabaseException.ConnectFail::class)
     fun update(@RequestBody input: DatabaseUpdateInput): DatabaseView {
         return transactionTemplate.executeNotNull {
             if (!testConnection(input.url, input.username, input.password)) {
@@ -91,16 +93,24 @@ class DatabaseService(
     }
 
     fun testConnection(url: String, username: String, password: String) =
-        DriverManager.getConnection(
-            url,
-            username,
-            password
-        ).use { connection ->
-            !connection.isClosed
+        try {
+            DriverManager.getConnection(
+                url,
+                username,
+                password
+            ).use { connection ->
+                !connection.isClosed
+            }
+        } catch (e: Throwable) {
+            throw DatabaseException.connectFail(cause = e)
         }
 
+
     @PostMapping("/test")
-    @Throws(DatabaseException.DataSourceNotFound::class)
+    @Throws(
+        DatabaseException.DataSourceNotFound::class,
+        DatabaseException.ConnectFail::class
+    )
     fun test(databaseId: UUID): Boolean {
         val database = getConnectionView(databaseId)
         return testConnection(database.url, database.username, database.password)
@@ -117,10 +127,16 @@ class DatabaseService(
     }
 
     @PostMapping("/refreshTables")
-    @Throws(DatabaseException.DataSourceNotFound::class)
+    @Throws(
+        DatabaseException.DataSourceNotFound::class,
+        DatabaseException.ConnectFail::class
+    )
     fun refreshTables(databaseId: UUID): List<TableView> {
         return transactionTemplate.executeNotNull {
             val database = getConnectionView(databaseId)
+            if (!testConnection(database.url, database.username, database.password)) {
+                throw DatabaseException.connectFail()
+            }
             DriverManager.getConnection(
                 database.url,
                 database.username,
