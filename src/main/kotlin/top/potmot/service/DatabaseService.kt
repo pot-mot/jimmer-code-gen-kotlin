@@ -57,6 +57,9 @@ class DatabaseService(
     @PostMapping("/insert")
     fun insert(@RequestBody input: DatabaseInsertInput): DatabaseView {
         return transactionTemplate.executeNotNull {
+            if (!testConnection(input.url, input.username, input.password)) {
+                throw DatabaseException.connectFail()
+            }
             sqlClient
                 .saveCommand(input) {
                     setMode(SaveMode.INSERT_ONLY)
@@ -68,6 +71,9 @@ class DatabaseService(
     @PostMapping("/update")
     fun update(@RequestBody input: DatabaseUpdateInput): DatabaseView {
         return transactionTemplate.executeNotNull {
+            if (!testConnection(input.url, input.username, input.password)) {
+                throw DatabaseException.connectFail()
+            }
             sqlClient
                 .saveCommand(input) {
                     setMode(SaveMode.UPDATE_ONLY)
@@ -84,17 +90,20 @@ class DatabaseService(
             }.fetchOneOrNull() ?: throw DatabaseException.dataSourceNotFound()
     }
 
+    fun testConnection(url: String, username: String, password: String) =
+        DriverManager.getConnection(
+            url,
+            username,
+            password
+        ).use { connection ->
+            !connection.isClosed
+        }
+
     @PostMapping("/test")
     @Throws(DatabaseException.DataSourceNotFound::class)
     fun test(databaseId: UUID): Boolean {
         val database = getConnectionView(databaseId)
-        return DriverManager.getConnection(
-            database.url,
-            database.username,
-            database.password
-        ).use { connection ->
-            !connection.isClosed
-        }
+        return testConnection(database.url, database.username, database.password)
     }
 
     @PostMapping("/fetchTables")
@@ -119,9 +128,11 @@ class DatabaseService(
             ).use { connection ->
                 val tableInputs = fetchMetadata(connection)
                 sqlClient
-                    .saveEntitiesCommand(tableInputs.map { it.toEntity {
-                        this.databaseId = databaseId
-                    } }) {
+                    .saveEntitiesCommand(tableInputs.map {
+                        it.toEntity {
+                            this.databaseId = databaseId
+                        }
+                    }) {
                         setMode(SaveMode.UPSERT)
                         setAssociatedModeAll(AssociatedSaveMode.MERGE)
                     }.execute(TableView::class)
