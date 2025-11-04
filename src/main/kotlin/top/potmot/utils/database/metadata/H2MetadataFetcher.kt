@@ -4,8 +4,10 @@ import top.potmot.entity.database.dto.TableInput
 import java.sql.Connection
 
 class H2MetadataFetcher(
-    connection: Connection
-) : MetadataFetcher(connection) {
+    connection: Connection,
+    catalog: String? = connection.catalog,
+    schema: String? = connection.schema,
+) : MetadataFetcher(connection, catalog, schema) {
     override fun fetchTables(): List<TableInput> {
         val tables = mutableListOf<TableInput>()
 

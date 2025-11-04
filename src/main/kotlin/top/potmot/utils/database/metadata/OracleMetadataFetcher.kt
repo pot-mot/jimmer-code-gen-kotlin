@@ -5,8 +5,10 @@ import java.sql.Connection
 import java.util.concurrent.ConcurrentHashMap
 
 class OracleMetadataFetcher(
-    connection: Connection
-) : MetadataFetcher(connection) {
+    connection: Connection,
+    catalog: String? = connection.catalog,
+    schema: String? = connection.schema,
+) : MetadataFetcher(connection, catalog, schema) {
     private val tableCommentsCache = ConcurrentHashMap<String, String>()
     private val columnCommentsCache = ConcurrentHashMap<String, String>()
 

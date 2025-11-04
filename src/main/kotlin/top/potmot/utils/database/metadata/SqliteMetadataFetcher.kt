@@ -4,8 +4,10 @@ import top.potmot.entity.database.dto.TableInput
 import java.sql.Connection
 
 class SqliteMetadataFetcher(
-    connection: Connection
-) : MetadataFetcher(connection) {
+    connection: Connection,
+    catalog: String? = connection.catalog,
+    schema: String? = connection.schema,
+) : MetadataFetcher(connection, catalog, schema) {
     private val checkPattern = Regex("CHECK\\s*\\([^)]+\\)", RegexOption.IGNORE_CASE)
 
     override fun fetchTableChecks(tableName: String): List<TableInput.TargetOf_checks> {

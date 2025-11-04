@@ -6,8 +6,10 @@ import java.sql.Connection
 import kotlin.collections.set
 
 class PostgreSQLMetadataFetcher(
-    connection: Connection
-) : MetadataFetcher(connection) {
+    connection: Connection,
+    catalog: String? = connection.catalog,
+    schema: String? = connection.schema,
+) : MetadataFetcher(connection, catalog, schema) {
 
     override fun fetchTableColumns(tableName: String): List<TableInput.TargetOf_columns> {
         val fullTypeMap = mutableMapOf<String, ColumnFullTypePair>()

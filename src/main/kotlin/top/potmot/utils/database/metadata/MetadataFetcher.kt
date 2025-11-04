@@ -9,6 +9,8 @@ import java.sql.DatabaseMetaData
 
 open class MetadataFetcher(
     protected val connection: Connection,
+    protected val catalog: String? = connection.catalog,
+    protected val schema: String? = connection.schema,
 ) {
     fun fetch(): List<TableInput> {
         return fetchTables()
@@ -17,8 +19,6 @@ open class MetadataFetcher(
     protected val logger = LoggerFactory.getLogger(MetadataFetcher::class.java)
 
     protected val metadata: DatabaseMetaData = connection.metaData
-    protected val catalog: String? = connection.catalog
-    protected val schema: String? = connection.schema
 
     protected open fun fetchTables(): List<TableInput> {
         val tables = mutableListOf<TableInput>()
@@ -229,14 +229,16 @@ private fun getTypeFromConnection(connection: Connection): DatabaseType? =
 
 fun fetchMetadata(
     connection: Connection,
+    catalog: String? = connection.catalog,
+    schema: String? = connection.schema,
     databaseType: DatabaseType? = getTypeFromConnection(connection)
 ) =
     when (databaseType) {
-        DatabaseType.MYSQL -> MySQLMetadataFetcher(connection).fetch()
-        DatabaseType.POSTGRESQL -> PostgreSQLMetadataFetcher(connection).fetch()
-        DatabaseType.ORACLE -> OracleMetadataFetcher(connection).fetch()
-        DatabaseType.SQLSERVER -> SqlServerMetadataFetcher(connection).fetch()
-        DatabaseType.H2 -> H2MetadataFetcher(connection).fetch()
-        DatabaseType.SQLITE -> SqliteMetadataFetcher(connection).fetch()
-        else -> MetadataFetcher(connection).fetch()
+        DatabaseType.MYSQL -> MySQLMetadataFetcher(connection, catalog, schema).fetch()
+        DatabaseType.POSTGRESQL -> PostgreSQLMetadataFetcher(connection, catalog, schema).fetch()
+        DatabaseType.ORACLE -> OracleMetadataFetcher(connection, catalog, schema).fetch()
+        DatabaseType.SQLSERVER -> SqlServerMetadataFetcher(connection, catalog, schema).fetch()
+        DatabaseType.H2 -> H2MetadataFetcher(connection, catalog, schema).fetch()
+        DatabaseType.SQLITE -> SqliteMetadataFetcher(connection, catalog, schema).fetch()
+        else -> MetadataFetcher(connection, catalog, schema).fetch()
     }

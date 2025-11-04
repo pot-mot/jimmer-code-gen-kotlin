@@ -9,8 +9,10 @@ private val columnRegex = Regex("`([^`]+)`\\s+([^\\n\\s]+)")
 private val checkConstraintRegex = Regex("CONSTRAINT\\s+`([^`]+)`\\s+CHECK\\s*\\((.+)\\)", RegexOption.IGNORE_CASE)
 
 class MySQLMetadataFetcher(
-    connection: Connection
-) : MetadataFetcher(connection) {
+    connection: Connection,
+    catalog: String? = connection.catalog,
+    schema: String? = connection.schema,
+) : MetadataFetcher(connection, catalog, schema) {
     private val tableCommentsCache = ConcurrentHashMap<String, String>()
 
     override fun fetchTables(): List<TableInput> {
@@ -89,7 +91,12 @@ class MySQLMetadataFetcher(
         val primaryKeys = fetchPrimaryKeys(tableName).toSet()
 
         val columns = mutableListOf<TableInput.TargetOf_columns>()
-        val resultSet = metadata.getColumns(catalog, schema, tableName, "%")
+        val resultSet = metadata.getColumns(
+            catalog,
+            schema,
+            tableName,
+            "%"
+        )
 
         while (resultSet.next()) {
             val columnName = resultSet.getString("COLUMN_NAME")
@@ -180,7 +187,7 @@ class MySQLMetadataFetcher(
         WHERE TABLE_SCHEMA = ?
         """.trimIndent()
         ).use { stmt ->
-            stmt.setString(1, connection.catalog)
+            stmt.setString(1, catalog)
             stmt.executeQuery().use { rs ->
                 while (rs.next()) {
                     val tableSchema = rs.getString("TABLE_SCHEMA")

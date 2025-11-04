@@ -5,8 +5,10 @@ import java.sql.Connection
 import java.util.concurrent.ConcurrentHashMap
 
 class SqlServerMetadataFetcher(
-    connection: Connection
-) : MetadataFetcher(connection) {
+    connection: Connection,
+    catalog: String? = connection.catalog,
+    schema: String? = connection.schema,
+) : MetadataFetcher(connection, catalog, schema) {
     private val tableCommentsCache = ConcurrentHashMap<String, String>()
     private val columnCommentsCache = ConcurrentHashMap<String, String>()
 
@@ -15,7 +17,12 @@ class SqlServerMetadataFetcher(
 
         val tables = mutableListOf<TableInput>()
 
-        val resultSet = metadata.getTables(catalog, schema, "%", arrayOf("TABLE"))
+        val resultSet = metadata.getTables(
+            catalog,
+            schema,
+            "%",
+            arrayOf("TABLE")
+        )
 
         while (resultSet.next()) {
             val tableSchema = resultSet.getString("TABLE_SCHEM") ?: ""
@@ -53,7 +60,12 @@ class SqlServerMetadataFetcher(
         val primaryKeys = fetchPrimaryKeys(tableName).toSet()
 
         val columns = mutableListOf<TableInput.TargetOf_columns>()
-        val resultSet = metadata.getColumns(catalog, schema, tableName, "%")
+        val resultSet = metadata.getColumns(
+            catalog,
+            schema,
+            tableName,
+            "%"
+        )
 
         while (resultSet.next()) {
             val columnName = resultSet.getString("COLUMN_NAME")
