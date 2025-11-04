@@ -16,7 +16,10 @@ class PostgreSQLMetadataFetchTest {
             val result = fetchMetadata(connection)
             assetResult(result)
         }
+    }
 
+    @Test
+    fun test16NoDatabaseMetadata() {
         DriverManager.getConnection(
             "jdbc:postgresql://localhost:39110/",
             "test",
@@ -37,7 +40,10 @@ class PostgreSQLMetadataFetchTest {
             val result = fetchMetadata(connection)
             assetResult(result)
         }
+    }
 
+    @Test
+    fun test17NoDatabaseMetadata() {
         DriverManager.getConnection(
             "jdbc:postgresql://localhost:39111/",
             "test",

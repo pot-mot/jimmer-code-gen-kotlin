@@ -18,6 +18,18 @@ class MySQL8MetadataFetchTest {
         }
     }
 
+    @Test
+    fun testNoDatabaseMetadata() {
+        DriverManager.getConnection(
+            "jdbc:mysql://localhost:39101",
+            "test",
+            "test"
+        ).use { connection ->
+            val result = fetchMetadata(connection)
+            assetResult(result)
+        }
+    }
+
     fun assetResult(result: List<TableInput>) {
         assert(result.size == 3)
 
