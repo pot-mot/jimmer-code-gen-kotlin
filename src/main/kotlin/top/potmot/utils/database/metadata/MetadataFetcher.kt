@@ -9,8 +9,8 @@ import java.sql.DatabaseMetaData
 
 open class MetadataFetcher(
     protected val connection: Connection,
-    protected val catalog: String? = connection.catalog,
-    protected val schema: String? = connection.schema,
+    protected val catalog: String? = connection.catalog?.ifBlank { null },
+    protected val schema: String? = connection.schema?.ifBlank { null },
 ) {
     fun fetch(): List<TableInput> {
         return fetchTables()
@@ -229,8 +229,8 @@ private fun getTypeFromConnection(connection: Connection): DatabaseType? =
 
 fun fetchMetadata(
     connection: Connection,
-    catalog: String? = connection.catalog,
-    schema: String? = connection.schema,
+    catalog: String? = connection.catalog?.ifBlank { null },
+    schema: String? = connection.schema?.ifBlank { null },
     databaseType: DatabaseType? = getTypeFromConnection(connection)
 ) =
     when (databaseType) {

@@ -5,8 +5,8 @@ import java.sql.Connection
 
 class H2MetadataFetcher(
     connection: Connection,
-    catalog: String? = connection.catalog,
-    schema: String? = connection.schema,
+    catalog: String? = connection.catalog?.ifBlank { null },
+    schema: String? = connection.schema?.ifBlank { null },
 ) : MetadataFetcher(connection, catalog, schema) {
     override fun fetchTables(): List<TableInput> {
         val tables = mutableListOf<TableInput>()

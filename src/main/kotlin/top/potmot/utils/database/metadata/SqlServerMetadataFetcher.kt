@@ -6,8 +6,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 class SqlServerMetadataFetcher(
     connection: Connection,
-    catalog: String? = connection.catalog,
-    schema: String? = connection.schema,
+    catalog: String? = connection.catalog?.ifBlank { null },
+    schema: String? = connection.schema?.ifBlank { null },
 ) : MetadataFetcher(connection, catalog, schema) {
     private val tableCommentsCache = ConcurrentHashMap<String, String>()
     private val columnCommentsCache = ConcurrentHashMap<String, String>()

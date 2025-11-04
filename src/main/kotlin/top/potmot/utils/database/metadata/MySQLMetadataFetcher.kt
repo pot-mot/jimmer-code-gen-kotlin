@@ -10,8 +10,8 @@ private val checkConstraintRegex = Regex("CONSTRAINT\\s+`([^`]+)`\\s+CHECK\\s*\\
 
 class MySQLMetadataFetcher(
     connection: Connection,
-    catalog: String? = connection.catalog,
-    schema: String? = connection.schema,
+    catalog: String? = connection.catalog?.ifBlank { null },
+    schema: String? = connection.schema?.ifBlank { null },
 ) : MetadataFetcher(connection, catalog, schema) {
     private val tableCommentsCache = ConcurrentHashMap<String, String>()
 
