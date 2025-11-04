@@ -4,6 +4,7 @@ import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
+import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.PostMapping
@@ -143,7 +144,7 @@ class DatabaseService(
                 database.password
             ).use { connection ->
                 val tableInputs = fetchMetadata(connection)
-                sqlClient
+                val tableViews = sqlClient
                     .saveEntitiesCommand(tableInputs.map {
                         it.toEntity {
                             this.databaseId = databaseId
@@ -153,6 +154,12 @@ class DatabaseService(
                         setAssociatedModeAll(AssociatedSaveMode.MERGE)
                     }.execute(TableView::class)
                     .viewItems.map { it.modifiedView }
+                val tableViewIds = tableViews.map { it.id }
+                sqlClient.executeDelete(DbTable::class) {
+                    where(table.databaseId eq databaseId)
+                    where(table.id valueNotIn tableViewIds)
+                }
+                tableViews
             }
         }
     }
