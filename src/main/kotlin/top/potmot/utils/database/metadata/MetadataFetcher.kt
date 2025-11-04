@@ -174,7 +174,6 @@ open class MetadataFetcher(
                             referencedColumnName = pkColumnName
                         ),
                     )
-                    existing
                 } ?: TableInput.TargetOf_foreignKeys(
                     name = fkName,
                     comment = fkComment,

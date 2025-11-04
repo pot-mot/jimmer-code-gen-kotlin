@@ -128,7 +128,7 @@ uk_email true email
             Assertions.assertEquals(3, testTable.foreignKeys.size)
             Assertions.assertLinesMatch(
                 """
-fk_group_category public.test_group_categories group_id -> group_id RESTRICT RESTRICT
+fk_group_category public.test_group_categories group_id -> group_id,category_id -> category_id RESTRICT RESTRICT
 fk_nullable_user public.test_user nullable_user_id -> id SET NULL SET NULL
 fk_user public.test_user user_id -> id CASCADE CASCADE
                 """.trim().split("\n"),

@@ -98,7 +98,7 @@ uk_email true email
             Assertions.assertEquals(3, testTable.foreignKeys.size)
             Assertions.assertLinesMatch(
                 """
-fk_group_category dbo.test_group_categories group_id -> group_id NO ACTION NO ACTION
+fk_group_category dbo.test_group_categories group_id -> group_id,category_id -> category_id NO ACTION NO ACTION
 fk_nullable_user dbo.test_user nullable_user_id -> id CASCADE SET NULL
 fk_user dbo.test_user user_id -> id NO ACTION NO ACTION
                 """.trim().split("\n"),
