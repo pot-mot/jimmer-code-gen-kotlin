@@ -17,6 +17,7 @@ DatabaseView {
 }
 
 DatabaseConnectionView {
+    type
     url
     username
     password

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 import top.potmot.entity.database.DatabaseType
 import top.potmot.entity.database.DbDatabaseDraft
 import top.potmot.entity.database.dto.*
+import top.potmot.error.DatabaseException
 
 @SpringBootTest
 @Transactional(rollbackFor = [Throwable::class])
@@ -62,6 +63,43 @@ open class DatabaseServiceTest(
             unload(this, DbDatabaseDraft::username)
             unload(this, DbDatabaseDraft::password)
         }, updatedView.toEntity())
+    }
+
+    @Test
+    fun testInsertTypeNotMath() {
+        val input = DatabaseInsertInput(
+            name = "test_database",
+            type = DatabaseType.POSTGRESQL,
+            url = "jdbc:mysql://localhost:39100/test",
+            username = "test",
+            password = "test",
+        )
+        Assertions.assertThrows(DatabaseException.DatabaseTypeNotMatch::class.java) {
+            databaseService.insert(input)
+        }
+    }
+
+    @Test
+    fun testUpdateTypeNotMath() {
+        val insertInput = DatabaseInsertInput(
+            name = "test_database",
+            type = DatabaseType.MYSQL,
+            url = "jdbc:mysql://localhost:39100/test",
+            username = "test",
+            password = "test",
+        )
+        val view = databaseService.insert(insertInput)
+        val updateInput = DatabaseUpdateInput(
+            id = view.id,
+            name = "updated_test_database",
+            type = DatabaseType.POSTGRESQL,
+            url = "jdbc:mysql://localhost:39100/test",
+            username = "test",
+            password = "test",
+        )
+        Assertions.assertThrows(DatabaseException.DatabaseTypeNotMatch::class.java) {
+            databaseService.update(updateInput)
+        }
     }
 
     @Test

@@ -215,7 +215,7 @@ open class MetadataFetcher(
     }
 }
 
-private fun getTypeFromConnection(connection: Connection): DatabaseType? =
+fun getTypeFromConnection(connection: Connection): DatabaseType? =
     when (connection.metaData.databaseProductName.lowercase()) {
         "mysql" -> DatabaseType.MYSQL
         "postgresql" -> DatabaseType.POSTGRESQL

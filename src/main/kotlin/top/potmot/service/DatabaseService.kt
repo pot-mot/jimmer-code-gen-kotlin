@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import top.potmot.entity.database.DatabaseType
 import top.potmot.entity.database.DbDatabase
 import top.potmot.entity.database.DbTable
 import top.potmot.entity.database.databaseId
@@ -23,6 +24,7 @@ import top.potmot.entity.database.dto.TableView
 import top.potmot.entity.database.id
 import top.potmot.error.DatabaseException
 import top.potmot.utils.database.metadata.fetchMetadata
+import top.potmot.utils.database.metadata.getTypeFromConnection
 import top.potmot.utils.transaction.executeNotNull
 import java.sql.DriverManager
 import java.util.UUID
@@ -46,22 +48,23 @@ class DatabaseService(
     }
 
     @PostMapping("/get")
-    @Throws(DatabaseException.DataSourceNotFound::class)
+    @Throws(DatabaseException.DatabaseNotFound::class)
     fun get(databaseId: UUID): DatabaseView {
         return sqlClient
             .createQuery(DbDatabase::class) {
                 where(table.id eq databaseId)
                 select(table.fetch(DatabaseView::class))
-            }.fetchOneOrNull() ?: throw DatabaseException.dataSourceNotFound()
+            }.fetchOneOrNull() ?: throw DatabaseException.DatabaseNotFound()
     }
 
     @PostMapping("/insert")
-    @Throws(DatabaseException.ConnectFail::class)
+    @Throws(
+        DatabaseException.ConnectFail::class,
+        DatabaseException.DatabaseTypeNotMatch::class,
+    )
     fun insert(@RequestBody input: DatabaseInsertInput): DatabaseView {
         return transactionTemplate.executeNotNull {
-            if (!testConnection(input.url, input.username, input.password)) {
-                throw DatabaseException.connectFail()
-            }
+            testConnection(input.type, input.url, input.username, input.password)
             sqlClient
                 .saveCommand(input) {
                     setMode(SaveMode.INSERT_ONLY)
@@ -71,12 +74,13 @@ class DatabaseService(
     }
 
     @PostMapping("/update")
-    @Throws(DatabaseException.ConnectFail::class)
+    @Throws(
+        DatabaseException.ConnectFail::class,
+        DatabaseException.DatabaseTypeNotMatch::class,
+        )
     fun update(@RequestBody input: DatabaseUpdateInput): DatabaseView {
         return transactionTemplate.executeNotNull {
-            if (!testConnection(input.url, input.username, input.password)) {
-                throw DatabaseException.connectFail()
-            }
+            testConnection(input.type, input.url, input.username, input.password)
             sqlClient
                 .saveCommand(input) {
                     setMode(SaveMode.UPDATE_ONLY)
@@ -90,35 +94,37 @@ class DatabaseService(
             .createQuery(DbDatabase::class) {
                 where(table.id eq databaseId)
                 select(table.fetch(DatabaseConnectionView::class))
-            }.fetchOneOrNull() ?: throw DatabaseException.dataSourceNotFound()
+            }.fetchOneOrNull() ?: throw DatabaseException.DatabaseNotFound()
     }
 
-    fun testConnection(url: String, username: String, password: String) =
-        try {
-            DriverManager.getConnection(
-                url,
-                username,
-                password
-            ).use { connection ->
-                !connection.isClosed
+    fun testConnection(type: DatabaseType, url: String, username: String, password: String) =
+        DriverManager.getConnection(
+            url,
+            username,
+            password
+        ).use { connection ->
+            if (connection.isClosed) {
+                throw DatabaseException.connectFail()
             }
-        } catch (e: Throwable) {
-            throw DatabaseException.connectFail(cause = e)
+            if (getTypeFromConnection(connection) != type) {
+                throw DatabaseException.databaseTypeNotMatch()
+            }
         }
 
 
     @PostMapping("/test")
-    @Throws(
-        DatabaseException.DataSourceNotFound::class,
-        DatabaseException.ConnectFail::class
-    )
     fun test(databaseId: UUID): Boolean {
         val database = getConnectionView(databaseId)
-        return testConnection(database.url, database.username, database.password)
+        return try {
+            testConnection(database.type, database.url, database.username, database.password)
+            true
+        } catch (_: Throwable) {
+            false
+        }
     }
 
     @PostMapping("/fetchTables")
-    @Throws(DatabaseException.DataSourceNotFound::class)
+    @Throws(DatabaseException.DatabaseNotFound::class)
     fun fetchTables(databaseId: UUID): List<TableView> {
         return sqlClient
             .createQuery(DbTable::class) {
@@ -129,15 +135,14 @@ class DatabaseService(
 
     @PostMapping("/refreshTables")
     @Throws(
-        DatabaseException.DataSourceNotFound::class,
-        DatabaseException.ConnectFail::class
+        DatabaseException.DatabaseNotFound::class,
+        DatabaseException.ConnectFail::class,
+        DatabaseException.DatabaseTypeNotMatch::class,
     )
     fun refreshTables(databaseId: UUID): List<TableView> {
         return transactionTemplate.executeNotNull {
             val database = getConnectionView(databaseId)
-            if (!testConnection(database.url, database.username, database.password)) {
-                throw DatabaseException.connectFail()
-            }
+            testConnection(database.type, database.url, database.username, database.password)
             DriverManager.getConnection(
                 database.url,
                 database.username,

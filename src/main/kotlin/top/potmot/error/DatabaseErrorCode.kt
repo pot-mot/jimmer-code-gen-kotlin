@@ -10,5 +10,7 @@ enum class DatabaseErrorCode {
 
     CONNECT_FAIL,
 
-    DATA_SOURCE_NOT_FOUND,
+    DATABASE_NOT_FOUND,
+
+    DATABASE_TYPE_NOT_MATCH,
 }
