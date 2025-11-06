@@ -63,4 +63,14 @@ class GenerateScriptService(
                 .modifiedView
         }
     }
+
+    @PostMapping("/delete")
+    fun delete(scriptId: UUID): Int {
+        return transactionTemplate.executeNotNull {
+            sqlClient
+                .createDelete(GenerateScript::class) {
+                    where(table.id eq scriptId)
+                }.execute()
+        }
+    }
 }
