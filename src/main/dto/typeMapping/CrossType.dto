@@ -4,16 +4,3 @@ input CrossTypeInput {
     #allScalars
     #allReferences
 }
-
-CrossTypeView {
-    #allScalars
-    sqlType {
-        #allScalars
-    }
-    jvmType {
-        #allScalars
-    }
-    tsType {
-        #allScalars
-    }
-}

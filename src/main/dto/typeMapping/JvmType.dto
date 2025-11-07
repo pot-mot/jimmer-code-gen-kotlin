@@ -2,8 +2,7 @@ export top.potmot.entity.typeMapping.JvmType
 
 input JvmTypeInput {
     #allScalars
-}
-
-JvmTypeView {
-    #allScalars
+    sqlToJvmMappingRules {
+        #allScalars
+    }
 }

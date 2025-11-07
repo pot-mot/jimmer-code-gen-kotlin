@@ -1,9 +1,0 @@
-export top.potmot.entity.typeMapping.JvmToTsMappingRule
-
-input JvmToTsMappingRuleInput {
-    #allScalars
-}
-
-JvmToTsMappingRuleView {
-    #allScalars
-}

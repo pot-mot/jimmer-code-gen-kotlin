@@ -12,13 +12,9 @@ import top.potmot.entity.typeMapping.JvmType
 import top.potmot.entity.typeMapping.SqlType
 import top.potmot.entity.typeMapping.TsType
 import top.potmot.entity.typeMapping.dto.CrossTypeInput
-import top.potmot.entity.typeMapping.dto.CrossTypeView
 import top.potmot.entity.typeMapping.dto.JvmTypeInput
-import top.potmot.entity.typeMapping.dto.JvmTypeView
 import top.potmot.entity.typeMapping.dto.SqlTypeInput
-import top.potmot.entity.typeMapping.dto.SqlTypeView
 import top.potmot.entity.typeMapping.dto.TsTypeInput
-import top.potmot.entity.typeMapping.dto.TsTypeView
 import top.potmot.utils.transaction.executeNotNull
 
 @RestController
@@ -30,10 +26,10 @@ class TypeMappingService(
     private val transactionTemplate: TransactionTemplate
 ) {
     @PostMapping("/listCrossType")
-    fun listCrossType(): List<CrossTypeView> {
+    fun listCrossType(): List<CrossTypeInput> {
         return sqlClient
             .createQuery(CrossType::class) {
-                select(table.fetch(CrossTypeView::class))
+                select(table.fetch(CrossTypeInput::class))
             }.execute()
     }
 
@@ -45,10 +41,10 @@ class TypeMappingService(
     }
 
     @PostMapping("/listJvmType")
-    fun listJvmType(): List<JvmTypeView> {
+    fun listJvmType(): List<JvmTypeInput> {
         return sqlClient
             .createQuery(JvmType::class) {
-                select(table.fetch(JvmTypeView::class))
+                select(table.fetch(JvmTypeInput::class))
             }.execute()
     }
 
@@ -60,10 +56,10 @@ class TypeMappingService(
     }
 
     @PostMapping("/listSqlType")
-    fun listSqlType(): List<SqlTypeView> {
+    fun listSqlType(): List<SqlTypeInput> {
         return sqlClient
             .createQuery(SqlType::class) {
-                select(table.fetch(SqlTypeView::class))
+                select(table.fetch(SqlTypeInput::class))
             }.execute()
     }
 
@@ -75,10 +71,10 @@ class TypeMappingService(
     }
 
     @PostMapping("/listTsType")
-    fun listTsType(): List<TsTypeView> {
+    fun listTsType(): List<TsTypeInput> {
         return sqlClient
             .createQuery(TsType::class) {
-                select(table.fetch(TsTypeView::class))
+                select(table.fetch(TsTypeInput::class))
             }.execute()
     }
 

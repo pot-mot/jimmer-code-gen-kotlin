@@ -3,6 +3,7 @@ package top.potmot.entity.typeMapping
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.Id
+import org.babyfish.jimmer.sql.OneToMany
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import java.util.UUID
 
@@ -19,4 +20,7 @@ interface SqlType {
     val numericPrecision: Int?
 
     val defaultValue: String?
+
+    @OneToMany(mappedBy = "result")
+    val jvmToSqlMappingRule: List<JvmToSqlMappingRule>
 }
