@@ -6,6 +6,7 @@ import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.entity.script.id
@@ -43,7 +44,7 @@ class GenerateScriptService(
 
 
     @PostMapping("/insert")
-    fun insert(input: GenerateScriptInsertInput): GenerateScriptView {
+    fun insert(@RequestBody input: GenerateScriptInsertInput): GenerateScriptView {
         return transactionTemplate.executeNotNull {
             sqlClient
                 .saveCommand(input) {
@@ -54,7 +55,7 @@ class GenerateScriptService(
     }
 
     @PostMapping("/update")
-    fun update(input: GenerateScriptUpdateInput): GenerateScriptView {
+    fun update(@RequestBody input: GenerateScriptUpdateInput): GenerateScriptView {
         return transactionTemplate.executeNotNull {
             sqlClient
                 .saveCommand(input) {
