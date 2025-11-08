@@ -3,6 +3,7 @@ package top.potmot.service
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.asc
+import org.babyfish.jimmer.sql.kt.ast.expression.desc
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import top.potmot.entity.model.Model
 import top.potmot.entity.model.ModelHistory
+import top.potmot.entity.model.createdTime
 import top.potmot.entity.model.dto.ModelHistoryNoJsonView
 import top.potmot.entity.model.dto.ModelHistoryView
 import top.potmot.entity.model.dto.ModelInsertInput
@@ -36,11 +38,26 @@ class ModelService(
     @Autowired
     private val transactionTemplate: TransactionTemplate
 ) {
+    enum class ModelOrder {
+        CREATE_TIME_ASC,
+        CREATE_TIME_DESC,
+        MODIFIED_TIME_ASC,
+        MODIFIED_TIME_DESC,
+    }
+
     @PostMapping("/list")
-    fun list(@RequestBody spec: ModelSpec): List<ModelNoJsonView> {
+    fun list(@RequestBody spec: ModelSpec, modelOrder: ModelOrder): List<ModelNoJsonView> {
         return sqlClient
             .createQuery(Model::class) {
                 where(spec)
+                orderBy(
+                    when (modelOrder) {
+                        ModelOrder.CREATE_TIME_ASC -> table.createdTime.asc()
+                        ModelOrder.CREATE_TIME_DESC -> table.createdTime.desc()
+                        ModelOrder.MODIFIED_TIME_ASC -> table.modifiedTime.asc()
+                        ModelOrder.MODIFIED_TIME_DESC -> table.modifiedTime.desc()
+                    }
+                )
                 select(table.fetch(ModelNoJsonView::class))
             }.execute()
     }

@@ -24,11 +24,11 @@ ModelNoJsonView {
 }
 
 specification ModelSpec {
-    like/i(name)
-    like/i(description)
+    like/i(name, description) as keywords
+    databaseType
+    jvmLanguage
     ge(createdTime)
     le(createdTime)
     ge(modifiedTime)
     le(modifiedTime)
-    databaseType
 }
