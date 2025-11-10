@@ -8,6 +8,5 @@ enum class ScriptType {
     GroupGenerator,
     MappedSuperClassGenerator,
     ModelGenerator,
-    TableDiffGenerator,
     TableGenerator,
 }
