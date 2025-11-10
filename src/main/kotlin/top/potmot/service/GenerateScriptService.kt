@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import top.potmot.entity.script.id
 import top.potmot.entity.script.GenerateScript
 import top.potmot.entity.script.dto.GenerateScriptInsertInput
-import top.potmot.entity.script.dto.GenerateScriptSaveInput
+import top.potmot.entity.script.dto.GenerateScriptUpdateInput
 import top.potmot.entity.script.dto.GenerateScriptView
 import top.potmot.utils.transaction.executeNotNull
 import java.util.UUID
@@ -54,12 +54,12 @@ class GenerateScriptService(
         }
     }
 
-    @PostMapping("/save")
-    fun save(@RequestBody input: GenerateScriptSaveInput): GenerateScriptView {
+    @PostMapping("/update")
+    fun update(@RequestBody input: GenerateScriptUpdateInput): GenerateScriptView {
         return transactionTemplate.executeNotNull {
             sqlClient
                 .saveCommand(input) {
-                    setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
+                    setMode(SaveMode.UPDATE_ONLY)
                 }.execute(GenerateScriptView::class)
                 .modifiedView
         }

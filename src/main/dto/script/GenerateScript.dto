@@ -5,7 +5,7 @@ input GenerateScriptInsertInput {
     -id
 }
 
-input GenerateScriptSaveInput {
+input GenerateScriptUpdateInput {
     #allScalars
     id!
 }
