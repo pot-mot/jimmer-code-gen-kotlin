@@ -48,7 +48,7 @@ class TypeMappingService(
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(CrossType::class) {
                 where(table.id valueNotIn savedItems.map { it.id })
-            }
+            }.execute()
             savedItems
         }
     }
@@ -69,7 +69,7 @@ class TypeMappingService(
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(JvmType::class) {
                 where(table.id valueNotIn savedItems.map { it.id })
-            }
+            }.execute()
             savedItems
         }
     }
@@ -90,7 +90,7 @@ class TypeMappingService(
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(SqlType::class) {
                 where(table.id valueNotIn savedItems.map { it.id })
-            }
+            }.execute()
             savedItems
         }
     }
@@ -111,7 +111,7 @@ class TypeMappingService(
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(TsType::class) {
                 where(table.id valueNotIn savedItems.map { it.id })
-            }
+            }.execute()
             savedItems
         }
     }
