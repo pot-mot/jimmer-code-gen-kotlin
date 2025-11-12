@@ -1,5 +1,10 @@
 export top.potmot.entity.typeMapping.CrossType
 
+CrossTypeView {
+    #allScalars
+    #allReferences
+}
+
 input CrossTypeInput {
     #allScalars
     #allReferences

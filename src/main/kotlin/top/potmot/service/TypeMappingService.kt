@@ -13,9 +13,13 @@ import top.potmot.entity.typeMapping.JvmType
 import top.potmot.entity.typeMapping.SqlType
 import top.potmot.entity.typeMapping.TsType
 import top.potmot.entity.typeMapping.dto.CrossTypeInput
+import top.potmot.entity.typeMapping.dto.CrossTypeView
 import top.potmot.entity.typeMapping.dto.JvmTypeInput
+import top.potmot.entity.typeMapping.dto.JvmTypeView
 import top.potmot.entity.typeMapping.dto.SqlTypeInput
+import top.potmot.entity.typeMapping.dto.SqlTypeView
 import top.potmot.entity.typeMapping.dto.TsTypeInput
+import top.potmot.entity.typeMapping.dto.TsTypeView
 import top.potmot.entity.typeMapping.id
 import top.potmot.utils.transaction.executeNotNull
 
@@ -28,84 +32,84 @@ class TypeMappingService(
     private val transactionTemplate: TransactionTemplate
 ) {
     @PostMapping("/listCrossType")
-    fun listCrossType(): List<CrossTypeInput> {
+    fun listCrossType(): List<CrossTypeView> {
         return sqlClient
             .createQuery(CrossType::class) {
-                select(table.fetch(CrossTypeInput::class))
+                select(table.fetch(CrossTypeView::class))
             }.execute()
     }
 
     @PostMapping("/saveCrossType")
-    fun saveCrossType(@RequestBody inputs: List<CrossTypeInput>): List<CrossTypeInput> {
+    fun saveCrossType(@RequestBody inputs: List<CrossTypeInput>): List<CrossTypeView> {
         return transactionTemplate.executeNotNull {
             val savedItems = sqlClient.saveInputsCommand(inputs)
-                .execute(CrossTypeInput::class)
+                .execute(CrossTypeView::class)
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(CrossType::class) {
-                where(table.id valueNotIn savedItems.mapNotNull { it.id })
+                where(table.id valueNotIn savedItems.map { it.id })
             }
             savedItems
         }
     }
 
     @PostMapping("/listJvmType")
-    fun listJvmType(): List<JvmTypeInput> {
+    fun listJvmType(): List<JvmTypeView> {
         return sqlClient
             .createQuery(JvmType::class) {
-                select(table.fetch(JvmTypeInput::class))
+                select(table.fetch(JvmTypeView::class))
             }.execute()
     }
 
     @PostMapping("/saveJvmType")
-    fun saveJvmType(@RequestBody inputs: List<JvmTypeInput>): List<JvmTypeInput> {
+    fun saveJvmType(@RequestBody inputs: List<JvmTypeInput>): List<JvmTypeView> {
         return transactionTemplate.executeNotNull {
             val savedItems = sqlClient.saveInputsCommand(inputs)
-                .execute(JvmTypeInput::class)
+                .execute(JvmTypeView::class)
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(JvmType::class) {
-                where(table.id valueNotIn savedItems.mapNotNull { it.id })
+                where(table.id valueNotIn savedItems.map { it.id })
             }
             savedItems
         }
     }
 
     @PostMapping("/listSqlType")
-    fun listSqlType(): List<SqlTypeInput> {
+    fun listSqlType(): List<SqlTypeView> {
         return sqlClient
             .createQuery(SqlType::class) {
-                select(table.fetch(SqlTypeInput::class))
+                select(table.fetch(SqlTypeView::class))
             }.execute()
     }
 
     @PostMapping("/saveSqlType")
-    fun saveSqlType(@RequestBody inputs: List<SqlTypeInput>): List<SqlTypeInput> {
+    fun saveSqlType(@RequestBody inputs: List<SqlTypeInput>): List<SqlTypeView> {
         return transactionTemplate.executeNotNull {
             val savedItems = sqlClient.saveInputsCommand(inputs)
-                .execute(SqlTypeInput::class)
+                .execute(SqlTypeView::class)
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(SqlType::class) {
-                where(table.id valueNotIn savedItems.mapNotNull { it.id })
+                where(table.id valueNotIn savedItems.map { it.id })
             }
             savedItems
         }
     }
 
     @PostMapping("/listTsType")
-    fun listTsType(): List<TsTypeInput> {
+    fun listTsType(): List<TsTypeView> {
         return sqlClient
             .createQuery(TsType::class) {
-                select(table.fetch(TsTypeInput::class))
+                select(table.fetch(TsTypeView::class))
             }.execute()
     }
 
     @PostMapping("/saveTsType")
-    fun saveTsType(@RequestBody inputs: List<TsTypeInput>): List<TsTypeInput> {
+    fun saveTsType(@RequestBody inputs: List<TsTypeInput>): List<TsTypeView> {
         return transactionTemplate.executeNotNull {
             val savedItems = sqlClient.saveInputsCommand(inputs)
-                .execute(TsTypeInput::class)
+                .execute(TsTypeView::class)
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(TsType::class) {
-                where(table.id valueNotIn savedItems.mapNotNull { it.id })
+                where(table.id valueNotIn savedItems.map { it.id })
             }
             savedItems
         }

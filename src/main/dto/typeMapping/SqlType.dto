@@ -1,5 +1,12 @@
 export top.potmot.entity.typeMapping.SqlType
 
+SqlTypeView {
+    #allScalars
+    jvmToSqlMappingRule {
+        #allScalars
+    }
+}
+
 input SqlTypeInput {
     #allScalars
     jvmToSqlMappingRule {

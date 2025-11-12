@@ -1,5 +1,12 @@
 export top.potmot.entity.typeMapping.TsType
 
+TsTypeView {
+    #allScalars
+    jvmToTsMappingRules {
+        #allScalars
+    }
+}
+
 input TsTypeInput {
     #allScalars
     jvmToTsMappingRules {
