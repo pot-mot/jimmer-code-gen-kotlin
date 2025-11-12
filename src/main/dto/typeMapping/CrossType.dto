@@ -3,9 +3,11 @@ export top.potmot.entity.typeMapping.CrossType
 CrossTypeView {
     #allScalars
     #allReferences
+    -orderKey
 }
 
 input CrossTypeInput {
     #allScalars
     #allReferences
+    -orderKey
 }
