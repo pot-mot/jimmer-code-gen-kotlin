@@ -14,6 +14,8 @@ interface JvmToTsMappingRule {
     @GeneratedValue(generatorType = UUIDIdGenerator::class)
     val id: UUID
 
+    val orderKey: Int
+
     val jvmSource: JvmSource
 
     val matchRegExp: String

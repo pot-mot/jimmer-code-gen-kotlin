@@ -4,6 +4,7 @@ import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Serialized
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import java.util.UUID
@@ -14,11 +15,13 @@ interface TsType {
     @GeneratedValue(generatorType = UUIDIdGenerator::class)
     val id: UUID
 
+    val orderKey: Int
+
     val typeExpression: String
 
     @Serialized
     val extraImports: List<TsImport>
 
-    @OneToMany(mappedBy = "result")
+    @OneToMany(mappedBy = "result", orderedProps = [OrderedProp("orderKey")])
     val jvmToTsMappingRules: List<JvmToTsMappingRule>
 }

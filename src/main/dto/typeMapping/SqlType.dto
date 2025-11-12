@@ -2,16 +2,18 @@ export top.potmot.entity.typeMapping.SqlType
 
 SqlTypeView {
     #allScalars
+    -orderKey
     jvmToSqlMappingRule {
         #allScalars
+        -orderKey
     }
 }
 
 input SqlTypeInput {
     #allScalars
-    -id
+    -orderKey
     jvmToSqlMappingRule {
         #allScalars
-        -id
+        -orderKey
     }
 }

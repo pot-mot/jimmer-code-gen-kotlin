@@ -79,7 +79,7 @@ create table if not exists model
     modified_time timestamp not null,
     database_type text check (database_type in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE')) not null,
     database_name_strategy text check (database_name_strategy in ('UPPER_SNAKE', 'LOWER_SNAKE')) not null,
-    default_foreign_key_type text check (default_foreign_key_type in ('AUTO', 'REAL', 'FAKE')) not null,
+    default_foreign_key_type text check (default_foreign_key_type in ('REAL', 'FAKE')) not null,
     jvm_language text check (jvm_language in ('JAVA', 'KOTLIN')) not null,
     default_enumeration_strategy text check (default_enumeration_strategy in ('NAME', 'ORDINAL')) not null,
     viewport text not null,
@@ -97,7 +97,7 @@ create table if not exists model_history
     modified_time timestamp not null,
     database_type text check (database_type in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE')) not null,
     database_name_strategy text check (database_name_strategy in ('UPPER_SNAKE', 'LOWER_SNAKE')) not null,
-    default_foreign_key_type text check (default_foreign_key_type in ('AUTO', 'REAL', 'FAKE')) not null,
+    default_foreign_key_type text check (default_foreign_key_type in ('REAL', 'FAKE')) not null,
     jvm_language text check (jvm_language in ('JAVA', 'KOTLIN')) not null,
     default_enumeration_strategy text check (default_enumeration_strategy in ('NAME', 'ORDINAL')) not null,
     viewport text not null,
@@ -109,7 +109,7 @@ create table if not exists generate_script
 (
     id uuid not null,
     name text not null,
-    type text check (type in ('AssociationGenerator', 'EmbeddableTypeGenerator', 'EntityGenerator', 'EnumerationGenerator', 'GroupGenerator', 'MappedSuperClassGenerator', 'ModelGenerator', 'TableDiffGenerator', 'TableGenerator')) not null,
+    type text check (type in ('AssociationGenerator', 'EmbeddableTypeGenerator', 'EntityGenerator', 'EnumerationGenerator', 'GroupGenerator', 'MappedSuperClassGenerator', 'ModelGenerator', 'TableGenerator')) not null,
     enabled bool not null,
     database_type text check (database_type in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
     jvm_language text check (jvm_language in ('JAVA', 'KOTLIN', 'ANY')) not null,
@@ -121,6 +121,7 @@ create table if not exists generate_script
 create table if not exists cross_type
 (
     id uuid not null,
+    order_key integer not null,
     jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
     database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
     sql_type_id uuid not null,
@@ -132,6 +133,7 @@ create table if not exists cross_type
 create table if not exists jvm_to_sql_mapping_rule
 (
     id uuid not null,
+    order_key integer not null,
     jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
     database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
     match_reg_exp text not null,
@@ -142,6 +144,7 @@ create table if not exists jvm_to_sql_mapping_rule
 create table if not exists jvm_to_ts_mapping_rule
 (
     id uuid not null,
+    order_key integer not null,
     jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
     match_reg_exp text not null,
     result_id uuid not null
@@ -151,6 +154,7 @@ create table if not exists jvm_to_ts_mapping_rule
 create table if not exists jvm_type
 (
     id uuid not null,
+    order_key integer not null,
     type_expression text not null,
     serialized bool not null,
     extra_imports text not null,
@@ -162,6 +166,7 @@ create table if not exists jvm_type
 create table if not exists sql_to_jvm_mapping_rule
 (
     id uuid not null,
+    order_key integer not null,
     jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
     database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
     match_reg_exp text not null,
@@ -172,6 +177,7 @@ create table if not exists sql_to_jvm_mapping_rule
 create table if not exists sql_type
 (
     id uuid not null,
+    order_key integer not null,
     type text not null,
     data_size integer,
     numeric_precision integer,
@@ -183,6 +189,7 @@ create table if not exists sql_type
 create table if not exists ts_type
 (
     id uuid not null,
+    order_key integer not null,
     type_expression text not null,
     extra_imports text not null
 );

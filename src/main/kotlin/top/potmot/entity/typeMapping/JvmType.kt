@@ -4,6 +4,7 @@ import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.OneToMany
+import org.babyfish.jimmer.sql.OrderedProp
 import org.babyfish.jimmer.sql.Serialized
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import java.util.UUID
@@ -13,6 +14,8 @@ interface JvmType {
     @Id
     @GeneratedValue(generatorType = UUIDIdGenerator::class)
     val id: UUID
+
+    val orderKey: Int
 
     val typeExpression: String
 
@@ -24,6 +27,6 @@ interface JvmType {
     @Serialized
     val extraAnnotations: List<String>
 
-    @OneToMany(mappedBy = "result")
+    @OneToMany(mappedBy = "result", orderedProps = [OrderedProp("orderKey")])
     val sqlToJvmMappingRules: List<SqlToJvmMappingRule>
 }

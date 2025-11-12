@@ -15,6 +15,8 @@ interface SqlToJvmMappingRule {
     @GeneratedValue(generatorType = UUIDIdGenerator::class)
     val id: UUID
 
+    val orderKey: Int
+
     val jvmSource: JvmSource
 
     val databaseSource: DatabaseSource
