@@ -9,7 +9,9 @@ SqlTypeView {
 
 input SqlTypeInput {
     #allScalars
+    -id
     jvmToSqlMappingRule {
         #allScalars
+        -id
     }
 }

@@ -9,7 +9,9 @@ TsTypeView {
 
 input TsTypeInput {
     #allScalars
+    -id
     jvmToTsMappingRules {
         #allScalars
+        -id
     }
 }

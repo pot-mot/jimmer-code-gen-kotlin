@@ -9,7 +9,9 @@ JvmTypeView {
 
 input JvmTypeInput {
     #allScalars
+    -id
     sqlToJvmMappingRules {
         #allScalars
+        -id
     }
 }

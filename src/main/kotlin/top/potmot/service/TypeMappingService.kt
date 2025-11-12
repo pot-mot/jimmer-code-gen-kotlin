@@ -2,7 +2,6 @@ package top.potmot.service
 
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
-import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.PostMapping
@@ -21,7 +20,6 @@ import top.potmot.entity.typeMapping.dto.SqlTypeInput
 import top.potmot.entity.typeMapping.dto.SqlTypeView
 import top.potmot.entity.typeMapping.dto.TsTypeInput
 import top.potmot.entity.typeMapping.dto.TsTypeView
-import top.potmot.entity.typeMapping.id
 import top.potmot.utils.transaction.executeNotNull
 
 @RestController
@@ -43,13 +41,10 @@ class TypeMappingService(
     @PostMapping("/saveCrossType")
     fun saveCrossType(@RequestBody inputs: List<CrossTypeInput>): List<CrossTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveInputsCommand(inputs) { setMode(SaveMode.NON_IDEMPOTENT_UPSERT) }
+            sqlClient.createDelete(CrossType::class) {}.execute()
+            sqlClient.saveInputsCommand(inputs) { setMode(SaveMode.INSERT_ONLY) }
                 .execute(CrossTypeView::class)
                 .viewItems.map { it.modifiedView }
-            sqlClient.createDelete(CrossType::class) {
-                where(table.id valueNotIn savedItems.map { it.id })
-            }.execute()
-            savedItems
         }
     }
 
@@ -64,13 +59,10 @@ class TypeMappingService(
     @PostMapping("/saveJvmType")
     fun saveJvmType(@RequestBody inputs: List<JvmTypeInput>): List<JvmTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveInputsCommand(inputs) { setMode(SaveMode.NON_IDEMPOTENT_UPSERT) }
+            sqlClient.createDelete(JvmType::class) {}.execute()
+            sqlClient.saveInputsCommand(inputs) { setMode(SaveMode.INSERT_ONLY) }
                 .execute(JvmTypeView::class)
                 .viewItems.map { it.modifiedView }
-            sqlClient.createDelete(JvmType::class) {
-                where(table.id valueNotIn savedItems.map { it.id })
-            }.execute()
-            savedItems
         }
     }
 
@@ -85,13 +77,10 @@ class TypeMappingService(
     @PostMapping("/saveSqlType")
     fun saveSqlType(@RequestBody inputs: List<SqlTypeInput>): List<SqlTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveInputsCommand(inputs) { setMode(SaveMode.NON_IDEMPOTENT_UPSERT) }
+            sqlClient.createDelete(SqlType::class) {}.execute()
+            sqlClient.saveInputsCommand(inputs) { setMode(SaveMode.INSERT_ONLY) }
                 .execute(SqlTypeView::class)
                 .viewItems.map { it.modifiedView }
-            sqlClient.createDelete(SqlType::class) {
-                where(table.id valueNotIn savedItems.map { it.id })
-            }.execute()
-            savedItems
         }
     }
 
@@ -106,13 +95,10 @@ class TypeMappingService(
     @PostMapping("/saveTsType")
     fun saveTsType(@RequestBody inputs: List<TsTypeInput>): List<TsTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveInputsCommand(inputs) { setMode(SaveMode.NON_IDEMPOTENT_UPSERT) }
+            sqlClient.createDelete(TsType::class) {}.execute()
+            sqlClient.saveInputsCommand(inputs) { setMode(SaveMode.INSERT_ONLY) }
                 .execute(TsTypeView::class)
                 .viewItems.map { it.modifiedView }
-            sqlClient.createDelete(TsType::class) {
-                where(table.id valueNotIn savedItems.map { it.id })
-            }.execute()
-            savedItems
         }
     }
 }
