@@ -1,5 +1,6 @@
 package top.potmot.service
 
+import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
@@ -79,7 +80,10 @@ class TypeMappingService(
                         rule.toEntity { orderKey = subIndex }
                     }
                 }
-            }) { setMode(SaveMode.NON_IDEMPOTENT_UPSERT) }
+            }) {
+                setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
+                setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
+            }
                 .execute(JvmTypeView::class)
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(JvmType::class) {
@@ -111,7 +115,10 @@ class TypeMappingService(
                         rule.toEntity { orderKey = subIndex }
                     }
                 }
-            }) { setMode(SaveMode.NON_IDEMPOTENT_UPSERT) }
+            }) {
+                setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
+                setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
+            }
                 .execute(SqlTypeView::class)
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(SqlType::class) {
@@ -143,7 +150,10 @@ class TypeMappingService(
                         rule.toEntity { orderKey = subIndex }
                     }
                 }
-            }) { setMode(SaveMode.NON_IDEMPOTENT_UPSERT) }
+            }) {
+                setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
+                setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
+            }
                 .execute(TsTypeView::class)
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(TsType::class) {
