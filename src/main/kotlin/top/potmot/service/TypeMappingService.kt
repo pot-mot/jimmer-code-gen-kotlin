@@ -22,6 +22,7 @@ import top.potmot.entity.typeMapping.dto.SqlTypeView
 import top.potmot.entity.typeMapping.dto.TsTypeInput
 import top.potmot.entity.typeMapping.dto.TsTypeView
 import top.potmot.entity.typeMapping.id
+import top.potmot.entity.typeMapping.orderKey
 import top.potmot.utils.transaction.executeNotNull
 
 @RestController
@@ -36,6 +37,7 @@ class TypeMappingService(
     fun listCrossType(): List<CrossTypeView> {
         return sqlClient
             .createQuery(CrossType::class) {
+                orderBy(table.orderKey)
                 select(table.fetch(CrossTypeView::class))
             }.execute()
     }
@@ -59,6 +61,7 @@ class TypeMappingService(
     fun listJvmType(): List<JvmTypeView> {
         return sqlClient
             .createQuery(JvmType::class) {
+                orderBy(table.orderKey)
                 select(table.fetch(JvmTypeView::class))
             }.execute()
     }
@@ -90,6 +93,7 @@ class TypeMappingService(
     fun listSqlType(): List<SqlTypeView> {
         return sqlClient
             .createQuery(SqlType::class) {
+                orderBy(table.orderKey)
                 select(table.fetch(SqlTypeView::class))
             }.execute()
     }
@@ -121,6 +125,7 @@ class TypeMappingService(
     fun listTsType(): List<TsTypeView> {
         return sqlClient
             .createQuery(TsType::class) {
+                orderBy(table.orderKey)
                 select(table.fetch(TsTypeView::class))
             }.execute()
     }
