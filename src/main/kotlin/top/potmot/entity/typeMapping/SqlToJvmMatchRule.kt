@@ -1,28 +1,28 @@
 package top.potmot.entity.typeMapping
 
+import org.babyfish.jimmer.sql.DissociateAction
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.ManyToOne
-import top.potmot.entity.database.DatabaseSource
-import top.potmot.entity.model.JvmSource
+import org.babyfish.jimmer.sql.OnDissociate
+import top.potmot.entity.database.DatabaseTypeOrAny
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import java.util.UUID
 
 @Entity
-interface SqlToJvmMappingRule {
+interface SqlToJvmMatchRule {
     @Id
     @GeneratedValue(generatorType = UUIDIdGenerator::class)
     val id: UUID
 
     val orderKey: Int
 
-    val jvmSource: JvmSource
-
-    val databaseSource: DatabaseSource
+    val databaseSource: DatabaseTypeOrAny
 
     val matchRegExp: String
 
     @ManyToOne
+    @OnDissociate(DissociateAction.DELETE)
     val result: JvmType
 }

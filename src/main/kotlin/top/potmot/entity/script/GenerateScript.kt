@@ -3,9 +3,9 @@ package top.potmot.entity.script
 import org.babyfish.jimmer.sql.Entity
 import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.Id
-import top.potmot.entity.database.ScriptDatabaseType
-import top.potmot.entity.model.ScriptJvmLanguage
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
+import top.potmot.entity.database.DatabaseTypeOrAny
+import top.potmot.entity.model.JvmLanguageOrAny
 import java.util.UUID
 
 @Entity
@@ -20,9 +20,9 @@ interface GenerateScript {
 
     val enabled: Boolean
 
-    val databaseType: ScriptDatabaseType
+    val databaseType: DatabaseTypeOrAny
 
-    val jvmLanguage: ScriptJvmLanguage
+    val jvmLanguage: JvmLanguageOrAny
 
     val scriptContent: String
 }

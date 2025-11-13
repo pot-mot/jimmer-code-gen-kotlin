@@ -122,7 +122,7 @@ create table if not exists cross_type
 (
     id uuid not null,
     order_key integer not null,
-    jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
+    jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'ANY')) not null,
     database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
     sql_type_id uuid not null,
     jvm_type_id uuid not null,
@@ -130,22 +130,21 @@ create table if not exists cross_type
 );
 
 
-create table if not exists jvm_to_sql_mapping_rule
+create table if not exists jvm_to_sql_match_rule
 (
     id uuid not null,
     order_key integer not null,
-    jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
-    database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
+    jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'ANY')) not null,
     match_reg_exp text not null,
     result_id uuid not null
 );
 
 
-create table if not exists jvm_to_ts_mapping_rule
+create table if not exists jvm_to_ts_match_rule
 (
     id uuid not null,
     order_key integer not null,
-    jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
+    jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'ANY')) not null,
     match_reg_exp text not null,
     result_id uuid not null
 );
@@ -155,6 +154,7 @@ create table if not exists jvm_type
 (
     id uuid not null,
     order_key integer not null,
+    jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'ANY')) not null,
     type_expression text not null,
     serialized bool not null,
     extra_imports text not null,
@@ -163,11 +163,20 @@ create table if not exists jvm_type
 
 
 
-create table if not exists sql_to_jvm_mapping_rule
+create table if not exists sql_to_jvm_match_rule
 (
     id uuid not null,
     order_key integer not null,
-    jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'BOTH')) not null,
+    database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
+    match_reg_exp text not null,
+    result_id uuid not null
+);
+
+
+create table if not exists sql_to_ts_match_rule
+(
+    id uuid not null,
+    order_key integer not null,
     database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
     match_reg_exp text not null,
     result_id uuid not null
@@ -178,12 +187,31 @@ create table if not exists sql_type
 (
     id uuid not null,
     order_key integer not null,
+    database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
     type text not null,
     data_size integer,
     numeric_precision integer,
     default_value text
 );
 
+
+
+create table if not exists ts_to_jvm_match_rule
+(
+    id uuid not null,
+    order_key integer not null,
+    match_reg_exp text not null,
+    result_id uuid not null
+);
+
+
+create table if not exists ts_to_sql_match_rule
+(
+    id uuid not null,
+    order_key integer not null,
+    match_reg_exp text not null,
+    result_id uuid not null
+);
 
 
 create table if not exists ts_type
@@ -205,11 +233,14 @@ alter table model add constraint pk_model_id primary key (id);
 alter table model_history add constraint pk_model_history_id primary key (id);
 alter table generate_script add constraint pk_generate_script_id primary key (id);
 alter table cross_type add constraint pk_cross_type_id primary key (id);
-alter table jvm_to_sql_mapping_rule add constraint pk_jvm_to_sql_mapping_rule_id primary key (id);
-alter table jvm_to_ts_mapping_rule add constraint pk_jvm_to_ts_mapping_rule_id primary key (id);
+alter table jvm_to_sql_match_rule add constraint pk_jvm_to_sql_match_rule_id primary key (id);
+alter table jvm_to_ts_match_rule add constraint pk_jvm_to_ts_match_rule_id primary key (id);
 alter table jvm_type add constraint pk_jvm_type_id primary key (id);
-alter table sql_to_jvm_mapping_rule add constraint pk_sql_to_jvm_mapping_rule_id primary key (id);
+alter table sql_to_jvm_match_rule add constraint pk_sql_to_jvm_match_rule_id primary key (id);
+alter table sql_to_ts_match_rule add constraint pk_sql_to_ts_match_rule_id primary key (id);
 alter table sql_type add constraint pk_sql_type_id primary key (id);
+alter table ts_to_jvm_match_rule add constraint pk_ts_to_jvm_match_rule_id primary key (id);
+alter table ts_to_sql_match_rule add constraint pk_ts_to_sql_match_rule_id primary key (id);
 alter table ts_type add constraint pk_ts_type_id primary key (id);
 alter table db_check add constraint uk_db_check_default unique (table_id);
 alter table db_check add constraint fk_db_check_table foreign key (table_id) references db_table (id);
@@ -225,6 +256,9 @@ alter table model_history add constraint fk_model_history_model foreign key (mod
 alter table cross_type add constraint fk_cross_type_sql_type foreign key (sql_type_id) references sql_type (id);
 alter table cross_type add constraint fk_cross_type_jvm_type foreign key (jvm_type_id) references jvm_type (id);
 alter table cross_type add constraint fk_cross_type_ts_type foreign key (ts_type_id) references ts_type (id);
-alter table jvm_to_sql_mapping_rule add constraint fk_jvm_to_sql_mapping_rule_result foreign key (result_id) references sql_type (id);
-alter table jvm_to_ts_mapping_rule add constraint fk_jvm_to_ts_mapping_rule_result foreign key (result_id) references ts_type (id);
-alter table sql_to_jvm_mapping_rule add constraint fk_sql_to_jvm_mapping_rule_result foreign key (result_id) references jvm_type (id);
+alter table jvm_to_sql_match_rule add constraint fk_jvm_to_sql_match_rule_result foreign key (result_id) references sql_type (id);
+alter table jvm_to_ts_match_rule add constraint fk_jvm_to_ts_match_rule_result foreign key (result_id) references ts_type (id);
+alter table sql_to_jvm_match_rule add constraint fk_sql_to_jvm_match_rule_result foreign key (result_id) references jvm_type (id);
+alter table sql_to_ts_match_rule add constraint fk_sql_to_ts_match_rule_result foreign key (result_id) references ts_type (id);
+alter table ts_to_jvm_match_rule add constraint fk_ts_to_jvm_match_rule_result foreign key (result_id) references jvm_type (id);
+alter table ts_to_sql_match_rule add constraint fk_ts_to_sql_match_rule_result foreign key (result_id) references sql_type (id);

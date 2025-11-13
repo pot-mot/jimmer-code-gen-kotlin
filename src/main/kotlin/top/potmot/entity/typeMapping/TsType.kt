@@ -23,5 +23,8 @@ interface TsType {
     val extraImports: List<TsImport>
 
     @OneToMany(mappedBy = "result", orderedProps = [OrderedProp("orderKey")])
-    val jvmToTsMappingRules: List<JvmToTsMappingRule>
+    val jvmMatchRules: List<JvmToTsMatchRule>
+
+    @OneToMany(mappedBy = "result", orderedProps = [OrderedProp("orderKey")])
+    val sqlMatchRules: List<SqlToTsMatchRule>
 }

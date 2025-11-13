@@ -4,10 +4,6 @@ enum class DatabaseType {
     MYSQL, POSTGRESQL, ORACLE, SQLSERVER, H2, SQLITE
 }
 
-enum class DatabaseSource {
-    MYSQL, POSTGRESQL, ORACLE, SQLSERVER, H2, SQLITE, ANY
-}
-
-enum class ScriptDatabaseType {
+enum class DatabaseTypeOrAny {
     MYSQL, POSTGRESQL, ORACLE, SQLSERVER, H2, SQLITE, ANY
 }

@@ -6,13 +6,12 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import top.potmot.entity.database.DatabaseTypeOrAny
 import top.potmot.entity.model.JvmLanguageOrAny
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import java.util.UUID
 
 @Entity
-interface CrossType {
+interface JvmToSqlMatchRule {
     @Id
     @GeneratedValue(generatorType = UUIDIdGenerator::class)
     val id: UUID
@@ -21,17 +20,9 @@ interface CrossType {
 
     val jvmSource: JvmLanguageOrAny
 
-    val databaseSource: DatabaseTypeOrAny
+    val matchRegExp: String
 
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)
-    val sqlType: SqlType
-
-    @ManyToOne
-    @OnDissociate(DissociateAction.DELETE)
-    val jvmType: JvmType
-
-    @ManyToOne
-    @OnDissociate(DissociateAction.DELETE)
-    val tsType: TsType
+    val result: SqlType
 }

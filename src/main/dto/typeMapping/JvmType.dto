@@ -3,7 +3,11 @@ export top.potmot.entity.typeMapping.JvmType
 JvmTypeView {
     #allScalars
     -orderKey
-    sqlToJvmMappingRules {
+    sqlMatchRules {
+        #allScalars
+        -orderKey
+    }
+    tsMatchRules {
         #allScalars
         -orderKey
     }
@@ -12,7 +16,11 @@ JvmTypeView {
 input JvmTypeInput {
     #allScalars
     -orderKey
-    sqlToJvmMappingRules {
+    sqlMatchRules {
+        #allScalars
+        -orderKey
+    }
+    tsMatchRules {
         #allScalars
         -orderKey
     }

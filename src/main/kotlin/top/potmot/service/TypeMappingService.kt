@@ -66,11 +66,14 @@ class TypeMappingService(
     @PostMapping("/saveJvmType")
     fun saveJvmType(@RequestBody inputs: List<JvmTypeInput>): List<JvmTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveEntitiesCommand(inputs.mapIndexed { index, it ->
-                it.toEntity {
+            val savedItems = sqlClient.saveEntitiesCommand(inputs.mapIndexed { index, input ->
+                input.toEntity {
                     orderKey = index
-                    sqlToJvmMappingRules = it.sqlToJvmMappingRules.mapIndexed { subIndex, it ->
-                        it.toEntity { orderKey = subIndex }
+                    sqlMatchRules = input.sqlMatchRules.mapIndexed { subIndex, rule ->
+                        rule.toEntity { orderKey = subIndex }
+                    }
+                    tsMatchRules = input.tsMatchRules.mapIndexed { subIndex, rule ->
+                        rule.toEntity { orderKey = subIndex }
                     }
                 }
             }) { setMode(SaveMode.NON_IDEMPOTENT_UPSERT) }
@@ -94,11 +97,14 @@ class TypeMappingService(
     @PostMapping("/saveSqlType")
     fun saveSqlType(@RequestBody inputs: List<SqlTypeInput>): List<SqlTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveEntitiesCommand(inputs.mapIndexed { index, it ->
-                it.toEntity {
+            val savedItems = sqlClient.saveEntitiesCommand(inputs.mapIndexed { index, input ->
+                input.toEntity {
                     orderKey = index
-                    jvmToSqlMappingRule = it.jvmToSqlMappingRule.mapIndexed { subIndex, it ->
-                        it.toEntity { orderKey = subIndex }
+                    jvmMatchRules = input.jvmMatchRules.mapIndexed { subIndex, rule ->
+                        rule.toEntity { orderKey = subIndex }
+                    }
+                    tsMatchRules = input.tsMatchRules.mapIndexed { subIndex, rule ->
+                        rule.toEntity { orderKey = subIndex }
                     }
                 }
             }) { setMode(SaveMode.NON_IDEMPOTENT_UPSERT) }
@@ -122,11 +128,14 @@ class TypeMappingService(
     @PostMapping("/saveTsType")
     fun saveTsType(@RequestBody inputs: List<TsTypeInput>): List<TsTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveEntitiesCommand(inputs.mapIndexed { index, it ->
-                it.toEntity {
+            val savedItems = sqlClient.saveEntitiesCommand(inputs.mapIndexed { index, input ->
+                input.toEntity {
                     orderKey = index
-                    jvmToTsMappingRules = it.jvmToTsMappingRules.mapIndexed { subIndex, it ->
-                        it.toEntity { orderKey = subIndex }
+                    jvmMatchRules = input.jvmMatchRules.mapIndexed { subIndex, rule ->
+                        rule.toEntity { orderKey = subIndex }
+                    }
+                    sqlMatchRules = input.sqlMatchRules.mapIndexed { subIndex, rule ->
+                        rule.toEntity { orderKey = subIndex }
                     }
                 }
             }) { setMode(SaveMode.NON_IDEMPOTENT_UPSERT) }

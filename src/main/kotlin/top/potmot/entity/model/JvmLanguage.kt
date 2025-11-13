@@ -4,10 +4,6 @@ enum class JvmLanguage {
     JAVA, KOTLIN
 }
 
-enum class JvmSource {
-    JAVA, KOTLIN, BOTH
-}
-
-enum class ScriptJvmLanguage {
+enum class JvmLanguageOrAny {
     JAVA, KOTLIN, ANY
 }
