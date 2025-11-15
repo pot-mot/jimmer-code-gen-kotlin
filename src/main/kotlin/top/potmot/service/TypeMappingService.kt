@@ -22,7 +22,10 @@ import top.potmot.entity.typeMapping.dto.SqlTypeInput
 import top.potmot.entity.typeMapping.dto.SqlTypeView
 import top.potmot.entity.typeMapping.dto.TsTypeInput
 import top.potmot.entity.typeMapping.dto.TsTypeView
-import top.potmot.entity.typeMapping.dto.withOrderKey
+import top.potmot.entity.typeMapping.dto.tsTypeWithOrderKey
+import top.potmot.entity.typeMapping.dto.sqlTypeWithOrderKey
+import top.potmot.entity.typeMapping.dto.jvmTypeWithOrderKey
+import top.potmot.entity.typeMapping.dto.crossTypeWithOrderKey
 import top.potmot.entity.typeMapping.id
 import top.potmot.entity.typeMapping.orderKey
 import top.potmot.utils.transaction.executeNotNull
@@ -47,7 +50,7 @@ class TypeMappingService(
     @PostMapping("/saveCrossType")
     fun saveCrossType(@RequestBody inputs: List<CrossTypeInput>): List<CrossTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveEntitiesCommand(inputs.withOrderKey()) {
+            val savedItems = sqlClient.saveEntitiesCommand(inputs.crossTypeWithOrderKey()) {
                 setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
             }
                 .execute(CrossTypeView::class)
@@ -71,7 +74,7 @@ class TypeMappingService(
     @PostMapping("/saveJvmType")
     fun saveJvmType(@RequestBody inputs: List<JvmTypeInput>): List<JvmTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveEntitiesCommand(inputs.withOrderKey()) {
+            val savedItems = sqlClient.saveEntitiesCommand(inputs.jvmTypeWithOrderKey()) {
                 setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
                 setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
             }
@@ -96,7 +99,7 @@ class TypeMappingService(
     @PostMapping("/saveSqlType")
     fun saveSqlType(@RequestBody inputs: List<SqlTypeInput>): List<SqlTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveEntitiesCommand(inputs.withOrderKey()) {
+            val savedItems = sqlClient.saveEntitiesCommand(inputs.sqlTypeWithOrderKey()) {
                 setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
                 setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
             }
@@ -121,7 +124,7 @@ class TypeMappingService(
     @PostMapping("/saveTsType")
     fun saveTsType(@RequestBody inputs: List<TsTypeInput>): List<TsTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveEntitiesCommand(inputs.withOrderKey()) {
+            val savedItems = sqlClient.saveEntitiesCommand(inputs.tsTypeWithOrderKey()) {
                 setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
                 setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
             }

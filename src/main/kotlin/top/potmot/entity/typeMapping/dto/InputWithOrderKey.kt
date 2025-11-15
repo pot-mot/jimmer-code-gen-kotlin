@@ -1,10 +1,10 @@
 package top.potmot.entity.typeMapping.dto
 
-fun List<CrossTypeInput>.withOrderKey() = mapIndexed { index, input ->
+fun List<CrossTypeInput>.crossTypeWithOrderKey() = mapIndexed { index, input ->
     input.toEntity { orderKey = index }
 }
 
-fun List<JvmTypeInput>.withOrderKey() = mapIndexed { index, input ->
+fun List<JvmTypeInput>.jvmTypeWithOrderKey() = mapIndexed { index, input ->
     input.toEntity {
         orderKey = index
         sqlMatchRules = input.sqlMatchRules.mapIndexed { subIndex, rule ->
@@ -16,7 +16,7 @@ fun List<JvmTypeInput>.withOrderKey() = mapIndexed { index, input ->
     }
 }
 
-fun List<SqlTypeInput>.withOrderKey() = mapIndexed { index, input ->
+fun List<SqlTypeInput>.sqlTypeWithOrderKey() = mapIndexed { index, input ->
     input.toEntity {
         orderKey = index
         jvmMatchRules = input.jvmMatchRules.mapIndexed { subIndex, rule ->
@@ -28,7 +28,7 @@ fun List<SqlTypeInput>.withOrderKey() = mapIndexed { index, input ->
     }
 }
 
-fun List<TsTypeInput>.withOrderKey() = mapIndexed { index, input ->
+fun List<TsTypeInput>.tsTypeWithOrderKey() = mapIndexed { index, input ->
     input.toEntity {
         orderKey = index
         jvmMatchRules = input.jvmMatchRules.mapIndexed { subIndex, rule ->
