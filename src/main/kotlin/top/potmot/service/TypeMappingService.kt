@@ -22,6 +22,7 @@ import top.potmot.entity.typeMapping.dto.SqlTypeInput
 import top.potmot.entity.typeMapping.dto.SqlTypeView
 import top.potmot.entity.typeMapping.dto.TsTypeInput
 import top.potmot.entity.typeMapping.dto.TsTypeView
+import top.potmot.entity.typeMapping.dto.withOrderKey
 import top.potmot.entity.typeMapping.id
 import top.potmot.entity.typeMapping.orderKey
 import top.potmot.utils.transaction.executeNotNull
@@ -46,9 +47,9 @@ class TypeMappingService(
     @PostMapping("/saveCrossType")
     fun saveCrossType(@RequestBody inputs: List<CrossTypeInput>): List<CrossTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveEntitiesCommand(inputs.mapIndexed { index, it ->
-                it.toEntity { orderKey = index }
-            }) { setMode(SaveMode.NON_IDEMPOTENT_UPSERT) }
+            val savedItems = sqlClient.saveEntitiesCommand(inputs.withOrderKey()) {
+                setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
+            }
                 .execute(CrossTypeView::class)
                 .viewItems.map { it.modifiedView }
             sqlClient.createDelete(CrossType::class) {
@@ -70,17 +71,7 @@ class TypeMappingService(
     @PostMapping("/saveJvmType")
     fun saveJvmType(@RequestBody inputs: List<JvmTypeInput>): List<JvmTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveEntitiesCommand(inputs.mapIndexed { index, input ->
-                input.toEntity {
-                    orderKey = index
-                    sqlMatchRules = input.sqlMatchRules.mapIndexed { subIndex, rule ->
-                        rule.toEntity { orderKey = subIndex }
-                    }
-                    tsMatchRules = input.tsMatchRules.mapIndexed { subIndex, rule ->
-                        rule.toEntity { orderKey = subIndex }
-                    }
-                }
-            }) {
+            val savedItems = sqlClient.saveEntitiesCommand(inputs.withOrderKey()) {
                 setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
                 setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
             }
@@ -105,17 +96,7 @@ class TypeMappingService(
     @PostMapping("/saveSqlType")
     fun saveSqlType(@RequestBody inputs: List<SqlTypeInput>): List<SqlTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveEntitiesCommand(inputs.mapIndexed { index, input ->
-                input.toEntity {
-                    orderKey = index
-                    jvmMatchRules = input.jvmMatchRules.mapIndexed { subIndex, rule ->
-                        rule.toEntity { orderKey = subIndex }
-                    }
-                    tsMatchRules = input.tsMatchRules.mapIndexed { subIndex, rule ->
-                        rule.toEntity { orderKey = subIndex }
-                    }
-                }
-            }) {
+            val savedItems = sqlClient.saveEntitiesCommand(inputs.withOrderKey()) {
                 setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
                 setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
             }
@@ -140,17 +121,7 @@ class TypeMappingService(
     @PostMapping("/saveTsType")
     fun saveTsType(@RequestBody inputs: List<TsTypeInput>): List<TsTypeView> {
         return transactionTemplate.executeNotNull {
-            val savedItems = sqlClient.saveEntitiesCommand(inputs.mapIndexed { index, input ->
-                input.toEntity {
-                    orderKey = index
-                    jvmMatchRules = input.jvmMatchRules.mapIndexed { subIndex, rule ->
-                        rule.toEntity { orderKey = subIndex }
-                    }
-                    sqlMatchRules = input.sqlMatchRules.mapIndexed { subIndex, rule ->
-                        rule.toEntity { orderKey = subIndex }
-                    }
-                }
-            }) {
+            val savedItems = sqlClient.saveEntitiesCommand(inputs.withOrderKey()) {
                 setMode(SaveMode.NON_IDEMPOTENT_UPSERT)
                 setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
             }
