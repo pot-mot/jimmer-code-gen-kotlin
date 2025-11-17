@@ -831,11 +831,13 @@ val initCrossTypes = listOf(
         jvmTypeId = InitTypeIds.JAVA_INT_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_INTEGER_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = false,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.JAVA_INTEGER_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_INTEGER_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = true,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.KT_INT_ID.value,
@@ -846,11 +848,13 @@ val initCrossTypes = listOf(
         jvmTypeId = InitTypeIds.JAVA_LONG_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_BIGINT_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = false,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.JAVA_LONG_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_BIGINT_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = true,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.KT_LONG_ID.value,
@@ -861,11 +865,13 @@ val initCrossTypes = listOf(
         jvmTypeId = InitTypeIds.JAVA_SHORT_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_SMALLINT_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = false,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.JAVA_SHORT_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_SMALLINT_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = true,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.KT_SHORT_ID.value,
@@ -876,11 +882,13 @@ val initCrossTypes = listOf(
         jvmTypeId = InitTypeIds.JAVA_FLOAT_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_REAL_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = false,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.JAVA_FLOAT_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_REAL_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = true,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.KT_FLOAT_ID.value,
@@ -891,11 +899,13 @@ val initCrossTypes = listOf(
         jvmTypeId = InitTypeIds.JAVA_DOUBLE_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_DOUBLE_PRECISION_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = false,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.JAVA_DOUBLE_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_DOUBLE_PRECISION_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = true,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.KT_DOUBLE_ID.value,
@@ -906,11 +916,13 @@ val initCrossTypes = listOf(
         jvmTypeId = InitTypeIds.JAVA_BOOLEAN_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_BOOLEAN_ID.value,
         tsTypeId = InitTypeIds.TS_BOOLEAN_ID.value,
+        nullable = false,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.JAVA_BOOLEAN_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_BOOLEAN_ID.value,
         tsTypeId = InitTypeIds.TS_BOOLEAN_ID.value,
+        nullable = true,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.KT_BOOLEAN_ID.value,
