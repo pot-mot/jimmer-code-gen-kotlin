@@ -6,8 +6,6 @@ import org.babyfish.jimmer.sql.GeneratedValue
 import org.babyfish.jimmer.sql.Id
 import org.babyfish.jimmer.sql.ManyToOne
 import org.babyfish.jimmer.sql.OnDissociate
-import top.potmot.entity.database.DatabaseTypeOrAny
-import top.potmot.entity.model.JvmLanguageOrAny
 import org.babyfish.jimmer.sql.meta.UUIDIdGenerator
 import java.util.UUID
 
@@ -19,9 +17,7 @@ interface CrossType {
 
     val orderKey: Int
 
-    val jvmSource: JvmLanguageOrAny
-
-    val databaseSource: DatabaseTypeOrAny
+    val nullable: Boolean?
 
     @ManyToOne
     @OnDissociate(DissociateAction.DELETE)

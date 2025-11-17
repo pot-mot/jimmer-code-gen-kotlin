@@ -122,8 +122,7 @@ create table if not exists cross_type
 (
     id uuid not null,
     order_key integer not null,
-    jvm_source text check (jvm_source in ('JAVA', 'KOTLIN', 'ANY')) not null,
-    database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
+    nullable bool,
     sql_type_id uuid not null,
     jvm_type_id uuid not null,
     ts_type_id uuid not null
@@ -168,6 +167,7 @@ create table if not exists sql_to_jvm_match_rule
     id uuid not null,
     order_key integer not null,
     database_source text check (database_source in ('MYSQL', 'POSTGRESQL', 'ORACLE', 'SQLSERVER', 'H2', 'SQLITE', 'ANY')) not null,
+    nullable_limit bool,
     match_reg_exp text not null,
     result_id uuid not null
 );

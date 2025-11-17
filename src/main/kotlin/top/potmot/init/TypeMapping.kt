@@ -21,19 +21,24 @@ import java.util.UUID
 
 private enum class InitTypeIds(val value: UUID = UUID.randomUUID()) {
     JVM_STRING_ID,
-    JVM_INT_PRIMITIVE_ID,
-    JVM_INTEGER_OBJECT_ID,
-    JVM_INT_OBJECT_ID,
-    JVM_LONG_PRIMITIVE_ID,
-    JVM_LONG_OBJECT_ID,
-    JVM_SHORT_PRIMITIVE_ID,
-    JVM_SHORT_OBJECT_ID,
-    JVM_FLOAT_PRIMITIVE_ID,
-    JVM_FLOAT_OBJECT_ID,
-    JVM_DOUBLE_PRIMITIVE_ID,
-    JVM_DOUBLE_OBJECT_ID,
-    JVM_BOOLEAN_PRIMITIVE_ID,
-    JVM_BOOLEAN_OBJECT_ID,
+    JAVA_INT_PRIMITIVE_ID,
+    JAVA_INTEGER_OBJECT_ID,
+    KT_INT_ID,
+    JAVA_LONG_PRIMITIVE_ID,
+    JAVA_LONG_OBJECT_ID,
+    KT_LONG_ID,
+    JAVA_SHORT_PRIMITIVE_ID,
+    JAVA_SHORT_OBJECT_ID,
+    KT_SHORT_ID,
+    JAVA_FLOAT_PRIMITIVE_ID,
+    JAVA_FLOAT_OBJECT_ID,
+    KT_FLOAT_ID,
+    JAVA_DOUBLE_PRIMITIVE_ID,
+    JAVA_DOUBLE_OBJECT_ID,
+    KT_DOUBLE_ID,
+    JAVA_BOOLEAN_PRIMITIVE_ID,
+    JAVA_BOOLEAN_OBJECT_ID,
+    KT_BOOLEAN_ID,
     JVM_BIG_DECIMAL_ID,
     JVM_LOCAL_DATE_TIME_ID,
     JVM_LOCAL_DATE_ID,
@@ -89,7 +94,7 @@ val initJvmTypes = listOf(
         )
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_INT_PRIMITIVE_ID.value,
+        id = InitTypeIds.JAVA_INT_PRIMITIVE_ID.value,
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "int",
         serialized = false,
@@ -97,10 +102,12 @@ val initJvmTypes = listOf(
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
+                nullableLimit = false,
                 databaseSource = DatabaseTypeOrAny.ANY,
                 matchRegExp = "/^int(eger)?(\\(\\d+\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
+                nullableLimit = false,
                 databaseSource = DatabaseTypeOrAny.ORACLE,
                 matchRegExp = "/^number(\\(\\d+\\))?$/i"
             ),
@@ -112,7 +119,7 @@ val initJvmTypes = listOf(
         )
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_INTEGER_OBJECT_ID.value,
+        id = InitTypeIds.JAVA_INTEGER_OBJECT_ID.value,
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "Integer",
         serialized = false,
@@ -120,6 +127,7 @@ val initJvmTypes = listOf(
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
+                nullableLimit = true,
                 databaseSource = DatabaseTypeOrAny.ANY,
                 matchRegExp = "/^int(eger)?(\\(\\d+\\))?$/i"
             ),
@@ -135,7 +143,7 @@ val initJvmTypes = listOf(
         )
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_INT_OBJECT_ID.value,
+        id = InitTypeIds.KT_INT_ID.value,
         jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Int",
         serialized = false,
@@ -154,7 +162,7 @@ val initJvmTypes = listOf(
         )
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_LONG_PRIMITIVE_ID.value,
+        id = InitTypeIds.JAVA_LONG_PRIMITIVE_ID.value,
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "long",
         serialized = false,
@@ -162,6 +170,7 @@ val initJvmTypes = listOf(
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
+                nullableLimit = false,
                 databaseSource = DatabaseTypeOrAny.ANY,
                 matchRegExp = "/^bigint(\\(\\d+\\))?$/i"
             ),
@@ -169,8 +178,24 @@ val initJvmTypes = listOf(
         tsMatchRules = emptyList()
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_LONG_OBJECT_ID.value,
-        jvmSource = JvmLanguageOrAny.ANY,
+        id = InitTypeIds.JAVA_LONG_OBJECT_ID.value,
+        jvmSource = JvmLanguageOrAny.JAVA,
+        typeExpression = "Long",
+        serialized = false,
+        extraImports = emptyList(),
+        extraAnnotations = emptyList(),
+        sqlMatchRules = listOf(
+            TargetOf_sqlMatchRules(
+                nullableLimit = true,
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^bigint(\\(\\d+\\))?$/i"
+            ),
+        ),
+        tsMatchRules = emptyList()
+    ),
+    JvmTypeInput(
+        id = InitTypeIds.KT_LONG_ID.value,
+        jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Long",
         serialized = false,
         extraImports = emptyList(),
@@ -184,7 +209,7 @@ val initJvmTypes = listOf(
         tsMatchRules = emptyList()
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_SHORT_PRIMITIVE_ID.value,
+        id = InitTypeIds.JAVA_SHORT_PRIMITIVE_ID.value,
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "short",
         serialized = false,
@@ -192,6 +217,7 @@ val initJvmTypes = listOf(
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
+                nullableLimit = false,
                 databaseSource = DatabaseTypeOrAny.ANY,
                 matchRegExp = "/^smallint(\\(\\d+\\))?$/i"
             ),
@@ -199,8 +225,24 @@ val initJvmTypes = listOf(
         tsMatchRules = emptyList()
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_SHORT_OBJECT_ID.value,
-        jvmSource = JvmLanguageOrAny.ANY,
+        id = InitTypeIds.JAVA_SHORT_OBJECT_ID.value,
+        jvmSource = JvmLanguageOrAny.JAVA,
+        typeExpression = "Short",
+        serialized = false,
+        extraImports = emptyList(),
+        extraAnnotations = emptyList(),
+        sqlMatchRules = listOf(
+            TargetOf_sqlMatchRules(
+                nullableLimit = true,
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^smallint(\\(\\d+\\))?$/i"
+            ),
+        ),
+        tsMatchRules = emptyList()
+    ),
+    JvmTypeInput(
+        id = InitTypeIds.KT_SHORT_ID.value,
+        jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Short",
         serialized = false,
         extraImports = emptyList(),
@@ -214,7 +256,7 @@ val initJvmTypes = listOf(
         tsMatchRules = emptyList()
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_FLOAT_PRIMITIVE_ID.value,
+        id = InitTypeIds.JAVA_FLOAT_PRIMITIVE_ID.value,
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "float",
         serialized = false,
@@ -222,14 +264,17 @@ val initJvmTypes = listOf(
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
+                nullableLimit = false,
                 databaseSource = DatabaseTypeOrAny.ANY,
                 matchRegExp = "/^real$/i"
             ),
             TargetOf_sqlMatchRules(
+                nullableLimit = false,
                 databaseSource = DatabaseTypeOrAny.ANY,
                 matchRegExp = "/^float$/i"
             ),
             TargetOf_sqlMatchRules(
+                nullableLimit = false,
                 databaseSource = DatabaseTypeOrAny.ORACLE,
                 matchRegExp = "/^(binary_)float$/i"
             ),
@@ -237,8 +282,34 @@ val initJvmTypes = listOf(
         tsMatchRules = emptyList()
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_FLOAT_OBJECT_ID.value,
-        jvmSource = JvmLanguageOrAny.ANY,
+        id = InitTypeIds.JAVA_FLOAT_OBJECT_ID.value,
+        jvmSource = JvmLanguageOrAny.JAVA,
+        typeExpression = "Float",
+        serialized = false,
+        extraImports = emptyList(),
+        extraAnnotations = emptyList(),
+        sqlMatchRules = listOf(
+            TargetOf_sqlMatchRules(
+                nullableLimit = true,
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^real$/i"
+            ),
+            TargetOf_sqlMatchRules(
+                nullableLimit = true,
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^float$/i"
+            ),
+            TargetOf_sqlMatchRules(
+                nullableLimit = true,
+                databaseSource = DatabaseTypeOrAny.ORACLE,
+                matchRegExp = "/^(binary_)float$/i"
+            ),
+        ),
+        tsMatchRules = emptyList()
+    ),
+    JvmTypeInput(
+        id = InitTypeIds.KT_FLOAT_ID.value,
+        jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Float",
         serialized = false,
         extraImports = emptyList(),
@@ -260,7 +331,7 @@ val initJvmTypes = listOf(
         tsMatchRules = emptyList()
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_DOUBLE_PRIMITIVE_ID.value,
+        id = InitTypeIds.JAVA_DOUBLE_PRIMITIVE_ID.value,
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "double",
         serialized = false,
@@ -268,10 +339,12 @@ val initJvmTypes = listOf(
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
+                nullableLimit = false,
                 databaseSource = DatabaseTypeOrAny.ANY,
                 matchRegExp = "/^double( precision)?$/i"
             ),
             TargetOf_sqlMatchRules(
+                nullableLimit = false,
                 databaseSource = DatabaseTypeOrAny.ORACLE,
                 matchRegExp = "/^(binary_)double$/i"
             ),
@@ -279,8 +352,29 @@ val initJvmTypes = listOf(
         tsMatchRules = emptyList()
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_DOUBLE_OBJECT_ID.value,
-        jvmSource = JvmLanguageOrAny.ANY,
+        id = InitTypeIds.JAVA_DOUBLE_OBJECT_ID.value,
+        jvmSource = JvmLanguageOrAny.JAVA,
+        typeExpression = "Double",
+        serialized = false,
+        extraImports = emptyList(),
+        extraAnnotations = emptyList(),
+        sqlMatchRules = listOf(
+            TargetOf_sqlMatchRules(
+                nullableLimit = true,
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^double( precision)?$/i"
+            ),
+            TargetOf_sqlMatchRules(
+                nullableLimit = true,
+                databaseSource = DatabaseTypeOrAny.ORACLE,
+                matchRegExp = "/^(binary_)double$/i"
+            ),
+        ),
+        tsMatchRules = emptyList()
+    ),
+    JvmTypeInput(
+        id = InitTypeIds.KT_DOUBLE_ID.value,
+        jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Double",
         serialized = false,
         extraImports = emptyList(),
@@ -298,7 +392,7 @@ val initJvmTypes = listOf(
         tsMatchRules = emptyList()
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_BOOLEAN_PRIMITIVE_ID.value,
+        id = InitTypeIds.JAVA_BOOLEAN_PRIMITIVE_ID.value,
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "boolean",
         serialized = false,
@@ -306,8 +400,9 @@ val initJvmTypes = listOf(
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
+                nullableLimit = false,
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^boolean$/i"
+                matchRegExp = "/^bool(ean)?$/i"
             ),
         ),
         tsMatchRules = listOf(
@@ -317,8 +412,28 @@ val initJvmTypes = listOf(
         )
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_BOOLEAN_OBJECT_ID.value,
-        jvmSource = JvmLanguageOrAny.ANY,
+        id = InitTypeIds.JAVA_BOOLEAN_OBJECT_ID.value,
+        jvmSource = JvmLanguageOrAny.JAVA,
+        typeExpression = "Boolean",
+        serialized = false,
+        extraImports = emptyList(),
+        extraAnnotations = emptyList(),
+        sqlMatchRules = listOf(
+            TargetOf_sqlMatchRules(
+                nullableLimit = true,
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^bool(ean)?$/i"
+            ),
+        ),
+        tsMatchRules = listOf(
+            TargetOf_tsMatchRules(
+                matchRegExp = "/^[Bb]oolean$/"
+            ),
+        )
+    ),
+    JvmTypeInput(
+        id = InitTypeIds.KT_BOOLEAN_ID.value,
+        jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Boolean",
         serialized = false,
         extraImports = emptyList(),
@@ -326,7 +441,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^boolean$/i"
+                matchRegExp = "/^bool(ean)?$/i"
             ),
         ),
         tsMatchRules = listOf(
@@ -666,7 +781,7 @@ val initTsTypes = listOf(
         extraImports = emptyList(),
         jvmMatchRules = listOf(
             TsTypeInput.TargetOf_jvmMatchRules(
-                jvmSource = JvmLanguageOrAny.JAVA,
+                jvmSource = JvmLanguageOrAny.ANY,
                 matchRegExp = "/^(int|Integer|Int|long|Long|short|Short|float|Float|double|Double)$/i"
             ),
         ),
@@ -683,14 +798,14 @@ val initTsTypes = listOf(
         extraImports = emptyList(),
         jvmMatchRules = listOf(
             TsTypeInput.TargetOf_jvmMatchRules(
-                jvmSource = JvmLanguageOrAny.JAVA,
-                matchRegExp = "/^(boolean|Boolean)$/i"
+                jvmSource = JvmLanguageOrAny.ANY,
+                matchRegExp = "/^[Bb]oolean$/i"
             ),
         ),
         sqlMatchRules = listOf(
             TsTypeInput.TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^boolean$/i"
+                matchRegExp = "/^bool(ean)?$/i"
             ),
         ),
     )
@@ -698,148 +813,131 @@ val initTsTypes = listOf(
 
 val initCrossTypes = listOf(
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
         jvmTypeId = InitTypeIds.JVM_STRING_ID.value,
         sqlTypeId = InitTypeIds.SQL_TEXT_ID.value,
         tsTypeId = InitTypeIds.TS_STRING_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
         jvmTypeId = InitTypeIds.JVM_STRING_ID.value,
         sqlTypeId = InitTypeIds.SQL_VARCHAR255_ID.value,
         tsTypeId = InitTypeIds.TS_STRING_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
         jvmTypeId = InitTypeIds.JVM_STRING_ID.value,
         sqlTypeId = InitTypeIds.SQL_CHAR255_ID.value,
         tsTypeId = InitTypeIds.TS_STRING_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.JAVA,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_INT_PRIMITIVE_ID.value,
+        jvmTypeId = InitTypeIds.JAVA_INT_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_INTEGER_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.JAVA,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_INTEGER_OBJECT_ID.value,
+        jvmTypeId = InitTypeIds.JAVA_INTEGER_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_INTEGER_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.KOTLIN,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_INT_OBJECT_ID.value,
+        jvmTypeId = InitTypeIds.KT_INT_ID.value,
         sqlTypeId = InitTypeIds.SQL_INTEGER_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.JAVA,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_LONG_PRIMITIVE_ID.value,
+        jvmTypeId = InitTypeIds.JAVA_LONG_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_BIGINT_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_LONG_OBJECT_ID.value,
+        jvmTypeId = InitTypeIds.JAVA_LONG_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_BIGINT_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.JAVA,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_SHORT_PRIMITIVE_ID.value,
+        jvmTypeId = InitTypeIds.KT_LONG_ID.value,
+        sqlTypeId = InitTypeIds.SQL_BIGINT_ID.value,
+        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+    ),
+    CrossTypeInput(
+        jvmTypeId = InitTypeIds.JAVA_SHORT_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_SMALLINT_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_SHORT_OBJECT_ID.value,
+        jvmTypeId = InitTypeIds.JAVA_SHORT_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_SMALLINT_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.JAVA,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_FLOAT_PRIMITIVE_ID.value,
+        jvmTypeId = InitTypeIds.KT_SHORT_ID.value,
+        sqlTypeId = InitTypeIds.SQL_SMALLINT_ID.value,
+        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+    ),
+    CrossTypeInput(
+        jvmTypeId = InitTypeIds.JAVA_FLOAT_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_REAL_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_FLOAT_OBJECT_ID.value,
+        jvmTypeId = InitTypeIds.JAVA_FLOAT_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_REAL_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.JAVA,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_DOUBLE_PRIMITIVE_ID.value,
+        jvmTypeId = InitTypeIds.KT_FLOAT_ID.value,
+        sqlTypeId = InitTypeIds.SQL_REAL_ID.value,
+        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+    ),
+    CrossTypeInput(
+        jvmTypeId = InitTypeIds.JAVA_DOUBLE_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_DOUBLE_PRECISION_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_DOUBLE_OBJECT_ID.value,
+        jvmTypeId = InitTypeIds.JAVA_DOUBLE_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_DOUBLE_PRECISION_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.JAVA,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_BOOLEAN_PRIMITIVE_ID.value,
+        jvmTypeId = InitTypeIds.KT_DOUBLE_ID.value,
+        sqlTypeId = InitTypeIds.SQL_DOUBLE_PRECISION_ID.value,
+        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+    ),
+    CrossTypeInput(
+        jvmTypeId = InitTypeIds.JAVA_BOOLEAN_PRIMITIVE_ID.value,
         sqlTypeId = InitTypeIds.SQL_BOOLEAN_ID.value,
         tsTypeId = InitTypeIds.TS_BOOLEAN_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        jvmTypeId = InitTypeIds.JVM_BOOLEAN_OBJECT_ID.value,
+        jvmTypeId = InitTypeIds.JAVA_BOOLEAN_OBJECT_ID.value,
         sqlTypeId = InitTypeIds.SQL_BOOLEAN_ID.value,
         tsTypeId = InitTypeIds.TS_BOOLEAN_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
+        jvmTypeId = InitTypeIds.KT_BOOLEAN_ID.value,
+        sqlTypeId = InitTypeIds.SQL_BOOLEAN_ID.value,
+        tsTypeId = InitTypeIds.TS_BOOLEAN_ID.value,
+    ),
+    CrossTypeInput(
         jvmTypeId = InitTypeIds.JVM_BIG_DECIMAL_ID.value,
         sqlTypeId = InitTypeIds.SQL_DECIMAL_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
         jvmTypeId = InitTypeIds.JVM_LOCAL_DATE_TIME_ID.value,
         sqlTypeId = InitTypeIds.SQL_TIMESTAMP_ID.value,
         tsTypeId = InitTypeIds.TS_STRING_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
         jvmTypeId = InitTypeIds.JVM_LOCAL_DATE_ID.value,
         sqlTypeId = InitTypeIds.SQL_DATE_ID.value,
         tsTypeId = InitTypeIds.TS_STRING_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
         jvmTypeId = InitTypeIds.JVM_LOCAL_TIME_ID.value,
         sqlTypeId = InitTypeIds.SQL_TIME_ID.value,
         tsTypeId = InitTypeIds.TS_STRING_ID.value,
     ),
     CrossTypeInput(
-        jvmSource = JvmLanguageOrAny.ANY,
-        databaseSource = DatabaseTypeOrAny.ANY,
         jvmTypeId = InitTypeIds.JVM_ZONED_DATE_TIME_ID.value,
         sqlTypeId = InitTypeIds.SQL_TIMESTAMPTZ_ID.value,
         tsTypeId = InitTypeIds.TS_STRING_ID.value,

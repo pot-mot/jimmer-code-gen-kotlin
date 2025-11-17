@@ -20,6 +20,8 @@ interface SqlToJvmMatchRule {
 
     val databaseSource: DatabaseTypeOrAny
 
+    val nullableLimit: Boolean?
+
     val matchRegExp: String
 
     @ManyToOne
