@@ -71,7 +71,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(n)?(var)?char\\(\\d+\\)$/i"
+                matchRegExp = "/^(n)?(var)?char(\\(\\d+\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
@@ -79,7 +79,7 @@ val initJvmTypes = listOf(
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^character( varying)?\\(\\d+\\)$/i"
+                matchRegExp = "/^character( varying)?(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = listOf(
@@ -98,7 +98,11 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^int(eger)?$/i"
+                matchRegExp = "/^int(eger)?(\\(\\d+\\))?$/i"
+            ),
+            TargetOf_sqlMatchRules(
+                databaseSource = DatabaseTypeOrAny.ORACLE,
+                matchRegExp = "/^number(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = listOf(
@@ -117,7 +121,11 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^int(eger)?$/i"
+                matchRegExp = "/^int(eger)?(\\(\\d+\\))?$/i"
+            ),
+            TargetOf_sqlMatchRules(
+                databaseSource = DatabaseTypeOrAny.ORACLE,
+                matchRegExp = "/^number(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = listOf(
@@ -136,7 +144,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^int(eger)?$/i"
+                matchRegExp = "/^int(eger)?(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = listOf(
@@ -155,11 +163,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^bigint$/i"
-            ),
-            TargetOf_sqlMatchRules(
-                databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^long$/i"
+                matchRegExp = "/^bigint(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = emptyList()
@@ -174,11 +178,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^bigint$/i"
-            ),
-            TargetOf_sqlMatchRules(
-                databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^long$/i"
+                matchRegExp = "/^bigint(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = emptyList()
@@ -193,11 +193,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^smallint$/i"
-            ),
-            TargetOf_sqlMatchRules(
-                databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^short$/i"
+                matchRegExp = "/^smallint(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = emptyList()
@@ -212,11 +208,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^smallint$/i"
-            ),
-            TargetOf_sqlMatchRules(
-                databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^short$/i"
+                matchRegExp = "/^smallint(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = emptyList()
@@ -355,15 +347,15 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^decimal$/i"
+                matchRegExp = "/^decimal(\\(\\d+\\,\\d+\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^numeric$/i"
+                matchRegExp = "/^numeric(\\(\\d+\\,\\d+\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^number$/i"
+                matchRegExp = "/^number(\\(\\d+\\,\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = emptyList()
@@ -380,15 +372,15 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^timestamp( without time zone)?$/i"
+                matchRegExp = "/^timestamp( without time zone)?(\\(\\d+\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^datetime$/i"
+                matchRegExp = "/^datetime(\\(\\d+\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ORACLE,
-                matchRegExp = "/^datetime2$/i"
+                matchRegExp = "/^datetime2(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = emptyList()
@@ -405,7 +397,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^date( without time zone)?$/i"
+                matchRegExp = "/^date( without time zone)?(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = emptyList()
@@ -422,7 +414,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^time( without time zone)?$/i"
+                matchRegExp = "/^time( without time zone)?(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = emptyList()
@@ -439,7 +431,11 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^timestamp(tz| with time zone)$/i"
+                matchRegExp = "/^timestamp(tz| with time zone)(\\(\\d+\\))?$/i"
+            ),
+            TargetOf_sqlMatchRules(
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^datetimeoffset(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = emptyList()
@@ -660,7 +656,7 @@ val initTsTypes = listOf(
         sqlMatchRules = listOf(
             TsTypeInput.TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(text|(n)?(var)?char\\(\\d+\\)|(small|medium|long)?text|character( varying)?\\(\\d+\\))$/i"
+                matchRegExp = "/^(text|(n)?(var)?char\\(\\d+\\)|(small|medium|long)?text|character( varying)?\\(\\d+\\))?$/i"
             ),
         ),
     ),
@@ -677,7 +673,7 @@ val initTsTypes = listOf(
         sqlMatchRules = listOf(
             TsTypeInput.TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(int(eger)?|tinyint|bigint|smallint|real|float|double( precision)?)$/i"
+                matchRegExp = "/^(int(eger)?|tinyint|bigint|smallint|real|float|double( precision)?)\\(\\d+\\))?$/i"
             ),
         ),
     ),
