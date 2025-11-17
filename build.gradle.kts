@@ -97,3 +97,7 @@ tasks.jar {
         attributes["Main-Class"] = "top.potmot.JimmerCodeGenApplicationKt"
     }
 }
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.compilerOptions {
+    freeCompilerArgs.set(listOf("-Xmulti-dollar-interpolation"))
+}
