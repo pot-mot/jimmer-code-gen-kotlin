@@ -142,11 +142,13 @@ class H2MetadataFetcher(
                 }
             }
 
-            "FLOAT", "DOUBLE" -> {
-                if (dataSize != null) "$typeName($dataSize)" else typeName
+            else -> {
+                if (typeName.uppercase().endsWith(" ARRAY")) {
+                    if (dataSize != null) "$typeName[$dataSize]" else typeName
+                } else {
+                    typeName
+                }
             }
-
-            else -> typeName
         }
     }
 }
