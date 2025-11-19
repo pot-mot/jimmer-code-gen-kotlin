@@ -128,7 +128,7 @@ class H2MetadataFetcher(
         val uppercaseTypeName = typeName.uppercase()
 
         return when (uppercaseTypeName) {
-            "CHARACTER", "CHARACTER VARYING", "CHAR", "VARCHAR", "VARCHAR2", "NVARCHAR", "NVARCHAR2", "NCHAR", "BINARY", "BINARY VARYING" -> {
+            "CHARACTER", "CHARACTER VARYING", "CHAR", "VARCHAR", "VARCHAR2", "NVARCHAR", "NVARCHAR2", "NCHAR", "BINARY", "BINARY VARYING", "DECFLOAT" -> {
                 if (dataSize != null) "$typeName($dataSize)" else typeName
             }
 
