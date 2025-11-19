@@ -56,7 +56,6 @@ class MySQL5MetadataFetchTest {
         assert(testTable != null)
         testTable?.apply {
             Assertions.assertEquals("测试表", testTable.comment)
-            Assertions.assertEquals(25, testTable.columns.size)
             Assertions.assertLinesMatch(
                 """
 id 自增主键 int(11) 10,null PRIMARY AUTO_INCREMENT
@@ -68,23 +67,52 @@ name 名称 varchar(50) 50,null NULL
 email 邮箱 varchar(100) 100,null NULL
 status 状态 tinyint(4) 3,null NULL DEFAULT 1 
 type_int 整数类型 int(11) 10,null NULL
-type_bigint 大整数类型 bigint(20) 19,null NULL
+type_int1 1位整数类型 tinyint(4) 3,null NULL
+type_int2 2位整数类型 smallint(6) 5,null NULL
+type_int4 4位整数类型 int(11) 10,null NULL
+type_int8 8位整数类型 bigint(20) 19,null NULL
+type_tinyint 微整数类型 tinyint(4) 3,null NULL
 type_smallint 小整数类型 smallint(6) 5,null NULL
-type_decimal 精确小数类型 decimal(10,2) 10,2 NULL
+type_mediumint 中整数类型 mediumint(9) 7,null NULL
+type_bigint 大整数类型 bigint(20) 19,null NULL
+type_numeric_10 精确数值类型(10) decimal(10,0) 10,null NULL
+type_numeric_10_2 精确数值类型(10, 2) decimal(10,2) 10,2 NULL
+type_decimal_10 精确数值类型(10) decimal(10,0) 10,null NULL
+type_decimal_10_2 精确数值类型(10, 2) decimal(10,2) 10,2 NULL
+type_dec  decimal(10,0) 10,null NULL
+type_fixed  decimal(10,0) 10,null NULL
+type_real 单精度浮点数 double 22,null NULL
 type_float 单精度浮点数 float 12,null NULL
 type_double 双精度浮点数 double 22,null NULL
+type_double_precision 双精度浮点数 double 22,null NULL
+type_float4 单精度浮点数 float 12,null NULL
+type_float8 单精度浮点数 double 22,null NULL
 type_boolean 布尔类型 tinyint(1) 1,null NULL
+type_year 年类型 year(4) 4,null NULL
 type_date 日期类型 date 10,null NULL
+type_time 时间类型 time 8,null NULL
+type_time_30 时间类型(3) time(3) 12,null NULL
 type_datetime 日期时间类型 datetime 19,null NULL
+type_datetime_3 日期时间类型(3) datetime(3) 23,null NULL
 type_timestamp 时间戳类型 timestamp 19,null DEFAULT CURRENT_TIMESTAMP 
+type_timestamp_default  timestamp 19,null DEFAULT CURRENT_TIMESTAMP 
 type_text 文本类型 text 65535,null NULL
+type_tinytext 短文本类型 tinytext 255,null NULL
+type_mediumtext 中长文本类型 mediumtext 16777215,null NULL
 type_longtext 长文本类型 longtext 2147483647,null NULL
 type_enum 枚举类型 enum('value1','value2','value3') 6,null NULL
 type_set 集合类型 set('option1','option2','option3') 23,null NULL
 type_json JSON数据类型 json 1073741824,null NULL
-type_blob 二进制大对象类型 blob 65535,null NULL
-type_bit 位类型 bit(8) 8,null NULL
-                """.trim().split("\n"),
+type_bit  bit(1) 1,null NULL
+type_bit_8  bit(8) 8,null NULL
+type_binary  binary(1) 1,null NULL
+type_binary_8  binary(8) 8,null NULL
+type_varbinary_8  varbinary(8) 8,null NULL
+type_blob  blob, 65535,null NULL
+type_tinyblob  tinyblob, 255,null NULL
+type_mediumblob  mediumblob, 16777215,null NULL
+type_long_blob  longblob, 2147483647,null NULL
+                """.trimIndent().trim().split("\n"),
                 testTable.columns.map { it.stringify() }
             )
 
