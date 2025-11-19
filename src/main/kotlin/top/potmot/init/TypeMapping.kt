@@ -788,7 +788,7 @@ val initTsTypes = listOf(
         sqlMatchRules = listOf(
             TsTypeInput.TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(int(eger)?|tinyint|bigint|smallint|real|float|double( precision)?)\\(\\d+\\))?$/i"
+                matchRegExp = "/^(int(eger)?|tinyint|bigint|smallint|real|float|double( precision)?)\\(\\d+\\)\\)?$/i"
             ),
         ),
     ),
