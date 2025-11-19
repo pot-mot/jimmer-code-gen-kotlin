@@ -125,7 +125,9 @@ class H2MetadataFetcher(
         dataSize: Int?,
         numericPrecision: Int?,
     ): String {
-        return when (typeName.uppercase()) {
+        val uppercaseTypeName = typeName.uppercase()
+
+        return when (uppercaseTypeName) {
             "CHARACTER", "CHARACTER VARYING", "CHAR", "VARCHAR", "VARCHAR2", "NVARCHAR", "NVARCHAR2", "NCHAR" -> {
                 if (dataSize != null) "$typeName($dataSize)" else typeName
             }
@@ -142,8 +144,14 @@ class H2MetadataFetcher(
                 }
             }
 
+           "TIME", "TIMESTAMP" -> {
+                if (numericPrecision != null) "$typeName($numericPrecision)" else typeName
+            }
+
             else -> {
-                if (typeName.uppercase().endsWith(" ARRAY")) {
+                if (uppercaseTypeName.endsWith(" WITH TIME ZONE")) {
+                    if (numericPrecision != null) "${typeName.substring(0, typeName.length - 15)}($numericPrecision) WITH TIME ZONE" else typeName
+                } else if (uppercaseTypeName.endsWith(" ARRAY")) {
                     if (dataSize != null) "$typeName[$dataSize]" else typeName
                 } else {
                     typeName
