@@ -52,6 +52,7 @@ CREATE TABLE test_table
     type_time_tz              TIME WITH TIME ZONE,
     type_time_3               TIME(3),
     type_time_3_tz            TIME(3) WITH TIME ZONE,
+    type_small_datetime       SMALLDATETIME,
     type_datetime             DATETIME,
     type_datetime2            DATETIME2,
     type_timestamp            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
