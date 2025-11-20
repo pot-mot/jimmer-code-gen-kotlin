@@ -47,8 +47,12 @@ CREATE TABLE test_table
     type_dec                  DEC,
     type_dec_float            DECFLOAT,
     type_dec_float_10         DECFLOAT(10),
-    type_float                REAL,
+    type_real                 REAL,
+    type_float                FLOAT,
+    type_float4               FLOAT4,
+    type_float8               FLOAT8,
     type_double               DOUBLE,
+    type_double_precision     DOUBLE PRECISION,
     type_boolean              BOOLEAN,
     type_date                 DATE,
     type_time                 TIME,
@@ -58,7 +62,8 @@ CREATE TABLE test_table
     type_small_datetime       SMALLDATETIME,
     type_datetime             DATETIME,
     type_datetime2            DATETIME2,
-    type_timestamp            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type_timestamp            TIMESTAMP,
+    type_timestamp_default    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     type_timestamp_3          TIMESTAMP(3),
     type_timestamp_tz         TIMESTAMP WITH TIME ZONE,
     type_timestamp_3_tz       TIMESTAMP(3) WITH TIME ZONE,
@@ -144,7 +149,6 @@ COMMENT ON COLUMN test_table.type_numeric_10_2 IS '精确数值类型(10, 2)';
 COMMENT ON COLUMN test_table.type_numeric_10_array IS '精确数值数组类型(10)';
 COMMENT ON COLUMN test_table.type_decimal_10 IS '精确数值类型(10)';
 COMMENT ON COLUMN test_table.type_decimal_10_2 IS '精确数值类型(10, 2)';
-COMMENT ON COLUMN test_table.type_float IS '单精度浮点数';
 COMMENT ON COLUMN test_table.type_double IS '双精度浮点数';
 COMMENT ON COLUMN test_table.type_boolean IS '布尔类型';
 COMMENT ON COLUMN test_table.type_date IS '日期类型';
