@@ -56,7 +56,6 @@ class SqlServerMetadataFetchTest {
         assert(testTable != null)
         testTable?.apply {
             Assertions.assertEquals("测试表", testTable.comment)
-            Assertions.assertEquals(23, testTable.columns.size)
             Assertions.assertLinesMatch(
                 """
 id 自增主键 int identity 10,null PRIMARY AUTO_INCREMENT
@@ -68,20 +67,41 @@ name 名称 nvarchar(50) 50,null NULL
 email 邮箱 nvarchar(100) 100,null NULL
 status 状态 smallint 5,null NULL DEFAULT ((1)) 
 type_int 整数类型 int 10,null NULL
-type_bigint 大整数类型 bigint 19,null NULL
+type_integer  int 10,null NULL
+type_tinyint  tinyint 3,null NULL
 type_smallint 小整数类型 smallint 5,null NULL
-type_decimal 精确小数类型 decimal(10,2) 10,2 NULL
-type_float 单精度浮点数 real 24,null NULL
-type_double 双精度浮点数 float 53,null NULL
-type_boolean 布尔类型 bit 1,null NULL
-type_date 日期类型 date 10,null NULL
-type_datetime 日期时间类型 datetime2(7) 27,7 NULL
-type_timestamp 时间戳类型 datetime2(7) 27,7 NULL DEFAULT (getdate()) 
-type_timestamp_tz 时区时间戳类型 datetimeoffset(7) 34,7 NULL
-type_text 文本类型 nvarchar(2147483647) 2147483647,null NULL
-type_check_enum 枚举类型检查 nvarchar(20) 20,null NULL
-type_blob 二进制大对象类型 varbinary(2147483647) 2147483647,null NULL
-type_bit 位类型 binary(8) 8,null NULL
+type_bigint 大整数类型 bigint 19,null NULL
+type_numeric  numeric(18) 18,null NULL
+type_numeric_10  numeric(10) 10,null NULL
+type_numeric_10_2  numeric(10,2) 10,2 NULL
+type_decimal 精确小数类型 decimal(18) 18,null NULL
+type_decimal_10  decimal(10) 10,null NULL
+type_decimal_10_2  decimal(10,2) 10,2 NULL
+type_dec  decimal(18) 18,null NULL
+type_real  real 24,null NULL
+type_float 单精度浮点数 float 53,null NULL
+type_double_precision  float 53,null NULL
+type_date  date 10,null NULL
+type_time  time(7) 16,7 NULL
+type_time_3  time(3) 12,3 NULL
+type_datetime  datetime2(7) 27,7 NULL
+type_datetime_3  datetime2(3) 23,3 NULL
+type_datetime_default  datetime2(7) 27,7 NULL DEFAULT (getdate()) 
+type_timestamp  timestamp 8,null
+type_datetimeoffset  datetimeoffset(7) 34,7 NULL
+type_datetimeoffset_3  datetimeoffset(3) 30,3 NULL
+type_text  text 2147483647,null NULL
+type_ntext  ntext 1073741823,null NULL
+type_guid  uniqueidentifier 36,null NULL
+type_check_enum  varchar(20) 20,null NULL
+type_char  char(20) 20,null NULL
+type_nchar  nchar(20) 20,null NULL
+type_nvarchar  nvarchar(20) 20,null NULL
+type_bit  bit 1,null NULL
+type_binary  binary(1) 1,null NULL
+type_binary_8  binary(8) 8,null NULL
+type_varbinary  varbinary(1) 1,null NULL
+type_varbinary_8  varbinary(8) 8,null NULL
                 """.trim().split("\n"),
                 testTable.columns.map { it.stringify() }
             )
