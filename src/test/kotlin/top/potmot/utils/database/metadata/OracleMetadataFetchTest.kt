@@ -98,7 +98,7 @@ TYPE_RAW_8  RAW(8) 8,null NULL
 TYPE_BLOB 二进制大对象类型 BLOB 4000,null NULL
 TYPE_CLOB  CLOB 4000,null NULL
 TYPE_NCLOB  NCLOB 4000,null NULL
-                """.trimIndent().trim().split("\n"),
+                """.trim().split("\n"),
                 testTable.columns.map { it.stringify() }
             )
 

@@ -114,7 +114,7 @@ type_blob  blob, 65535,null NULL
 type_tinyblob  tinyblob, 255,null NULL
 type_mediumblob  mediumblob, 16777215,null NULL
 type_long_blob  longblob, 2147483647,null NULL
-                """.trimIndent().trim().split("\n"),
+                """.trim().split("\n"),
                 testTable.columns.map { it.stringify() }
             )
 

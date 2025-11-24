@@ -120,7 +120,7 @@ TYPE_LONG_BLOB  BINARY LARGE OBJECT 2147483647,null NULL
 TYPE_LONG_VARBINARY  BINARY VARYING(1000000000) 1000000000,null NULL
 TYPE_CLOB  CHARACTER LARGE OBJECT 2147483647,null NULL
 TYPE_NCLOB  CHARACTER LARGE OBJECT 2147483647,null NULL
-                """.trimIndent().trim().split("\n"),
+                """.trim().split("\n"),
                 testTable.columns.map { it.stringify() }
             )
 

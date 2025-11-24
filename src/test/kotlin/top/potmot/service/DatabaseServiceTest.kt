@@ -175,6 +175,13 @@ open class DatabaseServiceTest(
             username = "test_login",
             password = "Test1234!"
         ),
+        DatabaseInsertInput(
+            name = "test-h2",
+            type = DatabaseType.H2,
+            url = "jdbc:h2:mem:test;INIT=RUNSCRIPT FROM './src/test/resources/database/h2.sql'",
+            username = "sa",
+            password = ""
+        )
     )
 
     @Test
