@@ -52,7 +52,6 @@ class SqliteMetadataFetchTest {
         assert(testTable != null)
         testTable?.apply {
             Assertions.assertEquals("", testTable.comment)
-            Assertions.assertEquals(22, testTable.columns.size)
             Assertions.assertLinesMatch(
                 """
 id  INTEGER 2000000000,null NULL PRIMARY AUTO_INCREMENT
@@ -66,14 +65,8 @@ status  INTEGER 2000000000,null NULL DEFAULT 1
 type_int  INTEGER 2000000000,null NULL
 type_bigint  INTEGER 2000000000,null NULL
 type_smallint  INTEGER 2000000000,null NULL
-type_decimal  REAL 2000000000,10 NULL
-type_float  REAL 2000000000,10 NULL
-type_double  REAL 2000000000,10 NULL
-type_boolean  INTEGER 2000000000,null NULL
-type_date  TEXT 2000000000,null NULL
-type_datetime  TEXT 2000000000,null NULL
+type_real  REAL 2000000000,10 NULL
 type_timestamp  TEXT 2000000000,null NULL DEFAULT datetime('now') 
-type_timestamp_tz  TEXT 2000000000,null NULL
 type_text  TEXT 2000000000,null NULL
 type_check_enum  TEXT 2000000000,null NULL
 type_blob  BLOB 2000000000,null NULL

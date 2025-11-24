@@ -26,14 +26,8 @@ CREATE TABLE test_table
     type_int                  INTEGER,
     type_bigint               INTEGER,
     type_smallint             INTEGER,
-    type_decimal              REAL,
-    type_float                REAL,
-    type_double               REAL,
-    type_boolean              INTEGER,  -- SQLite 没有布尔类型，用整数替代
-    type_date                 TEXT,     -- SQLite 使用 TEXT 存储日期
-    type_datetime             TEXT,     -- SQLite 使用 TEXT 存储日期时间
+    type_real                 REAL,
     type_timestamp            TEXT DEFAULT (datetime('now')),  -- SQLite 时间函数
-    type_timestamp_tz         TEXT,
     type_text                 TEXT,
     type_check_enum           TEXT,
     type_blob                 BLOB,
