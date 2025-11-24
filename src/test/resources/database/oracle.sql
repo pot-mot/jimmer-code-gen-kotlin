@@ -42,38 +42,59 @@ CREATE SEQUENCE seq_test_table_id
 
 CREATE TABLE test_table
 (
-    id                NUMBER(19) DEFAULT seq_test_table_id.nextval,
-    user_id           NUMBER(10) NOT NULL,
-    group_id          NUMBER(10) NOT NULL,
-    category_id       NUMBER(10) NOT NULL,
-    nullable_user_id  NUMBER(10),
-    name              VARCHAR2(50),
-    email             VARCHAR2(100),
-    status            NUMBER(3) DEFAULT 1,
-    type_int          NUMBER(10),
-    type_bigint       NUMBER(19),
-    type_smallint     NUMBER(5),
-    type_decimal      NUMBER(10, 2),
-    type_float        BINARY_FLOAT,
-    type_double       BINARY_DOUBLE,
-    type_boolean      NUMBER(1),
-    type_date         DATE,
-    type_datetime     TIMESTAMP,
-    type_timestamp    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    type_timestamp_tz TIMESTAMP WITH TIME ZONE,
-    type_text         CLOB,
-    type_check_enum   VARCHAR2(20),
-    type_json         CLOB,
-    type_blob         BLOB,
-    type_bit          RAW(8),
+    id                     NUMBER(19) DEFAULT seq_test_table_id.nextval,
+    user_id                NUMBER(10) NOT NULL,
+    group_id               NUMBER(10) NOT NULL,
+    category_id            NUMBER(10) NOT NULL,
+    nullable_user_id       NUMBER(10),
+    name                   VARCHAR2(50),
+    email                  VARCHAR2(100),
+    status                 NUMBER(3)  DEFAULT 1,
+    type_int               INT,
+    type_integer           INTEGER,
+    type_smallint          SMALLINT,
+    type_int_number        NUMBER(10),
+    type_smallint_number   NUMBER(5),
+    type_bigint            NUMBER(19),
+    type_numeric           NUMERIC,
+    type_numeric_10        NUMERIC(10),
+    type_numeric_10_2      NUMERIC(10, 2),
+    type_decimal           DECIMAL,
+    type_decimal_10        DECIMAL(10),
+    type_decimal_10_2      DECIMAL(10, 2),
+    type_dec               DEC,
+    type_real              REAL,
+    type_float             FLOAT,
+    type_binary_float      BINARY_FLOAT,
+    type_double_precision  DOUBLE PRECISION,
+    type_binary_double     BINARY_DOUBLE,
+    type_date              DATE,
+    type_timestamp         TIMESTAMP,
+    type_timestamp_default TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type_timestamp_3       TIMESTAMP(3),
+    type_timestamp_tz      TIMESTAMP WITH TIME ZONE,
+    type_timestamp_3_tz    TIMESTAMP(3) WITH TIME ZONE,
+    type_check_enum        VARCHAR2(20),
+    type_char              CHAR(20),
+    type_nchar             NCHAR(20),
+    type_varchar2          VARCHAR2(20),
+    type_raw_8             RAW(8),
+    type_blob              BLOB,
+    type_clob              CLOB,
+    type_nclob             NCLOB,
     PRIMARY KEY (id)
 );
 
-ALTER TABLE test_table ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES test_user (id) ON DELETE CASCADE;
-ALTER TABLE test_table ADD CONSTRAINT fk_nullable_user FOREIGN KEY (nullable_user_id) REFERENCES test_user (id) ON DELETE SET NULL;
-ALTER TABLE test_table ADD CONSTRAINT fk_group_category FOREIGN KEY (group_id, category_id) REFERENCES test_group_categories (group_id, category_id);
-ALTER TABLE test_table ADD CONSTRAINT uk_email UNIQUE (email);
-ALTER TABLE test_table ADD CONSTRAINT chk_type_check_enum CHECK (type_check_enum IN ('value1', 'value2', 'value3'));
+ALTER TABLE test_table
+    ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES test_user (id) ON DELETE CASCADE;
+ALTER TABLE test_table
+    ADD CONSTRAINT fk_nullable_user FOREIGN KEY (nullable_user_id) REFERENCES test_user (id) ON DELETE SET NULL;
+ALTER TABLE test_table
+    ADD CONSTRAINT fk_group_category FOREIGN KEY (group_id, category_id) REFERENCES test_group_categories (group_id, category_id);
+ALTER TABLE test_table
+    ADD CONSTRAINT uk_email UNIQUE (email);
+ALTER TABLE test_table
+    ADD CONSTRAINT chk_type_check_enum CHECK (type_check_enum IN ('value1', 'value2', 'value3'));
 
 -- 创建索引
 CREATE INDEX idx_name_status ON test_table (name, status);
@@ -100,6 +121,5 @@ COMMENT ON COLUMN test_table.type_timestamp IS '时间戳类型';
 COMMENT ON COLUMN test_table.type_timestamp_tz IS '时区时间戳类型';
 COMMENT ON COLUMN test_table.type_text IS '文本类型';
 COMMENT ON COLUMN test_table.type_check_enum IS '枚举类型检查';
-COMMENT ON COLUMN test_table.type_json IS 'JSON数据类型';
 COMMENT ON COLUMN test_table.type_blob IS '二进制大对象类型';
 COMMENT ON COLUMN test_table.type_bit IS '位类型';
