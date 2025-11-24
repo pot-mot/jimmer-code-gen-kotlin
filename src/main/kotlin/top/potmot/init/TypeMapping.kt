@@ -54,10 +54,10 @@ private enum class InitTypeIds(val value: UUID = UUID.randomUUID()) {
     SQL_REAL_ID,
     SQL_DOUBLE_PRECISION_ID,
     SQL_BOOLEAN_ID,
-    SQL_DECIMAL_ID,
-    SQL_TIMESTAMP_ID,
+    SQL_DECIMAL_11_2_ID,
     SQL_DATE_ID,
     SQL_TIME_ID,
+    SQL_TIMESTAMP_ID,
     SQL_TIMESTAMPTZ_ID,
 
     TS_STRING_ID,
@@ -76,15 +76,19 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(n)?(var)?char(\\(\\d+\\))?$/i"
+                matchRegExp = "/^(n)?(var)?char(acter)?( varying)?(\\(\\d+\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(small|medium|long)?text$/i"
+                matchRegExp = "/^(n)?(var)?char(acter)?( varying)?(\\(\\d+\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^character( varying)?(\\(\\d+\\))?$/i"
+                matchRegExp = "/^(n)?(tiny|small|medium|long)?text$/i"
+            ),
+            TargetOf_sqlMatchRules(
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^(n)?(tiny|small|medium|long)?clob$/i"
             ),
         ),
         tsMatchRules = listOf(
@@ -693,7 +697,7 @@ val initSqlTypes = listOf(
         ),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_DECIMAL_ID.value,
+        id = InitTypeIds.SQL_DECIMAL_11_2_ID.value,
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "decimal(11, 2)",
         dataSize = 11,
@@ -702,18 +706,6 @@ val initSqlTypes = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 jvmSource = JvmLanguageOrAny.ANY,
                 matchRegExp = "/^BigDecimal$/"
-            ),
-        ),
-        tsMatchRules = emptyList(),
-    ),
-    SqlTypeInput(
-        id = InitTypeIds.SQL_TIMESTAMP_ID.value,
-        databaseSource = DatabaseTypeOrAny.ANY,
-        type = "timestamp",
-        jvmMatchRules = listOf(
-            SqlTypeInput.TargetOf_jvmMatchRules(
-                jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^LocalDateTime$/"
             ),
         ),
         tsMatchRules = emptyList(),
@@ -738,6 +730,18 @@ val initSqlTypes = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 jvmSource = JvmLanguageOrAny.ANY,
                 matchRegExp = "/^LocalTime$/i"
+            ),
+        ),
+        tsMatchRules = emptyList(),
+    ),
+    SqlTypeInput(
+        id = InitTypeIds.SQL_TIMESTAMP_ID.value,
+        databaseSource = DatabaseTypeOrAny.ANY,
+        type = "timestamp",
+        jvmMatchRules = listOf(
+            SqlTypeInput.TargetOf_jvmMatchRules(
+                jvmSource = JvmLanguageOrAny.ANY,
+                matchRegExp = "/^LocalDateTime$/"
             ),
         ),
         tsMatchRules = emptyList(),
@@ -771,7 +775,7 @@ val initTsTypes = listOf(
         sqlMatchRules = listOf(
             TsTypeInput.TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(text|(n)?(var)?char\\(\\d+\\)|(small|medium|long)?text|character( varying)?\\(\\d+\\))?$/i"
+                matchRegExp = "/^(text|(n)?(var)?char\\(\\d+\\)|(tiny|small|medium|long)?text|character( varying)?\\(\\d+\\))?$/i"
             ),
         ),
     ),
@@ -931,7 +935,7 @@ val initCrossTypes = listOf(
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.JVM_BIG_DECIMAL_ID.value,
-        sqlTypeId = InitTypeIds.SQL_DECIMAL_ID.value,
+        sqlTypeId = InitTypeIds.SQL_DECIMAL_11_2_ID.value,
         tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
