@@ -71,19 +71,35 @@ type_int1 1位整数类型 tinyint(4) 3,null NULL
 type_int2 2位整数类型 smallint(6) 5,null NULL
 type_int4 4位整数类型 int(11) 10,null NULL
 type_int8 8位整数类型 bigint(20) 19,null NULL
+type_int_4  int(4) 10,null NULL
+type_int_10  int(10) 10,null NULL
+type_int_zerofill  int(10) unsigned zerofill 10,null NULL
+type_int_unsigned  int(10) unsigned 10,null NULL
+type_int_unsigned_zerofill  int(10) unsigned zerofill 10,null NULL
+type_int_10_unsigned  int(10) unsigned 10,null NULL
 type_tinyint 微整数类型 tinyint(4) 3,null NULL
+type_tinyint_unsigned  tinyint(3) unsigned 3,null NULL
 type_smallint 小整数类型 smallint(6) 5,null NULL
+type_smallint_unsigned  smallint(5) unsigned 5,null NULL
 type_mediumint 中整数类型 mediumint(9) 7,null NULL
+type_mediumint_unsigned  mediumint(8) unsigned 8,null NULL
 type_bigint 大整数类型 bigint(20) 19,null NULL
+type_bigint_unsigned  bigint(20) unsigned 20,null NULL
+type_numeric 精确数值类型 decimal(10,0) 10,null NULL
 type_numeric_10 精确数值类型(10) decimal(10,0) 10,null NULL
 type_numeric_10_2 精确数值类型(10, 2) decimal(10,2) 10,2 NULL
+type_decimal 精确数值类型 decimal(10,0) 10,null NULL
 type_decimal_10 精确数值类型(10) decimal(10,0) 10,null NULL
 type_decimal_10_2 精确数值类型(10, 2) decimal(10,2) 10,2 NULL
+type_decimal_unsigned 精确数值类型(无符号) decimal(10,0) unsigned 10,null NULL
 type_dec  decimal(10,0) 10,null NULL
 type_fixed  decimal(10,0) 10,null NULL
 type_real 单精度浮点数 double 22,null NULL
+type_real_unsigned  double unsigned 22,null NULL
 type_float 单精度浮点数 float 12,null NULL
+type_float_unsigned  double unsigned 22,null NULL
 type_double 双精度浮点数 double 22,null NULL
+type_double_unsigned  double unsigned 22,null NULL
 type_double_precision 双精度浮点数 double 22,null NULL
 type_float4 单精度浮点数 float 12,null NULL
 type_float8 单精度浮点数 double 22,null NULL
@@ -96,7 +112,19 @@ type_datetime 日期时间类型 datetime 19,null NULL
 type_datetime_3 日期时间类型(3) datetime(3) 23,null NULL
 type_timestamp 时间戳类型 timestamp 19,null DEFAULT CURRENT_TIMESTAMP 
 type_timestamp_default  timestamp 19,null DEFAULT CURRENT_TIMESTAMP 
+type_varchar  varchar(255) 255,null NULL
+type_char  char(255) 255,null NULL
+type_character  char(255) 255,null NULL
+type_character_binary  char(255) 255,null NULL
+type_character_varying  varchar(255) 255,null NULL
+type_nvarchar  varchar(255) 255,null NULL
+type_nchar  char(255) 255,null NULL
+type_varchar_binary  varchar(255) 255,null NULL
+type_char_binary  char(255) 255,null NULL
+type_nvarchar_binary  varchar(255) 255,null NULL
+type_nchar_binary  char(255) 255,null NULL
 type_text 文本类型 text 65535,null NULL
+type_text_binary 二进制文本类型 text 65535,null NULL
 type_tinytext 短文本类型 tinytext 255,null NULL
 type_mediumtext 中长文本类型 mediumtext 16777215,null NULL
 type_longtext 长文本类型 longtext 2147483647,null NULL
@@ -108,11 +136,11 @@ type_bit_8  bit(8) 8,null NULL
 type_binary  binary(1) 1,null NULL
 type_binary_8  binary(8) 8,null NULL
 type_varbinary_8  varbinary(8) 8,null NULL
-type_blob  blob, 65535,null NULL
-type_tinyblob  tinyblob, 255,null NULL
-type_mediumblob  mediumblob, 16777215,null NULL
-type_long_blob  longblob, 2147483647,null NULL
-                """.trim().split("\n"),
+type_blob  BLOB 65535,null NULL
+type_tinyblob  TINYBLOB 255,null NULL
+type_mediumblob  MEDIUMBLOB 16777215,null NULL
+type_long_blob  LONGBLOB 2147483647,null NULL
+                """.trimIndent().trim().split("\n"),
                 testTable.columns.map { it.stringify() }
             )
 

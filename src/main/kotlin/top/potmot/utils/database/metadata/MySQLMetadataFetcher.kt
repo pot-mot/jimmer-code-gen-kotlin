@@ -6,7 +6,7 @@ import java.sql.Connection
 import java.util.concurrent.ConcurrentHashMap
 
 private val systemCatalogs = setOf("information_schema", "mysql", "performance_schema", "sys")
-private val columnRegex = Regex("`([^`]+)`\\s+([^\\n\\s]+)")
+private val columnRegex = Regex("`([^`]+)`\\s+((?:[a-zA-Z]+(?:\\s*\\([^)]*\\))?(?:\\s*(?:unsigned|zerofill))*(?:\\s+binary)?))(?:\\s+|$)")
 private val checkConstraintRegex = Regex("CONSTRAINT\\s+`([^`]+)`\\s+CHECK\\s*\\((.+)\\)", RegexOption.IGNORE_CASE)
 
 class MySQLMetadataFetcher(
