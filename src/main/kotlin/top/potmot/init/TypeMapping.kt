@@ -39,6 +39,9 @@ private enum class InitTypeIds(val value: UUID = UUID.randomUUID()) {
     JAVA_BOOLEAN_PRIMITIVE_ID,
     JAVA_BOOLEAN_OBJECT_ID,
     KT_BOOLEAN_ID,
+    JAVA_BYTE_PRIMITIVE_ID,
+    JAVA_BYTE_OBJECT_ID,
+    KT_BYTE_ID,
     JVM_BIG_DECIMAL_ID,
     JVM_LOCAL_DATE_TIME_ID,
     JVM_LOCAL_DATE_ID,
@@ -51,6 +54,7 @@ private enum class InitTypeIds(val value: UUID = UUID.randomUUID()) {
     SQL_INTEGER_ID,
     SQL_BIGINT_ID,
     SQL_SMALLINT_ID,
+    SQL_TINYINT_ID,
     SQL_REAL_ID,
     SQL_DOUBLE_PRECISION_ID,
     SQL_BOOLEAN_ID,
@@ -108,7 +112,7 @@ val initJvmTypes = listOf(
             TargetOf_sqlMatchRules(
                 nullableLimit = false,
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^int(eger)?(\\(\\d+\\))?$/i"
+                matchRegExp = "/^(medium)?int(eger)?(\\(\\d+\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 nullableLimit = false,
@@ -133,7 +137,7 @@ val initJvmTypes = listOf(
             TargetOf_sqlMatchRules(
                 nullableLimit = true,
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^int(eger)?(\\(\\d+\\))?$/i"
+                matchRegExp = "/^(medium)?int(eger)?(\\(\\d+\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ORACLE,
@@ -156,7 +160,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^int(eger)?(\\(\\d+\\))?$/i"
+                matchRegExp = "/^(medium)?int(eger)?(\\(\\d+\\))?$/i"
             ),
         ),
         tsMatchRules = listOf(
@@ -455,6 +459,53 @@ val initJvmTypes = listOf(
         )
     ),
     JvmTypeInput(
+        id = InitTypeIds.JAVA_BYTE_PRIMITIVE_ID.value,
+        jvmSource = JvmLanguageOrAny.JAVA,
+        typeExpression = "byte",
+        serialized = false,
+        extraImports = emptyList(),
+        extraAnnotations = emptyList(),
+        sqlMatchRules = listOf(
+            TargetOf_sqlMatchRules(
+                nullableLimit = false,
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^tinyint(\\(\\d+\\))?$/i"
+            ),
+        ),
+        tsMatchRules = emptyList()
+    ),
+    JvmTypeInput(
+        id = InitTypeIds.JAVA_BYTE_OBJECT_ID.value,
+        jvmSource = JvmLanguageOrAny.JAVA,
+        typeExpression = "Byte",
+        serialized = false,
+        extraImports = emptyList(),
+        extraAnnotations = emptyList(),
+        sqlMatchRules = listOf(
+            TargetOf_sqlMatchRules(
+                nullableLimit = true,
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^tinyint(\\(\\d+\\))?$/i"
+            ),
+        ),
+        tsMatchRules = emptyList()
+    ),
+    JvmTypeInput(
+        id = InitTypeIds.KT_BYTE_ID.value,
+        jvmSource = JvmLanguageOrAny.KOTLIN,
+        typeExpression = "Byte",
+        serialized = false,
+        extraImports = emptyList(),
+        extraAnnotations = emptyList(),
+        sqlMatchRules = listOf(
+            TargetOf_sqlMatchRules(
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^tinyint(\\(\\d+\\))?$/i"
+            ),
+        ),
+        tsMatchRules = emptyList()
+    ),
+    JvmTypeInput(
         id = InitTypeIds.JVM_BIG_DECIMAL_ID.value,
         jvmSource = JvmLanguageOrAny.ANY,
         typeExpression = "BigDecimal",
@@ -697,6 +748,18 @@ val initSqlTypes = listOf(
         ),
     ),
     SqlTypeInput(
+        id = InitTypeIds.SQL_TINYINT_ID.value,
+        databaseSource = DatabaseTypeOrAny.ANY,
+        type = "tinyint",
+        jvmMatchRules = listOf(
+            SqlTypeInput.TargetOf_jvmMatchRules(
+                jvmSource = JvmLanguageOrAny.ANY,
+                matchRegExp = "/^[Bb]yte$/"
+            ),
+        ),
+        tsMatchRules = emptyList(),
+    ),
+    SqlTypeInput(
         id = InitTypeIds.SQL_DECIMAL_11_2_ID.value,
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "decimal(11, 2)",
@@ -932,6 +995,23 @@ val initCrossTypes = listOf(
         jvmTypeId = InitTypeIds.KT_BOOLEAN_ID.value,
         sqlTypeId = InitTypeIds.SQL_BOOLEAN_ID.value,
         tsTypeId = InitTypeIds.TS_BOOLEAN_ID.value,
+    ),
+    CrossTypeInput(
+        jvmTypeId = InitTypeIds.JAVA_BYTE_PRIMITIVE_ID.value,
+        sqlTypeId = InitTypeIds.SQL_TINYINT_ID.value,
+        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = false,
+    ),
+    CrossTypeInput(
+        jvmTypeId = InitTypeIds.JAVA_BYTE_OBJECT_ID.value,
+        sqlTypeId = InitTypeIds.SQL_TINYINT_ID.value,
+        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        nullable = true,
+    ),
+    CrossTypeInput(
+        jvmTypeId = InitTypeIds.KT_BYTE_ID.value,
+        sqlTypeId = InitTypeIds.SQL_TINYINT_ID.value,
+        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
     ),
     CrossTypeInput(
         jvmTypeId = InitTypeIds.JVM_BIG_DECIMAL_ID.value,
