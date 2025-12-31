@@ -518,15 +518,15 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^decimal(\\(\\d+\\,\\d+\\))?$/i"
+                matchRegExp = "/^decimal(\\(\\d+(\\,\\d+)?\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^numeric(\\(\\d+\\,\\d+\\))?$/i"
+                matchRegExp = "/^numeric(\\(\\d+\\(\\,\\d+)?\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^number(\\(\\d+\\,\\d+\\))?$/i"
+                matchRegExp = "/^number(\\(\\d+\\(\\,\\d+)?\\))?$/i"
             ),
         ),
         tsMatchRules = emptyList()
