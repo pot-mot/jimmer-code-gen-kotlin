@@ -80,11 +80,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(n)?(var)?char(acter)?( varying)?(\\(\\d+\\))?$/i"
-            ),
-            TargetOf_sqlMatchRules(
-                databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(n)?(var)?char(acter)?( varying)?(\\(\\d+\\))?$/i"
+                matchRegExp = "/^(n)?(var)?char(acter)?(2)?( varying)?(\\(\\d+\\))?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
