@@ -5,6 +5,7 @@ import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.asc
 import org.babyfish.jimmer.sql.kt.ast.expression.desc
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
+import org.babyfish.jimmer.sql.kt.exists
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.PostMapping
@@ -25,6 +26,8 @@ import top.potmot.entity.model.dto.toHistory
 import top.potmot.entity.model.id
 import top.potmot.entity.model.modelId
 import top.potmot.entity.model.modifiedTime
+import top.potmot.error.DeleteException
+import top.potmot.error.UpdateException
 import top.potmot.utils.transaction.executeNotNull
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -96,8 +99,13 @@ class ModelService(
     }
 
     @PostMapping("/update")
+    @Throws(UpdateException::class)
     fun update(@RequestBody input: ModelUpdateInput): ModelNoJsonView {
         return transactionTemplate.executeNotNull {
+            sqlClient
+                .exists(Model::class) {
+                    where(table.id eq input.id)
+                }.let { if (!it) throw UpdateException.notExisted() }
             val savedModel = sqlClient
                 .saveCommand(input.toEntity {
                     modifiedTime = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS)
@@ -137,7 +145,12 @@ class ModelService(
     }
 
     @PostMapping("/delete")
+    @Throws(DeleteException::class)
     fun delete(modelId: UUID): Int {
+        sqlClient
+            .exists(Model::class) {
+                where(table.id eq modelId)
+            }.let { if (!it) throw DeleteException.notExisted() }
         return transactionTemplate.executeNotNull {
             sqlClient
                 .createDelete(Model::class) {
@@ -147,7 +160,12 @@ class ModelService(
     }
 
     @PostMapping("/deleteHistory")
+    @Throws(DeleteException::class)
     fun deleteHistory(modelHistoryId: UUID): Int {
+        sqlClient
+            .exists(ModelHistory::class) {
+                where(table.id eq modelHistoryId)
+            }.let { if (!it) throw DeleteException.notExisted() }
         return transactionTemplate.executeNotNull {
             sqlClient
                 .createDelete(ModelHistory::class) {

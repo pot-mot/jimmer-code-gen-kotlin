@@ -5,6 +5,7 @@ import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
 import org.babyfish.jimmer.sql.kt.ast.expression.eq
 import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
+import org.babyfish.jimmer.sql.kt.exists
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.bind.annotation.PostMapping
@@ -23,6 +24,8 @@ import top.potmot.entity.database.dto.DatabaseView
 import top.potmot.entity.database.dto.TableView
 import top.potmot.entity.database.id
 import top.potmot.error.DatabaseException
+import top.potmot.error.DeleteException
+import top.potmot.error.UpdateException
 import top.potmot.utils.database.metadata.fetchMetadata
 import top.potmot.utils.database.metadata.getTypeFromConnection
 import top.potmot.utils.transaction.executeNotNull
@@ -48,13 +51,12 @@ class DatabaseService(
     }
 
     @PostMapping("/get")
-    @Throws(DatabaseException.DatabaseNotFound::class)
-    fun get(databaseId: UUID): DatabaseView {
+    fun get(databaseId: UUID): DatabaseView? {
         return sqlClient
             .createQuery(DbDatabase::class) {
                 where(table.id eq databaseId)
                 select(table.fetch(DatabaseView::class))
-            }.fetchOneOrNull() ?: throw DatabaseException.DatabaseNotFound()
+            }.fetchOneOrNull()
     }
 
     @PostMapping("/insert")
@@ -75,11 +77,16 @@ class DatabaseService(
 
     @PostMapping("/update")
     @Throws(
+        UpdateException::class,
         DatabaseException.ConnectFail::class,
         DatabaseException.DatabaseTypeNotMatch::class,
-        )
+    )
     fun update(@RequestBody input: DatabaseUpdateInput): DatabaseView {
         return transactionTemplate.executeNotNull {
+            sqlClient
+                .exists(DbDatabase::class) {
+                    where(table.id eq input.id)
+                }.let { if (!it) throw UpdateException.notExisted() }
             testConnection(input.type, input.url, input.username, input.password)
             sqlClient
                 .saveCommand(input) {
@@ -113,6 +120,7 @@ class DatabaseService(
 
 
     @PostMapping("/test")
+    @Throws(DatabaseException.DatabaseNotFound::class)
     fun test(databaseId: UUID): Boolean {
         val database = getConnectionView(databaseId)
         return try {
@@ -124,7 +132,6 @@ class DatabaseService(
     }
 
     @PostMapping("/fetchTables")
-    @Throws(DatabaseException.DatabaseNotFound::class)
     fun fetchTables(databaseId: UUID): List<TableView> {
         return sqlClient
             .createQuery(DbTable::class) {
@@ -170,8 +177,13 @@ class DatabaseService(
     }
 
     @PostMapping("/delete")
+    @Throws(DeleteException::class)
     fun delete(databaseId: UUID): Int {
         return transactionTemplate.executeNotNull {
+            sqlClient
+                .exists(DbDatabase::class) {
+                    where(table.id eq databaseId)
+                }.let { if (!it) throw DeleteException.notExisted() }
             sqlClient
                 .createDelete(DbDatabase::class) {
                     where(table.id eq databaseId)
