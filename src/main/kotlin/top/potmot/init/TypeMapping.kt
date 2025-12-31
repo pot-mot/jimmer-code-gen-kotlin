@@ -543,7 +543,7 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^timestamp( without time zone)?(\\(\\d+\\))?$/i"
+                matchRegExp = "/^timestamp(\\(\\d+\\))?( without time zone)?$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
@@ -602,7 +602,11 @@ val initJvmTypes = listOf(
         sqlMatchRules = listOf(
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^timestamp(tz| with time zone)(\\(\\d+\\))?$/i"
+                matchRegExp = "/^timestamptz(\\(\\d+\\))?$/i"
+            ),
+            TargetOf_sqlMatchRules(
+                databaseSource = DatabaseTypeOrAny.ANY,
+                matchRegExp = "/^timestamp(\\(\\d+\\))? with time zone$/i"
             ),
             TargetOf_sqlMatchRules(
                 databaseSource = DatabaseTypeOrAny.ANY,
