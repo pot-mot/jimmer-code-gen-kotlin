@@ -158,6 +158,11 @@ val initJvmTypes = listOf(
                 databaseSource = DatabaseTypeOrAny.ANY,
                 matchRegExp = "/^(medium)?int(eger)?(\\(\\d+\\))?$/i"
             ),
+            TargetOf_sqlMatchRules(
+                nullableLimit = false,
+                databaseSource = DatabaseTypeOrAny.ORACLE,
+                matchRegExp = "/^number(\\(\\d+\\))?$/i"
+            ),
         ),
         tsMatchRules = listOf(
             TargetOf_tsMatchRules(
