@@ -77,6 +77,7 @@ CREATE TABLE test_table
     type_check_enum        VARCHAR2(20),
     type_char              CHAR(20),
     type_nchar             NCHAR(20),
+    type_varchar           VARCHAR(20),
     type_varchar2          VARCHAR2(20),
     type_raw_8             RAW(8),
     type_blob              BLOB,
