@@ -45,7 +45,7 @@ open class ModelServiceTest(
             unload(this, ModelDraft::modifiedTime)
         })
 
-        val histories = modelService.fetchHistories(view.id)
+        val histories = modelService.fetchHistories(view.id, modelHistoryOrder = ModelService.ModelHistoryOrder.MODIFIED_TIME_ASC)
         Assertions.assertEquals(1, histories.size)
         Assertions.assertEquals(view.modifiedTime, histories[0].modifiedTime)
     }
@@ -83,7 +83,7 @@ open class ModelServiceTest(
             unload(this, ModelDraft::jsonData)
         }, updateView.toEntity())
 
-        val histories = modelService.fetchHistories(view.id)
+        val histories = modelService.fetchHistories(view.id, modelHistoryOrder = ModelService.ModelHistoryOrder.MODIFIED_TIME_ASC)
         Assertions.assertEquals(2, histories.size)
         Assertions.assertTrue(histories[0].modifiedTime < histories[1].modifiedTime)
         Assertions.assertEquals(view.modifiedTime, histories[0].modifiedTime)
