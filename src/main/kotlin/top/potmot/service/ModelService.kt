@@ -48,6 +48,11 @@ class ModelService(
         MODIFIED_TIME_DESC,
     }
 
+    enum class ModelHistoryOrder {
+        MODIFIED_TIME_ASC,
+        MODIFIED_TIME_DESC,
+    }
+
     @PostMapping("/list")
     fun list(@RequestBody spec: ModelSpec, modelOrder: ModelOrder): List<ModelNoJsonView> {
         return sqlClient
@@ -126,11 +131,16 @@ class ModelService(
     }
 
     @PostMapping("/fetchHistories")
-    fun fetchHistories(modelId: UUID): List<ModelHistoryNoJsonView> {
+    fun fetchHistories(modelId: UUID, modelHistoryOrder: ModelHistoryOrder): List<ModelHistoryNoJsonView> {
         return sqlClient
             .createQuery(ModelHistory::class) {
                 where(table.modelId eq modelId)
-                orderBy(table.modifiedTime.asc())
+                orderBy(
+                    when (modelHistoryOrder) {
+                        ModelHistoryOrder.MODIFIED_TIME_ASC -> table.modifiedTime.asc()
+                        ModelHistoryOrder.MODIFIED_TIME_DESC -> table.modifiedTime.desc()
+                    }
+                )
                 select(table.fetch(ModelHistoryNoJsonView::class))
             }.execute()
     }
