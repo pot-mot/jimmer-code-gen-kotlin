@@ -4,12 +4,12 @@ kotlin = "2.1.20"
 ksp = "2.1.20-2.0.0"
 springDependency = "1.1.7"
 springboot = "3.4.3"
-h2 = "2.2.224"
-mysql = "9.0.0"
-postgres = "42.7.3"
+h2 = "2.4.240"
+mysql = "9.5.0"
+postgres = "42.7.8"
 oracle = "23.26.0.0.0"
 sqlserver = "13.2.1.jre11"
-sqlite = "3.50.3.0"
+sqlite = "3.51.1.0"
 
 [libraries]
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }

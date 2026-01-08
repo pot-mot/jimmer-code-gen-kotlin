@@ -9,7 +9,7 @@ class H2MetadataFetchTest {
     @Test
     fun testMetadata() {
         DriverManager.getConnection(
-            "jdbc:h2:mem:test;INIT=RUNSCRIPT FROM './src/test/resources/database/h2.sql'",
+            "jdbc:h2:mem:test;MODE=LEGACY;INIT=RUNSCRIPT FROM './src/test/resources/database/h2.sql'",
             "sa",
             ""
         ).use { connection ->
@@ -86,8 +86,8 @@ TYPE_TIME_TZ  TIME WITH TIME ZONE 14,null NULL
 TYPE_TIME_3  TIME(3) 12,3 NULL
 TYPE_TIME_3_TZ  TIME(3) WITH TIME ZONE 18,3 NULL
 TYPE_SMALL_DATETIME  TIMESTAMP 19,null NULL
-TYPE_DATETIME 日期时间类型 TIMESTAMP(6) 26,6 NULL
-TYPE_DATETIME2  TIMESTAMP(6) 26,6 NULL
+TYPE_DATETIME 日期时间类型 TIMESTAMP(3) 23,3 NULL
+TYPE_DATETIME2  TIMESTAMP(7) 27,7 NULL
 TYPE_TIMESTAMP 时间戳类型 TIMESTAMP(6) 26,6 NULL
 TYPE_TIMESTAMP_DEFAULT  TIMESTAMP(6) 26,6 NULL DEFAULT CURRENT_TIMESTAMP 
 TYPE_TIMESTAMP_3  TIMESTAMP(3) 23,3 NULL

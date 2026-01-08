@@ -178,7 +178,7 @@ open class DatabaseServiceTest(
         DatabaseInsertInput(
             name = "test-h2",
             type = DatabaseType.H2,
-            url = "jdbc:h2:mem:test;INIT=RUNSCRIPT FROM './src/test/resources/database/h2.sql'",
+            url = "jdbc:h2:mem:test;MODE=LEGACY;INIT=RUNSCRIPT FROM './src/test/resources/database/h2.sql'",
             username = "sa",
             password = ""
         )
