@@ -1,1046 +1,1094 @@
 package top.potmot.init
 
+import java.util.UUID
 import top.potmot.entity.database.DatabaseTypeOrAny
 import top.potmot.entity.model.JvmLanguageOrAny
 import top.potmot.entity.typeMapping.dto.CrossTypeInput
 import top.potmot.entity.typeMapping.dto.JvmTypeInput
-import top.potmot.entity.typeMapping.dto.JvmTypeInput.TargetOf_sqlMatchRules
-import top.potmot.entity.typeMapping.dto.JvmTypeInput.TargetOf_tsMatchRules
 import top.potmot.entity.typeMapping.dto.SqlTypeInput
 import top.potmot.entity.typeMapping.dto.TsTypeInput
 import top.potmot.entity.typeMapping.dto.crossTypeWithOrderKey
 import top.potmot.entity.typeMapping.dto.jvmTypeWithOrderKey
 import top.potmot.entity.typeMapping.dto.sqlTypeWithOrderKey
 import top.potmot.entity.typeMapping.dto.tsTypeWithOrderKey
-import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZonedDateTime
-import java.util.UUID
-
-private enum class InitTypeIds(val value: UUID = UUID.randomUUID()) {
-    JVM_STRING_ID,
-    JAVA_INT_PRIMITIVE_ID,
-    JAVA_INTEGER_OBJECT_ID,
-    KT_INT_ID,
-    JAVA_LONG_PRIMITIVE_ID,
-    JAVA_LONG_OBJECT_ID,
-    KT_LONG_ID,
-    JAVA_SHORT_PRIMITIVE_ID,
-    JAVA_SHORT_OBJECT_ID,
-    KT_SHORT_ID,
-    JAVA_FLOAT_PRIMITIVE_ID,
-    JAVA_FLOAT_OBJECT_ID,
-    KT_FLOAT_ID,
-    JAVA_DOUBLE_PRIMITIVE_ID,
-    JAVA_DOUBLE_OBJECT_ID,
-    KT_DOUBLE_ID,
-    JAVA_BOOLEAN_PRIMITIVE_ID,
-    JAVA_BOOLEAN_OBJECT_ID,
-    KT_BOOLEAN_ID,
-    JAVA_BYTE_PRIMITIVE_ID,
-    JAVA_BYTE_OBJECT_ID,
-    KT_BYTE_ID,
-    JVM_BIG_DECIMAL_ID,
-    JVM_LOCAL_DATE_TIME_ID,
-    JVM_LOCAL_DATE_ID,
-    JVM_LOCAL_TIME_ID,
-    JVM_ZONED_DATE_TIME_ID,
-
-    SQL_TEXT_ID,
-    SQL_VARCHAR255_ID,
-    SQL_CHAR255_ID,
-    SQL_INTEGER_ID,
-    SQL_BIGINT_ID,
-    SQL_SMALLINT_ID,
-    SQL_TINYINT_ID,
-    SQL_REAL_ID,
-    SQL_DOUBLE_PRECISION_ID,
-    SQL_BOOLEAN_ID,
-    SQL_DECIMAL_11_2_ID,
-    SQL_DATE_ID,
-    SQL_TIME_ID,
-    SQL_TIMESTAMP_ID,
-    SQL_TIMESTAMPTZ_ID,
-
-    TS_STRING_ID,
-    TS_NUMBER_ID,
-    TS_BOOLEAN_ID,
-}
 
 val initJvmTypes = listOf(
     JvmTypeInput(
-        id = InitTypeIds.JVM_STRING_ID.value,
+        id = UUID.fromString("00039100-0000-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.ANY,
         typeExpression = "String",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0000-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(n)?(var)?char(acter)?(2)?( varying)?(\\(\\d+\\))?$/i"
+                matchRegExp = "/^(n)?(var)?char(acter)?(2)?( varying)?(\\(\\d+\\))?$/i",
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0000-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(n)?(tiny|small|medium|long)?text$/i"
+                matchRegExp = "/^(n)?(tiny|small|medium|long)?text$/i",
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0000-4000-a000-000000000003"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(n)?(tiny|small|medium|long)?clob$/i"
-            ),
+                matchRegExp = "/^(n)?(tiny|small|medium|long)?clob$/i",
+            )
         ),
         tsMatchRules = listOf(
-            TargetOf_tsMatchRules(
-                matchRegExp = "/^[Ss]tring$/"
-            ),
-        )
+            JvmTypeInput.TargetOf_tsMatchRules(
+                id = UUID.fromString("00039100-0000-4000-a000-000000000004"),
+                matchRegExp = "/^[Ss]tring$/",
+            )
+        ),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_INT_PRIMITIVE_ID.value,
+        id = UUID.fromString("00039100-0001-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "int",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = false,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0001-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(medium)?int(eger)?(\\(\\d+\\))?$/i"
-            ),
-            TargetOf_sqlMatchRules(
+                matchRegExp = "/^(medium)?int(eger)?(\\(\\d+\\))?$/i",
                 nullableLimit = false,
-                databaseSource = DatabaseTypeOrAny.ORACLE,
-                matchRegExp = "/^number(\\(\\d+\\))?$/i"
             ),
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0001-4000-a000-000000000002"),
+                databaseSource = DatabaseTypeOrAny.ORACLE,
+                matchRegExp = "/^number(\\(\\d+\\))?$/i",
+                nullableLimit = false,
+            )
         ),
         tsMatchRules = listOf(
-            TargetOf_tsMatchRules(
-                matchRegExp = "/^[Nn]umber$/"
-            ),
-        )
+            JvmTypeInput.TargetOf_tsMatchRules(
+                id = UUID.fromString("00039100-0001-4000-a000-000000000003"),
+                matchRegExp = "/^[Nn]umber$/",
+            )
+        ),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_INTEGER_OBJECT_ID.value,
+        id = UUID.fromString("00039100-0002-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "Integer",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = true,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0002-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(medium)?int(eger)?(\\(\\d+\\))?$/i"
+                matchRegExp = "/^(medium)?int(eger)?(\\(\\d+\\))?$/i",
+                nullableLimit = true,
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0002-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ORACLE,
-                matchRegExp = "/^number(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^number(\\(\\d+\\))?$/i",
+            )
         ),
         tsMatchRules = listOf(
-            TargetOf_tsMatchRules(
-                matchRegExp = "/^[Nn]umber$/"
-            ),
-        )
+            JvmTypeInput.TargetOf_tsMatchRules(
+                id = UUID.fromString("00039100-0002-4000-a000-000000000003"),
+                matchRegExp = "/^[Nn]umber$/",
+            )
+        ),
     ),
     JvmTypeInput(
-        id = InitTypeIds.KT_INT_ID.value,
+        id = UUID.fromString("00039100-0003-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Int",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0003-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(medium)?int(eger)?(\\(\\d+\\))?$/i"
+                matchRegExp = "/^(medium)?int(eger)?(\\(\\d+\\))?$/i",
             ),
-            TargetOf_sqlMatchRules(
-                nullableLimit = false,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0003-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ORACLE,
-                matchRegExp = "/^number(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^number(\\(\\d+\\))?$/i",
+                nullableLimit = false,
+            )
         ),
         tsMatchRules = listOf(
-            TargetOf_tsMatchRules(
-                matchRegExp = "/^[Nn]umber$/"
-            ),
-        )
+            JvmTypeInput.TargetOf_tsMatchRules(
+                id = UUID.fromString("00039100-0003-4000-a000-000000000003"),
+                matchRegExp = "/^[Nn]umber$/",
+            )
+        ),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_LONG_PRIMITIVE_ID.value,
+        id = UUID.fromString("00039100-0004-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "long",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = false,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0004-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^bigint(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^bigint(\\(\\d+\\))?$/i",
+                nullableLimit = false,
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_LONG_OBJECT_ID.value,
+        id = UUID.fromString("00039100-0005-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "Long",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = true,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0005-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^bigint(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^bigint(\\(\\d+\\))?$/i",
+                nullableLimit = true,
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.KT_LONG_ID.value,
+        id = UUID.fromString("00039100-0006-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Long",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0006-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^bigint(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^bigint(\\(\\d+\\))?$/i",
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_SHORT_PRIMITIVE_ID.value,
+        id = UUID.fromString("00039100-0007-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "short",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = false,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0007-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^smallint(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^smallint(\\(\\d+\\))?$/i",
+                nullableLimit = false,
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_SHORT_OBJECT_ID.value,
+        id = UUID.fromString("00039100-0008-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "Short",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = true,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0008-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^smallint(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^smallint(\\(\\d+\\))?$/i",
+                nullableLimit = true,
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.KT_SHORT_ID.value,
+        id = UUID.fromString("00039100-0009-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Short",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0009-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^smallint(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^smallint(\\(\\d+\\))?$/i",
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_FLOAT_PRIMITIVE_ID.value,
+        id = UUID.fromString("00039100-000a-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "float",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = false,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000a-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^real$/i"
-            ),
-            TargetOf_sqlMatchRules(
+                matchRegExp = "/^real$/i",
                 nullableLimit = false,
+            ),
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000a-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^float$/i"
-            ),
-            TargetOf_sqlMatchRules(
+                matchRegExp = "/^float$/i",
                 nullableLimit = false,
+            ),
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000a-4000-a000-000000000003"),
                 databaseSource = DatabaseTypeOrAny.ORACLE,
-                matchRegExp = "/^(binary_)float$/i"
-            ),
+                matchRegExp = "/^(binary_)float$/i",
+                nullableLimit = false,
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_FLOAT_OBJECT_ID.value,
+        id = UUID.fromString("00039100-000b-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "Float",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = true,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000b-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^real$/i"
-            ),
-            TargetOf_sqlMatchRules(
+                matchRegExp = "/^real$/i",
                 nullableLimit = true,
+            ),
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000b-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^float$/i"
-            ),
-            TargetOf_sqlMatchRules(
+                matchRegExp = "/^float$/i",
                 nullableLimit = true,
+            ),
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000b-4000-a000-000000000003"),
                 databaseSource = DatabaseTypeOrAny.ORACLE,
-                matchRegExp = "/^(binary_)float$/i"
-            ),
+                matchRegExp = "/^(binary_)float$/i",
+                nullableLimit = true,
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.KT_FLOAT_ID.value,
+        id = UUID.fromString("00039100-000c-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Float",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000c-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^real$/i"
+                matchRegExp = "/^real$/i",
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000c-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^float$/i"
+                matchRegExp = "/^float$/i",
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000c-4000-a000-000000000003"),
                 databaseSource = DatabaseTypeOrAny.ORACLE,
-                matchRegExp = "/^(binary_)float$/i"
-            ),
+                matchRegExp = "/^(binary_)float$/i",
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_DOUBLE_PRIMITIVE_ID.value,
+        id = UUID.fromString("00039100-000d-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "double",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = false,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000d-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^double( precision)?$/i"
-            ),
-            TargetOf_sqlMatchRules(
+                matchRegExp = "/^double( precision)?$/i",
                 nullableLimit = false,
-                databaseSource = DatabaseTypeOrAny.ORACLE,
-                matchRegExp = "/^(binary_)double$/i"
             ),
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000d-4000-a000-000000000002"),
+                databaseSource = DatabaseTypeOrAny.ORACLE,
+                matchRegExp = "/^(binary_)double$/i",
+                nullableLimit = false,
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_DOUBLE_OBJECT_ID.value,
+        id = UUID.fromString("00039100-000e-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "Double",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = true,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000e-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^double( precision)?$/i"
-            ),
-            TargetOf_sqlMatchRules(
+                matchRegExp = "/^double( precision)?$/i",
                 nullableLimit = true,
-                databaseSource = DatabaseTypeOrAny.ORACLE,
-                matchRegExp = "/^(binary_)double$/i"
             ),
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000e-4000-a000-000000000002"),
+                databaseSource = DatabaseTypeOrAny.ORACLE,
+                matchRegExp = "/^(binary_)double$/i",
+                nullableLimit = true,
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.KT_DOUBLE_ID.value,
+        id = UUID.fromString("00039100-000f-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Double",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000f-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^double( precision)?$/i"
+                matchRegExp = "/^double( precision)?$/i",
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-000f-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ORACLE,
-                matchRegExp = "/^(binary_)double$/i"
-            ),
+                matchRegExp = "/^(binary_)double$/i",
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_BOOLEAN_PRIMITIVE_ID.value,
+        id = UUID.fromString("00039100-0010-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "boolean",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = false,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0010-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^bool(ean)?$/i"
-            ),
+                matchRegExp = "/^bool(ean)?$/i",
+                nullableLimit = false,
+            )
         ),
         tsMatchRules = listOf(
-            TargetOf_tsMatchRules(
-                matchRegExp = "/^[Bb]oolean$/"
-            ),
-        )
+            JvmTypeInput.TargetOf_tsMatchRules(
+                id = UUID.fromString("00039100-0010-4000-a000-000000000002"),
+                matchRegExp = "/^[Bb]oolean$/",
+            )
+        ),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_BOOLEAN_OBJECT_ID.value,
+        id = UUID.fromString("00039100-0011-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "Boolean",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = true,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0011-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^bool(ean)?$/i"
-            ),
+                matchRegExp = "/^bool(ean)?$/i",
+                nullableLimit = true,
+            )
         ),
         tsMatchRules = listOf(
-            TargetOf_tsMatchRules(
-                matchRegExp = "/^[Bb]oolean$/"
-            ),
-        )
+            JvmTypeInput.TargetOf_tsMatchRules(
+                id = UUID.fromString("00039100-0011-4000-a000-000000000002"),
+                matchRegExp = "/^[Bb]oolean$/",
+            )
+        ),
     ),
     JvmTypeInput(
-        id = InitTypeIds.KT_BOOLEAN_ID.value,
+        id = UUID.fromString("00039100-0012-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Boolean",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0012-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^bool(ean)?$/i"
-            ),
+                matchRegExp = "/^bool(ean)?$/i",
+            )
         ),
         tsMatchRules = listOf(
-            TargetOf_tsMatchRules(
-                matchRegExp = "/^[Bb]oolean$/"
-            ),
-        )
+            JvmTypeInput.TargetOf_tsMatchRules(
+                id = UUID.fromString("00039100-0012-4000-a000-000000000002"),
+                matchRegExp = "/^[Bb]oolean$/",
+            )
+        ),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_BYTE_PRIMITIVE_ID.value,
+        id = UUID.fromString("00039100-0013-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "byte",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = false,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0013-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^tinyint(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^tinyint(\\(\\d+\\))?$/i",
+                nullableLimit = false,
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JAVA_BYTE_OBJECT_ID.value,
+        id = UUID.fromString("00039100-0014-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.JAVA,
         typeExpression = "Byte",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
-                nullableLimit = true,
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0014-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^tinyint(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^tinyint(\\(\\d+\\))?$/i",
+                nullableLimit = true,
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.KT_BYTE_ID.value,
+        id = UUID.fromString("00039100-0015-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.KOTLIN,
         typeExpression = "Byte",
         serialized = false,
         extraImports = emptyList(),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0015-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^tinyint(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^tinyint(\\(\\d+\\))?$/i",
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_BIG_DECIMAL_ID.value,
+        id = UUID.fromString("00039100-0016-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.ANY,
         typeExpression = "BigDecimal",
         serialized = false,
         extraImports = listOf(
-            BigDecimal::class.java.name
+            "java.math.BigDecimal"
         ),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0016-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^decimal(\\(\\d+(\\,\\d+)?\\))?$/i"
+                matchRegExp = "/^decimal(\\(\\d+(,\\d+)?\\))?$/i",
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0016-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^numeric(\\(\\d+(\\,\\d+)?\\))?$/i"
+                matchRegExp = "/^numeric(\\(\\d+(,\\d+)?\\))?$/i",
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0016-4000-a000-000000000003"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^number(\\(\\d+(\\,\\d+)?\\))?$/i"
-            ),
+                matchRegExp = "/^number(\\(\\d+(,\\d+)?\\))?$/i",
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_LOCAL_DATE_TIME_ID.value,
+        id = UUID.fromString("00039100-0017-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.ANY,
         typeExpression = "LocalDateTime",
         serialized = false,
         extraImports = listOf(
-            LocalDateTime::class.java.name
+            "java.time.LocalDateTime"
         ),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0017-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^timestamp(\\(\\d+\\))?( without time zone)?$/i"
+                matchRegExp = "/^timestamp(\\(\\d+\\))?( without time zone)?$/i",
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0017-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^datetime(\\(\\d+\\))?$/i"
+                matchRegExp = "/^datetime(\\(\\d+\\))?$/i",
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0017-4000-a000-000000000003"),
                 databaseSource = DatabaseTypeOrAny.ORACLE,
-                matchRegExp = "/^datetime2(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^datetime2(\\(\\d+\\))?$/i",
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_LOCAL_DATE_ID.value,
+        id = UUID.fromString("00039100-0018-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.ANY,
         typeExpression = "LocalDate",
         serialized = false,
         extraImports = listOf(
-            LocalDate::class.java.name
+            "java.time.LocalDate"
         ),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0018-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^date( without time zone)?(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^date( without time zone)?(\\(\\d+\\))?$/i",
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_LOCAL_TIME_ID.value,
+        id = UUID.fromString("00039100-0019-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.ANY,
         typeExpression = "LocalTime",
         serialized = false,
         extraImports = listOf(
-            LocalTime::class.java.name
+            "java.time.LocalTime"
         ),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-0019-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^time( without time zone)?(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^time( without time zone)?(\\(\\d+\\))?$/i",
+            )
         ),
-        tsMatchRules = emptyList()
+        tsMatchRules = emptyList(),
     ),
     JvmTypeInput(
-        id = InitTypeIds.JVM_ZONED_DATE_TIME_ID.value,
+        id = UUID.fromString("00039100-001a-4000-a000-00000000"),
         jvmSource = JvmLanguageOrAny.ANY,
         typeExpression = "ZonedDateTime",
         serialized = false,
         extraImports = listOf(
-            ZonedDateTime::class.java.name
+            "java.time.ZonedDateTime"
         ),
         extraAnnotations = emptyList(),
         sqlMatchRules = listOf(
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-001a-4000-a000-000000000001"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^timestamptz(\\(\\d+\\))?$/i"
+                matchRegExp = "/^timestamptz(\\(\\d+\\))?$/i",
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-001a-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^timestamp(\\(\\d+\\))? with time zone$/i"
+                matchRegExp = "/^timestamp(\\(\\d+\\))? with time zone$/i",
             ),
-            TargetOf_sqlMatchRules(
+            JvmTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039100-001a-4000-a000-000000000003"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^datetimeoffset(\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^datetimeoffset(\\(\\d+\\))?$/i",
+            )
         ),
-        tsMatchRules = emptyList()
-    )
+        tsMatchRules = emptyList(),
+    ),
 ).jvmTypeWithOrderKey()
 
 val initSqlTypes = listOf(
     SqlTypeInput(
-        id = InitTypeIds.SQL_TEXT_ID.value,
+        id = UUID.fromString("00039101-0000-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "text",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-0000-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^String$/"
-            ),
+                matchRegExp = "/^String$/",
+            )
         ),
         tsMatchRules = listOf(
             SqlTypeInput.TargetOf_tsMatchRules(
-                matchRegExp = "/^[Ss]tring$/"
-            ),
+                id = UUID.fromString("00039101-0000-4000-a000-000000000002"),
+                matchRegExp = "/^[Ss]tring$/",
+            )
         ),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_VARCHAR255_ID.value,
+        id = UUID.fromString("00039101-0001-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "varchar(255)",
-        dataSize = 255,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-0001-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^String$/"
-            ),
+                matchRegExp = "/^String$/",
+            )
         ),
         tsMatchRules = listOf(
             SqlTypeInput.TargetOf_tsMatchRules(
-                matchRegExp = "/^[Ss]tring$/"
-            ),
+                id = UUID.fromString("00039101-0001-4000-a000-000000000002"),
+                matchRegExp = "/^[Ss]tring$/",
+            )
         ),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_CHAR255_ID.value,
+        id = UUID.fromString("00039101-0002-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "char(255)",
-        dataSize = 255,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-0002-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^String$/"
-            ),
+                matchRegExp = "/^String$/",
+            )
         ),
         tsMatchRules = listOf(
             SqlTypeInput.TargetOf_tsMatchRules(
-                matchRegExp = "/^[Ss]tring$/"
-            ),
+                id = UUID.fromString("00039101-0002-4000-a000-000000000002"),
+                matchRegExp = "/^[Ss]tring$/",
+            )
         ),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_INTEGER_ID.value,
+        id = UUID.fromString("00039101-0003-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "integer",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-0003-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.JAVA,
-                matchRegExp = "/^(int|Integer)$/"
+                matchRegExp = "/^(int|Integer)$/",
             ),
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-0003-4000-a000-000000000002"),
                 jvmSource = JvmLanguageOrAny.KOTLIN,
-                matchRegExp = "/^Int$/"
-            ),
+                matchRegExp = "/^Int$/",
+            )
         ),
         tsMatchRules = listOf(
             SqlTypeInput.TargetOf_tsMatchRules(
-                matchRegExp = "/^[Nn]umber$/"
-            ),
+                id = UUID.fromString("00039101-0003-4000-a000-000000000003"),
+                matchRegExp = "/^[Nn]umber$/",
+            )
         ),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_BIGINT_ID.value,
+        id = UUID.fromString("00039101-0004-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "bigint",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-0004-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^[Ll]ong$/"
-            ),
+                matchRegExp = "/^[Ll]ong$/",
+            )
         ),
         tsMatchRules = emptyList(),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_SMALLINT_ID.value,
+        id = UUID.fromString("00039101-0005-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "smallint",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-0005-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^[Ss]hort$/"
-            ),
+                matchRegExp = "/^[Ss]hort$/",
+            )
         ),
         tsMatchRules = emptyList(),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_REAL_ID.value,
+        id = UUID.fromString("00039101-0007-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "real",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-0007-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^[Ff]loat$/"
-            ),
+                matchRegExp = "/^[Ff]loat$/",
+            )
         ),
         tsMatchRules = emptyList(),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_DOUBLE_PRECISION_ID.value,
+        id = UUID.fromString("00039101-0008-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "double precision",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-0008-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^[Dd]ouble$/"
-            ),
+                matchRegExp = "/^[Dd]ouble$/",
+            )
         ),
         tsMatchRules = emptyList(),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_BOOLEAN_ID.value,
+        id = UUID.fromString("00039101-0009-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "boolean",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-0009-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^[Bb]oolean$/"
-            ),
+                matchRegExp = "/^[Bb]oolean$/",
+            )
         ),
         tsMatchRules = listOf(
             SqlTypeInput.TargetOf_tsMatchRules(
-                matchRegExp = "/^[Bb]oolean$/"
-            ),
+                id = UUID.fromString("00039101-0009-4000-a000-000000000002"),
+                matchRegExp = "/^[Bb]oolean$/",
+            )
         ),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_TINYINT_ID.value,
+        id = UUID.fromString("00039101-0006-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "tinyint",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-0006-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^[Bb]yte$/"
-            ),
+                matchRegExp = "/^[Bb]yte$/",
+            )
         ),
         tsMatchRules = emptyList(),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_DECIMAL_11_2_ID.value,
+        id = UUID.fromString("00039101-000a-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "decimal(11, 2)",
-        dataSize = 11,
-        numericPrecision = 2,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-000a-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^BigDecimal$/"
-            ),
+                matchRegExp = "/^BigDecimal$/",
+            )
         ),
         tsMatchRules = emptyList(),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_DATE_ID.value,
+        id = UUID.fromString("00039101-000b-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "date",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-000b-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^LocalDate$/"
-            ),
+                matchRegExp = "/^LocalDate$/",
+            )
         ),
         tsMatchRules = emptyList(),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_TIME_ID.value,
+        id = UUID.fromString("00039101-000c-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "time",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-000c-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^LocalTime$/i"
-            ),
+                matchRegExp = "/^LocalTime$/i",
+            )
         ),
         tsMatchRules = emptyList(),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_TIMESTAMP_ID.value,
+        id = UUID.fromString("00039101-000d-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "timestamp",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-000d-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^LocalDateTime$/"
-            ),
+                matchRegExp = "/^LocalDateTime$/",
+            )
         ),
         tsMatchRules = emptyList(),
     ),
     SqlTypeInput(
-        id = InitTypeIds.SQL_TIMESTAMPTZ_ID.value,
+        id = UUID.fromString("00039101-000e-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.POSTGRESQL,
         type = "timestamptz",
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039101-000e-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
-                matchRegExp = "/^ZonedDateTime$/"
-            ),
+                matchRegExp = "/^ZonedDateTime$/",
+            )
         ),
         tsMatchRules = emptyList(),
     ),
 ).sqlTypeWithOrderKey()
 
-
 val initTsTypes = listOf(
     TsTypeInput(
-        id = InitTypeIds.TS_STRING_ID.value,
+        id = UUID.fromString("00039102-0000-4000-a000-00000000"),
         typeExpression = "string",
         extraImports = emptyList(),
         jvmMatchRules = listOf(
-            TsTypeInput.TargetOf_jvmMatchRules(
+                        TsTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039102-0000-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
                 matchRegExp = "/^String$/"
-            ),
+            )
         ),
         sqlMatchRules = listOf(
-            TsTypeInput.TargetOf_sqlMatchRules(
+                        TsTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039102-0000-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ANY,
-                matchRegExp = "/^(text|(n)?(var)?char\\(\\d+\\)|(tiny|small|medium|long)?text|character( varying)?\\(\\d+\\))?$/i"
-            ),
+                matchRegExp = "/^(text|(n)?(var)?char\\(\\d+\\)|(tiny|small|medium|long)?text|character( varying)?\\(\\d+\\))$/i"
+            )
         ),
     ),
     TsTypeInput(
-        id = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039102-0001-4000-a000-00000000"),
         typeExpression = "number",
         extraImports = emptyList(),
         jvmMatchRules = listOf(
-            TsTypeInput.TargetOf_jvmMatchRules(
+                        TsTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039102-0001-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
                 matchRegExp = "/^(int|Integer|Int|long|Long|short|Short|float|Float|double|Double)$/i"
-            ),
+            )
         ),
         sqlMatchRules = listOf(
-            TsTypeInput.TargetOf_sqlMatchRules(
+                        TsTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039102-0001-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ANY,
                 matchRegExp = "/^(int(eger)?|tinyint|bigint|smallint|real|float|double( precision)?)\\(\\d+\\)\\)?$/i"
-            ),
+            )
         ),
     ),
     TsTypeInput(
-        id = InitTypeIds.TS_BOOLEAN_ID.value,
+        id = UUID.fromString("00039102-0002-4000-a000-00000000"),
         typeExpression = "boolean",
         extraImports = emptyList(),
         jvmMatchRules = listOf(
-            TsTypeInput.TargetOf_jvmMatchRules(
+                        TsTypeInput.TargetOf_jvmMatchRules(
+                id = UUID.fromString("00039102-0002-4000-a000-000000000001"),
                 jvmSource = JvmLanguageOrAny.ANY,
                 matchRegExp = "/^[Bb]oolean$/i"
-            ),
+            )
         ),
         sqlMatchRules = listOf(
-            TsTypeInput.TargetOf_sqlMatchRules(
+                        TsTypeInput.TargetOf_sqlMatchRules(
+                id = UUID.fromString("00039102-0002-4000-a000-000000000002"),
                 databaseSource = DatabaseTypeOrAny.ANY,
                 matchRegExp = "/^bool(ean)?$/i"
-            ),
+            )
         ),
-    )
+    ),
 ).tsTypeWithOrderKey()
 
 val initCrossTypes = listOf(
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JVM_STRING_ID.value,
-        sqlTypeId = InitTypeIds.SQL_TEXT_ID.value,
-        tsTypeId = InitTypeIds.TS_STRING_ID.value,
+        id = UUID.fromString("00039103-0000-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0000-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0000-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0000-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JVM_STRING_ID.value,
-        sqlTypeId = InitTypeIds.SQL_VARCHAR255_ID.value,
-        tsTypeId = InitTypeIds.TS_STRING_ID.value,
+        id = UUID.fromString("00039103-0001-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0000-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0001-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0000-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JVM_STRING_ID.value,
-        sqlTypeId = InitTypeIds.SQL_CHAR255_ID.value,
-        tsTypeId = InitTypeIds.TS_STRING_ID.value,
+        id = UUID.fromString("00039103-0002-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0000-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0002-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0000-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_INT_PRIMITIVE_ID.value,
-        sqlTypeId = InitTypeIds.SQL_INTEGER_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0003-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0001-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0003-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = false,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_INTEGER_OBJECT_ID.value,
-        sqlTypeId = InitTypeIds.SQL_INTEGER_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0004-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0002-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0003-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = true,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.KT_INT_ID.value,
-        sqlTypeId = InitTypeIds.SQL_INTEGER_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0005-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0003-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0003-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_LONG_PRIMITIVE_ID.value,
-        sqlTypeId = InitTypeIds.SQL_BIGINT_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0007-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0004-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0004-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = false,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_LONG_OBJECT_ID.value,
-        sqlTypeId = InitTypeIds.SQL_BIGINT_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0008-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0005-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0004-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = true,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.KT_LONG_ID.value,
-        sqlTypeId = InitTypeIds.SQL_BIGINT_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0006-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0006-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0004-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_SHORT_PRIMITIVE_ID.value,
-        sqlTypeId = InitTypeIds.SQL_SMALLINT_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-000a-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0007-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0005-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = false,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_SHORT_OBJECT_ID.value,
-        sqlTypeId = InitTypeIds.SQL_SMALLINT_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-000b-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0008-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0005-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = true,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.KT_SHORT_ID.value,
-        sqlTypeId = InitTypeIds.SQL_SMALLINT_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0009-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0009-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0005-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_FLOAT_PRIMITIVE_ID.value,
-        sqlTypeId = InitTypeIds.SQL_REAL_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-000d-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-000a-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0007-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = false,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_FLOAT_OBJECT_ID.value,
-        sqlTypeId = InitTypeIds.SQL_REAL_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-000e-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-000b-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0007-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = true,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.KT_FLOAT_ID.value,
-        sqlTypeId = InitTypeIds.SQL_REAL_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-000c-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-000c-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0007-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_DOUBLE_PRIMITIVE_ID.value,
-        sqlTypeId = InitTypeIds.SQL_DOUBLE_PRECISION_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0010-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-000d-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0008-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = false,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_DOUBLE_OBJECT_ID.value,
-        sqlTypeId = InitTypeIds.SQL_DOUBLE_PRECISION_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0011-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-000e-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0008-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = true,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.KT_DOUBLE_ID.value,
-        sqlTypeId = InitTypeIds.SQL_DOUBLE_PRECISION_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-000f-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-000f-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0008-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_BOOLEAN_PRIMITIVE_ID.value,
-        sqlTypeId = InitTypeIds.SQL_BOOLEAN_ID.value,
-        tsTypeId = InitTypeIds.TS_BOOLEAN_ID.value,
+        id = UUID.fromString("00039103-0013-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0010-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0009-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0002-4000-a000-00000000"),
         nullable = false,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_BOOLEAN_OBJECT_ID.value,
-        sqlTypeId = InitTypeIds.SQL_BOOLEAN_ID.value,
-        tsTypeId = InitTypeIds.TS_BOOLEAN_ID.value,
+        id = UUID.fromString("00039103-0014-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0011-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0009-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0002-4000-a000-00000000"),
         nullable = true,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.KT_BOOLEAN_ID.value,
-        sqlTypeId = InitTypeIds.SQL_BOOLEAN_ID.value,
-        tsTypeId = InitTypeIds.TS_BOOLEAN_ID.value,
+        id = UUID.fromString("00039103-0012-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0012-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0009-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0002-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_BYTE_PRIMITIVE_ID.value,
-        sqlTypeId = InitTypeIds.SQL_TINYINT_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0016-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0013-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0006-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = false,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JAVA_BYTE_OBJECT_ID.value,
-        sqlTypeId = InitTypeIds.SQL_TINYINT_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0017-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0014-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0006-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
         nullable = true,
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.KT_BYTE_ID.value,
-        sqlTypeId = InitTypeIds.SQL_TINYINT_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0015-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0015-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-0006-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JVM_BIG_DECIMAL_ID.value,
-        sqlTypeId = InitTypeIds.SQL_DECIMAL_11_2_ID.value,
-        tsTypeId = InitTypeIds.TS_NUMBER_ID.value,
+        id = UUID.fromString("00039103-0018-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0016-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-000a-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0001-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JVM_LOCAL_DATE_TIME_ID.value,
-        sqlTypeId = InitTypeIds.SQL_TIMESTAMP_ID.value,
-        tsTypeId = InitTypeIds.TS_STRING_ID.value,
+        id = UUID.fromString("00039103-0019-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0017-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-000d-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0000-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JVM_LOCAL_DATE_ID.value,
-        sqlTypeId = InitTypeIds.SQL_DATE_ID.value,
-        tsTypeId = InitTypeIds.TS_STRING_ID.value,
+        id = UUID.fromString("00039103-001a-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0018-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-000b-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0000-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JVM_LOCAL_TIME_ID.value,
-        sqlTypeId = InitTypeIds.SQL_TIME_ID.value,
-        tsTypeId = InitTypeIds.TS_STRING_ID.value,
+        id = UUID.fromString("00039103-001b-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-0019-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-000c-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0000-4000-a000-00000000"),
     ),
     CrossTypeInput(
-        jvmTypeId = InitTypeIds.JVM_ZONED_DATE_TIME_ID.value,
-        sqlTypeId = InitTypeIds.SQL_TIMESTAMPTZ_ID.value,
-        tsTypeId = InitTypeIds.TS_STRING_ID.value,
-    )
+        id = UUID.fromString("00039103-001c-4000-a000-00000000"),
+        jvmTypeId = UUID.fromString("00039100-001a-4000-a000-00000000"),
+        sqlTypeId = UUID.fromString("00039101-000e-4000-a000-00000000"),
+        tsTypeId = UUID.fromString("00039102-0000-4000-a000-00000000"),
+    ),
 ).crossTypeWithOrderKey()
