@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="not_generated" pattern="file[jimmer-code-gen.main]:kotlin//*" />
+</component>

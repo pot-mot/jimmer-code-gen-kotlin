@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/src/main/resources/sql/h2/jimmer_code_gen.sql" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/src/test/resources/database/h2.sql" dialect="H2" />
+    <file url="file://$PROJECT_DIR$/src/test/resources/database/mysql5.7.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/test/resources/database/mysql8.4.7.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/test/resources/database/oracle.sql" dialect="Oracle" />
+    <file url="file://$PROJECT_DIR$/src/test/resources/database/postgresql.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/src/test/resources/database/sqlite.sql" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/src/test/resources/database/sqlserver.sql" dialect="TSQL" />
+  </component>
+</project>
