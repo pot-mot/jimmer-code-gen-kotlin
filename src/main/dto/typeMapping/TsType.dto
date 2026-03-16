@@ -25,3 +25,22 @@ input TsTypeInput {
         -orderKey
     }
 }
+
+input TsTypeUpdateInput {
+    #allScalars
+    id!
+    -orderKey
+    jvmMatchRules {
+        #allScalars
+        -orderKey
+    }
+    sqlMatchRules {
+        #allScalars
+        -orderKey
+    }
+}
+
+input TsTypeOrderInput {
+    id!
+    orderKey
+}

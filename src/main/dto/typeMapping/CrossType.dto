@@ -11,3 +11,15 @@ input CrossTypeInput {
     #allReferences
     -orderKey
 }
+
+input CrossTypeUpdateInput {
+    #allScalars
+    #allReferences
+    id!
+    -orderKey
+}
+
+input CrossTypeOrderInput {
+    id!
+    orderKey
+}

@@ -3,6 +3,7 @@ package top.potmot.service
 import org.babyfish.jimmer.sql.ast.mutation.AssociatedSaveMode
 import org.babyfish.jimmer.sql.ast.mutation.SaveMode
 import org.babyfish.jimmer.sql.kt.KSqlClient
+import org.babyfish.jimmer.sql.kt.ast.expression.valueIn
 import org.babyfish.jimmer.sql.kt.ast.expression.valueNotIn
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.support.TransactionTemplate
@@ -15,12 +16,20 @@ import top.potmot.entity.typeMapping.JvmType
 import top.potmot.entity.typeMapping.SqlType
 import top.potmot.entity.typeMapping.TsType
 import top.potmot.entity.typeMapping.dto.CrossTypeInput
+import top.potmot.entity.typeMapping.dto.CrossTypeOrderInput
+import top.potmot.entity.typeMapping.dto.CrossTypeUpdateInput
 import top.potmot.entity.typeMapping.dto.CrossTypeView
 import top.potmot.entity.typeMapping.dto.JvmTypeInput
+import top.potmot.entity.typeMapping.dto.JvmTypeOrderInput
+import top.potmot.entity.typeMapping.dto.JvmTypeUpdateInput
 import top.potmot.entity.typeMapping.dto.JvmTypeView
 import top.potmot.entity.typeMapping.dto.SqlTypeInput
+import top.potmot.entity.typeMapping.dto.SqlTypeOrderInput
+import top.potmot.entity.typeMapping.dto.SqlTypeUpdateInput
 import top.potmot.entity.typeMapping.dto.SqlTypeView
 import top.potmot.entity.typeMapping.dto.TsTypeInput
+import top.potmot.entity.typeMapping.dto.TsTypeOrderInput
+import top.potmot.entity.typeMapping.dto.TsTypeUpdateInput
 import top.potmot.entity.typeMapping.dto.TsTypeView
 import top.potmot.entity.typeMapping.dto.tsTypeWithOrderKey
 import top.potmot.entity.typeMapping.dto.sqlTypeWithOrderKey
@@ -29,6 +38,7 @@ import top.potmot.entity.typeMapping.dto.crossTypeWithOrderKey
 import top.potmot.entity.typeMapping.id
 import top.potmot.entity.typeMapping.orderKey
 import top.potmot.utils.transaction.executeNotNull
+import java.util.UUID
 
 @RestController
 @RequestMapping("/typeMapping")
@@ -45,6 +55,33 @@ class TypeMappingService(
                 orderBy(table.orderKey)
                 select(table.fetch(CrossTypeView::class))
             }.execute()
+    }
+
+    @PostMapping("/updateCrossType")
+    fun updateCrossType(@RequestBody inputs: List<CrossTypeUpdateInput>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.saveInputs(inputs) {
+                setMode(SaveMode.UPDATE_ONLY)
+            } 
+        }
+    }
+
+    @PostMapping("/updateCrossTypeOrder")
+    fun updateCrossTypeOrder(@RequestBody inputs: List<CrossTypeOrderInput>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.saveInputs(inputs) {
+                setMode(SaveMode.UPDATE_ONLY)
+            }
+        }
+    }
+    
+    @PostMapping("/deleteCrossType")
+    fun deleteCrossType(@RequestBody ids: List<UUID>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.createDelete(CrossType::class) {
+                where(table.id valueIn ids)
+            }.execute()
+        }
     }
 
     @PostMapping("/saveCrossType")
@@ -69,6 +106,33 @@ class TypeMappingService(
                 orderBy(table.orderKey)
                 select(table.fetch(JvmTypeView::class))
             }.execute()
+    }
+
+    @PostMapping("/updateJvmType")
+    fun updateJvmType(@RequestBody inputs: List<JvmTypeUpdateInput>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.saveInputs(inputs) {
+                setMode(SaveMode.UPDATE_ONLY)
+            }
+        }
+    }
+
+    @PostMapping("/updateJvmTypeOrder")
+    fun updateJvmTypeOrder(@RequestBody inputs: List<JvmTypeOrderInput>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.saveInputs(inputs) {
+                setMode(SaveMode.UPDATE_ONLY)
+            }
+        }
+    }
+
+    @PostMapping("/deleteJvmType")
+    fun deleteJvmType(@RequestBody ids: List<UUID>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.createDelete(JvmType::class) {
+                where(table.id valueIn ids)
+            }.execute()
+        }
     }
 
     @PostMapping("/saveJvmType")
@@ -96,6 +160,33 @@ class TypeMappingService(
             }.execute()
     }
 
+    @PostMapping("/updateSqlType")
+    fun updateSqlType(@RequestBody inputs: List<SqlTypeUpdateInput>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.saveInputs(inputs) {
+                setMode(SaveMode.UPDATE_ONLY)
+            }
+        }
+    }
+
+    @PostMapping("/updateSqlTypeOrder")
+    fun updateSqlTypeOrder(@RequestBody inputs: List<SqlTypeOrderInput>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.saveInputs(inputs) {
+                setMode(SaveMode.UPDATE_ONLY)
+            }
+        }
+    }
+
+    @PostMapping("/deleteSqlType")
+    fun deleteSqlType(@RequestBody ids: List<UUID>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.createDelete(SqlType::class) {
+                where(table.id valueIn ids)
+            }.execute()
+        }
+    }
+
     @PostMapping("/saveSqlType")
     fun saveSqlType(@RequestBody inputs: List<SqlTypeInput>): List<SqlTypeView> {
         return transactionTemplate.executeNotNull {
@@ -119,6 +210,33 @@ class TypeMappingService(
                 orderBy(table.orderKey)
                 select(table.fetch(TsTypeView::class))
             }.execute()
+    }
+
+    @PostMapping("/updateTsType")
+    fun updateTsType(@RequestBody inputs: List<TsTypeUpdateInput>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.saveInputs(inputs) {
+                setMode(SaveMode.UPDATE_ONLY)
+            }
+        }
+    }
+
+    @PostMapping("/updateTsTypeOrder")
+    fun updateTsTypeOrder(@RequestBody inputs: List<TsTypeOrderInput>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.saveInputs(inputs) {
+                setMode(SaveMode.UPDATE_ONLY)
+            }
+        }
+    }
+
+    @PostMapping("/deleteTsType")
+    fun deleteTsType(@RequestBody ids: List<UUID>) {
+        transactionTemplate.executeNotNull {
+            sqlClient.createDelete(TsType::class) {
+                where(table.id valueIn ids)
+            }.execute()
+        }
     }
 
     @PostMapping("/saveTsType")

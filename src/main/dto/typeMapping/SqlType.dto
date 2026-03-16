@@ -25,3 +25,22 @@ input SqlTypeInput {
         -orderKey
     }
 }
+
+input SqlTypeUpdateInput {
+    #allScalars
+    id!
+    -orderKey
+    jvmMatchRules {
+        #allScalars
+        -orderKey
+    }
+    tsMatchRules {
+        #allScalars
+        -orderKey
+    }
+}
+
+input SqlTypeOrderInput {
+    id!
+    orderKey
+}
