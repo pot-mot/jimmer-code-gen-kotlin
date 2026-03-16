@@ -619,6 +619,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-0000-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "text",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-0000-4000-a000-000000000001"),
@@ -637,6 +640,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-0001-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "varchar(255)",
+        dataSize = 255,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-0001-4000-a000-000000000001"),
@@ -655,6 +661,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-0002-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "char(255)",
+        dataSize = 255,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-0002-4000-a000-000000000001"),
@@ -673,6 +682,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-0003-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "integer",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-0003-4000-a000-000000000001"),
@@ -696,6 +708,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-0004-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "bigint",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-0004-4000-a000-000000000001"),
@@ -709,6 +724,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-0005-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "smallint",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-0005-4000-a000-000000000001"),
@@ -722,6 +740,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-0007-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "real",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-0007-4000-a000-000000000001"),
@@ -735,6 +756,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-0008-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "double precision",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-0008-4000-a000-000000000001"),
@@ -748,6 +772,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-0009-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "boolean",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-0009-4000-a000-000000000001"),
@@ -766,6 +793,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-0006-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "tinyint",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-0006-4000-a000-000000000001"),
@@ -779,6 +809,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-000a-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "decimal(11, 2)",
+        dataSize = 11,
+        numericPrecision = 2,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-000a-4000-a000-000000000001"),
@@ -792,6 +825,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-000b-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "date",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-000b-4000-a000-000000000001"),
@@ -805,6 +841,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-000c-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "time",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-000c-4000-a000-000000000001"),
@@ -818,6 +857,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-000d-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.ANY,
         type = "timestamp",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-000d-4000-a000-000000000001"),
@@ -831,6 +873,9 @@ val initSqlTypes = listOf(
         id = UUID.fromString("00039101-000e-4000-a000-00000000"),
         databaseSource = DatabaseTypeOrAny.POSTGRESQL,
         type = "timestamptz",
+        dataSize = null,
+        numericPrecision = null,
+        defaultValue = null,
         jvmMatchRules = listOf(
             SqlTypeInput.TargetOf_jvmMatchRules(
                 id = UUID.fromString("00039101-000e-4000-a000-000000000001"),
