@@ -35,6 +35,7 @@ import top.potmot.entity.typeMapping.dto.tsTypeWithOrderKey
 import top.potmot.entity.typeMapping.dto.sqlTypeWithOrderKey
 import top.potmot.entity.typeMapping.dto.jvmTypeWithOrderKey
 import top.potmot.entity.typeMapping.dto.crossTypeWithOrderKey
+import top.potmot.entity.typeMapping.dto.prepareOrderKey
 import top.potmot.entity.typeMapping.id
 import top.potmot.entity.typeMapping.orderKey
 import top.potmot.utils.transaction.executeNotNull
@@ -60,9 +61,10 @@ class TypeMappingService(
     @PostMapping("/updateCrossType")
     fun updateCrossType(@RequestBody inputs: List<CrossTypeUpdateInput>) {
         transactionTemplate.executeNotNull {
-            sqlClient.saveInputs(inputs) {
+            sqlClient.saveEntities(inputs.map { it.prepareOrderKey() }) {
                 setMode(SaveMode.UPDATE_ONLY)
-            } 
+                setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
+            }
         }
     }
 
@@ -74,7 +76,7 @@ class TypeMappingService(
             }
         }
     }
-    
+
     @PostMapping("/deleteCrossType")
     fun deleteCrossType(@RequestBody ids: List<UUID>) {
         transactionTemplate.executeNotNull {
@@ -111,8 +113,9 @@ class TypeMappingService(
     @PostMapping("/updateJvmType")
     fun updateJvmType(@RequestBody inputs: List<JvmTypeUpdateInput>) {
         transactionTemplate.executeNotNull {
-            sqlClient.saveInputs(inputs) {
+            sqlClient.saveEntities(inputs.map { it.prepareOrderKey() }) {
                 setMode(SaveMode.UPDATE_ONLY)
+                setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
             }
         }
     }
@@ -163,8 +166,9 @@ class TypeMappingService(
     @PostMapping("/updateSqlType")
     fun updateSqlType(@RequestBody inputs: List<SqlTypeUpdateInput>) {
         transactionTemplate.executeNotNull {
-            sqlClient.saveInputs(inputs) {
+            sqlClient.saveEntities(inputs.map { it.prepareOrderKey() }) {
                 setMode(SaveMode.UPDATE_ONLY)
+                setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
             }
         }
     }
@@ -215,8 +219,9 @@ class TypeMappingService(
     @PostMapping("/updateTsType")
     fun updateTsType(@RequestBody inputs: List<TsTypeUpdateInput>) {
         transactionTemplate.executeNotNull {
-            sqlClient.saveInputs(inputs) {
+            sqlClient.saveEntities(inputs.map { it.prepareOrderKey() }) {
                 setMode(SaveMode.UPDATE_ONLY)
+                setAssociatedModeAll(AssociatedSaveMode.VIOLENTLY_REPLACE)
             }
         }
     }
