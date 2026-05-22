@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.spring.dependency.management)
     alias(libs.plugins.spring.boot)
+    kotlin("plugin.spring") version "2.1.20"
 }
 
 group = "top.potmot"
@@ -38,6 +39,7 @@ dependencies {
     runtimeOnly(libs.oracle)
     runtimeOnly(libs.sqlserver)
     runtimeOnly(libs.sqlite)
+    implementation(kotlin("stdlib"))
 }
 
 // Without this configuration, gradle command can still run.

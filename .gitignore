@@ -40,3 +40,4 @@ src/main/resources/dist
 /jimmer_code_gen.trace.db
 /jimmer_code_gen.mv.db
 /.kotlin/
+/.idea/db-forest-config.xml
